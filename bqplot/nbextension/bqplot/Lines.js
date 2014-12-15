@@ -155,6 +155,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.selector.touch();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+            this.model.update_labels();
             this.legend_el = elem.selectAll(".legend" + this.uuid)
                 .data(this.model.curve_data, function(d, i) { return d.name; });
 
@@ -177,10 +178,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("x", rect_dim * 1.2)
                 .attr("y", rect_dim / 2)
                 .attr("dy", "0.35em")
-                .text(function(d, i) {return that.model.get("labels")[i]; })
+                .text(function(d, i) {return that.model.curve_labels[i]; })
                 .style("fill", function(d,i) { return that.get_colors(i);});
-            var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
 
+            var max_length = d3.max(this.model.curve_labels, function(d) { return d.length; });
             this.legend_el.exit().remove();
             return [this.model.curve_data.length, max_length];
         },
@@ -227,21 +228,23 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var curves_sel = this.el.selectAll(".curve")
                 .data(this.model.curve_data, function(d, i) { return d.name; });
 
+            var new_curves = curves_sel.enter().append("g")
+                .attr("class", "curve");
+            new_curves.append("path")
+                .attr("class", "line")
+                .attr("fill", "none");
+
             var that = this;
             curves_sel.select("path")
-                .transition().duration(this.model.get("animate_dur"))
-                .attr("d", function(d) { return that.line(d.values); });
-
-            curves_sel.enter().append("g")
-                .attr("class", "curve")
-                .append("path")
                 .attr("id", function(d, i) { return "curve" + (i+1); })
-                .attr("class", "line")
                 .attr("d", function(d) { return that.line(d.values); })
-                .attr("fill", "none")
                 .style("stroke", function(d, i) { return that.get_colors(i); })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", $.proxy(this.get_line_style, this));
+
+            curves_sel.select("path")
+                .transition().duration(this.model.get("animate_dur"))
+                .attr("d", function(d) { return that.line(d.values) });
 
             curves_sel.exit()
                 .transition().duration(this.model.get("animate_dur"))
@@ -260,7 +263,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     .select(".curve_label")
                     .attr("display", function(d, i) { return (curves_subset.indexOf(i) != -1 && that.model.get("curve_display") == "label") ? "inline" : "none"; });
             }
-
             this.create_labels();
         },
     });
