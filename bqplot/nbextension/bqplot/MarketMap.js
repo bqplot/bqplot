@@ -288,7 +288,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .selectAll(".rect_element")
                     .data(data);
 
-                groups.enter()
+                var new_groups = groups.enter()
                     .append("g")
                     .attr("class", "rect_element")
                     .attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
@@ -296,7 +296,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .on("mouseover", function(data, ind) {$.proxy(that.mouseover_handler(data, (element_count + ind), this), that);})
                     .on("mouseout", function(data, ind) {$.proxy(that.mouseout_handler(data, (element_count + ind), this), that);});
 
-                groups.append("rect")
+                new_groups.append("rect")
                     .attr("x", 0)
                     .attr("y", 0)
                     .attr("class", "market_map_rect")
@@ -305,9 +305,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
                     .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) { return (that.color_scale && elem.color != undefined)
                            ? that.color_scale.scale(elem["color"]) : that.colors_map(i);}});
-                groups.attr("class", function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); });
+                new_groups.attr("class", function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); });
 
-                groups.append("text")
+                new_groups.append("text")
                     .attr("x", that.column_width / 2.0)
                     .attr("y", that.row_height / 2.0)
                     .text(function(data, j) { return data['display']; })
