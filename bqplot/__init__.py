@@ -61,6 +61,11 @@ from .axes import *
 from .marks import *
 from .scales import *
 
+# ignore the IPython future warning that widgets might change
+import warnings
+warnings.filterwarnings('ignore', module='IPython.html.widgets',
+                        category = FutureWarning)
+
 def install_nbextension(**kwargs):
     """Install the appropriate html and javascript into the IPython nbextension.
 
