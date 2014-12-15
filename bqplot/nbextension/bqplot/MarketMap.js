@@ -156,15 +156,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 // Adding the tooltip to the parent of the el so as to not
                 // pollute the DOM
                 this.el.parentNode.appendChild(this.tooltip_div.node());
-
-                // Get all the bounding rects of the paths around each of the
-                // sectors. Get their client bounding rect.
-                var paths = d3.select(this.el).selectAll(".bounding_path")[0];
-                var clientRects = paths.map(function(path) { return path.getBoundingClientRect(); });
-                var text_elements = this.fig_names.selectAll(".names_object").data(clientRects);
-                text_elements.attr("width", function(d) { return d.width;})
-                    .attr("height", function(d) { return d.height;});
                 this.update_layout();
+                this.draw_group_names();
             });
             $(this.options.cell).on("output_area_resize", function() {
                 self.update_layout();
@@ -339,6 +332,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                            "height": "100%", "justify-content": "center", "word-wrap": "break-word", "font": "24px sans-serif", "color": "black"})
                     .text(that.groups[i]);
             });
+            this.draw_group_names();
+        },
+        draw_group_names: function() {
+            // Get all the bounding rects of the paths around each of the
+            // sectors. Get their client bounding rect.
+            var paths = d3.select(this.el).selectAll(".bounding_path")[0];
+            var clientRects = paths.map(function(path) { return path.getBoundingClientRect(); });
+            var text_elements = this.fig_names.selectAll(".names_object").data(clientRects);
+            text_elements.attr("width", function(d) { return d.width;})
+                .attr("height", function(d) { return d.height;});
         },
         recolor_chart: function() {
             var that = this;
