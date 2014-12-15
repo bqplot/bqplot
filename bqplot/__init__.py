@@ -56,15 +56,15 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 
 """
 
-from .figure import *
-from .axes import *
-from .marks import *
-from .scales import *
-
 # ignore the IPython future warning that widgets might change
 import warnings
 warnings.filterwarnings('ignore', module='IPython.html.widgets',
                         category = FutureWarning)
+
+from .figure import *
+from .axes import *
+from .marks import *
+from .scales import *
 
 def install_nbextension(**kwargs):
     """Install the appropriate html and javascript into the IPython nbextension.
