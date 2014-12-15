@@ -80,7 +80,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .attr("width", "100%")
                     .attr("height", "100%");
             if (this.model.get('theme')) {
-                 this.svg.classed(this.model.get('theme'), true)
+                this.svg.classed(this.model.get('theme'), true)
             }
             this.fig = this.svg.append("g")
                     .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
