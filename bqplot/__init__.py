@@ -60,7 +60,6 @@ from .figure import *
 from .axes import *
 from .marks import *
 from .scales import *
-from .traits import *
 
 def install_nbextension(**kwargs):
     """Install the appropriate html and javascript into the IPython nbextension.
