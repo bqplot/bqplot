@@ -75,13 +75,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
             }
             // Reading the properties and creating the dom elements required
-            this.svg = d3.select(this.el)
+            this.svg = d3.select(this.el).attr('class', this.model.get('theme'))
                     .attr("viewBox", "0 0 "+ this.width +' '+ this.height)
                     .attr("width", "100%")
                     .attr("height", "100%");
-            if (this.model.get('theme')) {
-                this.svg.classed(this.model.get('theme'), true)
-            }
             this.fig = this.svg.append("g")
                     .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
@@ -235,6 +232,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             // transform figure
             this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
             this.draw_map();
+            // When map is expanded or contracted, there should not be any
+            // accidental hovers. To prevent this, the following call is made.
+            this.fig_hover.selectAll("rect")
+                .remove();
+            this.hide_tooltip();
             this.trigger("margin_updated");
         },
         create_scale_views: function() {
@@ -435,9 +437,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             tooltip_div.transition()
                 .style("opacity", .9);
 
-            tooltip_div.style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 100) + "px");
+            // the +5s are for breathing room for the tool tip
+            tooltip_div.style("left", (mouse_pos[0] + this.el.offsetLeft + 5) + "px")
+                .style("top", (mouse_pos[1] + this.el.offsetTop + 5) + "px");
             tooltip_div.select("table").remove();
+
             var tooltip_table = tooltip_div.append("table")
                 .selectAll("tr").data(this.tooltip_fields);
 
