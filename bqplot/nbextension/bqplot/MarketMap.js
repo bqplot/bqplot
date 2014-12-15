@@ -235,6 +235,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             // transform figure
             this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
             this.draw_map();
+            // When map is expanded or contracted, there should not be any
+            // accidental hovers. To prevent this, the following call is made.
+            this.fig_hover.selectAll("rect")
+                .remove();
+            this.hide_tooltip();
             this.trigger("margin_updated");
         },
         create_scale_views: function() {
@@ -283,33 +288,42 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .selectAll(".rect_element")
                     .data(data);
 
-                groups.enter()
+                // Appending the <g> <rect> and <text> elements to the newly
+                // added nodes
+                var new_groups = groups.enter()
                     .append("g")
-                    .attr("class", "rect_element")
-                    .attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
-                    .on("click", function(data, ind) {$.proxy(that.cell_click_handler(data, (element_count + ind), this), that);})
-                    .on("mouseover", function(data, ind) {$.proxy(that.mouseover_handler(data, (element_count + ind), this), that);})
-                    .on("mouseout", function(data, ind) {$.proxy(that.mouseout_handler(data, (element_count + ind), this), that);});
+                    .classed("rect_element", true);
 
-                groups.append("rect")
+                new_groups.append("rect")
                     .attr("x", 0)
                     .attr("y", 0)
-                    .attr("class", "market_map_rect")
+                    .classed("market_map_rect", true);
+
+                new_groups.append("text")
+                    .classed("market_map_text", true)
+                    .style({"text-anchor": "middle", 'fill' :'black'});
+
+                // Update the attributes of the entire set of nodes
+                groups.attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
+                    .on("click", function(data, ind) {$.proxy(that.cell_click_handler(data, (element_count + ind), this), that);})
+                    .on("mouseover", function(data, ind) {$.proxy(that.mouseover_handler(data, (element_count + ind), this), that);})
+                    .on("mouseout", function(data, ind) {$.proxy(that.mouseout_handler(data, (element_count + ind), this), that);})
+                    .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); });
+
+                groups.selectAll(".market_map_rect")
                     .attr("width", that.column_width)
                     .attr("height", that.row_height)
                     .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
                     .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) { return (that.color_scale && elem.color != undefined)
                            ? that.color_scale.scale(elem["color"]) : that.colors_map(i);}});
-                groups.attr("class", function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); });
 
-                groups.append("text")
+                groups.selectAll(".market_map_text")
                     .attr("x", that.column_width / 2.0)
                     .attr("y", that.row_height / 2.0)
                     .text(function(data, j) { return data['display']; })
-                    .attr("class", "market_map_text")
                     .style("opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
-                    .style({"text-anchor": "middle", 'fill' :'black'});
 
+                // Removing the old nodes
                 groups.exit().remove();
                 var path = that.create_bounding_path(d, ends);
                 var min_x = d3.min(ends, function(end_point) { return end_point.x;});
@@ -330,7 +344,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             var that = this;
             var color_data = this.model.get('color_data');
             var display_text = this.model.get("display_text");
-            display_text = (display_text == undefined) ? this.data : display_text;
+            display_text = (display_text == undefined || display_text.length == 0) ? this.data : display_text;
 
             var mapped_data = this.data.map(function(d, i) { return {'name': d, 'display': display_text[i],
                                                                      'color': color_data[i], 'group': that.grouped_data[i], 'ref_data': that.ref_data[i]};});
@@ -435,9 +449,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             tooltip_div.transition()
                 .style("opacity", .9);
 
-            tooltip_div.style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 100) + "px");
+            // the +5s are for breathing room for the tool tip
+            tooltip_div.style("left", (mouse_pos[0] + this.el.offsetLeft + 5) + "px")
+                .style("top", (mouse_pos[1] + this.el.offsetTop + 5) + "px");
             tooltip_div.select("table").remove();
+
             var tooltip_table = tooltip_div.append("table")
                 .selectAll("tr").data(this.tooltip_fields);
 

@@ -451,20 +451,20 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                         max_label_len = (child_count[1]) ? Math.max(max_label_len, child_count[1]) : max_label_len;
                     }
                 });
-            });
 
-            var coords = this.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
-            if(count != 1) {
-                legend_g.append("g")
-                    .attr("class", "axis")
-                  .append("rect")
-                    .attr({"y": (legend_height + 2) / 2.0, "x": (-0.5 * (legend_height + 2))})
-                    .attr("width", (max_label_len+2) + "em")
-                    .attr("height", (count * (legend_height + 2)))
-                    .style({"fill": "none"});
-            }
-            max_label_len = (legend_location === "top" || legend_location === "top-right" || legend_location === "right") ? -(max_label_len + 2) : 1;
-            legend_g.style({'transform': 'translate(' + (coords[0]) + 'px, ' + (coords[1]) + 'px) '  + ' translateX(' + (max_label_len) + 'em)'});
+                var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
+                if(count != 1) {
+                    legend_g.append("g")
+                        .attr("class", "axis")
+                    .append("rect")
+                        .attr({"y": (legend_height + 2) / 2.0, "x": (-0.5 * (legend_height + 2))})
+                        .attr("width", (max_label_len+2) + "em")
+                        .attr("height", (count * (legend_height + 2)))
+                        .style({"fill": "none"});
+                }
+                max_label_len = (legend_location === "top" || legend_location === "top-right" || legend_location === "right") ? -(max_label_len + 2) : 1;
+                legend_g.style({'transform': 'translate(' + (coords[0]) + 'px, ' + (coords[1]) + 'px) '  + ' translateX(' + (max_label_len) + 'em)'});
+            });
         },
         get_legend_coords: function(legend_location, width, height, disp) {
             var x_start = 0;
