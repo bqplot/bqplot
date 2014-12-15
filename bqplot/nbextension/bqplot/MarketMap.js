@@ -75,10 +75,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
             }
             // Reading the properties and creating the dom elements required
-            this.svg = d3.select(this.el).attr('class', this.model.get('theme'))
+            this.svg = d3.select(this.el)
                     .attr("viewBox", "0 0 "+ this.width +' '+ this.height)
                     .attr("width", "100%")
                     .attr("height", "100%");
+            if (this.model.get('theme')) {
+                 this.svg.classed(this.model.get('theme'), true)
+            }
             this.fig = this.svg.append("g")
                     .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
