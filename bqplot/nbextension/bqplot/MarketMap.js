@@ -344,7 +344,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             var that = this;
             var color_data = this.model.get('color_data');
             var display_text = this.model.get("display_text");
-            display_text = (display_text == undefined) ? this.data : display_text;
+            display_text = (display_text == undefined || display_text.length == 0) ? this.data : display_text;
 
             var mapped_data = this.data.map(function(d, i) { return {'name': d, 'display': display_text[i],
                                                                      'color': color_data[i], 'group': that.grouped_data[i], 'ref_data': that.ref_data[i]};});
