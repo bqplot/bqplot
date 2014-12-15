@@ -288,33 +288,42 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .selectAll(".rect_element")
                     .data(data);
 
+                // Appending the <g> <rect> and <text> elements to the newly
+                // added nodes
                 var new_groups = groups.enter()
                     .append("g")
-                    .attr("class", "rect_element")
-                    .attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
-                    .on("click", function(data, ind) {$.proxy(that.cell_click_handler(data, (element_count + ind), this), that);})
-                    .on("mouseover", function(data, ind) {$.proxy(that.mouseover_handler(data, (element_count + ind), this), that);})
-                    .on("mouseout", function(data, ind) {$.proxy(that.mouseout_handler(data, (element_count + ind), this), that);});
+                    .classed("rect_element", true);
 
                 new_groups.append("rect")
                     .attr("x", 0)
                     .attr("y", 0)
-                    .attr("class", "market_map_rect")
+                    .classed("market_map_rect", true);
+
+                new_groups.append("text")
+                    .classed("market_map_text", true)
+                    .style({"text-anchor": "middle", 'fill' :'black'});
+
+                // Update the attributes of the entire set of nodes
+                groups.attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
+                    .on("click", function(data, ind) {$.proxy(that.cell_click_handler(data, (element_count + ind), this), that);})
+                    .on("mouseover", function(data, ind) {$.proxy(that.mouseover_handler(data, (element_count + ind), this), that);})
+                    .on("mouseout", function(data, ind) {$.proxy(that.mouseout_handler(data, (element_count + ind), this), that);})
+                    .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); });
+
+                groups.selectAll(".market_map_rect")
                     .attr("width", that.column_width)
                     .attr("height", that.row_height)
                     .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
                     .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) { return (that.color_scale && elem.color != undefined)
                            ? that.color_scale.scale(elem["color"]) : that.colors_map(i);}});
-                new_groups.attr("class", function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); });
 
-                new_groups.append("text")
+                groups.selectAll(".market_map_text")
                     .attr("x", that.column_width / 2.0)
                     .attr("y", that.row_height / 2.0)
                     .text(function(data, j) { return data['display']; })
-                    .attr("class", "market_map_text")
                     .style("opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
-                    .style({"text-anchor": "middle", 'fill' :'black'});
 
+                // Removing the old nodes
                 groups.exit().remove();
                 var path = that.create_bounding_path(d, ends);
                 var min_x = d3.min(ends, function(end_point) { return end_point.x;});
