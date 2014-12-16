@@ -66,7 +66,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                     });
                 }
             }
-
             this.update_domains();
             this.dirty = false;
             this.trigger("data_updated");
@@ -77,11 +76,12 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // remaining values.
             var that = this;
             this.curve_labels = this.get("labels");
-            if(this.curve_labels.length > this.y_data.length) {
-                this.curve_labels = this.curve_labels.slice(0, this.y_data.length);
+            var data_length = (this.x_data.length == 1) ? (this.y_data.length) : Math.min(this.x_data.length, this.y_data.length);
+            if(this.curve_labels.length > data_length) {
+                this.curve_labels = this.curve_labels.slice(0, data_length);
             }
-            else if(this.curve_labels.length < this.y_data.length) {
-                _.range(this.curve_labels.length, this.y_data.length).forEach( function(index) { that.curve_labels[index] = 'C' + (index+1);});
+            else if(this.curve_labels.length < data_length) {
+                _.range(this.curve_labels.length, data_length).forEach( function(index) { that.curve_labels[index] = 'C' + (index+1);});
             }
         },
         update_domains: function() {

@@ -237,7 +237,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             curves_sel.select("path")
                 .attr("id", function(d, i) { return "curve" + (i+1); })
-                .attr("d", function(d) { return that.line(d.values); })
                 .style("stroke", function(d, i) { return that.get_colors(i); })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", $.proxy(this.get_line_style, this));
