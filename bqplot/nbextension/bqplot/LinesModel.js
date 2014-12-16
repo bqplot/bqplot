@@ -41,12 +41,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             } else {
                 this.x_data = this.x_data[0] instanceof Array ? this.x_data : [this.x_data];
                 this.y_data = this.y_data[0] instanceof Array ? this.y_data : [this.y_data];
+                this.update_labels();
 
-                this.curve_labels = this.get("labels");
-                if (this.curve_labels.length == 0) {
-                    this.curve_labels = this.y_data.map(function(d, i) { return 'C' + (i+1);});
-                }
-                this.curve_labels = this.curve_labels.slice(0, this.y_data.length);
                 if (this.x_data.length == 1 && this.y_data.length > 1) { //same x for all y
                     this.curve_data = this.curve_labels.map(function(name, i) {
                         return {
@@ -70,10 +66,23 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                     });
                 }
             }
-
             this.update_domains();
             this.dirty = false;
             this.trigger("data_updated");
+        },
+        update_labels: function() {
+            // Function to set the labels appropriately.
+            // Setting the labels to the value sent and filling in the
+            // remaining values.
+            var that = this;
+            this.curve_labels = this.get("labels");
+            var data_length = (this.x_data.length == 1) ? (this.y_data.length) : Math.min(this.x_data.length, this.y_data.length);
+            if(this.curve_labels.length > data_length) {
+                this.curve_labels = this.curve_labels.slice(0, data_length);
+            }
+            else if(this.curve_labels.length < data_length) {
+                _.range(this.curve_labels.length, data_length).forEach( function(index) { that.curve_labels[index] = 'C' + (index+1);});
+            }
         },
         update_domains: function() {
             var scales = this.get("scales");
