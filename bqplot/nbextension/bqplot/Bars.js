@@ -64,28 +64,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             Bars.__super__.create_listeners.apply(this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
-            this.model.on("colors_updated", this.apply_colors, this);
-        },
-        update_colors: function(model, colors) {
-            var that = this;
-            //the following if condition is to handle the case of single
-            //dimensional data.
-            //if y is 1-d, each bar should be of 1 color.
-            //if y is multi-dimensional, the correspoding values should be of
-            //the same color.
-            if(this.model.bar_data.length > 0 && this.model.bar_data[0].values.length == 1){
-                this.el.selectAll(".bar")
-                    .style("fill", function(d, i) { return that.get_colors(i); });
-            } else {
-                this.el.selectAll(".bargroup").selectAll(".bar")
-                   .style("fill", function(d, i) { return that.get_colors(i); });
-            }
-            //legend color update
-            this.el.selectAll(".legendrect")
-                .style("fill", function(d, i) { return that.get_colors(i); });
-            this.el.selectAll(".legendtext")
-                .style("fill", function(d, i) { return that.get_colors(i); });
-
+            this.model.on("colors_updated", this.update_colors, this);
         },
         rescale: function() {
             Bars.__super__.rescale.apply(this);
@@ -179,7 +158,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
             }
             bar_groups.exit().remove();
-            this.apply_colors();
+            this.update_colors();
 
             this.el.selectAll(".zeroLine").remove();
             this.el.append("g")
@@ -190,12 +169,18 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("y1", this.y_scale.scale(0))
                 .attr("y2", this.y_scale.scale(0));
         },
-        apply_colors: function() {
-            // refer to the comment in update_colors method to see the
-            // explanation for the below if condition
+        update_colors: function() {
+            //the following if condition is to handle the case of single
+            //dimensional data.
+            //if y is 1-d, each bar should be of 1 color.
+            //if y is multi-dimensional, the correspoding values should be of
+            //the same color.
             var that = this;
+            if(this.color_scale) {
+                this.color_scale.set_range();
+            }
             if(this.model.bar_data.length > 0){
-                if(this.model.bar_data[0].values.length == 1) {
+                if(this.model.is_y_2d) {
                     this.el.selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
                                                                                     ? that.color_scale.scale(d.color) : that.get_colors(i);});
                 } else {
@@ -204,9 +189,18 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                                                                                     ? that.color_scale.scale(d.color) : that.get_colors(i);});
                 }
             }
+            //legend color update
+            if(this.legend_el) {
+                this.legend_el.selectAll(".legendrect")
+                    .style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
+                                                                                        ? that.color_scale.scale(d.color) : that.get_colors(i);});
+                this.legend_el.selectAll(".legendtext")
+                    .style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
+                                                                                        ? that.color_scale.scale(d.color) : that.get_colors(i);});
+            }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            if(this.model.bar_data[0].values.length == 1 && this.model.get("colors").length != 1)
+            if(!(this.model.is_y_2d) && this.model.get("colors").length != 1)
                 return [0, 0];
 
             this.legend_el = elem.selectAll(".legend" + this.uuid)
@@ -221,7 +215,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .on("mouseover", $.proxy(this.highlight_axis, this))
                 .on("mouseout", $.proxy(this.unhighlight_axis, this))
                 .append("rect")
-                .style("fill", function(d,i) { return that.get_colors(i); })
+                .classed("legendrect", true)
+                .style("fill", function(d,i) { return (d.color != undefined && that.color_scale != undefined)
+                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(i);})
                 .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
 
             this.legend_el.append("text")
@@ -230,7 +226,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("y", rect_dim / 2)
                 .attr("dy", "0.35em")
                 .text(function(d, i) {return that.model.get("labels")[i]; })
-                .style("fill", function(d,i) { return that.get_colors(i);});
+                .style("fill", function(d,i) { return (d.color != undefined && that.color_scale != undefined)
+                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(i);});
 
             var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
 

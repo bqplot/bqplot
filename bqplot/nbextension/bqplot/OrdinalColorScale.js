@@ -30,6 +30,7 @@ define(["widgets/js/manager", "d3", "./OrdinalScale", "./ColorUtils"], function(
             } else {
                 this.scale.range(ColorUtils.get_ordinal_scale_range(this.model.get("scheme"), this.scale.domain().length));
             }
+            this.trigger("color_scale_range_changed");
         },
         model_domain_changed: function() {
             OrdinalColorScale.__super__.model_domain_changed.apply(this);
@@ -37,7 +38,6 @@ define(["widgets/js/manager", "d3", "./OrdinalScale", "./ColorUtils"], function(
         },
         colors_changed: function() {
             this.set_range();
-            this.trigger("color_scale_range_changed");
         },
     });
     WidgetManager.WidgetManager.register_widget_view("OrdinalColorScale", OrdinalColorScale);

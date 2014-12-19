@@ -31,10 +31,13 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
                 this.max_from_data = false;
                 this.min_from_data = false;
                 this.domain = this.ord_domain.map(function(d) { return d; });
+                this.trigger("domain_changed");
             }
             else {
                 this.max_from_data = true;
                 this.min_from_data = true;
+                this.domain = [];
+                this.update_domain();
             }
         },
         update_domain: function() {
