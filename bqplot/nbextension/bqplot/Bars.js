@@ -180,7 +180,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.color_scale.set_range();
             }
             if(this.model.bar_data.length > 0){
-                if(this.model.is_y_2d) {
+                if(!(this.model.is_y_2d)) {
                     this.el.selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
                                                                                     ? that.color_scale.scale(d.color) : that.get_colors(i);});
                 } else {
