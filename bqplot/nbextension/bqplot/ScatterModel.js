@@ -57,7 +57,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 names = (show_labels) ? names : x_data.map(function(dat, ind) { return 'Dot' + ind; });
 
                 if(color_scale) {
-                    color_scale.compute_and_set_domain(color, 0);
+                    color_scale.compute_and_set_domain(color, this.id);
                 }
                 this.xy_data = x_data.map(function(d, i) { return {x: d, y: y_data[i], z: color[i], size: size[i], opacity: opacity[i], name: names[i] }; });
             }

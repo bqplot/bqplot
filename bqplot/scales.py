@@ -121,5 +121,6 @@ class DateColorScale(ColorScale):
 class OrdinalColorScale(ColorScale):
 
     scale_range_type = Unicode('Color', sync=True)
+    domain = List(sync=True)
     _view_name = Unicode('OrdinalColorScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)

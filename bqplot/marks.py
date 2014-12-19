@@ -150,6 +150,11 @@ class Bars(Mark):
     name = 'Bar chart'
     x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=1)
     y = NdArray(sync=True, display_index=2, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=2)
+    # Same as color attribute for the scatter
+    color = NdArray(sync=True, display_index=8, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=1)
+    # Enum attribute to specify if color should be the same for all bars with
+    # the same x or for all bars which belong to the same array in Y
+    color_mode = Enum(['auto', 'group', 'element'], default_value='auto', sync=True)  # No change handler for this attribute now
     type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)

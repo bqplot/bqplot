@@ -47,7 +47,7 @@ class Figure(DOMWidget):
 
     min_width = CFloat(800.0, sync=True)  #: Minimum width for the figure, including margin
     min_height = CFloat(600.0, sync=True)  #: Minimum height for the figure, including margin
-    fig_margin = Dict(dict(top=50, bottom=50, left=50, right=50), sync=True)   #: Margin the drawing takes place inside
+    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)   #: Margin the drawing takes place inside
     preserve_aspect = Bool(False, sync=True, exposed=True, display_index=3, display_name='Preserve aspect ratio')  #: Preserve the aspect ratio given by the minimum width and height
 
     axes = List(allow_none=False, sync=True)  #: List of axes

@@ -22,6 +22,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.set_internal_scales();
             var self = this;
             return base_creation_promise.then(function() {
+                self.color_scale = self.scales["color"];
                 self.create_listeners();
                 self.draw();
             }, null);
@@ -43,6 +44,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // Changes based on the data.
             this.x_offset = 0;
             this.y_offset = this.y_scale.offset;
+            if(this.color_scale) {
+                this.color_scale.set_range();
+            }
         },
         adjust_offset: function() {
         // If it is a linear scale and you plot ordinal data on it,
@@ -60,6 +64,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             Bars.__super__.create_listeners.apply(this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
+            this.model.on("colors_updated", this.apply_colors, this);
         },
         update_colors: function(model, colors) {
             var that = this;
@@ -174,16 +179,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
             }
             bar_groups.exit().remove();
-
-            // refer to the comment in update_colors method to see the
-            // explanation for the below if condition
-            if(this.model.bar_data.length > 0){
-                if(this.model.bar_data[0].values.length == 1) {
-                    this.el.selectAll(".bar").style("fill", function(d, i) { return that.get_colors(i);})
-                } else {
-                    bars_sel.style("fill", function(d, i) { return that.get_colors(i)});
-                }
-            }
+            this.apply_colors();
 
             this.el.selectAll(".zeroLine").remove();
             this.el.append("g")
@@ -193,6 +189,21 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("x2", this.width)
                 .attr("y1", this.y_scale.scale(0))
                 .attr("y2", this.y_scale.scale(0));
+        },
+        apply_colors: function() {
+            // refer to the comment in update_colors method to see the
+            // explanation for the below if condition
+            var that = this;
+            if(this.model.bar_data.length > 0){
+                if(this.model.bar_data[0].values.length == 1) {
+                    this.el.selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
+                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(i);});
+                } else {
+                    this.el.selectAll(".bargroup").
+                        selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
+                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(i);});
+                }
+            }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             if(this.model.bar_data[0].values.length == 1 && this.model.get("colors").length != 1)
