@@ -162,5 +162,6 @@ class Bars(Mark):
     xgrids = Enum(['off', 'line', 'dashed'], default_value='off', sync=True, exposed=True, display_index=6, display_name='X grids')
     ygrids = Enum(['off', 'line', 'dashed'], default_value='off', sync=True, exposed=True, display_index=7, display_name='Y grids')
     stroke = Color('white', allow_none=True, sync=True)
+    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
     _view_name = Unicode('bqplot.Bars', sync=True)
     _model_name = Unicode('bqplot.BarsModel', sync=True)

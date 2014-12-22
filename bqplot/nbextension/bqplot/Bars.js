@@ -65,7 +65,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
-            this.model.on("change:stroke", this.update_stroke, this);
+            this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
         },
         rescale: function() {
             Bars.__super__.rescale.apply(this);
@@ -160,7 +160,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
             bar_groups.exit().remove();
             this.update_colors();
-            this.update_stroke(this.model, this.model.get("stroke"));
+            this.update_stroke_and_opacity();
 
             this.el.selectAll(".zeroLine").remove();
             this.el.append("g")
@@ -171,9 +171,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("y1", this.y_scale.scale(0))
                 .attr("y2", this.y_scale.scale(0));
         },
-        update_stroke: function(model, value) {
+        update_stroke_and_opacity: function() {
+            var stroke = this.model.get("stroke");
+            var opacity = this.model.get("opacity");
             this.el.selectAll(".bar")
-                .style("stroke", (value == undefined) ? "none" : value);
+                .style("stroke", (stroke == undefined) ? "none" : stroke)
+                .style("opacity", opacity);
         },
         update_colors: function() {
             //the following if condition is to handle the case of single
