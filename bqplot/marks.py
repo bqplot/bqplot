@@ -161,5 +161,6 @@ class Bars(Mark):
     curve_display = Enum(['none', 'legend'], default_value='none', sync=True, exposed=True, display_index=5, display_name='Curve display')
     xgrids = Enum(['off', 'line', 'dashed'], default_value='off', sync=True, exposed=True, display_index=6, display_name='X grids')
     ygrids = Enum(['off', 'line', 'dashed'], default_value='off', sync=True, exposed=True, display_index=7, display_name='Y grids')
+    stroke = Color('white', allow_none=True, sync=True)
     _view_name = Unicode('bqplot.Bars', sync=True)
     _model_name = Unicode('bqplot.BarsModel', sync=True)

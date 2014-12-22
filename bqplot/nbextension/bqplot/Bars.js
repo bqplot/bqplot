@@ -65,6 +65,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
+            this.model.on("change:stroke", this.update_stroke, this);
         },
         rescale: function() {
             Bars.__super__.rescale.apply(this);
@@ -142,8 +143,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .data(function(d) { return d.values; })
             bars_sel.enter()
                 .append("rect")
-                .attr("class", "bar")
-                .style("stroke", "white");
+                .attr("class", "bar");
+
 
             //FIXME: add transitions
             if(this.model.get("type") == "stacked") {
@@ -159,6 +160,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
             bar_groups.exit().remove();
             this.update_colors();
+            this.update_stroke(this.model, this.model.get("stroke"));
 
             this.el.selectAll(".zeroLine").remove();
             this.el.append("g")
@@ -168,6 +170,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("x2", this.width)
                 .attr("y1", this.y_scale.scale(0))
                 .attr("y2", this.y_scale.scale(0));
+        },
+        update_stroke: function(model, value) {
+            this.el.selectAll(".bar")
+                .style("stroke", (value == undefined) ? "none" : value);
         },
         update_colors: function() {
             //the following if condition is to handle the case of single
