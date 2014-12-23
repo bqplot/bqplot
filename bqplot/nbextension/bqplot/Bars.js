@@ -128,7 +128,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.x1.domain(_.range(this.model.bar_data[0].values.length)).rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
              bar_groups.enter()
                 .append("g")
-                .attr("class", "bargroup");
+                .attr("class", "bargroup")
+                .on("click", function(d, i) { return that.bar_click_handler(d, i); });
              bar_groups.exit().remove();
 
              if(this.x_scale.model.type == "ordinal") {
@@ -266,6 +267,54 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var data_y = this.model.get_typed_field("y");
 
             return {'x': data_x, 'y': data_y};
+        },
+        bar_click_handler: function (data, index) {
+            var that = this;
+            if(this.model.get("select_bars")) {
+                var idx_selected = jQuery.extend(true, [], this.model.get("idx_selected"));
+                var elem_index = idx_selected.indexOf(index);
+                // index of bar i. Checking if it is already present in the
+                // list
+                if( elem_index > -1 && d3.event.ctrlKey){
+                    // if the index is already selected and if ctrl key is
+                    // pressed, remove the element from the list
+                    idx_selected.splice(elem_index, 1);
+                }
+                else {
+                    if(d3.event.shiftKey) {
+                        //If shift is pressed and the element is already
+                        //selected, do not do anything
+                        if(elem_index > -1) {
+                            return;
+                        }
+                        //Add elements before or after the index of the current
+                        //bar which has been clicked
+                        min_index = (idx_selected.length != 0)?d3.min(idx_selected):-1;
+                        max_index = (idx_selected.length != 0)?d3.max(idx_selected):(that.model.bar_data).length;
+                        if(index > max_index){
+                            _.range(max_index+1, index).forEach(function(i) { idx_selected.push(i); });
+                        } else if(index < min_index){
+                            _.range(index+1, min_index).forEach(function(i) { idx_selected.push(i);});
+                        }
+                    }
+                    else if(!(d3.event.ctrlKey)) {
+                        idx_selected = [];
+                    }
+                    // updating the array containing the bar indexes selected
+                    // and updating the style
+                    idx_selected.push(index);
+                }
+                this.model.set("idx_selected", ((idx_selected.length == 0) ? null : idx_selected), {updated_view: this});
+                this.touch();
+                if (!d3.event)
+                    d3.event = window.event;
+                var e = d3.event;
+                if (typeof(e.cancelBubble) !== "undefined") // IE
+                    e.cancelBubble = true;
+                if (e.stopPropagation)
+                    e.stopPropagation();
+                e.preventDefault();
+            }
         },
     });
     WidgetManager.WidgetManager.register_widget_view("bqplot.Bars", Bars);

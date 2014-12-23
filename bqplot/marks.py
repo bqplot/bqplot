@@ -50,7 +50,7 @@ class Mark(Widget):
     set_y_domain = Bool(True, sync=True)  # Similar attribute as above for the Y scale
     visible = Bool(True, sync=True)
     selected_style = Dict({}, sync=True)  # Style to be applied to the selected items of a mark
-    unselected_style = Dict({}, sync=True)  # Style to ne applied to the items which are not selected in a mark
+    unselected_style = Dict({}, sync=True)  # Style to be applied to the items which are not selected in a mark
     idx_selected = List(sync=True, allow_none=True)
     _model_name = Unicode('bqplot.MarkModel', sync=True)
     _ipython_display_ = None  # We cannot display a mark outside of a figure.
@@ -158,6 +158,7 @@ class Bars(Mark):
     type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
+    select_bars = Bool(False, sync=True)
     curve_display = Enum(['none', 'legend'], default_value='none', sync=True, exposed=True, display_index=5, display_name='Curve display')
     xgrids = Enum(['off', 'line', 'dashed'], default_value='off', sync=True, exposed=True, display_index=6, display_name='X grids')
     ygrids = Enum(['off', 'line', 'dashed'], default_value='off', sync=True, exposed=True, display_index=7, display_name='Y grids')
