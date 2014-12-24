@@ -21,6 +21,25 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var base_creation_promise = Bars.__super__.render.apply(this);
             this.set_internal_scales();
             var self = this;
+            this.selected_indices = this.model.get("idx_selected");
+            this.selected_style = this.model.get("selected_style");
+            this.unselected_style = this.model.get("unselected_style");
+
+            this.el.append("rect")
+                .attr("class", "intselmouse")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", this.width)
+                .attr("visibility", "hidden")
+                .attr("pointer-events", "all")
+                .attr("height", this.height)
+                .style("pointer-events", "all")
+                .on("click", $.proxy(this.reset_selection, this));
+            /*
+            this.el.attr("pointer-events", "all")
+                .on("click", function() { self.reset_selection(); });
+               */
+
             return base_creation_promise.then(function() {
                 self.color_scale = self.scales["color"];
                 self.create_listeners();
@@ -70,6 +89,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         rescale: function() {
             Bars.__super__.rescale.apply(this);
             this.set_ranges();
+
+            this.el.select(".intselmouse")
+                .attr("width", this.width)
+                .attr("height", this.height);
 
             this.el.select(".zeroLine")
                 .attr("x1",  0)
@@ -134,7 +157,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
              if(this.x_scale.model.type == "ordinal") {
                 var x_max = d3.max(this.parent.get_xrange());
-                bar_groups.attr("transform", function(d) { return "translate(" + ((that.x_scale.scale(d.key) !== undefined ? that.x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";});
+                bar_groups.attr("transform", function(d) { return "translate(" + ((that.x_scale.scale(d.key) !== undefined
+                                                                                   ? that.x_scale.scale(d.key) : x_max)
+                                                                                   + that.x_offset) + ", 0)";});
              } else {
                 bar_groups.attr("transform", function(d) { return "translate(" + (that.x_scale.scale(d.key) + that.x_offset) + ", 0)";});
 
@@ -160,8 +185,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
             }
             bar_groups.exit().remove();
-            this.update_colors();
-            this.update_stroke_and_opacity();
+            // this.update_colors();
+            // this.update_stroke_and_opacity();
+            this.apply_styles();
 
             this.el.selectAll(".zeroLine").remove();
             this.el.append("g")
@@ -244,29 +270,76 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.legend_el.exit().remove();
             return [this.model.bar_data[0].values.length, max_length];
         },
+        apply_styles: function(indices) {
+            var all_indices = _.range(this.model.bar_data.length);
+            this.clear_style(this.selected_style);
+            this.clear_style(this.unselected_style);
+
+            this.set_default_style(all_indices);
+
+            this.set_style_on_elements(this.selected_style, this.selected_indices);
+            var unselected_indices = (indices == undefined) ? [] : _.difference(all_indices, indices);
+            this.set_style_on_elements(this.unselected_style, unselected_indices);
+        },
+        clear_style: function(style_dict, indices) {
+            // Function to clear the style of a dict on some or all the elements of the
+            // chart.If indices is null, clears the style on all elements. If
+            // not, clears on only the elements whose indices are mathcing.
+            //
+            // This function is not used right now. But it can be used if we
+            // decide to accomodate more properties than those set by default.
+            // Because those have to cleared specifically.
+            var elements = this.el.selectAll(".bargroup");
+            if(indices != undefined) {
+                elements = elements.filter(function(d, index) { return indices.indexOf(index) != -1; });
+            }
+            var clearing_style = {};
+            for(var key in style_dict) {
+                clearing_style[key] = null;
+            }
+            elements.selectAll(".bar").style(clearing_style);
+        },
+        set_style_on_elements: function(style, indices) {
+            // If the index array is undefined or of length=0, exit the
+            // function without doing anything
+            if(indices == undefined || indices.length == 0) {
+                return;
+            }
+            // Also, return if the style object itself is blank
+            if(Object.keys(style).length == 0)
+                return;
+            var elements = this.el.selectAll(".bargroup");
+            elements = elements.filter(function(data, index) { return indices.indexOf(index) != -1; });
+            elements.selectAll(".bar").style(style);
+        },
+        set_default_style: function(indices) {
+            // For all the elements with index in the list indices, the default
+            // style is applied.
+            this.update_colors();
+            this.update_stroke_and_opacity();
+        },
+        style_updated: function(new_style, indices) {
+            // reset the style of the elements and apply the new style
+            this.set_default_style(indices);
+            this.set_style_on_elements(new_style, indices);
+        },
+        selected_style_updated: function(model, style) {
+            this.selected_style = style;
+            this.style_updated(style, this.selected_indices);
+        },
+        unselected_style_updated: function(model, style) {
+            this.unselected_style = style;
+            var sel_indices = this.selected_indices;
+            var unselected_indices = (sel_indices) ? _.range(this.model.bar_data.length).filter(function(index){ return sel_indices.indexOf(index) == -1; })
+                                                             : [];
+            this.style_updated(style, unselected_indices);
+        },
         set_x_range: function() {
             if(this.x_scale.model.type == "ordinal") {
                 return this.x_scale.scale.rangeExtent();
             }
             else
                 return [this.x_scale.scale(d3.min(this.x.domain())), this.x_scale.scale(d3.max(this.x.domain()))];
-        },
-        set_data: function(data) {
-            var x_data = data['x']
-            var y_data = data['y']
-
-            this.model.set("x", x_data);
-            this.model.set("y", y_data);
-
-            this.touch();
-            this.update_date_and_draw();
-
-        },
-        get_data: function(data) {
-            var data_x = this.model.get_typed_field("x");
-            var data_y = this.model.get_typed_field("y");
-
-            return {'x': data_x, 'y': data_y};
         },
         bar_click_handler: function (data, index) {
             var that = this;
@@ -314,7 +387,21 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 if (e.stopPropagation)
                     e.stopPropagation();
                 e.preventDefault();
+                this.selected_indices = idx_selected;
+                this.apply_styles(this.selected_indices);
             }
+        },
+        reset_selection: function() {
+            if(this.model.get("select_bars")) {
+                this.model.set("idx_selected", null);
+                this.touch();
+                this.selected_indices = null;
+
+                this.clear_style(this.selected_style);
+                this.clear_style(this.unselected_style);
+                this.set_default_style();
+            }
+
         },
     });
     WidgetManager.WidgetManager.register_widget_view("bqplot.Bars", Bars);
