@@ -157,7 +157,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.model.update_labels();
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-                .data(this.model.curve_data, function(d, i) { return d.name; });
+                .data(this.model.mark_data, function(d, i) { return d.name; });
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
@@ -183,7 +183,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             var max_length = d3.max(this.model.curve_labels, function(d) { return d.length; });
             this.legend_el.exit().remove();
-            return [this.model.curve_data.length, max_length];
+            return [this.model.mark_data.length, max_length];
         },
         create_labels: function() {
             var curves_sel = this.el.selectAll(".curve");
@@ -201,7 +201,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         legend_click: function(index) {
             var path = "#curve" + (index + 1);
-            var opacity = this.model.curve_data[index].opacity = (this.model.curve_data[index].opacity === 1) ? 0.1 : 1;
+            var opacity = this.model.mark_data[index].opacity = (this.model.mark_data[index].opacity === 1) ? 0.1 : 1;
             this.el.select("#legend"+(index+1))
                 .style("opacity", opacity + 0.4);
             this.el.select(path).style("opacity", opacity);
@@ -226,7 +226,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         draw: function() {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
-                .data(this.model.curve_data, function(d, i) { return d.name; });
+                .data(this.model.mark_data, function(d, i) { return d.name; });
 
             var new_curves = curves_sel.enter().append("g")
                 .attr("class", "curve");

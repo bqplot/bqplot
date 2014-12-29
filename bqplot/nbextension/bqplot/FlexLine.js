@@ -53,7 +53,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var g_elements = elem.selectAll(".legend" + this.uuid)
-                .data(this.model.curve_data, function(d, i) { return d.name; });
+                .data(this.model.mark_data, function(d, i) { return d.name; });
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
@@ -77,7 +77,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
 
             g_elements.exit().remove();
-            return [this.model.curve_data.length, max_length];
+            return [this.model.mark_data.length, max_length];
         },
         set_ranges: function() {
             FlexLine.__super__.set_ranges.apply(this);
@@ -91,7 +91,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
         draw: function() {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
-                .data(this.model.new_curve_data, function(d, i) { return d.name; });
+                .data(this.model.new_mark_data, function(d, i) { return d.name; });
 
             var that = this;
 
@@ -103,7 +103,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
                 .remove();
 
             curves_sel[0].forEach(function(elem, index) { var lines = d3.select(elem).selectAll("line")
-                                                     .data(that.model.new_curve_data[index]['values']);
+                                                     .data(that.model.new_mark_data[index]['values']);
                                                 lines.enter().append("line");
                                                 lines.attr("class", "line-elem")
                                                     .attr({'x1': function(dataelem) { return that.x_scale.scale(dataelem.x1); }, 'x2': function(dataelem) { return that.x_scale.scale(dataelem.x2); },
