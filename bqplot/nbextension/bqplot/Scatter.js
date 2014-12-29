@@ -277,7 +277,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var labels = this.model.get("labels");
             var fill = this.model.get("fill");
 
-            var elements = this.el.selectAll(".dot_grp").data(this.model.xy_data, function(d) { return d.name; });
+            var elements = this.el.selectAll(".dot_grp").data(this.model.mark_data, function(d) { return d.name; });
             var elements_added = elements.enter().append("g").attr("class", "dot_grp");
 
 
@@ -318,7 +318,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-                .data([this.model.xy_data]);
+                .data([this.model.mark_data]);
             var default_color = this.model.get("default_color");
 
             var that = this;
@@ -358,16 +358,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(x_end == undefined) {
                 this.model.set("idx_selected", null);
                 this.touch();
-                return _.range(this.model.xy_data.length);
+                return _.range(this.model.mark_data.length);
             }
             var xmin = this.x_scale.scale.invert(x_start),
                 xmax = this.x_scale.scale.invert(x_end),
                 ymin = this.y_scale.scale.invert(y_start),
                 ymax = this.y_scale.scale.invert(y_end);
 
-            var indices = _.range(this.model.xy_data.length);
+            var indices = _.range(this.model.mark_data.length);
             var that = this;
-            var idx_selected = _.filter(indices, function(index) { var elem = that.model.xy_data[index];
+            var idx_selected = _.filter(indices, function(index) { var elem = that.model.mark_data[index];
                                                                    return (elem.x >= xmin && elem.x <= xmax &&
                                                                             elem.y >= ymin && elem.y <= ymax);});
             this.model.set("idx_selected", idx_selected);
@@ -379,7 +379,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.apply_styles(value);
         },
         apply_styles: function(indices) {
-            var all_indices = _.range(this.model.xy_data.length)
+            var all_indices = _.range(this.model.mark_data.length)
             this.set_default_style(all_indices);
 
             this.set_style_on_elements(this.selected_style, this.selected_indices);
@@ -442,7 +442,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         unselected_style_updated: function(model, style) {
             this.unselected_style = style;
             var sel_indices = this.selected_indices;
-            var unselected_indices = (sel_indices) ? _.range(this.model.xy_data.length).filter(function(index){ return sel_indices.indexOf(index) == -1; })
+            var unselected_indices = (sel_indices) ? _.range(this.model.mark_data.length).filter(function(index){ return sel_indices.indexOf(index) == -1; })
                                                              : [];
             this.style_updated(style, unselected_indices);
         },
