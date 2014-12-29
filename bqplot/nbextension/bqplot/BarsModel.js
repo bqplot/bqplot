@@ -35,12 +35,12 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             y_data = (y_data.length == 0 || y_data[0] instanceof Array) ? y_data : [y_data];
             this.curve_labels = this.get("labels");
             if (x_data.length == 0 || y_data.length == 0) {
-                this.bar_data = [];
+                this.mark_data = [];
                 this.is_y_2d = false;
             }
             else {
                 x_data = x_data.slice(0, d3.min(y_data.map(function(d) { return d.length; })));
-                this.bar_data = x_data.map(function (x_elem, index) {
+                this.mark_data = x_data.map(function (x_elem, index) {
                     var data = {};
                     var y0 = 0;
                     var y0_neg = 0;
@@ -60,7 +60,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                     data.neg_max = y0_neg;
                     return data;
                 });
-                this.is_y_2d = (this.bar_data[0].values.length > 1);
+                this.is_y_2d = (this.mark_data[0].values.length > 1);
                 this.update_color();
             }
             this.update_domains();
@@ -75,7 +75,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var color_scale = this.get("scales")["color"];
             var color_mode = this.get("color_mode");
             var apply_color_to_groups = ((color_mode == 'group') || (color_mode == 'auto' && !(this.is_y_2d)));
-            this.bar_data.forEach(function(single_bar_d, bar_grp_index) {
+            this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
                                     single_bar_d.values.forEach(function(bar_d, bar_index) {
                                         bar_d.color = (apply_color_to_groups) ? color[bar_grp_index] : color[bar_index];
                                     });
@@ -90,7 +90,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var y_scale = scales["y"];
 
             if(this.get("set_x_domain")) {
-                x_scale.compute_and_set_domain(this.bar_data.map(function(elem) { return elem.key; }), this.id);
+                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.key; }), this.id);
             }
             else {
                 x_scale.del_domain([], this.id);
@@ -98,13 +98,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
 
             if(this.get("set_y_domain")) {
                 if(this.get("type") == "stacked") {
-                    y_scale.compute_and_set_domain([d3.min(this.bar_data, function(c) { return c.neg_max; }),
-                                                   d3.max(this.bar_data, function(c) { return c.pos_max; })], this.id);
+                    y_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
+                                                   d3.max(this.mark_data, function(c) { return c.pos_max; })], this.id);
                 } else {
 
-                    var min = d3.min(this.bar_data, function(c) { return d3.min(c.values, function(val) { return val.val; }); });
+                    var min = d3.min(this.mark_data, function(c) { return d3.min(c.values, function(val) { return val.val; }); });
                     min = Math.min(0, min);
-                    var max = d3.max(this.bar_data, function(c) { return d3.max(c.values, function(val) { return val.val; }); });
+                    var max = d3.max(this.mark_data, function(c) { return d3.max(c.values, function(val) { return val.val; }); });
                     max = Math.max(0, max);
                     y_scale.compute_and_set_domain([min, max], this.id);
                 }

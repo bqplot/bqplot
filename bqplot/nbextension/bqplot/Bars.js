@@ -127,13 +127,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var colors = this.model.get("colors");
             var that = this;
             var animate_dur = this.model.get("animate_dur");
-            var bar_groups = this.el.selectAll(".bargroup").data(this.model.bar_data, function(d) {return d.key;});
+            var bar_groups = this.el.selectAll(".bargroup").data(this.model.mark_data, function(d) {return d.key;});
 
             // this.x is the ordinal scale used to draw the bars. If a linear
             // scale is given, then the ordinal scale is created from the
             // linear scale.
             if(this.x_scale.model.type != "ordinal") {
-                var model_domain = this.model.bar_data.map(function(elem) { return elem.key; })
+                var model_domain = this.model.mark_data.map(function(elem) { return elem.key; })
                 this.x.domain(model_domain);
             }
             else {
@@ -143,8 +143,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.adjust_offset();
             this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
 
-            if(this.model.bar_data.length > 0)
-                this.x1.domain(_.range(this.model.bar_data[0].values.length)).rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
+            if(this.model.mark_data.length > 0)
+                this.x1.domain(_.range(this.model.mark_data[0].values.length)).rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
              bar_groups.enter()
                 .append("g")
                 .attr("class", "bargroup")
@@ -166,7 +166,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             bars_sel.enter()
                 .append("rect")
                 .attr("class", "bar");
-
 
             //FIXME: add transitions
             if(this.model.get("type") == "stacked") {
@@ -211,7 +210,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(this.color_scale) {
                 this.color_scale.set_range();
             }
-            if(this.model.bar_data.length > 0){
+            if(this.model.mark_data.length > 0){
                 if(!(this.model.is_y_2d)) {
                     this.el.selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
                                                                                     ? that.color_scale.scale(d.color) : that.get_colors(i);});
@@ -236,7 +235,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 return [0, 0];
 
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-                .data(this.model.bar_data[0].values);
+                .data(this.model.mark_data[0].values);
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
@@ -264,10 +263,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
 
             this.legend_el.exit().remove();
-            return [this.model.bar_data[0].values.length, max_length];
+            return [this.model.mark_data[0].values.length, max_length];
         },
         apply_styles: function(indices) {
-            var all_indices = _.range(this.model.bar_data.length);
+            var all_indices = _.range(this.model.mark_data.length);
             this.clear_style(this.selected_style);
             this.clear_style(this.unselected_style);
 
@@ -326,7 +325,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         unselected_style_updated: function(model, style) {
             this.unselected_style = style;
             var sel_indices = this.selected_indices;
-            var unselected_indices = (sel_indices) ? _.range(this.model.bar_data.length).filter(function(index){ return sel_indices.indexOf(index) == -1; })
+            var unselected_indices = (sel_indices) ? _.range(this.model.mark_data.length).filter(function(index){ return sel_indices.indexOf(index) == -1; })
                                                              : [];
             this.style_updated(style, unselected_indices);
         },
@@ -359,7 +358,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                         //Add elements before or after the index of the current
                         //bar which has been clicked
                         min_index = (idx_selected.length != 0)?d3.min(idx_selected):-1;
-                        max_index = (idx_selected.length != 0)?d3.max(idx_selected):(that.model.bar_data).length;
+                        max_index = (idx_selected.length != 0)?d3.max(idx_selected):(that.model.mark_data).length;
                         if(index > max_index){
                             _.range(max_index+1, index).forEach(function(i) { idx_selected.push(i); });
                         } else if(index < min_index){
