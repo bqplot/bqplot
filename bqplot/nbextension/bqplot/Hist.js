@@ -118,13 +118,13 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             var select_color = (colors.length > 1) ? colors[1] : "red";
 
             var indices = [];
-            this.model.data.forEach(function(d, i) { indices.push(i); });
+            this.model.mark_data.forEach(function(d, i) { indices.push(i); });
 
             var that = this;
             this.el.selectAll(".bar").remove();
             var bar_width = this.calculate_bar_width();
 	        var bar = this.el.selectAll(".bar")
-			    .data(this.model.data)
+			    .data(this.model.mark_data)
 		        .enter().append("g")
 			    .attr("class","bar")
 			    .attr("transform", function(d) { return "translate(" + that.x_scale.scale(d.x) + "," + that.y_scale.scale(d.y) + ")"; });
@@ -159,12 +159,12 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                             }
                             that.sel_indices.forEach( function(elem) { buffer_index.push(elem); });
                             min_index = (that.bar_index_sel.length != 0)?d3.min(that.bar_index_sel):-1;
-                            max_index = (that.bar_index_sel.length != 0)?d3.max(that.bar_index_sel):(that.data).length;
+                            max_index = (that.bar_index_sel.length != 0)?d3.max(that.bar_index_sel):(that.mark_data).length;
                             if(i > max_index){
-                                that.data.slice(max_index + 1, i).forEach(function(data_elem ) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
+                                that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
                                 indices.slice(max_index + 1, i).forEach(function(data_elem ) {that.bar_index_sel.push(data_elem); });
                             } else if(i < min_index){
-                                that.data.slice(i+1, min_index).forEach(function(data_elem) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
+                                that.model.mark_data.slice(i+1, min_index).forEach(function(data_elem) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
                                 indices.slice(i+1, min_index).forEach(function(data_elem) { that.bar_index_sel.push(data_elem);});
                             }
                         }else{
@@ -190,7 +190,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-                .data([this.model.data[0]]);
+                .data([this.model.mark_data[0]]);
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
