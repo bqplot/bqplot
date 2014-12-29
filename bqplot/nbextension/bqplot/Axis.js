@@ -175,6 +175,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.update_label();
         },
         get_offset: function() {
+            var that = this;
             var return_promise = Promise.resolve();
             this.loc = this.model.get("offset");
             if(this.loc["value"] != undefined){
@@ -183,11 +184,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 } else {
                     this.offset_scale_model = this.loc["scale"];
                     return_promise = this.create_child_view(this.offset_scale_model).then(function(view) {
+                        that.offset_scale = view;
                         if(that.offset_scale.model.type != "ordinal") {
                             that.offset_scale.scale.clamp(true);
                         }
                         that.offset_scale.on("domain_changed", that.rescale_axis, that);
-                        that.offset_scale = view;
                     });
                 }
                 this.offset_value = this.loc["value"];
