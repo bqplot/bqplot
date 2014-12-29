@@ -156,6 +156,41 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             var len = this.colors.length;
             return this.colors[index % len];
         },
+        // Style related functions
+        selected_style_updated: function(model, style) {
+            this.selected_style = style;
+            this.style_updated(style, this.selected_indices);
+        },
+        unselected_style_updated: function(model, style) {
+            this.unselected_style = style;
+            var sel_indices = this.selected_indices;
+            var unselected_indices = (sel_indices) ? _.range(this.model.mark_data.length).filter(function(index){ return sel_indices.indexOf(index) == -1; })
+                                                             : [];
+            this.style_updated(style, unselected_indices);
+        },
+        style_updated: function(new_style, indices) {
+            // reset the style of the elements and apply the new style
+            this.set_default_style(indices);
+            this.set_style_on_elements(new_style, indices);
+        },
+        apply_styles: function(indices) {
+            var all_indices = _.range(this.model.mark_data.length);
+            this.clear_style(this.selected_style);
+            this.clear_style(this.unselected_style);
+
+            this.set_default_style(all_indices);
+
+            this.set_style_on_elements(this.selected_style, this.selected_indices);
+            var unselected_indices = (indices == undefined) ? [] : _.difference(all_indices, indices);
+            this.set_style_on_elements(this.unselected_style, unselected_indices);
+        },
+        // Abstract functions which have to be overridden by the specific mark
+        clear_style: function(style_dict, indices) {
+        },
+        set_default_style:function(indices) {
+        },
+        set_style_on_elements: function(style, indices) {
+        },
     });
     WidgetManager.WidgetManager.register_widget_view("bqplot.Mark", Mark);
     return [Mark];

@@ -265,17 +265,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.legend_el.exit().remove();
             return [this.model.mark_data[0].values.length, max_length];
         },
-        apply_styles: function(indices) {
-            var all_indices = _.range(this.model.mark_data.length);
-            this.clear_style(this.selected_style);
-            this.clear_style(this.unselected_style);
-
-            this.set_default_style(all_indices);
-
-            this.set_style_on_elements(this.selected_style, this.selected_indices);
-            var unselected_indices = (indices == undefined) ? [] : _.difference(all_indices, indices);
-            this.set_style_on_elements(this.unselected_style, unselected_indices);
-        },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
             // chart.If indices is null, clears the style on all elements. If
@@ -312,22 +301,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // style is applied.
             this.update_colors();
             this.update_stroke_and_opacity();
-        },
-        style_updated: function(new_style, indices) {
-            // reset the style of the elements and apply the new style
-            this.set_default_style(indices);
-            this.set_style_on_elements(new_style, indices);
-        },
-        selected_style_updated: function(model, style) {
-            this.selected_style = style;
-            this.style_updated(style, this.selected_indices);
-        },
-        unselected_style_updated: function(model, style) {
-            this.unselected_style = style;
-            var sel_indices = this.selected_indices;
-            var unselected_indices = (sel_indices) ? _.range(this.model.mark_data.length).filter(function(index){ return sel_indices.indexOf(index) == -1; })
-                                                             : [];
-            this.style_updated(style, unselected_indices);
         },
         set_x_range: function() {
             if(this.x_scale.model.type == "ordinal") {
