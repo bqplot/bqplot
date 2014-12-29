@@ -272,6 +272,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                 old_handler.call(this);
                 d3.select(this).on("mousedown.brush", function() {
                     if(d3.event.shiftKey && d3.event.ctrlKey && d3.event.altKey) {
+                        self.clear_selectors();
                         self.create_brush();
                     }
                     else if(d3.event.ctrlKey) {
@@ -334,6 +335,14 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             var extent = brush.empty() ? this.scale.scale.domain() : brush.extent()
             this.model.set("brushing", false);
             this.convert_and_save(extent, item);
+        },
+        clear_selectors: function() {
+            this.el.selectAll(".selector")
+                .remove();
+            this.model.set("_selected", {});
+            this.model.set("idx_selected", {});
+            this.curr_index = 0;
+            this.touch();
         },
         convert_and_save: function(extent, item) {
             var selected = jQuery.extend(true, {}, this.model.get("_selected"));
