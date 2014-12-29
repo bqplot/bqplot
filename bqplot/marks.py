@@ -158,3 +158,19 @@ class Bars(Mark):
     ygrids = Enum(['off', 'line', 'dashed'], default_value='off', sync=True, exposed=True, display_index=7, display_name='Y grids')
     _view_name = Unicode('bqplot.Bars', sync=True)
     _model_name = Unicode('bqplot.BarsModel', sync=True)
+
+
+class Label(Mark):
+
+    """Label mark."""
+    x = Float(allow_none=True, default_value=None, sync=True)
+    y = Float(allow_none=True, default_value=None, sync=True)
+    x_offset = Float(sync=True)
+    y_offset = Float(sync=True)
+
+    color = Color(None, allow_none=True, sync=True, exposed=True, display_index=5, display_name='Color')
+    rotate = Float(sync=True)
+    text = Unicode(sync=True)
+    font_size = Unicode(default_value='14px', sync=True)
+    font_weight = Enum(['normal', 'bold', 'bolder'], default_value='bold', sync=True)
+    _view_name = Unicode('bqplot.Label', sync=True)
