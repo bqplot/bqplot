@@ -26,7 +26,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.unselected_style = this.model.get("unselected_style");
 
             this.el.append("rect")
-                .attr("class", "intselmouse")
+                .attr("class", "mouseeventrect")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", this.width)
@@ -35,10 +35,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("height", this.height)
                 .style("pointer-events", "all")
                 .on("click", $.proxy(this.reset_selection, this));
-            /*
-            this.el.attr("pointer-events", "all")
-                .on("click", function() { self.reset_selection(); });
-               */
 
             return base_creation_promise.then(function() {
                 self.color_scale = self.scales["color"];
@@ -90,7 +86,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             Bars.__super__.rescale.apply(this);
             this.set_ranges();
 
-            this.el.select(".intselmouse")
+            this.el.select(".mouseeventrect")
                 .attr("width", this.width)
                 .attr("height", this.height);
 
