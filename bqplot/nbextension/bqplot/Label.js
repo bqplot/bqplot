@@ -24,7 +24,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             //because some of the functions depend on child scales being
             //created. Make sure none of the event handler functions make that
             //assumption.
-            this.rotate_angle = this.model.get("rotate");
+            this.rotate_angle = this.model.get("rotate_angle");
             this.x_offset = this.model.get("x_offset");
             this.y_offset = this.model.get("y_offset");
             this.color = this.model.get("color");
@@ -39,7 +39,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             Label.__super__.create_listeners.apply(this);
             this.model.on("change:text", this.update_text, this);
             this.model.on_some_change(["font_weight", "font_size", "color", "align"], this.update_style, this);
-            this.model.on("change:rotate", function(model, value) { this.rotate_angle = value; this.apply_net_transform();}, this);
+            this.model.on("change:rotate_angle", function(model, value) { this.rotate_angle = value; this.apply_net_transform();}, this);
             this.model.on("change:y_offset", function(model, value) { this.y_offset = value; this.apply_net_transform();}, this);
             this.model.on("change:x_offset", function(model, value) { this.x_offset = value; this.apply_net_transform();}, this);
         },
