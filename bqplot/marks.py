@@ -32,7 +32,7 @@ Marks
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
 
-from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat
+from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
@@ -163,7 +163,8 @@ class Bars(Mark):
 class Label(Mark):
 
     """Label mark."""
-    x = Float(allow_none=True, default_value=None, sync=True)
+    # x = Float(sync=True) | Date(sync=True)
+    x = Float(sync=True)
     y = Float(allow_none=True, default_value=None, sync=True)
     x_offset = Float(sync=True)
     y_offset = Float(sync=True)
@@ -173,4 +174,5 @@ class Label(Mark):
     text = Unicode(sync=True)
     font_size = Unicode(default_value='14px', sync=True)
     font_weight = Enum(['normal', 'bold', 'bolder'], default_value='bold', sync=True)
+    align = Enum(['middle', 'start', 'end'], default_value='start', sync=True)  # alignment of the text with respect to the location provided
     _view_name = Unicode('bqplot.Label', sync=True)
