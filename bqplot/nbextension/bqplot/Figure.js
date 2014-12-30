@@ -336,8 +336,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             model.on("scales_updated", function() { self.mark_scales_updated(model); }, this);
             model.on("mark_padding_updated", function() { self.mark_padding_updated(model);}, this);
 
-            this.update_padding_dict(this.x_pad_dict, model, model.get('scales')['x'], model.x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, model.get('scales')['y'], model.y_padding);
+            var child_x_scale = model.get('scales')['x'];
+            var child_y_scale = model.get('scales')['y'];
+
+            if(child_x_scale == undefined)
+                child_x_scale = this.scale_x.model;
+            if(child_y_scale == undefined)
+                child_y_scale = this.scale_y.model;
+
+            this.update_padding_dict(this.x_pad_dict, model, child_x_scale, model.x_padding);
+            this.update_padding_dict(this.y_pad_dict, model, child_y_scale, model.y_padding);
             var dummy = self.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
 
             return this.create_child_view(model, {clip_id: this.clip_id}).then(function(view) {
