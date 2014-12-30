@@ -56,6 +56,7 @@ define([
     "./HistModel",
     "./Hist",
     "./FlexLine",
+    "./Label",
     "./ColorAxis",
     "./SelectorOverlay",
     "./IntervalSelectorOverlay",

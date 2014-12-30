@@ -32,7 +32,7 @@ Marks
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
 
-from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat
+from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
@@ -158,3 +158,22 @@ class Bars(Mark):
     ygrids = Enum(['off', 'line', 'dashed'], default_value='off', sync=True, exposed=True, display_index=7, display_name='Y grids')
     _view_name = Unicode('bqplot.Bars', sync=True)
     _model_name = Unicode('bqplot.BarsModel', sync=True)
+
+
+class Label(Mark):
+
+    """Label mark."""
+    # x = Float(sync=True) | Date(sync=True)
+    x = Float(sync=True)  # The x co-ordinate of the location of the label. Can be in terms of data or a value between [0, 1]
+    # which is interpreted in the figure scale.
+    y = Float(allow_none=True, default_value=None, sync=True)  # Same as the x attribute
+    x_offset = Int(sync=True)  # Offset from the stated x location in pixels
+    y_offset = Int(sync=True)  # Offset from the stated y location in pixels
+
+    color = Color(None, allow_none=True, sync=True)  # Color of the text
+    rotate_angle = Float(sync=True)  # Angle by which the text is to be rotated
+    text = Unicode(sync=True)  # Text to be displayed
+    font_size = Unicode(default_value='14px', sync=True)  # Font size in px em or ex
+    font_weight = Enum(['normal', 'bold', 'bolder'], default_value='bold', sync=True)
+    align = Enum(['middle', 'start', 'end'], default_value='start', sync=True)  # Alignment of the text with respect to the location provided
+    _view_name = Unicode('bqplot.Label', sync=True)
