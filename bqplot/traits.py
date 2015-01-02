@@ -316,10 +316,15 @@ class NdArray(CInstance):
             ## Pandas series handles all the cases where the passed in data could
             ## be any of the combinations of [list, nparray] X [python_datetime, np.datetime]
             if(len(np.shape(value)) == 2):
-                value = [pd.Series(elem).values for elem in value]
+                return_value = []
+                for elem in value:
+                    temp_val = pd.to_datetime(elem, coerce=True, box=False, infer_datetime_format=True)
+                    temp_val = value if (temp_val[0] is pd.NaT) else temp_val
+                    return_value.insert(temp_val)
             else:
-                value = pd.Series(value).values
-        return np.asarray(value)
+                temp_val = pd.to_datetime(value, coerce=True, box=False, infer_datetime_format=True)
+                return_value = value if (temp_val[0] is pd.NaT) else temp_val
+        return np.asarray(return_value)
 
     def validate(self, obj, value):
         if not isinstance(value, self.klass):
