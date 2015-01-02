@@ -37,14 +37,14 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var x_scale = scales["x"];
             var y_scale = scales["y"];
             if (this.x_data.length == 0 || this.y_data.length == 0) {
-                this.curve_data = [];
+                this.mark_data = [];
             } else {
                 this.x_data = this.x_data[0] instanceof Array ? this.x_data : [this.x_data];
                 this.y_data = this.y_data[0] instanceof Array ? this.y_data : [this.y_data];
                 this.update_labels();
 
                 if (this.x_data.length == 1 && this.y_data.length > 1) { //same x for all y
-                    this.curve_data = this.curve_labels.map(function(name, i) {
+                    this.mark_data = this.curve_labels.map(function(name, i) {
                         return {
                             name: name,
                             values: that.y_data[i].map(function(d, j) {
@@ -54,7 +54,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                         };
                     });
                 } else {
-                    this.curve_data = this.curve_labels.map(function(name, i) {
+                    this.mark_data = this.curve_labels.map(function(name, i) {
                         var xy_data = d3.zip(that.x_data[i], that.y_data[i]);
                         return {
                             name: name,
@@ -90,13 +90,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var y_scale = scales["y"];
 
             if(this.get("set_x_domain")) {
-                x_scale.compute_and_set_domain(this.curve_data.map(function(elem) { return elem.values.map( function(d) { return d.x; } ); }), this.id);
+                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.values.map( function(d) { return d.x; } ); }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
             if(this.get("set_y_domain")) {
-                y_scale.compute_and_set_domain(this.curve_data.map(function(elem) { return elem.values.map( function(d) { return d.y; } ); }), this.id);
+                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.values.map( function(d) { return d.y; } ); }), this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
@@ -124,7 +124,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 width_scale.compute_and_set_domain(width_data, 0);
             }
 
-            this.new_curve_data = this.curve_data
+            this.new_mark_data = this.mark_data
                                       .map(function(curve_elem) { return { name: curve_elem['name'],
                                                                            values: curve_elem['values'].slice(0, curve_elem['values'].length - 1)
                                                                                 .map(function(val, index, values_array)

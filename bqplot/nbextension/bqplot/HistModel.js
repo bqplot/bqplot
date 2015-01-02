@@ -19,7 +19,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         initialize: function() {
             // TODO: should not need to set this.data
             HistModel.__super__.initialize.apply(this);
-            this.data = [];
+            this.mark_data = [];
             // For histogram, changing the x-scale changes the y-values being
             // plotted. Hence update_data is called on set_x_domain change but
             // on set_y_domain change, update_domains is called
@@ -50,9 +50,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.num_bins = this.get("bins");
 	        this.x_bins =  this.create_uniform_bins(this.min_x, this.max_x, this.num_bins);
             this.x_mid = this.x_bins.map(function(d, i) { return 0.5 * (d + that.x_bins[i - 1]); }).slice(1);
-            this.data = d3.layout.histogram().bins(this.x_bins).value(function(d){ return d['value']; })(x_data_ind);
+            this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d){ return d['value']; })(x_data_ind);
 
-            this.counts = this.data.map(function(d) { return d.length; });
+            this.counts = this.mark_data.map(function(d) { return d.length; });
             this.set("midpoints", this.x_mid);
             this.set("counts", this.counts);
 
@@ -67,7 +67,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // y-domain change is handled by this function.
             var y_scale = this.get("scales")["y"];
             if(this.get("set_y_domain")) {
-                y_scale.set_domain([0, d3.max(this.data, function(d){return d.y}) * 1.05], this.id);
+                y_scale.set_domain([0, d3.max(this.mark_data, function(d){return d.y}) * 1.05], this.id);
             }
         },
         create_uniform_bins: function(min_val, max_val, num_bins) {
