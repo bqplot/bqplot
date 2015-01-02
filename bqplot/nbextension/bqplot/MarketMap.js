@@ -196,6 +196,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.model.on('change:show_groups', this.show_groups, this);
             this.model.on('change:selected_stroke', this.update_selected_stroke, this);
             this.model.on('change:hovered_stroke', this.update_hovered_stroke, this);
+            this.model.on('change:selected', function() { this.clear_selected(); this.apply_selected(); }, this);
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -228,6 +229,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             // transform figure
             this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
             this.draw_map();
+
+            // Drawing the selected cells
+            this.clear_selected();
+            this.apply_selected();
+
             // When map is expanded or contracted, there should not be any
             // accidental hovers. To prevent this, the following call is made.
             this.fig_hover.selectAll("rect")
@@ -301,7 +307,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .on("click", function(data, ind) {$.proxy(that.cell_click_handler(data, (element_count + ind), this), that);})
                     .on("mouseover", function(data, ind) {$.proxy(that.mouseover_handler(data, (element_count + ind), this), that);})
                     .on("mouseout", function(data, ind) {$.proxy(that.mouseout_handler(data, (element_count + ind), this), that);})
-                    .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); });
+                    .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
+                    .attr("id", function(data) { return "market_map_element_" + data['name']});
 
                 groups.selectAll(".market_map_rect")
                     .attr("width", that.column_width)
@@ -390,27 +397,52 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         cell_click_handler: function(data, id, cell) {
             var selected = this.model.get("selected").slice();
             var index = selected.indexOf(data.name);
-            var transform = d3.select(cell).attr("transform");
+            var cell_id = d3.select(cell).attr("id");
             if(index == -1) {
                 //append a rectangle with the dimensions to the g-click
                 selected.push(data.name);
-                this.fig_click.append("rect")
-                    .attr("class", "click_" + id)
-                    .attr("transform", transform)
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .attr("width", this.column_width)
-                    .attr("height", this.row_height)
-                    .style({'stroke': this.selected_stroke, 'stroke-width': '4px', 'fill': 'none'});
+                var transform = d3.select(cell).attr("transform");
+                this.add_selected_cell(cell_id, transform);
             }
             else {
-                this.fig_click.select(".click_" + id)
+                this.fig_click.select("#click_" + cell_id)
                     .remove();
                 //remove the rectangle from the g-click
                 selected.splice(index, 1);
             }
             this.model.set("selected", selected);
             this.touch();
+        },
+        apply_selected: function() {
+            var selected = this.model.get("selected");
+            var self = this;
+            if(selected === undefined || selected === null || selected.length == 0)
+                this.clear_selected();
+            else{
+                selected.forEach(function(data) {
+                    var cell_id = "market_map_element_" + data;
+                    self.fig_click.select("#click_" + cell_id)
+                        .remove();
+                    if(self.fig_map.selectAll("#"+ cell_id)[0].length == 1) {
+                        var transform = self.fig_map.selectAll("#"+ cell_id).attr("transform");
+                        self.add_selected_cell(cell_id, transform);
+                    }
+               });
+            }
+        },
+        clear_selected: function() {
+            this.fig_click.selectAll("rect")
+                .remove();
+        },
+        add_selected_cell: function(id, transform) {
+            this.fig_click.append("rect")
+                .attr("id", "click_" + id)
+                .attr("transform", transform)
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", this.column_width)
+                .attr("height", this.row_height)
+                .style({'stroke': this.selected_stroke, 'stroke-width': '4px', 'fill': 'none'});
         },
         mouseover_handler: function(data, id, cell) {
             var transform = d3.select(cell).attr("transform");
