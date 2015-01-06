@@ -311,7 +311,7 @@ class NdArray(CInstance):
 
     def _set_value(self, value):
         return_value = []
-        if value is None:
+        if value is None or len(value) == 0:
             return value
         if(isinstance(value, list) or (isinstance(value, np.ndarray) and value.dtype == 'object')):
             ## Pandas to_datetime handles all the cases where the passed in data could
@@ -340,7 +340,7 @@ class NdArray(CInstance):
             value = self._cast(value)
         min_dim = self._metadata.get('min_dim', 0)
         max_dim = self._metadata.get('max_dim', np.inf)
-        dim = len(value.shape)
+        dim = 0 if value is None else len(value.shape)
         if dim > max_dim or dim < min_dim:
             raise TraitError("Dimension mismatch")
         return value
