@@ -58,22 +58,36 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.x_scale = that.scales["x"];
                 that.y_scale = that.scales["y"];
 
+                if(that.x_scale === undefined || that.x_scale === null) {
+                    that.x_scale = that.parent.scale_x;
+                }
                 that.listenTo(that.x_scale, "domain_changed", function() {
                     if (!that.model.dirty) { that.draw(); }
                 });
+
+                if(that.y_scale === undefined || that.y_scale === null) {
+                    that.y_scale = that.parent.scale_y;
+                }
                 that.listenTo(that.y_scale, "domain_changed", function() {
                     if (!that.model.dirty) { that.draw(); }
                 });
+
                 that.set_ranges();
                 that.rescale();
             });
         },
         set_ranges: function() {
-            this.x_scale.set_range(this.parent.get_padded_xrange(this.x_scale.model));
-            this.y_scale.set_range(this.parent.get_padded_yrange(this.y_scale.model));
+            var x_scale = this.scales["x"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
 
-            this.x_offset = this.x_scale.offset;
-            this.y_offset = this.y_scale.offset;
+            var y_scale = this.scales["y"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
 
             var size_scale = this.scales["size"];
             if(size_scale) {
