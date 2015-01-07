@@ -58,14 +58,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.x_scale = that.scales["x"];
                 that.y_scale = that.scales["y"];
 
-                if(that.x_scale == undefined) {
+                if(that.x_scale === undefined || that.x_scale === null) {
                     that.x_scale = that.parent.scale_x;
                 }
                 that.listenTo(that.x_scale, "domain_changed", function() {
                     if (!that.model.dirty) { that.draw(); }
                 });
 
-                if(that.y_scale == undefined) {
+                if(that.y_scale === undefined || that.y_scale === null) {
                     that.y_scale = that.parent.scale_y;
                 }
                 that.listenTo(that.y_scale, "domain_changed", function() {
