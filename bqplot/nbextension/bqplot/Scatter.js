@@ -304,8 +304,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("transform", function(d) { return "translate(" + (text_loc) + "," + (-text_loc) + ")"; })
                 .attr("display", function(d) { return (show_names) ? "inline": "none";});
 
-            elements.exit().transition().delay(animate_dur).remove();
-
+            // Removed the transition on exit as it was causing issues.
+            // Elements are not removed until the transition is complete and
+            // hence the setting styles function doesn't behave as intended.
+            // The only way to call the function after all of the elements are
+            // removed is round-about and doesn't look very nice visually.
+            elements.exit().remove();
             this.apply_styles(this.selected_indices);
         },
         color_scale_updated: function() {
