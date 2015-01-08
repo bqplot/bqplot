@@ -295,6 +295,8 @@ class Hist(Mark):
     midpoints = List(sync=True, display_index=3, display_name='Mid points')
     counts = List(sync=True, display_index=4, display_name='Counts')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=5, display_name='Colors')
+    stroke = Color('white', allow_none=True, sync=True)
+    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
     _view_name = Unicode('bqplot.Hist', sync=True)
     _model_name = Unicode('bqplot.HistModel', sync=True)
 

@@ -31,6 +31,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             Hist.__super__.create_listeners.apply(this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors",this.update_colors,this);
+            this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
         },
         reset_selections: function() {
             if(!(this.selector_model)) {
@@ -86,6 +87,13 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                 this.legend_el.selectAll("text")
                     .style("fill", this.get_colors(0));
             }
+        },
+        update_stroke_and_opacity: function() {
+            var stroke = this.model.get("stroke");
+            var opacity = this.model.get("opacity");
+            this.el.selectAll(".rect")
+                .style("stroke", (stroke == undefined) ? "none" : stroke)
+                .style("opacity", opacity);
         },
         calculate_bar_width: function() {
             var bar_width = (this.x_scale.scale(this.model.max_x) - this.x_scale.scale(this.model.min_x)) / this.model.num_bins;
@@ -186,6 +194,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                         e.stopPropagation();
                     e.preventDefault();
                 }) ;
+                this.update_stroke_and_opacity();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)

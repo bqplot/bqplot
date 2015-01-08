@@ -181,8 +181,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
             }
             bar_groups.exit().remove();
-            // this.update_colors();
-            // this.update_stroke_and_opacity();
             this.apply_styles();
 
             this.el.selectAll(".zeroLine").remove();
