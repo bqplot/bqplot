@@ -14,9 +14,9 @@
 
 r"""
 
-====================
-New Plotting Widgets
-====================
+==============
+BQPlot Package
+==============
 
 .. currentmodule:: bqplot
 
@@ -49,6 +49,10 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 .. automodule:: bqplot.scales
 .. automodule:: bqplot.marks
 .. automodule:: bqplot.axes
+.. automodule:: bqplot.market_map
+.. automodule:: bqplot.overlays
+.. automodule:: bqplot.traits
+
 .. automodule:: bqplot.pyplot
 
 

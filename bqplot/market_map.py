@@ -12,6 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+r"""
+
+==========
+Market Map
+==========
+
+.. currentmodule:: bqplot.market_map
+
+.. autosummary::
+   :toctree: generate/
+
+   MarketMap
+   SquareMarketMap
+"""
 # from .figure import Figure
 from IPython.utils.traitlets import Int, Unicode, List, Dict, Enum, Bool
 from IPython.html.widgets import DOMWidget

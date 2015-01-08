@@ -12,6 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+r"""
+
+========
+Overlays
+========
+
+.. currentmodule:: bqplot.overlays
+
+.. autosummary::
+   :toctree: generate/
+
+   BrushIntervalSelectorOverlay
+   BrushSelectorOverlay
+   HandDraw
+   IndexSelectorOverlay
+   IntervalSelectorOverlay
+   MultiSelectorOverlay
+   OneDSelectorOverlay
+   Overlay
+   PanZoom
+   SelectorOverlay
+   TwoDSelectorOverlay
+   panzoom
+"""
+
 import sys
 from IPython.utils.traitlets import Bool, Int, Float, Unicode, Dict, Any, Instance, List
 from IPython.html.widgets import Widget
