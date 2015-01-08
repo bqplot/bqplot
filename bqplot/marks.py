@@ -310,11 +310,19 @@ class Bars(Mark):
         font-awesome icon for that mark
     name: string
         user-friendly name of the mark
+    color_mode: {'auto', 'group', 'element'}
+    type: {'stacked', 'grouped'}
+    colors: list of colors
+    padding: float
+    select_bars: bool
+    stroke: color
+    opacity: float
 
     Data Attributes
     ---------------
     x: numpy.ndarray
     y: numpy.ndarray
+    color: numpy.ndarray
     """
     icon = 'fa-bar-chart'
     name = 'Bar chart'
