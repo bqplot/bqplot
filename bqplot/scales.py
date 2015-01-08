@@ -81,7 +81,7 @@ class LinearScale(Scale):
     """
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
-    scale_range_type = Unicode('numeric', sync=True)
+    scale_range_type = Unicode('numerical', sync=True)
     _view_name = Unicode('LinearScale', sync=True)
     _model_name = Unicode('LinearScaleModel', sync=True)
 
@@ -104,7 +104,7 @@ class LogScale(Scale):
     """
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
-    scale_range_type = Unicode('numeric', sync=True)
+    scale_range_type = Unicode('numerical', sync=True)
     _view_name = Unicode('LogScale', sync=True)
     _model_name = Unicode('LogScaleModel', sync=True)
 
@@ -130,7 +130,7 @@ class DateScale(Scale):
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
     date_format = Unicode('', sync=True)
-    scale_range_type = Unicode('numeric', sync=True)
+    scale_range_type = Unicode('numerical', sync=True)
     _view_name = Unicode('DateScale', sync=True)
     _model_name = Unicode('DateScaleModel', sync=True)
 
@@ -150,7 +150,7 @@ class OrdinalScale(Scale):
         The range type of a linear scale is numerical.
     """
     domain = List(sync=True)
-    scale_range_type = Unicode('numeric', sync=True)
+    scale_range_type = Unicode('numerical', sync=True)
     _view_name = Unicode('OrdinalScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
 

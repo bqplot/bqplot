@@ -19,8 +19,8 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
         render: function() {
             Line.__super__.render.apply(this);
             var that = this;
-            this.color_scale =  this.scales['color'];
-            this.width_scale = this.scales['width'];
+            this.color_scale =  this.scales["color"];
+            this.width_scale = this.scales["width"];
             this.line = d3.svg.line()
                 .interpolate(this.model.get("interpolate"))
                 .x(function(d) { return that.x_scale.scale(d.x) + that.x_offset; })
@@ -32,10 +32,10 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
         },
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
-            this.model.on('change:colors', this.update_colors, this);
-            this.model.on('change:stroke_width', this.update_stroke_width, this);
-            this.model.on('change:curve_display', this.update_legend_labels, this);
-            this.model.on('change:color change:width', this.update_and_draw, this);
+            this.model.on("change:colors", this.update_colors, this);
+            this.model.on("change:stroke_width", this.update_stroke_width, this);
+            this.model.on("change:labels_visibility", this.update_legend_labels, this);
+            this.model.on("change:color change:width", this.update_and_draw, this);
         },
         update_stroke_width: function(model, stroke_width){
             this.el.selectAll(".curve").selectAll("path").style("stroke-width", stroke_width);
@@ -103,18 +103,18 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
                 .remove();
 
             curves_sel[0].forEach(function(elem, index) { var lines = d3.select(elem).selectAll("line")
-                                                     .data(that.model.new_mark_data[index]['values']);
+                                                     .data(that.model.new_mark_data[index]["values"]);
                                                 lines.enter().append("line");
                                                 lines.attr("class", "line-elem")
-                                                    .attr({'x1': function(dataelem) { return that.x_scale.scale(dataelem.x1); }, 'x2': function(dataelem) { return that.x_scale.scale(dataelem.x2); },
-                                                            'y1': function(dataelem) { return that.y_scale.scale(dataelem.y1); } , 'y2': function(dataelem) { return that.y_scale.scale(dataelem.y2); }} )
+                                                    .attr({"x1": function(dataelem) { return that.x_scale.scale(dataelem.x1); }, "x2": function(dataelem) { return that.x_scale.scale(dataelem.x2); },
+                                                           "y1": function(dataelem) { return that.y_scale.scale(dataelem.y1); }, "y2": function(dataelem) { return that.y_scale.scale(dataelem.y2); }} )
                                                     .attr("stroke", function(dataelem) { return that.get_element_color(dataelem); })
                                                     .attr("stroke-width", function(dataelem) { return that.get_element_width(dataelem); });
                                               });
 
             this.el.selectAll(".curve")
                 .select(".curve_label")
-                .attr("display", function(d) { return that.model.get("curve_display") == "label" ? "inline" : "none"; });
+                .attr("display", function(d) { return that.model.get("labels_visibility") == "label" ? "inline" : "none"; });
 
             // alter the display only if a few of the curves are visible
             if(this.model.get("curves_subset").length > 0) {
@@ -123,7 +123,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
                     .attr("display", function(d, i) { return curves_subset.indexOf(i) != -1 ? "inline" : "none"; });
                 this.el.selectAll(".curve")
                     .select(".curve_label")
-                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) != -1 && that.model.get("curve_display") == "label") ? "inline" : "none"; });
+                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) != -1 && that.model.get("labels_visibility") == "label") ? "inline" : "none"; });
             }
         },
         get_element_color: function(dataelem) {
@@ -143,8 +143,8 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
                   .transition().duration(this.model.get("animate_dur"))
-                  .attr({'x1': function(dataelem) { return that.x_scale.scale(dataelem.x1); }, 'x2': function(dataelem) { return that.x_scale.scale(dataelem.x2); },
-                                                            'y1': function(dataelem) { return that.y_scale.scale(dataelem.y1); } , 'y2': function(dataelem) { return that.y_scale.scale(dataelem.y2); }} )
+                  .attr({"x1": function(dataelem) { return that.x_scale.scale(dataelem.x1); }, "x2": function(dataelem) { return that.x_scale.scale(dataelem.x2); },
+                         "y1": function(dataelem) { return that.y_scale.scale(dataelem.y1); }, "y2": function(dataelem) { return that.y_scale.scale(dataelem.y2); }} )
 
             this.create_children();
             this.create_labels();
