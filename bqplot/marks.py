@@ -295,7 +295,6 @@ class Hist(Mark):
     midpoints = List(sync=True, display_index=3, display_name='Mid points')
     counts = List(sync=True, display_index=4, display_name='Counts')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=5, display_name='Colors')
-    yticks = Bool(True, sync=True, exposed=True, display_index=5, display_name='Y ticks')
     _view_name = Unicode('bqplot.Hist', sync=True)
     _model_name = Unicode('bqplot.HistModel', sync=True)
 

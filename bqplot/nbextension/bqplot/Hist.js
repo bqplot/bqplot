@@ -21,7 +21,6 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             this.sel_indices = [-1];
             this.bar_index_sel = [];
 
-            this.show_y_ticks = this.model.get("yticks");
             var self = this;
             return base_creation_promise.then(function() {
                 self.create_listeners();
