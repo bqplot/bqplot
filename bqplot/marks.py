@@ -136,7 +136,9 @@ class Lines(Mark):
         stroke width of the lines
     labels_visibility: {'none', 'label'}
         visibility of the curve labels
-    curve_subset: list
+    curve_subset: list of integers or None
+        if st to None, all the lines are displayed. Otherwise, only the items
+        in the list will have full opacity, while others will be faded.
     line_style: {'solid', 'dashed', 'dotted'}
         Line style.
 
@@ -194,12 +196,17 @@ class Scatter(Mark):
     name: string
         user-friendly name of the mark
     marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up'}
+        marker shape
     default_color: color
+        default color of the marker
     stroke: color
+        stroke color of the marker
     default_opacity: float
         This number is validated to be between 0 and 1.
-    opacity: numpy.ndarray
     default_size: int
+        Default marker size in pixel.
+        If size data is provided with a scale, default_size stands for the
+        maximal marker size (i.e. the maximum value for the 'size' scale range)
 
     Data Attributes
     ---------------
@@ -270,7 +277,9 @@ class Hist(Mark):
     bins: int
         number of bins in the histogram
     midpoints: list
-    counts: list of colors
+        midpoints of the bins of the histogram. It is a read-only attribute.
+    counts: list of ints
+        number of sample points per bin. It is a read-only attribute.
     yticks: bool
 
     Data Attributes
