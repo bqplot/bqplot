@@ -24,7 +24,6 @@ define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, Scal
              this.offset = 0;
              this.ticks = this.model.ticks;
              this.create_event_listeners();
-             this.parse_date = this.model.parse_date;
              this.format_date = this.model.format_date;
          },
      });

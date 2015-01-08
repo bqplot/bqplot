@@ -34,33 +34,96 @@ from .scales import Scale, LinearScale
 
 class Figure(DOMWidget):
 
-    """The base figure
+    """Main canvas for drawing a chart.
 
-    Make sure that the width is at least equal to the sum of the margins (perhaps there should be a validation enforcing this).
+    The Figure object holds the list of Marks and Axes. It also holds an optional
+    Overlay object that is responsible for figure-level mouse interactions, the
+    "interaction layer".
 
-    The scale_x and scale_y scales are the scales used when you want to position something within the figure.  For example, the default scales have domain [0,1], which means that, for example, 0 in the x_scale means the left edge and 1 means the right edge.
+    Besides, the Figure object has two reference scales, for positioning items in an absolute
+    fashion in the figure canvas.
 
+
+    .. rubric:: Data Attributes
+
+    .. autosummary::
+
+       title
+       axes
+       marks
+       overlay
+       scale_x
+       scale_y
+
+    .. rubric:: Layout Attributes
+
+    .. autosummary::
+
+       min_width
+       min_height
+       preserve_aspect
+       fig_margin
+       padding_x
+       padding_y
+       legend_location
+
+
+    .. rubric:: HTML Attributes
+
+    .. autosummary::
+
+       border_color
+       border_style
+       border_width
+
+       color
+       background_color
+       border_color
+
+       font_family
+       font_size
+       font_weight
+
+       width
+       height
+
+       padding
+       margin
     """
     _view_name = Unicode('bqplot.Figure', sync=True)
 
-    title = Unicode(sync=True, exposed=True, display_index=1, display_name='Title')  #: The title of the figure
+    #: The title of the figure
+    title = Unicode(sync=True, exposed=True, display_index=1, display_name='Title')
+    #: List of axes
+    axes = List(allow_none=False, sync=True)
+    #: List of marks
+    marks = List(allow_none=False, sync=True)
+    #: The (optional) interaction layer widget
+    overlay = Any(None, sync=True)
+    #: A scale instance for the horizontal global figure scale
+    scale_x = Instance(Scale, sync=True)
+    #: A scale instance for the vertical global figure scale
+    scale_y = Instance(Scale, sync=True)
 
-    min_width = CFloat(800.0, sync=True)  #: Minimum width for the figure, including margin
-    min_height = CFloat(600.0, sync=True)  #: Minimum height for the figure, including margin
-    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)   #: Margin the drawing takes place inside
-    preserve_aspect = Bool(False, sync=True, exposed=True, display_index=3, display_name='Preserve aspect ratio')  #: Preserve the aspect ratio given by the minimum width and height
+    #: Minimum width for the figure, including the figure margins
+    min_width = CFloat(800.0, sync=True)
+    #: Minimum height for the figure, including the figure margins
+    min_height = CFloat(600.0, sync=True)
+    #: Preserve the aspect ratio of the figure box specified with `min_width` and `min_height`.
+    #: This does not guarantee that the data coordinates will have any specific aspect ratio.
+    preserve_aspect = Bool(False, sync=True, exposed=True, display_index=3, display_name='Preserve aspect ratio')
 
-    axes = List(allow_none=False, sync=True)  #: List of axes
-    marks = List(allow_none=False, sync=True)  #: List of marks
-    overlay = Any(None, sync=True)  #: The overlay object
-
-    legend_location = Enum(['top', 'top-right', 'right', 'bottom-right', 'bottom', 'bottom-left', 'left', 'top-left'], default_value='top-right', sync=True,
-                           exposed=True, display_index=2, display_name='Legend position')  #: The legend location
-
-    scale_x = Instance(Scale, sync=True)  #: A scale instance for the horizontal global figure scale
-    scale_y = Instance(Scale, sync=True)  #: A scale instance for the vertical global figure scale
-    padding_x = Float(0, sync=True)  #: Padding to be applied for the figure in the x-direction on both sides
-    padding_y = Float(0.025, sync=True)  #: Padding to be applied for the figure in the y-direction on both sides
+    #: Dictionary of figure margins, containing 'top', 'bottom', 'left' and 'right' margins.
+    #: The user is responsible for making sure that the width and height are greater than the sum of the margins.
+    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)
+    #: Padding to be applied around the data points in the figure in the horizontal direction on both sides
+    padding_x = Float(0, sync=True)
+    #: Padding to be applied around the data points in the figure in the vertical direction on both sides
+    padding_y = Float(0.025, sync=True)
+    #: The legend location
+    legend_location = Enum(['top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'],
+                           default_value='top-right', sync=True,
+                           exposed=True, display_index=2, display_name='Legend position')
 
     def _scale_x_default(self):
         return LinearScale(min=0, max=1)

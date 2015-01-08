@@ -36,9 +36,44 @@ from .traits import NumpyArray
 
 class Axis(Widget):
 
-    """A line axis."""
+    """A line axis.
+
+    A line axis is the visual representation of a numerical or date scale.
+
+    Attributes
+    ----------
+        icon: string
+            The font-awesome icon name for this object.
+        orientation: {'horizontal', 'vertical'}
+            The orientation of the axis, either vertical or horizontal
+        side: {'bottom', 'top', 'left', 'right'}
+            The side of the axis, either bottom, top, left or right
+        label: string
+            The axis label
+        tick_format: string
+            The tick format for the axis.
+        scale: Scale
+            The scale represented by the axis
+        num_ticks: int
+            If tick_values is None, number of ticks
+        tick_values: numpy.ndarray or None
+            Tick values for the axis
+        offset: dict
+            Containing a scale and a value {'scale': scale or None, 'value': value of the offset}
+            If offset['scale'] is None, the corresponding figure scale is used instead. 
+        label_location: {'middle', 'start', 'end'}
+            The location of the label along the axis, one of 'start', 'end' or 'middle'
+        label_color: string
+            The axis label color
+        color: string
+            The line color
+        label_offset: string
+            Label displacement from the axis line. Units allowed are em px and ex.
+        visible: bool
+            A visibility toggle for the axis
+    """
     icon = 'fa-arrows'
-    orientation = Enum(['vertical', 'horizontal'], default_value='horizontal', sync=True)
+    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal', sync=True)
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom', sync=True)
     label = Unicode(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none', sync=True)   # Style of the grid on the X-axis
@@ -47,7 +82,7 @@ class Axis(Widget):
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NumpyArray(sync=True)
     offset = Dict(dict(), sync=True)
-    label_location = Enum(['start', 'end', 'middle'], default_value='middle', sync=True)  # Placement of the label along the axis
+    label_location = Enum(['middle', 'start', 'end'], default_value='middle', sync=True)  # Placement of the label along the axis
     label_color = Unicode(None, sync=True, allow_none=True)
     grid_color = Unicode(None, sync=True, allow_none=True)
     color = Unicode(None, sync=True, allow_none=True)
@@ -56,15 +91,13 @@ class Axis(Widget):
     # the figure with resepect to the axis line.
 
     visible = Bool(True, sync=True)  # Attribute to control the visibility of the axis
-    scale = Instance(Scale, sync=True)
-    num_ticks = Int(default_value=None, sync=True, allow_none=True)
     _view_name = Unicode('bqplot.Axis', sync=True)
     _model_name = Unicode('bqplot.AxisModel', sync=True)
     _ipython_display_ = None  # We cannot display an axis outside of a figure.
 
     def _tick_format_default(self):
         if isinstance(self.scale, DateScale):
-            # perhaps we should have a DateAxis subclass instead of this checking
+            # TODO: perhaps we should have a DateAxis subclass instead of this checking
             return '%b-%y'
         elif isinstance(self.scale, LogScale):
             return '.3g'
@@ -74,9 +107,26 @@ class Axis(Widget):
 
 class ColorAxis(Axis):
 
-    """A colorbar axis."""
+    """A colorbar axis.
 
-    orientation = Enum(['vertical', 'horizontal'], default_value='horizontal', sync=True)
+    A color axis is the visual representation of a color scale.
+
+    Attributes
+    ----------
+
+    orientation: {'horizontal', 'vertical'}
+        Orientation of the color axis
+    side: {'bottom', 'top', 'left', right}
+        Position of the color axis
+    label: string
+        Label of the color axis
+    scale: ColorScale
+        The scale represented by the axis
+    tick_format: string
+        The axis tick format
+    """
+
+    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal', sync=True)
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom', sync=True)
     label = Unicode(sync=True)
     scale = Instance(ColorScale, sync=True)

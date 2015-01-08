@@ -35,7 +35,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
                 if(that.axis_scale.model.type == "date_color_linear") {
                     that.axis_line_scale = d3.time.scale().nice();
-                    that.parse_date = that.axis_scale.model.parse_date;
                 } else if(that.axis_scale.model.type == "ordinal") {
                     that.axis_line_scale = d3.scale.ordinal();
                     that.ordinal = true;

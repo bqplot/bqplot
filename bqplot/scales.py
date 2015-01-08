@@ -42,7 +42,18 @@ from .traits import Date
 
 class Scale(Widget):
 
-    """The Scale base class
+    """The base scale class
+
+    Scale objects represent a mapping between data (the domain) and a visual quantity (The range).
+
+    Attributes
+    ----------
+    domain_class: type
+        type of the domain of the scale. Default value is float
+    reverse: bool
+        whether the scale should be reversed
+    allow_padding: bool
+        indicates whether figures are allowed to add data padding to this scale or not
     """
     domain_class = Type(Float, sync=False)
     reverse = Bool(False, sync=True)  #: Whether the scale should be reversed
@@ -54,48 +65,114 @@ class Scale(Widget):
 
 class LinearScale(Scale):
 
-    """A linear scale."""
+    """A linear scale
+
+    An affine mapping from a numerical domain and a numerical range.
+
+    Attributes
+    ----------
+    min: float (optional)
+        if not None, min is the minimal value of the domain
+    max: float (optional)
+        if not None, max is the maximal value of the domain
+    scale_range_type: string
+        This attribute should not be modifed. The range type of a linear
+        scale is numerical.
+    """
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
-    scale_range_type = Unicode('numeric', sync=True)
+    scale_range_type = Unicode('numerical', sync=True)
     _view_name = Unicode('LinearScale', sync=True)
     _model_name = Unicode('LinearScaleModel', sync=True)
 
 
 class LogScale(Scale):
 
-    """A log scale."""
+    """A log scale.
+
+    A logarithmic mapping from a numerical domain to a numerical range.
+
+    Attributes
+    ----------
+    min: float (optional)
+        if not None, min is the minimal value of the domain
+    max: float (optional)
+        if not None, max is the maximal value of the domain
+    scale_range_type: string
+        This attribute should not be modifed by the user.
+        The range type of a linear scale is numerical.
+    """
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
-    scale_range_type = Unicode('numeric', sync=True)
+    scale_range_type = Unicode('numerical', sync=True)
     _view_name = Unicode('LogScale', sync=True)
     _model_name = Unicode('LogScaleModel', sync=True)
 
 
 class DateScale(Scale):
 
-    """A date scale, with customizable formatting."""
+    """A date scale, with customizable formatting.
+
+    An affine mapping from dates to a numerical range.
+
+    Attributes
+    ----------
+    min: date (optional)
+        if not None, min is the minimal value of the domain
+    max: date (optional)
+        if not None, max is the maximal value of the domain
+    date_format: string
+    scale_range_type: string
+        This attribute should not be modifed by the user.
+        The range type of a linear scale is numerical.
+    """
     domain_class = Type(Date, sync=False)
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
     date_format = Unicode('', sync=True)
-    scale_range_type = Unicode('numeric', sync=True)
+    scale_range_type = Unicode('numerical', sync=True)
     _view_name = Unicode('DateScale', sync=True)
     _model_name = Unicode('DateScaleModel', sync=True)
 
 
 class OrdinalScale(Scale):
 
-    """An ordinal scale."""
+    """An ordinal scale.
+
+    A mapping from a discrete set of values to a numerical range.
+
+    Attributes
+    ----------
+    domain: list
+        The discrete values mapped by the ordinal scale
+    scale_range_type: string
+        This attribute should not be modifed by the user.
+        The range type of a linear scale is numerical.
+    """
     domain = List(sync=True)
-    scale_range_type = Unicode('numeric', sync=True)
+    scale_range_type = Unicode('numerical', sync=True)
     _view_name = Unicode('OrdinalScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
 
 
 class ColorScale(Scale):
 
-    """A color scale."""
+    """A color scale.
+
+    A mapping from numbers to colors. The relation is affine by part.
+
+    Attributes
+    ----------
+    scale_type: enum
+    colors: list
+    min: float
+    max: float
+    mid: float
+    scheme: string
+    scale_range_type: string
+        This attribute should not be modifed by the user.
+        The range type of a color scale is 'color'.
+    """
     scale_type = Enum(['linear'], default_value='linear', sync=True)
     colors = List(sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
@@ -109,6 +186,20 @@ class ColorScale(Scale):
 
 class DateColorScale(ColorScale):
 
+    """A date color scale.
+
+    A mapping from dates to a numerical domain.
+
+    Attributes
+    ----------
+    min: date
+    max: date
+    mid: date
+    date_format: string
+    scale_range_type: string
+        This attribute should not be modifed by the user.
+        The range type of a color scale is 'color'.
+    """
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
     mid = Unicode(default_value=None, sync=True, allow_none=True)
@@ -120,7 +211,19 @@ class DateColorScale(ColorScale):
 
 class OrdinalColorScale(ColorScale):
 
-    scale_range_type = Unicode('Color', sync=True)
+    """An ordinal color scale.
+
+    A mapping between a discrete set of value to colors.
+
+    Attributes
+    ----------
+    domain: list
+        The discrete values mapped by the ordinal scales.
+    scale_range_type: string
+        This attribute should not be modifed by the user.
+        The range type of a color scale is 'color'.
+    """
     domain = List(sync=True)
+    scale_range_type = Unicode('Color', sync=True)
     _view_name = Unicode('OrdinalColorScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)

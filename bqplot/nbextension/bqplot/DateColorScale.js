@@ -30,7 +30,6 @@ define(["widgets/js/manager", "d3", "./LinearColorScale", "./ColorUtils"], funct
                 this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
             }
             this.format_date = this.model.format_date;
-            this.parse_date = this.model.parse_date;
 
             this.model.on("domain_changed", this.model_domain_changed, this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
