@@ -30,7 +30,7 @@ Pyplot
    plot
    scatter
    hist
-   bars
+   bar
 
    clear
    close

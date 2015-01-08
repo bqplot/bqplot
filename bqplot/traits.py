@@ -12,6 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+r"""
+
+=============
+Custom Traits
+=============
+
+.. currentmodule:: bqplot.traits
+
+.. autosummary::
+   :toctree: generate/
+
+   BoundedFloat
+   BoundedInt
+   CInstance
+   Color
+   ColorList
+   Date
+   NdArray
+   NumpyArray
+   PandasDataFrame
+   PandasSeries
+   UnicodeList
+   isrgbcolor
+   safe_directional_link
+   safe_dlink
+"""
+
 from IPython.utils.traitlets import Instance, Unicode, List, Int, Float, TraitError, TraitType
 import numpy as np
 import pandas as pd
