@@ -24,7 +24,6 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
         },
         min_max_changed: function() {
             this.format_date = d3.time.format(this.get('date_format'));
-            this.parse_date = this.format_date.parse;
             this.min = this.get_date_elem("min");
             this.max = this.get_date_elem("max");
             this.min_from_data = (this.min === null);

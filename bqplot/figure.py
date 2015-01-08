@@ -34,12 +34,43 @@ from .scales import Scale, LinearScale
 
 class Figure(DOMWidget):
 
-    """The base figure
+    """Main canvas for drawing a chart.
 
-    Make sure that the width is at least equal to the sum of the margins (perhaps there should be a validation enforcing this).
+    The Figure object holds the list of Marks and Axes. It also holds an optional
+    Overlay object that is responsible for figure-level mouse interactions, the
+    "interaction layer"
 
-    The scale_x and scale_y scales are the scales used when you want to position something within the figure.  For example, the default scales have domain [0,1], which means that, for example, 0 in the x_scale means the left edge and 1 means the right edge.
+    Besides, it also holds two reference scales, for positioning items in an absolute
+    fashion in the figure canvas.
 
+    Attributes
+    ----------
+    title: Unicode
+        The title of the chart
+    min_width: float
+        Minimum width for the figure, including the figure margins
+    min_height: float
+        Minimum height for the figure, including the figure margins
+    fig_margin: dict
+        Dictionary of figure margins, containing 'top', 'bottom', 'left' and 'right' margins
+        The user is responsible for making sure that the width and height are greater than the sum of the margins.
+    padding_x: Float
+        Padding to be applied around the data points in the figure
+        in the horizontal direction on both sides
+    padding_y: Float
+        Padding to be applied around the data points in the figure
+        in the vertical direction on both sides
+    preserve_aspect: bool
+        Preserve the aspect ratio of the figure specified with minimum width and height
+        It is not to be confused with aspect ratio in data coordinates.
+    axes: list
+        The list of axes in the figure
+    marks: list
+        The list of marks of the figure
+    overlay: Overlay
+        The (optional )interaction layer object
+    legend_location: {'top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'}
+        The position of the figure legend.
     """
     _view_name = Unicode('bqplot.Figure', sync=True)
 
@@ -54,7 +85,7 @@ class Figure(DOMWidget):
     marks = List(allow_none=False, sync=True)  #: List of marks
     overlay = Any(None, sync=True)  #: The overlay object
 
-    legend_location = Enum(['top', 'top-right', 'right', 'bottom-right', 'bottom', 'bottom-left', 'left', 'top-left'], default_value='top-right', sync=True,
+    legend_location = Enum(['top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'], default_value='top-right', sync=True,
                            exposed=True, display_index=2, display_name='Legend position')  #: The legend location
 
     scale_x = Instance(Scale, sync=True)  #: A scale instance for the horizontal global figure scale

@@ -32,14 +32,63 @@ Marks
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
 
-from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
+from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
 
 class Mark(Widget):
 
-    """The base mark class."""
+    """The base mark class.
+
+    Mark attributes that are traitlets may be decorated with the following values
+
+    Some of the Mark traitlet data attributes are "scaled attributes". Their class-level traitlet instance are
+    decorated
+
+    Data Attribute Decoration
+    -------------------------
+    Data attributes are decorated for
+
+    scaled: bool
+        Indicates whether the considered attribute is a data attribute which must be
+        associated with a scale to be taken into account
+    scale_range_type: string
+        A condition on the range type of the associated scale.
+
+    GUI Generation Decoration
+    -------------------------
+    More decoration is added for automatic GUI generation purpose.
+
+    exposed: bool
+        Indicates whether a mark attribute must be exposed in the generated GUI.
+    display_index:
+        In the case a mark attribute is exposed, the display_index is a hint on
+        the order of mark attributes
+    display_name:
+        In the case a mark attribute is exposed, the display_name string holds
+        a user-friendly name for the exposed attribute.
+
+    Attributes
+    ----------
+    scales: Dict
+        A dictionary of scale holding scales for each data attribute.
+        - If a mark holds a "scaled" attribute named 'x', the scales dictionary
+        must have a corresponding scale for the key 'x'.
+        - The scale's range type must be compatible with the decoration "scale_range_type"
+        of the scaled attribute.
+    children: list
+    display_legend: bool
+    animate_dur: int
+    labels: list of unicode strings
+    apply_clip: bool
+    set_x_domain: bool
+    set_y_domain: bool
+    visible: bool
+    selected_style: dict
+    unselected_style: dict
+    idx_selected: list
+    """
     scales = Dict(sync=True)
     children = List([], sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1, display_name='Display legend')
@@ -61,7 +110,11 @@ class Mark(Widget):
 
 class Lines(Mark):
 
-    """Line marks."""
+    """Lines mark.
+
+    Attributes
+    ----------
+    """
     icon = 'fa-line-chart'
     name = 'Lines'
     x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=2)
@@ -76,6 +129,11 @@ class Lines(Mark):
 
 
 class FlexLine(Lines):
+    """Flexible Lines mark.
+
+    Attributes
+    ----------
+    """
     colors = List(CATEGORY10, sync=True)
     color = NdArray(sync=True, display_index=5, scaled=True, scale_range_type='numeric')
     width = NdArray(sync=True, display_index=6, scaled=True, scale_range_type='numeric')
@@ -85,7 +143,12 @@ class FlexLine(Lines):
 
 class Scatter(Mark):
 
-    """Scatter marks."""
+    """Scatter mark.
+
+    Attributes
+    ----------
+
+    """
     icon = 'fa-cloud'
     name = 'Scatter'
     x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=1)
@@ -128,7 +191,12 @@ class Scatter(Mark):
 
 class Hist(Mark):
 
-    """Histogram marks."""
+    """Histogram marks.
+
+    Attributes
+    ----------
+
+    """
     icon = 'fa-signal'
     name = 'Histogram'
     # Attributes 'midpoints' and 'counts' are read-only attributes which are
@@ -145,7 +213,12 @@ class Hist(Mark):
 
 class Bars(Mark):
 
-    """Bar marks."""
+    """Bar marks.
+
+    Attributes
+    ----------
+
+    """
     icon = 'fa-bar-chart'
     name = 'Bar chart'
     x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=1)
@@ -170,7 +243,11 @@ class Bars(Mark):
 
 class Label(Mark):
 
-    """Label mark."""
+    """Label mark.
+
+    Attributes
+    ----------
+    """
     # x = Float(sync=True) | Date(sync=True)
     x = Float(sync=True)  # The x co-ordinate of the location of the label. Can be in terms of data or a value between [0, 1]
     # which is interpreted in the figure scale.
