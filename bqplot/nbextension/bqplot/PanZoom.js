@@ -33,6 +33,8 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
             this.model.on("change:scales", function(model, value) {
                 this.update_scales(model.previous("scales"), value);
             }, this);
+            this.set_ranges();
+            this.parent.on("margin_updated", this.set_ranges, this);
         },
         update_scales: function(old_scales, new_scales) {
             this.xscales = new_scales["x"];
@@ -40,14 +42,26 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
 
             var that = this;
             // Getting A collection of views for each of the scale models.
-            this.xscale_views = this.xscales.map(function(scale_model) {
-                //TODO: check if exists
-                return that.parent.child_scale_views[scale_model.id]['x'][0];
-            });
-            this.yscale_views = this.yscales.map(function(scale_model) {
-                // TODO: check if exists
-                return that.parent.child_scale_views[scale_model.id]['y'][0];
-            });
+            this.xscale_promises = Promise.all(this.xscales.map(function(model) {
+                return that.create_child_view(model);
+            }));
+
+            this.yscale_promises = Promise.all(this.yscales.map(function(model) {
+                return that.create_child_view(model);
+            }));
+        },
+        set_ranges: function() {
+           var that = this;
+           this.xscale_promises.then(function(views) {
+               for (var i=0; i<views.length; i++) {
+                   views[i].set_range(that.parent.get_padded_xrange(views[i].model));
+               }
+           });
+           this.yscale_promises.then(function(views) {
+               for (var i=0; i<views.length; i++) {
+                   views[i].set_range(that.parent.get_padded_yrange(views[i].model));
+               }
+           });
         },
         mousedown: function () {
             this.active = true;
@@ -68,34 +82,38 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                     this.previous_pos = mouse_pos;
                 }
                 var that = this;
-                var xdiffs = this.xscale_views.map(function(view) {
-                                                if (view.scale.invert) { // Categorical scales don't have an inversion.
-                                                    return view.scale.invert(mouse_pos[0]) - view.scale.invert(that.previous_pos[0]);
-                                                }
-                                            });
-                var ydiffs = this.yscale_views.map(function(view) {
-                                                if (view.scale.invert) { // Categorical scales don't have an inversion.
-                                                    return view.scale.invert(mouse_pos[1]) - view.scale.invert(that.previous_pos[1]);
-                                                }
-                                            });
-                for (var i=0; i<this.xscale_views.length; i++) {
-                    var domain = this.xdomains[i];
-                    var min = domain[0] - xdiffs[i];
-                    var max = domain[1] - xdiffs[i];
-                    this.set_scale_attribute(this.xscales[i], "min", min);
-                    this.set_scale_attribute(this.xscales[i], "max", max);
-                    // TODO? Only do in mouseup?
-                    this.xscale_views[i].touch();
-                }
-                for (var i=0; i<this.yscale_views.length; i++) {
-                    var domain = this.ydomains[i];
-                    var min = domain[0] - ydiffs[i];
-                    var max = domain[1] - ydiffs[i];
-                    this.set_scale_attribute(this.yscales[i], "min",min);
-                    this.set_scale_attribute(this.yscales[i], "max", max);
-                    // TODO? Only do in mouseup?
-                    this.yscale_views[i].touch();
-                }
+                Promise.all([this.xscale_promises, this.yscale_promises]).then(function(prom) {
+                    var xscale_views = prom[0], yscale_views = prom[1];
+
+                    var xdiffs = xscale_views.map(function(view) {
+                                                    if (view.scale.invert) { // Categorical scales don't have an inversion.
+                                                        return view.scale.invert(mouse_pos[0]) - view.scale.invert(that.previous_pos[0]);
+                                                    }
+                                                  });
+                    var ydiffs = yscale_views.map(function(view) {
+                                                    if (view.scale.invert) { // Categorical scales don't have an inversion.
+                                                        return view.scale.invert(mouse_pos[1]) - view.scale.invert(that.previous_pos[1]);
+                                                    }
+                                                  });
+                    for (var i=0; i<xscale_views.length; i++) {
+                        var domain = that.xdomains[i];
+                        var min = domain[0] - xdiffs[i];
+                        var max = domain[1] - xdiffs[i];
+                        that.set_scale_attribute(that.xscales[i], "min", min);
+                        that.set_scale_attribute(that.xscales[i], "max", max);
+                        // TODO? Only do in mouseup?
+                        xscale_views[i].touch();
+                    }
+                    for (var i=0; i<yscale_views.length; i++) {
+                        var domain = that.ydomains[i];
+                        var min = domain[0] - ydiffs[i];
+                        var max = domain[1] - ydiffs[i];
+                        that.set_scale_attribute(that.yscales[i], "min", min);
+                        that.set_scale_attribute(that.yscales[i], "max", max);
+                        // TODO? Only do this on mouseup?
+                        yscale_views[i].touch();
+                    }
+                });
             }
         },
         mousewheel: function() {
@@ -110,31 +128,35 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                         this.el.style({"cursor": "zoom-out"});
                     }
                     var that = this;
-                    var xpos = this.xscale_views.map(function(view) {
+                    Promise.all([this.xscale_promises, this.yscale_promises]).then(function(prom) {
+                        var xscale_views = prom[0], yscale_views = prom[1];
+
+                        var xpos = xscale_views.map(function(view) {
                                                          return view.scale.invert(mouse_pos[0]);
-                                                     });
-                    var ypos = this.yscale_views.map(function(view) {
+                                                    });
+                        var ypos = yscale_views.map(function(view) {
                                                          return view.scale.invert(mouse_pos[1]);
-                                                     });
-                    var factor = Math.exp(-delta * 0.001);
-                    for (var i=0; i<this.xscale_views.length; i++) {
-                        var domain = this.xscales[i].domain;
-                        var min = domain[0];
-                        var max = domain[1];
-                        this.set_scale_attribute(this.xscales[i], "min", (1 - factor) * xpos[i] + factor * min);
-                        this.set_scale_attribute(this.xscales[i], "max", (1 - factor) * xpos[i] + factor * max);
-                        // TODO? Only do in mouseup?
-                        this.xscale_views[i].touch();
-                    }
-                    for (var i=0; i<this.yscale_views.length; i++) {
-                        var domain = this.yscales[i].domain;
-                        var min = domain[0];
-                        var max = domain[1];
-                        this.set_scale_attribute(this.yscales[i], "min", (1 - factor) * ypos[i] + factor * min);
-                        this.set_scale_attribute(this.yscales[i], "max", (1 - factor ) * ypos[i] + factor * max);
-                        // TODO? Only do in mouseup?
-                        this.yscale_views[i].touch();
-                    }
+                                                    });
+                        var factor = Math.exp(-delta * 0.001);
+                        for (var i=0; i<xscale_views.length; i++) {
+                            var domain = that.xscales[i].domain;
+                            var min = domain[0];
+                            var max = domain[1];
+                            that.set_scale_attribute(that.xscales[i], "min", (1 - factor) * xpos[i] + factor * min);
+                            that.set_scale_attribute(that.xscales[i], "max", (1 - factor) * xpos[i] + factor * max);
+                            // TODO? Only do in mouseup?
+                            xscale_views[i].touch();
+                        }
+                        for (var i=0; i<yscale_views.length; i++) {
+                            var domain = that.yscales[i].domain;
+                            var min = domain[0];
+                            var max = domain[1];
+                            that.set_scale_attribute(that.yscales[i], "min", (1 - factor) * ypos[i] + factor * min);
+                            that.set_scale_attribute(that.yscales[i], "max", (1 - factor) * ypos[i] + factor * max);
+                            // TODO? Only do this on mouseup?
+                            yscale_views[i].touch();
+                        }
+                    });
                 }
             }
         },
