@@ -167,7 +167,7 @@ class ColorScale(Scale):
     colors: list
     min: float
     max: float
-    mid:float
+    mid: float
     scheme: string
     scale_range_type: string
         This attribute should not be modifed by the user.
@@ -213,7 +213,7 @@ class OrdinalColorScale(ColorScale):
 
     """An ordinal color scale.
 
-    A mapping between a discrte set of value to colors.
+    A mapping between a discrete set of value to colors.
 
     Attributes
     ----------

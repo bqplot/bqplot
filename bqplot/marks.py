@@ -41,30 +41,27 @@ class Mark(Widget):
 
     """The base mark class.
 
-    Mark attributes that are traitlets may be decorated with the following values
-
-    Some of the Mark traitlet data attributes are "scaled attributes". Their class-level traitlet instance are
-    decorated
+    Traitlet mark attributes may be decorated with metadata, at the mark type level.
 
     Data Attribute Decoration
     -------------------------
-    Data attributes are decorated for
+    Data attributes are decorated with the following values:
 
     scaled: bool
-        Indicates whether the considered attribute is a data attribute which must be
-        associated with a scale to be taken into account
+        Indicates whether the considered attribute is a data attribute which
+        must be associated with a scale in order to be taken into account.
     scale_range_type: string
         A condition on the range type of the associated scale.
 
     GUI Generation Decoration
     -------------------------
-    More decoration is added for automatic GUI generation purpose.
+    More decoration is added for automatic GUI generation purpose:
 
     exposed: bool
         Indicates whether a mark attribute must be exposed in the generated GUI.
     display_index:
         In the case a mark attribute is exposed, the display_index is a hint on
-        the order of mark attributes
+        the display order of mark attributes.
     display_name:
         In the case a mark attribute is exposed, the display_name string holds
         a user-friendly name for the exposed attribute.
@@ -72,22 +69,35 @@ class Mark(Widget):
     Attributes
     ----------
     scales: Dict
-        A dictionary of scale holding scales for each data attribute.
+        A dictionary of scales holding scales for each data attribute.
         - If a mark holds a "scaled" attribute named 'x', the scales dictionary
         must have a corresponding scale for the key 'x'.
-        - The scale's range type must be compatible with the decoration "scale_range_type"
-        of the scaled attribute.
+        - The scale's range type must be compatible with the decoration
+        "scale_range_type" of the scaled attribute.
     children: list
     display_legend: bool
+        Display toggle for the mark legend in the general figure legend
     animate_dur: int
-    labels: list of unicode strings
+        Duration of transition on change of data attributes, in milliseconds.
+    labels: list of unicode strings.
+        Labels of the items of the mark. This attribute has different meanings
+        depending on the type of mark.
     apply_clip: bool
+        Indicates whether the items that are beyond the limits of the chart
+        should be clipped.
     set_x_domain: bool
+        Indicates whether this mark can impact the domain of the 'x' scale.
     set_y_domain: bool
+        Indicates whether this mark can impact the domain of the 'y' scale.
     visible: bool
+        Visibility toggle for the mark.
     selected_style: dict
+        CSS style to be applied to selected items in the mark.
     unselected_style: dict
+        CSS style to be applied to items that are not selected in the mark, when
+        a selection exists.
     idx_selected: list
+        Indices of the selected items in the mark.
     """
     scales = Dict(sync=True)
     children = List([], sync=True)
@@ -129,6 +139,7 @@ class Lines(Mark):
 
 
 class FlexLine(Lines):
+
     """Flexible Lines mark.
 
     Attributes

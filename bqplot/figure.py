@@ -38,9 +38,9 @@ class Figure(DOMWidget):
 
     The Figure object holds the list of Marks and Axes. It also holds an optional
     Overlay object that is responsible for figure-level mouse interactions, the
-    "interaction layer"
+    "interaction layer".
 
-    Besides, it also holds two reference scales, for positioning items in an absolute
+    Besides, the Figure object has two reference scales, for positioning items in an absolute
     fashion in the figure canvas.
 
     Attributes
@@ -68,7 +68,7 @@ class Figure(DOMWidget):
     marks: list
         The list of marks of the figure
     overlay: Overlay
-        The (optional )interaction layer object
+        The (optional) interaction layer object
     legend_location: {'top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'}
         The position of the figure legend.
     """

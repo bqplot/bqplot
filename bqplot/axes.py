@@ -46,7 +46,7 @@ class Axis(Widget):
             The font-awesome icon name for this object.
         orientation: {'horizontal', 'vertical'}
             The orientation of the axis, either vertical or horizontal
-        side: string
+        side: {'bottom', 'top', 'left', 'right'}
             The side of the axis, either bottom, top, left or right
         label: string
             The axis label
@@ -55,8 +55,12 @@ class Axis(Widget):
         scale: Scale
             The scale represented by the axis
         num_ticks: int
-        tick_values: numpy.ndarray
+            If tick_values is None, number of ticks
+        tick_values: numpy.ndarray or None
+            Tick values for the axis
         offset: dict
+            Containing a scale and a value {'scale': scale or None, 'value': value of the offset}
+            If offset['scale'] is None, the corresponding figure scale is used instead. 
         label_location: {'middle', 'start', 'end'}
             The location of the label along the axis, one of 'start', 'end' or 'middle'
         label_color: string
@@ -64,10 +68,9 @@ class Axis(Widget):
         color: string
             The line color
         label_offset: string
+            Label displacement from the axis line. Units allowed are em px and ex.
         visible: bool
             A visibility toggle for the axis
-        num_ticks: int
-
     """
     icon = 'fa-arrows'
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal', sync=True)
@@ -120,7 +123,7 @@ class ColorAxis(Axis):
     scale: ColorScale
         The scale represented by the axis
     tick_format: string
-        The tick format along this axis
+        The axis tick format
     """
 
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal', sync=True)
