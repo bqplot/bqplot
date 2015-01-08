@@ -123,7 +123,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
 
             var that = this;
             // display the children
-            this.child_scale_views = {};
             var figure_scale_promise = this.create_figure_scales();
 
             figure_scale_promise.then(function() {
@@ -291,30 +290,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         },
         update_marks: function(mark_views) {
             this.update_paddings();
-
-            // this.child_scale_views has key of the scale model id and value of the list of scale view
-            // ids in *this* figure.
-
-            // this is for the pan/zoom.  When panning or zooming, we need to set the data domain
-            // of the scales (i.e., changing min and max).  In order to set the domain appropriately,
-            // we need to invert the mouse position to get a data position.  So we need the scale views
-            // associated with the marks and a given orientation. We technically only need one scale
-            // to invert the mouse
-            // position, but we collect all of them for future use.
-            var self = this;
-            this.child_scale_views = {}
-            _.each(mark_views, function(mark) {
-                _.each(mark.scales, function(scale_view, key) {
-                    if (!self.child_scale_views[scale_view.model.id]) {
-                        self.child_scale_views[scale_view.model.id] = {};
-                    }
-                    if (self.child_scale_views[scale_view.model.id][key]) {
-                        self.child_scale_views[scale_view.model.id][key].push(scale_view);
-                    } else {
-                        self.child_scale_views[scale_view.model.id][key] = [scale_view];
-                    }
-                });
-            })
         },
         remove_mark: function(view) {
            // Called when a mark is removed from the mark list.
