@@ -77,7 +77,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var apply_color_to_groups = ((color_mode == 'group') || (color_mode == 'auto' && !(this.is_y_2d)));
             this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
                                     single_bar_d.values.forEach(function(bar_d, bar_index) {
-                                        bar_d.color = (apply_color_to_groups) ? color[bar_grp_index] : color[bar_index];
+                                        bar_d.color_index = (apply_color_to_groups) ? bar_grp_index : bar_index;
+                                        bar_d.color = color[bar_d.color_index];
                                     });
                                 });
             if(color_scale && color.length > 0) {
