@@ -42,24 +42,24 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
 
             var that = this;
             // Getting A collection of views for each of the scale models.
-            this.xscale_promises = Promise.all(this.xscales.map(function(model) {
+            var xscale_promises = Promise.all(this.xscales.map(function(model) {
                 return that.create_child_view(model);
             }));
 
-            this.yscale_promises = Promise.all(this.yscales.map(function(model) {
+            var yscale_promises = Promise.all(this.yscales.map(function(model) {
                 return that.create_child_view(model);
             }));
+            this.scale_promises = Promise.all([xscale_promises, yscale_promises]);
         },
         set_ranges: function() {
            var that = this;
-           this.xscale_promises.then(function(views) {
-               for (var i=0; i<views.length; i++) {
-                   views[i].set_range(that.parent.get_padded_xrange(views[i].model));
-               }
-           });
-           this.yscale_promises.then(function(views) {
-               for (var i=0; i<views.length; i++) {
-                   views[i].set_range(that.parent.get_padded_yrange(views[i].model));
+           this.scale_promises.then(function(prom) {
+               var xscale_views = prom[0], yscale_views = prom[1];
+               for (var i=0; i<xscale_views.length; i++) {
+                   xscale_views[i].set_range(that.parent.get_padded_xrange(xscale_views[i].model));
+               }   
+               for (var i=0; i<yscale_views.length; i++) {
+                   yscale_views[i].set_range(that.parent.get_padded_yrange(yscale_views[i].model));
                }
            });
         },
@@ -82,7 +82,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                     this.previous_pos = mouse_pos;
                 }
                 var that = this;
-                Promise.all([this.xscale_promises, this.yscale_promises]).then(function(prom) {
+                this.scale_promises.then(function(prom) {
                     var xscale_views = prom[0], yscale_views = prom[1];
 
                     var xdiffs = xscale_views.map(function(view) {
@@ -128,7 +128,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                         this.el.style({"cursor": "zoom-out"});
                     }
                     var that = this;
-                    Promise.all([this.xscale_promises, this.yscale_promises]).then(function(prom) {
+                    this.scale_promises.then(function(prom) {
                         var xscale_views = prom[0], yscale_views = prom[1];
 
                         var xpos = xscale_views.map(function(view) {
