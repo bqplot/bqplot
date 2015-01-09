@@ -55,6 +55,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
 
             this.model.on("change:tick_values", this.tickvalues_changed, this);
             this.model.on("change:tick_format", this.tickformat_changed, this);
+            this.model.on("change:num_ticks", function(model, value) { this.num_ticks=value; this.tickvalues_changed();}, this);
             this.model.on("change:color", this.update_color, this);
             this.model.on_some_change(["label", "label_color"], this.update_label, this);
             this.model.on_some_change(["grid_color", "grid_lines"], this.update_grid_lines, this);

@@ -24,14 +24,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             //container for mouse clicks
             this.el.append("rect")
-                .attr("class", "intselmouse")
+                .attr("class", "mouseeventrect")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", this.width)
                 .attr("visibility", "hidden")
                 .attr("pointer-events", "all")
                 .attr("height", this.height)
+                .style("pointer-events", "all")
                 .on("click", $.proxy(this.click, this));
+
             var that = this;
             this.drag_listener = d3.behavior.drag()
                 .on("dragstart", function(d) { return that.drag_start(d, this); })
@@ -152,7 +154,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         rescale: function() {
             Scatter.__super__.rescale.apply(this);
             this.set_ranges();
-            this.el.select(".intselmouse")
+            this.el.select(".mouseeventrect")
                 .attr("width", this.width)
                 .attr("height", this.height);
 
@@ -302,8 +304,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("transform", function(d) { return "translate(" + (text_loc) + "," + (-text_loc) + ")"; })
                 .attr("display", function(d) { return (show_names) ? "inline": "none";});
 
-            elements.exit().transition().delay(animate_dur).remove();
-
+            // Removed the transition on exit as it was causing issues.
+            // Elements are not removed until the transition is complete and
+            // hence the setting styles function doesn't behave as intended.
+            // The only way to call the function after all of the elements are
+            // removed is round-about and doesn't look very nice visually.
+            elements.exit().remove();
             this.apply_styles(this.selected_indices);
         },
         color_scale_updated: function() {

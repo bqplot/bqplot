@@ -295,7 +295,8 @@ class Hist(Mark):
     midpoints = List(sync=True, display_index=3, display_name='Mid points')
     counts = List(sync=True, display_index=4, display_name='Counts')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=5, display_name='Colors')
-    yticks = Bool(True, sync=True, exposed=True, display_index=5, display_name='Y ticks')
+    stroke = Color('white', allow_none=True, sync=True)
+    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
     _view_name = Unicode('bqplot.Hist', sync=True)
     _model_name = Unicode('bqplot.HistModel', sync=True)
 
@@ -332,10 +333,13 @@ class Bars(Mark):
     color = NdArray(sync=True, display_index=8, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
     # Enum attribute to specify if color should be the same for all bars with
     # the same x or for all bars which belong to the same array in Y
+    # 'group' means for every x all bars have same color.
+    # 'element' means for every dimension of y, all bars have same color.
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto', sync=True)  # No change handler for this attribute now
     type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
-    padding = Float(0.05, sync=True)
+    padding = Float(0.05, sync=True)  # Attribute to control the spacing between the bars.
+    # Value is specified as a percentage of the width of the bar.
     select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')

@@ -596,25 +596,66 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             var num_rows = bottom_row - top_row;
 
             if(elem_remaining != 0){
+                // starting corener of the path
                 this.calc_end_point_source(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
                 var elem_filled = Math.min(rows_remaining, elem_remaining);
+
+                if(elem_filled == elem_remaining) {
+                    // There are enough elements only to fill one column
+                    // partially. We add the three end points and exit
+                    // The adjacent corner from the starting corner. This is
+                    // required because the elements are filled in the first
+                    // row itself.
+                    this.calc_end_point_source(start_col, start_row, (-1) * init_x, init_y).forEach(function(d) { end_points.push(d); });
+
+                    var current_row = start_row + (elem_remaining - 1) * init_y;
+                    this.calc_end_point_dest(start_col, current_row, (-1) * init_x, init_y).forEach(function(e) { end_points.push(e); });
+                    this.calc_end_point_dest(start_col, current_row, init_x, init_y).forEach(function(e) { end_points.push(e); });
+
+                    /*
+                    console.log("new set");
+                    end_points.forEach(function(point) { console.log(point); });
+                    console.log("end set");
+                   */
+
+                    return end_points;
+                }
                 elem_remaining = elem_remaining - elem_filled;
                 if(cols_remaining == 0) {
+                    // Since this is the last column, the adjacent corner from
+                    // the starting corner is added here too
                     this.calc_end_point_source(start_col, start_row, init_x * (-1), init_y).forEach(function(d) { end_points.push(d); });
                 }
                 else if(rows_remaining != (bottom_row - top_row)) {
+                    // If the starting row is not the starting row of a group,
+                    // the poirnt adjacent to the starting point needs to be
+                    // added.
                     this.calc_end_point_source(start_col, start_row, init_x * (-1), init_y).forEach(function(d) { end_points.push(d); });
 
                     if(elem_remaining > num_rows) {
+                        // If next row is completely filled, then the top row
+                        // element of the next column is an end point. That is
+                        // being added here.
                         this.calc_end_point_dest(start_col + init_x, (init_y == 1) ? top_row :
                                              bottom_row - 1, init_x * (-1), init_y * (-1)).forEach(function(d) { end_points.push(d); });
                     }
+                }
+                else if(elem_remaining < num_rows) {
+                    // one continuous row in this case
+                    this.calc_end_point_source(start_col, start_row, (-1) * init_x, init_y).forEach(function(d) { end_points.push(d); });
                 }
                 start_row = start_row + (init_y * (elem_filled - 1));
                 //first set of end points are added here
                 this.calc_end_point_dest(start_col, start_row, (-1) * init_x, init_y).forEach(function(d) { end_points.push(d); });
                 if(elem_remaining == 0) {
                     this.calc_end_point_dest(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
+
+                    /*
+                    console.log("new set");
+                    end_points.forEach(function(point) { console.log(point); });
+                    console.log("end set");
+                   */
+
                     return end_points;
                 }
                 if(cols_remaining != 0 && elem_remaining > num_rows)
@@ -665,8 +706,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                         init_x = 1;
                     }
                 } else {
+                    // The number of elements are such that the row group is
+                    // not exhausted.
                     init_y = Math.pow(-1, (no_cont_cols)) * init_y;
-                    //as I am moving down this time, next time I will move up
+                    //As I am moving down this time, next time I will move up
                     //and I might not reach the top row, it might be an end
                     //point.
                     start_row = (init_y == 1) ? top_row : bottom_row - 1;
@@ -679,23 +722,39 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 //this is an end point
             }
             //all elements are exhausted
-            if(elem_remaining == 0){
+            if(elem_remaining == 0) {
+                // The column is exactly filled. In this case, the only end
+                // point I need to add is the outer edge w.r.t. the direction
+                // in which we are travelling
                 start_row = (init_y == 1) ? bottom_row - 1 : top_row;
                 init_x = (across) ? ((-1) * init_x) : init_x;
                 this.calc_end_point_dest(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
             }
             else {
-                init_y = -1 * init_y;
+                // The previous column was exactly filled and the last column
+                // is partially filled
+                init_y = -1 * init_y; // Since we are in the next column, the direction of y has to be reversed
                 start_row = (init_y == 1) ? top_row : bottom_row - 1;
                 start_col = (across) ? start_col : (start_col + (init_x));
+
+                // this is the outer edge of the start of the last column w.r.t
+                // the current direction of travel.
                 this.calc_end_point_source(start_col, start_row, init_x * (-1), init_y).forEach(function(d) { end_points.push(d); });
-                start_row = start_row + (elem_remaining - 1) * init_y;
-                this.calc_end_point_dest(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
-                this.calc_end_point_dest(start_col, start_row, (-1) * init_x, init_y).forEach(function(d) { end_points.push(d); });
+
+                // The points corresponding to the cell at which we stop.
+                var current_row = start_row + (elem_remaining - 1) * init_y;  // this is the row in which we end
+                // Two points need to be added. The boundary of the last cell
+                // in the y-direction.
+                this.calc_end_point_dest(start_col, current_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
+                this.calc_end_point_dest(start_col, current_row, (-1) * init_x, init_y).forEach(function(d) { end_points.push(d); });
             }
-            // console.log("new set");
-            // end_points.forEach(function(point) { console.log(point); });
-            // console.log("end set");
+
+            /*
+            console.log("new set");
+            end_points.forEach(function(point) { console.log(point); });
+            console.log("end set");
+           */
+
             return end_points;
         },
         create_bounding_path: function(elem, end_points) {
@@ -773,7 +832,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 match = final_val;
                 max_iter--;
             }
-            values.push(editing_copy[0]);
+            if(editing_copy.length > 0)
+                values.push(editing_copy[0]);
             values.push(end_points[0]);
             var line = d3.svg.line()
                 .interpolate('linear')

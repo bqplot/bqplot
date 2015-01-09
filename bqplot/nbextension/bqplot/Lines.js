@@ -115,7 +115,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
-                  .transition().duration(300)
+                  .transition().duration(this.model.get("animate_dur"))
                   .attr("d", function(d) { return that.line(d.values); });
             this.create_labels();
         },

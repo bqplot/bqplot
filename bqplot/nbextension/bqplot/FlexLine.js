@@ -17,18 +17,21 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
     var Line = line[0];
     var FlexLine = Line.extend({
         render: function() {
-            Line.__super__.render.apply(this);
-            var that = this;
-            this.color_scale =  this.scales["color"];
-            this.width_scale = this.scales["width"];
-            this.line = d3.svg.line()
-                .interpolate(this.model.get("interpolate"))
-                .x(function(d) { return that.x_scale.scale(d.x) + that.x_offset; })
-                .y(function(d) { return that.y_scale.scale(d.y) + that.y_offset; })
-                .defined(function(d) { return d.y !== null; });
+            var base_render_promise = Line.__super__.render.apply(this);
+            var self = this;
 
-            this.create_listeners();
-            this.draw();
+            return base_render_promise.then(function() {
+                self.color_scale =  self.scales['color'];
+                self.width_scale = self.scales['width'];
+                self.line = d3.svg.line()
+                    .interpolate(self.model.get("interpolate"))
+                    .x(function(d) { return self.x_scale.scale(d.x) + self.x_offset; })
+                    .y(function(d) { return self.y_scale.scale(d.y) + self.y_offset; })
+                    .defined(function(d) { return d.y !== null; });
+
+                self.create_listeners();
+                self.draw();
+            }, null);
         },
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
@@ -143,11 +146,8 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
                   .transition().duration(this.model.get("animate_dur"))
-                  .attr({"x1": function(dataelem) { return that.x_scale.scale(dataelem.x1); }, "x2": function(dataelem) { return that.x_scale.scale(dataelem.x2); },
-                         "y1": function(dataelem) { return that.y_scale.scale(dataelem.y1); }, "y2": function(dataelem) { return that.y_scale.scale(dataelem.y2); }} )
-
-            this.create_children();
-            this.create_labels();
+                  .attr({'x1': function(dataelem) { return that.x_scale.scale(dataelem.x1); }, 'x2': function(dataelem) { return that.x_scale.scale(dataelem.x2); },
+                                                            'y1': function(dataelem) { return that.y_scale.scale(dataelem.y1); } , 'y2': function(dataelem) { return that.y_scale.scale(dataelem.y2); }} )
         },
         create_labels: function() {
             //do nothing

@@ -22,7 +22,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             var value = this.get(param);
             var return_value = [];
             var self = this;
-            if(value.hasOwnProperty("type") && value.hasOwnProperty("values")) {
+            if(value.hasOwnProperty("type") && value.hasOwnProperty("values") && value["values"] != null) {
                 if(value.type == "date") {
                     return_value = this.get(param)['values'];
                     if(return_value[0] instanceof Array) {

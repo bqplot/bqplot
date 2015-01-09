@@ -80,6 +80,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
+            this.model.on("change:type", this.draw, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
         },
         rescale: function() {
@@ -180,8 +181,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
             }
             bar_groups.exit().remove();
-            // this.update_colors();
-            // this.update_stroke_and_opacity();
             this.apply_styles();
 
             this.el.selectAll(".zeroLine").remove();
@@ -213,25 +212,25 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(this.model.mark_data.length > 0){
                 if(!(this.model.is_y_2d)) {
                     this.el.selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(i);});
+                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
                 } else {
                     this.el.selectAll(".bargroup").
                         selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(i);});
+                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
                 }
             }
             //legend color update
             if(this.legend_el) {
                 this.legend_el.selectAll(".legendrect")
                     .style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                        ? that.color_scale.scale(d.color) : that.get_colors(i);});
+                                                                                        ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
                 this.legend_el.selectAll(".legendtext")
                     .style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                        ? that.color_scale.scale(d.color) : that.get_colors(i);});
+                                                                                        ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
             }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            if(!(this.model.is_y_2d) && this.model.get("colors").length != 1)
+            if(!(this.model.is_y_2d) && (this.model.get("colors").length != 1 && this.model.get("color_mode") != "element"))
                 return [0, 0];
 
             this.legend_el = elem.selectAll(".legend" + this.uuid)
@@ -248,7 +247,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .append("rect")
                 .classed("legendrect", true)
                 .style("fill", function(d,i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(i);})
+                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);})
                 .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
 
             this.legend_el.append("text")
@@ -258,7 +257,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("dy", "0.35em")
                 .text(function(d, i) {return that.model.get("labels")[i]; })
                 .style("fill", function(d,i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(i);});
+                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
 
             var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
 

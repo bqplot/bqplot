@@ -310,23 +310,37 @@ class NdArray(CInstance):
             return {'values': a, 'type': None}
 
     def _set_value(self, value):
-        if value is None:
-            return value
-        if(isinstance(value, list)):
-            ## Pandas series handles all the cases where the passed in data could
+        if value is None or len(value) == 0:
+            return np.asarray(value)
+        return_value = []
+        if(isinstance(value, list) or (isinstance(value, np.ndarray) and value.dtype == 'object')):
+            ## Pandas to_datetime handles all the cases where the passed in data could
             ## be any of the combinations of [list, nparray] X [python_datetime, np.datetime]
+            ## Because of the coerce=True flag, any non-compatible date time type will be converted
+            ## to pd.NaT. By this comparision, we can figure out if it is date castable or not.
             if(len(np.shape(value)) == 2):
-                value = [pd.Series(elem).values for elem in value]
+                for elem in value:
+                    temp_val = pd.to_datetime(elem, coerce=True, box=False, infer_datetime_format=True)
+                    temp_val = elem if (temp_val[0] == np.datetime64('NaT')) else temp_val
+                    return_value.append(temp_val)
+            elif(isinstance(value, list)):
+                temp_val = pd.to_datetime(value, coerce=True, box=False, infer_datetime_format=True)
+                return_value = value if (temp_val[0] == np.datetime64('NaT')) else temp_val
             else:
-                value = pd.Series(value).values
-        return np.asarray(value)
+                temp_val = pd.to_datetime(value, coerce=True, box=False, infer_datetime_format=True)
+                temp_val = value if (temp_val[0] == np.datetime64('NaT')) else temp_val
+                return_value = temp_val
+        else:
+            return_value = value
+        return np.asarray(return_value)
 
     def validate(self, obj, value):
-        if not isinstance(value, self.klass):
+        ## If it is an object, I have to check if it can be cast into a date
+        if (not isinstance(value, self.klass) or value.dtype == 'object'):
             value = self._cast(value)
         min_dim = self._metadata.get('min_dim', 0)
         max_dim = self._metadata.get('max_dim', np.inf)
-        dim = len(value.shape)
+        dim = 0 if value is None else len(np.shape(value))
         if dim > max_dim or dim < min_dim:
             raise TraitError("Dimension mismatch")
         return value
