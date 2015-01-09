@@ -55,6 +55,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
         },
         mouseup: function () {
             if (this.active) {
+                this.mouse_entry(true);
                 this.lines_model.set_typed_field("y", utils.deep_2d_copy(this.lines_model.y_data) );
                 this.lines_view.touch();
                 this.active = false;
