@@ -27,11 +27,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
          set_range: function(range, padding) {
              this.scale.range(range);
          },
-         compute_and_set_domain: function(array, index) {
-             this.model.compute_and_set_domain(array, index);
+         compute_and_set_domain: function(array, id) {
+             this.model.compute_and_set_domain(array, id);
          },
-         set_domain: function(array, index) {
-             this.model.set_domain(array, index);
+         set_domain: function(array, id) {
+             this.model.set_domain(array, id);
          },
          model_domain_changed: function() {
              this.scale.domain(this.model.domain);

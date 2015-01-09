@@ -21,12 +21,12 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
             this.type = "ordinal";
             this.min_from_data = true;
             this.max_from_data = true;
-            this.on('change:domain', this.domain_changed, this);
+            this.on("change:domain", this.domain_changed, this);
             this.ticks = [];
             this.on("change:ticks", this.ticks_changed, this);
         },
         domain_changed: function() {
-            this.ord_domain = this.get('domain');
+            this.ord_domain = this.get("domain");
             if(this.ord_domain !== undefined && this.ord_domain.length != 0){
                 this.max_from_data = false;
                 this.min_from_data = false;
