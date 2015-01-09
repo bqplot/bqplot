@@ -28,10 +28,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
             // Register the mouse callback when the mark view promises are
             // resolved.
             this.set_lines_view().then(function() {
-                that.el
-                    .on("mousedown", function() { that.mousedown(); })
-                    .on("mousemove", function() { that.mousemove(); })
-                    .on("mouseup", function() { that.mouseup(); });
+                that.el.on("mousedown", function() { return that.mousedown(); })
             });
 
             // Update line index
@@ -50,11 +47,21 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
         mousedown: function () {
             this.active = true;
             this.mouse_entry(false);
+            var that = this;
+            this.el.on("mousemove", function() { that.mousemove(); })
+            this.el.on("mouseleave", function() { that.mouseup(); });
+            this.el.on("mouseup", function() { that.mouseup(); });
         },
         mouseup: function () {
-            this.lines_model.set_typed_field("y", utils.deep_2d_copy(this.lines_model.y_data) );
-            this.lines_view.touch();
-            this.active = false;
+            if (this.active) {
+                this.mouse_entry(true);
+                this.lines_model.set_typed_field("y", utils.deep_2d_copy(this.lines_model.y_data) );
+                this.lines_view.touch();
+                this.active = false;
+                this.el.off("mousemove");
+                this.el.off("mouseleave");
+                this.el.off("mouseup");
+            }
         },
         mousemove: function() {
             this.mouse_entry(true);
