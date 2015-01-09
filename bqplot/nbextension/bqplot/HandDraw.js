@@ -50,11 +50,16 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
         mousedown: function () {
             this.active = true;
             this.mouse_entry(false);
+            var that = this;
+            this.el.on("mouseleave", function() { that.mouseup(); })
         },
         mouseup: function () {
-            this.lines_model.set_typed_field("y", utils.deep_2d_copy(this.lines_model.y_data) );
-            this.lines_view.touch();
-            this.active = false;
+            if (this.active) {
+                this.lines_model.set_typed_field("y", utils.deep_2d_copy(this.lines_model.y_data) );
+                this.lines_view.touch();
+                this.active = false;
+                this.el.off("mouseleave");
+            }
         },
         mousemove: function() {
             this.mouse_entry(true);
