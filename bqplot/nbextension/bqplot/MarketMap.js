@@ -481,7 +481,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         show_tooltip: function(event, data) {
             var mouse_pos = d3.mouse(this.el);
             var that = this;
-            var tooltip_div = d3.select("body")
+            var tooltip_div = d3.select(this.el.parentNode)
                 .select("#map_tooltip");
             tooltip_div.transition()
                 .style("opacity", .9);
@@ -509,7 +509,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.send({event: "hover", data: data["name"], ref_data: data.ref_data});
         },
         hide_tooltip: function() {
-            var tooltip_div = d3.select("body")
+            var tooltip_div = d3.select(this.el.parentNode)
                 .select("#map_tooltip");
             tooltip_div.transition()
                 .style("opacity", 0);
