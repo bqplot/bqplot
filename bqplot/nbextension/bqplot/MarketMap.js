@@ -264,6 +264,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.reset_drawing_controls();
             // Removing pre existing elements from the map
             this.fig_map.selectAll(".element_group").remove();
+            this.fig_names.selectAll(".names_object").remove();
             this.rect_groups = this.fig_map.selectAll(".element_group")
                 .data(this.groups);
 
