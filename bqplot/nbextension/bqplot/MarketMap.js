@@ -22,6 +22,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         remove: function() {
             this.model.off(null, null, this);
             this.svg.remove();
+            this.tooltip_div.remove();
         },
         render: function(options) {
             this.width = this.model.get("map_width");
@@ -144,7 +145,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     self.color_scale.on("color_scale_range_changed", self.update_map_colors, self);
                 }
                 self.create_listeners();
-                // self.draw_map();
 
                 self.axis_views = new Widget.ViewList(self.add_axis, null, self);
                 self.axis_views.update(self.model.get("axes"));
@@ -158,6 +158,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 this.el.parentNode.appendChild(this.tooltip_div.node());
                 this.update_layout();
                 this.draw_group_names();
+                this.create_tooltip_widget();
             });
             $(this.options.cell).on("output_area_resize", function() {
                 self.update_layout();
@@ -488,27 +489,40 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             // the +5s are for breathing room for the tool tip
             tooltip_div.style("left", (mouse_pos[0] + this.el.offsetLeft + 5) + "px")
                 .style("top", (mouse_pos[1] + this.el.offsetTop + 5) + "px");
+
             tooltip_div.select("table").remove();
+            if(! this.tooltip_widget) {
+                var tooltip_table = tooltip_div.append("table")
+                    .selectAll("tr").data(this.tooltip_fields);
 
-            var tooltip_table = tooltip_div.append("table")
-                .selectAll("tr").data(this.tooltip_fields);
+                tooltip_table.exit().remove();
+                var table_rows = tooltip_table.enter().append("tr");
 
-            tooltip_table.exit().remove();
-            var table_rows = tooltip_table.enter().append("tr");
+                table_rows.append("td")
+                    .attr("class", "tooltiptext")
+                    .text(function(datum) { return datum;});
 
-            table_rows.append("td")
-                .attr("class", "tooltiptext")
-                .text(function(datum) { return datum;});
-
-            table_rows.append("td")
-                .attr("class", "tooltiptext")
-                .text(function(datum, index) { return that.tooltip_formats[index](data.ref_data[datum]);});
+                table_rows.append("td")
+                    .attr("class", "tooltiptext")
+                    .text(function(datum, index) { return that.tooltip_formats[index](data.ref_data[datum]);});
+            }
+            this.send({event: "hover", data: data["name"], ref_data: data.ref_data});
         },
         hide_tooltip: function() {
             var tooltip_div = d3.select("body")
                 .select("#map_tooltip");
             tooltip_div.transition()
                 .style("opacity", 0);
+        },
+        create_tooltip_widget: function() {
+            this.tooltip_widget = this.model.get("tooltip_widget");
+            var self = this;
+            if(this.tooltip_widget) {
+                var tooltip_widget_creation_promise = this.create_child_view(this.tooltip_widget);
+                tooltip_widget_creation_promise.then(function(view) {
+                    self.tooltip_div.node().appendChild(d3.select(view.el).node());
+                });
+            }
         },
         get_group_transform: function(index) {
             return "translate(" + '0' + ", 0)";
