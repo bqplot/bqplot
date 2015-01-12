@@ -19,7 +19,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         initialize: function() {
             LinesModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
-            this.on("change:permeable", this.update_domains, this);
+            // FIXME: replace this with on("change:permeable"). It is not done here because
+            // on_some_change depends on the GLOBAL backbone on("change") handler which
+            // is called AFTER the specific handlers on("change:foobar") and we make that
+            // assumption.
+            this.on_some_change(["permeable"], this.update_domains, this);
             this.on("change:stroke_width", this.update_bounding_box, this);
         },
         update_bounding_box: function(model, value) {

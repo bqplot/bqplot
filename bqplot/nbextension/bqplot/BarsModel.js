@@ -23,7 +23,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.on("change:color",  function() { this.update_color();
                                                   this.trigger("colors_updated"); }
                                                   , this);
-            this.on("change:permeable", this.update_domains, this);
+            // FIXME: replace this with on("change:permeable"). It is not done here because
+            // on_some_change depends on the GLOBAL backbone on("change") handler which
+            // is called AFTER the specific handlers on("change:foobar") and we make that
+            // assumption.
+            this.on_some_change(["permeable"], this.update_domains, this);
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");
