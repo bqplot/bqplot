@@ -46,7 +46,7 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
             var max = (!this.max_from_data) ? this.max : d3.max(_.map(this.domains, function(d) { return d.length > 1 ? d[1] : that.global_min; }));
             var prev_domain = this.domain;
             var min_index = (this.reverse) ? 1 : 0;
-            if(min != prev_domain[min_index] || max != prev_domain[1 - min_index]) {
+            if(min !== prev_domain[min_index] || max !== prev_domain[1 - min_index]) {
                 this.domain = (this.reverse) ? [max, min] : [min, max];
                 this.trigger("domain_changed", this.domain);
             }
@@ -55,7 +55,7 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
             // Takes an array and calculates the domain for the particular
             // view. If you have the domain already calculated on your side,
             // call set_domain function.
-            if(data_array.length == 0) {
+            if(data_array.length === 0) {
                this.set_domain([], id);
                return;
             }

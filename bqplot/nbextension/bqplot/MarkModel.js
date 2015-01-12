@@ -22,16 +22,20 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             var value = this.get(param);
             var return_value = [];
             var self = this;
-            if(value.hasOwnProperty("type") && value.hasOwnProperty("values") && value["values"] != null) {
-                if(value.type == "date") {
-                    return_value = this.get(param)['values'];
+            if(value.hasOwnProperty("type") && value.hasOwnProperty("values") && value["values"] !== null) {
+                if(value.type === "date") {
+                    return_value = this.get(param)["values"];
                     if(return_value[0] instanceof Array) {
-                       return_value = return_value.map(function(val) { return val.map(function(elem) { return self.convert_to_date(elem); })});
+                       return_value = return_value.map(function(val) {
+                           return val.map(function(elem) {
+                               return self.convert_to_date(elem);
+                           });
+                       });
                     } else {
                         return_value = return_value.map(function(val) { return self.convert_to_date(val); });
                     }
                 } else {
-                    return_value = this.get(param)['values'];
+                    return_value = this.get(param)["values"];
                 }
             }
             return return_value;
@@ -49,14 +53,20 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             if(saved_value[0] instanceof Array) {
                 is_date = saved_value[0][0] instanceof Date;
                 if(is_date)
-                    saved_value = saved_value.map(function(val) { return val.map(function(elem) { return self.convert_to_json(elem); })});
+                    saved_value = saved_value.map(function(val) {
+                        return val.map(function(elem) {
+                            return self.convert_to_json(elem);
+                        });
+                    });
             } else {
                 is_date = saved_value[0] instanceof Date;
                 if(is_date)
-                    saved_value = saved_value.map(function(elem) { return self.convert_to_json(elem);});
+                    saved_value = saved_value.map(function(elem) {
+                        return self.convert_to_json(elem);
+                    });
             }
-            return_object['type'] = (is_date) ? 'date' : 'float';
-            return_object['values'] = saved_value;
+            return_object["type"] = (is_date) ? "date" : "float";
+            return_object["values"] = saved_value;
             this.set(param, return_object);
         },
         get_date_elem: function(param) {
@@ -67,15 +77,15 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         convert_to_date: function(elem) {
             // Function to convert the string to a date element
-            if(elem == undefined)  // checks for both undefined and null
+            if(elem === undefined)  // checks for both undefined and null
                 return null;
             return new Date(elem);
         },
         convert_to_json: function(elem) {
             // converts the date to a json compliant format
-            if(elem == undefined)
+            if(elem === undefined)
                 return null;
-            return (elem.toJSON == undefined) ? elem : elem.toJSON();
+            return (elem.toJSON === undefined) ? elem : elem.toJSON();
         },
 
     });

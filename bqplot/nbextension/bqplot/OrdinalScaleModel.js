@@ -43,7 +43,7 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
         update_domain: function() {
             var domain = [];
             for (id in this.domains) { domain = _.union(domain, this.domains[id]); }
-            if(this.domain.length != domain.length || (_.intersection(this.domain, domain)).length != domain.length){
+            if(this.domain.length !== domain.length || (_.intersection(this.domain, domain)).length !== domain.length) {
                 this.domain = domain;
                 this.trigger("domain_changed", domain);
             }
@@ -55,7 +55,7 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
             if(!this.min_from_data && !this.max_from_data) {
                 return;
             }
-            if(data_array.length == 0) {
+            if(data_array.length === 0) {
                this.set_domain([], id);
                return;
             }

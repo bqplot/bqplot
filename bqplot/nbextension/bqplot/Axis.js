@@ -21,7 +21,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.parent = this.options.parent;
             this.highlight = this.options.highlight;
             this.margin = this.parent.margin;
-            this.vertical = this.model.get("orientation") == "vertical" ? true : false;
+            this.vertical = this.model.get("orientation") === "vertical" ? true : false;
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
             this.width = this.parent.width - (this.margin.left + this.margin.right);
 
@@ -66,11 +66,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         update_display: function() {
             this.side = this.model.get("side");
-            this.vertical = this.model.get("orientation") == "vertical" ? true : false;
+            this.vertical = this.model.get("orientation") === "vertical" ? true : false;
             if(this.vertical) {
-                this.axis.orient(this.side == "right" ? "right" : "left");
+                this.axis.orient(this.side === "right" ? "right" : "left");
             } else {
-                this.axis.orient(this.side == "top" ? "top" : "bottom");
+                this.axis.orient(this.side === "top" ? "top" : "bottom");
             }
             this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
             this.rescale_axis();
@@ -78,12 +78,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         set_tick_values: function() {
             if (this.tick_values.length > 0) {
                 this.axis.tickValues(this.tick_values);
-            } else if (this.num_ticks != undefined) {
+            } else if (this.num_ticks !== undefined) {
                 this.axis.tickValues(this.get_ticks());
             } else {
-                if (this.axis_scale.model.type == "ordinal") {
+                if (this.axis_scale.model.type === "ordinal") {
                     this.axis.tickValues(this.axis_scale.scale.domain());
-                } else if (this.axis_scale.model.type == "log") {
+                } else if (this.axis_scale.model.type === "log") {
                     var allticks = this.axis_scale.scale.ticks();
                     var oom = Math.abs(Math.log10(this.axis_scale.scale.domain()[1] / this.axis_scale.scale.domain()[0]));
                     if (oom < 2) {
@@ -136,9 +136,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.axis.scale(this.axis_scale.scale);
         },
         generate_tick_formatter: function() {
-            if(this.axis_scale.model.type == "date" || this.axis_scale.model.type == "date_color_linear")
+            if(this.axis_scale.model.type === "date" || this.axis_scale.model.type === "date_color_linear")
                 return d3.time.format(this.model.get("tick_format"));
-            else if (this.axis_scale.model.type == "ordinal")
+            else if (this.axis_scale.model.type === "ordinal")
                 return function(d) { return d; };
             return d3.format(this.model.get("tick_format"));
         },
@@ -150,9 +150,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         create_axis_line: function() {
             if(this.vertical) {
-                this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side == "right" ? "right" : "left").tickFormat(this.tick_format);
+                this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side === "right" ? "right" : "left").tickFormat(this.tick_format);
             } else {
-                this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side == "top" ? "top" : "bottom");
+                this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side === "top" ? "top" : "bottom");
             }
         },
         append_axis: function() {
@@ -179,14 +179,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             var that = this;
             var return_promise = Promise.resolve();
             this.loc = this.model.get("offset");
-            if(this.loc["value"] != undefined){
-                if(this.loc["scale"] == undefined) {
+            if(this.loc["value"] !== undefined){
+                if(this.loc["scale"] === undefined) {
                     this.offset_scale = (this.vertical) ? this.parent.scale_x : this.parent.scale_y;
                 } else {
                     this.offset_scale_model = this.loc["scale"];
                     return_promise = this.create_child_view(this.offset_scale_model).then(function(view) {
                         that.offset_scale = view;
-                        if(that.offset_scale.model.type != "ordinal") {
+                        if(that.offset_scale.model.type !== "ordinal") {
                             that.offset_scale.scale.clamp(true);
                         }
                         that.offset_scale.on("domain_changed", that.rescale_axis, that);
@@ -208,9 +208,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         get_basic_transform: function() {
             if(this.vertical){
-                return (this.side == "right") ? this.width : 0;
+                return (this.side === "right") ? this.width : 0;
             } else {
-                return (this.side == "top") ? 0 : this.height;
+                return (this.side === "top") ? 0 : this.height;
             }
         },
         get_axis_transform: function() {
@@ -221,7 +221,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
         },
         process_offset: function() {
-            if(typeof this.loc["scale"] == "undefined" && typeof this.loc["value"] == "undefined") {
+            if(typeof this.loc["scale"] === "undefined" && typeof this.loc["value"] === "undefined") {
                 return this.get_basic_transform();
             } else {
                 var value = this.offset_scale.scale(this.offset_value);
@@ -232,12 +232,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         get_label_attributes: function() {
             var label_x = 0;
              if(this.vertical){
-                 if(this.label_loc == "start")
+                 if(this.label_loc === "start")
                      label_x = -(this.height);
-                 else if(this.label_loc == "middle")
+                 else if(this.label_loc === "middle")
                      label_x = -(this.height) / 2;
 
-                 if(this.side == "right") {
+                 if(this.side === "right") {
                         return {transform: "rotate(-90)", x: label_x, y: this.label_offset,
                             dy: "1ex", dx: "0em"};
                  } else {
@@ -245,12 +245,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                             dy: "0em", dx: "0em"};
                  }
             } else {
-                if(this.label_loc == "middle")
+                if(this.label_loc === "middle")
                     label_x = this.width / 2;
-                else if (this.label_loc == "end")
+                else if (this.label_loc === "end")
                     label_x = this.width;
 
-                if(this.side == "top") {
+                if(this.side === "top") {
                     return {x: label_x, y: this.label_offset , dy: "0.75ex",
                             dx: "0em", transform: ""};
                 } else {
@@ -263,9 +263,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             // This function returns the text styling based on the attributes
             // of the axis. As of now, only the text-anchor attribute is set.
             // More can be added :)
-            if(this.label_loc == "start")
+            if(this.label_loc === "start")
                 return {"text-anchor" : "start"};
-            else if(this.label_loc == "end")
+            else if(this.label_loc === "end")
                 return {"text-anchor" : "end"};
             else
                 return {"text-anchor" : "middle"};
@@ -293,7 +293,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         extract_label_offset: function(label_offset) {
             // If the label offset is not defined, depending on the orientation
             // of the axis, an offset is set.
-            if(label_offset == undefined) {
+            if(label_offset === undefined) {
                 if(!this.vertical)
                     label_offset = "2em"
                 else
@@ -304,11 +304,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             // notion of away and towards is different for left/ right and
             // top/bottom axis.
             var index = -1;
-            for(var iter = 0;(iter < units_array.length && index == -1); iter++)
+            for(var iter = 0;(iter < units_array.length && index === -1); iter++)
                 index = label_offset.indexOf(units_array[iter]);
-            if(index == -1)
+            if(index === -1)
                 return label_offset;
-            if(this.side == "top" || this.side == "left") {
+            if(this.side === "top" || this.side === "left") {
                 var num = -1 * parseInt(label_offset.substring(0, index));
                 label_offset = num + label_offset.substring(index);
             }
@@ -327,7 +327,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
 
             grid_lines.selectAll("line.grid-line").remove();
             var grid_type = this.model.get("grid_lines");
-            var is_x = axis_type == "x";
+            var is_x = axis_type === "x";
 
             //will not work for ordinal scale
             if(grid_type !== "none") {
@@ -343,13 +343,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                     .attr("stroke-opacity", 0.4)
                     .attr("stroke-dasharray", grid_type === "solid" ? "none" : ("5, 5"));
 
-                if(this.model.get("grid_color")!="" && this.model.get("grid_color")!=null) {
+                if(this.model.get("grid_color") !== "" && this.model.get("grid_color") !== null) {
                     grid_lines.selectAll("line.grid-line").attr("stroke", this.model.get("grid_color"));
                 }
             }
         },
         update_color: function() {
-            if(this.model.get("color")!="" && this.model.get("color")!=null) {
+            if(this.model.get("color") !== "" && this.model.get("color") !== null) {
                 this.el.selectAll(".tick").selectAll("line").style("stroke", this.model.get("color"));
                 this.el.selectAll(".tick").selectAll("text").style("fill", this.model.get("color"));
                 this.el.selectAll(".domain").style("stroke", this.model.get("color"));
@@ -395,15 +395,15 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             // If an array is passed, then just scale and return equally spaced
             // points in the array. This is the way it is done for ordinal
             // scales.
-            if(this.axis_scale.model.type == "ordinal") {
+            if(this.axis_scale.model.type === "ordinal") {
                 data_array = this.axis_scale.scale.domain();
             }
             if(this.num_ticks < 2)
                 return [];
             if(data_array) {
-                if(data_array.length <= this.num_ticks)
+                if(data_array.length <= this.num_ticks) {
                     return data_array;
-                else {
+                } else {
                    var step = Math.floor(data_array.length / (this.num_ticks - 1));
                    indices = _.range(0, data_array.length, step);
                    return indices.map(function(index) { return data_array[index]; });
@@ -412,7 +412,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             var scale_range = this.axis_scale.scale.domain();
             var max_index = (this.axis_scale.scale.domain().length - 1);
             var step = (scale_range[max_index] - scale_range[0]) / (this.num_ticks - 1);
-            if(this.axis_scale.model.type == "date" || this.axis_scale.model.type == "date_color_linear") {
+            if(this.axis_scale.model.type === "date" || this.axis_scale.model.type === "date_color_linear") {
             //For date scale, the dates have to be converted into milliseconds
             //since epoch time and then back.
                 scale_range[0] = scale_range[0].getTime();
@@ -428,7 +428,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         set_scale: function(model) {
             // Sets the child scale
             var that = this;
-            if (this.axis_scale) {this.axis_scale.remove();}
+            if (this.axis_scale) { this.axis_scale.remove(); }
             return this.create_child_view(model).then(function(view) {
                 // Trigger the displayed event of the child view.
                 that.after_displayed(function() { view.trigger("displayed"); }, that);

@@ -39,7 +39,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             }
             var that = this;
             var colors = this.model.get("colors");
-            this.bar_index_sel.forEach( function(d) { that.el.selectAll("#rect" + d).attr("fill", colors[0]) });
+            this.bar_index_sel.forEach(function(d) { that.el.selectAll("#rect" + d).attr("fill", colors[0]); });
             this.bar_index_sel = [];
             this.sel_indices = [];
             this.selector_model.set("selected", jQuery.extend(true, [], []));
@@ -78,7 +78,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
         },
         update_colors: function(model, colors) {
             this.el.selectAll(".bar").selectAll("rect").attr("fill", this.get_colors(0));
-            if(model.get("labels") && colors.length > 1){
+            if (model.get("labels") && colors.length > 1) {
                 this.el.selectAll(".bar").selectAll("text").attr("fill", this.get_colors(1));
             }
             if (this.legend_el) {
@@ -92,7 +92,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             this.el.selectAll(".rect")
-                .style("stroke", (stroke == undefined) ? "none" : stroke)
+                .style("stroke", (stroke === undefined) ? "none" : stroke)
                 .style("opacity", opacity);
         },
         calculate_bar_width: function() {
@@ -149,51 +149,59 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                     }
                     buffer_index = [];
                     var elem_index = that.bar_index_sel.indexOf(i);
-                    if( elem_index > -1 && d3.event.ctrlKey){
+                    if( elem_index > -1 && d3.event.ctrlKey) {
                         that.bar_index_sel.splice(elem_index, 1);
-                        d.forEach( function(elem) { remove_index = that.sel_indices.indexOf(elem.index);
-                                                    if(remove_index != -1){ that.sel_indices.splice(remove_index, 1); }});
-                        that.el.selectAll("#rect"+i).attr("fill", fill_color);
+                        d.forEach(function(elem) {
+                            remove_index = that.sel_indices.indexOf(elem.index);
+                            if(remove_index !== -1) {
+                                that.sel_indices.splice(remove_index, 1);
+                            }
+                        });
+                        that.el.selectAll("#rect" + i).attr("fill", fill_color);
                     }
                     else {
-                        if(that.sel_indices[0] == -1)
+                        if(that.sel_indices[0] === -1) {
                             that.sel_indices.splice(0,1);
-                        if(d3.event.ctrlKey){
-                            that.sel_indices.forEach( function(elem) { buffer_index.push(elem); });
-                        }else if(d3.event.shiftKey) {
+                        }
+                        if(d3.event.ctrlKey) {
+                            that.sel_indices.forEach(function(elem) { buffer_index.push(elem); });
+                        } else if(d3.event.shiftKey) {
                             if(elem_index > -1) {
                                 return;
                             }
-                            that.sel_indices.forEach( function(elem) { buffer_index.push(elem); });
-                            min_index = (that.bar_index_sel.length != 0)?d3.min(that.bar_index_sel):-1;
-                            max_index = (that.bar_index_sel.length != 0)?d3.max(that.bar_index_sel):(that.mark_data).length;
+                            that.sel_indices.forEach(function(elem) { buffer_index.push(elem); });
+                            min_index = (that.bar_index_sel.length !== 0) ? d3.min(that.bar_index_sel) : -1;
+                            max_index = (that.bar_index_sel.length !== 0) ? d3.max(that.bar_index_sel) : (that.mark_data).length;
                             if(i > max_index){
                                 that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
                                 indices.slice(max_index + 1, i).forEach(function(data_elem ) {that.bar_index_sel.push(data_elem); });
                             } else if(i < min_index){
-                                that.model.mark_data.slice(i+1, min_index).forEach(function(data_elem) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
-                                indices.slice(i+1, min_index).forEach(function(data_elem) { that.bar_index_sel.push(data_elem);});
+                                that.model.mark_data.slice(i + 1, min_index).forEach(function(data_elem) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
+                                indices.slice(i+1, min_index).forEach(function(data_elem) { that.bar_index_sel.push(data_elem); });
                             }
-                        }else{
-                            that.bar_index_sel.forEach( function(index) { that.el.selectAll("#rect"+index).attr("fill", fill_color) });
+                        } else {
+                            that.bar_index_sel.forEach(function(index) { that.el.selectAll("#rect" + index).attr("fill", fill_color); });
                             that.bar_index_sel = [];
                         }
                         that.sel_indices = (d.map(function(elem) { return elem.index; }));
                         that.bar_index_sel.push(i);
-                        that.bar_index_sel.forEach(function(data_elem) {$.proxy(that.reset_colors(data_elem, select_color), that)});
+                        that.bar_index_sel.forEach(function(data_elem) { $.proxy(that.reset_colors(data_elem, select_color), that); });
                     }
-                    buffer_index.forEach( function(data_elem) {that.sel_indices.push(data_elem)});
+                    buffer_index.forEach(function(data_elem) { that.sel_indices.push(data_elem); });
                     that.selector_model.set("selected", jQuery.extend(true, [], that.sel_indices));
                     that.selector.touch();
-                    if (!d3.event)
+                    if (!d3.event) {
                         d3.event = window.event;
+                    }
                     var e = d3.event;
-                    if (typeof(e.cancelBubble) !== "undefined") // IE
+                    if (typeof(e.cancelBubble) !== "undefined") { // IE
                         e.cancelBubble = true;
-                    if (e.stopPropagation)
+                    }
+                    if (e.stopPropagation) {
                         e.stopPropagation();
+                    }
                     e.preventDefault();
-                }) ;
+                });
                 this.update_stroke_and_opacity();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
@@ -218,7 +226,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                 .attr("y", rect_dim / 2)
                 .attr("dy", "0.35em")
                 .text(function(d, i) {return that.model.get("labels")[i]; })
-                .style("fill", function(d,i) { return that.get_colors(i);});
+                .style("fill", function(d,i) { return that.get_colors(i); });
 
             var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
 
@@ -230,18 +238,18 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             rects.attr("fill", color);
         },
         update_selected_colors: function(idx_start, idx_end) {
-            //listen to changes of idx_selected and draw yourself
+            // listen to changes of idx_selected and draw yourself
             var colors = this.model.get("colors");
-            var select_color = colors.length > 1 ? colors[1] : 'red';
-            var fill_color = colors[0]
+            var select_color = colors.length > 1 ? colors[1] : "red";
+            var fill_color = colors[0];
             bars_sel = this.el.selectAll(".bar");
             var current_range = _.range(idx_start, idx_end);
-            if(current_range.length == this.model.num_bins){
+            if(current_range.length == this.model.num_bins) {
                 current_range = [];
             }
             var self = this;
             _.range(0, this.model.num_bins).forEach(function(d) { self.el.selectAll("#rect" + d).attr("fill", fill_color); });
-            current_range.forEach(function(d) { self.el.selectAll("#rect" + d).attr("fill",  select_color) });
+            current_range.forEach(function(d) { self.el.selectAll("#rect" + d).attr("fill", select_color); });
         },
         invert_range: function(start_pxl, end_pxl) {
             var self = this;
@@ -253,8 +261,9 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             var x_data = this.model.get_typed_field("x");
             var indices = _.range(x_data.length);
             var selected_data = [this.model.x_bins[idx_start], this.model.x_bins[idx_end]];
-            var idx_selected = _.filter(indices, function(index) { var elem = x_data[index]; return (elem <= selected_data[1] &&
-                                                                                                     elem >= selected_data[0]); });
+            var idx_selected = _.filter(indices, function(index) {
+                var elem = x_data[index]; return (elem <= selected_data[1] && elem >= selected_data[0]);
+            });
             return idx_selected;
         },
     });

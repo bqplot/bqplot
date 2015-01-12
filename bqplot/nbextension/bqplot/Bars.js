@@ -48,7 +48,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.x1 = d3.scale.ordinal();
         },
         set_ranges: function() {
-            if(this.x_scale.model.type != "ordinal") {
+            if(this.x_scale.model.type !== "ordinal") {
                 this.x_scale.set_range(this.parent.get_padded_xrange(this.x_scale.model));
             } else {
                 this.x_scale.set_range(this.parent.get_padded_xrange(this.x_scale.model), this.padding);
@@ -69,7 +69,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         // bars. This is because an ordinal scale gives the values
         // corresponding to the start of the bin but linear scale gives the
         // actual value.
-            if(this.x_scale.model.type != "ordinal") {
+            if(this.x_scale.model.type !== "ordinal") {
                 this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
             } else {
                 this.x_offset = 0;
@@ -105,23 +105,27 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.adjust_offset();
             this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
 
-             if(this.x_scale.model.type == "ordinal") {
+             if(this.x_scale.model.type === "ordinal") {
                 var x_max = d3.max(this.parent.get_xrange());
-                bar_groups.attr("transform", function(d) { return "translate(" + ((that.x_scale.scale(d.key) !== undefined ? that.x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";});
+                bar_groups.attr("transform", function(d) {
+                    return "translate(" + ((that.x_scale.scale(d.key) !== undefined ? that.x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
+                });
              } else {
-                bar_groups.attr("transform", function(d) { return "translate(" + (that.x_scale.scale(d.key) + that.x_offset) + ", 0)";});
+                bar_groups.attr("transform", function(d) {
+                    return "translate(" + (that.x_scale.scale(d.key) + that.x_offset) + ", 0)";
+                });
              }
-             if(this.model.get("type") == "stacked") {
+             if(this.model.get("type") === "stacked") {
                 bars_sel.attr("x", 0)
                     .attr("width", this.x.rangeBand().toFixed(2))
-                    .attr("y", function(d) {return d3.min([that.y_scale.scale(d.y1)]); })
-                    .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
-            } else {
+                    .attr("y", function(d) { return d3.min([that.y_scale.scale(d.y1)]); })
+                    .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val))); });
+             } else {
                 bars_sel.attr("x", function(datum, index) { return that.x1(index); })
                     .attr("width", this.x1.rangeBand().toFixed(2))
-                    .attr("y", function(d) {return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(0)]); })
-                    .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
-            }
+                    .attr("y", function(d) { return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(0)]); })
+                    .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val))); });
+             }
         },
         draw: function() {
             this.set_ranges();
@@ -133,8 +137,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // this.x is the ordinal scale used to draw the bars. If a linear
             // scale is given, then the ordinal scale is created from the
             // linear scale.
-            if(this.x_scale.model.type != "ordinal") {
-                var model_domain = this.model.mark_data.map(function(elem) { return elem.key; })
+            if(this.x_scale.model.type !== "ordinal") {
+                var model_domain = this.model.mark_data.map(function(elem) { return elem.key; });
                 this.x.domain(model_domain);
             }
             else {
@@ -152,14 +156,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .on("click", function(d, i) { return that.bar_click_handler(d, i); });
              bar_groups.exit().remove();
 
-             if(this.x_scale.model.type == "ordinal") {
+             if(this.x_scale.model.type === "ordinal") {
                 var x_max = d3.max(this.parent.get_xrange());
-                bar_groups.attr("transform", function(d) { return "translate(" + ((that.x_scale.scale(d.key) !== undefined
-                                                                                   ? that.x_scale.scale(d.key) : x_max)
-                                                                                   + that.x_offset) + ", 0)";});
+                bar_groups.attr("transform", function(d) {
+                    return "translate(" + ((that.x_scale.scale(d.key) !== undefined
+                                            ? that.x_scale.scale(d.key) : x_max)
+                                            + that.x_offset) + ", 0)";
+                });
              } else {
-                bar_groups.attr("transform", function(d) { return "translate(" + (that.x_scale.scale(d.key) + that.x_offset) + ", 0)";});
-
+                bar_groups.attr("transform", function(d) {
+                    return "translate(" + (that.x_scale.scale(d.key) + that.x_offset) + ", 0)";
+                });
              }
 
             var bars_sel = bar_groups.selectAll(".bar")
@@ -169,16 +176,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("class", "bar");
 
             //FIXME: add transitions
-            if(this.model.get("type") == "stacked") {
+            if(this.model.get("type") === "stacked") {
                 bars_sel.attr("x", 0)
                     .attr("width", this.x.rangeBand().toFixed(2))
-                    .attr("y", function(d) {return d3.min([that.y_scale.scale(d.y1)]); })
-                    .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
+                    .attr("y", function(d) { return d3.min([that.y_scale.scale(d.y1)]); })
+                    .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val))); });
             } else {
                 bars_sel.attr("x", function(datum, index) { return that.x1(index); })
                     .attr("width", this.x1.rangeBand().toFixed(2))
-                    .attr("y", function(d) {return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(0)]); })
-                    .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));})
+                    .attr("y", function(d) { return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(0)]); })
+                    .attr("height", function(d) { return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val))); });
             }
             bar_groups.exit().remove();
             this.apply_styles();
@@ -196,7 +203,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             this.el.selectAll(".bar")
-                .style("stroke", (stroke == undefined) ? "none" : stroke)
+                .style("stroke", (stroke === undefined) ? "none" : stroke)
                 .style("opacity", opacity);
         },
         update_colors: function() {
@@ -211,27 +218,37 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
             if(this.model.mark_data.length > 0){
                 if(!(this.model.is_y_2d)) {
-                    this.el.selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
+                    this.el.selectAll(".bar").style("fill", function(d, i) {
+                        return (d.color !== undefined && that.color_scale !== undefined)
+                                ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                    });
                 } else {
-                    this.el.selectAll(".bargroup").
-                        selectAll(".bar").style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
+                    this.el.selectAll(".bargroup")
+                       .selectAll(".bar")
+                       .style("fill", function(d, i) {
+                       return (d.color !== undefined && that.color_scale !== undefined)
+                               ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                    });
                 }
             }
             //legend color update
             if(this.legend_el) {
                 this.legend_el.selectAll(".legendrect")
-                    .style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                        ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
+                    .style("fill", function(d, i) {
+                    return (d.color && that.color_scale)
+                            ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                });
                 this.legend_el.selectAll(".legendtext")
-                    .style("fill", function(d, i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                        ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
+                    .style("fill", function(d, i) {
+                    return (d.color !== undefined && that.color_scale !== undefined)
+                            ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                });
             }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            if(!(this.model.is_y_2d) && (this.model.get("colors").length != 1 && this.model.get("color_mode") != "element"))
+            if(!(this.model.is_y_2d) && (this.model.get("colors").length !== 1 && this.model.get("color_mode") !== "element")) {
                 return [0, 0];
+            }
 
             this.legend_el = elem.selectAll(".legend" + this.uuid)
                 .data(this.model.mark_data[0].values);
@@ -246,18 +263,21 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .on("mouseout", $.proxy(this.unhighlight_axis, this))
                 .append("rect")
                 .classed("legendrect", true)
-                .style("fill", function(d,i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);})
-                .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
+                .style("fill", function(d,i) {
+                    return (d.color !== undefined && that.color_scale !== undefined)
+                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                }).attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
 
             this.legend_el.append("text")
                 .attr("class","legendtext")
                 .attr("x", rect_dim * 1.2)
                 .attr("y", rect_dim / 2)
                 .attr("dy", "0.35em")
-                .text(function(d, i) {return that.model.get("labels")[i]; })
-                .style("fill", function(d,i) { return (d.color != undefined && that.color_scale != undefined)
-                                                                                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);});
+                .text(function(d, i) { return that.model.get("labels")[i]; })
+                .style("fill", function(d,i) {
+                    return (d.color !== undefined && that.color_scale !== undefined)
+                    ? that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                });
 
             var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
 
@@ -273,8 +293,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // decide to accomodate more properties than those set by default.
             // Because those have to cleared specifically.
             var elements = this.el.selectAll(".bargroup");
-            if(indices != undefined) {
-                elements = elements.filter(function(d, index) { return indices.indexOf(index) != -1; });
+            if(indices !== undefined) {
+                elements = elements.filter(function(d, index) {
+                    return indices.indexOf(index) !== -1;
+                });
             }
             var clearing_style = {};
             for(var key in style_dict) {
@@ -285,14 +307,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         set_style_on_elements: function(style, indices) {
             // If the index array is undefined or of length=0, exit the
             // function without doing anything
-            if(indices == undefined || indices.length == 0) {
+            if(indices === undefined || indices.length === 0) {
                 return;
             }
             // Also, return if the style object itself is blank
-            if(Object.keys(style).length == 0)
+            if(Object.keys(style).length === 0) {
                 return;
+            }
             var elements = this.el.selectAll(".bargroup");
-            elements = elements.filter(function(data, index) { return indices.indexOf(index) != -1; });
+            elements = elements.filter(function(data, index) {
+                return indices.indexOf(index) !== -1;
+            });
             elements.selectAll(".bar").style(style);
         },
         set_default_style: function(indices) {
@@ -302,7 +327,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.update_stroke_and_opacity();
         },
         set_x_range: function() {
-            if(this.x_scale.model.type == "ordinal") {
+            if(this.x_scale.model.type === "ordinal") {
                 return this.x_scale.scale.rangeExtent();
             }
             else
@@ -329,12 +354,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                         }
                         //Add elements before or after the index of the current
                         //bar which has been clicked
-                        min_index = (idx_selected.length != 0)?d3.min(idx_selected):-1;
-                        max_index = (idx_selected.length != 0)?d3.max(idx_selected):(that.model.mark_data).length;
+                        min_index = (idx_selected.length !== 0) ? d3.min(idx_selected) : -1;
+                        max_index = (idx_selected.length !== 0) ? d3.max(idx_selected) : that.model.mark_data.length;
                         if(index > max_index){
                             _.range(max_index+1, index).forEach(function(i) { idx_selected.push(i); });
                         } else if(index < min_index){
-                            _.range(index+1, min_index).forEach(function(i) { idx_selected.push(i);});
+                            _.range(index+1, min_index).forEach(function(i) { idx_selected.push(i); });
                         }
                     }
                     else if(!(d3.event.ctrlKey)) {
@@ -344,7 +369,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     // and updating the style
                     idx_selected.push(index);
                 }
-                this.model.set("idx_selected", ((idx_selected.length == 0) ? null : idx_selected), {updated_view: this});
+                this.model.set("idx_selected", ((idx_selected.length === 0) ? null : idx_selected), {updated_view: this});
                 this.touch();
                 if (!d3.event)
                     d3.event = window.event;

@@ -44,13 +44,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("change:line_style", this.update_line_style, this);
         },
         update_legend_labels: function() {
-            if(this.model.get("labels_visibility") == "none") {
+            if(this.model.get("labels_visibility") === "none") {
                 this.el.selectAll(".legend")
                     .attr("display", "none");
 
                 this.el.selectAll(".curve_label")
                     .attr("display", "none");
-            } else if(this.model.get("labels_visibility") == "label") {
+            } else if(this.model.get("labels_visibility") === "label") {
 
                 this.el.selectAll(".legend")
                     .attr("display", "none");
@@ -148,8 +148,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var idx_start = this.bisect(data, x_start);
             var idx_end = this.bisect(data, x_end);
 
-            x_start = (this.x_scale.model.type == "date") ? this.x_scale.format_date(x_start) : x_start;
-            x_end = (this.x_scale.model.type == "date") ? this.x_scale.format_date(x_end) : x_end;
+            x_start = (this.x_scale.model.type === "date") ? this.x_scale.format_date(x_start) : x_start;
+            x_end = (this.x_scale.model.type === "date") ? this.x_scale.format_date(x_end) : x_end;
 
             this.selector_model.set("idx_selected", [idx_start, idx_end]);
             this.selector.touch();
@@ -174,12 +174,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
 
             this.legend_el.append("text")
-                .attr("class","legendtext")
+                .attr("class", "legendtext")
                 .attr("x", rect_dim * 1.2)
                 .attr("y", rect_dim / 2)
                 .attr("dy", "0.35em")
                 .text(function(d, i) {return that.model.curve_labels[i]; })
-                .style("fill", function(d,i) { return that.get_colors(i);});
+                .style("fill", function(d,i) { return that.get_colors(i); });
 
             var max_length = d3.max(this.model.curve_labels, function(d) { return d.length; });
             this.legend_el.exit().remove();
@@ -196,7 +196,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     .attr("transform", function(d) { return "translate(" + that.x_scale.scale(d.value.x) + "," + that.y_scale.scale(d.value.y) + ")"; })
                     .attr("x", 3)
                     .attr("dy", ".35em")
-                    .attr("display", function(d) { return (that.model.get("labels_visibility") != "label") ? "none" : "inline"; })
+                    .attr("display", function(d) { return (that.model.get("labels_visibility") !== "label") ? "none" : "inline"; })
                     .text(function(d) { return d.name; });
         },
         legend_click: function(index) {
@@ -214,13 +214,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if (curves_subset.length > 1) {
                 this.el.selectAll(".curve")
                     .select("path")
-                    .attr("display", function(d, i) { return curves_subset.indexOf(i) != -1 ? "inline" : "none"; });
+                    .attr("display", function(d, i) { return curves_subset.indexOf(i) !== -1 ? "inline" : "none"; });
                 this.el.selectAll(".curve")
                     .select(".curve_label")
-                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) != -1 && that.model.get("labels_visibility") == "label") ? "inline" : "none"; });
+                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ? "inline" : "none"; });
             } else { //make all curves visible
                 this.el.selectAll(".curve").select("path").attr("display", "inline");
-                this.el.selectAll(".curve").select(".curve_label").attr("display", function(d) { return that.model.get("labels_visibility") == "label" ? "inline" : "none"; });
+                this.el.selectAll(".curve").select(".curve_label").attr("display", function(d) { return that.model.get("labels_visibility") === "label" ? "inline" : "none"; });
             }
         },
         draw: function() {
@@ -251,16 +251,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             this.el.selectAll(".curve")
                 .select(".curve_label")
-                .attr("display", function(d) { return that.model.get("labels_visibility") == "label" ? "inline" : "none"; });
+                .attr("display", function(d) { return that.model.get("labels_visibility") === "label" ? "inline" : "none"; });
 
             // alter the display only if a few of the curves are visible
             if(this.model.get("curves_subset").length > 0) {
                 this.el.selectAll(".curve")
                     .select("path")
-                    .attr("display", function(d, i) { return curves_subset.indexOf(i) != -1 ? "inline" : "none"; });
+                    .attr("display", function(d, i) { return curves_subset.indexOf(i) !== -1 ? "inline" : "none"; });
                 this.el.selectAll(".curve")
                     .select(".curve_label")
-                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) != -1 && that.model.get("labels_visibility") == "label") ? "inline" : "none"; });
+                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ? "inline" : "none"; });
             }
             this.create_labels();
         },

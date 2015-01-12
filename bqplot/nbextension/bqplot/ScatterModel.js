@@ -42,7 +42,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var size_scale = scales["size"];
             var y_data = this.get_typed_field("y");
 
-            if (x_data.length == 0 || y_data.length == 0) {
+            if (x_data.length === 0 || y_data.length === 0) {
                 this.mark_data = [];
             }
             else {
@@ -56,7 +56,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 var size = this.get_typed_field("size");
                 var opacity = this.get_typed_field("opacity");
                 var names = this.get_typed_field("names");
-                var show_labels = (names.length != 0);
+                var show_labels = (names.length !== 0);
                 names = (show_labels) ? names : x_data.map(function(dat, ind) { return "Dot" + ind; });
 
                 if(color_scale) {
