@@ -20,11 +20,10 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // TODO: should not need to set this.data
             HistModel.__super__.initialize.apply(this);
             this.mark_data = [];
-            // For histogram, changing the x-scale changes the y-values being
-            // plotted. Hence update_data is called on set_x_domain change but
-            // on set_y_domain change, update_domains is called
-            this.on_some_change(["bins", "x", "set_x_domain"], this.update_data, this);
-            this.on("change:set_y_domain", this.update_domains, this);
+            // For the histogram, changing the "x" scale changes the y values being plotted.
+            // Hence, on change of the value of "permeable", we must call the "update_data" 
+            // function, and note merely "update_domains".
+            this.on_some_change(["bins", "x", "permeable"], this.update_data, this);
         },
         update_data: function() {
 	        var x_data = this.get_typed_field("x");
@@ -34,7 +33,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // TODO: This potentially triggers domain_changed and therefore a
             // Draw, while update_data is generally followed by a Draw.
 
-            if(this.get("set_x_domain")) {
+            if(!this.get("permeable")["x"]) {
                 x_scale.compute_and_set_domain(x_data, this.id);
             } else {
                 x_scale.del_domain([], this.id);
@@ -50,7 +49,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.num_bins = this.get("bins");
 	        this.x_bins =  this.create_uniform_bins(this.min_x, this.max_x, this.num_bins);
             this.x_mid = this.x_bins.map(function(d, i) { return 0.5 * (d + that.x_bins[i - 1]); }).slice(1);
-            this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d){ return d['value']; })(x_data_ind);
+            this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d){ return d["value"]; })(x_data_ind);
 
             this.counts = this.mark_data.map(function(d) { return d.length; });
             this.set("midpoints", this.x_mid);
@@ -66,8 +65,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // change is handled by the update_data function and only the
             // y-domain change is handled by this function.
             var y_scale = this.get("scales")["y"];
-            if(this.get("set_y_domain")) {
-                y_scale.set_domain([0, d3.max(this.mark_data, function(d){return d.y}) * 1.05], this.id);
+            if(!this.get("permeable")["y"]) {
+                y_scale.set_domain([0, d3.max(this.mark_data, function(d) { return d.y; }) * 1.05], this.id);
             }
         },
         create_uniform_bins: function(min_val, max_val, num_bins) {
@@ -75,7 +74,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var step_size = (diff) / num_bins;
             var return_val = new Array();
             for(i=0; i<num_bins; i++) {
-                return_val[i] = min_val+ i*step_size;
+                return_val[i] = min_val+ i * step_size;
             }
             return_val[num_bins] = max_val;
             return return_val;

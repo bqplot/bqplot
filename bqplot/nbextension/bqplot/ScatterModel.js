@@ -17,11 +17,10 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
     var MarkModel = MarkModel[1];
     var ScatterModel = MarkModel.extend({
         initialize: function() {
-            // TODO: Normally, color, opacity and size should not require a
-            // redraw
+            // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y", "color", "opacity", "size", "names"], this.update_data, this);
-            this.on_some_change(["set_x_domain", "set_y_domain"], this.update_domains, this);
+            this.on("change:permeable", this.update_domains, this);
             this.on("change:default_size", this.update_bounding_box, this);
         },
         update_bounding_box: function(model, value) {
@@ -54,7 +53,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 var opacity = this.get_typed_field("opacity");
                 var names = this.get_typed_field("names");
                 var show_labels = (names.length != 0);
-                names = (show_labels) ? names : x_data.map(function(dat, ind) { return 'Dot' + ind; });
+                names = (show_labels) ? names : x_data.map(function(dat, ind) { return "Dot" + ind; });
 
                 if(color_scale) {
                     color_scale.compute_and_set_domain(color, this.id);
@@ -75,12 +74,12 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var size_scale = scales["size"];
             var opacity_scale = scales["opacity"];
 
-            if(this.get("set_x_domain")) {
+            if(!this.get("permeable")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.x; }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
-            if(this.get("set_y_domain")) {
+            if(!this.get("permeable")["y"]) {
                 y_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.y; }), this.id);
             } else {
                 y_scale.del_domain([], this.id);
