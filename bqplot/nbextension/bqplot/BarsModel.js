@@ -23,11 +23,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.on("change:color",  function() { this.update_color();
                                                   this.trigger("colors_updated"); }
                                                   , this);
-            // FIXME: replace this with on("change:permeable"). It is not done here because
+            // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
-            this.on_some_change(["permeable"], this.update_domains, this);
+            this.on_some_change(["preserve_domain"], this.update_domains, this);
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");
@@ -94,14 +94,14 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var x_scale = scales["x"];
             var y_scale = scales["y"];
 
-            if(!this.get("permeable")["x"]) {
+            if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.key; }), this.id);
             }
             else {
                 x_scale.del_domain([], this.id);
             }
 
-            if(!this.get("permeable")["y"]) {
+            if(!this.get("preserve_domain")["y"]) {
                 if(this.get("type") == "stacked") {
                     y_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
                                                    d3.max(this.mark_data, function(c) { return c.pos_max; })], this.id);

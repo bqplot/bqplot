@@ -20,11 +20,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y", "color", "opacity", "size", "names"], this.update_data, this);
-            // FIXME: replace this with on("change:permeable"). It is not done here because
+            // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
-            this.on_some_change(["permeable"], this.update_domains, this);
+            this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:default_size", this.update_bounding_box, this);
         },
         update_bounding_box: function(model, value) {
@@ -78,12 +78,12 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var size_scale = scales["size"];
             var opacity_scale = scales["opacity"];
 
-            if(!this.get("permeable")["x"]) {
+            if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.x; }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
-            if(!this.get("permeable")["y"]) {
+            if(!this.get("preserve_domain")["y"]) {
                 y_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.y; }), this.id);
             } else {
                 y_scale.del_domain([], this.id);

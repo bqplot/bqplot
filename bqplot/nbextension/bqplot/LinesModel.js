@@ -19,11 +19,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         initialize: function() {
             LinesModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
-            // FIXME: replace this with on("change:permeable"). It is not done here because
+            // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
-            this.on_some_change(["permeable"], this.update_domains, this);
+            this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:stroke_width", this.update_bounding_box, this);
         },
         update_bounding_box: function(model, value) {
@@ -93,13 +93,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var x_scale = scales["x"];
             var y_scale = scales["y"];
 
-            if(!this.get("permeable")["x"]) {
+            if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.values.map( function(d) { return d.x; } ); }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
-            if(!this.get("permeable")["y"]) {
+            if(!this.get("preserve_domain")["y"]) {
                 y_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.values.map( function(d) { return d.y; } ); }), this.id);
             } else {
                 y_scale.del_domain([], this.id);

@@ -74,11 +74,10 @@ class Mark(Widget):
         must have a corresponding scale for the key 'x'.
         - The scale's range type should be equal to the scaled attribute's
         scale_range_type value.
-    permeable: dict
+    preserve_domain: dict
         Indicates if this mark affects the domain(s) of the specified scale(s). The keys of this
-        dictionary are the same as the ones of the "scales" attribute, and values are boolean. If 
-        a mark is "permeable" w.r.t. a certain scale, it mean that it does not impact the domain of 
-        that scale. If a key is missing, it is considered as False.
+        dictionary are the same as the ones of the "scales" attribute, and values are boolean. 
+        If a key is missing, it is considered as False.
     children: list
     display_legend: bool
         Display toggle for the mark legend in the general figure legend
@@ -101,7 +100,7 @@ class Mark(Widget):
         Indices of the selected items in the mark.
     """
     scales = Dict(sync=True)
-    permeable = Dict(sync=True)
+    preserve_domain = Dict(sync=True)
     children = List([], sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1, display_name='Display legend')
     animate_dur = Int(0, sync=True, exposed=True, display_index=2, display_name='Animation duration')
