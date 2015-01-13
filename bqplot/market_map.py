@@ -27,8 +27,8 @@ Market Map
    SquareMarketMap
 """
 # from .figure import Figure
-from IPython.utils.traitlets import Int, Unicode, List, Dict, Enum, Bool
-from IPython.html.widgets import DOMWidget
+from IPython.utils.traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance
+from IPython.html.widgets import DOMWidget, CallbackDispatcher
 
 from .traits import NumpyArray, PandasDataFrame
 from .marks import CATEGORY10
@@ -73,7 +73,20 @@ class MarketMap(DOMWidget):
     clickable = Bool(False, sync=True)
     selected = List([], sync=True)
     enable_hover = Bool(True, sync=True)
+    tooltip_widget = Instance(DOMWidget, sync=True)
     _view_name = Unicode("MarketMap", sync=True)
+
+    def __init__(self, **kwargs):
+        super(MarketMap, self).__init__(**kwargs)
+        self._hover_handlers = CallbackDispatcher()
+        self.on_msg(self._handle_custom_msgs)
+
+    def on_hover(self, callback, remove=False):
+        self._hover_handlers.register_callback(callback, remove=remove)
+
+    def _handle_custom_msgs(self, _, content):
+        if content.get('event', '') == 'hover':
+            self._hover_handlers(self, content)
 
 
 class SquareMarketMap(MarketMap):
