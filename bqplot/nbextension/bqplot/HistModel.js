@@ -22,7 +22,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.mark_data = [];
             // For the histogram, changing the "x" scale changes the y values being plotted.
             // Hence, on change of the value of "preserve_domain", we must call the "update_data" 
-            // function, and note merely "update_domains".
+            // function, and not merely "update_domains".
             this.on_some_change(["bins", "x", "preserve_domain"], this.update_data, this);
         },
         update_data: function() {
