@@ -56,7 +56,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
 
             var scale_models = this.model.get("scales");
             var that = this;
-            var scale_promises = {}
+            var scale_promises = {};
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
@@ -115,7 +115,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                 .transition().duration(300)
 		        .attr("x", 2)
                 .attr("width", bar_width)
-		        .attr("height", function(d) { return that.height - that.y_scale.scale(d.y); })
+		        .attr("height", function(d) { return that.height - that.y_scale.scale(d.y); });
         },
         draw: function() {
             var that = this;
@@ -173,21 +173,39 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                             min_index = (that.bar_index_sel.length !== 0) ? d3.min(that.bar_index_sel) : -1;
                             max_index = (that.bar_index_sel.length !== 0) ? d3.max(that.bar_index_sel) : (that.mark_data).length;
                             if(i > max_index){
-                                that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
-                                indices.slice(max_index + 1, i).forEach(function(data_elem ) {that.bar_index_sel.push(data_elem); });
+                                that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) {
+                                    data_elem.map(function(elem) {
+                                        buffer_index.push(elem.index);
+                                    });
+                                });
+                                indices.slice(max_index + 1, i).forEach(function(data_elem ) {
+                                    that.bar_index_sel.push(data_elem);
+                                });
                             } else if(i < min_index){
-                                that.model.mark_data.slice(i + 1, min_index).forEach(function(data_elem) { data_elem.map( function(elem) { buffer_index.push(elem.index);});});
-                                indices.slice(i+1, min_index).forEach(function(data_elem) { that.bar_index_sel.push(data_elem); });
+                                that.model.mark_data.slice(i + 1, min_index).forEach(function(data_elem) {
+                                    data_elem.map(function(elem) {
+                                        buffer_index.push(elem.index);
+                                    });
+                                });
+                                indices.slice(i+1, min_index).forEach(function(data_elem) {
+                                    that.bar_index_sel.push(data_elem);
+                                });
                             }
                         } else {
-                            that.bar_index_sel.forEach(function(index) { that.el.selectAll("#rect" + index).attr("fill", fill_color); });
+                            that.bar_index_sel.forEach(function(index) {
+                                that.el.selectAll("#rect" + index).attr("fill", fill_color);
+                            });
                             that.bar_index_sel = [];
                         }
                         that.sel_indices = (d.map(function(elem) { return elem.index; }));
                         that.bar_index_sel.push(i);
-                        that.bar_index_sel.forEach(function(data_elem) { $.proxy(that.reset_colors(data_elem, select_color), that); });
+                        that.bar_index_sel.forEach(function(data_elem) {
+                            $.proxy(that.reset_colors(data_elem, select_color), that);
+                        });
                     }
-                    buffer_index.forEach(function(data_elem) { that.sel_indices.push(data_elem); });
+                    buffer_index.forEach(function(data_elem) {
+                        that.sel_indices.push(data_elem);
+                    });
                     that.selector_model.set("selected", jQuery.extend(true, [], that.sel_indices));
                     that.selector.touch();
                     if (!d3.event) {

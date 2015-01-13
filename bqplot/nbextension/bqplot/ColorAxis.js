@@ -133,9 +133,13 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .style("fill",function(d) { return d; });
 
                 if(this.vertical) {
-                    rects.attr("x", function(d, i) { return i * bar_width - (that.height - 2 * that.x_offset); });
+                    rects.attr("x", function(d, i) {
+                        return i * bar_width - (that.height - 2 * that.x_offset);
+                    });
                 } else {
-                    rects.attr("x", function(d, i) { return i * bar_width; });
+                    rects.attr("x", function(d, i) {
+                        return i * bar_width;
+                    });
                 }
             }
             else {
@@ -155,8 +159,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .enter()
                     .append("stop")
                     .attr({
-                        "offset": function(d,i){ return colorSpacing * (i) + "%"; },
-                        "stop-color": function(d,i){ return that.colors[i]; },
+                        "offset": function(d,i) { return colorSpacing * (i) + "%"; },
+                        "stop-color": function(d,i) { return that.colors[i]; },
                         "stop-opacity": 1
                     });
 
@@ -169,7 +173,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                         "height": this.bar_height,
                         x: (this.vertical) ? -(this.height - 2 * this.x_offset) : 0,
                         y: 0,
-                        "stroke-width":1
+                        "stroke-width": 1
                     })
                     .style("fill","url(#colorBarGradient" + this.unique_id + ")");
             }
@@ -249,9 +253,13 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .selectAll("rect")
                     .attr("width", bar_width);
                 if(this.vertical) {
-                    rectangles.attr("x", function(d, i) { return (i * bar_width) - (self.height - 2 * self.x_offset); });
+                    rectangles.attr("x", function(d, i) {
+                        return (i * bar_width) - (self.height - 2 * self.x_offset);
+                    });
                 } else {
-                    rectangles.attr("x", function(d, i) { return i * bar_width; });
+                    rectangles.attr("x", function(d, i) {
+                        return i * bar_width;
+                    });
                 }
             } else {
                 this.el.select("#colorBarG" + this.unique_id)

@@ -37,7 +37,9 @@ define(["widgets/js/manager", "d3", "./Overlay" ], function(WidgetManager, d3, O
         populate_mark_views: function() {
             var fig = this.parent;
             var self = this;
-            var mark_ids = this.model.get("marks").map(function(mark_model) { return mark_model.id; });  // Model ids of the marks of the selector
+            var mark_ids = this.model.get("marks").map(function(mark_model) {
+                return mark_model.id; // Model ids of the marks of the selector
+            });
             return Promise.all(fig.mark_views.views).then(function(views) {
                 var fig_mark_ids = fig.mark_views._models.map(function(mark_model) { return mark_model.id; });  // Model ids of the marks in the figure
                 var mark_indices = mark_ids.map(function(mark_model_id) { return fig_mark_ids.indexOf(mark_model_id); });  // look up based on model ids

@@ -20,9 +20,10 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             BarsModel.__super__.initialize.apply(this);
             this.is_y_2d = false;
             this.on_some_change(["x", "y"], this.update_data, this);
-            this.on("change:color",  function() { this.update_color();
-                                                  this.trigger("colors_updated"); }
-                                                  , this);
+            this.on("change:color", function() {
+                this.update_color();
+                this.trigger("colors_updated");
+            }, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
@@ -35,10 +36,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
-
-            y_data = (y_data.length == 0 || y_data[0] instanceof Array) ? y_data : [y_data];
+            y_data = (y_data.length === 0 || y_data[0] instanceof Array) ? y_data : [y_data];
             this.curve_labels = this.get("labels");
-            if (x_data.length == 0 || y_data.length == 0) {
+            if (x_data.length === 0 || y_data.length === 0) {
                 this.mark_data = [];
                 this.is_y_2d = false;
             }
@@ -49,17 +49,18 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                     var y0 = 0;
                     var y0_neg = 0;
                     data.key = x_elem;
-                    data.values = y_data.map(function(y_elem, y_index) { var value = y_elem[index];
-                                                                        var positive = (value >= 0);
-                                                                        return {y0: (positive) ? y0 : y0_neg,
-                                                                                y1: (positive) ? (y0 += y_elem[index]) : (function() {
-                                                                                                                            y0_neg += y_elem[index];
-                                                                                                                            return (y0_neg - y_elem[index]);
-                                                                                                                        }()),
-                                                                                val: y_elem[index],
-                                                                                };
-                                                              }
-                                            );
+                    data.values = y_data.map(function(y_elem, y_index) {
+                        var value = y_elem[index];
+                        var positive = (value >= 0);
+                        return {
+                            y0: (positive) ? y0 : y0_neg,
+                            y1: (positive) ? (y0 += y_elem[index]) : (function() {
+                                y0_neg += y_elem[index];
+                                return (y0_neg - y_elem[index]);
+                            }()),
+                            val: y_elem[index],
+                        };
+                    });
                     data.pos_max = y0;
                     data.neg_max = y0_neg;
                     return data;
@@ -78,13 +79,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var color = this.get_typed_field("color");
             var color_scale = this.get("scales")["color"];
             var color_mode = this.get("color_mode");
-            var apply_color_to_groups = ((color_mode == "group") || (color_mode == "auto" && !(this.is_y_2d)));
+            var apply_color_to_groups = ((color_mode === "group") || (color_mode === "auto" && !(this.is_y_2d)));
             this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
-                                    single_bar_d.values.forEach(function(bar_d, bar_index) {
-                                        bar_d.color_index = (apply_color_to_groups) ? bar_grp_index : bar_index;
-                                        bar_d.color = color[bar_d.color_index];
-                                    });
-                                });
+                single_bar_d.values.forEach(function(bar_d, bar_index) {
+                    bar_d.color_index = (apply_color_to_groups) ? bar_grp_index : bar_index;
+                    bar_d.color = color[bar_d.color_index];
+                });
+            });
             if(color_scale && color.length > 0) {
                     if(!this.get("preserve_domain")["color"]) {
                         color_scale.compute_and_set_domain(color, this.id);
@@ -106,14 +107,22 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             }
 
             if(!this.get("preserve_domain")["y"]) {
-                if(this.get("type") == "stacked") {
+                if(this.get("type") === "stacked") {
                     y_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
-                                                   d3.max(this.mark_data, function(c) { return c.pos_max; })], this.id);
+                                                    d3.max(this.mark_data, function(c) { return c.pos_max; })], this.id);
                 } else {
-
-                    var min = d3.min(this.mark_data, function(c) { return d3.min(c.values, function(val) { return val.val; }); });
+                    var min = d3.min(this.mark_data,
+                        function(c) {
+                            return d3.min(c.values, function(val) {
+                                return val.val;
+                            });
+                        });
                     min = Math.min(0, min);
-                    var max = d3.max(this.mark_data, function(c) { return d3.max(c.values, function(val) { return val.val; }); });
+                    var max = d3.max(this.mark_data, function(c) {
+                        return d3.max(c.values, function(val) {
+                            return val.val;
+                        });
+                    });
                     max = Math.max(0, max);
                     y_scale.compute_and_set_domain([min, max], this.id);
                 }

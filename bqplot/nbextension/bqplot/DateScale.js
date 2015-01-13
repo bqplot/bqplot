@@ -16,7 +16,7 @@
 define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, ScaleView) {
     var BaseScale = ScaleView[0];
     var DateScale = BaseScale.extend({
-         render: function(){
+         render: function() {
              this.scale = d3.time.scale();
              if(this.model.domain.length > 0) {
                  this.scale.domain(this.model.domain);

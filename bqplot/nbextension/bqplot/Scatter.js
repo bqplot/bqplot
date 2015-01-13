@@ -393,8 +393,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 return;
             }
             // Also, return if the style object itself is blank
-            if(Object.keys(style).length === 0)
+            if(Object.keys(style).length === 0) {
                 return;
+            }
             var elements = this.el.selectAll(".dot");
             elements = elements.filter(function(data, index) { return indices.indexOf(index) !== -1; });
             elements.style(style);

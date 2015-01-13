@@ -57,7 +57,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                var xscale_views = prom[0], yscale_views = prom[1];
                for (var i=0; i<xscale_views.length; i++) {
                    xscale_views[i].set_range(that.parent.get_padded_xrange(xscale_views[i].model));
-               }   
+               }
                for (var i=0; i<yscale_views.length; i++) {
                    yscale_views[i].set_range(that.parent.get_padded_yrange(yscale_views[i].model));
                }
@@ -67,8 +67,12 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
             this.active = true;
             this.el.style({"cursor": "move"});
             this.previous_pos = d3.mouse(this.el.node());
-            this.xdomains = this.xscales.map(function(s) { return s.domain.slice(0); });
-            this.ydomains = this.yscales.map(function(s) { return s.domain.slice(0); });
+            this.xdomains = this.xscales.map(function(s) {
+                return s.domain.slice(0);
+            });
+            this.ydomains = this.yscales.map(function(s) {
+                return s.domain.slice(0);
+            });
         },
         mouseup: function () {
             this.active = false;
@@ -86,15 +90,15 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                     var xscale_views = prom[0], yscale_views = prom[1];
 
                     var xdiffs = xscale_views.map(function(view) {
-                                                    if (view.scale.invert) { // Categorical scales don't have an inversion.
-                                                        return view.scale.invert(mouse_pos[0]) - view.scale.invert(that.previous_pos[0]);
-                                                    }
-                                                  });
+                        if (view.scale.invert) { // Categorical scales don't have an inversion.
+                            return view.scale.invert(mouse_pos[0]) - view.scale.invert(that.previous_pos[0]);
+                        }
+                    });
                     var ydiffs = yscale_views.map(function(view) {
-                                                    if (view.scale.invert) { // Categorical scales don't have an inversion.
-                                                        return view.scale.invert(mouse_pos[1]) - view.scale.invert(that.previous_pos[1]);
-                                                    }
-                                                  });
+                        if (view.scale.invert) { // Categorical scales don't have an inversion.
+                            return view.scale.invert(mouse_pos[1]) - view.scale.invert(that.previous_pos[1]);
+                        }
+                    });
                     for (var i=0; i<xscale_views.length; i++) {
                         var domain = that.xdomains[i];
                         var min = domain[0] - xdiffs[i];
@@ -132,11 +136,11 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                         var xscale_views = prom[0], yscale_views = prom[1];
 
                         var xpos = xscale_views.map(function(view) {
-                                                         return view.scale.invert(mouse_pos[0]);
-                                                    });
+                             return view.scale.invert(mouse_pos[0]);
+                        });
                         var ypos = yscale_views.map(function(view) {
-                                                         return view.scale.invert(mouse_pos[1]);
-                                                    });
+                            return view.scale.invert(mouse_pos[1]);
+                        });
                         var factor = Math.exp(-delta * 0.001);
                         for (var i=0; i<xscale_views.length; i++) {
                             var domain = that.xscales[i].domain;

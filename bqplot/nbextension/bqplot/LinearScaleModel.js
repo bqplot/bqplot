@@ -42,8 +42,12 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
         },
         update_domain: function() {
             var that = this;
-            var min = (!this.min_from_data) ? this.min : d3.min(_.map(this.domains, function(d) { return d.length > 0 ? d[0] : that.global_max; }));
-            var max = (!this.max_from_data) ? this.max : d3.max(_.map(this.domains, function(d) { return d.length > 1 ? d[1] : that.global_min; }));
+            var min = (!this.min_from_data) ? this.min : d3.min(_.map(this.domains, function(d) {
+                return d.length > 0 ? d[0] : that.global_max;
+            }));
+            var max = (!this.max_from_data) ? this.max : d3.max(_.map(this.domains, function(d) {
+                return d.length > 1 ? d[1] : that.global_min;
+            }));
             var prev_domain = this.domain;
             var min_index = (this.reverse) ? 1 : 0;
             if(min !== prev_domain[min_index] || max !== prev_domain[1 - min_index]) {
