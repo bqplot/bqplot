@@ -19,16 +19,18 @@ define(["d3"], function(d3) {
             var first = array[0];
             var end = array[array.length - 1];
             var pivot;
-            if(array[0] > array[1])
+            if(array[0] > array[1]) {
                 pivot = d3.min(array);
-            else
+            } else {
                 pivot = d3.max(array);
-
+            }
             return [d3.scale.linear().range([first, pivot]), d3.scale.linear().range([pivot, end])];
         },
         deep_2d_copy: function(array) {
             // FIXME: Nooooo!
-            return array.map(function(d) { return d.slice(0); });
+            return array.map(function(d) {
+                return d.slice(0);
+            });
         }
     }
 });

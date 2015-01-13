@@ -35,7 +35,9 @@ define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, Scal
              var unpadded_scale = this.scale.copy();
              unpadded_scale.domain(this.model.domain);
              unpadded_scale.range(old_range);
-             this.scale.domain(new_range.map(function(limit) { return unpadded_scale.invert(limit);}));
+             this.scale.domain(new_range.map(function(limit) {
+                 return unpadded_scale.invert(limit);
+             }));
          },
      });
     WidgetManager.WidgetManager.register_widget_view("LinearScale", LinearScale);

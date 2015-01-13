@@ -58,7 +58,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                           "min-height": this.height});
             this.margin = this.model.get("fig_margin");
 
-
             this.svg = d3.select(this.el)
                 .attr("viewBox", "0 0 " + this.width + " " + this.height);
             this.update_plotarea_dimensions();
@@ -85,13 +84,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                   .attr("stop-color", "black")
                   .attr("stop-opacity", 0);
 
-
-            this.bg = this.fig
-                .append("rect")
-                  .attr("x", 0).attr("y", 0)
-                  .attr("width", this.plotarea_width)
-                  .attr("height", this.plotarea_height)
-                  .attr("fill", "url(#" + gradient_id + ")");
+            this.bg = this.fig.append("rect")
+              .attr("x", 0).attr("y", 0)
+              .attr("width", this.plotarea_width)
+              .attr("height", this.plotarea_height)
+              .attr("fill", "url(#" + gradient_id + ")");
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
@@ -108,23 +105,21 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             */
 
             this.clip_path = this.svg.select("defs")
-                .append("svg:clipPath")
-                .attr("id", this.clip_id)
-                .append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", this.plotarea_width)
-                .attr("height", this.plotarea_height);
+              .append("svg:clipPath")
+              .attr("id", this.clip_id)
+              .append("rect")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", this.plotarea_width)
+              .attr("height", this.plotarea_height);
 
             this.title = this.fig.append("text")
-                .attr("class", "mainheading")
-                .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: '1em'})
-                .text(this.model.get("title"));
+              .attr("class", "mainheading")
+              .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
+              .text(this.model.get("title"));
 
-            var that = this;
-            // display the children
             var figure_scale_promise = this.create_figure_scales();
-
+            var that = this;
             figure_scale_promise.then(function() {
                 that.mark_views = new widget.ViewList(that.add_mark, that.remove_mark, that);
                 that.mark_views.update(that.model.get("marks"));
@@ -136,16 +131,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     that.set_overlay(that.model.get("overlay"));
                 });
 
-                that.axis_views = new widget.ViewList(that.add_axis, null , that);
+                that.axis_views = new widget.ViewList(that.add_axis, null, that);
                 that.axis_views.update(that.model.get("axes"));
 
                 // TODO: move to the model
                 that.model.on_some_change(["fig_margin", "min_width", "min_height", "preserve_aspect"], that.update_layout, that);
                 that.model.on_some_change(["padding_x", "padding_y"], function() {
-                                                                                    this.figure_padding_x = this.model.get("padding_x");
-                                                                                    this.figure_padding_y = this.model.get("padding_y");
-                                                                                    this.trigger("margin_updated");
-                                                                                }, that);
+                    this.figure_padding_x = this.model.get("padding_x");
+                    this.figure_padding_y = this.model.get("padding_y");
+                    this.trigger("margin_updated");
+                }, that);
                 that.model.on("change:axes", function(model, value, options) {
                     this.axis_views.update(value);
                 }, that);
@@ -198,7 +193,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }
 
             var scale_id = scale_model.id;
-            var scale_padding = (this.x_padding_arr[scale_id] != undefined) ? this.x_padding_arr[scale_id] : 0;
+            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
+                this.x_padding_arr[scale_id] : 0;
             var fig_padding = (this.plotarea_width) * this.figure_padding_x;
             return [(fig_padding + scale_padding), (this.plotarea_width - fig_padding - scale_padding)];
         },
@@ -209,7 +205,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }
 
             var scale_id = scale_model.id;
-            var scale_padding = (this.y_padding_arr[scale_id] != undefined) ? this.y_padding_arr[scale_id] : 0;
+            var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
+                this.y_padding_arr[scale_id] : 0;
             var fig_padding = (this.plotarea_height) * this.figure_padding_y;
             return [this.plotarea_height - scale_padding - fig_padding, scale_padding + fig_padding];
         },
@@ -224,7 +221,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 return this.plotarea_height;
             }
             var scale_id = scale_model.id;
-            var scale_padding = (this.y_padding_arr[scale_id] != undefined) ? this.y_padding_arr[scale_id] : 0;
+            var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
+                this.y_padding_arr[scale_id] : 0;
             return (this.plotarea_height) * (1 - this.figure_padding_y) - scale_padding - scale_padding;
         },
         get_mark_plotarea_width: function (scale_model) {
@@ -233,7 +231,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }
 
             var scale_id = scale_model.id;
-            var scale_padding = (this.x_padding_arr[scale_id] != undefined) ? this.x_padding_arr[scale_id] : 0;
+            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
+                this.x_padding_arr[scale_id] : 0;
             return (this.plotarea_width) * (1 - this.figure_padding_x) - scale_padding - scale_padding;
         },
         add_axis: function(model) {
@@ -256,11 +255,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         },
         remove_from_padding_dict: function(dict, mark_model, scale_model) {
             var scale_id = scale_model.id;
-            if(dict[scale_id] != undefined) {
+            if(dict[scale_id] !== undefined) {
                 delete dict[scale_id][mark_model.id];
             }
-            if(Object.keys(dict[scale_id]).length == 0)
+            if(Object.keys(dict[scale_id]).length == 0) {
                 delete dict[scale_id];
+            }
         },
         update_padding_dict: function(dict, mark_model, scale_model, value) {
             var scale_id = scale_model.id;
@@ -271,20 +271,20 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         },
         mark_scales_updated: function(model) {
             var prev_scale_models = model.previous("scales");
-            this.remove_from_padding_dict(this.x_pad_dict, model, prev_scale_models['x']);
-            this.remove_from_padding_dict(this.y_pad_dict, model, prev_scale_models['y']);
+            this.remove_from_padding_dict(this.x_pad_dict, model, prev_scale_models["x"]);
+            this.remove_from_padding_dict(this.y_pad_dict, model, prev_scale_models["y"]);
 
             var scale_models = model.get("scales")
-            this.update_padding_dict(this.x_pad_dict, model, scale_models['x'], model.x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, scale_models['y'], model.y_padding);
+            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.x_padding);
+            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.y_padding);
 
             this.update_paddings();
         },
         mark_padding_updated: function(model) {
             var scale_models = model.get("scales");
 
-            this.update_padding_dict(this.x_pad_dict, model, scale_models['x'], model.x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, scale_models['y'], model.y_padding);
+            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.x_padding);
+            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.y_padding);
 
             this.update_paddings();
         },
@@ -300,24 +300,30 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             model.off("mark_padding_updated", null, this);
 
             var scale_models = model.get("scales");
-            this.remove_from_padding_dict(this.x_pad_dict, model, scale_models['x']);
-            this.remove_from_padding_dict(this.y_pad_dict, model, scale_models['y']);
+            this.remove_from_padding_dict(this.x_pad_dict, model, scale_models["x"]);
+            this.remove_from_padding_dict(this.y_pad_dict, model, scale_models["y"]);
             view.remove();
         },
         add_mark: function(model) {
             var self = this;
 
             model.on("data_updated redraw_legend", this.update_legend, this);
-            model.on("scales_updated", function() { self.mark_scales_updated(model); }, this);
-            model.on("mark_padding_updated", function() { self.mark_padding_updated(model);}, this);
+            model.on("scales_updated", function() {
+                self.mark_scales_updated(model);
+            }, this);
+            model.on("mark_padding_updated", function() {
+                self.mark_padding_updated(model);
+            }, this);
 
-            var child_x_scale = model.get('scales')['x'];
-            var child_y_scale = model.get('scales')['y'];
+            var child_x_scale = model.get("scales")["x"];
+            var child_y_scale = model.get("scales")["y"];
 
-            if(child_x_scale == undefined)
+            if(child_x_scale == undefined) {
                 child_x_scale = this.scale_x.model;
-            if(child_y_scale == undefined)
+            }
+            if(child_y_scale == undefined) {
                 child_y_scale = this.scale_y.model;
+            }
 
             this.update_padding_dict(this.x_pad_dict, model, child_x_scale, model.x_padding);
             this.update_padding_dict(this.y_pad_dict, model, child_y_scale, model.y_padding);
@@ -369,7 +375,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
             this.svg.attr("width", null);
-            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") + " " + this.model.get("min_height"));
+            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width")
+                                      + " " + this.model.get("min_height"));
             setTimeout($.proxy(this.update_layout2, this), 0);
         },
         update_layout2: function() {
@@ -381,11 +388,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         update_layout3: function() {
             var preserve_aspect = this.model.get("preserve_aspect");
             if (preserve_aspect === true) {
-                var aspect_ratio = this.model.get("min_width")/this.model.get("min_height");
+                var aspect_ratio = this.model.get("min_width") / this.model.get("min_height");
                 if (this.width/this.height > aspect_ratio) {
-                    this.width = this.height*aspect_ratio;
+                    this.width = this.height * aspect_ratio;
                 } else {
-                    this.height = this.width/aspect_ratio;
+                    this.height = this.width / aspect_ratio;
                 }
             }
             this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
@@ -398,15 +405,18 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.scale_x.set_range([0, this.plotarea_width]);
             this.scale_y.set_range([this.plotarea_height, 0]);
             // transform figure
-            this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-            this.title.attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"});
+            this.fig.attr("transform", "translate(" + this.margin.left + ","
+                                                    + this.margin.top + ")");
+            this.title.attr({x: (0.5 * (this.plotarea_width)),
+                             y: -(this.margin.top / 2.0),
+                             dy: "1em"});
 
             this.bg
               .attr("width", this.plotarea_width)
               .attr("height", this.plotarea_height);
 
             this.clip_path.attr("width", this.plotarea_width)
-                .attr("height", this.plotarea_height);
+              .attr("height", this.plotarea_height);
 
             this.trigger("margin_updated");
             this.update_legend();
@@ -421,7 +431,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             var legend_location = this.model.get("legend_location");
 
             var legend_g = this.fig_marks.append("g")
-                .attr("class", "g_legend");
+              .attr("class", "g_legend");
 
             var that = this;
             var count = 1;
@@ -431,22 +441,28 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     if(mark_view.model.get("display_legend")) {
                         var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
                         count = count + child_count[0];
-                        max_label_len = (child_count[1]) ? Math.max(max_label_len, child_count[1]) : max_label_len;
+                        max_label_len = (child_count[1]) ?
+                            Math.max(max_label_len, child_count[1]) : max_label_len;
                     }
                 });
 
                 var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
-                if(count != 1) {
+                if(count !== 1) {
                     legend_g.append("g")
-                        .attr("class", "axis")
+                      .attr("class", "axis")
                     .append("rect")
-                        .attr({"y": (legend_height + 2) / 2.0, "x": (-0.5 * (legend_height + 2))})
-                        .attr("width", (max_label_len+2) + "em")
-                        .attr("height", (count * (legend_height + 2)))
-                        .style({"fill": "none"});
+                      .attr({"y": (legend_height + 2) / 2.0,
+                             "x": (-0.5 * (legend_height + 2))})
+                      .attr("width", (max_label_len+2) + "em")
+                      .attr("height", (count * (legend_height + 2)))
+                      .style({"fill": "none"});
                 }
-                max_label_len = (legend_location === "top" || legend_location === "top-right" || legend_location === "right") ? -(max_label_len + 2) : 1;
-                legend_g.style({'transform': 'translate(' + (coords[0]) + 'px, ' + (coords[1]) + 'px) '  + ' translateX(' + (max_label_len) + 'em)'});
+                max_label_len = (legend_location === "top" ||
+                                 legend_location === "top-right" ||
+                                 legend_location === "right") ? -(max_label_len + 2) : 1;
+                legend_g.style({"transform": "translate(" + (coords[0]) + "px, "
+                                                          + (coords[1]) + "px) "
+                                         + " translateX(" + (max_label_len) + "em)"});
             });
         },
         get_legend_coords: function(legend_location, width, height, disp) {
@@ -500,8 +516,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     self.overlay.node().appendChild(view.el.node());
                     // Trigger the displayed event of the child view.
                     self.after_displayed(function() {
-                        view.trigger("displayed"); },
-                    self);
+                        view.trigger("displayed");
+                    }, self);
                 });
             }
         },

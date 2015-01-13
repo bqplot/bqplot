@@ -26,7 +26,7 @@ define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, Scal
              this.create_event_listeners();
          },
          set_range: function(range, padding) {
-            padding = (typeof padding == "undefined") ? 0 : padding;
+            padding = (padding === undefined) ? 0 : padding;
             this.scale.rangeBands(range, padding, padding / 2.0);
             this.offset = this.scale.rangeBand() / 2.0;
          },
@@ -43,7 +43,8 @@ define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, Scal
              var axis_length = Math.abs(old_range[1] - old_range[0]);
              var unpadded_scale = this.scale.copy();
              unpadded_scale.rangeBands(old_range);
-             var outer_padding = (unpadded_scale.range().length > 0) ? (unpadded_scale.range()[0] / unpadded_scale.rangeBand()) : 0;
+             var outer_padding = (unpadded_scale.range().length > 0) ?
+                 (unpadded_scale.range()[0] / unpadded_scale.rangeBand()) : 0;
              this.scale.rangeBands(new_range, 0.0, outer_padding);
          },
      });

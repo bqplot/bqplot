@@ -20,7 +20,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.parent = this.options.parent;
             this.highlight = this.options.highlight;
             this.margin = this.parent.margin;
-            this.vertical = this.model.get("orientation") == "vertical" ? true : false;
+            this.vertical = this.model.get("orientation") === "vertical" ? true : false;
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
             this.width = this.parent.width - (this.margin.left + this.margin.right);
             this.unique_id = IPython.utils.uuid();
@@ -33,9 +33,9 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 that.axis_scale.set_range();
                 that.axis_scale.on("domain_changed", that.redraw_axisline, that);
                 that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
-                if(that.axis_scale.model.type == "date_color_linear") {
+                if(that.axis_scale.model.type === "date_color_linear") {
                     that.axis_line_scale = d3.time.scale().nice();
-                } else if(that.axis_scale.model.type == "ordinal") {
+                } else if(that.axis_scale.model.type === "ordinal") {
                     that.axis_line_scale = d3.scale.ordinal();
                     that.ordinal = true;
                 } else {
@@ -66,11 +66,12 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.model.on("change:tick_format", this.tickformat_changed, this);
             this.model.on("change:visible", this.update_visibility, this);
             this.model.on("change:label", this.update_label, this);
-            this.model.on_some_change(["side", "orientation"], function() { this.vertical = this.model.get("orientation") == "vertical" ? true : false;
-                                                                            this.side = this.model.get("side");
-                                                                            this.rescale_axis();
-                                                                            this.redraw_axis();
-                                                                          }, this);
+            this.model.on_some_change(["side", "orientation"], function() {
+                this.vertical = this.model.get("orientation") === "vertical" ? true : false;
+                this.side = this.model.get("side");
+                this.rescale_axis();
+                this.redraw_axis();
+            }, this);
         },
         append_axis: function() {
             // The label is allocated a space of 100px. If the label
@@ -94,7 +95,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
 
             this.draw_color_bar();
             this.axis_line_scale.domain(this.axis_scale.scale.domain());
-
 
             this.g_axisline = colorBar.append("g")
                 .attr("class", "axis");
@@ -130,12 +130,16 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .attr("y", 0)
                     .attr("height", this.bar_height)
                     .attr("width", bar_width)
-                    .style("fill",function(d) { return d; });
+                    .style("fill", function(d) { return d; });
 
                 if(this.vertical) {
-                    rects.attr("x", function(d, i) { return i * bar_width - (that.height - 2 * that.x_offset)  ; });
+                    rects.attr("x", function(d, i) {
+                        return i * bar_width - (that.height - 2 * that.x_offset);
+                    });
                 } else {
-                    rects.attr("x", function(d, i) { return i * bar_width; });
+                    rects.attr("x", function(d, i) {
+                        return i * bar_width;
+                    });
                 }
             }
             else {
@@ -155,9 +159,9 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .enter()
                     .append("stop")
                     .attr({
-                        "offset": function(d,i){return colorSpacing * (i) + "%"},
-                        "stop-color":function(d,i){return that.colors[i]},
-                        "stop-opacity":1
+                        "offset": function(d,i) { return colorSpacing * (i) + "%"; },
+                        "stop-color": function(d,i) { return that.colors[i]; },
+                        "stop-opacity": 1
                     });
 
                 colorBar.append("g")
@@ -169,14 +173,14 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                         "height": this.bar_height,
                         x: (this.vertical) ? -(this.height - 2 * this.x_offset) : 0,
                         y: 0,
-                        "stroke-width":1
+                        "stroke-width": 1
                     })
                     .style("fill","url(#colorBarGradient" + this.unique_id + ")");
             }
         },
         get_topg_transform: function() {
             if(this.vertical){
-                if(this.side == "right") {
+                if(this.side === "right") {
                     return "translate(" + this.get_basic_transform() + "px, 0px)" + " translate(" + this.margin.right + "px, 0px)" +
                          " translate(" + (-this.bar_height) + "px, 0px) translate(-5em, 0px)";
                 }
@@ -190,13 +194,13 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         },
         get_label_transform: function() {
             if(this.vertical) {
-                return "translate(" + ((this.side == "right") ? (this.bar_height / 2) : (-this.bar_height / 2)) + ", " + (this.x_offset - 15) + ")";
+                return "translate(" + ((this.side === "right") ? (this.bar_height / 2) : (-this.bar_height / 2)) + ", " + (this.x_offset - 15) + ")";
             }
             return "translate(" + (this.x_offset - 5) + ", " + (this.bar_height / 2)+ ")";
         },
         get_axisline_transform: function() {
             if(this.vertical) {
-                return "translate(" + ((this.side == "right") ? this.bar_height : -(this.bar_height)) + ", 0)";
+                return "translate(" + ((this.side === "right") ? this.bar_height : -(this.bar_height)) + ", 0)";
             }
             return "translate(0, " + this.bar_height + ")";
         },
@@ -248,10 +252,15 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .select(".g-rect")
                     .selectAll("rect")
                     .attr("width", bar_width);
-                if(this.vertical)
-                    rectangles.attr("x", function(d, i) { return (i * bar_width) - (self.height - 2 * self.x_offset)  ; });
-                else
-                    rectangles.attr("x", function(d, i) { return i * bar_width; });
+                if(this.vertical) {
+                    rectangles.attr("x", function(d, i) {
+                        return (i * bar_width) - (self.height - 2 * self.x_offset);
+                    });
+                } else {
+                    rectangles.attr("x", function(d, i) {
+                        return i * bar_width;
+                    });
+                }
             } else {
                 this.el.select("#colorBarG" + this.unique_id)
                     .select(".g-rect")
@@ -281,22 +290,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.draw_color_bar();
             this.redraw_axisline();
         },
-        set_tick_values: function() {
-            if (this.tick_values.length > 0) {
-                this.axis.tickValues(this.tick_values);
-            } else if (this.num_ticks != undefined) {
-                    this.axis.tickValues(this.get_ticks())
-            } else {
-                this.axis.tickValues((this.axis_scale.model.type == "ordinal")
-                                    ? this.axis_scale.scale.domain()
-                                    : this.axis_scale.scale.ticks())
-            }
-            this.axis.tickFormat(this.tick_format);
-            if(this.g_axisline) {
-                this.g_axisline.call(this.axis);
-            }
-        },
     });
     WidgetManager.WidgetManager.register_widget_view("bqplot.ColorAxis", ColorBar);
-
 });

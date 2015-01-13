@@ -101,7 +101,6 @@ class Mark(Widget):
     """
     scales = Dict(sync=True)
     preserve_domain = Dict(allow_none=False, sync=True)
-    children = List([], sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1, display_name='Display legend')
     animate_dur = Int(0, sync=True, exposed=True, display_index=2, display_name='Animation duration')
     labels = UnicodeList(sync=True, exposed=True, display_index=3, display_name='Labels')
@@ -120,6 +119,8 @@ class Mark(Widget):
 class Lines(Mark):
 
     """Lines mark.
+
+    In the case of the Lines mark, scales for "x" and "y" MUST be provided.
 
     Attributes
     ----------
@@ -163,6 +164,11 @@ class FlexLine(Lines):
 
     """Flexible Lines mark.
 
+    In the case of the FlexLines mark, scales for "x" and "y" MUST be provided.
+    Scales for color and width data attributes are optional. In the case where another
+    data attribute than "x" or "y" is provided but the corresponding scale is
+    missing, the data attribute is ignored.
+
     Attributes
     ----------
     name: string
@@ -185,6 +191,11 @@ class FlexLine(Lines):
 class Scatter(Mark):
 
     """Scatter mark.
+
+    In the case of the Scatter mark, scales for "x" and "y" MUST be provided.
+    The scales of other data attributes are optional. In the case where another
+    data attribute than "x" or "y" is provided but the corresponding scale is
+    missing, the data attribute is ignored.
 
     Attributes
     ----------
@@ -265,6 +276,8 @@ class Hist(Mark):
 
     """Histogram mark.
 
+    In the case of the Hist mark, a scale for "x" MUST be provided.
+
     Attributes
     ----------
     icon: string
@@ -301,6 +314,11 @@ class Hist(Mark):
 class Bars(Mark):
 
     """Bar mark.
+
+    In the case of the Bars mark, scales for "x" and "y"  MUST be provided.
+    The scales of other data attributes are optional. In the case where another
+    data attribute than "x" or "y" is provided but the corresponding scale is
+    missing, the data attribute is ignored.
 
     Attributes
     ----------

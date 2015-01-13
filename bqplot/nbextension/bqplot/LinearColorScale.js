@@ -18,13 +18,14 @@ define(["widgets/js/manager", "d3", "./Scale", "./ColorUtils"], function(WidgetM
     var LinearColorScale = BaseScaleView.extend({
         render: function(){
             this.scale = d3.scale.linear();
-            if(this.model.domain.length > 0)
+            if(this.model.domain.length > 0) {
                 this.scale.domain(this.model.domain);
+            }
             this.offset = 0;
             this.ticks = this.model.ticks;
             this.scheme = this.model.scheme = this.model.get("scheme");
 
-            if(this.model.get("colors").length == 0) {
+            if(this.model.get("colors").length === 0) {
                this.divergent = this.model.divergent = ColorUtils.is_divergent(this.scheme);
             } else {
                 this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
@@ -50,10 +51,11 @@ define(["widgets/js/manager", "d3", "./Scale", "./ColorUtils"], function(WidgetM
             this.model.update_domain();
         },
         colors_changed: function() {
-            if(this.model.get("colors").length == 0)
+            if(this.model.get("colors").length === 0) {
                 this.divergent = this.model.divergent = ColorUtils.is_divergent(this.model.get("scheme"));
-            else
+            } else {
                 this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
+            }
             this.set_range();
             this.trigger("color_scale_range_changed");
         },

@@ -30,12 +30,16 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
         update_domain: function() {
             var that = this;
             var max_index = (this.divergent) ? 2 : 1;
-            var min = (!this.min_from_data) ? this.min : d3.min(_.map(this.domains, function(d) { return d.length > 0 ? d[0] : that.global_max; }));
-            var max = (!this.max_from_data) ? this.max : d3.max(_.map(this.domains, function(d) { return d.length > max_index ? d[max_index] : (d.length) > 1 ? d[1] : that.global_min; }));
+            var min = (!this.min_from_data) ? this.min : d3.min(_.map(this.domains, function(d) {
+                return d.length > 0 ? d[0] : that.global_max;
+            }));
+            var max = (!this.max_from_data) ? this.max : d3.max(_.map(this.domains, function(d) {
+                return d.length > max_index ? d[max_index] : (d.length) > 1 ? d[1] : that.global_min;
+            }));
             var prev_domain = this.domain;
             if(min != prev_domain[0] || max != prev_domain[max_index]) {
                 if(this.divergent) {
-                    var mid = (this.mid == undefined) ? (min + max) / 2 : this.mid;
+                    var mid = (this.mid === undefined || this.mid === null) ? (min + max) / 2 : this.mid;
                     this.domain = (this.reverse) ? [max, mid, min] : [min, mid, max];
                 } else {
                     this.domain = (this.reverse) ? [max, min] : [min, max];
@@ -44,15 +48,20 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
             }
         },
         compute_and_set_domain: function(data_array, id) {
-            if(!this.min_from_data && !this.max_from_data)
+            if(!this.min_from_data && !this.max_from_data) {
                 return;
-            if(data_array.length == 0) {
+            }
+            if(data_array.length === 0) {
                this.set_domain([0, 1], id);
                return;
             }
             var data = data_array[0] instanceof Array ? data_array : [data_array];
-            var min = (!this.min_from_data) ? this.min : d3.min(data.map(function(d) { return d3.min(d); }));
-            var max = (!this.max_from_data) ? this.max : d3.max(data.map(function(d) { return d3.max(d); }));
+            var min = (!this.min_from_data) ? this.min : d3.min(data.map(function(d) {
+                return d3.min(d);
+            }));
+            var max = (!this.max_from_data) ? this.max : d3.max(data.map(function(d) {
+                return d3.max(d);
+            }));
             this.set_domain([min, max], id);
         },
     });

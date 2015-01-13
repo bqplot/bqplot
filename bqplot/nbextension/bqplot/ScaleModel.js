@@ -29,7 +29,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.update_domain();
         },
         del_domain: function(domain, id) {
-            if(this.domains[id] != undefined) {
+            if(this.domains[id] !== undefined) {
                 delete this.domains[id];
                 this.update_domain();
             }

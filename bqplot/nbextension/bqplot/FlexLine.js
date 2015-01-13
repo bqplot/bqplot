@@ -21,8 +21,8 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var self = this;
 
             return base_render_promise.then(function() {
-                self.color_scale =  self.scales['color'];
-                self.width_scale = self.scales['width'];
+                self.color_scale = self.scales["color"];
+                self.width_scale = self.scales["width"];
                 self.line = d3.svg.line()
                     .interpolate(self.model.get("interpolate"))
                     .x(function(d) { return self.x_scale.scale(d.x) + self.x_offset; })
@@ -63,8 +63,9 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             g_elements.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
-                .attr("transform", function(d, i) { return "translate(0, " + (i * inter_y_disp + y_disp)  + ")"; })
-                .on("mouseover", $.proxy(this.make_axis_bold, this))
+                .attr("transform", function(d, i) {
+                    return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
+                }).on("mouseover", $.proxy(this.make_axis_bold, this))
                 .on("mouseout", $.proxy(this.make_axis_non_bold, this))
               .append("line")
                 .style("stroke", function(d,i) { return that.get_colors(i); })
@@ -76,8 +77,10 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
                 .attr("y", rect_dim / 2)
                 .attr("dy", "0.35em")
                 .text(function(d, i) {return that.model.get("labels")[i]; })
-                .style("fill", function(d,i) { return that.get_colors(i);});
-            var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
+                .style("fill", function(d,i) { return that.get_colors(i); });
+            var max_length = d3.max(this.model.get("labels"), function(d) {
+                return d.length;
+            });
 
             g_elements.exit().remove();
             return [this.model.mark_data.length, max_length];
@@ -105,49 +108,68 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
                 .transition().duration(this.model.get("animate_dur"))
                 .remove();
 
-            curves_sel[0].forEach(function(elem, index) { var lines = d3.select(elem).selectAll("line")
-                                                     .data(that.model.new_mark_data[index]["values"]);
-                                                lines.enter().append("line");
-                                                lines.attr("class", "line-elem")
-                                                    .attr({"x1": function(dataelem) { return that.x_scale.scale(dataelem.x1); }, "x2": function(dataelem) { return that.x_scale.scale(dataelem.x2); },
-                                                           "y1": function(dataelem) { return that.y_scale.scale(dataelem.y1); }, "y2": function(dataelem) { return that.y_scale.scale(dataelem.y2); }} )
-                                                    .attr("stroke", function(dataelem) { return that.get_element_color(dataelem); })
-                                                    .attr("stroke-width", function(dataelem) { return that.get_element_width(dataelem); });
-                                              });
+            curves_sel[0].forEach(function(elem, index) {
+                var lines = d3.select(elem).selectAll("line")
+                    .data(that.model.new_mark_data[index]["values"]);
+                lines.enter().append("line");
+                lines.attr("class", "line-elem")
+                    .attr({"x1": function(dataelem) { return that.x_scale.scale(dataelem.x1); },
+                           "x2": function(dataelem) { return that.x_scale.scale(dataelem.x2); },
+                           "y1": function(dataelem) { return that.y_scale.scale(dataelem.y1); },
+                           "y2": function(dataelem) { return that.y_scale.scale(dataelem.y2); }})
+                    .attr("stroke", function(dataelem) {
+                        return that.get_element_color(dataelem);
+                    }).attr("stroke-width", function(dataelem) {
+                        return that.get_element_width(dataelem);
+                    });
+            });
 
             this.el.selectAll(".curve")
                 .select(".curve_label")
-                .attr("display", function(d) { return that.model.get("labels_visibility") == "label" ? "inline" : "none"; });
+                .attr("display", function(d) {
+                    return that.model.get("labels_visibility") === "label" ?
+                        "inline" : "none";
+                });
 
             // alter the display only if a few of the curves are visible
             if(this.model.get("curves_subset").length > 0) {
                 this.el.selectAll(".curve")
                     .select("path")
-                    .attr("display", function(d, i) { return curves_subset.indexOf(i) != -1 ? "inline" : "none"; });
+                    .attr("display", function(d, i) {
+                        return curves_subset.indexOf(i) !== -1 ?
+                            "inline" : "none";
+                    });
                 this.el.selectAll(".curve")
                     .select(".curve_label")
-                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) != -1 && that.model.get("labels_visibility") == "label") ? "inline" : "none"; });
+                    .attr("display", function(d, i) {
+                        return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
+                            "inline" : "none";
+                    });
             }
         },
         get_element_color: function(dataelem) {
-            if(this.color_scale != undefined && dataelem.color != undefined)
+            if(this.color_scale !== undefined && dataelem.color !== undefined) {
                 return this.color_scale.scale(dataelem.color);
+            }
             return this.model.get("colors")[0];
         },
         get_element_width: function(dataelem) {
-            if(this.width_scale != undefined && dataelem.size != undefined)
+            if(this.width_scale !== undefined && dataelem.size !== undefined) {
                 return this.width_scale.scale(dataelem.size);
+            }
             return this.model.get("stroke_width");
         },
         rescale: function() {
             FlexLine.__super__.rescale.apply(this);
             this.set_ranges();
-
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
-                  .transition().duration(this.model.get("animate_dur"))
-                  .attr({'x1': function(dataelem) { return that.x_scale.scale(dataelem.x1); }, 'x2': function(dataelem) { return that.x_scale.scale(dataelem.x2); },
-                                                            'y1': function(dataelem) { return that.y_scale.scale(dataelem.y1); } , 'y2': function(dataelem) { return that.y_scale.scale(dataelem.y2); }} )
+                .transition().duration(this.model.get("animate_dur"))
+                .attr({"x1": function(dataelem) { return that.x_scale.scale(dataelem.x1); },
+                       "x2": function(dataelem) { return that.x_scale.scale(dataelem.x2); },
+                       "y1": function(dataelem) { return that.y_scale.scale(dataelem.y1); },
+                       "y2": function(dataelem) { return that.y_scale.scale(dataelem.y2); },
+                });
         },
         create_labels: function() {
             //do nothing

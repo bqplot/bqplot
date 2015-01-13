@@ -54,7 +54,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                             values: that.y_data[i].map(function(d, j) {
                                 return {x: that.x_data[0][j], y: d};
                             }),
-                            opacity: 1
+                            opacity: 1,
                         };
                     });
                 } else {
@@ -65,7 +65,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                             values: xy_data.map(function(d, j) {
                                 return {x: d[0], y: d[1]};
                             }),
-                            opacity: 1
+                            opacity: 1,
                         };
                     });
                 }
@@ -80,12 +80,15 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // remaining values.
             var that = this;
             this.curve_labels = this.get("labels");
-            var data_length = (this.x_data.length == 1) ? (this.y_data.length) : Math.min(this.x_data.length, this.y_data.length);
+            var data_length = (this.x_data.length == 1) ?
+                (this.y_data.length) : Math.min(this.x_data.length, this.y_data.length);
             if(this.curve_labels.length > data_length) {
                 this.curve_labels = this.curve_labels.slice(0, data_length);
             }
             else if(this.curve_labels.length < data_length) {
-                _.range(this.curve_labels.length, data_length).forEach( function(index) { that.curve_labels[index] = "C" + (index+1);});
+                _.range(this.curve_labels.length, data_length).forEach(function(index) {
+                    that.curve_labels[index] = "C" + (index+1);
+                });
             }
         },
         update_domains: function() {
@@ -94,13 +97,17 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var y_scale = scales["y"];
 
             if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.values.map( function(d) { return d.x; } ); }), this.id);
+                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.values.map(function(d) { return d.x; });
+                }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
             if(!this.get("preserve_domain")["y"]) {
-                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.values.map( function(d) { return d.y; } ); }), this.id);
+                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.values.map(function(d) { return d.y; });
+                }), this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
@@ -136,20 +143,19 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 }
             }
 
-            this.new_mark_data = this.mark_data
-                                      .map(function(curve_elem) { return { name: curve_elem["name"],
-                                                                           values: curve_elem["values"].slice(0, curve_elem["values"].length - 1)
-                                                                                .map(function(val, index, values_array)
-                                                                                {
-                                                                                    return { x1: val["x"], y1: val["y"],
-                                                                                             x2: curve_elem["values"][index+1]["x"],
-                                                                                             y2: curve_elem["values"][index+1]["y"],
-                                                                                             color: color_data[index],
-                                                                                             size: width_data[index]
-                                                                                           };
-                                                                                })
-                                                                        }
-                                                                });
+            this.new_mark_data = this.mark_data.map(function(curve_elem) {
+                return {   name: curve_elem["name"],
+                           values: curve_elem["values"].slice(0, curve_elem["values"].length - 1)
+                             .map(function(val, index, values_array) {
+                               return {x1: val["x"],
+                                       y1: val["y"],
+                                       x2: curve_elem["values"][index+1]["x"],
+                                       y2: curve_elem["values"][index+1]["y"],
+                                       color: color_data[index],
+                                       size: width_data[index]};
+                           }),
+                       };
+            });
             this.trigger("data_updated");
         },
     });

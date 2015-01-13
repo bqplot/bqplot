@@ -58,14 +58,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.x_scale = that.scales["x"];
                 that.y_scale = that.scales["y"];
 
-                if(that.x_scale === undefined || that.x_scale === null) {
+                if(!that.x_scale) {
                     that.x_scale = that.parent.scale_x;
                 }
                 that.listenTo(that.x_scale, "domain_changed", function() {
                     if (!that.model.dirty) { that.draw(); }
                 });
 
-                if(that.y_scale === undefined || that.y_scale === null) {
+                if(!that.y_scale) {
                     that.y_scale = that.parent.scale_y;
                 }
                 that.listenTo(that.y_scale, "domain_changed", function() {
@@ -115,7 +115,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.model.on("change:visible", this.update_visibility, this);
 
             this.parent.on("margin_updated", this.rescale, this);
-            this.model.on_some_change(["labels", "display_legend"], function() { this.model.trigger("redraw_legend"); }, this);
+            this.model.on_some_change(["labels", "display_legend"], function() {
+                this.model.trigger("redraw_legend"); 
+            }, this);
         },
         set_internal_scales: function() {
             // Some marks such as Bars need to create additional scales
@@ -164,8 +166,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.el.style("display", visible ? "inline" : "none");
         },
         get_colors: function(index) {
-            //function to cycle colors when number of children are more than
-            //number of colors.
+            // cycles over the list of colors when too many items
             this.colors = this.model.get("colors");
             var len = this.colors.length;
             return this.colors[index % len];
@@ -178,8 +179,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         unselected_style_updated: function(model, style) {
             this.unselected_style = style;
             var sel_indices = this.selected_indices;
-            var unselected_indices = (sel_indices) ? _.range(this.model.mark_data.length).filter(function(index){ return sel_indices.indexOf(index) == -1; })
-                                                             : [];
+            var unselected_indices = (sel_indices) ?
+                _.range(this.model.mark_data.length).filter(function(index){
+                    return sel_indices.indexOf(index) === -1;
+                }) : [];
             this.style_updated(style, unselected_indices);
         },
         style_updated: function(new_style, indices) {
@@ -195,7 +198,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.set_default_style(all_indices);
 
             this.set_style_on_elements(this.selected_style, this.selected_indices);
-            var unselected_indices = (indices == undefined) ? [] : _.difference(all_indices, indices);
+            var unselected_indices = (!indices) ? [] : _.difference(all_indices, indices);
             this.set_style_on_elements(this.unselected_style, unselected_indices);
         },
         // Abstract functions which have to be overridden by the specific mark

@@ -34,8 +34,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                     .on("brush", $.proxy(self.brush_move, self))
                     .on("brushend", $.proxy(self.brush_end, self));
 
-                self.is_x_date = (self.x_scale.model.type == "date");
-                self.is_y_date = (self.y_scale.model.type == "date");
+                self.is_x_date = (self.x_scale.model.type === "date");
+                self.is_y_date = (self.y_scale.model.type === "date");
 
                 self.el.attr("class", "selector brushintsel")
                     .call(self.brush);
@@ -56,9 +56,11 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.convert_and_save(extent);
         },
         convert_and_save: function(extent) {
-            if(extent.length == 0) {
+            if(extent.length === 0) {
                 this.model.set("selected", extent);
-                var idx_selected = this.mark_views.map(function(mark_view) { return mark_view.invert_2d_range(extent); });
+                var idx_selected = this.mark_views.map(function(mark_view) {
+                    return mark_view.invert_2d_range(extent);
+                });
                 this.model.set("idx_selected", idx_selected);
                 this.touch();
                 return;
@@ -66,8 +68,12 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             var extent_x = [extent[0][0], extent[1][0]];
             var extent_y = [extent[0][1], extent[1][1]];
             var self = this;
-            var idx_selected = this.mark_views.map(function(mark_view) { return mark_view .invert_2d_range(self.x_scale.scale(extent_x[0]), self.x_scale.scale(extent_x[1]),
-                                                                   self.y_scale.scale(extent_y[0]), self.y_scale.scale(extent_y[1]))});
+            var idx_selected = this.mark_views.map(function(mark_view) {
+                return mark_view.invert_2d_range(self.x_scale.scale(extent_x[0]),
+                                                 self.x_scale.scale(extent_x[1]),
+                                                 self.y_scale.scale(extent_y[0]),
+                                                 self.y_scale.scale(extent_y[1]));
+            });
             this.model.set("idx_selected", idx_selected);
             // TODO: The call to the function can be removed once _pack_models is
             // changed
@@ -131,17 +137,22 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.touch();
         },
         brush_move: function () {
-            var extent = this.brush.empty() ? this.scale.scale.domain() : this.brush.extent();
+            var extent = this.brush.empty() ? 
+                this.scale.scale.domain() : this.brush.extent();
             this.convert_and_save(extent);
         },
         brush_end: function () {
-            var extent = this.brush.empty() ? this.scale.scale.domain() : this.brush.extent()
+            var extent = this.brush.empty() ?
+                this.scale.scale.domain() : this.brush.extent();
             this.model.set("brushing", false);
             this.convert_and_save(extent);
         },
         convert_and_save: function(extent) {
             var self = this;
-            var idx_selected = this.mark_views.map(function(mark_view) { return mark_view.invert_range(self.scale.scale(extent[0]), self.scale.scale(extent[1])); });
+            var idx_selected = this.mark_views.map(function(mark_view) {
+                return mark_view.invert_range(self.scale.scale(extent[0]), 
+                                              self.scale.scale(extent[1]));
+            });
             this.model.set("idx_selected", idx_selected);
             this.model.set_typed_field("selected", extent);
             this.touch();
@@ -175,10 +186,14 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         //the list remove_classes
         //selection attribute should be a d3-selection
         if(remove_classes) {
-            remove_classes.forEach(function(r_class) { selection.classed(r_class, false); });
+            remove_classes.forEach(function(r_class) { 
+                selection.classed(r_class, false);
+            });
         }
         if(add_classes) {
-            add_classes.forEach(function(a_class) { selection.classed(a_class, true); });
+            add_classes.forEach(function(a_class) {
+                selection.classed(a_class, true);
+            });
         }
     };
 
@@ -190,7 +205,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.names = this.model.get("names");
             this.curr_index = 0;
 
-            var name = (this.names.length > this.curr_index) ? this.names[this.curr_index] : this.curr_index;
+            var name = (this.names.length > this.curr_index) ?
+                this.names[this.curr_index] : this.curr_index;
 
             var scale_creation_promise = this.create_scales();
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
@@ -201,7 +217,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                     .on("brushend", function() { self.brush_end(name, self); });
 
                 // attribute to see if the scale is a date scale
-                self.is_date = (self.scale.model.type == "date");
+                self.is_date = (self.scale.model.type === "date");
 
                 self.el.attr("class", "multiselector");
 
@@ -223,7 +239,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             data.forEach(function(elem) {
                 var label = self.get_label(elem);
                 var prev_label = self.get_label(elem, prev_names);
-                if(prev_label != label) {
+                if(prev_label !== label) {
                     self.el.select(".brush_text_" + elem)
                         .text(label);
                     selected[label] = selected[prev_label];
@@ -239,7 +255,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         create_brush: function(event) {
             // Function to add new brushes.
             var self = this;
-            var name = (this.names.length > this.curr_index) ? this.names[this.curr_index] : this.curr_index;
+            var name = (this.names.length > this.curr_index) ?
+                this.names[this.curr_index] : this.curr_index;
             var index = this.curr_index;
             var brush = d3.svg.brush()
                 .x(this.scale.scale)
@@ -274,16 +291,13 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                     if(d3.event.shiftKey && d3.event.ctrlKey && d3.event.altKey) {
                         self.clear_selectors();
                         self.create_brush();
-                    }
-                    else if(d3.event.ctrlKey) {
+                    } else if(d3.event.ctrlKey) {
                         add_remove_classes(d3.select(this), ["inactive"], ["active"]);
                         self.create_brush(d3.event);
-                    }
-                    else if(d3.event.shiftKey && self.selecting_brush == false) {
+                    } else if(d3.event.shiftKey && self.selecting_brush === false) {
                         add_remove_classes(self.el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
                         self.selecting_brush = true;
-                    }
-                    else {
+                    } else {
                         add_remove_classes(self.el.selectAll(".selector"), ["inactive"], ["visible"]);
                         add_remove_classes(d3.select(this), ["active"], ["inactive"]);
                         old_handler.call(this);
@@ -295,7 +309,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             /* if(this.curr_index > 1) {
                 // Have to create a dupicate event and re dispatch it for the
                 // event to get triggered on the new brush.
-                // if curr_index == 1, then it is the first brush being
+                // if curr_index === 1, then it is the first brush being
                 // created. So no duplicate event needs to dispatched.
                 var duplicate_event = new event.constructor(event.type, event);
                 new_brush_g.node().dispatchEvent(duplicate_event);
@@ -304,7 +318,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         get_label: function(index, arr) {
             //arr is optional. If you do not pass anything, this.names is
             //considered arr.
-            if(arr == undefined) {
+            if(arr === undefined || arr === null) {
                 arr = this.names;
             }
             return (arr.length > index) ? arr[index] : index;
@@ -324,7 +338,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         },
         get_text_location: function(extent) {
             var mid = (extent[0] + extent[1]) / 2;
-            if(this.scale.model.type == "date") {
+            if(this.scale.model.type === "date") {
                 mid = new Date((extent[0].getTime() + extent[1].getTime()) / 2);
             }
             return this.scale.scale(mid);
@@ -332,7 +346,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         brush_end: function (item, brush_g) {
             var brush = d3.event.target;
             var self = this;
-            var extent = brush.empty() ? this.scale.scale.domain() : brush.extent()
+            var extent = brush.empty() ? this.scale.scale.domain() : brush.extent();
             this.model.set("brushing", false);
             this.convert_and_save(extent, item);
         },
@@ -348,10 +362,14 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             var selected = jQuery.extend(true, {}, this.model.get("_selected"));
             var idx_selected = jQuery.extend(true, {}, this.model.get("idx_selected"));
             var self = this;
-            var item_idx_selected = this.mark_views.map(function(mark_view) { return mark_view.invert_range(self.scale.scale(extent[0]), self.scale.scale(extent[1])); });
+            var item_idx_selected = this.mark_views.map(function(mark_view) {
+                return mark_view.invert_range(self.scale.scale(extent[0]), self.scale.scale(extent[1]));
+            });
             idx_selected[this.get_label(item)] = item_idx_selected;
             // TODO: remove the ternary operator once _pack_models is changed
-            selected[this.get_label(item)] = extent.map(function(elem) { return (self.is_date) ? self.scale.model.convert_to_json(elem) : elem; });
+            selected[this.get_label(item)] = extent.map(function(elem) {
+                return (self.is_date) ? self.scale.model.convert_to_json(elem) : elem;
+            });
             this.model.set("_selected", selected);
             this.model.set("idx_selected", idx_selected);
             this.touch();
