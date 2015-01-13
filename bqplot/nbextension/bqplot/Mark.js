@@ -134,8 +134,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             elem.append("g")
                 .attr("transform", "translate(" + x_disp + ", " + y_disp + ")")
                 .attr("class", "legend" + this.uuid)
-                .on("mouseover", $.proxy(this.highlight_axis, this))
-                .on("mouseout", $.proxy(this.unhighlight_axis, this))
+                .on("mouseover", _.bind(this.highlight_axis, this))
+                .on("mouseout", _.bind(this.unhighlight_axis, this))
               .append("text")
                 .text(this.model.get("labels")[0]);
             return [1, 1];

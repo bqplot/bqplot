@@ -75,9 +75,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         // Could be fused in a single function for increased readability
         // and to avoid code repetition
         update_line_style: function() {
-            this.el.selectAll(".curve").selectAll("path").style("stroke-dasharray", $.proxy(this.get_line_style, this))
+            this.el.selectAll(".curve").selectAll("path").style("stroke-dasharray", _.bind(this.get_line_style, this));
             if (this.legend_el) {
-                this.legend_el.select("line").style("stroke-dasharray", $.proxy(this.get_line_style, this));
+                this.legend_el.select("line").style("stroke-dasharray", _.bind(this.get_line_style, this));
             }
         },
         update_stroke_width: function(model, stroke_width){
@@ -175,12 +175,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("class", "legend" + this.uuid)
                 .attr("transform", function(d, i) {
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
-                }).on("mouseover", $.proxy(this.highlight_axis, this))
-                .on("mouseout", $.proxy(this.unhighlight_axis, this))
+                }).on("mouseover", _.bind(this.highlight_axis, this))
+                .on("mouseout", _.bind(this.unhighlight_axis, this))
               .append("line")
                 .style("stroke", function(d,i) { return that.get_colors(i); })
                 .style("stroke-width", this.model.get("stroke_width"))
-                .style("stroke-dasharray", $.proxy(this.get_line_style, this))
+                .style("stroke-dasharray", _.bind(this.get_line_style, this))
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
 
             this.legend_el.append("text")
@@ -264,7 +264,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("id", function(d, i) { return "curve" + (i+1); })
                 .style("stroke", function(d, i) { return that.get_colors(i); })
                 .style("stroke-width", this.model.get("stroke_width"))
-                .style("stroke-dasharray", $.proxy(this.get_line_style, this));
+                .style("stroke-dasharray", _.bind(this.get_line_style, this));
 
             curves_sel.select("path")
                 .transition().duration(this.model.get("animate_dur"))

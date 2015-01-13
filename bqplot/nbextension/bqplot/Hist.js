@@ -206,7 +206,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                         that.sel_indices = (d.map(function(elem) { return elem.index; }));
                         that.bar_index_sel.push(i);
                         that.bar_index_sel.forEach(function(data_elem) {
-                            $.proxy(that.reset_colors(data_elem, select_color), that);
+                            _.bind(that.reset_colors(data_elem, select_color), that);
                         });
                     }
                     buffer_index.forEach(function(data_elem) {
@@ -238,8 +238,8 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                 .append("g")
                 .attr("class", "legend" + this.uuid)
                 .attr("transform", function(d, i) { return "translate(0, " + (i * inter_y_disp + y_disp)  + ")"; })
-                .on("mouseover", $.proxy(this.highlight_axis, this))
-                .on("mouseout", $.proxy(this.unhighlight_axis, this))
+                .on("mouseover", _.bind(this.highlight_axis, this))
+                .on("mouseout", _.bind(this.unhighlight_axis, this))
                 .append("rect")
                 .style("fill", function(d,i) { return that.get_colors(i); })
                 .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});

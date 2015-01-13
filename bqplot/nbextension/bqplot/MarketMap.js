@@ -203,13 +203,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
             this.svg.attr("width", null);
             this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
-            setTimeout($.proxy(this.update_layout2, this), 0);
+            setTimeout(_.bind(this.update_layout2, this), 0);
         },
         update_layout2: function() {
             rect = this.el.getBoundingClientRect();
             this.width = rect.width > 0 ? rect.width : this.model.get("map_width");
             this.height = rect.height > 0 ? rect.height : this.model.get("map_height");
-            setTimeout($.proxy(this.update_layout3, this), 0);
+            setTimeout(_.bind(this.update_layout3, this), 0);
         },
         update_layout3: function() {
             var preserve_aspect = this.model.get("preserve_aspect");
@@ -306,9 +306,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
 
                 // Update the attributes of the entire set of nodes
                 groups.attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
-                    .on("click", function(data, ind) {$.proxy(that.cell_click_handler(data, (element_count + ind), this), that);})
-                    .on("mouseover", function(data, ind) {$.proxy(that.mouseover_handler(data, (element_count + ind), this), that);})
-                    .on("mouseout", function(data, ind) {$.proxy(that.mouseout_handler(data, (element_count + ind), this), that);})
+                    .on("click", function(data, ind) { _.bind(that.cell_click_handler(data, (element_count + ind), this), that);})
+                    .on("mouseover", function(data, ind) { _.bind(that.mouseover_handler(data, (element_count + ind), this), that);})
+                    .on("mouseout", function(data, ind) { _.bind(that.mouseout_handler(data, (element_count + ind), this), that);})
                     .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
                     .attr("id", function(data) { return "market_map_element_" + data['name']});
 
