@@ -26,7 +26,7 @@ define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, Scal
              this.create_event_listeners();
          },
          set_range: function(range, padding) {
-            padding = (typeof padding == "undefined") ? 0 : padding;
+            padding = (padding === undefined) ? 0 : padding;
             this.scale.rangeBands(range, padding, padding / 2.0);
             this.offset = this.scale.rangeBand() / 2.0;
          },

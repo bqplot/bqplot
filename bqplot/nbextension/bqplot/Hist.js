@@ -218,7 +218,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                         d3.event = window.event;
                     }
                     var e = d3.event;
-                    if (typeof(e.cancelBubble) !== "undefined") { // IE
+                    if (e.cancelBubble !== undefined) { // IE
                         e.cancelBubble = true;
                     }
                     if (e.stopPropagation) {

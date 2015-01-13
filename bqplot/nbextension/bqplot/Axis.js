@@ -231,8 +231,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
         },
         process_offset: function() {
-            if(typeof this.loc["scale"] === "undefined" &&
-               typeof this.loc["value"] === "undefined") {
+            if(this.loc["scale"] === undefined &&
+               this.loc["value"] === undefined) {
                 return this.get_basic_transform();
             } else {
                 var value = this.offset_scale.scale(this.offset_value);

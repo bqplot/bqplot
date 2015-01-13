@@ -410,7 +410,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     d3.event = window.event;
                 }
                 var e = d3.event;
-                if(typeof(e.cancelBubble) !== "undefined") { // IE
+                if(e.cancelBubble !== undefined) { // IE
                     e.cancelBubble = true;
                 }
                 if(e.stopPropagation) {
