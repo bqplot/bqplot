@@ -121,11 +121,19 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var width_scale = scales["width"];
 
             if(color_scale && color_data.length > 0){
-                color_scale.compute_and_set_domain(color_data, 0);
+                if(!this.get("preserve_domain")["color"]) {
+                    color_scale.compute_and_set_domain(color_data, this.id);
+                } else {
+                    color_scale.del_domain([], this.id);
+                }
             }
 
             if(width_scale && width_data.length > 0){
-                width_scale.compute_and_set_domain(width_data, 0);
+                if(!this.get("preserve_domain")["width"]) {
+                    width_scale.compute_and_set_domain(width_data, this.id);
+                } else {
+                    width_scale.del_domain([], this.id);
+                }
             }
 
             this.new_mark_data = this.mark_data
