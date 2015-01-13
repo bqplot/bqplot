@@ -30,9 +30,9 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                 self.brush = d3.svg.brush()
                     .x(self.x_scale.scale)
                     .y(self.y_scale.scale)
-                    .on("brushstart", $.proxy(self.brush_start, self))
-                    .on("brush", $.proxy(self.brush_move, self))
-                    .on("brushend", $.proxy(self.brush_end, self));
+                    .on("brushstart", _.bind(self.brush_start, self))
+                    .on("brush", _.bind(self.brush_move, self))
+                    .on("brushend", _.bind(self.brush_end, self));
 
                 self.is_x_date = (self.x_scale.model.type === "date");
                 self.is_y_date = (self.y_scale.model.type === "date");
@@ -119,9 +119,9 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
                 self.brush = d3.svg.brush()
                     .x(self.scale.scale)
-                    .on("brushstart", $.proxy(self.brush_start, self))
-                    .on("brush", $.proxy(self.brush_move, self))
-                    .on("brushend", $.proxy(self.brush_end, self));
+                    .on("brushstart", _.bind(self.brush_start, self))
+                    .on("brush", _.bind(self.brush_move, self))
+                    .on("brushend", _.bind(self.brush_end, self));
 
                 self.el.attr("class", "selector brushintsel");
 
@@ -137,7 +137,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.touch();
         },
         brush_move: function () {
-            var extent = this.brush.empty() ? 
+            var extent = this.brush.empty() ?
                 this.scale.scale.domain() : this.brush.extent();
             this.convert_and_save(extent);
         },
@@ -150,7 +150,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         convert_and_save: function(extent) {
             var self = this;
             var idx_selected = this.mark_views.map(function(mark_view) {
-                return mark_view.invert_range(self.scale.scale(extent[0]), 
+                return mark_view.invert_range(self.scale.scale(extent[0]),
                                               self.scale.scale(extent[1]));
             });
             this.model.set("idx_selected", idx_selected);
@@ -186,7 +186,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         //the list remove_classes
         //selection attribute should be a d3-selection
         if(remove_classes) {
-            remove_classes.forEach(function(r_class) { 
+            remove_classes.forEach(function(r_class) {
                 selection.classed(r_class, false);
             });
         }

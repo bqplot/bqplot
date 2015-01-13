@@ -40,9 +40,9 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
                     .attr("pointer-events", "all")
                     .attr("visibility", "hidden");
 
-                self.background.on("mousemove", $.proxy(self.mousemove, self))
-                    .on("click", $.proxy(self.click, self))
-                    .on("dblclick", $.proxy(self.dblclick, self));
+                self.background.on("mousemove", _.bind(self.mousemove, self))
+                    .on("click", _.bind(self.click, self))
+                    .on("dblclick", _.bind(self.dblclick, self));
 
                 self.rect = self.el.append("rect")
                 .attr("class", "selector intsel")

@@ -43,15 +43,15 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
                     .attr("pointer-events", "all")
                     .attr("visibility", "hidden");
 
-                self.background.on("mousemove", $.proxy(self.mousemove, self))
-                    .on("click", $.proxy(self.initial_click, self));
+                self.background.on("mousemove", _.bind(self.mousemove, self))
+                    .on("click", _.bind(self.initial_click, self));
                 self.create_listeners();
             });
         },
         initial_click: function() {
             this.line.attr("visibility", "visible");
             this.click();
-            this.background.on("click", $.proxy(this.click, this));
+            this.background.on("click", _.bind(this.click, this));
         },
         click: function () {
             this.active = !this.active;
@@ -67,7 +67,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             this.line.attr({x1: xpixel, x2: xpixel});
             this.model.set_typed_field("selected", [this.invert_pixel(xpixel)]);
             var idx_selected = this.mark_views.map(function(mark_view) {
-                return mark_view.invert_point(xpixel); 
+                return mark_view.invert_point(xpixel);
             });
             this.model.set("idx_selected", idx_selected);
             this.touch();
@@ -81,7 +81,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             this.line.attr("x1", 0)
                 .attr("x2", 0)
                 .attr("visibility", "hidden");
-            this.background.on("click", $.proxy(this.initial_click, this));
+            this.background.on("click", _.bind(this.initial_click, this));
             this.scale = this.parent.x_scale;
         },
         remove: function() {

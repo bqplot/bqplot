@@ -34,7 +34,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("pointer-events", "all")
               .attr("height", this.height)
               .style("pointer-events", "all")
-              .on("click", $.proxy(this.click, this));
+              .on("click", _.bind(this.click, this));
 
             var that = this;
             this.drag_listener = d3.behavior.drag()
@@ -383,8 +383,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("class", "legend" + this.uuid)
               .attr("transform", function(d, i) {
                   return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
-              }).on("mouseover", $.proxy(this.highlight_axis, this))
-              .on("mouseout", $.proxy(this.unhighlight_axis, this))
+              }).on("mouseover", _.bind(this.highlight_axis, this))
+              .on("mouseout", _.bind(this.unhighlight_axis, this))
               .append("path")
               .attr("transform", function(d, i) {
                   return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
