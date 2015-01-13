@@ -166,8 +166,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.el.style("display", visible ? "inline" : "none");
         },
         get_colors: function(index) {
-            //function to cycle colors when number of children are more than
-            //number of colors.
+            // cycles over the list of colors when too many items
             this.colors = this.model.get("colors");
             var len = this.colors.length;
             return this.colors[index % len];

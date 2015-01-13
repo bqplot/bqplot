@@ -84,12 +84,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                   .attr("stop-color", "black")
                   .attr("stop-opacity", 0);
 
-            this.bg = this.fig
-                .append("rect")
-                  .attr("x", 0).attr("y", 0)
-                  .attr("width", this.plotarea_width)
-                  .attr("height", this.plotarea_height)
-                  .attr("fill", "url(#" + gradient_id + ")");
+            this.bg = this.fig.append("rect")
+              .attr("x", 0).attr("y", 0)
+              .attr("width", this.plotarea_width)
+              .attr("height", this.plotarea_height)
+              .attr("fill", "url(#" + gradient_id + ")");
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
@@ -106,23 +105,21 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             */
 
             this.clip_path = this.svg.select("defs")
-                .append("svg:clipPath")
-                .attr("id", this.clip_id)
-                .append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", this.plotarea_width)
-                .attr("height", this.plotarea_height);
+              .append("svg:clipPath")
+              .attr("id", this.clip_id)
+              .append("rect")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", this.plotarea_width)
+              .attr("height", this.plotarea_height);
 
             this.title = this.fig.append("text")
-                .attr("class", "mainheading")
-                .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
-                .text(this.model.get("title"));
+              .attr("class", "mainheading")
+              .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
+              .text(this.model.get("title"));
 
-            var that = this;
-            // display the children
             var figure_scale_promise = this.create_figure_scales();
-
+            var that = this;
             figure_scale_promise.then(function() {
                 that.mark_views = new widget.ViewList(that.add_mark, that.remove_mark, that);
                 that.mark_views.update(that.model.get("marks"));
@@ -234,7 +231,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }
 
             var scale_id = scale_model.id;
-            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ? 
+            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
                 this.x_padding_arr[scale_id] : 0;
             return (this.plotarea_width) * (1 - this.figure_padding_x) - scale_padding - scale_padding;
         },
@@ -261,8 +258,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             if(dict[scale_id] !== undefined) {
                 delete dict[scale_id][mark_model.id];
             }
-            if(Object.keys(dict[scale_id]).length == 0)
+            if(Object.keys(dict[scale_id]).length == 0) {
                 delete dict[scale_id];
+            }
         },
         update_padding_dict: function(dict, mark_model, scale_model, value) {
             var scale_id = scale_model.id;
@@ -313,7 +311,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             model.on("scales_updated", function() {
                 self.mark_scales_updated(model);
             }, this);
-            model.on("mark_padding_updated", function() { 
+            model.on("mark_padding_updated", function() {
                 self.mark_padding_updated(model);
             }, this);
 
@@ -377,7 +375,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
             this.svg.attr("width", null);
-            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") 
+            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width")
                                       + " " + this.model.get("min_height"));
             setTimeout($.proxy(this.update_layout2, this), 0);
         },
@@ -409,8 +407,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             // transform figure
             this.fig.attr("transform", "translate(" + this.margin.left + ","
                                                     + this.margin.top + ")");
-            this.title.attr({x: (0.5 * (this.plotarea_width)), 
-                             y: -(this.margin.top / 2.0), 
+            this.title.attr({x: (0.5 * (this.plotarea_width)),
+                             y: -(this.margin.top / 2.0),
                              dy: "1em"});
 
             this.bg
@@ -443,7 +441,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     if(mark_view.model.get("display_legend")) {
                         var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
                         count = count + child_count[0];
-                        max_label_len = (child_count[1]) ? 
+                        max_label_len = (child_count[1]) ?
                             Math.max(max_label_len, child_count[1]) : max_label_len;
                     }
                 });
@@ -453,7 +451,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     legend_g.append("g")
                       .attr("class", "axis")
                     .append("rect")
-                      .attr({"y": (legend_height + 2) / 2.0, 
+                      .attr({"y": (legend_height + 2) / 2.0,
                              "x": (-0.5 * (legend_height + 2))})
                       .attr("width", (max_label_len+2) + "em")
                       .attr("height", (count * (legend_height + 2)))

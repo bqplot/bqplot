@@ -101,7 +101,6 @@ class Mark(Widget):
     """
     scales = Dict(sync=True)
     preserve_domain = Dict(allow_none=False, sync=True)
-    children = List([], sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1, display_name='Display legend')
     animate_dur = Int(0, sync=True, exposed=True, display_index=2, display_name='Animation duration')
     labels = UnicodeList(sync=True, exposed=True, display_index=3, display_name='Labels')
