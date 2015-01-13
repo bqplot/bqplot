@@ -63,8 +63,12 @@ define(["widgets/js/manager", "d3", "./DateScaleModel"], function(WidgetManager,
                return;
             }
             var data = data_array[0] instanceof Array ? data_array : [data_array];
-            var min = (!this.min_from_data) ? this.min : d3.min(data.map(function(d) { return d3.min(d); }));
-            var max = (!this.max_from_data) ? this.max : d3.max(data.map(function(d) { return d3.max(d); }));
+            var min = (!this.min_from_data) ? this.min : d3.min(data.map(function(d) {
+                return d3.min(d);
+            }));
+            var max = (!this.max_from_data) ? this.max : d3.max(data.map(function(d) {
+                return d3.max(d);
+            }));
             this.set_domain([min, max], id);
         },
     });

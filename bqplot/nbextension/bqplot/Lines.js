@@ -251,16 +251,22 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             this.el.selectAll(".curve")
                 .select(".curve_label")
-                .attr("display", function(d) { return that.model.get("labels_visibility") === "label" ? "inline" : "none"; });
+                .attr("display", function(d) {
+                    return that.model.get("labels_visibility") === "label" ? "inline" : "none";
+                });
 
             // alter the display only if a few of the curves are visible
             if(this.model.get("curves_subset").length > 0) {
                 this.el.selectAll(".curve")
                     .select("path")
-                    .attr("display", function(d, i) { return curves_subset.indexOf(i) !== -1 ? "inline" : "none"; });
+                    .attr("display", function(d, i) {
+                        return curves_subset.indexOf(i) !== -1 ? "inline" : "none"; 
+                    });
                 this.el.selectAll(".curve")
                     .select(".curve_label")
-                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ? "inline" : "none"; });
+                    .attr("display", function(d, i) {
+                        return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ? "inline" : "none";
+                    });
             }
             this.create_labels();
         },

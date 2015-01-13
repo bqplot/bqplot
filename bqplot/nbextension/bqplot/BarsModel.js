@@ -43,7 +43,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 this.is_y_2d = false;
             }
             else {
-                x_data = x_data.slice(0, d3.min(y_data.map(function(d) { return d.length; })));
+                x_data = x_data.slice(0, d3.min(y_data.map(function(d) {
+                    return d.length;
+                })));
                 this.mark_data = x_data.map(function (x_elem, index) {
                     var data = {};
                     var y0 = 0;
@@ -100,7 +102,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var y_scale = scales["y"];
 
             if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.key; }), this.id);
+                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { 
+                    return elem.key;
+                }), this.id);
             }
             else {
                 x_scale.del_domain([], this.id);

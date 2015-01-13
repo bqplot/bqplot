@@ -41,9 +41,15 @@ define(["widgets/js/manager", "d3", "./Overlay" ], function(WidgetManager, d3, O
                 return mark_model.id; // Model ids of the marks of the selector
             });
             return Promise.all(fig.mark_views.views).then(function(views) {
-                var fig_mark_ids = fig.mark_views._models.map(function(mark_model) { return mark_model.id; });  // Model ids of the marks in the figure
-                var mark_indices = mark_ids.map(function(mark_model_id) { return fig_mark_ids.indexOf(mark_model_id); });  // look up based on model ids
-                self.mark_views = mark_indices.map(function(elem) { return views[elem]; });  // return the views. Based on the assumption that fig.mark_views is an ordered list
+                var fig_mark_ids = fig.mark_views._models.map(function(mark_model) {
+                    return mark_model.id;
+                });  // Model ids of the marks in the figure
+                var mark_indices = mark_ids.map(function(mark_model_id) {
+                    return fig_mark_ids.indexOf(mark_model_id); // look up based on model ids
+                });
+                self.mark_views = mark_indices.map(function(elem) {
+                    return views[elem]; // return the views, based on the assumption that fig.mark_views is an ordered list
+                });
             });
         },
     });
