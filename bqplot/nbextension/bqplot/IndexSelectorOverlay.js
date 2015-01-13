@@ -66,7 +66,9 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             //update the index vertical line
             this.line.attr({x1: xpixel, x2: xpixel});
             this.model.set_typed_field("selected", [this.invert_pixel(xpixel)]);
-            var idx_selected = this.mark_views.map(function(mark_view) { return mark_view.invert_point(xpixel); });
+            var idx_selected = this.mark_views.map(function(mark_view) {
+                return mark_view.invert_point(xpixel); 
+            });
             this.model.set("idx_selected", idx_selected);
             this.touch();
         },

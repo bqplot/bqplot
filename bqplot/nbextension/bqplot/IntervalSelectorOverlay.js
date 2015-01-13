@@ -59,7 +59,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
         click: function () {
             this.active = true;
             this.rect.style("display", "inline");
-            this.freeze_but_move = this.model.get("size") ? true: !this.freeze_but_move;
+            this.freeze_but_move = this.model.get("size") ?
+                true : !this.freeze_but_move;
         },
         dblclick: function () {
             this.freeze_dont_move = !this.freeze_dont_move;
@@ -70,9 +71,11 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             }
 
             var mouse_pos = d3.mouse(this.background.node());
-            var int_len = this.size > 0 ? this.size : parseInt(this.rect.attr("width"));
+            var int_len = this.size > 0 ?
+                this.size : parseInt(this.rect.attr("width"));
             var vert_factor = (this.height - mouse_pos[1]) / this.height;
-            var interval_size = this.freeze_but_move ? int_len : Math.round(vert_factor * this.width);
+            var interval_size = this.freeze_but_move ?
+                int_len : Math.round(vert_factor * this.width);
 
             var start;
             if (mouse_pos[0] - interval_size / 2 < 0)
@@ -86,7 +89,9 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             this.rect.attr("x", start);
             this.rect.attr("width", interval_size);
             this.model.set_typed_field("selected", this.invert_range(start, start + interval_size));
-            var idx_selected = this.mark_views.map(function(mark_view) { return mark_view.invert_range(start, start + interval_size); });
+            var idx_selected = this.mark_views.map(function(mark_view) {
+                return mark_view.invert_range(start, start + interval_size);
+            });
             this.model.set("idx_selected", idx_selected);
             this.touch();
         },

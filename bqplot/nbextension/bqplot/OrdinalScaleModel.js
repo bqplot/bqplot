@@ -42,8 +42,11 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
         },
         update_domain: function() {
             var domain = [];
-            for (id in this.domains) { domain = _.union(domain, this.domains[id]); }
-            if(this.domain.length !== domain.length || (_.intersection(this.domain, domain)).length !== domain.length) {
+            for (id in this.domains) {
+                domain = _.union(domain, this.domains[id]);
+            }
+            if(this.domain.length !== domain.length ||
+               (_.intersection(this.domain, domain)).length !== domain.length) {
                 this.domain = domain;
                 this.trigger("domain_changed", domain);
             }

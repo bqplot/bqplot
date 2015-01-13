@@ -28,7 +28,9 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
             // Register the mouse callback when the mark view promises are
             // resolved.
             this.set_lines_view().then(function() {
-                that.el.on("mousedown", function() { return that.mousedown(); })
+                that.el.on("mousedown", function() {
+                    return that.mousedown();
+                })
             });
 
             // Update line index
@@ -50,7 +52,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
             this.active = true;
             this.mouse_entry(false);
             var that = this;
-            this.el.on("mousemove", function() { that.mousemove(); })
+            this.el.on("mousemove", function() { that.mousemove(); });
             this.el.on("mouseleave", function() { that.mouseup(); });
             this.el.on("mouseup", function() { that.mouseup(); });
         },
@@ -99,8 +101,8 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                     return {x: d, y: that.lines_model.y_data[that.line_index][i]};
                 });
                 this.lines_view.el.select("#curve" + (that.line_index + 1))
-                    .attr("d", function(d) { 
-                        return that.lines_view.line(xy_data); 
+                    .attr("d", function(d) {
+                        return that.lines_view.line(xy_data);
                     });
                 this.previous_pos = mouse_pos;
             }
@@ -114,8 +116,8 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
             // Nearest neighbor search
             idx = this.lines_view.bisect(x_data, x);
             if (x - x_data[idx-1] > x_data[idx] - x) {
-                return idx; 
-            } else { 
+                return idx;
+            } else {
                 return idx-1;
             }
         },

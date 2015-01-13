@@ -26,10 +26,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             //assumption.
             return base_render_promise.then(function() {
                 self.line = d3.svg.line()
-                    .interpolate(self.model.get("interpolate"))
-                    .x(function(d) { return self.x_scale.scale(d.x) + self.x_offset; })
-                    .y(function(d) { return self.y_scale.scale(d.y) + self.y_offset; })
-                    .defined(function(d) { return d.y !== null; });
+                  .interpolate(self.model.get("interpolate"))
+                  .x(function(d) { return self.x_scale.scale(d.x) + self.x_offset; })
+                  .y(function(d) { return self.y_scale.scale(d.y) + self.y_offset; })
+                  .defined(function(d) { return d.y !== null; });
                 self.create_listeners();
                 self.draw();
             }, null);
@@ -46,23 +46,19 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         update_legend_labels: function() {
             if(this.model.get("labels_visibility") === "none") {
                 this.el.selectAll(".legend")
-                    .attr("display", "none");
-
+                  .attr("display", "none");
                 this.el.selectAll(".curve_label")
-                    .attr("display", "none");
+                  .attr("display", "none");
             } else if(this.model.get("labels_visibility") === "label") {
-
                 this.el.selectAll(".legend")
-                    .attr("display", "none");
-
+                  .attr("display", "none");
                 this.el.selectAll(".curve_label")
-                    .attr("display", "inline");
+                  .attr("display", "inline");
             } else {
                 this.el.selectAll(".legend")
-                    .attr("display", "inline");
-
+                  .attr("display", "inline");
                 this.el.selectAll(".curve_label")
-                    .attr("display", "none");
+                  .attr("display", "none");
             }
         },
         get_line_style: function() {
@@ -94,20 +90,26 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             // update curve colors
             this.el.selectAll(".curve").select("path")
-                .style("stroke", function(d, i) { return that.get_colors(i); });
+                .style("stroke", function(d, i) {
+                    return that.get_colors(i);
+                });
             // update legend colors
             if (this.legend_el){
                 this.legend_el.select("line")
-                    .style("stroke", function(d, i) { return that.get_colors(i); });
+                  .style("stroke", function(d, i) {
+                      return that.get_colors(i);
+                  });
                 this.legend_el.select("text")
-                    .style("fill", function(d, i) { return that.get_colors(i); });
+                  .style("fill", function(d, i) {
+                      return that.get_colors(i);
+                  });
             }
         },
         update_interpolate: function(model, interpolate) {
             var that = this;
             this.line.interpolate(interpolate);
             this.el.selectAll(".curve").selectAll("path")
-                .attr("d", function(d) { return that.line(d.values); });
+              .attr("d", function(d) { return that.line(d.values); });
         },
         rescale: function() {
             Lines.__super__.rescale.apply(this);
@@ -115,24 +117,28 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
-                  .transition().duration(this.model.get("animate_dur"))
-                  .attr("d", function(d) { return that.line(d.values); });
+              .transition().duration(this.model.get("animate_dur"))
+              .attr("d", function(d) { return that.line(d.values); });
             this.create_labels();
         },
         invert_range: function(start_pxl, end_pxl) {
             var self = this;
             var start = this.x_scale.scale.invert(start_pxl);
             var end = this.x_scale.scale.invert(end_pxl);
-            var data = this.model.x_data[0] instanceof Array ? this.model.x_data[0] : this.model.x_data;
+            var data = this.model.x_data[0] instanceof Array ?
+                this.model.x_data[0] : this.model.x_data;
 
-            var indices = [start, end].map(function(elem) { return self.bisect(data, elem); });
+            var indices = [start, end].map(function(elem) {
+                return self.bisect(data, elem);
+            });
             this.model.set("idx_selected", indices);
             this.touch();
             return indices;
         },
         invert_point: function(pixel) {
             var data_point = this.x_scale.scale.invert(pixel);
-            var data = this.model.x_data[0] instanceof Array ? this.model.x_data[0] : this.model.x_data;
+            var data = this.model.x_data[0] instanceof Array ?
+                this.model.x_data[0] : this.model.x_data;
 
             var index = this.bisect(data, data_point);
             this.model.set("idx_selected", [index]);
@@ -144,12 +150,15 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var x_start = brush_extent[0];
             var x_end = brush_extent[1];
 
-            var data = this.model.x_data[0] instanceof Array ? this.model.x_data[0] : this.model.x_data;
+            var data = this.model.x_data[0] instanceof Array ?
+                this.model.x_data[0] : this.model.x_data;
             var idx_start = this.bisect(data, x_start);
             var idx_end = this.bisect(data, x_end);
 
-            x_start = (this.x_scale.model.type === "date") ? this.x_scale.format_date(x_start) : x_start;
-            x_end = (this.x_scale.model.type === "date") ? this.x_scale.format_date(x_end) : x_end;
+            x_start = (this.x_scale.model.type === "date") ?
+                this.x_scale.format_date(x_start) : x_start;
+            x_end = (this.x_scale.model.type === "date") ?
+                this.x_scale.format_date(x_end) : x_end;
 
             this.selector_model.set("idx_selected", [idx_start, idx_end]);
             this.selector.touch();
@@ -164,8 +173,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.legend_el.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
-                .attr("transform", function(d, i) { return "translate(0, " + (i * inter_y_disp + y_disp)  + ")"; })
-                .on("mouseover", $.proxy(this.highlight_axis, this))
+                .attr("transform", function(d, i) {
+                    return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
+                }).on("mouseover", $.proxy(this.highlight_axis, this))
                 .on("mouseout", $.proxy(this.unhighlight_axis, this))
               .append("line")
                 .style("stroke", function(d,i) { return that.get_colors(i); })
@@ -181,7 +191,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .text(function(d, i) {return that.model.curve_labels[i]; })
                 .style("fill", function(d,i) { return that.get_colors(i); });
 
-            var max_length = d3.max(this.model.curve_labels, function(d) { return d.length; });
+            var max_length = d3.max(this.model.curve_labels, function(d) {
+                return d.length;
+            });
             this.legend_el.exit().remove();
             return [this.model.mark_data.length, max_length];
         },
@@ -192,16 +204,20 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             curves_sel.selectAll(".curve_label").remove();
             curves_sel.append("text")
                     .attr("class", "curve_label")
-                    .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-                    .attr("transform", function(d) { return "translate(" + that.x_scale.scale(d.value.x) + "," + that.y_scale.scale(d.value.y) + ")"; })
-                    .attr("x", 3)
+                    .datum(function(d) {
+                        return {name: d.name, value: d.values[d.values.length - 1]};
+                    }).attr("transform", function(d) {
+                        return "translate(" + that.x_scale.scale(d.value.x) + "," + that.y_scale.scale(d.value.y) + ")";
+                    }).attr("x", 3)
                     .attr("dy", ".35em")
-                    .attr("display", function(d) { return (that.model.get("labels_visibility") !== "label") ? "none" : "inline"; })
-                    .text(function(d) { return d.name; });
+                    .attr("display", function(d) { return (that.model.get("labels_visibility") !== "label") ?
+                          "none" : "inline";
+                    }).text(function(d) { return d.name; });
         },
         legend_click: function(index) {
             var path = "#curve" + (index + 1);
-            var opacity = this.model.mark_data[index].opacity = (this.model.mark_data[index].opacity === 1) ? 0.1 : 1;
+            var opacity = this.model.mark_data[index].opacity = (this.model.mark_data[index].opacity === 1) ?
+                0.1 : 1;
             this.el.select("#legend"+(index+1))
                 .style("opacity", opacity + 0.4);
             this.el.select(path).style("opacity", opacity);
@@ -214,13 +230,22 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if (curves_subset.length > 1) {
                 this.el.selectAll(".curve")
                     .select("path")
-                    .attr("display", function(d, i) { return curves_subset.indexOf(i) !== -1 ? "inline" : "none"; });
+                    .attr("display", function(d, i) {
+                        return curves_subset.indexOf(i) !== -1 ?
+                            "inline" : "none";
+                    });
                 this.el.selectAll(".curve")
                     .select(".curve_label")
-                    .attr("display", function(d, i) { return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ? "inline" : "none"; });
+                    .attr("display", function(d, i) {
+                        return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
+                            "inline" : "none";
+                    });
             } else { //make all curves visible
                 this.el.selectAll(".curve").select("path").attr("display", "inline");
-                this.el.selectAll(".curve").select(".curve_label").attr("display", function(d) { return that.model.get("labels_visibility") === "label" ? "inline" : "none"; });
+                this.el.selectAll(".curve").select(".curve_label").attr("display", function(d) {
+                    return that.model.get("labels_visibility") === "label" ?
+                        "inline" : "none";
+                });
             }
         },
         draw: function() {
@@ -252,7 +277,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.el.selectAll(".curve")
                 .select(".curve_label")
                 .attr("display", function(d) {
-                    return that.model.get("labels_visibility") === "label" ? "inline" : "none";
+                    return that.model.get("labels_visibility") === "label" ?
+                        "inline" : "none";
                 });
 
             // alter the display only if a few of the curves are visible
@@ -260,12 +286,14 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.el.selectAll(".curve")
                     .select("path")
                     .attr("display", function(d, i) {
-                        return curves_subset.indexOf(i) !== -1 ? "inline" : "none"; 
+                        return curves_subset.indexOf(i) !== -1 ?
+                            "inline" : "none";
                     });
                 this.el.selectAll(".curve")
                     .select(".curve_label")
                     .attr("display", function(d, i) {
-                        return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ? "inline" : "none";
+                        return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
+                            "inline" : "none";
                     });
             }
             this.create_labels();

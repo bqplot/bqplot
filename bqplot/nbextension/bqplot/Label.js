@@ -39,9 +39,15 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             Label.__super__.create_listeners.apply(this);
             this.model.on("change:text", this.update_text, this);
             this.model.on_some_change(["font_weight", "font_size", "color", "align"], this.update_style, this);
-            this.model.on("change:rotate_angle", function(model, value) { this.rotate_angle = value; this.apply_net_transform(); }, this);
-            this.model.on("change:y_offset", function(model, value) { this.y_offset = value; this.apply_net_transform(); }, this);
-            this.model.on("change:x_offset", function(model, value) { this.x_offset = value; this.apply_net_transform(); }, this);
+            this.model.on("change:rotate_angle", function(model, value) {
+                this.rotate_angle = value; this.apply_net_transform();
+            }, this);
+            this.model.on("change:y_offset", function(model, value) {
+                this.y_offset = value; this.apply_net_transform(); 
+            }, this);
+            this.model.on("change:x_offset", function(model, value) {
+                this.x_offset = value; this.apply_net_transform();
+            }, this);
             this.model.on_some_change(["x", "y"], this.apply_net_transform, this);
         },
         rescale: function() {

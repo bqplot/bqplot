@@ -130,7 +130,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .attr("y", 0)
                     .attr("height", this.bar_height)
                     .attr("width", bar_width)
-                    .style("fill",function(d) { return d; });
+                    .style("fill", function(d) { return d; });
 
                 if(this.vertical) {
                     rects.attr("x", function(d, i) {

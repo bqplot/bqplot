@@ -28,7 +28,9 @@ define(["d3"], function(d3) {
         },
         deep_2d_copy: function(array) {
             // FIXME: Nooooo!
-            return array.map(function(d) { return d.slice(0); });
+            return array.map(function(d) {
+                return d.slice(0);
+            });
         }
     }
 });

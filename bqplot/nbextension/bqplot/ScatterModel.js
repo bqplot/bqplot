@@ -57,7 +57,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 var opacity = this.get_typed_field("opacity");
                 var names = this.get_typed_field("names");
                 var show_labels = (names.length !== 0);
-                names = (show_labels) ? names : x_data.map(function(dat, ind) { return "Dot" + ind; });
+                names = (show_labels) ? names : x_data.map(function(dat, ind) {
+                    return "Dot" + ind;
+                });
 
                 if(color_scale) {
                     if(!this.get("preserve_domain")["color"]) {
@@ -67,7 +69,14 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                     }
                 }
 
-                this.mark_data = x_data.map(function(d, i) { return {x: d, y: y_data[i], z: color[i], size: size[i], opacity: opacity[i], name: names[i] }; });
+                this.mark_data = x_data.map(function(d, i) {
+                    return {x: d,
+                            y: y_data[i],
+                            z: color[i],
+                            size: size[i],
+                            opacity: opacity[i],
+                            name: names[i]};
+                });
             }
 
             this.update_domains();
@@ -84,25 +93,33 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var opacity_scale = scales["opacity"];
 
             if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.x; }), this.id);
+                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.x;
+                }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
             if(!this.get("preserve_domain")["y"]) {
-                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.y; }), this.id);
+                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.y;
+                }), this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
             if(size_scale) {
                 if(!this.get("preserve_domain")["size"]) {
-                    size_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.size; }), this.id);
+                    size_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                        return elem.size;
+                    }), this.id);
                 } else {
                     size_scale.del_domain([], this.id);
                 }
             }
             if(opacity_scale) {
                 if(!this.get("preserve_domain")["opacity"]) {
-                    opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.opacity; }), this.id);
+                    opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                        return elem.opacity;
+                    }), this.id);
                 } else {
                     opacity_scale.del_domain([], this.id);
                 }

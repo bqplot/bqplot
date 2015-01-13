@@ -37,7 +37,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             Overlay.__super__.remove.apply(this);
             this.el.remove();
         }
-
     });
 
     WidgetManager.WidgetManager.register_widget_view("bqplot.Overlay", Overlay);

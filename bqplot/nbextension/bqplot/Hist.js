@@ -39,7 +39,9 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             }
             var that = this;
             var colors = this.model.get("colors");
-            this.bar_index_sel.forEach(function(d) { that.el.selectAll("#rect" + d).attr("fill", colors[0]); });
+            this.bar_index_sel.forEach(function(d) {
+                that.el.selectAll("#rect" + d).attr("fill", colors[0]);
+            });
             this.bar_index_sel = [];
             this.sel_indices = [];
             this.selector_model.set("selected", jQuery.extend(true, [], []));
@@ -134,7 +136,9 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
 			    .data(this.model.mark_data)
 		        .enter().append("g")
 			    .attr("class","bar")
-			    .attr("transform", function(d) { return "translate(" + that.x_scale.scale(d.x) + "," + that.y_scale.scale(d.y) + ")"; });
+			    .attr("transform", function(d) {
+                    return "translate(" + that.x_scale.scale(d.x) + "," + that.y_scale.scale(d.y) + ")";
+                });
 
 		    bar.append("rect")
                 .attr("class", "rect")
@@ -170,8 +174,10 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                                 return;
                             }
                             that.sel_indices.forEach(function(elem) { buffer_index.push(elem); });
-                            min_index = (that.bar_index_sel.length !== 0) ? d3.min(that.bar_index_sel) : -1;
-                            max_index = (that.bar_index_sel.length !== 0) ? d3.max(that.bar_index_sel) : (that.mark_data).length;
+                            min_index = (that.bar_index_sel.length !== 0) ?
+                                d3.min(that.bar_index_sel) : -1;
+                            max_index = (that.bar_index_sel.length !== 0) ?
+                                d3.max(that.bar_index_sel) : (that.mark_data).length;
                             if(i > max_index){
                                 that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) {
                                     data_elem.map(function(elem) {
@@ -246,7 +252,9 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                 .text(function(d, i) {return that.model.get("labels")[i]; })
                 .style("fill", function(d,i) { return that.get_colors(i); });
 
-            var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
+            var max_length = d3.max(this.model.get("labels"), function(d) {
+                return d.length;
+            });
 
             this.legend_el.exit().remove();
             return [1, max_length];

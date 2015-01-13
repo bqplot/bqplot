@@ -18,8 +18,9 @@ define(["widgets/js/manager", "d3", "./LinearColorScale", "./ColorUtils"], funct
     var DateColorScale = LinearColorScaleView.extend({
         render: function(){
             this.scale = d3.time.scale();
-            if(this.model.domain.length > 0)
+            if(this.model.domain.length > 0) {
                 this.scale.domain(this.model.domain);
+            }
             this.offset = 0;
             this.ticks = this.model.ticks;
             this.scheme = this.model.scheme = this.model.get("scheme");

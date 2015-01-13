@@ -32,7 +32,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                            });
                        });
                     } else {
-                        return_value = return_value.map(function(val) { return self.convert_to_date(val); });
+                        return_value = return_value.map(function(val) {
+                            return self.convert_to_date(val);
+                        });
                     }
                 } else {
                     return_value = this.get(param)["values"];

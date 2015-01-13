@@ -48,8 +48,9 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
             }
         },
         compute_and_set_domain: function(data_array, id) {
-            if(!this.min_from_data && !this.max_from_data)
+            if(!this.min_from_data && !this.max_from_data) {
                 return;
+            }
             if(data_array.length === 0) {
                this.set_domain([0, 1], id);
                return;

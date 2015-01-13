@@ -137,11 +137,13 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.touch();
         },
         brush_move: function () {
-            var extent = this.brush.empty() ? this.scale.scale.domain() : this.brush.extent();
+            var extent = this.brush.empty() ? 
+                this.scale.scale.domain() : this.brush.extent();
             this.convert_and_save(extent);
         },
         brush_end: function () {
-            var extent = this.brush.empty() ? this.scale.scale.domain() : this.brush.extent();
+            var extent = this.brush.empty() ?
+                this.scale.scale.domain() : this.brush.extent();
             this.model.set("brushing", false);
             this.convert_and_save(extent);
         },
@@ -184,10 +186,14 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         //the list remove_classes
         //selection attribute should be a d3-selection
         if(remove_classes) {
-            remove_classes.forEach(function(r_class) { selection.classed(r_class, false); });
+            remove_classes.forEach(function(r_class) { 
+                selection.classed(r_class, false);
+            });
         }
         if(add_classes) {
-            add_classes.forEach(function(a_class) { selection.classed(a_class, true); });
+            add_classes.forEach(function(a_class) {
+                selection.classed(a_class, true);
+            });
         }
     };
 
@@ -199,7 +205,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.names = this.model.get("names");
             this.curr_index = 0;
 
-            var name = (this.names.length > this.curr_index) ? this.names[this.curr_index] : this.curr_index;
+            var name = (this.names.length > this.curr_index) ?
+                this.names[this.curr_index] : this.curr_index;
 
             var scale_creation_promise = this.create_scales();
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
@@ -248,7 +255,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         create_brush: function(event) {
             // Function to add new brushes.
             var self = this;
-            var name = (this.names.length > this.curr_index) ? this.names[this.curr_index] : this.curr_index;
+            var name = (this.names.length > this.curr_index) ?
+                this.names[this.curr_index] : this.curr_index;
             var index = this.curr_index;
             var brush = d3.svg.brush()
                 .x(this.scale.scale)
@@ -283,16 +291,13 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                     if(d3.event.shiftKey && d3.event.ctrlKey && d3.event.altKey) {
                         self.clear_selectors();
                         self.create_brush();
-                    }
-                    else if(d3.event.ctrlKey) {
+                    } else if(d3.event.ctrlKey) {
                         add_remove_classes(d3.select(this), ["inactive"], ["active"]);
                         self.create_brush(d3.event);
-                    }
-                    else if(d3.event.shiftKey && self.selecting_brush === false) {
+                    } else if(d3.event.shiftKey && self.selecting_brush === false) {
                         add_remove_classes(self.el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
                         self.selecting_brush = true;
-                    }
-                    else {
+                    } else {
                         add_remove_classes(self.el.selectAll(".selector"), ["inactive"], ["visible"]);
                         add_remove_classes(d3.select(this), ["active"], ["inactive"]);
                         old_handler.call(this);

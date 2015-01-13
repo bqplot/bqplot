@@ -55,7 +55,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
 
             this.model.on("change:tick_values", this.tickvalues_changed, this);
             this.model.on("change:tick_format", this.tickformat_changed, this);
-            this.model.on("change:num_ticks", function(model, value) { this.num_ticks=value; this.tickvalues_changed();}, this);
+            this.model.on("change:num_ticks", function(model, value) {
+                this.num_ticks=value; this.tickvalues_changed();
+            }, this);
             this.model.on("change:color", this.update_color, this);
             this.model.on_some_change(["label", "label_color"], this.update_label, this);
             this.model.on_some_change(["grid_color", "grid_lines"], this.update_grid_lines, this);
@@ -92,7 +94,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                         var useticks = [];
                         for (var i = 0; i < allticks.length; i++) {
                             var r = Math.abs(Math.log10(allticks[i]) % 1);
-                            if ((Math.abs(r) < 0.001) || (Math.abs(r-1) < 0.001) || (Math.abs(r-0.30103) < 0.001) || (Math.abs(r-0.69897) < 0.001)) {
+                            if ((Math.abs(r) < 0.001) ||
+                                (Math.abs(r-1) < 0.001) ||
+                                (Math.abs(r-0.30103) < 0.001) ||
+                                (Math.abs(r-0.69897) < 0.001)) {
                                 useticks.push(allticks[i]);
                             }
                         }
@@ -221,7 +226,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
         },
         process_offset: function() {
-            if(typeof this.loc["scale"] === "undefined" && typeof this.loc["value"] === "undefined") {
+            if(typeof this.loc["scale"] === "undefined" &&
+               typeof this.loc["value"] === "undefined") {
                 return this.get_basic_transform();
             } else {
                 var value = this.offset_scale.scale(this.offset_value);
@@ -232,29 +238,38 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         get_label_attributes: function() {
             var label_x = 0;
              if(this.vertical){
-                 if(this.label_loc === "start")
+                 if(this.label_loc === "start") {
                      label_x = -(this.height);
-                 else if(this.label_loc === "middle")
+                 } else if(this.label_loc === "middle") {
                      label_x = -(this.height) / 2;
-
+                 }
                  if(this.side === "right") {
-                        return {transform: "rotate(-90)", x: label_x, y: this.label_offset,
-                            dy: "1ex", dx: "0em"};
+                    return {transform: "rotate(-90)",
+                            x: label_x,
+                            y: this.label_offset,
+                            dy: "1ex",
+                            dx: "0em"};
                  } else {
-                        return {transform: "rotate(-90)", x: label_x, y: this.label_offset,
+                    return {transform: "rotate(-90)",
+                            x: label_x,
+                            y: this.label_offset,
                             dy: "0em", dx: "0em"};
                  }
             } else {
-                if(this.label_loc === "middle")
+                if(this.label_loc === "middle") {
                     label_x = this.width / 2;
-                else if (this.label_loc === "end")
+                } else if (this.label_loc === "end") {
                     label_x = this.width;
-
+                }
                 if(this.side === "top") {
-                    return {x: label_x, y: this.label_offset , dy: "0.75ex",
+                    return {x: label_x,
+                            y: this.label_offset ,
+                            dy: "0.75ex",
                             dx: "0em", transform: ""};
                 } else {
-                    return {x: label_x, y: this.label_offset, dy: "0.25ex",
+                    return {x: label_x,
+                            y: this.label_offset,
+                            dy: "0.25ex",
                             dx: "0em", transform: ""};
                 }
             }
@@ -273,9 +288,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         update_label: function() {
             this.g_axisline.select("text.axislabel").text(this.model.get("label"));
             this.el.selectAll(".axislabel").selectAll("text");
-            if(this.model.get("label_color")!="" && this.model.get("label_color")!=null) {
-                this.g_axisline.select("text.axislabel").style("fill", this.model.get("label_color"));
-                this.el.selectAll(".axislabel").selectAll("text").style("fill", this.model.get("label_color"));
+            if(this.model.get("label_color") !== ""
+               && this.model.get("label_color") !== null) {
+                this.g_axisline.select("text.axislabel")
+                  .style("fill", this.model.get("label_color"));
+                this.el.selectAll(".axislabel").selectAll("text")
+                  .style("fill", this.model.get("label_color"));
             }
 
         },
@@ -304,10 +322,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             // notion of away and towards is different for left/ right and
             // top/bottom axis.
             var index = -1;
-            for(var iter = 0;(iter < units_array.length && index === -1); iter++)
+            for(var iter = 0; (iter < units_array.length && index === -1); iter++) {
                 index = label_offset.indexOf(units_array[iter]);
-            if(index === -1)
+            }
+            if(index === -1) {
                 return label_offset;
+            }
             if(this.side === "top" || this.side === "left") {
                 var num = -1 * parseInt(label_offset.substring(0, index));
                 label_offset = num + label_offset.substring(index);
@@ -343,16 +363,22 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                     .attr("stroke-opacity", 0.4)
                     .attr("stroke-dasharray", grid_type === "solid" ? "none" : ("5, 5"));
 
-                if(this.model.get("grid_color") !== "" && this.model.get("grid_color") !== null) {
-                    grid_lines.selectAll("line.grid-line").attr("stroke", this.model.get("grid_color"));
+                if(this.model.get("grid_color") !== "" &&
+                   this.model.get("grid_color") !== null) {
+                    grid_lines.selectAll("line.grid-line")
+                      .attr("stroke", this.model.get("grid_color"));
                 }
             }
         },
         update_color: function() {
-            if(this.model.get("color") !== "" && this.model.get("color") !== null) {
-                this.el.selectAll(".tick").selectAll("line").style("stroke", this.model.get("color"));
-                this.el.selectAll(".tick").selectAll("text").style("fill", this.model.get("color"));
-                this.el.selectAll(".domain").style("stroke", this.model.get("color"));
+            if(this.model.get("color") !== "" &&
+               this.model.get("color") !== null) {
+                this.el.selectAll(".tick").selectAll("line")
+                  .style("stroke", this.model.get("color"));
+                this.el.selectAll(".tick").selectAll("text")
+                  .style("fill", this.model.get("color"));
+                this.el.selectAll(".domain")
+                  .style("stroke", this.model.get("color"));
             }
         },
         redraw_axisline: function() {
@@ -406,20 +432,25 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 } else {
                    var step = Math.floor(data_array.length / (this.num_ticks - 1));
                    indices = _.range(0, data_array.length, step);
-                   return indices.map(function(index) { return data_array[index]; });
+                   return indices.map(function(index) {
+                       return data_array[index];
+                   });
                 }
             }
             var scale_range = this.axis_scale.scale.domain();
             var max_index = (this.axis_scale.scale.domain().length - 1);
             var step = (scale_range[max_index] - scale_range[0]) / (this.num_ticks - 1);
-            if(this.axis_scale.model.type === "date" || this.axis_scale.model.type === "date_color_linear") {
+            if(this.axis_scale.model.type === "date" ||
+               this.axis_scale.model.type === "date_color_linear") {
             //For date scale, the dates have to be converted into milliseconds
             //since epoch time and then back.
                 scale_range[0] = scale_range[0].getTime();
                 scale_range[max_index] = scale_range[max_index].getTime();
                 var max = (scale_range[max_index] + (step * 0.5));
                 var range_in_times = _.range(scale_range[0], max, step);
-                return range_in_times.map(function(elem) { return new Date(elem); });
+                return range_in_times.map(function(elem) {
+                    return new Date(elem);
+                });
             } else {
                 var max = (scale_range[max_index] + (step * 0.5));
                 return _.range(scale_range[0], max, step);
@@ -431,7 +462,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             if (this.axis_scale) { this.axis_scale.remove(); }
             return this.create_child_view(model).then(function(view) {
                 // Trigger the displayed event of the child view.
-                that.after_displayed(function() { view.trigger("displayed"); }, that);
+                that.after_displayed(function() {
+                    view.trigger("displayed");
+                }, that);
                 that.axis_scale = view;
                 that.axis_scale.on("domain_changed", that.redraw_axisline, that);
                 that.axis_scale.on("highlight_axis", that.highlight_axis, that);
