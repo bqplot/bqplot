@@ -39,7 +39,7 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
             var prev_domain = this.domain;
             if(min != prev_domain[0] || max != prev_domain[max_index]) {
                 if(this.divergent) {
-                    var mid = (this.mid === undefined) ? (min + max) / 2 : this.mid;
+                    var mid = (this.mid === undefined || this.mid === null) ? (min + max) / 2 : this.mid;
                     this.domain = (this.reverse) ? [max, mid, min] : [min, mid, max];
                 } else {
                     this.domain = (this.reverse) ? [max, min] : [min, max];

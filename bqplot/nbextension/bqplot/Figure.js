@@ -196,7 +196,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }
 
             var scale_id = scale_model.id;
-            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ? this.x_padding_arr[scale_id] : 0;
+            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
+                this.x_padding_arr[scale_id] : 0;
             var fig_padding = (this.plotarea_width) * this.figure_padding_x;
             return [(fig_padding + scale_padding), (this.plotarea_width - fig_padding - scale_padding)];
         },
@@ -207,7 +208,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }
 
             var scale_id = scale_model.id;
-            var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ? this.y_padding_arr[scale_id] : 0;
+            var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
+                this.y_padding_arr[scale_id] : 0;
             var fig_padding = (this.plotarea_height) * this.figure_padding_y;
             return [this.plotarea_height - scale_padding - fig_padding, scale_padding + fig_padding];
         },
@@ -222,7 +224,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 return this.plotarea_height;
             }
             var scale_id = scale_model.id;
-            var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ? this.y_padding_arr[scale_id] : 0;
+            var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
+                this.y_padding_arr[scale_id] : 0;
             return (this.plotarea_height) * (1 - this.figure_padding_y) - scale_padding - scale_padding;
         },
         get_mark_plotarea_width: function (scale_model) {
@@ -231,7 +234,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }
 
             var scale_id = scale_model.id;
-            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ? this.x_padding_arr[scale_id] : 0;
+            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ? 
+                this.x_padding_arr[scale_id] : 0;
             return (this.plotarea_width) * (1 - this.figure_padding_x) - scale_padding - scale_padding;
         },
         add_axis: function(model) {
@@ -306,16 +310,22 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             var self = this;
 
             model.on("data_updated redraw_legend", this.update_legend, this);
-            model.on("scales_updated", function() { self.mark_scales_updated(model); }, this);
-            model.on("mark_padding_updated", function() { self.mark_padding_updated(model); }, this);
+            model.on("scales_updated", function() {
+                self.mark_scales_updated(model);
+            }, this);
+            model.on("mark_padding_updated", function() { 
+                self.mark_padding_updated(model);
+            }, this);
 
             var child_x_scale = model.get("scales")["x"];
             var child_y_scale = model.get("scales")["y"];
 
-            if(child_x_scale == undefined)
+            if(child_x_scale == undefined) {
                 child_x_scale = this.scale_x.model;
-            if(child_y_scale == undefined)
+            }
+            if(child_y_scale == undefined) {
                 child_y_scale = this.scale_y.model;
+            }
 
             this.update_padding_dict(this.x_pad_dict, model, child_x_scale, model.x_padding);
             this.update_padding_dict(this.y_pad_dict, model, child_y_scale, model.y_padding);
@@ -367,7 +377,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
             this.svg.attr("width", null);
-            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") + " " + this.model.get("min_height"));
+            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") 
+                                      + " " + this.model.get("min_height"));
             setTimeout($.proxy(this.update_layout2, this), 0);
         },
         update_layout2: function() {
@@ -396,15 +407,18 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.scale_x.set_range([0, this.plotarea_width]);
             this.scale_y.set_range([this.plotarea_height, 0]);
             // transform figure
-            this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-            this.title.attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"});
+            this.fig.attr("transform", "translate(" + this.margin.left + ","
+                                                    + this.margin.top + ")");
+            this.title.attr({x: (0.5 * (this.plotarea_width)), 
+                             y: -(this.margin.top / 2.0), 
+                             dy: "1em"});
 
             this.bg
               .attr("width", this.plotarea_width)
               .attr("height", this.plotarea_height);
 
             this.clip_path.attr("width", this.plotarea_width)
-                .attr("height", this.plotarea_height);
+              .attr("height", this.plotarea_height);
 
             this.trigger("margin_updated");
             this.update_legend();
@@ -419,7 +433,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             var legend_location = this.model.get("legend_location");
 
             var legend_g = this.fig_marks.append("g")
-                .attr("class", "g_legend");
+              .attr("class", "g_legend");
 
             var that = this;
             var count = 1;
@@ -429,22 +443,28 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     if(mark_view.model.get("display_legend")) {
                         var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
                         count = count + child_count[0];
-                        max_label_len = (child_count[1]) ? Math.max(max_label_len, child_count[1]) : max_label_len;
+                        max_label_len = (child_count[1]) ? 
+                            Math.max(max_label_len, child_count[1]) : max_label_len;
                     }
                 });
 
                 var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
                 if(count !== 1) {
                     legend_g.append("g")
-                        .attr("class", "axis")
+                      .attr("class", "axis")
                     .append("rect")
-                        .attr({"y": (legend_height + 2) / 2.0, "x": (-0.5 * (legend_height + 2))})
-                        .attr("width", (max_label_len+2) + "em")
-                        .attr("height", (count * (legend_height + 2)))
-                        .style({"fill": "none"});
+                      .attr({"y": (legend_height + 2) / 2.0, 
+                             "x": (-0.5 * (legend_height + 2))})
+                      .attr("width", (max_label_len+2) + "em")
+                      .attr("height", (count * (legend_height + 2)))
+                      .style({"fill": "none"});
                 }
-                max_label_len = (legend_location === "top" || legend_location === "top-right" || legend_location === "right") ? -(max_label_len + 2) : 1;
-                legend_g.style({"transform": "translate(" + (coords[0]) + "px, " + (coords[1]) + "px) "  + " translateX(" + (max_label_len) + "em)"});
+                max_label_len = (legend_location === "top" ||
+                                 legend_location === "top-right" ||
+                                 legend_location === "right") ? -(max_label_len + 2) : 1;
+                legend_g.style({"transform": "translate(" + (coords[0]) + "px, "
+                                                          + (coords[1]) + "px) "
+                                         + " translateX(" + (max_label_len) + "em)"});
             });
         },
         get_legend_coords: function(legend_location, width, height, disp) {

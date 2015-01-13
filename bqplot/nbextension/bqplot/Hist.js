@@ -94,7 +94,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             this.el.selectAll(".rect")
-                .style("stroke", (stroke === undefined) ? "none" : stroke)
+                .style("stroke", (stroke === null || stroke === undefined) ? "none" : stroke)
                 .style("opacity", opacity);
         },
         calculate_bar_width: function() {

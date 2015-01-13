@@ -318,7 +318,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         get_label: function(index, arr) {
             //arr is optional. If you do not pass anything, this.names is
             //considered arr.
-            if(arr === undefined) {
+            if(arr === undefined || arr === null) {
                 arr = this.names;
             }
             return (arr.length > index) ? arr[index] : index;

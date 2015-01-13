@@ -224,7 +224,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             this.el.selectAll(".bar")
-                .style("stroke", (stroke === undefined) ? "none" : stroke)
+                .style("stroke", (stroke === undefined || stroke === null) ? "none" : stroke)
                 .style("opacity", opacity);
         },
         update_colors: function() {
@@ -333,7 +333,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         set_style_on_elements: function(style, indices) {
             // If the index array is undefined or of length=0, exit the
             // function without doing anything
-            if(indices === undefined || indices.length === 0) {
+            if(!indices || indices.length === 0) {
                 return;
             }
             // Also, return if the style object itself is blank
@@ -356,9 +356,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(this.x_scale.model.type === "ordinal") {
                 return this.x_scale.scale.rangeExtent();
             }
-            else
+            else {
                 return [this.x_scale.scale(d3.min(this.x.domain())),
                         this.x_scale.scale(d3.max(this.x.domain()))];
+            }
         },
         bar_click_handler: function (data, index) {
             var that = this;
@@ -367,7 +368,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 var elem_index = idx_selected.indexOf(index);
                 // index of bar i. Checking if it is already present in the
                 // list
-                if( elem_index > -1 && d3.event.ctrlKey){
+                if( elem_index > -1 && d3.event.ctrlKey) {
                     // if the index is already selected and if ctrl key is
                     // pressed, remove the element from the list
                     idx_selected.splice(elem_index, 1);
@@ -404,13 +405,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 }
                 this.model.set("idx_selected", ((idx_selected.length === 0) ? null : idx_selected), {updated_view: this});
                 this.touch();
-                if (!d3.event)
+                if (!d3.event) {
                     d3.event = window.event;
+                }
                 var e = d3.event;
-                if (typeof(e.cancelBubble) !== "undefined") // IE
+                if (typeof(e.cancelBubble) !== "undefined") { // IE
                     e.cancelBubble = true;
-                if (e.stopPropagation)
+                }
+                if (e.stopPropagation) {
                     e.stopPropagation();
+                }
                 e.preventDefault();
                 this.selected_indices = idx_selected;
                 this.apply_styles(this.selected_indices);

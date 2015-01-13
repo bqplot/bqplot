@@ -79,14 +79,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         convert_to_date: function(elem) {
             // Function to convert the string to a date element
-            if(elem === undefined)  // checks for both undefined and null
+            if(elem === undefined || elem === null) {
                 return null;
+            }
             return new Date(elem);
         },
         convert_to_json: function(elem) {
             // converts the date to a json compliant format
-            if(elem === undefined)
+            if(elem === undefined || elem === null) {
                 return null;
+            }
             return (elem.toJSON === undefined) ? elem : elem.toJSON();
         },
 

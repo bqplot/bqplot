@@ -51,7 +51,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             });
 
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
-                .style("display", this.model.get("visible") ? "inline" : "none");
+              .style("display", this.model.get("visible") ? "inline" : "none");
 
             this.model.on("change:tick_values", this.tickvalues_changed, this);
             this.model.on("change:tick_format", this.tickformat_changed, this);
@@ -80,7 +80,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         set_tick_values: function() {
             if (this.tick_values.length > 0) {
                 this.axis.tickValues(this.tick_values);
-            } else if (this.num_ticks !== undefined) {
+            } else if (this.num_ticks) {
                 this.axis.tickValues(this.get_ticks());
             } else {
                 if (this.axis_scale.model.type === "ordinal") {
@@ -134,17 +134,21 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
         },
         update_axis_domain: function() {
-            var initial_range = (this.vertical) ? this.parent.get_padded_yrange(this.axis_scale.model) : this.parent.get_padded_xrange(this.axis_scale.model);
-            var target_range = (this.vertical) ? this.parent.get_yrange() : this.parent.get_xrange();
+            var initial_range = (this.vertical) ?
+                this.parent.get_padded_yrange(this.axis_scale.model) : this.parent.get_padded_xrange(this.axis_scale.model);
+            var target_range = (this.vertical) ?
+                this.parent.get_yrange() : this.parent.get_xrange();
 
             this.axis_scale.expand_domain(initial_range, target_range);
             this.axis.scale(this.axis_scale.scale);
         },
         generate_tick_formatter: function() {
-            if(this.axis_scale.model.type === "date" || this.axis_scale.model.type === "date_color_linear")
+            if(this.axis_scale.model.type === "date" ||
+               this.axis_scale.model.type === "date_color_linear") {
                 return d3.time.format(this.model.get("tick_format"));
-            else if (this.axis_scale.model.type === "ordinal")
+            } else if (this.axis_scale.model.type === "ordinal") {
                 return function(d) { return d; };
+            }
             return d3.format(this.model.get("tick_format"));
         },
         set_scales_range: function() {
@@ -306,16 +310,17 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         update_label_offset: function(model, offset) {
             this.label_offset = this.extract_label_offset(offset);
             this.g_axisline.select("text.axislabel")
-                .attr("y", this.label_offset);
+              .attr("y", this.label_offset);
         },
         extract_label_offset: function(label_offset) {
             // If the label offset is not defined, depending on the orientation
             // of the axis, an offset is set.
-            if(label_offset === undefined) {
-                if(!this.vertical)
-                    label_offset = "2em"
-                else
-                    label_offset = "4ex"
+            if(!label_offset) {
+                if(!this.vertical) {
+                    label_offset = "2em";
+                } else {
+                    label_offset = "4ex";
+                }
             }
             // Label_offset is a signed distance from the axis line. Positive
             // is away from the figure and negative is towards the figure. The
@@ -361,7 +366,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                     .attr("y2", is_x ? this.height : this.axis_scale.scale)
                     .attr("stroke", "grey")
                     .attr("stroke-opacity", 0.4)
-                    .attr("stroke-dasharray", grid_type === "solid" ? "none" : ("5, 5"));
+                    .attr("stroke-dasharray", grid_type === "solid" ?
+                          "none" : ("5, 5"));
 
                 if(this.model.get("grid_color") !== "" &&
                    this.model.get("grid_color") !== null) {

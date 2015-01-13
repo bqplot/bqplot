@@ -20,7 +20,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var base_creation_promise = Scatter.__super__.render.apply(this);
             this.stroke = this.model.get("stroke");
             this.default_opacity = this.model.get("default_opacity");
-            this.dot = d3.svg.symbol().type(this.model.get("marker")).size(this.model.get("default_size"));
+            this.dot = d3.svg.symbol()
+              .type(this.model.get("marker"))
+              .size(this.model.get("default_size"));
 
             //container for mouse clicks
             this.el.append("rect")
@@ -42,8 +44,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
-
             this.selected_indices = this.model.get("idx_selected");
+
             var self = this;
             return base_creation_promise.then(function() {
                 self.color_scale =  self.scales["color"];
@@ -52,11 +54,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 // the following change handler is for the case when the colors of
                 // the scale change. The positional data does not need to be changed.
                 if(self.color_scale) {
-                    self.color_scale.on("color_scale_range_changed", self.color_scale_updated, self);
+                    self.color_scale.on("color_scale_range_changed",
+                                        self.color_scale_updated, self);
                 }
                 self.create_listeners();
-                self.draw();},
-            null);
+                self.draw();
+            }, null);
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
@@ -76,7 +79,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             this.el.selectAll(".dot")
               .style("fill", this.model.get("fill") ?
-                     function(d) { ireturn that.get_element_color(d); } : "none")
+                     function(d) { return that.get_element_color(d); } : "none")
               .style("stroke", this.stroke ?
                      this.stroke : function(d) {
                   return that.get_element_color(d);
@@ -147,19 +150,19 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         // points of entry to that logic which makes it easier to manage and to
         // keep consistent across different places where we use it.
         get_element_color: function(data) {
-           if(this.color_scale !== undefined && data.z !== undefined) {
+           if(this.color_scale && data.z !== undefined) {
               return this.color_scale.scale(data.z);
            }
            return this.model.get("default_color");
         },
         get_element_size: function(data) {
-           if(this.size_scale !== undefined && data.size !== undefined) {
+           if(this.size_scale && data.size !== undefined) {
               return this.size_scale.scale(data.size);
            }
            return this.model.get("default_size");
         },
         get_element_opacity: function(data) {
-           if(this.opacity_scale !== undefined && data.opacity !== undefined) {
+           if(this.opacity_scale && data.opacity !== undefined) {
               return this.opacity_scale.scale(data.opacity);
            }
            return this.model.get("default_opacity");
@@ -414,7 +417,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 });
         },
         invert_2d_range: function(x_start, x_end, y_start, y_end) {
-            if(x_end === undefined) {
+            if(!x_end) {
                 this.model.set("idx_selected", null);
                 this.touch();
                 return _.range(this.model.mark_data.length);
@@ -442,7 +445,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         set_style_on_elements: function(style, indices) {
             // If the index array is undefined or of length=0, exit the
             // function without doing anything
-            if(indices === undefined || indices.length === 0) {
+            if(!indices || indices.length === 0) {
                 return;
             }
             // Also, return if the style object itself is blank
@@ -458,7 +461,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         set_default_style: function(indices) {
             // For all the elements with index in the list indices, the default
             // style is applied.
-            if(indices === undefined || indices.length === 0) {
+            if(!indices || indices.length === 0) {
                 return;
             }
             var elements = this.el.selectAll(".dot").filter(function(data, index) {
@@ -485,7 +488,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // decide to accomodate more properties than those set by default.
             // Because those have to cleared specifically.
             var elements = this.el.selectAll(".dot");
-            if(indices !== undefined) {
+            if(indices) {
                 elements = elements.filter(function(d, index) {
                     return indices.indexOf(index) !== -1;
                 });
@@ -497,5 +500,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             elements.style(clearing_style);
         },
     });
+
     WidgetManager.WidgetManager.register_widget_view("bqplot.Scatter", Scatter);
 });

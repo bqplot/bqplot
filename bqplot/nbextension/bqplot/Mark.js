@@ -58,14 +58,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.x_scale = that.scales["x"];
                 that.y_scale = that.scales["y"];
 
-                if(that.x_scale === undefined || that.x_scale === null) {
+                if(!that.x_scale) {
                     that.x_scale = that.parent.scale_x;
                 }
                 that.listenTo(that.x_scale, "domain_changed", function() {
                     if (!that.model.dirty) { that.draw(); }
                 });
 
-                if(that.y_scale === undefined || that.y_scale === null) {
+                if(!that.y_scale) {
                     that.y_scale = that.parent.scale_y;
                 }
                 that.listenTo(that.y_scale, "domain_changed", function() {
@@ -180,9 +180,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         unselected_style_updated: function(model, style) {
             this.unselected_style = style;
             var sel_indices = this.selected_indices;
-            var unselected_indices = (sel_indices) ? 
+            var unselected_indices = (sel_indices) ?
                 _.range(this.model.mark_data.length).filter(function(index){
-                    return sel_indices.indexOf(index) == -1; 
+                    return sel_indices.indexOf(index) === -1;
                 }) : [];
             this.style_updated(style, unselected_indices);
         },
@@ -199,8 +199,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.set_default_style(all_indices);
 
             this.set_style_on_elements(this.selected_style, this.selected_indices);
-            var unselected_indices = (indices == undefined) ?
-                [] : _.difference(all_indices, indices);
+            var unselected_indices = (!indices) ? [] : _.difference(all_indices, indices);
             this.set_style_on_elements(this.unselected_style, unselected_indices);
         },
         // Abstract functions which have to be overridden by the specific mark
