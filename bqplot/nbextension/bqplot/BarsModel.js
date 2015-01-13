@@ -23,7 +23,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.on("change:color",  function() { this.update_color();
                                                   this.trigger("colors_updated"); }
                                                   , this);
-            this.on_some_change(["set_x_domain", "set_y_domain"], this.update_domains, this);
+            // FIXME: replace this with on("change:preserve_domain"). It is not done here because
+            // on_some_change depends on the GLOBAL backbone on("change") handler which
+            // is called AFTER the specific handlers on("change:foobar") and we make that
+            // assumption.
+            this.on_some_change(["preserve_domain"], this.update_domains, this);
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");
@@ -74,7 +78,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var color = this.get_typed_field("color");
             var color_scale = this.get("scales")["color"];
             var color_mode = this.get("color_mode");
-            var apply_color_to_groups = ((color_mode == 'group') || (color_mode == 'auto' && !(this.is_y_2d)));
+            var apply_color_to_groups = ((color_mode == "group") || (color_mode == "auto" && !(this.is_y_2d)));
             this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
                                     single_bar_d.values.forEach(function(bar_d, bar_index) {
                                         bar_d.color_index = (apply_color_to_groups) ? bar_grp_index : bar_index;
@@ -82,7 +86,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                                     });
                                 });
             if(color_scale && color.length > 0) {
-                color_scale.compute_and_set_domain(color, this.id);
+                    if(!this.get("preserve_domain")["color"]) {
+                        color_scale.compute_and_set_domain(color, this.id);
+                    } else {
+                        color_scale.del_domain([], this.id);
+                    }
             }
         },
         update_domains: function() {
@@ -90,14 +98,14 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var x_scale = scales["x"];
             var y_scale = scales["y"];
 
-            if(this.get("set_x_domain")) {
+            if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.key; }), this.id);
             }
             else {
                 x_scale.del_domain([], this.id);
             }
 
-            if(this.get("set_y_domain")) {
+            if(!this.get("preserve_domain")["y"]) {
                 if(this.get("type") == "stacked") {
                     y_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
                                                    d3.max(this.mark_data, function(c) { return c.pos_max; })], this.id);

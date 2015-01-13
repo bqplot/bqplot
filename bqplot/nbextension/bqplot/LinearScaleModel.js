@@ -51,18 +51,18 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
                 this.trigger("domain_changed", this.domain);
             }
         },
-        compute_and_set_domain: function(data_array, index) {
+        compute_and_set_domain: function(data_array, id) {
             // Takes an array and calculates the domain for the particular
             // view. If you have the domain already calculated on your side,
             // call set_domain function.
             if(data_array.length == 0) {
-               this.set_domain([], index);
+               this.set_domain([], id);
                return;
             }
             var data = data_array[0] instanceof Array ? data_array : [data_array];
             var min = d3.min(data.map(function(d) { return d3.min(d); }));
             var max = d3.max(data.map(function(d) { return d3.max(d); }));
-            this.set_domain([min, max], index);
+            this.set_domain([min, max], id);
         },
     });
     WidgetManager.WidgetManager.register_widget_model("LinearScaleModel", LinearScaleModel);

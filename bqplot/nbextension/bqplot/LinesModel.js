@@ -19,7 +19,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         initialize: function() {
             LinesModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
-            this.on_some_change(["set_x_domain", "set_y_domain"], this.update_domains, this);
+            // FIXME: replace this with on("change:preserve_domain"). It is not done here because
+            // on_some_change depends on the GLOBAL backbone on("change") handler which
+            // is called AFTER the specific handlers on("change:foobar") and we make that
+            // assumption.
+            this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:stroke_width", this.update_bounding_box, this);
         },
         update_bounding_box: function(model, value) {
@@ -81,7 +85,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 this.curve_labels = this.curve_labels.slice(0, data_length);
             }
             else if(this.curve_labels.length < data_length) {
-                _.range(this.curve_labels.length, data_length).forEach( function(index) { that.curve_labels[index] = 'C' + (index+1);});
+                _.range(this.curve_labels.length, data_length).forEach( function(index) { that.curve_labels[index] = "C" + (index+1);});
             }
         },
         update_domains: function() {
@@ -89,13 +93,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var x_scale = scales["x"];
             var y_scale = scales["y"];
 
-            if(this.get("set_x_domain")) {
+            if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.values.map( function(d) { return d.x; } ); }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
-            if(this.get("set_y_domain")) {
+            if(!this.get("preserve_domain")["y"]) {
                 y_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.values.map( function(d) { return d.y; } ); }), this.id);
             } else {
                 y_scale.del_domain([], this.id);
@@ -117,28 +121,36 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var width_scale = scales["width"];
 
             if(color_scale && color_data.length > 0){
-                color_scale.compute_and_set_domain(color_data, 0);
+                if(!this.get("preserve_domain")["color"]) {
+                    color_scale.compute_and_set_domain(color_data, this.id);
+                } else {
+                    color_scale.del_domain([], this.id);
+                }
             }
 
             if(width_scale && width_data.length > 0){
-                width_scale.compute_and_set_domain(width_data, 0);
+                if(!this.get("preserve_domain")["width"]) {
+                    width_scale.compute_and_set_domain(width_data, this.id);
+                } else {
+                    width_scale.del_domain([], this.id);
+                }
             }
 
             this.new_mark_data = this.mark_data
-                                      .map(function(curve_elem) { return { name: curve_elem['name'],
-                                                                           values: curve_elem['values'].slice(0, curve_elem['values'].length - 1)
+                                      .map(function(curve_elem) { return { name: curve_elem["name"],
+                                                                           values: curve_elem["values"].slice(0, curve_elem["values"].length - 1)
                                                                                 .map(function(val, index, values_array)
                                                                                 {
-                                                                                    return { x1: val['x'], y1: val['y'],
-                                                                                             x2: curve_elem['values'][index+1]['x'],
-                                                                                             y2: curve_elem['values'][index+1]['y'],
+                                                                                    return { x1: val["x"], y1: val["y"],
+                                                                                             x2: curve_elem["values"][index+1]["x"],
+                                                                                             y2: curve_elem["values"][index+1]["y"],
                                                                                              color: color_data[index],
                                                                                              size: width_data[index]
                                                                                            };
                                                                                 })
                                                                         }
                                                                 });
-            this.trigger('data_updated');
+            this.trigger("data_updated");
         },
     });
     WidgetManager.WidgetManager.register_widget_model("bqplot.FlexLineModel", FlexLineModel);

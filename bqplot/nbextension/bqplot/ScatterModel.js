@@ -17,11 +17,14 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
     var MarkModel = MarkModel[1];
     var ScatterModel = MarkModel.extend({
         initialize: function() {
-            // TODO: Normally, color, opacity and size should not require a
-            // redraw
+            // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y", "color", "opacity", "size", "names"], this.update_data, this);
-            this.on_some_change(["set_x_domain", "set_y_domain"], this.update_domains, this);
+            // FIXME: replace this with on("change:preserve_domain"). It is not done here because
+            // on_some_change depends on the GLOBAL backbone on("change") handler which
+            // is called AFTER the specific handlers on("change:foobar") and we make that
+            // assumption.
+            this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:default_size", this.update_bounding_box, this);
         },
         update_bounding_box: function(model, value) {
@@ -54,11 +57,16 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 var opacity = this.get_typed_field("opacity");
                 var names = this.get_typed_field("names");
                 var show_labels = (names.length != 0);
-                names = (show_labels) ? names : x_data.map(function(dat, ind) { return 'Dot' + ind; });
+                names = (show_labels) ? names : x_data.map(function(dat, ind) { return "Dot" + ind; });
 
                 if(color_scale) {
-                    color_scale.compute_and_set_domain(color, this.id);
+                    if(!this.get("preserve_domain")["color"]) {
+                        color_scale.compute_and_set_domain(color, this.id);
+                    } else {
+                        color_scale.del_domain([], this.id);
+                    }
                 }
+
                 this.mark_data = x_data.map(function(d, i) { return {x: d, y: y_data[i], z: color[i], size: size[i], opacity: opacity[i], name: names[i] }; });
             }
 
@@ -75,21 +83,29 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var size_scale = scales["size"];
             var opacity_scale = scales["opacity"];
 
-            if(this.get("set_x_domain")) {
+            if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.x; }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
-            if(this.get("set_y_domain")) {
+            if(!this.get("preserve_domain")["y"]) {
                 y_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.y; }), this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
             if(size_scale) {
-                size_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.size; }), this.id);
+                if(!this.get("preserve_domain")["size"]) {
+                    size_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.size; }), this.id);
+                } else {
+                    size_scale.del_domain([], this.id);
+                }
             }
             if(opacity_scale) {
-                opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.opacity; }), this.id);
+                if(!this.get("preserve_domain")["opacity"]) {
+                    opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.opacity; }), this.id);
+                } else {
+                    opacity_scale.del_domain([], this.id);
+                }
             }
         },
     });
