@@ -62,9 +62,9 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                 this.lines_model.set_typed_field("y", utils.deep_2d_copy(this.lines_model.y_data) );
                 this.lines_view.touch();
                 this.active = false;
-                this.el.off("mousemove");
-                this.el.off("mouseleave");
-                this.el.off("mouseup");
+                this.el.on("mousemove", null);
+                this.el.on("mouseleave", null);
+                this.el.on("mouseup", null);
             }
         },
         mousemove: function() {
