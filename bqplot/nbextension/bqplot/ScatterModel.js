@@ -60,8 +60,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 names = (show_labels) ? names : x_data.map(function(dat, ind) { return "Dot" + ind; });
 
                 if(color_scale) {
-                    color_scale.compute_and_set_domain(color, this.id);
+                    if(!this.get("preserve_domain")["color"]) {
+                        color_scale.compute_and_set_domain(color, this.id);
+                    } else {
+                        color_scale.del_domain([], this.id);
+                    }
                 }
+
                 this.mark_data = x_data.map(function(d, i) { return {x: d, y: y_data[i], z: color[i], size: size[i], opacity: opacity[i], name: names[i] }; });
             }
 
@@ -89,10 +94,18 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 y_scale.del_domain([], this.id);
             }
             if(size_scale) {
-                size_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.size; }), this.id);
+                if(!this.get("preserve_domain")["size"]) {
+                    size_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.size; }), this.id);
+                } else {
+                    size_scale.del_domain([], this.id);
+                }
             }
             if(opacity_scale) {
-                opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.opacity; }), this.id);
+                if(!this.get("preserve_domain")["opacity"]) {
+                    opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) { return elem.opacity; }), this.id);
+                } else {
+                    opacity_scale.del_domain([], this.id);
+                }
             }
         },
     });

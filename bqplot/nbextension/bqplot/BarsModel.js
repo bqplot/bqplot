@@ -86,7 +86,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                                     });
                                 });
             if(color_scale && color.length > 0) {
-                color_scale.compute_and_set_domain(color, this.id);
+                    if(!this.get("preserve_domain")["color"]) {
+                        color_scale.compute_and_set_domain(color, this.id);
+                    } else {
+                        color_scale.del_domain([], this.id);
+                    }
             }
         },
         update_domains: function() {

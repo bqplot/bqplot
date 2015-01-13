@@ -76,7 +76,7 @@ class Mark(Widget):
         scale_range_type value.
     preserve_domain: dict
         Indicates if this mark affects the domain(s) of the specified scale(s). The keys of this
-        dictionary are the same as the ones of the "scales" attribute, and values are boolean. 
+        dictionary are the same as the ones of the "scales" attribute, and values are boolean.
         If a key is missing, it is considered as False.
     children: list
     display_legend: bool
@@ -100,7 +100,7 @@ class Mark(Widget):
         Indices of the selected items in the mark.
     """
     scales = Dict(sync=True)
-    preserve_domain = Dict(sync=True)
+    preserve_domain = Dict(allow_none=False, sync=True)
     children = List([], sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1, display_name='Display legend')
     animate_dur = Int(0, sync=True, exposed=True, display_index=2, display_name='Animation duration')
