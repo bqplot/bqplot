@@ -108,7 +108,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
              if(this.x_scale.model.type === "ordinal") {
                 var x_max = d3.max(this.parent.get_xrange());
                 bar_groups.attr("transform", function(d) {
-                    return "translate(" + ((that.x_scale.scale(d.key) !== undefined ? that.x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
+                    return "translate(" + ((that.x_scale.scale(d.key) !== undefined ?
+                                            that.x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
                 });
              } else {
                 bar_groups.attr("transform", function(d) {
@@ -237,7 +238,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(this.color_scale) {
                 this.color_scale.set_range();
             }
-            if(this.model.mark_data.length > 0){
+            if(this.model.mark_data.length > 0) {
                 if(!(this.model.is_y_2d)) {
                     this.el.selectAll(".bar").style("fill", function(d, i) {
                         return (d.color !== undefined && that.color_scale !== undefined) ?
@@ -333,7 +334,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         set_style_on_elements: function(style, indices) {
             // If the index array is undefined or of length=0, exit the
             // function without doing anything
-            if(!indices || indices.length === 0) {
+            if(indices === undefined || indices === null || indices.length === 0) {
                 return;
             }
             // Also, return if the style object itself is blank
@@ -368,7 +369,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 var elem_index = idx_selected.indexOf(index);
                 // index of bar i. Checking if it is already present in the
                 // list
-                if( elem_index > -1 && d3.event.ctrlKey) {
+                if(elem_index > -1 && d3.event.ctrlKey) {
                     // if the index is already selected and if ctrl key is
                     // pressed, remove the element from the list
                     idx_selected.splice(elem_index, 1);
@@ -405,14 +406,14 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 }
                 this.model.set("idx_selected", ((idx_selected.length === 0) ? null : idx_selected), {updated_view: this});
                 this.touch();
-                if (!d3.event) {
+                if(!d3.event) {
                     d3.event = window.event;
                 }
                 var e = d3.event;
-                if (typeof(e.cancelBubble) !== "undefined") { // IE
+                if(typeof(e.cancelBubble) !== "undefined") { // IE
                     e.cancelBubble = true;
                 }
-                if (e.stopPropagation) {
+                if(e.stopPropagation) {
                     e.stopPropagation();
                 }
                 e.preventDefault();

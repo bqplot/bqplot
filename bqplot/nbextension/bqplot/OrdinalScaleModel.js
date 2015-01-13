@@ -27,13 +27,12 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
         },
         domain_changed: function() {
             this.ord_domain = this.get("domain");
-            if(this.ord_domain !== undefined && this.ord_domain.length != 0){
+            if(this.ord_domain !== null && this.ord_domain.length !== 0) {
                 this.max_from_data = false;
                 this.min_from_data = false;
                 this.domain = this.ord_domain.map(function(d) { return d; });
                 this.trigger("domain_changed");
-            }
-            else {
+            } else {
                 this.max_from_data = true;
                 this.min_from_data = true;
                 this.domain = [];

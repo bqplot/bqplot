@@ -290,22 +290,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.draw_color_bar();
             this.redraw_axisline();
         },
-        set_tick_values: function() {
-            if (this.tick_values.length > 0) {
-                this.axis.tickValues(this.tick_values);
-            } else if (this.num_ticks !== undefined) {
-                this.axis.tickValues(this.get_ticks());
-            } else {
-                this.axis.tickValues((this.axis_scale.model.type === "ordinal")
-                                    ? this.axis_scale.scale.domain()
-                                    : this.axis_scale.scale.ticks());
-            }
-            this.axis.tickFormat(this.tick_format);
-            if(this.g_axisline) {
-                this.g_axisline.call(this.axis);
-            }
-        },
     });
     WidgetManager.WidgetManager.register_widget_view("bqplot.ColorAxis", ColorBar);
-
 });

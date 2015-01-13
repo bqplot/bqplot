@@ -56,7 +56,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.model.on("change:tick_values", this.tickvalues_changed, this);
             this.model.on("change:tick_format", this.tickformat_changed, this);
             this.model.on("change:num_ticks", function(model, value) {
-                this.num_ticks=value; this.tickvalues_changed();
+                this.num_ticks = value;
+                this.tickvalues_changed();
             }, this);
             this.model.on("change:color", this.update_color, this);
             this.model.on_some_change(["label", "label_color"], this.update_label, this);
@@ -80,7 +81,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         set_tick_values: function() {
             if (this.tick_values.length > 0) {
                 this.axis.tickValues(this.tick_values);
-            } else if (this.num_ticks) {
+            } else if (this.num_ticks !== undefined && this.num_ticks !== null) {
                 this.axis.tickValues(this.get_ticks());
             } else {
                 if (this.axis_scale.model.type === "ordinal") {
@@ -188,7 +189,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             var that = this;
             var return_promise = Promise.resolve();
             this.loc = this.model.get("offset");
-            if(this.loc["value"] !== undefined){
+            if(this.loc["value"] !== undefined && this.loc["value"] !== null) {
                 if(this.loc["scale"] === undefined) {
                     this.offset_scale = (this.vertical) ? this.parent.scale_x : this.parent.scale_y;
                 } else {
@@ -235,6 +236,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 return this.get_basic_transform();
             } else {
                 var value = this.offset_scale.scale(this.offset_value);
+                // FIXME: must we check for null?
                 value = (value === undefined) ? this.get_basic_transform() : value;
                 return this.offset_scale.offset + value;
             }
