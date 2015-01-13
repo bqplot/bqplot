@@ -326,7 +326,7 @@ def axes(**kwargs):
     return appended_axes
 
 
-def plot(*args, **kwargs):
+def plot(x, y, **kwargs):
     """Draws lines in the current context figure.
 
     The options optional argument is used to pass attributes for the scales to
@@ -335,7 +335,6 @@ def plot(*args, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', _context['scales'])
     options = kwargs.pop('options', {})
-    x, y = args[0], args[1]
     if 'x' not in scales:
         xoptions = options.get('x', {})
         # Event when passing an array, we can specify that it is an array of dates.
@@ -351,7 +350,7 @@ def plot(*args, **kwargs):
     return lines
 
 
-def scatter(*args, **kwargs):
+def scatter(x, y, **kwargs):
     """Draws a scatter in the current context figure.
 
     The options optional argument is used to pass attributes for the scales to
@@ -364,19 +363,18 @@ def scatter(*args, **kwargs):
         scales['x'] = LinearScale(**options.get('x', {}))
     if 'y' not in scales:
         scales['y'] = LinearScale(**options.get('y', {}))
-    if 'color' not in scales and len(args) > 2:
-        scales['color'] = ColorScale(**options.get('color', {}))
-    x, y = args[0], args[1]
-    if len(args) > 2:
-        color_data = args[2]
-    else:
-        color_data = []
-    scatter = Scatter(x=x, y=y, color_data=color_data, scales=scales, **kwargs)
+    # Go through the list of optional scaled attributes.
+    for name in ['color', 'size', 'opacity']:
+        if name not in scales and name in kwargs:
+            # Not necessarily color scale but the correct scale type based on
+            # scale_range_type and dtype of kwargs[name]
+            scales[name] = ColorScale(**options.get(name, {}))
+    scatter = Scatter(x=x, y=y, scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [scatter]
     return scatter
 
 
-def hist(*args, **kwargs):
+def hist(sample, **kwargs):
     """Draws a histogram in the current context figure.
 
     The options optional argument is used to pass attributes for the scales to
@@ -395,7 +393,7 @@ def hist(*args, **kwargs):
     return hist
 
 
-def bar(*args, **kwargs):
+def bar(x, y, **kwargs):
     """Draws a BarChart in the current context figure.
 
     The options optional argument is used to pass attributes for the scales to
@@ -408,7 +406,6 @@ def bar(*args, **kwargs):
         scales['x'] = OrdinalScale(**options.get('x', {}))
     if 'y' not in scales:
         scales['y'] = LinearScale(**options.get('y', {}))
-    x, y = args[0], args[1]
     bar = Bars(x=x, y=y, scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [bar]
     return bar
