@@ -214,8 +214,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             var range = (this.vertical) ? [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
             if(this.ordinal) {
                 this.axis_line_scale.rangeRoundBands(range, 0.05);
-            }
-            else {
+            } else {
                 if(this.axis_scale.divergent) {
                     this.axis_line_scale.range([range[0], (range[0] + range[1]) * 0.5, range[1]]);
                 } else {
