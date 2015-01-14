@@ -134,17 +134,17 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             elem.append("g")
                 .attr("transform", "translate(" + x_disp + ", " + y_disp + ")")
                 .attr("class", "legend" + this.uuid)
-                .on("mouseover", _.bind(this.highlight_axis, this))
-                .on("mouseout", _.bind(this.unhighlight_axis, this))
+                .on("mouseover", _.bind(this.highlight_axes, this))
+                .on("mouseout", _.bind(this.unhighlight_axes, this))
               .append("text")
                 .text(this.model.get("labels")[0]);
             return [1, 1];
         },
-        highlight_axis: function() {
+        highlight_axes: function() {
             this.x_scale.model.trigger("highlight_axis");
             this.y_scale.model.trigger("highlight_axis");
         },
-        unhighlight_axis: function() {
+        unhighlight_axes: function() {
             this.x_scale.model.trigger("unhighlight_axis");
             this.y_scale.model.trigger("unhighlight_axis");
         },

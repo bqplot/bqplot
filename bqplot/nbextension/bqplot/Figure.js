@@ -238,14 +238,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         add_axis: function(model) {
             // Called when an axis is added to the axes list.
 
-            // this is a crude assumption.  If we have more than two axes,
-            // then we'll assume we need to highlight some axis.  Highlighting
-            // an axis means that when a displayed legend mark is hovered over, the
-            // corresponding axes for the scales of that mark are highlighted.  The point here
-            // is that it is annoying to highlight the axes if there are only two.
-            var highlight = (this.model.get("axes").length > 2);
+            // If we have more than two axes, then we need to highlight corresponding axes
+            // when hovering a mark legend.
+            var enable = (this.model.get("axes").length > 2);
             var that = this;
-            return this.create_child_view(model, {highlight: highlight}).then(function(view) {
+            return this.create_child_view(model, {enable_highlight: enable})
+              .then(function(view) {
                 that.fig_axes.node().appendChild(view.el.node());
                 // Trigger the displayed event of the child view.
                 that.after_displayed(function() {

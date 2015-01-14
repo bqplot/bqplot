@@ -238,8 +238,8 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                 .append("g")
                 .attr("class", "legend" + this.uuid)
                 .attr("transform", function(d, i) { return "translate(0, " + (i * inter_y_disp + y_disp)  + ")"; })
-                .on("mouseover", _.bind(this.highlight_axis, this))
-                .on("mouseout", _.bind(this.unhighlight_axis, this))
+                .on("mouseover", _.bind(this.highlight_axes, this))
+                .on("mouseout", _.bind(this.unhighlight_axes, this))
                 .append("rect")
                 .style("fill", function(d,i) { return that.get_colors(i); })
                 .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});

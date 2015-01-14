@@ -19,7 +19,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
      var Axis = widget.WidgetView.extend({
          render: function() {
             this.parent = this.options.parent;
-            this.highlight = this.options.highlight;
+            this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
             this.vertical = this.model.get("orientation") === "vertical" ? true : false;
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
@@ -206,13 +206,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
             return return_promise;
         },
-        highlight_axis: function() {
-            if(this.highlight){
+        highlight: function() {
+            if(this.enable_highlight){
                 this.g_axisline.classed("axisbold", true);
             }
         },
-        unhighlight_axis: function() {
-            if(this.highlight){
+        unhighlight: function() {
+            if(this.enable_highlight){
                 this.g_axisline.classed("axisbold", false);
             }
         },
@@ -475,8 +475,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 }, that);
                 that.axis_scale = view;
                 that.axis_scale.on("domain_changed", that.redraw_axisline, that);
-                that.axis_scale.on("highlight_axis", that.highlight_axis, that);
-                that.axis_scale.on("unhighlight_axis", that.unhighlight_axis, that);
+                that.axis_scale.on("highlight_axis", that.highlight, that);
+                that.axis_scale.on("unhighlight_axis", that.unhighlight, that);
             });
         },
         update_scale: function(old, value) {

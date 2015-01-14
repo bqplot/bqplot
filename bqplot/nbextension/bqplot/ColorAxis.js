@@ -18,7 +18,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
     var ColorBar = AxisView.extend({
         render: function() {
             this.parent = this.options.parent;
-            this.highlight = this.options.highlight;
+            this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
             this.vertical = this.model.get("orientation") === "vertical" ? true : false;
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
