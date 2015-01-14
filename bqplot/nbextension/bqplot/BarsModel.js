@@ -43,7 +43,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.base_value = this.get("base");
             if(this.base_value === undefined || this.base_value === null) {
                 this.base_value = 0;
-
             }
 
             if (x_data.length === 0 || y_data.length === 0) {
