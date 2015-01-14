@@ -20,20 +20,20 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // TODO: should not need to set this.data
             HistModel.__super__.initialize.apply(this);
             this.mark_data = [];
-            // For the histogram, changing the "x" scale changes the y values being plotted.
+            // For the histogram, changing the "sample" scale changes the "counts" values being plotted.
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"
             // function, and not merely "update_domains".
-            this.on_some_change(["bins", "x", "preserve_domain"], this.update_data, this);
+            this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
         },
         update_data: function() {
-	        var x_data = this.get_typed_field("x");
+	        var x_data = this.get_typed_field("sample");
             var scales = this.get("scales");
-            var x_scale = scales["x"];
+            var x_scale = scales["sample"];
 
             // TODO: This potentially triggers domain_changed and therefore a
             // Draw, while update_data is generally followed by a Draw.
 
-            if(!this.get("preserve_domain")["x"]) {
+            if(!this.get("preserve_domain")["sample"]) {
                 x_scale.compute_and_set_domain(x_data, this.id);
             } else {
                 x_scale.del_domain([], this.id);
@@ -72,8 +72,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // things including the data which is to be plotted. So the x-domain
             // change is handled by the update_data function and only the
             // y-domain change is handled by this function.
-            var y_scale = this.get("scales")["y"];
-            if(!this.get("preserve_domain")["y"]) {
+            var y_scale = this.get("scales")["counts"];
+            if(!this.get("preserve_domain")["counts"]) {
                 y_scale.set_domain([0, d3.max(this.mark_data, function(d) {
                     return d.y;
                 }) * 1.05], this.id);

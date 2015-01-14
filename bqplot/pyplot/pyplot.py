@@ -385,12 +385,12 @@ def hist(*args, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', _context['scales'])
     options = kwargs.pop('options', {})
-    if 'x' not in scales:
-        scales['x'] = LinearScale(**options.get('x', {}))
-    if 'y' not in scales:
-        scales['y'] = LinearScale(**options.get('y', {}))
-    x = args[0]
-    hist = Hist(x=x, scales=scales, **kwargs)
+    if 'sample' not in scales:
+        scales['sample'] = LinearScale(**options.get('sample', {}))
+    if 'counts' not in scales:
+        scales['counts'] = LinearScale(**options.get('counts', {}))
+    sample = args[0]
+    hist = Hist(sample=sample, scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [hist]
     return hist
 
