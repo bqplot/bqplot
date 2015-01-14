@@ -19,7 +19,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
-            this.on_some_change(["x", "y", "color", "opacity", "size", "names"], this.update_data, this);
+            this.on_some_change(["x", "y", "color", "opacity", "size"], this.update_data, this);
+            this.on_some_change(["names", "names_unique"], function() { this.update_unique_ids(); this.trigger("data_updated"); }, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
@@ -56,10 +57,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 var size = this.get_typed_field("size");
                 var opacity = this.get_typed_field("opacity");
                 var names = this.get_typed_field("names");
-                var show_labels = (names.length !== 0);
-                names = (show_labels) ? names : x_data.map(function(dat, ind) {
-                    return "Dot" + ind;
-                });
 
                 if(color_scale) {
                     if(!this.get("preserve_domain")["color"]) {
@@ -75,12 +72,30 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                             z: color[i],
                             size: size[i],
                             opacity: opacity[i],
-                            name: names[i]};
+                            };
                 });
             }
-
+            this.update_unique_ids();
             this.update_domains();
             this.trigger("data_updated");
+        },
+        update_unique_ids: function() {
+            var names = this.get_typed_field("names");
+            var show_labels = (names.length !== 0);
+            names = (show_labels) ? names : this.mark_data.map(function(data, index) {
+                return "Dot" + index;
+            });
+            var unique_ids = [];
+            if(this.get("names_unique")) {
+                unique_ids = names.slice(0);
+            } else {
+                unique_ids = _.range(this.mark_data.length);
+            }
+
+            this.mark_data.forEach(function(data, index){
+                                       data["name"] = names[index];
+                                       data["unique_id"] = unique_ids[index];
+            });
         },
         update_domains: function() {
             // color scale needs an issue in DateScaleModel to be fixed. It

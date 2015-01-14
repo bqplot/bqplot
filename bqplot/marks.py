@@ -248,6 +248,7 @@ class Scatter(Mark):
     display_names = Bool(True, sync=True, exposed=True, display_index=11, display_name='Display names')
     fill = Bool(True, sync=True)
     drag_color = Color('DodgerBlue', sync=True)
+    names_unique = Bool(True, sync=True)  # Boolean to indicate if the attribute 'names' should be the primary key or not
 
     enable_move = Bool(False, sync=True)
     enable_add = Bool(False, sync=True)
