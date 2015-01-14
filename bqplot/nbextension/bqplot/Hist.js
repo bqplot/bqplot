@@ -64,8 +64,8 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             });
             return utils.resolve_promises_dict(scale_promises).then(function(d) {
                 that.scales = d;
-                that.x_scale = that.scales["x"];
-                that.y_scale = that.scales["y"];
+                that.x_scale = that.scales["sample"];
+                that.y_scale = that.scales["counts"];
 
                 that.listenTo(that.x_scale, "domain_changed", function() {
                     if (!that.model.dirty) { that.model.update_data(); }
@@ -118,6 +118,19 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
 		        .attr("x", 2)
                 .attr("width", bar_width)
 		        .attr("height", function(d) { return that.height - that.y_scale.scale(d.y); });
+        },
+        set_ranges: function() {
+            var x_scale = this.scales["sample"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
+
+            var y_scale = this.scales["counts"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
         },
         draw: function() {
             var that = this;
@@ -284,7 +297,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.model.x_bins, data[1])]);
             this.update_selected_colors(idx_start, idx_end);
 
-            var x_data = this.model.get_typed_field("x");
+            var x_data = this.model.get_typed_field("sample");
             var indices = _.range(x_data.length);
             var selected_data = [this.model.x_bins[idx_start], this.model.x_bins[idx_end]];
             var idx_selected = _.filter(indices, function(index) {

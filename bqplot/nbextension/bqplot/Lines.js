@@ -128,9 +128,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var data = this.model.x_data[0] instanceof Array ?
                 this.model.x_data[0] : this.model.x_data;
 
-            var indices = [start, end].map(function(elem) { 
-				return Math.min(self.bisect(data, elem), 
-								Math.max((data.length - 1), 0)); 
+            var indices = [start, end].map(function(elem) {
+				return Math.min(self.bisect(data, elem),
+								Math.max((data.length - 1), 0));
 			});
             this.model.set("idx_selected", indices);
             this.touch();
@@ -141,7 +141,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var data = this.model.x_data[0] instanceof Array ?
                 this.model.x_data[0] : this.model.x_data;
 
-            var index = Math.min(this.bisect(data, data_point), 
+            var index = Math.min(this.bisect(data, data_point),
 								 Math.max((data.length - 1), 0));
             this.model.set("idx_selected", [index]);
             this.touch();
@@ -155,7 +155,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var data = this.model.x_data[0] instanceof Array ?
                 this.model.x_data[0] : this.model.x_data;
             var idx_start = this.bisect(data, x_start);
-            var idx_end = Math.min(this.bisect(data, x_end), 
+            var idx_end = Math.min(this.bisect(data, x_end),
 								   Math.max((data.length - 1), 0));
 
             x_start = (this.x_scale.model.type === "date") ?
