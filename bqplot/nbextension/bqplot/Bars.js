@@ -93,47 +93,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             this.el.select(".zeroLine")
                 .attr("x1",  0)
-                .attr("x2", this.width)
-                .attr("y1", this.y_scale.scale(0))
-                .attr("y2", this.y_scale.scale(0));
+                .attr("x2", this.parent.plotarea_width)
+                .attr("y1", this.y_scale.scale(this.model.base_value))
+                .attr("y2", this.y_scale.scale(this.model.base_value));
 
             var bar_groups = this.el.selectAll(".bargroup");
             var bars_sel = bar_groups.selectAll(".bar");
 
-            var that = this;
             this.x.rangeRoundBands(this.set_x_range(), this.padding);
             this.adjust_offset();
             this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
-
-             if(this.x_scale.model.type === "ordinal") {
-                var x_max = d3.max(this.parent.get_xrange());
-                bar_groups.attr("transform", function(d) {
-                    return "translate(" + ((that.x_scale.scale(d.key) !== undefined ?
-                                            that.x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
-                });
-             } else {
-                bar_groups.attr("transform", function(d) {
-                    return "translate(" + (that.x_scale.scale(d.key) + that.x_offset) + ", 0)";
-                });
-             }
-             if(this.model.get("type") === "stacked") {
-                bars_sel.attr("x", 0)
-                    .attr("width", this.x.rangeBand().toFixed(2))
-                    .attr("y", function(d) {
-                        return d3.min([that.y_scale.scale(d.y1)]);
-                    }).attr("height", function(d) {
-                        return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));
-                    });
-             } else {
-                bars_sel.attr("x", function(datum, index) {
-                        return that.x1(index);
-                    }).attr("width", this.x1.rangeBand().toFixed(2))
-                    .attr("y", function(d) {
-                        return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(0)]);
-                    }).attr("height", function(d) {
-                        return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));
-                    });
-             }
+            this.draw_bars();
         },
         draw: function() {
             this.set_ranges();
@@ -171,55 +141,58 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 });
              bar_groups.exit().remove();
 
-             if(this.x_scale.model.type === "ordinal") {
+             var bars_sel = bar_groups.selectAll(".bar")
+                 .data(function(d) { return d.values; })
+             bars_sel.enter()
+                 .append("rect")
+                 .attr("class", "bar");
+            this.draw_bars();
+
+            this.apply_styles();
+
+            this.el.selectAll(".zeroLine").remove();
+            this.el.append("g")
+                .append("line")
+                .attr("class", "zeroLine")
+                .attr("x1",  0)
+                .attr("x2", this.parent.plotarea_width)
+                .attr("y1", this.y_scale.scale(this.model.base_value))
+                .attr("y2", this.y_scale.scale(this.model.base_value));
+        },
+        draw_bars: function() {
+            var bar_groups = this.el.selectAll(".bargroup");
+            var bars_sel = bar_groups.selectAll(".bar");
+            var that = this;
+
+            if(this.x_scale.model.type === "ordinal") {
                 var x_max = d3.max(this.parent.get_xrange());
                 bar_groups.attr("transform", function(d) {
                     return "translate(" + ((that.x_scale.scale(d.key) !== undefined ?
-                                             that.x_scale.scale(d.key) : x_max)
-                                            + that.x_offset) + ", 0)";
+                                            that.x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
                 });
-             } else {
+            } else {
                 bar_groups.attr("transform", function(d) {
                     return "translate(" + (that.x_scale.scale(d.key) + that.x_offset) + ", 0)";
                 });
-             }
-
-            var bars_sel = bar_groups.selectAll(".bar")
-                .data(function(d) { return d.values; })
-            bars_sel.enter()
-                .append("rect")
-                .attr("class", "bar");
-
-            //FIXME: add transitions
+            }
             if(this.model.get("type") === "stacked") {
                 bars_sel.attr("x", 0)
                     .attr("width", this.x.rangeBand().toFixed(2))
                     .attr("y", function(d) {
-                        return d3.min([that.y_scale.scale(d.y1)]);
+                        return that.y_scale.scale(d.y1);
                     }).attr("height", function(d) {
-                        return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));
+                        return Math.abs(that.y_scale.scale(d.y1 + d.val) - that.y_scale.scale(d.y1));
                     });
             } else {
                 bars_sel.attr("x", function(datum, index) {
                         return that.x1(index);
                     }).attr("width", this.x1.rangeBand().toFixed(2))
                     .attr("y", function(d) {
-                        return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(0)]);
+                        return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(that.model.base_value)]);
                     }).attr("height", function(d) {
-                        return Math.abs(that.y_scale.scale(0) - (that.y_scale.scale(d.val)));
+                        return Math.abs(that.y_scale.scale(that.model.base_value) - (that.y_scale.scale(d.val)));
                     });
             }
-            bar_groups.exit().remove();
-            this.apply_styles();
-
-            this.el.selectAll(".zeroLine").remove();
-            this.el.append("g")
-                .append("line")
-                .attr("x1",  0)
-                .attr("class", "zeroLine")
-                .attr("x2", this.width)
-                .attr("y1", this.y_scale.scale(0))
-                .attr("y2", this.y_scale.scale(0));
         },
         update_stroke_and_opacity: function() {
             var stroke = this.model.get("stroke");

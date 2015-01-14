@@ -328,18 +328,31 @@ class Bars(Mark):
     name: string
         user-friendly name of the mark
     color_mode: {'auto', 'group', 'element'}
+        enum attribute to specify if color should be the same for all bars with
+        the same x or for all bars which belong to the same array in Y
+        'group' means for every x all bars have same color.
+        'element' means for every dimension of y, all bars have same color.
+        'auto' picks 'group' and 'element' for 1-d and 2-d values of
+        Y respectively.
     type: {'stacked', 'grouped'}
     colors: list of colors
+        list of colors for the bars.
     padding: float
+        attribute to control the spacing between the bars
+        value is specified as a percentage of the width of the bar
     select_bars: bool
     stroke: color
     opacity: float
+    base: float
+        reference value from which the bars are drawn. defaults to 0.0
 
     Data Attributes
     ---------------
     x: numpy.ndarray
     y: numpy.ndarray
     color: numpy.ndarray
+        color of the data points (1d array). Defaults to default_color when not
+        privided or when a value is NaN
     """
     icon = 'fa-bar-chart'
     name = 'Bar chart'
@@ -347,10 +360,6 @@ class Bars(Mark):
     y = NdArray(sync=True, display_index=2, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=2)
     # Same as color attribute for the scatter
     color = NdArray(sync=True, display_index=8, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
-    # Enum attribute to specify if color should be the same for all bars with
-    # the same x or for all bars which belong to the same array in Y
-    # 'group' means for every x all bars have same color.
-    # 'element' means for every dimension of y, all bars have same color.
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto', sync=True)  # No change handler for this attribute now
     type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
@@ -358,6 +367,7 @@ class Bars(Mark):
     # Value is specified as a percentage of the width of the bar.
     select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
+    base = Float(default_value=0.0, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
     _view_name = Unicode('bqplot.Bars', sync=True)
     _model_name = Unicode('bqplot.BarsModel', sync=True)
