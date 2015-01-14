@@ -31,8 +31,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
 
             this.help_text = this.model.get("help_text");
             this.div = d3.select("body").append("div")
-                .attr("class", "tooltip")
-                .style("opacity", 0);
+              .attr("class", "tooltip")
+              .style("opacity", 0);
 
             this.bisect = d3.bisector(function(d) { return d; }).left;
             this.el.style("display", (this.model.get("visible") ? "inline" : "none"));
@@ -49,7 +49,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
 
             var scale_models = this.model.get("scales");
             var that = this;
-            var scale_promises = {}
+            var scale_promises = {};
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
@@ -116,7 +116,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
 
             this.parent.on("margin_updated", this.rescale, this);
             this.model.on_some_change(["labels", "display_legend"], function() {
-                this.model.trigger("redraw_legend"); 
+                this.model.trigger("redraw_legend");
             }, this);
         },
         set_internal_scales: function() {
@@ -132,21 +132,23 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             elem.selectAll(".legend" + this.uuid).remove();
             elem.append("g")
-                .attr("transform", "translate(" + x_disp + ", " + y_disp + ")")
-                .attr("class", "legend" + this.uuid)
-                .on("mouseover", _.bind(this.highlight_axis, this))
-                .on("mouseout", _.bind(this.unhighlight_axis, this))
-              .append("text")
-                .text(this.model.get("labels")[0]);
+              .attr("transform", "translate(" + x_disp + ", " + y_disp + ")")
+              .attr("class", "legend" + this.uuid)
+              .on("mouseover", _.bind(this.highlight_axes, this))
+              .on("mouseout", _.bind(this.unhighlight_axes, this))
+            .append("text")
+              .text(this.model.get("labels")[0]);
             return [1, 1];
         },
-        highlight_axis: function() {
-            this.x_scale.model.trigger("highlight_axis");
-            this.y_scale.model.trigger("highlight_axis");
+        highlight_axes: function() {
+            _.each(this.model.get("scales"), function(model) {
+               model.trigger("highlight_axis");
+            });
         },
-        unhighlight_axis: function() {
-            this.x_scale.model.trigger("unhighlight_axis");
-            this.y_scale.model.trigger("unhighlight_axis");
+        unhighlight_axes: function() {
+            _.each(this.model.get("scales"), function(model) {
+               model.trigger("unhighlight_axis");
+            });
         },
         rescale: function() {
             this.width = this.parent.get_mark_plotarea_width(this.x_scale.model);

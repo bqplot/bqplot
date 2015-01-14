@@ -383,8 +383,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("class", "legend" + this.uuid)
               .attr("transform", function(d, i) {
                   return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
-              }).on("mouseover", _.bind(this.highlight_axis, this))
-              .on("mouseout", _.bind(this.unhighlight_axis, this))
+              }).on("mouseover", _.bind(this.highlight_axes, this))
+              .on("mouseout", _.bind(this.unhighlight_axes, this))
               .append("path")
               .attr("transform", function(d, i) {
                   return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
