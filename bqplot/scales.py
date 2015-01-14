@@ -75,13 +75,13 @@ class LinearScale(Scale):
         if not None, min is the minimal value of the domain
     max: float (optional)
         if not None, max is the maximal value of the domain
-    scale_range_type: string
+    rtype: string
         This attribute should not be modifed. The range type of a linear
         scale is numerical.
     """
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
-    scale_range_type = Unicode('numerical', sync=True)
+    rtype = Unicode('numerical', sync=True)
     _view_name = Unicode('LinearScale', sync=True)
     _model_name = Unicode('LinearScaleModel', sync=True)
 
@@ -98,13 +98,13 @@ class LogScale(Scale):
         if not None, min is the minimal value of the domain
     max: float (optional)
         if not None, max is the maximal value of the domain
-    scale_range_type: string
+    rtype: string
         This attribute should not be modifed by the user.
         The range type of a linear scale is numerical.
     """
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
-    scale_range_type = Unicode('numerical', sync=True)
+    rtype = Unicode('Number', sync=True)
     _view_name = Unicode('LogScale', sync=True)
     _model_name = Unicode('LogScaleModel', sync=True)
 
@@ -122,7 +122,7 @@ class DateScale(Scale):
     max: date (optional)
         if not None, max is the maximal value of the domain
     date_format: string
-    scale_range_type: string
+    rtype: string
         This attribute should not be modifed by the user.
         The range type of a linear scale is numerical.
     """
@@ -130,7 +130,7 @@ class DateScale(Scale):
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
     date_format = Unicode('', sync=True)
-    scale_range_type = Unicode('numerical', sync=True)
+    rtype = Unicode('Number', sync=True)
     _view_name = Unicode('DateScale', sync=True)
     _model_name = Unicode('DateScaleModel', sync=True)
 
@@ -145,12 +145,12 @@ class OrdinalScale(Scale):
     ----------
     domain: list
         The discrete values mapped by the ordinal scale
-    scale_range_type: string
+    rtype: string
         This attribute should not be modifed by the user.
         The range type of a linear scale is numerical.
     """
     domain = List(sync=True)
-    scale_range_type = Unicode('numerical', sync=True)
+    rtype = Unicode('Number', sync=True)
     _view_name = Unicode('OrdinalScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
 
@@ -159,7 +159,7 @@ class ColorScale(Scale):
 
     """A color scale.
 
-    A mapping from numbers to colors. The relation is affine by part.
+    A mapping from Numbers to Colors. The relation is affine by part.
 
     Attributes
     ----------
@@ -169,7 +169,7 @@ class ColorScale(Scale):
     max: float
     mid: float
     scheme: string
-    scale_range_type: string
+    rtype: string
         This attribute should not be modifed by the user.
         The range type of a color scale is 'color'.
     """
@@ -179,7 +179,7 @@ class ColorScale(Scale):
     max = Float(default_value=None, sync=True, allow_none=True)
     mid = Float(default_value=None, sync=True, allow_none=True)
     scheme = Unicode('RdYlGn', sync=True)
-    scale_range_type = Unicode('Color', sync=True)
+    rtype = Unicode('Color', sync=True)
     _view_name = Unicode('LinearColorScale', sync=True)
     _model_name = Unicode('LinearColorScaleModel', sync=True)
 
@@ -196,7 +196,7 @@ class DateColorScale(ColorScale):
     max: date
     mid: date
     date_format: string
-    scale_range_type: string
+    rtype: string
         This attribute should not be modifed by the user.
         The range type of a color scale is 'color'.
     """
@@ -204,7 +204,7 @@ class DateColorScale(ColorScale):
     max = Date(default_value=None, sync=True, allow_none=True)
     mid = Unicode(default_value=None, sync=True, allow_none=True)
     date_format = Unicode("", sync=True)
-    scale_range_type = Unicode('Color', sync=True)
+    rtype = Unicode('Color', sync=True)
     _view_name = Unicode('DateColorScale', sync=True)
     _model_name = Unicode('DateColorScaleModel', sync=True)
 
@@ -219,11 +219,11 @@ class OrdinalColorScale(ColorScale):
     ----------
     domain: list
         The discrete values mapped by the ordinal scales.
-    scale_range_type: string
+    rtype: string
         This attribute should not be modifed by the user.
         The range type of a color scale is 'color'.
     """
     domain = List(sync=True)
-    scale_range_type = Unicode('Color', sync=True)
+    rtype = Unicode('Color', sync=True)
     _view_name = Unicode('OrdinalColorScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)

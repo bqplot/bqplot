@@ -50,8 +50,8 @@ class Mark(Widget):
     scaled: bool
         Indicates whether the considered attribute is a data attribute which
         must be associated with a scale in order to be taken into account.
-    scale_range_type: string
-        A condition on the range type of the associated scale.
+    rtype: string
+        Range type of the associated scale.
 
     GUI Generation Decoration
     -------------------------
@@ -72,8 +72,7 @@ class Mark(Widget):
         A dictionary of scales holding scales for each data attribute.
         - If a mark holds a scaled attribute named 'x', the scales dictionary
         must have a corresponding scale for the key 'x'.
-        - The scale's range type should be equal to the scaled attribute's
-        scale_range_type value.
+        - The scale's range type should be equal to the scaled attribute's range type (rtype).
     preserve_domain: dict
         Indicates if this mark affects the domain(s) of the specified scale(s). The keys of this
         dictionary are the same as the ones of the "scales" attribute, and values are boolean.
@@ -149,8 +148,8 @@ class Lines(Mark):
     """
     icon = 'fa-line-chart'
     name = 'Lines'
-    x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=2)
-    y = NdArray(sync=True, display_index=2, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=2)
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=2)
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4, display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none', sync=True, exposed=True, display_index=5, display_name='Labels visibility')
@@ -182,8 +181,8 @@ class FlexLine(Lines):
     """
     name = 'Flexible lines'
     colors = List(CATEGORY10, sync=True)
-    color = NdArray(sync=True, display_index=5, scaled=True, scale_range_type='numerical')
-    width = NdArray(sync=True, display_index=6, scaled=True, scale_range_type='numerical')
+    color = NdArray(sync=True, display_index=5, scaled=True, rtype='Number')
+    width = NdArray(sync=True, display_index=6, scaled=True, rtype='Number')
     _view_name = Unicode('bqplot.FlexLine', sync=True)
     _model_name = Unicode('bqplot.FlexLineModel', sync=True)
 
@@ -234,16 +233,16 @@ class Scatter(Mark):
     """
     icon = 'fa-cloud'
     name = 'Scatter'
-    x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
-    y = NdArray(sync=True, display_index=2, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up'], sync=True, default_value='circle', exposed=True, display_index=3, display_name='Marker')
     default_color = Color('green', sync=True, exposed=True, display_index=4, display_name='Default color')
     stroke = Color(None, allow_none=True, sync=True, exposed=True, display_index=5, display_name='Stroke color')
-    color = NdArray(sync=True, display_index=6, scaled=True, scale_range_type='color', min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=6, scaled=True, rtype='color', min_dim=1, max_dim=1)
     default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=7, display_name='Default opacity')
-    opacity = NdArray(sync=True, display_index=8, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
+    opacity = NdArray(sync=True, display_index=8, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     default_size = Int(64, sync=True, exposed=True, display_index=9, display_name='Default size')  # dot size in square pixels
-    size = NdArray(sync=True, display_index=10, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
+    size = NdArray(sync=True, display_index=10, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     names = NdArray(sync=True)  # names either has to be of length 0 or of the length of the data. Intermediate values will result in undefined behavior.
     display_names = Bool(True, sync=True, exposed=True, display_index=11, display_name='Display names')
     fill = Bool(True, sync=True)
@@ -302,10 +301,10 @@ class Hist(Mark):
     name = 'Histogram'
     # Attributes 'midpoints' and 'counts' are read-only attributes which are
     # set when the histogram is drawn
-    sample = NdArray(sync=True, display_index=1, display_name='Sample', scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
+    sample = NdArray(sync=True, display_index=1, display_name='Sample', scaled=True, rtype='Number', min_dim=1, max_dim=1)
     bins = Int(10, sync=True, exposed=True, display_index=2, display_name='Number of bins')
     midpoints = List(sync=True, display_index=3, display_name='Mid points')
-    counts = List(sync=True, display_index=4, scaled=True, scale_range_type='numerical', read_only=True, display_name='Counts')
+    counts = List(sync=True, display_index=4, scaled=True, rtype='Number', read_only=True, display_name='Counts')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=5, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
@@ -357,10 +356,10 @@ class Bars(Mark):
     """
     icon = 'fa-bar-chart'
     name = 'Bar chart'
-    x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
-    y = NdArray(sync=True, display_index=2, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=2)
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
     # Same as color attribute for the scatter
-    color = NdArray(sync=True, display_index=8, scaled=True, scale_range_type='numerical', min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto', sync=True)  # No change handler for this attribute now
     type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')

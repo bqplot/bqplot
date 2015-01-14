@@ -305,6 +305,9 @@ def axes(**kwargs):
     scales = kwargs.get('scales', _context['scales'])
     options = kwargs.get('options', {})
     appended_axes = {}
+
+    # TODO: loop over keys of scales dictionary. and create Axis or Color Axis
+    # based on the value of rtype (range type).
     if 'x' in scales:  # horizontal
         xargs = dict(_default_axes_options, **(options.get('x', {})))
         xargs.update({'scale': scales['x']})
@@ -337,7 +340,7 @@ def plot(x, y, **kwargs):
     options = kwargs.pop('options', {})
     if 'x' not in scales:
         xoptions = options.get('x', {})
-        # Event when passing an array, we can specify that it is an array of dates.
+        # Even when passing an array, we can specify that it is an array of dates.
         if (hasattr(x, 'dtype') and np.issubdtype(x.dtype, np.datetime64)) or\
            ('dtype' in xoptions and xoptions['dtype'] == 'date'):
             scales['x'] = DateScale(**xoptions)
@@ -367,7 +370,8 @@ def scatter(x, y, **kwargs):
     for name in ['color', 'size', 'opacity']:
         if name not in scales and name in kwargs:
             # Not necessarily color scale but the correct scale type based on
-            # scale_range_type and dtype of kwargs[name]
+            # rtype (range type, static) and dtype (domain type, dynamic)
+            # of kwargs[name]
             scales[name] = ColorScale(**options.get(name, {}))
     scatter = Scatter(x=x, y=y, scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [scatter]
