@@ -27,6 +27,31 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                 self.draw();
             });
         },
+        set_ranges: function() {
+            var x_scale = this.scales["sample"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
+            var y_scale = this.scales["counts"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
+        },
+        set_positional_scales: function() {
+            // Positional scales are special in that they trigger a full redraw
+            // when their domain is changed.
+            this.x_scale = this.scales["sample"];
+            this.y_scale = this.scales["counts"];
+            var that = this;
+            this.listenTo(this.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.model.update_data(); }
+            });
+            this.listenTo(this.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+        },
         create_listeners: function() {
             Hist.__super__.create_listeners.apply(this);
             this.model.on("data_updated", this.draw, this);
@@ -46,37 +71,6 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             this.sel_indices = [];
             this.selector_model.set("selected", jQuery.extend(true, [], []));
             this.selector.touch();
-        },
-        set_scale_models: function() {
-            // first, if this.scales was already define, unregister to any
-            // event on the old one.
-            for (var key in this.scales) {
-                this.stopListening(this.scales[key]);
-            }
-
-            this.scales = {};
-
-            var scale_models = this.model.get("scales");
-            var that = this;
-            var scale_promises = {};
-            _.each(scale_models, function(model, key) {
-                scale_promises[key] = that.create_child_view(model);
-            });
-            return utils.resolve_promises_dict(scale_promises).then(function(d) {
-                that.scales = d;
-                that.x_scale = that.scales["sample"];
-                that.y_scale = that.scales["counts"];
-
-                that.listenTo(that.x_scale, "domain_changed", function() {
-                    if (!that.model.dirty) { that.model.update_data(); }
-                });
-                that.listenTo(that.y_scale, "domain_changed", function() {
-                    if (!that.model.dirty) { that.draw(); }
-                });
-
-                that.set_ranges();
-                that.rescale();
-            });
         },
         update_colors: function(model, colors) {
             this.el.selectAll(".bar").selectAll("rect").attr("fill", this.get_colors(0));
@@ -119,19 +113,6 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                 .attr("width", bar_width)
 		        .attr("height", function(d) { return that.height - that.y_scale.scale(d.y); });
         },
-        set_ranges: function() {
-            var x_scale = this.scales["sample"];
-            if(x_scale) {
-                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
-                this.x_offset = x_scale.offset;
-            }
-
-            var y_scale = this.scales["counts"];
-            if(y_scale) {
-                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
-                this.y_offset = y_scale.offset;
-            }
-        },
         draw: function() {
             var that = this;
             this.set_ranges();
@@ -146,100 +127,100 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             this.el.selectAll(".bar").remove();
             var bar_width = this.calculate_bar_width();
 	        var bar = this.el.selectAll(".bar")
-			    .data(this.model.mark_data)
-		        .enter().append("g")
-			    .attr("class","bar")
-			    .attr("transform", function(d) {
-                    return "translate(" + that.x_scale.scale(d.x) + "," + that.y_scale.scale(d.y) + ")";
-                });
+			  .data(this.model.mark_data)
+		      .enter().append("g")
+			  .attr("class","bar")
+			  .attr("transform", function(d) {
+                  return "translate(" + that.x_scale.scale(d.x) + "," + that.y_scale.scale(d.y) + ")";
+              });
 
 		    bar.append("rect")
-                .attr("class", "rect")
-                .attr("id", function(d, i) { return "rect"+i; })
-		        .attr("x", 2)
-                .attr("width", bar_width)
-		        .attr("height", function(d) { return that.height - that.y_scale.scale(d.y); })
-                .attr("fill", fill_color)
-                .on("click", function(d, i) {
-                    if(!(that.selector_model)) {
-                       return;
-                    }
-                    buffer_index = [];
-                    var elem_index = that.bar_index_sel.indexOf(i);
-                    if( elem_index > -1 && d3.event.ctrlKey) {
-                        that.bar_index_sel.splice(elem_index, 1);
-                        d.forEach(function(elem) {
-                            remove_index = that.sel_indices.indexOf(elem.index);
-                            if(remove_index !== -1) {
-                                that.sel_indices.splice(remove_index, 1);
-                            }
-                        });
-                        that.el.selectAll("#rect" + i).attr("fill", fill_color);
-                    }
-                    else {
-                        if(that.sel_indices[0] === -1) {
-                            that.sel_indices.splice(0,1);
-                        }
-                        if(d3.event.ctrlKey) {
-                            that.sel_indices.forEach(function(elem) { buffer_index.push(elem); });
-                        } else if(d3.event.shiftKey) {
-                            if(elem_index > -1) {
-                                return;
-                            }
-                            that.sel_indices.forEach(function(elem) { buffer_index.push(elem); });
-                            min_index = (that.bar_index_sel.length !== 0) ?
-                                d3.min(that.bar_index_sel) : -1;
-                            max_index = (that.bar_index_sel.length !== 0) ?
-                                d3.max(that.bar_index_sel) : (that.mark_data).length;
-                            if(i > max_index){
-                                that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) {
-                                    data_elem.map(function(elem) {
-                                        buffer_index.push(elem.index);
-                                    });
-                                });
-                                indices.slice(max_index + 1, i).forEach(function(data_elem ) {
-                                    that.bar_index_sel.push(data_elem);
-                                });
-                            } else if(i < min_index){
-                                that.model.mark_data.slice(i + 1, min_index).forEach(function(data_elem) {
-                                    data_elem.map(function(elem) {
-                                        buffer_index.push(elem.index);
-                                    });
-                                });
-                                indices.slice(i+1, min_index).forEach(function(data_elem) {
-                                    that.bar_index_sel.push(data_elem);
-                                });
-                            }
-                        } else {
-                            that.bar_index_sel.forEach(function(index) {
-                                that.el.selectAll("#rect" + index).attr("fill", fill_color);
-                            });
-                            that.bar_index_sel = [];
-                        }
-                        that.sel_indices = (d.map(function(elem) { return elem.index; }));
-                        that.bar_index_sel.push(i);
-                        that.bar_index_sel.forEach(function(data_elem) {
-                            _.bind(that.reset_colors(data_elem, select_color), that);
-                        });
-                    }
-                    buffer_index.forEach(function(data_elem) {
-                        that.sel_indices.push(data_elem);
-                    });
-                    that.selector_model.set("selected", jQuery.extend(true, [], that.sel_indices));
-                    that.selector.touch();
-                    if (!d3.event) {
-                        d3.event = window.event;
-                    }
-                    var e = d3.event;
-                    if (e.cancelBubble !== undefined) { // IE
-                        e.cancelBubble = true;
-                    }
-                    if (e.stopPropagation) {
-                        e.stopPropagation();
-                    }
-                    e.preventDefault();
-                });
-                this.update_stroke_and_opacity();
+              .attr("class", "rect")
+              .attr("id", function(d, i) { return "rect"+i; })
+		      .attr("x", 2)
+              .attr("width", bar_width)
+		      .attr("height", function(d) { return that.height - that.y_scale.scale(d.y); })
+              .attr("fill", fill_color)
+              .on("click", function(d, i) {
+                  if(!(that.selector_model)) {
+                     return;
+                  }
+                  buffer_index = [];
+                  var elem_index = that.bar_index_sel.indexOf(i);
+                  if( elem_index > -1 && d3.event.ctrlKey) {
+                      that.bar_index_sel.splice(elem_index, 1);
+                      d.forEach(function(elem) {
+                          remove_index = that.sel_indices.indexOf(elem.index);
+                          if(remove_index !== -1) {
+                              that.sel_indices.splice(remove_index, 1);
+                          }
+                      });
+                      that.el.selectAll("#rect" + i).attr("fill", fill_color);
+                  }
+                  else {
+                      if(that.sel_indices[0] === -1) {
+                          that.sel_indices.splice(0,1);
+                      }
+                      if(d3.event.ctrlKey) {
+                          that.sel_indices.forEach(function(elem) { buffer_index.push(elem); });
+                      } else if(d3.event.shiftKey) {
+                          if(elem_index > -1) {
+                              return;
+                          }
+                          that.sel_indices.forEach(function(elem) { buffer_index.push(elem); });
+                          min_index = (that.bar_index_sel.length !== 0) ?
+                              d3.min(that.bar_index_sel) : -1;
+                          max_index = (that.bar_index_sel.length !== 0) ?
+                              d3.max(that.bar_index_sel) : (that.mark_data).length;
+                          if(i > max_index){
+                              that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) {
+                                  data_elem.map(function(elem) {
+                                      buffer_index.push(elem.index);
+                                  });
+                              });
+                              indices.slice(max_index + 1, i).forEach(function(data_elem ) {
+                                  that.bar_index_sel.push(data_elem);
+                              });
+                          } else if(i < min_index){
+                              that.model.mark_data.slice(i + 1, min_index).forEach(function(data_elem) {
+                                  data_elem.map(function(elem) {
+                                      buffer_index.push(elem.index);
+                                  });
+                              });
+                              indices.slice(i+1, min_index).forEach(function(data_elem) {
+                                  that.bar_index_sel.push(data_elem);
+                              });
+                          }
+                      } else {
+                          that.bar_index_sel.forEach(function(index) {
+                              that.el.selectAll("#rect" + index).attr("fill", fill_color);
+                          });
+                          that.bar_index_sel = [];
+                      }
+                      that.sel_indices = (d.map(function(elem) { return elem.index; }));
+                      that.bar_index_sel.push(i);
+                      that.bar_index_sel.forEach(function(data_elem) {
+                          _.bind(that.reset_colors(data_elem, select_color), that);
+                      });
+                  }
+                  buffer_index.forEach(function(data_elem) {
+                      that.sel_indices.push(data_elem);
+                  });
+                  that.selector_model.set("selected", jQuery.extend(true, [], that.sel_indices));
+                  that.selector.touch();
+                  if (!d3.event) {
+                      d3.event = window.event;
+                  }
+                  var e = d3.event;
+                  if (e.cancelBubble !== undefined) { // IE
+                      e.cancelBubble = true;
+                  }
+                  if (e.stopPropagation) {
+                      e.stopPropagation();
+                  }
+                  e.preventDefault();
+              });
+            this.update_stroke_and_opacity();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)

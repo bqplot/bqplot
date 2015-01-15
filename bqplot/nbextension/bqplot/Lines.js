@@ -34,6 +34,18 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 self.draw();
             }, null);
         },
+        set_ranges: function() {
+            var x_scale = this.scales["x"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
+            var y_scale = this.scales["y"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
+        },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
             this.model.on("change:interpolate", this.update_interpolate, this);

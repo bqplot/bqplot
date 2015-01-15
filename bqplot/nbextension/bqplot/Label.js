@@ -29,11 +29,39 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.y_offset = this.model.get("y_offset");
             this.color = this.model.get("color");
             this.text = this.model.get("text");
-
             return base_render_promise.then(function() {
                 self.create_listeners();
                 self.draw();
             }, null);
+        },
+        set_ranges: function() {
+            var x_scale = this.scales["x"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
+            var y_scale = this.scales["y"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
+        },
+        set_positional_scales: function() {
+            this.x_scale = this.scales["x"];
+            this.y_scale = this.scales["y"];
+            if(!this.x_scale) {
+                this.x_scale = this.parent.scale_x;
+            }
+            var that = this;
+            this.listenTo(this.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            if(!that.y_scale) {
+                this.y_scale = this.parent.scale_y;
+            }
+            this.listenTo(this.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
         },
         create_listeners: function() {
             Label.__super__.create_listeners.apply(this);
@@ -43,7 +71,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.rotate_angle = value; this.apply_net_transform();
             }, this);
             this.model.on("change:y_offset", function(model, value) {
-                this.y_offset = value; this.apply_net_transform(); 
+                this.y_offset = value; this.apply_net_transform();
             }, this);
             this.model.on("change:x_offset", function(model, value) {
                 this.x_offset = value; this.apply_net_transform();

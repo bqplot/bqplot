@@ -42,11 +42,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 self.draw();
             }, null);
         },
-        set_internal_scales: function() {
-            // Two scales to draw the bars.
-            this.x = d3.scale.ordinal();
-            this.x1 = d3.scale.ordinal();
-        },
         set_ranges: function() {
             if(this.x_scale.model.type !== "ordinal") {
                 this.x_scale.set_range(this.parent.get_padded_xrange(this.x_scale.model));
@@ -62,6 +57,11 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(this.color_scale) {
                 this.color_scale.set_range();
             }
+        },
+        set_internal_scales: function() {
+            // Two scales to draw the bars.
+            this.x = d3.scale.ordinal();
+            this.x1 = d3.scale.ordinal();
         },
         adjust_offset: function() {
         // If it is a linear scale and you plot ordinal data on it,
