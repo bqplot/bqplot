@@ -365,7 +365,7 @@ def scatter(x, y, **kwargs):
     kwargs['x'] = x
     kwargs['y'] = y
     # Going through the list of data attributes
-    for name in ['x', 'y', 'color', 'size', 'opacity']:
+    for name in Scatter.class_trait_names(scaled=True):
         if name not in scales and name in kwargs:
             traitlet = Scatter.class_traits()[name]
             rtype = traitlet.get_metadata('rtype')
