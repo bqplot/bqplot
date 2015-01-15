@@ -14,8 +14,9 @@
  */
 
 define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
-        var Mark = mark[0];
-        var Scatter = Mark.extend({
+    var min_size = 10;
+    var Mark = mark[0];
+    var Scatter = Mark.extend({
         render: function() {
             var base_creation_promise = Scatter.__super__.render.apply(this);
             this.stroke = this.model.get("stroke");

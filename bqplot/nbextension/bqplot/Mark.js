@@ -14,7 +14,6 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], function(WidgetManager, widget, d3, utils) {
-    var min_size = 10;
     var Mark = widget.WidgetView.extend({
         render: function() {
             this.parent = this.options.parent;
