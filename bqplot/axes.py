@@ -60,7 +60,7 @@ class Axis(Widget):
             Tick values for the axis
         offset: dict
             Containing a scale and a value {'scale': scale or None, 'value': value of the offset}
-            If offset['scale'] is None, the corresponding figure scale is used instead. 
+            If offset['scale'] is None, the corresponding figure scale is used instead.
         label_location: {'middle', 'start', 'end'}
             The location of the label along the axis, one of 'start', 'end' or 'middle'
         label_color: string
@@ -77,7 +77,7 @@ class Axis(Widget):
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom', sync=True)
     label = Unicode(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none', sync=True)   # Style of the grid on the X-axis
-    tick_format = Unicode(sync=True)
+    tick_format = Unicode(allow_none=True, sync=True)
     scale = Instance(Scale, sync=True)
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NumpyArray(sync=True)
@@ -98,7 +98,7 @@ class Axis(Widget):
     def _tick_format_default(self):
         if isinstance(self.scale, DateScale):
             # TODO: perhaps we should have a DateAxis subclass instead of this checking
-            return '%b-%y'
+            return None
         elif isinstance(self.scale, LogScale):
             return '.3g'
         else:

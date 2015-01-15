@@ -19,7 +19,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         initialize: function() {
             BarsModel.__super__.initialize.apply(this);
             this.is_y_2d = false;
-            this.on_some_change(["x", "y"], this.update_data, this);
+            this.on_some_change(["x", "y", "base"], this.update_data, this);
             this.on("change:color", function() {
                 this.update_color();
                 this.trigger("colors_updated");
@@ -38,6 +38,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var y_scale = scales["y"];
             y_data = (y_data.length === 0 || y_data[0] instanceof Array) ? y_data : [y_data];
             this.curve_labels = this.get("labels");
+            var self = this;
+
+            this.base_value = this.get("base");
+            if(this.base_value === undefined || this.base_value === null) {
+                this.base_value = 0;
+            }
+
             if (x_data.length === 0 || y_data.length === 0) {
                 this.mark_data = [];
                 this.is_y_2d = false;
@@ -48,19 +55,20 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 })));
                 this.mark_data = x_data.map(function (x_elem, index) {
                     var data = {};
-                    var y0 = 0;
-                    var y0_neg = 0;
+                    var y0 = self.base_value;
+                    var y0_neg = self.base_value;
                     data.key = x_elem;
                     data.values = y_data.map(function(y_elem, y_index) {
-                        var value = y_elem[index];
+                        var value = y_elem[index] - self.base_value;
                         var positive = (value >= 0);
                         return {
                             y0: (positive) ? y0 : y0_neg,
-                            y1: (positive) ? (y0 += y_elem[index]) : (function() {
-                                y0_neg += y_elem[index];
-                                return (y0_neg - y_elem[index]);
+                            y1: (positive) ? (y0 += value) : (function() {
+                                y0_neg += value;
+                                return (y0_neg - value);
                             }()),
-                            val: y_elem[index],
+                            val: value,
+                            // analogous to the height of the bar
                         };
                     });
                     data.pos_max = y0;
@@ -114,7 +122,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             if(!this.get("preserve_domain")["y"]) {
                 if(this.get("type") === "stacked") {
                     y_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
-                                                    d3.max(this.mark_data, function(c) { return c.pos_max; })],
+                                                    d3.max(this.mark_data, function(c) { return c.pos_max; }), this.base_value],
                                                     this.id);
                 } else {
                     var min = d3.min(this.mark_data,
@@ -123,14 +131,12 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                                 return val.val;
                             });
                         });
-                    min = Math.min(0, min);
                     var max = d3.max(this.mark_data, function(c) {
                         return d3.max(c.values, function(val) {
                             return val.val;
                         });
                     });
-                    max = Math.max(0, max);
-                    y_scale.compute_and_set_domain([min, max], this.id);
+                    y_scale.compute_and_set_domain([min, max, this.base_value], this.id);
                 }
             } else {
                 y_scale.del_domain([], this.id);

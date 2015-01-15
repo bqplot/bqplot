@@ -16,6 +16,16 @@
 // Axis view to display the axis
 define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
      var units_array = ["em", "ex", "px"];
+     var custom_time_format = d3.time.format.multi([
+                [".%L", function(d) { return d.getMilliseconds(); }],
+                [":%S", function(d) { return d.getSeconds(); }],
+                ["%I:%M", function(d) { return d.getMinutes(); }],
+                ["%I %p", function(d) { return d.getHours(); }],
+                ["%a %d", function(d) { return d.getDay() && d.getDate() !== 1; }],
+                ["%b %d", function(d) { return d.getDate() !== 1; }],
+                ["%b %Y", function(d) { return d.getMonth(); }],
+                ["%Y", function() { return true; }]
+     ]);
      var Axis = widget.WidgetView.extend({
          render: function() {
             this.parent = this.options.parent;
@@ -146,7 +156,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         generate_tick_formatter: function() {
             if(this.axis_scale.model.type === "date" ||
                this.axis_scale.model.type === "date_color_linear") {
-                return d3.time.format(this.model.get("tick_format"));
+                if(this.model.get("tick_format"))
+                    return d3.time.format(this.model.get("tick_format"));
+                else
+                    return custom_time_format;
             } else if (this.axis_scale.model.type === "ordinal") {
                 return function(d) { return d; };
             }
@@ -160,7 +173,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         create_axis_line: function() {
             if(this.vertical) {
-                this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side === "right" ? "right" : "left").tickFormat(this.tick_format);
+                this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side === "right" ? "right" : "left");
             } else {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side === "top" ? "top" : "bottom");
             }
