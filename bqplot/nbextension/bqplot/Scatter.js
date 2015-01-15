@@ -150,7 +150,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         // points of entry to that logic which makes it easier to manage and to
         // keep consistent across different places where we use it.
         get_element_color: function(data) {
-           if(this.color_scale && data.z !== undefined) {
+           if(this.color_scale && data.z !== undefined && data.z !== null) {
               return this.color_scale.scale(data.z);
            }
            return this.model.get("default_color");
