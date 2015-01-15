@@ -45,7 +45,7 @@ Pyplot
 from IPython.display import display
 import numpy as np
 from ..figure import Figure
-from ..scales import LinearScale, ColorScale, DateScale, OrdinalScale
+from ..scales import Scale, LinearScale, DateScale, OrdinalScale
 from ..axes import Axis, ColorAxis
 from ..marks import Lines, Scatter, Hist, Bars
 from ..overlays import panzoom
@@ -53,7 +53,7 @@ from IPython.html.widgets import VBox, HBox as ButtonGroup
 from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
 
 # TODO: use logging configurable for default figure settings
-_default_fig_options = {'min_width': 800, 'min_height': 600, 'fig_margin': dict(top=50, bottom=50, left=50, right=50)}
+_default_fig_options = {}
 _default_axes_options = {}
 _context = {
     'figure': None,
@@ -305,6 +305,9 @@ def axes(**kwargs):
     scales = kwargs.get('scales', _context['scales'])
     options = kwargs.get('options', {})
     appended_axes = {}
+
+    # TODO: loop over keys of scales dictionary. and create Axis or Color Axis
+    # based on the value of rtype (range type).
     if 'x' in scales:  # horizontal
         xargs = dict(_default_axes_options, **(options.get('x', {})))
         xargs.update({'scale': scales['x']})
@@ -326,7 +329,7 @@ def axes(**kwargs):
     return appended_axes
 
 
-def plot(*args, **kwargs):
+def plot(x, y, **kwargs):
     """Draws lines in the current context figure.
 
     The options optional argument is used to pass attributes for the scales to
@@ -335,10 +338,9 @@ def plot(*args, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', _context['scales'])
     options = kwargs.pop('options', {})
-    x, y = args[0], args[1]
     if 'x' not in scales:
         xoptions = options.get('x', {})
-        # Event when passing an array, we can specify that it is an array of dates.
+        # Even when passing an array, we can specify that it is an array of dates.
         if (hasattr(x, 'dtype') and np.issubdtype(x.dtype, np.datetime64)) or\
            ('dtype' in xoptions and xoptions['dtype'] == 'date'):
             scales['x'] = DateScale(**xoptions)
@@ -351,7 +353,7 @@ def plot(*args, **kwargs):
     return lines
 
 
-def scatter(*args, **kwargs):
+def scatter(x, y, **kwargs):
     """Draws a scatter in the current context figure.
 
     The options optional argument is used to pass attributes for the scales to
@@ -360,23 +362,25 @@ def scatter(*args, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', _context['scales'])
     options = kwargs.pop('options', {})
-    if 'x' not in scales:
-        scales['x'] = LinearScale(**options.get('x', {}))
-    if 'y' not in scales:
-        scales['y'] = LinearScale(**options.get('y', {}))
-    if 'color' not in scales and len(args) > 2:
-        scales['color'] = ColorScale(**options.get('color', {}))
-    x, y = args[0], args[1]
-    if len(args) > 2:
-        color_data = args[2]
-    else:
-        color_data = []
-    scatter = Scatter(x=x, y=y, color_data=color_data, scales=scales, **kwargs)
+    kwargs['x'] = x
+    kwargs['y'] = y
+    # Going through the list of data attributes
+    for name in Scatter.class_trait_names(scaled=True):
+        if name not in scales and name in kwargs:
+            traitlet = Scatter.class_traits()[name]
+            rtype = traitlet.get_metadata('rtype')
+            dtype = traitlet.validate(None, kwargs[name]).dtype
+            compat_scale_types = [Scale.scale_types[key] for key in Scale.scale_types
+                    if Scale.scale_types[key].rtype == rtype
+                        and np.issubdtype(dtype, Scale.scale_types[key].dtype)]
+            # TODO: something better than taking the first compatible scale type.
+            scales[name] = compat_scale_types[0](**options.get(name, {}))
+    scatter = Scatter(scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [scatter]
     return scatter
 
 
-def hist(*args, **kwargs):
+def hist(sample, **kwargs):
     """Draws a histogram in the current context figure.
 
     The options optional argument is used to pass attributes for the scales to
@@ -389,13 +393,12 @@ def hist(*args, **kwargs):
         scales['sample'] = LinearScale(**options.get('sample', {}))
     if 'counts' not in scales:
         scales['counts'] = LinearScale(**options.get('counts', {}))
-    sample = args[0]
     hist = Hist(sample=sample, scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [hist]
     return hist
 
 
-def bar(*args, **kwargs):
+def bar(x, y, **kwargs):
     """Draws a BarChart in the current context figure.
 
     The options optional argument is used to pass attributes for the scales to
@@ -408,7 +411,6 @@ def bar(*args, **kwargs):
         scales['x'] = OrdinalScale(**options.get('x', {}))
     if 'y' not in scales:
         scales['y'] = LinearScale(**options.get('y', {}))
-    x, y = args[0], args[1]
     bar = Bars(x=x, y=y, scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [bar]
     return bar

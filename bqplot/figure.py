@@ -26,12 +26,13 @@ Figure
    Figure
 """
 
-from IPython.html.widgets import DOMWidget
+from IPython.html.widgets import DOMWidget, register
 from IPython.utils.traitlets import Unicode, Instance, List, Dict, Any, CFloat, Bool, Enum, Float
 
 from .scales import Scale, LinearScale
 
 
+@register('bqplot.Figure')
 class Figure(DOMWidget):
 
     """Main canvas for drawing a chart.
