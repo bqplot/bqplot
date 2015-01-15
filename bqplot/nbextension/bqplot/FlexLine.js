@@ -36,17 +36,14 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
         },
         set_ranges: function() {
             FlexLine.__super__.set_ranges.apply(this);
-            if(this.color_scale) {
-                this.color_scale.set_range();
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                color_scale.set_range();
             }
-            if(this.width_scale) {
-                this.width_scale.set_range([0.5, this.model.get("stroke_width")]);
+            var width_scale = this.scales["width"];
+            if(width_scale) {
+                width_scale.set_range([0.5, this.model.get("stroke_width")]);
             }
-        },
-        set_positional_scales: function() {
-            FlexLine.__super__.set_positional_scales.apply(this);
-            this.color_scale = this.scales["color"];
-            this.width_scale = this.scales["width"];
         },
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
@@ -56,7 +53,8 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             this.model.on("change:color change:width", this.update_and_draw, this);
         },
         update_stroke_width: function(model, stroke_width){
-            this.el.selectAll(".curve").selectAll("path").style("stroke-width", stroke_width);
+            this.el.selectAll(".curve").selectAll("path")
+              .style("stroke-width", stroke_width);
         },
         update_interpolate: function(model, interpolate) {
             var that = this;
@@ -154,14 +152,16 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             }
         },
         get_element_color: function(dataelem) {
-            if(this.color_scale !== undefined && dataelem.color !== undefined) {
-                return this.color_scale.scale(dataelem.color);
+            var color_scale = this.scales["color"];
+            if(color_scale !== undefined && dataelem.color !== undefined) {
+                return color_scale.scale(dataelem.color);
             }
             return this.model.get("colors")[0];
         },
         get_element_width: function(dataelem) {
-            if(this.width_scale !== undefined && dataelem.size !== undefined) {
-                return this.width_scale.scale(dataelem.size);
+            var width_scale = this.scales["width"];
+            if(width_scale !== undefined && dataelem.size !== undefined) {
+                return width_scale.scale(dataelem.size);
             }
             return this.model.get("stroke_width");
         },
