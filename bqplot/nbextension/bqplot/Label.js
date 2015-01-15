@@ -47,6 +47,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         set_positional_scales: function() {
+            // If no scale for "x" or "y" is specified, figure scales are used.
             this.x_scale = this.scales["x"];
             this.y_scale = this.scales["y"];
             if(!this.x_scale) {

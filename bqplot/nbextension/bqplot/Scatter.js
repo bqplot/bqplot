@@ -67,13 +67,11 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
                 this.x_offset = x_scale.offset;
             }
-
             var y_scale = this.scales["y"];
             if(y_scale) {
                 y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
                 this.y_offset = y_scale.offset;
             }
-
             var size_scale = this.scales["size"];
             if(size_scale) {
                 // I don't know how to set the lower bound on the range of the
@@ -85,7 +83,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 // I don't know how to handle for ordinal scale.
                 var size_domain = size_scale.scale.domain();
                 var ratio = d3.min(size_domain) / d3.max(size_domain);
-                size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]), this.model.get("default_size")]);
+                size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]),
+                                     this.model.get("default_size")]);
             }
             var color_scale = this.scales["color"];
             if(color_scale) {
@@ -95,6 +94,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(opacity_scale) {
                 opacity_scale.set_range([0.2, 1]);
             }
+        },
+        set_positional_scales: function() {
+            this.x_scale = this.scales["x"];
+            this.y_scale = this.scales["y"];
+            var that = this;
+            this.listenTo(that.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            this.listenTo(that.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);

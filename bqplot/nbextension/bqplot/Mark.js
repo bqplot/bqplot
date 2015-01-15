@@ -63,15 +63,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         set_positional_scales: function() {
             // Positional scales are special in that they trigger a full redraw
             // when their domain is changed.
-            this.x_scale = this.scales["x"];
-            this.y_scale = this.scales["y"];
-            var that = this;
-            this.listenTo(that.x_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
-            });
-            this.listenTo(that.y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
-            });
+            // This should be overloaded in specific mark implementation.
+        },
+        set_internal_scales: function() {
+            // Some marks such as Bars need to create additional scales
+            // to draw themselves. In this case, the set_internal_scales
+            // is overloaded.
         },
         create_listeners: function() {
             this.model.on("change:visible", this.update_visibility, this);
@@ -80,11 +77,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.model.on_some_change(["labels", "display_legend"], function() {
                 this.model.trigger("redraw_legend");
             }, this);
-        },
-        set_internal_scales: function() {
-            // Some marks such as Bars need to create additional scales
-            // to draw themselves. In this case, the set_internal_scales
-            // is overloaded.
         },
         remove: function() {
             this.model.off(null, null, this);

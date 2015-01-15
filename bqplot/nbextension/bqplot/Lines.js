@@ -46,6 +46,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.y_offset = y_scale.offset;
             }
         },
+        set_positional_scales: function() {
+            this.x_scale = this.scales["x"];
+            this.y_scale = this.scales["y"];
+            var that = this;
+            this.listenTo(that.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            this.listenTo(that.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+        },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
             this.model.on("change:interpolate", this.update_interpolate, this);
