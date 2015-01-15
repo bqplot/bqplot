@@ -27,12 +27,39 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return base_render_promise.then(function() {
                 self.line = d3.svg.line()
                   .interpolate(self.model.get("interpolate"))
-                  .x(function(d) { return self.x_scale.scale(d.x) + self.x_offset; })
-                  .y(function(d) { return self.y_scale.scale(d.y) + self.y_offset; })
+                  .x(function(d) {
+                      return self.x_scale.scale(d.x) + self.x_offset;
+                  })
+                  .y(function(d) {
+                      return self.y_scale.scale(d.y) + self.y_offset;
+                  })
                   .defined(function(d) { return d.y !== null; });
                 self.create_listeners();
                 self.draw();
             }, null);
+        },
+        set_ranges: function() {
+            var x_scale = this.scales["x"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
+            var y_scale = this.scales["y"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
+        },
+        set_positional_scales: function() {
+            this.x_scale = this.scales["x"];
+            this.y_scale = this.scales["y"];
+            var that = this;
+            this.listenTo(that.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            this.listenTo(that.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
         },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
@@ -75,15 +102,19 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         // Could be fused in a single function for increased readability
         // and to avoid code repetition
         update_line_style: function() {
-            this.el.selectAll(".curve").selectAll("path").style("stroke-dasharray", _.bind(this.get_line_style, this));
+            this.el.selectAll(".curve").selectAll("path")
+              .style("stroke-dasharray", _.bind(this.get_line_style, this));
             if (this.legend_el) {
-                this.legend_el.select("line").style("stroke-dasharray", _.bind(this.get_line_style, this));
+                this.legend_el.select("line")
+                  .style("stroke-dasharray", _.bind(this.get_line_style, this));
             }
         },
-        update_stroke_width: function(model, stroke_width){
-            this.el.selectAll(".curve").selectAll("path").style("stroke-width", stroke_width);
-            if (this.legend_el){
-                this.legend_el.select("line").style("stroke-width", stroke_width);
+        update_stroke_width: function(model, stroke_width) {
+            this.el.selectAll(".curve").selectAll("path")
+              .style("stroke-width", stroke_width);
+            if (this.legend_el) {
+                this.legend_el.select("line")
+                  .style("stroke-width", stroke_width);
             }
         },
         update_colors: function(model, colors) {
@@ -169,7 +200,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.model.update_labels();
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-                .data(this.model.mark_data, function(d, i) { return d.name; });
+                .data(this.model.mark_data, function(d, i) {
+                    return d.name;
+                });
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
@@ -191,7 +224,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("x", rect_dim * 1.2)
                 .attr("y", rect_dim / 2)
                 .attr("dy", "0.35em")
-                .text(function(d, i) {return that.model.curve_labels[i]; })
+                .text(function(d, i) { return that.model.curve_labels[i]; })
                 .style("fill", function(d,i) { return that.get_colors(i); });
 
             var max_length = d3.max(this.model.curve_labels, function(d) {
@@ -210,10 +243,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     .datum(function(d) {
                         return {name: d.name, value: d.values[d.values.length - 1]};
                     }).attr("transform", function(d) {
-                        return "translate(" + that.x_scale.scale(d.value.x) + "," + that.y_scale.scale(d.value.y) + ")";
+                        return "translate(" + that.x_scale.scale(d.value.x)
+                                      + "," + that.y_scale.scale(d.value.y) + ")";
                     }).attr("x", 3)
                     .attr("dy", ".35em")
-                    .attr("display", function(d) { return (that.model.get("labels_visibility") !== "label") ?
+                    .attr("display", function(d) {
+                        return (that.model.get("labels_visibility") !== "label") ?
                           "none" : "inline";
                     }).text(function(d) { return d.name; });
         },

@@ -14,8 +14,9 @@
  */
 
 define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
-        var Mark = mark[0];
-        var Scatter = Mark.extend({
+    var min_size = 10;
+    var Mark = mark[0];
+    var Scatter = Mark.extend({
         render: function() {
             var base_creation_promise = Scatter.__super__.render.apply(this);
             this.stroke = this.model.get("stroke");
@@ -60,6 +61,51 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 self.create_listeners();
                 self.draw();
             }, null);
+        },
+        set_ranges: function() {
+            var x_scale = this.scales["x"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
+            var y_scale = this.scales["y"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
+            var size_scale = this.scales["size"];
+            if(size_scale) {
+                // I don't know how to set the lower bound on the range of the
+                // values that the size scale takes. I guess a reasonable
+                // approximation is that the area should be proportional to the
+                // value. But I also want to set a lower bound of 10px area on
+                // the size. This is what I do in the step below.
+
+                // I don't know how to handle for ordinal scale.
+                var size_domain = size_scale.scale.domain();
+                var ratio = d3.min(size_domain) / d3.max(size_domain);
+                size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]),
+                                     this.model.get("default_size")]);
+            }
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                color_scale.set_range();
+            }
+            var opacity_scale = this.scales["opacity"];
+            if(opacity_scale) {
+                opacity_scale.set_range([0.2, 1]);
+            }
+        },
+        set_positional_scales: function() {
+            this.x_scale = this.scales["x"];
+            this.y_scale = this.scales["y"];
+            var that = this;
+            this.listenTo(that.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            this.listenTo(that.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);

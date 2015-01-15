@@ -42,11 +42,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 self.draw();
             }, null);
         },
-        set_internal_scales: function() {
-            // Two scales to draw the bars.
-            this.x = d3.scale.ordinal();
-            this.x1 = d3.scale.ordinal();
-        },
         set_ranges: function() {
             if(this.x_scale.model.type !== "ordinal") {
                 this.x_scale.set_range(this.parent.get_padded_xrange(this.x_scale.model));
@@ -63,12 +58,27 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.color_scale.set_range();
             }
         },
+        set_positional_scales: function() {
+            this.x_scale = this.scales["x"];
+            this.y_scale = this.scales["y"];
+            var that = this;
+            this.listenTo(that.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            this.listenTo(that.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+        },
+        set_internal_scales: function() {
+            // Two scales to draw the bars.
+            this.x = d3.scale.ordinal();
+            this.x1 = d3.scale.ordinal();
+        },
         adjust_offset: function() {
-        // If it is a linear scale and you plot ordinal data on it,
-        // the value have to be negatively offset by half of the width of the
-        // bars. This is because an ordinal scale gives the values
-        // corresponding to the start of the bin but linear scale gives the
-        // actual value.
+            // In the case of a linear scale, and when plotting ordinal data,
+            // the value have to be negatively offset by half of the width of
+            // the bars, because ordinal scales give the values corresponding
+            // to the start of the bin but linear scale gives the actual value.
             if(this.x_scale.model.type !== "ordinal") {
                 this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
             } else {

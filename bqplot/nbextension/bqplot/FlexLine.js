@@ -21,17 +21,29 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var self = this;
 
             return base_render_promise.then(function() {
-                self.color_scale = self.scales["color"];
-                self.width_scale = self.scales["width"];
                 self.line = d3.svg.line()
                     .interpolate(self.model.get("interpolate"))
-                    .x(function(d) { return self.x_scale.scale(d.x) + self.x_offset; })
-                    .y(function(d) { return self.y_scale.scale(d.y) + self.y_offset; })
+                    .x(function(d) {
+                        return self.x_scale.scale(d.x) + self.x_offset;
+                    })
+                    .y(function(d) {
+                        return self.y_scale.scale(d.y) + self.y_offset;
+                    })
                     .defined(function(d) { return d.y !== null; });
-
                 self.create_listeners();
                 self.draw();
             }, null);
+        },
+        set_ranges: function() {
+            FlexLine.__super__.set_ranges.apply(this);
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                color_scale.set_range();
+            }
+            var width_scale = this.scales["width"];
+            if(width_scale) {
+                width_scale.set_range([0.5, this.model.get("stroke_width")]);
+            }
         },
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
@@ -41,7 +53,8 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             this.model.on("change:color change:width", this.update_and_draw, this);
         },
         update_stroke_width: function(model, stroke_width){
-            this.el.selectAll(".curve").selectAll("path").style("stroke-width", stroke_width);
+            this.el.selectAll(".curve").selectAll("path")
+              .style("stroke-width", stroke_width);
         },
         update_interpolate: function(model, interpolate) {
             var that = this;
@@ -84,15 +97,6 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
 
             g_elements.exit().remove();
             return [this.model.mark_data.length, max_length];
-        },
-        set_ranges: function() {
-            FlexLine.__super__.set_ranges.apply(this);
-            if(this.color_scale) {
-                this.color_scale.set_range();
-            }
-            if(this.width_scale) {
-                this.width_scale.set_range([0.5, this.model.get("stroke_width")]);
-            }
         },
         draw: function() {
             this.set_ranges();
@@ -148,19 +152,21 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             }
         },
         get_element_color: function(dataelem) {
-            if(this.color_scale !== undefined && dataelem.color !== undefined) {
-                return this.color_scale.scale(dataelem.color);
+            var color_scale = this.scales["color"];
+            if(color_scale !== undefined && dataelem.color !== undefined) {
+                return color_scale.scale(dataelem.color);
             }
             return this.model.get("colors")[0];
         },
         get_element_width: function(dataelem) {
-            if(this.width_scale !== undefined && dataelem.size !== undefined) {
-                return this.width_scale.scale(dataelem.size);
+            var width_scale = this.scales["width"];
+            if(width_scale !== undefined && dataelem.size !== undefined) {
+                return width_scale.scale(dataelem.size);
             }
             return this.model.get("stroke_width");
         },
         rescale: function() {
-            FlexLine.__super__.rescale.apply(this);
+            Line.__super__.rescale.apply(this);
             this.set_ranges();
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
