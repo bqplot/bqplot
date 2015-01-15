@@ -37,6 +37,18 @@ from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
 
+def register_mark(key=None):
+    """Returns a decorator registering a mark class in the mark type registry.
+    If no key is provided, the class name is used as a key. A key is
+    provided for each core bqplot mark so that the frontend can use
+    this key regardless of the kernel language."""
+    def wrap(mark):
+        l = key if key is not None else mark.__module__ + mark.__name__
+        Mark.mark_types[l] = mark
+        return mark
+    return wrap
+
+
 class Mark(Widget):
 
     """The base mark class.
@@ -68,6 +80,8 @@ class Mark(Widget):
 
     Attributes
     ----------
+    mark_types: dict
+        A registry of existing mark types.
     scales: Dict
         A dictionary of scales holding scales for each data attribute.
         - If a mark holds a scaled attribute named 'x', the scales dictionary
@@ -98,6 +112,7 @@ class Mark(Widget):
     idx_selected: list
         Indices of the selected items in the mark.
     """
+    mark_types = {}
     scales = Dict(sync=True)
     preserve_domain = Dict(allow_none=False, sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1, display_name='Display legend')
@@ -115,6 +130,7 @@ class Mark(Widget):
         return None
 
 
+@register_mark('bqplot.Lines')
 class Lines(Mark):
 
     """Lines mark.
@@ -159,6 +175,7 @@ class Lines(Mark):
     _model_name = Unicode('bqplot.LinesModel', sync=True)
 
 
+@register_mark('bqplot.FlexLine')
 class FlexLine(Lines):
 
     """Flexible Lines mark.
@@ -187,6 +204,7 @@ class FlexLine(Lines):
     _model_name = Unicode('bqplot.FlexLineModel', sync=True)
 
 
+@register_mark('bqplot.Scatter')
 class Scatter(Mark):
 
     """Scatter mark.
@@ -272,6 +290,7 @@ class Scatter(Mark):
             self._drag_end_handlers(self, content)
 
 
+@register_mark('bqplot.Hist')
 class Hist(Mark):
 
     """Histogram mark.
@@ -312,6 +331,7 @@ class Hist(Mark):
     _model_name = Unicode('bqplot.HistModel', sync=True)
 
 
+@register_mark('bqplot.Bars')
 class Bars(Mark):
 
     """Bar mark.
@@ -373,6 +393,7 @@ class Bars(Mark):
     _model_name = Unicode('bqplot.BarsModel', sync=True)
 
 
+@register_mark('bqplot.Label')
 class Label(Mark):
 
     """Label mark.

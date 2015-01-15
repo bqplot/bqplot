@@ -45,11 +45,25 @@ from .scales import Scale, DateScale
 from .traits import NdArray
 
 
+def register_overlay(key=None):
+    """Returns a decorator registering an overlay class in the overlay type registry.
+    If no key is provided, the class name is used as a key. A key is
+    provided for each core bqplot overlay type so that the frontend can use
+    this key regardless of the kernal language."""
+    def wrap(overlay):
+        l = key if key is not None else overlay.__module__ + overlay.__name__
+        Overlay.overlay_types[l] = overlay
+        return overlay
+    return wrap
+
+
 class Overlay(Widget):
+    overlay_types = {}
     _view_name = Unicode('bqplot.Overlay', sync=True)
     _ipython_display_ = None  # We cannot display an overlay outside of a figure
 
 
+@register_overlay('bqplot.HandDraw')
 class HandDraw(Overlay):
     _view_name = Unicode('bqplot.HandDraw', sync=True)
     lines = Any(None, sync=True)
@@ -59,6 +73,7 @@ class HandDraw(Overlay):
     max_x = Float(sys.float_info.max, sync=True)
 
 
+@register_overlay('bqplot.PanZoom')
 class PanZoom(Overlay):
     _view_name = Unicode('bqplot.PanZoom', sync=True)
     allow_pan = Bool(True, sync=True)
@@ -103,12 +118,14 @@ class TwoDSelectorOverlay(SelectorOverlay):
     y_scale = Instance(Scale, sync=True)
 
 
+@register_overlay('bqplot.IntervalSelectorOverlay')
 class IntervalSelectorOverlay(OneDSelectorOverlay):
     _view_name = Unicode('bqplot.IntervalSelectorOverlay', sync=True)
     selected = NdArray(sync=True)
     idx_selected = List([], sync=True)
 
 
+@register_overlay('bqplot.IndexSelectorOverlay')
 class IndexSelectorOverlay(OneDSelectorOverlay):
     _view_name = Unicode('bqplot.IndexSelectorOverlay', sync=True)
     selected = NdArray(sync=True)
@@ -117,6 +134,7 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
     line_width = Int(2, sync=True)
 
 
+@register_overlay('bqplot.BrushIntervalSelectorOverlay')
 class BrushIntervalSelectorOverlay(OneDSelectorOverlay):
     _view_name = Unicode("bqplot.BrushIntervalSelectorOverlay", sync=True)
     brushing = Bool(False, sync=True)
@@ -124,6 +142,7 @@ class BrushIntervalSelectorOverlay(OneDSelectorOverlay):
     idx_selected = List([], sync=True)
 
 
+@register_overlay('bqplot.BrushSelectorOverlay')
 class BrushSelectorOverlay(TwoDSelectorOverlay):
     _view_name = Unicode("bqplot.BrushSelectorOverlay", sync=True)
     clear = Bool(False, sync=True)
@@ -154,6 +173,7 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
                 self.selected[1][1] = self.read_json_y(self.selected[1][1])
 
 
+@register_overlay('bqplot.MultiSelectorOverlay')
 class MultiSelectorOverlay(OneDSelectorOverlay):
     _view_name = Unicode("bqplot.MultiSelectorOverlay", sync=True)
     names = List([], sync=True)
