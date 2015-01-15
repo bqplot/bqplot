@@ -37,6 +37,7 @@ Scales
 from IPython.html.widgets import Widget
 from IPython.utils.traitlets import Unicode, List, Enum, Float, Bool, Type
 
+import numpy as np
 from .traits import Date
 
 
@@ -96,7 +97,7 @@ class LinearScale(Scale):
         scale is numerical.
     """
     rtype = 'Number'
-    dtype = 'float'
+    dtype = np.float
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
     _view_name = Unicode('LinearScale', sync=True)
@@ -121,7 +122,7 @@ class LogScale(Scale):
         The range type of a linear scale is numerical.
     """
     rtype = 'Number'
-    dtype = 'float'
+    dtype = np.float
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
     _view_name = Unicode('LogScale', sync=True)
@@ -147,7 +148,7 @@ class DateScale(Scale):
         The range type of a linear scale is numerical.
     """
     rtype = 'Number'
-    dtype = 'datetime64'
+    dtype = np.datetime64
     domain_class = Type(Date, sync=False)
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
@@ -172,7 +173,7 @@ class OrdinalScale(Scale):
         The range type of a linear scale is numerical.
     """
     rtype = 'Number'
-    dtype = 'string'
+    dtype = np.str
     domain = List(sync=True)
     _view_name = Unicode('OrdinalScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
@@ -198,7 +199,7 @@ class ColorScale(Scale):
         The range type of a color scale is 'color'.
     """
     rtype = 'Color'
-    dtype = 'float'
+    dtype = np.float
     scale_type = Enum(['linear'], default_value='linear', sync=True)
     colors = List(sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
@@ -227,7 +228,7 @@ class DateColorScale(ColorScale):
         The range type of a color scale is 'color'.
     """
     rtype = 'Color'
-    dtype = 'datetime64'
+    dtype = np.datetime64
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
     mid = Unicode(default_value=None, sync=True, allow_none=True)
@@ -252,7 +253,7 @@ class OrdinalColorScale(ColorScale):
         The range type of a color scale is 'color'.
     """
     rtype = 'Color'
-    dtype = 'string'
+    dtype = np.str
     domain = List(sync=True)
     _view_name = Unicode('OrdinalColorScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
