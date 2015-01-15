@@ -45,7 +45,7 @@ Pyplot
 from IPython.display import display
 import numpy as np
 from ..figure import Figure
-from ..scales import LinearScale, ColorScale, DateScale, OrdinalScale
+from ..scales import Scale, LinearScale, DateScale, OrdinalScale
 from ..axes import Axis, ColorAxis
 from ..marks import Lines, Scatter, Hist, Bars
 from ..overlays import panzoom
@@ -53,7 +53,7 @@ from IPython.html.widgets import VBox, HBox as ButtonGroup
 from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
 
 # TODO: use logging configurable for default figure settings
-_default_fig_options = {'min_width': 800, 'min_height': 600, 'fig_margin': dict(top=50, bottom=50, left=50, right=50)}
+_default_fig_options = {}
 _default_axes_options = {}
 _context = {
     'figure': None,
@@ -362,18 +362,20 @@ def scatter(x, y, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', _context['scales'])
     options = kwargs.pop('options', {})
-    if 'x' not in scales:
-        scales['x'] = LinearScale(**options.get('x', {}))
-    if 'y' not in scales:
-        scales['y'] = LinearScale(**options.get('y', {}))
-    # Go through the list of optional scaled attributes.
-    for name in ['color', 'size', 'opacity']:
+    kwargs['x'] = x
+    kwargs['y'] = y
+    # Going through the list of data attributes
+    for name in ['x', 'y', 'color', 'size', 'opacity']:
         if name not in scales and name in kwargs:
-            # Not necessarily color scale but the correct scale type based on
-            # rtype (range type, static) and dtype (domain type, dynamic)
-            # of kwargs[name]
-            scales[name] = ColorScale(**options.get(name, {}))
-    scatter = Scatter(x=x, y=y, scales=scales, **kwargs)
+            traitlet = Scatter.class_traits()[name]
+            rtype = traitlet.get_metadata('rtype')
+            dtype = traitlet.validate(None, kwargs[name]).dtype
+            compat_scale_types = [Scale.scale_types[key] for key in Scale.scale_types
+                    if Scale.scale_types[key].rtype == rtype
+                        and np.issubdtype(dtype, Scale.scale_types[key].dtype)]
+            # TODO: something better than taking the first compatible scale type.
+            scales[name] = compat_scale_types[0](**options.get(name, {}))
+    scatter = Scatter(scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [scatter]
     return scatter
 
@@ -391,7 +393,6 @@ def hist(sample, **kwargs):
         scales['sample'] = LinearScale(**options.get('sample', {}))
     if 'counts' not in scales:
         scales['counts'] = LinearScale(**options.get('counts', {}))
-    sample = args[0]
     hist = Hist(sample=sample, scales=scales, **kwargs)
     fig.marks = [mark for mark in fig.marks] + [hist]
     return hist
