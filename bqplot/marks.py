@@ -256,7 +256,7 @@ class Scatter(Mark):
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up'], sync=True, default_value='circle', exposed=True, display_index=3, display_name='Marker')
     default_color = Color('green', sync=True, exposed=True, display_index=4, display_name='Default color')
     stroke = Color(None, allow_none=True, sync=True, exposed=True, display_index=5, display_name='Stroke color')
-    color = NdArray(sync=True, display_index=6, scaled=True, rtype='color', min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=6, scaled=True, rtype='Color', min_dim=1, max_dim=1)
     default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=7, display_name='Default opacity')
     opacity = NdArray(sync=True, display_index=8, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     default_size = Int(64, sync=True, exposed=True, display_index=9, display_name='Default size')  # dot size in square pixels
@@ -379,7 +379,7 @@ class Bars(Mark):
     x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
     # Same as color attribute for the scatter
-    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', min_dim=1, max_dim=1)
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto', sync=True)  # No change handler for this attribute now
     type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
