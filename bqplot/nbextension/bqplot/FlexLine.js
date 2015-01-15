@@ -21,17 +21,32 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var self = this;
 
             return base_render_promise.then(function() {
-                self.color_scale = self.scales["color"];
-                self.width_scale = self.scales["width"];
                 self.line = d3.svg.line()
                     .interpolate(self.model.get("interpolate"))
-                    .x(function(d) { return self.x_scale.scale(d.x) + self.x_offset; })
-                    .y(function(d) { return self.y_scale.scale(d.y) + self.y_offset; })
+                    .x(function(d) {
+                        return self.x_scale.scale(d.x) + self.x_offset;
+                    })
+                    .y(function(d) {
+                        return self.y_scale.scale(d.y) + self.y_offset;
+                    })
                     .defined(function(d) { return d.y !== null; });
-
                 self.create_listeners();
                 self.draw();
             }, null);
+        },
+        set_ranges: function() {
+            FlexLine.__super__.set_ranges.apply(this);
+            if(this.color_scale) {
+                this.color_scale.set_range();
+            }
+            if(this.width_scale) {
+                this.width_scale.set_range([0.5, this.model.get("stroke_width")]);
+            }
+        },
+        set_positional_scales: function() {
+            FlexLine.__super__.set_positional_scales.apply(this);
+            this.color_scale = this.scales["color"];
+            this.width_scale = this.scales["width"];
         },
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
@@ -84,15 +99,6 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
 
             g_elements.exit().remove();
             return [this.model.mark_data.length, max_length];
-        },
-        set_ranges: function() {
-            FlexLine.__super__.set_ranges.apply(this);
-            if(this.color_scale) {
-                this.color_scale.set_range();
-            }
-            if(this.width_scale) {
-                this.width_scale.set_range([0.5, this.model.get("stroke_width")]);
-            }
         },
         draw: function() {
             this.set_ranges();
