@@ -30,10 +30,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("class", "mouseeventrect")
               .attr("x", 0)
               .attr("y", 0)
-              .attr("width", this.width)
+              .attr("width", this.parent.plotarea_width)
               .attr("visibility", "hidden")
               .attr("pointer-events", "all")
-              .attr("height", this.height)
+              .attr("height", this.parent.plotarea_height)
               .style("pointer-events", "all")
               .on("click", _.bind(this.click, this));
 
@@ -214,11 +214,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
            return this.model.get("default_opacity");
         },
         rescale: function() {
-            Scatter.__super__.rescale.apply(this);
             this.set_ranges();
             this.el.select(".mouseeventrect")
-              .attr("width", this.width)
-              .attr("height", this.height);
+              .attr("width", this.parent.plotarea_width)
+              .attr("height", this.parent.plotarea_height);
 
             var that = this;
 

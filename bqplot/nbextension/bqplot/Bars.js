@@ -29,10 +29,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("class", "mouseeventrect")
                 .attr("x", 0)
                 .attr("y", 0)
-                .attr("width", this.width)
+                .attr("width", this.parent.plotarea_width)
                 .attr("visibility", "hidden")
                 .attr("pointer-events", "all")
-                .attr("height", this.height)
+                .attr("height", this.parent.plotarea_height)
                 .style("pointer-events", "all")
                 .on("click", _.bind(this.reset_selection, this));
 
@@ -94,18 +94,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
         },
         rescale: function() {
-            Bars.__super__.rescale.apply(this);
             this.set_ranges();
 
             this.el.select(".mouseeventrect")
-                .attr("width", this.width)
-                .attr("height", this.height);
+              .attr("width", this.parent.plotarea_width)
+              .attr("height", this.parent.plotarea_height);
 
             this.el.select(".zeroLine")
-                .attr("x1",  0)
-                .attr("x2", this.parent.plotarea_width)
-                .attr("y1", this.y_scale.scale(this.model.base_value))
-                .attr("y2", this.y_scale.scale(this.model.base_value));
+              .attr("x1",  0)
+              .attr("x2", this.parent.plotarea_width)
+              .attr("y1", this.y_scale.scale(this.model.base_value))
+              .attr("y2", this.y_scale.scale(this.model.base_value));
 
             var bar_groups = this.el.selectAll(".bargroup");
             var bars_sel = bar_groups.selectAll(".bar");
@@ -132,42 +131,42 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     return elem.key;
                 });
                 this.x.domain(model_domain);
-            }
-            else {
+            } else {
                 this.x.domain(this.x_scale.scale.domain());
             }
             this.x.rangeRoundBands(this.set_x_range(), this.padding);
             this.adjust_offset();
             this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
 
-            if(this.model.mark_data.length > 0)
+            if(this.model.mark_data.length > 0) {
                 this.x1.domain(_.range(this.model.mark_data[0].values.length))
                     .rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
-             bar_groups.enter()
-                .append("g")
-                .attr("class", "bargroup")
-                .on("click", function(d, i) {
-                    return that.bar_click_handler(d, i);
-                });
-             bar_groups.exit().remove();
+            }
+            bar_groups.enter()
+              .append("g")
+              .attr("class", "bargroup")
+              .on("click", function(d, i) {
+                  return that.bar_click_handler(d, i);
+              });
+            bar_groups.exit().remove();
 
-             var bars_sel = bar_groups.selectAll(".bar")
-                 .data(function(d) { return d.values; })
-             bars_sel.enter()
-                 .append("rect")
-                 .attr("class", "bar");
+            var bars_sel = bar_groups.selectAll(".bar")
+              .data(function(d) { return d.values; })
+            bars_sel.enter()
+              .append("rect")
+              .attr("class", "bar");
             this.draw_bars();
 
             this.apply_styles();
 
             this.el.selectAll(".zeroLine").remove();
             this.el.append("g")
-                .append("line")
-                .attr("class", "zeroLine")
-                .attr("x1",  0)
-                .attr("x2", this.parent.plotarea_width)
-                .attr("y1", this.y_scale.scale(this.model.base_value))
-                .attr("y2", this.y_scale.scale(this.model.base_value));
+              .append("line")
+              .attr("class", "zeroLine")
+              .attr("x1",  0)
+              .attr("x2", this.parent.plotarea_width)
+              .attr("y1", this.y_scale.scale(this.model.base_value))
+              .attr("y2", this.y_scale.scale(this.model.base_value));
         },
         draw_bars: function() {
             var bar_groups = this.el.selectAll(".bargroup");
@@ -196,12 +195,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             } else {
                 bars_sel.attr("x", function(datum, index) {
                         return that.x1(index);
-                    }).attr("width", this.x1.rangeBand().toFixed(2))
-                    .attr("y", function(d) {
-                        return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(that.model.base_value)]);
-                    }).attr("height", function(d) {
-                        return Math.abs(that.y_scale.scale(that.model.base_value) - (that.y_scale.scale(d.val)));
-                    });
+                  }).attr("width", this.x1.rangeBand().toFixed(2))
+                  .attr("y", function(d) {
+                      return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(that.model.base_value)]);
+                  }).attr("height", function(d) {
+                      return Math.abs(that.y_scale.scale(that.model.base_value) - (that.y_scale.scale(d.val)));
+                  });
             }
         },
         update_stroke_and_opacity: function() {

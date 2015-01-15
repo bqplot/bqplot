@@ -104,8 +104,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             });
         },
         rescale: function() {
-            this.width = this.parent.get_mark_plotarea_width(this.x_scale.model);
-            this.height = this.parent.get_mark_plotarea_height(this.y_scale.model);
+            // function called on resize of the Figure. To be overloaded in specific
+            // mark implementation.
         },
         invert_range: function(start_pxl, end_pxl) {
             return [start_pxl, end_pxl];
