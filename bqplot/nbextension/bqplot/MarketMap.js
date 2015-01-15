@@ -75,6 +75,17 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 this.num_rows = Math.floor(num_items / this.num_cols);
                 this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
             }
+
+            // row_groups cannot be greater than the number of rows
+            this.row_groups = Math.min(this.row_groups, this.num_rows);
+            // if there is only one row_group, then the number of coulmns are
+            // not necessarily equal to the variable this.num_cols as we draw
+            // row first. So we need to adjust the this.num_cols variable
+            // according to the num_rows.
+            if(this.row_groups == 1) {
+                this.num_cols = Math.floor(num_items / this.num_rows);
+                this.num_cols = (num_items % this.num_rows == 0) ? this.num_cols : (this.num_cols + 1);
+            }
             // Reading the properties and creating the dom elements required
             this.svg = d3.select(this.el)
                     .attr("viewBox", "0 0 "+ this.width +' '+ this.height)
@@ -306,9 +317,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
 
                 // Update the attributes of the entire set of nodes
                 groups.attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
-                    .on("click", function(data, ind) { _.bind(that.cell_click_handler(data, (element_count + ind), this), that);})
-                    .on("mouseover", function(data, ind) { _.bind(that.mouseover_handler(data, (element_count + ind), this), that);})
-                    .on("mouseout", function(data, ind) { _.bind(that.mouseout_handler(data, (element_count + ind), this), that);})
+                    .on("click", function(data, ind) { that.cell_click_handler(data, (element_count + ind), this);})
+                    .on("mouseover", function(data, ind) { that.mouseover_handler(data, (element_count + ind), this);})
+                    .on("mouseout", function(data, ind) { that.mouseout_handler(data, (element_count + ind), this);})
                     .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
                     .attr("id", function(data) { return "market_map_element_" + data['name']});
 
