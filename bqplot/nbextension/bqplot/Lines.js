@@ -121,9 +121,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             // update curve colors
             this.el.selectAll(".curve").select("path")
-                .style("stroke", function(d, i) {
-                    return that.get_colors(i);
-                });
+              .style("stroke", function(d, i) {
+                  return that.get_colors(i);
+              });
             // update legend colors
             if (this.legend_el){
                 this.legend_el.select("line")
@@ -143,9 +143,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("d", function(d) { return that.line(d.values); });
         },
         rescale: function() {
-            Lines.__super__.rescale.apply(this);
             this.set_ranges();
-
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
               .transition().duration(this.model.get("animate_dur"))
@@ -200,9 +198,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.model.update_labels();
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-                .data(this.model.mark_data, function(d, i) {
-                    return d.name;
-                });
+              .data(this.model.mark_data, function(d, i) {
+                  return d.name;
+              });
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
@@ -220,12 +218,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
 
             this.legend_el.append("text")
-                .attr("class", "legendtext")
-                .attr("x", rect_dim * 1.2)
-                .attr("y", rect_dim / 2)
-                .attr("dy", "0.35em")
-                .text(function(d, i) { return that.model.curve_labels[i]; })
-                .style("fill", function(d,i) { return that.get_colors(i); });
+              .attr("class", "legendtext")
+              .attr("x", rect_dim * 1.2)
+              .attr("y", rect_dim / 2)
+              .attr("dy", "0.35em")
+              .text(function(d, i) { return that.model.curve_labels[i]; })
+              .style("fill", function(d,i) { return that.get_colors(i); });
 
             var max_length = d3.max(this.model.curve_labels, function(d) {
                 return d.length;
@@ -239,25 +237,25 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             curves_sel.selectAll(".curve_label").remove();
             curves_sel.append("text")
-                    .attr("class", "curve_label")
-                    .datum(function(d) {
-                        return {name: d.name, value: d.values[d.values.length - 1]};
-                    }).attr("transform", function(d) {
-                        return "translate(" + that.x_scale.scale(d.value.x)
-                                      + "," + that.y_scale.scale(d.value.y) + ")";
-                    }).attr("x", 3)
-                    .attr("dy", ".35em")
-                    .attr("display", function(d) {
-                        return (that.model.get("labels_visibility") !== "label") ?
-                          "none" : "inline";
-                    }).text(function(d) { return d.name; });
+              .attr("class", "curve_label")
+              .datum(function(d) {
+                  return {name: d.name, value: d.values[d.values.length - 1]};
+              }).attr("transform", function(d) {
+                  return "translate(" + that.x_scale.scale(d.value.x)
+                                + "," + that.y_scale.scale(d.value.y) + ")";
+              }).attr("x", 3)
+              .attr("dy", ".35em")
+              .attr("display", function(d) {
+                  return (that.model.get("labels_visibility") !== "label") ?
+                    "none" : "inline";
+              }).text(function(d) { return d.name; });
         },
         legend_click: function(index) {
             var path = "#curve" + (index + 1);
             var opacity = this.model.mark_data[index].opacity = (this.model.mark_data[index].opacity === 1) ?
                 0.1 : 1;
             this.el.select("#legend"+(index+1))
-                .style("opacity", opacity + 0.4);
+              .style("opacity", opacity + 0.4);
             this.el.select(path).style("opacity", opacity);
         },
         update_curves_subset: function() {
@@ -267,72 +265,74 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var curves_subset = this.model.get("curves_subset");
             if (curves_subset.length > 1) {
                 this.el.selectAll(".curve")
-                    .select("path")
-                    .attr("display", function(d, i) {
-                        return curves_subset.indexOf(i) !== -1 ?
-                            "inline" : "none";
-                    });
+                  .select("path")
+                  .attr("display", function(d, i) {
+                      return curves_subset.indexOf(i) !== -1 ?
+                          "inline" : "none";
+                  });
                 this.el.selectAll(".curve")
-                    .select(".curve_label")
-                    .attr("display", function(d, i) {
-                        return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
-                            "inline" : "none";
-                    });
+                  .select(".curve_label")
+                  .attr("display", function(d, i) {
+                      return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
+                          "inline" : "none";
+                  });
             } else { //make all curves visible
-                this.el.selectAll(".curve").select("path").attr("display", "inline");
-                this.el.selectAll(".curve").select(".curve_label").attr("display", function(d) {
-                    return that.model.get("labels_visibility") === "label" ?
-                        "inline" : "none";
-                });
+                this.el.selectAll(".curve")
+                  .select("path").attr("display", "inline");
+                this.el.selectAll(".curve")
+                  .select(".curve_label").attr("display", function(d) {
+                      return that.model.get("labels_visibility") === "label" ?
+                          "inline" : "none";
+                  });
             }
         },
         draw: function() {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
-                .data(this.model.mark_data, function(d, i) { return d.name; });
+              .data(this.model.mark_data, function(d, i) { return d.name; });
 
             var new_curves = curves_sel.enter().append("g")
-                .attr("class", "curve");
+              .attr("class", "curve");
             new_curves.append("path")
-                .attr("class", "line")
-                .attr("fill", "none");
+              .attr("class", "line")
+              .attr("fill", "none");
 
             var that = this;
             curves_sel.select("path")
-                .attr("id", function(d, i) { return "curve" + (i+1); })
-                .style("stroke", function(d, i) { return that.get_colors(i); })
-                .style("stroke-width", this.model.get("stroke_width"))
-                .style("stroke-dasharray", _.bind(this.get_line_style, this));
+              .attr("id", function(d, i) { return "curve" + (i+1); })
+              .style("stroke", function(d, i) { return that.get_colors(i); })
+              .style("stroke-width", this.model.get("stroke_width"))
+              .style("stroke-dasharray", _.bind(this.get_line_style, this));
 
             curves_sel.select("path")
-                .transition().duration(this.model.get("animate_dur"))
-                .attr("d", function(d) { return that.line(d.values) });
+              .transition().duration(this.model.get("animate_dur"))
+              .attr("d", function(d) { return that.line(d.values) });
 
             curves_sel.exit()
-                .transition().duration(this.model.get("animate_dur"))
-                .remove();
+              .transition().duration(this.model.get("animate_dur"))
+              .remove();
 
             this.el.selectAll(".curve")
-                .select(".curve_label")
-                .attr("display", function(d) {
-                    return that.model.get("labels_visibility") === "label" ?
-                        "inline" : "none";
-                });
+              .select(".curve_label")
+              .attr("display", function(d) {
+                  return that.model.get("labels_visibility") === "label" ?
+                      "inline" : "none";
+              });
 
             // alter the display only if a few of the curves are visible
             if(this.model.get("curves_subset").length > 0) {
                 this.el.selectAll(".curve")
-                    .select("path")
-                    .attr("display", function(d, i) {
-                        return curves_subset.indexOf(i) !== -1 ?
-                            "inline" : "none";
-                    });
+                  .select("path")
+                  .attr("display", function(d, i) {
+                      return curves_subset.indexOf(i) !== -1 ?
+                          "inline" : "none";
+                  });
                 this.el.selectAll(".curve")
-                    .select(".curve_label")
-                    .attr("display", function(d, i) {
-                        return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
-                            "inline" : "none";
-                    });
+                  .select(".curve_label")
+                  .attr("display", function(d, i) {
+                      return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
+                          "inline" : "none";
+                  });
             }
             this.create_labels();
         },

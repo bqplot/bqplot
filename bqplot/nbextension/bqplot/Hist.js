@@ -79,9 +79,9 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             }
             if (this.legend_el) {
                 this.legend_el.selectAll("rect")
-                    .style("fill", this.get_colors(0));
+                  .style("fill", this.get_colors(0));
                 this.legend_el.selectAll("text")
-                    .style("fill", this.get_colors(0));
+                  .style("fill", this.get_colors(0));
             }
         },
         update_stroke_and_opacity: function() {
@@ -99,23 +99,22 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             return bar_width;
         },
         rescale: function() {
-            Hist.__super__.rescale.apply(this);
             this.set_ranges();
 
             var that = this;
 			this.el.selectAll(".bar")
-			    .attr("transform", function(d) {
-                    return "translate(" + that.x_scale.scale(d.x)
-                                  + "," + that.y_scale.scale(d.y) + ")";
-                });
+			  .attr("transform", function(d) {
+                  return "translate(" + that.x_scale.scale(d.x)
+                                + "," + that.y_scale.scale(d.y) + ")";
+              });
             var bar_width = this.calculate_bar_width();
             this.el.selectAll(".bar").select("rect")
-                .transition().duration(300)
-		        .attr("x", 2)
-                .attr("width", bar_width)
-		        .attr("height", function(d) {
-                    return that.height - that.y_scale.scale(d.y);
-                });
+              .transition().duration(300)
+		      .attr("x", 2)
+              .attr("width", bar_width)
+		      .attr("height", function(d) {
+                  return that.height - that.y_scale.scale(d.y);
+              });
         },
         draw: function() {
             var that = this;
@@ -244,28 +243,28 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
             this.legend_el.enter()
-                .append("g")
-                .attr("class", "legend" + this.uuid)
-                .attr("transform", function(d, i) {
-                    return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
-                })
-                .on("mouseover", _.bind(this.highlight_axes, this))
-                .on("mouseout", _.bind(this.unhighlight_axes, this))
-                .append("rect")
-                .style("fill", function(d,i) { return that.get_colors(i); })
-                .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
+              .append("g")
+              .attr("class", "legend" + this.uuid)
+              .attr("transform", function(d, i) {
+                  return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
+              })
+              .on("mouseover", _.bind(this.highlight_axes, this))
+              .on("mouseout", _.bind(this.unhighlight_axes, this))
+              .append("rect")
+              .style("fill", function(d,i) { return that.get_colors(i); })
+              .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
 
             this.legend_el.append("text")
-                .attr("class","legendtext")
-                .attr("x", rect_dim * 1.2)
-                .attr("y", rect_dim / 2)
-                .attr("dy", "0.35em")
-                .text(function(d, i) {
-                    return that.model.get("labels")[i];
-                })
-                .style("fill", function(d,i) {
-                    return that.get_colors(i);
-                });
+              .attr("class","legendtext")
+              .attr("x", rect_dim * 1.2)
+              .attr("y", rect_dim / 2)
+              .attr("dy", "0.35em")
+              .text(function(d, i) {
+                  return that.model.get("labels")[i];
+              })
+              .style("fill", function(d,i) {
+                  return that.get_colors(i);
+              });
 
             var max_length = d3.max(this.model.get("labels"), function(d) {
                 return d.length;
