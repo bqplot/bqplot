@@ -166,7 +166,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             return this.model.get("stroke_width");
         },
         rescale: function() {
-            FlexLine.__super__.rescale.apply(this);
+            Line.__super__.rescale.apply(this);
             this.set_ranges();
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
