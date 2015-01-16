@@ -45,7 +45,7 @@ Pyplot
 from IPython.display import display
 import numpy as np
 from ..figure import Figure
-from ..scales import Scale, LinearScale, DateScale, OrdinalScale
+from ..scales import Scale, LinearScale
 from ..axes import Axis, ColorAxis
 from ..marks import Lines, Scatter, Hist, Bars
 from ..overlays import panzoom
@@ -329,45 +329,14 @@ def axes(**kwargs):
     return appended_axes
 
 
-def plot(x, y, **kwargs):
-    """Draws lines in the current context figure.
-
-    The options optional argument is used to pass attributes for the scales to
-    be created, or used.
-    """
+def _draw_mark(mark_type, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', _context['scales'])
     options = kwargs.pop('options', {})
-    if 'x' not in scales:
-        xoptions = options.get('x', {})
-        # Even when passing an array, we can specify that it is an array of dates.
-        if (hasattr(x, 'dtype') and np.issubdtype(x.dtype, np.datetime64)) or\
-           ('dtype' in xoptions and xoptions['dtype'] == 'date'):
-            scales['x'] = DateScale(**xoptions)
-        else:
-            scales['x'] = LinearScale(**xoptions)
-    if 'y' not in scales:
-        scales['y'] = LinearScale(**options.get('y', {}))
-    lines = Lines(x=x, y=y, scales=scales, **kwargs)
-    fig.marks = [mark for mark in fig.marks] + [lines]
-    return lines
-
-
-def scatter(x, y, **kwargs):
-    """Draws a scatter in the current context figure.
-
-    The options optional argument is used to pass attributes for the scales to
-    be created, or used.
-    """
-    fig = kwargs.pop('figure', current_figure())
-    scales = kwargs.pop('scales', _context['scales'])
-    options = kwargs.pop('options', {})
-    kwargs['x'] = x
-    kwargs['y'] = y
     # Going through the list of data attributes
-    for name in Scatter.class_trait_names(scaled=True):
+    for name in mark_type.class_trait_names(scaled=True):
         if name not in scales and name in kwargs:
-            traitlet = Scatter.class_traits()[name]
+            traitlet = mark_type.class_traits()[name]
             rtype = traitlet.get_metadata('rtype')
             dtype = traitlet.validate(None, kwargs[name]).dtype
             compat_scale_types = [Scale.scale_types[key] for key in Scale.scale_types
@@ -375,15 +344,37 @@ def scatter(x, y, **kwargs):
                         and np.issubdtype(dtype, Scale.scale_types[key].dtype)]
             # TODO: something better than taking the first compatible scale type.
             scales[name] = compat_scale_types[0](**options.get(name, {}))
-    scatter = Scatter(scales=scales, **kwargs)
-    fig.marks = [mark for mark in fig.marks] + [scatter]
-    return scatter
+    mark = mark_type(scales=scales, **kwargs)
+    fig.marks = [m for m in fig.marks] + [mark]
+    return mark
+
+
+def plot(x, y, **kwargs):
+    """Draws lines in the current context figure.
+
+    The 'options' keyword argument is used to pass attributes for the scales to
+    be created, or used.
+    """
+    kwargs['x'] = x
+    kwargs['y'] = y
+    return _draw_mark(Lines, **kwargs)
+
+
+def scatter(x, y, **kwargs):
+    """Draws a scatter in the current context figure.
+
+    The 'options' keyword argument is used to pass attributes for the scales to
+    be created, or used.
+    """
+    kwargs['x'] = x
+    kwargs['y'] = y
+    return _draw_mark(Scatter, **kwargs)
 
 
 def hist(sample, **kwargs):
     """Draws a histogram in the current context figure.
 
-    The options optional argument is used to pass attributes for the scales to
+    The 'options' keyword argument is used to pass attributes for the scales to
     be created, or used.
     """
     fig = kwargs.pop('figure', current_figure())
@@ -401,19 +392,12 @@ def hist(sample, **kwargs):
 def bar(x, y, **kwargs):
     """Draws a BarChart in the current context figure.
 
-    The options optional argument is used to pass attributes for the scales to
+    The 'options' keyword argument is used to pass attributes for the scales to
     be created or used.
     """
-    fig = kwargs.pop('figure', current_figure())
-    scales = kwargs.pop('scales', _context['scales'])
-    options = kwargs.pop('options', {})
-    if 'x' not in scales:
-        scales['x'] = OrdinalScale(**options.get('x', {}))
-    if 'y' not in scales:
-        scales['y'] = LinearScale(**options.get('y', {}))
-    bar = Bars(x=x, y=y, scales=scales, **kwargs)
-    fig.marks = [mark for mark in fig.marks] + [bar]
-    return bar
+    kwargs['x'] = x
+    kwargs['y'] = y
+    return _draw_mark(Bars, **kwargs)
 
 
 def clear():
