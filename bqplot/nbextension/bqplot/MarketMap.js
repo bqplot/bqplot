@@ -140,11 +140,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.group_iter = 1;
         },
         create_listeners: function() {
-            this.model.on('change:color_data', this.recolor_chart, this);
-            this.model.on('change:show_groups', this.show_groups, this);
-            this.model.on('change:selected_stroke', this.update_selected_stroke, this);
-            this.model.on('change:hovered_stroke', this.update_hovered_stroke, this);
-            this.model.on('change:selected', function() { this.clear_selected(); this.apply_selected(); }, this);
+            this.model.on("change:color_data", this.recolor_chart, this);
+            this.model.on("change:show_groups", this.show_groups, this);
+            this.model.on("change:selected_stroke", this.update_selected_stroke, this);
+            this.model.on("change:hovered_stroke", this.update_hovered_stroke, this);
+            this.model.on("change:selected", function() { this.clear_selected(); this.apply_selected(); }, this);
+            this.model.on_some_change(["names", "groups"], function() {
+                                                               this.update_data();
+                                                               this.set_area_dimensions(this.data.length);
+                                                               this.draw_map();
+                                                           }, this);
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -191,7 +196,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         },
         update_data: function() {
             var self = this;
-
             this.data = this.model.get("names");
             this.ref_data = this.model.get("ref_data");
             this.group_data = this.model.get("groups");
@@ -225,7 +229,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             var color_scale_model = this.model.get("scales")["color"];
             var color_data = this.model.get("color_data");
             if(color_scale_model && color_data.length > 0) {
-                color_scale_model.compute_and_set_domain(color_data, this.id);
+                color_scale_model.compute_and_set_domain(color_data, this.model.id);
             }
         },
         set_area_dimensions: function(num_items) {
@@ -419,16 +423,18 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         update_map_colors: function() {
             var that = this;
             var color_scale = this.scales["color"];
-            this.rect_groups[0].forEach(function(d, i) {
-                var data = that.grouped_data[that.groups[i]];
-                var color = that.colors_map(i);
-                var groups = d3.select(d)
-                    .selectAll(".rect_element")
-                    .data(data)
-                    .select('rect')
-                    .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) { return (color_scale && elem.color != undefined)
-                           ? color_scale.scale(elem['color']) : that.colors_map(i);}});
-            });
+            if(this.rect_groups !== undefined && this.rect_groups !== null) {
+                this.rect_groups[0].forEach(function(d, i) {
+                    var data = that.grouped_data[that.groups[i]];
+                    var color = that.colors_map(i);
+                    var groups = d3.select(d)
+                        .selectAll(".rect_element")
+                        .data(data)
+                        .select('rect')
+                        .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) { return (color_scale && elem.color != undefined)
+                            ? color_scale.scale(elem['color']) : that.colors_map(i);}});
+                });
+            }
         },
         cell_click_handler: function(data, id, cell) {
             var selected = this.model.get("selected").slice();
