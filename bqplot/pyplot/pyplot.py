@@ -377,16 +377,13 @@ def hist(sample, **kwargs):
     The 'options' keyword argument is used to pass attributes for the scales to
     be created, or used.
     """
-    fig = kwargs.pop('figure', current_figure())
+    kwargs['sample'] = sample
+    options = kwargs.get('options', {})
     scales = kwargs.pop('scales', _context['scales'])
-    options = kwargs.pop('options', {})
-    if 'sample' not in scales:
-        scales['sample'] = LinearScale(**options.get('sample', {}))
     if 'counts' not in scales:
         scales['counts'] = LinearScale(**options.get('counts', {}))
-    hist = Hist(sample=sample, scales=scales, **kwargs)
-    fig.marks = [mark for mark in fig.marks] + [hist]
-    return hist
+    kwargs['scales'] = scales
+    return _draw_mark(Hist, **kwargs)
 
 
 def bar(x, y, **kwargs):
