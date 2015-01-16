@@ -143,12 +143,18 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.model.on("change:hovered_stroke", this.update_hovered_stroke, this);
             this.model.on("change:selected", function() { this.clear_selected(); this.apply_selected(); }, this);
             this.model.on_some_change(["names", "groups", "ref_data"], function() {
-                                                               this.update_data();
-                                                               this.set_area_dimensions(this.data.length);
-                                                               this.update_plotarea_dimensions();
-                                                               this.draw_map();
-                                                           }, this);
-            this.model.on("change:rows", function(model, value) { this.num_rows = value; });
+                                                                           this.update_data();
+                                                                           this.compute_dimensions_and_draw();
+                                                                        }, this);
+            this.model.on("change:rows", function(model, value) { this.num_rows = value;
+                                                                  this.compute_dimensions_and_draw();
+                                                                }, this);
+            this.model.on("change:cols", function(model, value) { this.num_cols = value;
+                                                                  this.compute_dimensions_and_draw();
+                                                                }, this);
+            this.model.on("change:row_groups", function(model, value) { this.row_groups = value;
+                                                                        this.compute_dimensions_and_draw();
+                                                                      }, this);
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -272,6 +278,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             // switch direction. The below functions tells us where to swtich
             // direction.
             this.set_row_limits();
+        },
+        compute_dimensions_and_draw: function() {
+            this.set_area_dimensions(this.data.length);
+            this.update_plotarea_dimensions();
+            this.draw_map();
         },
         update_default_tooltip: function() {
             this.tooltip_fields = this.model.get("tooltip_fields");
