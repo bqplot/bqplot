@@ -79,10 +79,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.hovered_stroke = this.model.get("hovered_stroke");
 
             this.update_plotarea_dimensions();
-            // depending on the number of rows, we need to decide when to
-            // switch direction. The below functions tells us where to swtich
-            // direction.
-            this.set_row_limits();
+
 
             var scale_creation_promise = this.create_scale_views();
             scale_creation_promise.then(function() {
@@ -145,11 +142,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.model.on("change:selected_stroke", this.update_selected_stroke, this);
             this.model.on("change:hovered_stroke", this.update_hovered_stroke, this);
             this.model.on("change:selected", function() { this.clear_selected(); this.apply_selected(); }, this);
-            this.model.on_some_change(["names", "groups"], function() {
+            this.model.on_some_change(["names", "groups", "ref_data"], function() {
                                                                this.update_data();
                                                                this.set_area_dimensions(this.data.length);
+                                                               this.update_plotarea_dimensions();
                                                                this.draw_map();
                                                            }, this);
+            this.model.on("change:rows", function(model, value) { this.num_rows = value; });
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -269,7 +268,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 this.num_cols = Math.floor(num_items / this.num_rows);
                 this.num_cols = (num_items % this.num_rows == 0) ? this.num_cols : (this.num_cols + 1);
             }
-
+            // depending on the number of rows, we need to decide when to
+            // switch direction. The below functions tells us where to swtich
+            // direction.
+            this.set_row_limits();
         },
         update_default_tooltip: function() {
             this.tooltip_fields = this.model.get("tooltip_fields");
