@@ -113,7 +113,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
 		      .attr("x", 2)
               .attr("width", bar_width)
 		      .attr("height", function(d) {
-                  return that.height - that.y_scale.scale(d.y);
+                  return that.parent.plotarea_height - that.y_scale.scale(d.y);
               });
         },
         draw: function() {
@@ -146,7 +146,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
 		      .attr("x", 2)
               .attr("width", bar_width)
 		      .attr("height", function(d) {
-                  return that.height - that.y_scale.scale(d.y);
+                  return that.parent.plotarea_height - that.y_scale.scale(d.y);
               })
               .attr("fill", fill_color)
               .on("click", function(d, i) {
