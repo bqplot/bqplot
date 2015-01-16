@@ -49,15 +49,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             var self = this;
             return base_creation_promise.then(function() {
-                self.color_scale =  self.scales["color"];
-                self.size_scale = self.scales["size"];
-                self.opacity_scale = self.scales["opacity"];
-                // the following change handler is for the case when the colors of
-                // the scale change. The positional data does not need to be changed.
-                if(self.color_scale) {
-                    self.color_scale.on("color_scale_range_changed",
-                                        self.color_scale_updated, self);
-                }
                 self.create_listeners();
                 self.draw();
             }, null);
@@ -99,13 +90,40 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         set_positional_scales: function() {
             this.x_scale = this.scales["x"];
             this.y_scale = this.scales["y"];
-            var that = this;
-            this.listenTo(that.x_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+            var self = this;
+            this.listenTo(this.x_scale, "domain_changed", function() {
+                if (!self.model.dirty) { self.draw(); }
             });
-            this.listenTo(that.y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+            this.listenTo(this.y_scale, "domain_changed", function() {
+                if (!self.model.dirty) { self.draw(); }
             });
+        },
+        initialize_additional_scales: function() {
+            // function to create the additional scales and create the
+            // listeners for the additional scales
+            var self = this;
+            this.color_scale =  this.scales["color"];
+            this.size_scale = this.scales["size"];
+            this.opacity_scale = this.scales["opacity"];
+            // the following change handler is for the case when the colors of
+            // the scale change. The positional data does not need to be changed.
+            if(this.color_scale) {
+                this.listenTo(this.color_scale, "domain_changed", function() {
+                    self.color_scale_updated();
+                });
+                this.color_scale.on("color_scale_range_changed",
+                                    this.color_scale_updated, this);
+            }
+            if(this.size_scale) {
+                this.listenTo(this.size_scale, "domain_changed", function() {
+                    self.update_default_size();
+                });
+            }
+            if(this.opacity_scale) {
+                this.listenTo(this.opacity_scale, "domain_changed", function() {
+                    self.update_default_opacity();
+                });
+            }
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
@@ -122,21 +140,23 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("change:unselected_style", this.unselected_style_updated, this);
         },
         update_default_color: function(model, new_color) {
-            var that = this;
-            this.el.selectAll(".dot")
-              .style("fill", this.model.get("fill") ?
-                     function(d) { return that.get_element_color(d); } : "none")
-              .style("stroke", this.stroke ?
-                     this.stroke : function(d) {
-                  return that.get_element_color(d);
-              });
+            if(!this.model.dirty) {
+                var that = this;
+                this.el.selectAll(".dot")
+                .style("fill", this.model.get("fill") ?
+                        function(d) { return that.get_element_color(d); } : "none")
+                .style("stroke", this.stroke ?
+                        this.stroke : function(d) {
+                    return that.get_element_color(d);
+                });
 
-            if (this.legend_el) {
-                this.legend_el.select("path")
-                  .style("fill", new_color)
-                  .style("stroke", this.stroke ? this.stroke : new_color);
-                this.legend_el.select("text")
-                  .style("fill", this.model.get("fill") ? new_color : "none");
+                if (this.legend_el) {
+                    this.legend_el.select("path")
+                    .style("fill", new_color)
+                    .style("stroke", this.stroke ? this.stroke : new_color);
+                    this.legend_el.select("text")
+                    .style("fill", this.model.get("fill") ? new_color : "none");
+                }
             }
         },
         update_fill: function(model, fill) {
@@ -163,17 +183,19 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_default_opacity: function() {
-            this.default_opacity = this.model.get("default_opacity");
-            // update opacity scale range?
-            var that = this;
-            this.el.selectAll(".dot")
-              .style("opacity", function(data) {
-                  return that.get_element_opacity(data);
-              });
-            if (this.legend_el) {
-                this.legend_el.select("path")
-                  .style("opacity", this.default_opacity)
-                  .style("fill", this.model.get("default_color"));
+            if(!this.model.dirty) {
+                this.default_opacity = this.model.get("default_opacity");
+                // update opacity scale range?
+                var that = this;
+                this.el.selectAll(".dot")
+                .style("opacity", function(data) {
+                    return that.get_element_opacity(data);
+                });
+                if (this.legend_el) {
+                    this.legend_el.select("path")
+                    .style("opacity", this.default_opacity)
+                    .style("fill", this.model.get("default_color"));
+                }
             }
         },
         update_marker: function(model, marker) {
@@ -185,10 +207,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         update_default_size: function(model, new_size) {
             // update size scale range?
-            var that = this;
-            this.el.selectAll(".dot").attr("d", this.dot.size(function(data) {
-                return that.get_element_size(data);
-            }));
+            if(!this.model.dirty) {
+                var that = this;
+                this.el.selectAll(".dot").attr("d", this.dot.size(function(data) {
+                    return that.get_element_size(data);
+                }));
+            }
         },
         // The following three functions are convenience functions to get
         // the fill color / opacity / size of an element given the data.

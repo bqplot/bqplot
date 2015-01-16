@@ -35,57 +35,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.num_rows = this.model.get("rows");
             this.num_cols = this.model.get("cols");
             this.row_groups = this.model.get("row_groups");
-            this.clickable = this.model.get('clickable');
+            this.clickable = this.model.get("clickable");
 
-            this.data = this.model.get("names");
-            this.ref_data = this.model.get("ref_data");
-            this.group_data = this.model.get("groups");
-            this.groups = _.uniq(this.group_data, true);
-            var display_text = this.model.get("display_text");
-            display_text = (display_text == undefined || display_text.length == 0) ? this.data : display_text;
+            this.update_data();
+            // set the number of rows and columns in the map
+            this.set_area_dimensions(this.data.length);
 
-            this.colors = this.model.get('colors');
-            var num_colors = this.colors.length;
-            this.colors_map = function(d) { return self.get_color(d, num_colors);};
-            var color_data = this.model.get('color_data');
-            var mapped_data = this.data.map(function(d, i) {
-                return {'display': display_text[i], 'name': d, 'color': color_data[i],
-                        'group': self.group_data[i], 'ref_data': self.ref_data[i]};
-            });
-            var num_items = mapped_data.length;
-
-            if (this.num_cols !== undefined && this.num_cols !== null && this.num_cols != 0) {
-                // When the number of row groups is greater than 1, the number
-                // of columns has to be an odd number. This is to
-                // ensure the continuity of the waffles when groups are spread
-                // across multiple row groups
-                if(this.row_groups > 1 && this.num_cols % 2 == 0)
-                    this.num_cols++;
-                this.num_rows = Math.floor(num_items / this.num_cols);
-                this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
-            } else if(this.num_rows !== undefined && this.num_rows !== null && this.num_rows != 0) {
-                this.num_cols = Math.floor(num_items / this.num_rows);
-                this.num_cols = (num_items % this.num_rows == 0) ? this.num_cols : (this.num_cols + 1);
-                if(this.row_groups > 1 && this.num_cols % 2 == 0)
-                    this.num_cols++;
-            } else {
-                this.num_cols = Math.floor(Math.sqrt(num_items));
-                if(this.row_groups > 1 && this.num_cols % 2 == 0)
-                    this.num_cols++;
-                this.num_rows = Math.floor(num_items / this.num_cols);
-                this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
-            }
-
-            // row_groups cannot be greater than the number of rows
-            this.row_groups = Math.min(this.row_groups, this.num_rows);
-            // if there is only one row_group, then the number of coulmns are
-            // not necessarily equal to the variable this.num_cols as we draw
-            // row first. So we need to adjust the this.num_cols variable
-            // according to the num_rows.
-            if(this.row_groups == 1) {
-                this.num_cols = Math.floor(num_items / this.num_rows);
-                this.num_cols = (num_items % this.num_rows == 0) ? this.num_cols : (this.num_cols + 1);
-            }
             // Reading the properties and creating the dom elements required
             this.svg = d3.select(this.el)
                     .attr("viewBox", "0 0 "+ this.width +' '+ this.height)
@@ -118,29 +73,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 .style("position", "absolute")
                 .style("pointer-events", "none")
                 .style("z-index", 1001);  // setting the z-index to a value which is greater than the full screen z-index value
-
-            this.tooltip_fields = this.model.get("tooltip_fields");
-            var formats = this.model.get("tooltip_formats");
-            this.tooltip_formats = this.tooltip_fields.map(function(field, index) {
-                var fmt = formats[index];
-                if(fmt == undefined || fmt == "") {return function(d) { return d;}}
-                else return d3.format(fmt);
-            });
+            this.update_default_tooltip();
 
             this.selected_stroke = this.model.get("selected_stroke");
             this.hovered_stroke = this.model.get("hovered_stroke");
 
-            this.grouped_data = _.groupBy(mapped_data, function(d, i) {return self.group_data[i];});
-            this.groups = [];
-            this.running_sums = [];
-            this.running_sums[0] = 0;
-            var count = 0;
-            for (var key in this.grouped_data) {
-                this.groups.push(key);
-                count += this.grouped_data[key].length;
-                this.running_sums.push(count);
-            }
-            this.running_sums.pop();
             this.update_plotarea_dimensions();
             // depending on the number of rows, we need to decide when to
             // switch direction. The below functions tells us where to swtich
@@ -149,11 +86,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
 
             var scale_creation_promise = this.create_scale_views();
             scale_creation_promise.then(function() {
-                self.color_scale = self.scales['color'];
-                if(self.color_scale){
-                    self.color_scale.compute_and_set_domain(color_data, 0);
-                    self.color_scale.set_range();
-                    self.color_scale.on("color_scale_range_changed", self.update_map_colors, self);
+                var color_scale = self.scales['color'];
+                if(color_scale){
+                    color_scale.set_range();
+                    color_scale.on("color_scale_range_changed", self.update_map_colors, self);
                 }
                 self.create_listeners();
 
@@ -253,19 +189,115 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.hide_tooltip();
             this.trigger("margin_updated");
         },
+        update_data: function() {
+            var self = this;
+
+            this.data = this.model.get("names");
+            this.ref_data = this.model.get("ref_data");
+            this.group_data = this.model.get("groups");
+            this.groups = _.uniq(this.group_data, true);
+            var display_text = this.model.get("display_text");
+            display_text = (display_text == undefined || display_text.length == 0) ? this.data : display_text;
+
+            this.colors = this.model.get('colors');
+            var num_colors = this.colors.length;
+            this.colors_map = function(d) { return self.get_color(d, num_colors);};
+            var color_data = this.model.get('color_data');
+            var mapped_data = this.data.map(function(d, i) {
+                return {'display': display_text[i], 'name': d, 'color': color_data[i],
+                        'group': self.group_data[i], 'ref_data': self.ref_data[i]};
+            });
+
+            this.update_domains();
+            this.grouped_data = _.groupBy(mapped_data, function(d, i) {return self.group_data[i];});
+            this.groups = [];
+            this.running_sums = [];
+            this.running_sums[0] = 0;
+            var count = 0;
+            for (var key in this.grouped_data) {
+                this.groups.push(key);
+                count += this.grouped_data[key].length;
+                this.running_sums.push(count);
+            }
+            this.running_sums.pop();
+        },
+        update_domains: function() {
+            var color_scale_model = this.model.get("scales")["color"];
+            var color_data = this.model.get("color_data");
+            if(color_scale_model && color_data.length > 0) {
+                color_scale_model.compute_and_set_domain(color_data, this.id);
+            }
+        },
+        set_area_dimensions: function(num_items) {
+            this.num_rows = this.model.get("rows");
+            this.num_cols = this.model.get("cols");
+            this.row_groups = this.model.get("row_groups");
+
+            if (this.num_cols !== undefined && this.num_cols !== null && this.num_cols != 0) {
+                // When the number of row groups is greater than 1, the number
+                // of columns has to be an odd number. This is to
+                // ensure the continuity of the waffles when groups are spread
+                // across multiple row groups
+                if(this.row_groups > 1 && this.num_cols % 2 == 0)
+                    this.num_cols++;
+                this.num_rows = Math.floor(num_items / this.num_cols);
+                this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
+            } else if(this.num_rows !== undefined && this.num_rows !== null && this.num_rows != 0) {
+                this.num_cols = Math.floor(num_items / this.num_rows);
+                this.num_cols = (num_items % this.num_rows == 0) ? this.num_cols : (this.num_cols + 1);
+                if(this.row_groups > 1 && this.num_cols % 2 == 0)
+                    this.num_cols++;
+            } else {
+                this.num_cols = Math.floor(Math.sqrt(num_items));
+                if(this.row_groups > 1 && this.num_cols % 2 == 0)
+                    this.num_cols++;
+                this.num_rows = Math.floor(num_items / this.num_cols);
+                this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
+            }
+
+            // row_groups cannot be greater than the number of rows
+            this.row_groups = Math.min(this.row_groups, this.num_rows);
+            // if there is only one row_group, then the number of coulmns are
+            // not necessarily equal to the variable this.num_cols as we draw
+            // row first. So we need to adjust the this.num_cols variable
+            // according to the num_rows.
+            if(this.row_groups == 1) {
+                this.num_cols = Math.floor(num_items / this.num_rows);
+                this.num_cols = (num_items % this.num_rows == 0) ? this.num_cols : (this.num_cols + 1);
+            }
+
+        },
+        update_default_tooltip: function() {
+            this.tooltip_fields = this.model.get("tooltip_fields");
+            var formats = this.model.get("tooltip_formats");
+            this.tooltip_formats = this.tooltip_fields.map(function(field, index) {
+                var fmt = formats[index];
+                if(fmt == undefined || fmt == "") {return function(d) { return d;}}
+                else return d3.format(fmt);
+            });
+        },
         create_scale_views: function() {
             for (var key in this.scales) {
                 this.stopListening(this.scales[key]);
             }
             var scale_models = this.model.get("scales");
             var that = this;
-            var scale_promises = {}
+            var scale_promises = {};
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
             return utils.resolve_promises_dict(scale_promises).then(function(d) {
                 that.scales = d;
+                that.set_scales();
             });
+        },
+        set_scales: function() {
+            var self = this;
+            if(this.scales["color"]) {
+                this.listenTo(this.scales["color"], "domain_changed", function() {
+                    self.update_map_colors();
+                });
+            }
         },
         show_groups: function(model, value) {
             this.fig_names.style("display", (value ? "inline" : "none"));
@@ -279,6 +311,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.fig_names.selectAll(".names_object").remove();
             this.rect_groups = this.fig_map.selectAll(".element_group")
                 .data(this.groups);
+            var color_scale = this.scales["color"];
 
             var that = this;
             this.rect_groups.enter()
@@ -327,8 +360,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .attr("width", that.column_width)
                     .attr("height", that.row_height)
                     .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
-                    .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) { return (that.color_scale && elem.color != undefined)
-                           ? that.color_scale.scale(elem["color"]) : that.colors_map(i);}});
+                    .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) { return (color_scale && elem.color != undefined)
+                           ? color_scale.scale(elem["color"]) : that.colors_map(i);}});
 
                 groups.selectAll(".market_map_text")
                     .attr("x", that.column_width / 2.0)
@@ -365,23 +398,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         },
         recolor_chart: function() {
             var that = this;
-            var color_data = this.model.get('color_data');
-            var display_text = this.model.get("display_text");
-            display_text = (display_text == undefined || display_text.length == 0) ? this.data : display_text;
-
-            var mapped_data = this.data.map(function(d, i) { return {'name': d, 'display': display_text[i],
-                                                                     'color': color_data[i], 'group': that.grouped_data[i], 'ref_data': that.ref_data[i]};});
-
-            if(this.color_scale){
-                this.color_scale.compute_and_set_domain(color_data, 0);
-                this.color_scale.set_range();
-            }
-
-            this.grouped_data = _.groupBy(mapped_data, function(d, i) {return that.group_data[i];});
+            this.update_data();
             this.rect_groups = this.fig.selectAll(".element_group")
                 .data(this.groups);
 
             var that = this;
+            var color_scale = this.scales["color"];
 
             this.rect_groups[0].forEach(function(d, i) {
                 var data = that.grouped_data[that.groups[i]];
@@ -391,11 +413,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .data(data)
                     .select('rect')
                     .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j)
-                           { return (that.color_scale && elem.color != undefined) ? that.color_scale.scale(elem['color']) : that.colors_map(i);}});
+                           { return (color_scale && elem.color != undefined) ? color_scale.scale(elem['color']) : that.colors_map(i);}});
             });
         },
         update_map_colors: function() {
             var that = this;
+            var color_scale = this.scales["color"];
             this.rect_groups[0].forEach(function(d, i) {
                 var data = that.grouped_data[that.groups[i]];
                 var color = that.colors_map(i);
@@ -403,8 +426,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .selectAll(".rect_element")
                     .data(data)
                     .select('rect')
-                    .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) { return (that.color_scale && elem.color != undefined)
-                           ? that.color_scale.scale(elem['color']) : that.colors_map(i);}});
+                    .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) { return (color_scale && elem.color != undefined)
+                           ? color_scale.scale(elem['color']) : that.colors_map(i);}});
             });
         },
         cell_click_handler: function(data, id, cell) {

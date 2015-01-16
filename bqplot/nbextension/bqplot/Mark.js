@@ -55,6 +55,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             return utils.resolve_promises_dict(scale_promises).then(function(scales) {
                 that.scales = scales;
                 that.set_positional_scales();
+                that.initialize_additional_scales();
                 that.set_ranges();
                 that.rescale();
             });
@@ -63,6 +64,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             // Positional scales are special in that they trigger a full redraw
             // when their domain is changed.
             // This should be overloaded in specific mark implementation.
+        },
+        initialize_additional_scales: function() {
+            // This function is for the extra scales that are required for
+            // rendering mark. The scale listeners are set up in this function.
+            // This should be overloaded in the specific mark implementation.
         },
         set_internal_scales: function() {
             // Some marks such as Bars need to create additional scales
