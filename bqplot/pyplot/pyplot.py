@@ -237,9 +237,10 @@ def scales(key=None, scales={}):
                           'color': ColorScale(min=0, max=1)
                       })
         Creates a new scales context, where the 'x' scale is kept from the
-        previous context, the 'color' scale is an instance of ColorScale provided
-        by the user. Other scales, potentially needed such as the 'y' scale in the
-        case of a line chart will be created on the fly when needed.
+        previous context, the 'color' scale is an instance of ColorScale
+        provided by the user. Other scales, potentially needed such as the 'y'
+        scale in the case of a line chart will be created on the fly when
+        needed.
 
     Notes
     -----
@@ -248,7 +249,8 @@ def scales(key=None, scales={}):
     """
     old_context = _context['scales']
     if key is None:  # No key provided
-        _context['scales'] = {k: scales[k] if scales[k] is not Ellipsis else old_context[k] for k in scales}
+        _context['scales'] = {k: scales[k] if scales[k] is not Ellipsis
+                              else old_context[k] for k in scales}
     else:  # A key is provided
         if key not in _context['scale_registry']:
             _context['scale_registry'][key] = {k: scales[k] if scales[k] is not Ellipsis else old_context[k] for k in scales}
@@ -306,8 +308,10 @@ def axes(**kwargs):
     options = kwargs.get('options', {})
     appended_axes = {}
 
-    # TODO: loop over keys of scales dictionary. and create Axis or Color Axis
-    # based on the value of rtype (range type).
+    # TODO: 1- determine Axis type based on Scale type decoration (rtype)
+    # TODO: 2= not assume that 'x' is horizontal etc, and use a new Mark type
+    # decoration on the meaning of the scale in that marks's context - i.e.
+    # axes should either take a mark argument and/or use the last mark created.
     if 'x' in scales:  # horizontal
         xargs = dict(_default_axes_options, **(options.get('x', {})))
         xargs.update({'scale': scales['x']})
@@ -335,13 +339,17 @@ def _draw_mark(mark_type, **kwargs):
     options = kwargs.pop('options', {})
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
-        if name not in scales and name in kwargs:
+        # TODO: the following should also happen if name in kwargs and
+        # scales[name] is incompatible.
+        if name in kwargs and name not in scales:
             traitlet = mark_type.class_traits()[name]
             rtype = traitlet.get_metadata('rtype')
             dtype = traitlet.validate(None, kwargs[name]).dtype
-            compat_scale_types = [Scale.scale_types[key] for key in Scale.scale_types
-                    if Scale.scale_types[key].rtype == rtype
-                        and np.issubdtype(dtype, Scale.scale_types[key].dtype)]
+            compat_scale_types = [Scale.scale_types[key]
+                                  for key in Scale.scale_types
+                                  if Scale.scale_types[key].rtype == rtype
+                                  and np.issubdtype(dtype,
+                                                    Scale.scale_types[key].dtype)]
             # TODO: something better than taking the first compatible scale type.
             scales[name] = compat_scale_types[0](**options.get(name, {}))
     mark = mark_type(scales=scales, **kwargs)

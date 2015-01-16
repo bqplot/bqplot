@@ -313,7 +313,7 @@ class Hist(Mark):
     ---------------
     sample: numpy.ndarray
         sample of which the histogram must be computed.
-    counts: list of ints (read-only)
+    counts: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
     """
     icon = 'fa-signal'
@@ -323,7 +323,7 @@ class Hist(Mark):
     sample = NdArray(sync=True, display_index=1, display_name='Sample', scaled=True, rtype='Number', min_dim=1, max_dim=1)
     bins = Int(10, sync=True, exposed=True, display_index=2, display_name='Number of bins')
     midpoints = List(sync=True, display_index=3, display_name='Mid points')
-    counts = List(sync=True, display_index=4, scaled=True, rtype='Number', read_only=True, display_name='Counts')
+    counts = NdArray(sync=True, display_index=4, display_name='Count', scaled=True, rtype='Number', read_only=True)
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=5, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')

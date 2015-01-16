@@ -61,7 +61,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
 
             this.counts = this.mark_data.map(function(d) { return d.length; });
             this.set("midpoints", this.x_mid);
-            this.set("counts", this.counts);
+            this.set_typed_field("counts", this.counts);
 
             this.update_domains();
             this.save_changes();
