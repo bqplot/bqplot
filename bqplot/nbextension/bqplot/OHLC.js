@@ -321,14 +321,14 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var mark_width = (that.x_scale.scale(this.model.max_x) - that.x_scale.scale(this.model.min_x)) / num_days;
             return mark_width;
         },
-        rescale: function() {
-            OHLC.__super__.rescale.apply(this);
+        relayout: function() {
+            OHLC.__super__.relayout.apply(this);
             this.set_ranges();
             this.el.select(".intselmouse")
                 .attr("width", this.width)
                 .attr("height", this.height);
 
-            // We have to redraw every time that we rescale
+            // We have to redraw every time that we relayout
             var that = this;
             //this.draw(); XXX
         },
