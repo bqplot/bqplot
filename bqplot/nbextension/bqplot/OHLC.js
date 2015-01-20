@@ -25,6 +25,29 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 that.draw();},
             null);
 		},
+        set_ranges: function() {
+            var x_scale = this.scales["x"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
+            var y_scale = this.scales["y"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
+        },
+        set_positional_scales: function() {
+            this.x_scale = this.scales["x"];
+            this.y_scale = this.scales["y"];
+            var that = this;
+            this.listenTo(that.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            this.listenTo(that.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+        },
         create_listeners: function() {
             OHLC.__super__.create_listeners.apply(this);
             this.model.on('data_updated', this.draw, this);
@@ -58,7 +81,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             };
 
             // Only fill candles when close is lower than open
-            this.el.selectAll(".stick").style("fill", function(d) { return (d[px.op] > d[px.cl] ? color : "none"); });
+            this.el.selectAll(".stick").style("fill", function(d) {
+                return (d[px.op] > d[px.cl] ? color : "none");
+            });
 
             if (this.legend_el) {
                 this.legend_el.selectAll("path").attr("fill", color);
@@ -83,46 +108,70 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 // Draw icon for legend
                 if( this.model.get("marker") === "candle" ) {
                     leg.append("path")
-                       .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                                 (that.rect_dim/2) + ")"; })
+                       .attr("transform", function(d, i) {
+                           return "translate(" + (that.rect_dim/2) + "," +
+                                                 (that.rect_dim/2) + ")";
+                       })
                        .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() { return "m0," + (-1*that.rect_dim/2) +
-                                                      " l0," + (that.rect_dim/4); });
+                       .attr("d", function() {
+                           return "m0," + (-1*that.rect_dim/2) +
+                                 " l0," + (that.rect_dim/4);
+                       });
                     leg.append("path")
-                       .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                                 (that.rect_dim/2) + ")"; })
+                       .attr("transform", function(d, i) {
+                           return "translate(" + (that.rect_dim/2) + "," +
+                                                 (that.rect_dim/2) + ")";
+                       })
                        .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() { return "m0," + (that.rect_dim/2) +
-                                                      " l0," + (-1*that.rect_dim/4); });
+                       .attr("d", function() {
+                           return "m0," + (that.rect_dim/2) +
+                                 " l0," + (-1*that.rect_dim/4);
+                       });
                     leg.append("path")
-                       .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                                 (that.rect_dim/2) + ")"; })
+                       .attr("transform", function(d, i) {
+                           return "translate(" + (that.rect_dim/2) + "," +
+                                                 (that.rect_dim/2) + ")";
+                       })
                        .attr("stroke", this.model.get("stroke"))
                        .attr("fill", this.model.get("color"))
-                       .attr("d", function() { return "m" + (-1*that.rect_dim/4) + "," + (-1*that.rect_dim/4) +
-                                                      " l" + (that.rect_dim/2) + ",0" +
-                                                      " l0," + (that.rect_dim/2) +
-                                                      " l" + (-1*that.rect_dim/2) + ",0 z"; });
+                       .attr("d", function() {
+                           return "m" + (-1*that.rect_dim/4) + "," + (-1*that.rect_dim/4) +
+                                  " l" + (that.rect_dim/2) + ",0" +
+                                  " l0," + (that.rect_dim/2) +
+                                  " l" + (-1*that.rect_dim/2) + ",0 z";
+                       });
                 } else {
                     // bar
                     leg.append("path")
-                       .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                                 (that.rect_dim/2) + ")"; })
+                       .attr("transform", function(d, i) {
+                           return "translate(" + (that.rect_dim/2) + "," +
+                                                 (that.rect_dim/2) + ")";
+                       })
                        .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() { return "m0," + (-1*that.rect_dim/2) +
-                                                      " l0," + (that.rect_dim); });
+                       .attr("d", function() {
+                           return "m0," + (-1*that.rect_dim/2) +
+                                 " l0," + (that.rect_dim);
+                       });
                     leg.append("path")
-                       .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                                 (that.rect_dim/2) + ")"; })
+                       .attr("transform", function(d, i) {
+                           return "translate(" + (that.rect_dim/2) + "," +
+                                                 (that.rect_dim/2) + ")";
+                       })
                        .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() { return "m0," + (that.rect_dim/4) +
-                                                      " l" + (-1*that.rect_dim/4) + ",0"; });
+                       .attr("d", function() {
+                           return "m0," + (that.rect_dim/4) +
+                                   " l" + (-1*that.rect_dim/4) + ",0";
+                       });
                     leg.append("path")
-                       .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                                 (that.rect_dim/2) + ")"; })
+                       .attr("transform", function(d, i) {
+                           return "translate(" + (that.rect_dim/2) + "," +
+                                                 (that.rect_dim/2) + ")";
+                       })
                        .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() { return "m0," + (-1*that.rect_dim/4) +
-                                                      " l" + (that.rect_dim/4) + ",0"; });
+                       .attr("d", function() {
+                           return "m0," + (-1*that.rect_dim/4) +
+                                   " l" + (that.rect_dim/4) + ",0";
+                       });
                 }
             }
             // Redraw existing marks
@@ -137,7 +186,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.set_default_style(all_indices);
 
             this.set_style_on_elements(this.selected_style, this.selected_indices);
-            var unselected_indices = (indices == undefined) ? [] : _.difference(all_indices, indices);
+            var unselected_indices = (indices == undefined) ?
+                [] : _.difference(all_indices, indices);
             this.set_style_on_elements(this.unselected_style, unselected_indices);
         },
         set_style_on_elements: function(style, indices) {
@@ -151,7 +201,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
             var elements = this.el.selectAll(".stick");
             var that = this;
-            elements = elements.filter(function(data, index) { return indices.indexOf(index) != -1; });
+            elements = elements.filter(function(data, index) {
+                return indices.indexOf(index) != -1;
+            });
             elements.style(style);
         },
         set_default_style: function(indices) {
@@ -161,16 +213,22 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var color = this.model.get("color");
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
-            var elements = this.el.selectAll(".stick").filter(function(data, index) { return indices.indexOf(index) != -1; });
+            var elements = this.el.selectAll(".stick").filter(function(data, index) {
+                return indices.indexOf(index) != -1;
+            });
 
-            elements.style("fill", function(d) { return (d[0] > d[3] ? color : "none"); })
-                    .style("stroke", stroke)
-                    .style("opacity", opacity);
+            elements.style("fill", function(d) {
+                  return (d[0] > d[3] ? color : "none");
+              })
+              .style("stroke", stroke)
+              .style("opacity", opacity);
         },
         clear_style: function(style_dict, indices) {
             var elements = this.el.selectAll(".stick");
             if(indices != undefined) {
-                elements = elements.filter(function(d, index) { return indices.indexOf(index) != -1; });
+                elements = elements.filter(function(d, index) {
+                    return indices.indexOf(index) != -1;
+                });
             }
             var clearing_style = {};
             for(var key in style_dict) {
@@ -189,9 +247,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         unselected_style_updated: function(model, style) {
             this.unselected_style = style;
             var sel_indices = this.selected_indices;
-            var unselected_indices = (sel_indices ? _.range(this.model.x_data.length)
-                                                    .filter(function(index){ return sel_indices.indexOf(index) == -1; })
-                                                  : []);
+            var unselected_indices = (sel_indices ?
+                _.range(this.model.x_data.length)
+                  .filter(function(index){ return sel_indices.indexOf(index) == -1; })
+                : []);
             this.style_updated(style, unselected_indices);
         },
         update_selected_colors: function(idx_start, idx_end) {
@@ -205,9 +264,15 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var selected_stroke = this.model.get("color");
 
             _.range(0, this.model.x_data.length)
-             .forEach(function(d) { that.el.selectAll("#stick" + d).style("stroke", stroke); });
+             .forEach(function(d) {
+                 that.el.selectAll("#stick" + d)
+                   .style("stroke", stroke);
+             });
 
-            current_range.forEach(function(d) { that.el.selectAll("#stick" + d).style("stroke", selected_stroke); });
+            current_range.forEach(function(d) {
+                that.el.selectAll("#stick" + d)
+                  .style("stroke", selected_stroke);
+            });
         },
         invert_range: function(start_pxl, end_pxl) {
             if( start_pxl === undefined && end_pxl === undefined ) {
@@ -216,16 +281,19 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 return idx_selected;
             }
             var that = this;
-            var data = [start_pxl, end_pxl].map( function(elem) { return that.x_scale.scale.invert(elem); });
+            var data = [start_pxl, end_pxl].map( function(elem) {
+                return that.x_scale.scale.invert(elem);
+            });
             var idx_start = d3.max([0, d3.bisectLeft(this.model.x_data, data[0])]);
             var idx_end = d3.min([this.model.x_data.length, d3.bisectRight(this.model.x_data, data[1])]);
             this.update_selected_colors(idx_start, idx_end);
 
             var indices = _.range(this.model.x_data.length);
             var selected_data = [this.model.x_data[idx_start], this.model.x_data[idx_end]];
-            var idx_selected = _.filter(indices, function(index) { var elem = that.model.x_data[index];
-                                                                   return (elem <= selected_data[1]
-                                                                        && elem >= selected_data[0]); });
+            var idx_selected = _.filter(indices, function(index) {
+                var elem = that.model.x_data[index];
+                return (elem <= selected_data[1] && elem >= selected_data[0]);
+            });
             return idx_selected;
         },
         invert_point: function(pixel) {
@@ -249,22 +317,26 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var mark_width = this.calculate_mark_width();
             var stick = this.el.selectAll(".stick")
                             .data(this.model.y_data);
-            
+
             // Update existing
-            stick.attr( "transform", function(d, i) { return "translate(" +
-                                                             (that.x_scale.scale(that.model.x_data[i]) + that.x_offset) +
-                                                             "," + (that.y_scale.scale(d[px.hi]) + that.y_offset) + ")"; });
+            stick.attr( "transform", function(d, i) {
+                return "translate(" + (that.x_scale.scale(that.model.x_data[i]) + that.x_offset) +
+                                "," + (that.y_scale.scale(d[px.hi]) + that.y_offset) + ")";
+            });
             // Create new
             var new_sticks = stick.enter()
-                                  .append("g")
-                                  .attr("class", "stick")
-                                  .attr("id", function(d, i) { return "stick"+i; })
-                                  .attr("transform", function(d, i) { return "translate(" +
-                                                                             (that.x_scale.scale(that.model.x_data[i]) + that.x_offset) +
-                                                                             "," + (that.y_scale.scale(d[px.hi]) + that.y_offset) + ")"; })
-                                  .style("stroke", this.model.get("stroke"))
-                                  .style("opacity", this.model.get("opacity"))
-                                  .style("fill", function(d, i) { return (d[px.op] > d[px.cl]) ? color : "none"; });
+              .append("g")
+              .attr("class", "stick")
+              .attr("id", function(d, i) { return "stick"+i; })
+              .attr("transform", function(d, i) {
+                  return "translate(" + (that.x_scale.scale(that.model.x_data[i]) + that.x_offset) +
+                                  "," + (that.y_scale.scale(d[px.hi]) + that.y_offset) + ")";
+              })
+              .style("stroke", this.model.get("stroke"))
+              .style("opacity", this.model.get("opacity"))
+              .style("fill", function(d, i) {
+                  return (d[px.op] > d[px.cl]) ? color : "none";
+              });
             new_sticks.append("path")
                       .attr("class", "stick_piece_1");
             new_sticks.append("path")
@@ -275,39 +347,39 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // Determine OHLC marker type
             if( this.model.get("marker") == 'candle' ) {
                 this.el.selectAll(".stick_piece_1")
-                       .attr("d", function(d, i) {
-                               var bigger = (d[px.op] > d[px.cl]) ? d[px.op] : d[px.cl];
-                               return "m0,0 l0," + (that.y_scale.scale(bigger)-that.y_scale.scale(d[px.hi]));
-                           });
+                  .attr("d", function(d, i) {
+                      var bigger = (d[px.op] > d[px.cl]) ? d[px.op] : d[px.cl];
+                      return "m0,0 l0," + (that.y_scale.scale(bigger)-that.y_scale.scale(d[px.hi]));
+                  });
                 this.el.selectAll(".stick_piece_2")
-                       .attr("d", function(d, i) {
-                               var smaller = (d[px.op] > d[px.cl]) ? d[px.cl] : d[px.op];
-                               return "m0," + (that.y_scale.scale(smaller)-that.y_scale.scale(d[px.hi])) +
-                                      "l0," + (that.y_scale.scale(d[px.lo])-that.y_scale.scale(smaller));
-                           });
+                  .attr("d", function(d, i) {
+                      var smaller = (d[px.op] > d[px.cl]) ? d[px.cl] : d[px.op];
+                      return "m0," + (that.y_scale.scale(smaller)-that.y_scale.scale(d[px.hi])) +
+                             "l0," + (that.y_scale.scale(d[px.lo])-that.y_scale.scale(smaller));
+                  });
                 this.el.selectAll(".stick_piece_3")
-                       .attr("d", function(d, i) {
-                               return "m" + (-1*mark_width/2) +"," + (that.y_scale.scale(d[px.op])-that.y_scale.scale(d[px.hi])) +
-                                      " l" + (mark_width) + ",0" +
-                                      " l0," + (that.y_scale.scale(d[px.cl])-that.y_scale.scale(d[px.op])) +
-                                      " l" + (-1*mark_width) + ",0 z";
-                           });
+                  .attr("d", function(d, i) {
+                       return "m" + (-1*mark_width/2) +"," + (that.y_scale.scale(d[px.op])-that.y_scale.scale(d[px.hi])) +
+                             " l" + (mark_width) + ",0" +
+                           " l0," + (that.y_scale.scale(d[px.cl])-that.y_scale.scale(d[px.op])) +
+                             " l" + (-1*mark_width) + ",0 z";
+                  });
             } else {
                 // bar
                 this.el.selectAll(".stick_piece_1")
-                       .attr("d", function(d, i) {
-                               return "m" + (-1*mark_width/2) + "," + (that.y_scale.scale(d[px.op])-that.y_scale.scale(d[px.hi])) +
-                                      " l" + (mark_width/2) + ",0";
-                           });
+                  .attr("d", function(d, i) {
+                      return "m" + (-1*mark_width/2) + "," + (that.y_scale.scale(d[px.op])-that.y_scale.scale(d[px.hi])) +
+                            " l" + (mark_width/2) + ",0";
+                  });
                 this.el.selectAll(".stick_piece_2")
-                       .attr("d", function(d, i) {
-                               return "m0," + (that.y_scale.scale(d[px.cl])-that.y_scale.scale(d[px.hi])) +
-                                      " l" + (mark_width/2) + ",0";
-                           });
+                  .attr("d", function(d, i) {
+                      return "m0," + (that.y_scale.scale(d[px.cl])-that.y_scale.scale(d[px.hi])) +
+                              " l" + (mark_width/2) + ",0";
+                  });
                 this.el.selectAll(".stick_piece_3")
-                       .attr("d", function(d, i) {
-                               return "m0,0 l0," + (that.y_scale.scale(d[px.lo])-that.y_scale.scale(d[px.hi]));
-                           });
+                  .attr("d", function(d, i) {
+                      return "m0,0 l0," + (that.y_scale.scale(d[px.lo])-that.y_scale.scale(d[px.hi]));
+                  });
             }
 
             // Remove extras
@@ -340,18 +412,22 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.rect_dim = inter_y_disp * 0.8;
             var that = this;
             var leg = this.legend_el.enter()
-                          .append("g")
-                          .attr("transform", function(d, i) { return "translate(0, " + (i * inter_y_disp + y_disp) + ")"; })
-                          .attr("class", "legend" + this.uuid)
-                          .attr("fill", color)
-                          .on("mouseover", $.proxy(this.highlight_axis, this))
-                          .on("mouseout", $.proxy(this.unhighlight_axis, this));
+              .append("g")
+              .attr("transform", function(d, i) {
+                  return "translate(0, " + (i * inter_y_disp + y_disp) + ")";
+              })
+              .attr("class", "legend" + this.uuid)
+              .attr("fill", color)
+              .on("mouseover", _.bind(this.highlight_axes, this))
+              .on("mouseout", _.bind(this.unhighlight_axes, this));
 
             // Draw OHLC icon next to legend text
             if( this.model.get("marker") === "candle" ) {
                 leg.append("path")
-                   .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                             (that.rect_dim/2) + ")"; })
+                   .attr("transform", function(d, i) {
+                       return "translate(" + (that.rect_dim/2) + "," +
+                                             (that.rect_dim/2) + ")";
+                   })
                    .attr("d", function() { return "m0," + (-1*that.rect_dim/2) +
                                                   " l0," + (that.rect_dim/4); });
                 leg.append("path")
@@ -390,18 +466,41 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             leg.selectAll("path").attr("stroke", stroke);
 
             this.legend_el.append("text")
-                          .attr("class", "legendtext")
-                          .attr("x", that.rect_dim * 1.2)
-                          .attr("y", that.rect_dim / 2)
-                          .attr("dy", "0.35em")
-                          .text(function(d, i) { return that.model.get("labels")[i]; })
-                          .style("fill", stroke);
+              .attr("class", "legendtext")
+              .attr("x", that.rect_dim * 1.2)
+              .attr("y", that.rect_dim / 2)
+              .attr("dy", "0.35em")
+              .text(function(d, i) { return that.model.get("labels")[i]; })
+              .style("fill", stroke);
 
-            var max_length = d3.max(this.model.get("labels"), function(d) { return d.length; });
+            var max_length = d3.max(this.model.get("labels"), function(d) {
+                return d.length;
+            });
 
             this.legend_el.exit().remove();
             return [1, max_length];
-        }
+        },
+        update_domains: function() {
+            var scales = this.get("scales");
+            var x_scale = scales["x"];
+            var y_scale = scales["y"];
+
+            if(!this.get("preserve_domain")["x"]) {
+                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.values.map(function(d) { return d.x; });
+                }), this.id);
+            } else {
+                x_scale.del_domain([], this.id);
+            }
+
+            if(!this.get("preserve_domain")["y"]) {
+                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.values.map(function(d) { return d.y; });
+                }), this.id);
+            } else {
+                y_scale.del_domain([], this.id);
+            }
+        },
     });
     WidgetManager.WidgetManager.register_widget_view("bqplot.OHLC", OHLC);
 });

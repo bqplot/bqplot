@@ -19,7 +19,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
 	    initialize: function() {
             OHLCModel.__super__.initialize.apply(this);
 	        this.on_some_change(["x", "y"], this.update_data, this);
-	        this.on_some_change(["set_x_domain", "set_y_domain"], this.update_domains, this);
+	        this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:marker", this.update_bounding_box, this);
 	    },
         update_bounding_box: function(model, value) {
@@ -72,15 +72,21 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 return;
             }
 
-            if(this.get("set_x_domain")) {
+            if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.x_data, this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
-            if( this.get("set_y_domain")) {
-                // Remember that elem contains OHLC data here so we cannot use compute_and_set_domain
-                var min = d3.min(this.y_data.map(function(d) { return d[px.lo]; }));
-                var max = d3.max(this.y_data.map(function(d) { return d[px.hi]; }));
+
+            if(!this.get("preserve_domain")["y"]) {
+                // Remember that elem contains OHLC data here so we cannot use
+                // compute_and_set_domain
+                var min = d3.min(this.y_data.map(function(d) {
+                    return d[px.lo];
+                }));
+                var max = d3.max(this.y_data.map(function(d) {
+                    return d[px.hi];
+                }));
                 y_scale.set_domain([min,max], this.id);
             } else {
                 y_scale.del_domain([], this.id);

@@ -43,11 +43,14 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             if (this.x_data.length == 0 || this.y_data.length == 0) {
                 this.mark_data = [];
             } else {
-                this.x_data = this.x_data[0] instanceof Array ? this.x_data : [this.x_data];
-                this.y_data = this.y_data[0] instanceof Array ? this.y_data : [this.y_data];
+                this.x_data = this.x_data[0] instanceof Array ?
+                    this.x_data : [this.x_data];
+                this.y_data = this.y_data[0] instanceof Array ?
+                    this.y_data : [this.y_data];
                 this.update_labels();
 
-                if (this.x_data.length == 1 && this.y_data.length > 1) { //same x for all y
+                if (this.x_data.length == 1 && this.y_data.length > 1) {
+                    // same x for all y
                     this.mark_data = this.curve_labels.map(function(name, i) {
                         return {
                             name: name,
