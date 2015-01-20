@@ -58,6 +58,26 @@ def register_overlay(key=None):
 
 
 class Overlay(Widget):
+
+    """The base Overlay class
+
+    An overlay is a mouse interaction layer for a figure that requires the
+    capture of all mouse events on the plot area. A consequence is that one can
+    only allow one interaction overlay at most at the same time on a figure.
+
+    An interaction overlay can be associated with features such as selection or
+    manual change of specific mark. Although, they differ from the so called
+    "mark interactions" in that they do not rely on knowing whether a specific
+    element of the mark are hovered by the mouse. Implementation-wise, this
+    results in interaction overlays to set a global transparent "glass screen"
+    element on the top of the figure capturing all mouse events.
+
+    Attributes
+    ----------
+    overlay_types: dict
+        A registry of existing overlay types.
+
+    """
     overlay_types = {}
     _view_name = Unicode('bqplot.Overlay', sync=True)
     _ipython_display_ = None  # We cannot display an overlay outside of a figure
@@ -65,6 +85,16 @@ class Overlay(Widget):
 
 @register_overlay('bqplot.HandDraw')
 class HandDraw(Overlay):
+
+    """A handDraw interaction overlay.
+
+    Attributes
+    ----------
+    lines: an instance Lines mark or None
+    line_index: nonnegative integer
+    min_x: float
+    max_x: float
+    """
     _view_name = Unicode('bqplot.HandDraw', sync=True)
     lines = Any(None, sync=True)
     line_index = Int(0, sync=True)
@@ -75,6 +105,9 @@ class HandDraw(Overlay):
 
 @register_overlay('bqplot.PanZoom')
 class PanZoom(Overlay):
+
+    """An interaction overlay to pan and zoom a figure w.r.t. certain scales.
+    """
     _view_name = Unicode('bqplot.PanZoom', sync=True)
     allow_pan = Bool(True, sync=True)
     allow_zoom = Bool(True, sync=True)

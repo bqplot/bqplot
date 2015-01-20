@@ -53,7 +53,8 @@ class Mark(Widget):
 
     """The base mark class.
 
-    Traitlet mark attributes may be decorated with metadata, at the mark type level.
+    Traitlet mark attributes may be decorated with metadata, at the mark type
+    level.
 
     Data Attribute Decoration
     -------------------------
@@ -86,12 +87,13 @@ class Mark(Widget):
         A dictionary of scales holding scales for each data attribute.
         - If a mark holds a scaled attribute named 'x', the scales dictionary
         must have a corresponding scale for the key 'x'.
-        - The scale's range type should be equal to the scaled attribute's range type (rtype).
+        - The scale's range type should be equal to the scaled attribute's
+        range type (rtype).
     preserve_domain: dict
-        Indicates if this mark affects the domain(s) of the specified scale(s). The keys of this
-        dictionary are the same as the ones of the "scales" attribute, and values are boolean.
-        If a key is missing, it is considered as False.
-    children: list
+        Indicates if this mark affects the domain(s) of the specified scale(s).
+        The keys of this dictionary are the same as the ones of the "scales"
+        attribute, and values are boolean. If a key is missing, it is
+        considered as False.
     display_legend: bool
         Display toggle for the mark legend in the general figure legend
     animate_dur: int
@@ -107,8 +109,8 @@ class Mark(Widget):
     selected_style: dict
         CSS style to be applied to selected items in the mark.
     unselected_style: dict
-        CSS style to be applied to items that are not selected in the mark, when
-        a selection exists.
+        CSS style to be applied to items that are not selected in the mark,
+        when a selection exists.
     idx_selected: list
         Indices of the selected items in the mark.
     """
@@ -118,13 +120,13 @@ class Mark(Widget):
     display_legend = Bool(False, sync=True, exposed=True, display_index=1, display_name='Display legend')
     animate_dur = Int(0, sync=True, exposed=True, display_index=2, display_name='Animation duration')
     labels = UnicodeList(sync=True, exposed=True, display_index=3, display_name='Labels')
-    apply_clip = Bool(True, sync=True)  # If set to true, the mark is clipped by the parent to fit in its area.
+    apply_clip = Bool(True, sync=True)
     visible = Bool(True, sync=True)
-    selected_style = Dict({}, sync=True)  # Style to be applied to the selected items of a mark
-    unselected_style = Dict({}, sync=True)  # Style to be applied to the items which are not selected in a mark
+    selected_style = Dict({}, sync=True)
+    unselected_style = Dict({}, sync=True)
     idx_selected = List(sync=True, allow_none=True)
     _model_name = Unicode('bqplot.MarkModel', sync=True)
-    _ipython_display_ = None  # We cannot display a mark outside of a figure.
+    _ipython_display_ = None
 
     def _idx_selected_default(self):
         return None
@@ -162,10 +164,15 @@ class Lines(Mark):
     y: numpy.ndarray
         ordinates of the data points (1d or 2d array)
     """
+    # Mark decoration
     icon = 'fa-line-chart'
     name = 'Lines'
+
+    # Scaled attributes
     x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=2)
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
+
+    # Other attributes
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4, display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none', sync=True, exposed=True, display_index=5, display_name='Labels visibility')
@@ -181,9 +188,9 @@ class FlexLine(Lines):
     """Flexible Lines mark.
 
     In the case of the FlexLines mark, scales for "x" and "y" MUST be provided.
-    Scales for color and width data attributes are optional. In the case where another
-    data attribute than "x" or "y" is provided but the corresponding scale is
-    missing, the data attribute is ignored.
+    Scales for color and width data attributes are optional. In the case where
+    another data attribute than "x" or "y" is provided but the corresponding
+    scale is missing, the data attribute is ignored.
 
     Attributes
     ----------
@@ -196,10 +203,15 @@ class FlexLine(Lines):
     color: numpy.ndarray
     width: numpy.ndarray
     """
+    # Mark decoration
     name = 'Flexible lines'
-    colors = List(CATEGORY10, sync=True)
+
+    # Scaled attributes
     color = NdArray(sync=True, display_index=5, scaled=True, rtype='Number')
     width = NdArray(sync=True, display_index=6, scaled=True, rtype='Number')
+
+    # Other attributes
+    colors = List(CATEGORY10, sync=True)
     _view_name = Unicode('bqplot.FlexLine', sync=True)
     _model_name = Unicode('bqplot.FlexLineModel', sync=True)
 
@@ -249,30 +261,35 @@ class Scatter(Mark):
         size of the data points. Defaults to default_size when not provided or
         when a value is NaN
     """
+    # Mark decoration
     icon = 'fa-cloud'
     name = 'Scatter'
+
+    # Scaled attribtes
     x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=6, scaled=True, rtype='Color', min_dim=1, max_dim=1)
+    opacity = NdArray(sync=True, display_index=8, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    size = NdArray(sync=True, display_index=10, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+
+    # Other attributes
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up'], sync=True, default_value='circle', exposed=True, display_index=3, display_name='Marker')
     default_color = Color('green', sync=True, exposed=True, display_index=4, display_name='Default color')
     stroke = Color(None, allow_none=True, sync=True, exposed=True, display_index=5, display_name='Stroke color')
-    color = NdArray(sync=True, display_index=6, scaled=True, rtype='Color', min_dim=1, max_dim=1)
     default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=7, display_name='Default opacity')
-    opacity = NdArray(sync=True, display_index=8, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     default_size = Int(64, sync=True, exposed=True, display_index=9, display_name='Default size')  # dot size in square pixels
-    size = NdArray(sync=True, display_index=10, scaled=True, rtype='Number', min_dim=1, max_dim=1)
-    names = NdArray(sync=True)  # names either has to be of length 0 or of the length of the data. Intermediate values will result in undefined behavior.
+    names = NdArray(sync=True)
     display_names = Bool(True, sync=True, exposed=True, display_index=11, display_name='Display names')
     fill = Bool(True, sync=True)
     drag_color = Color('DodgerBlue', sync=True)
-    names_unique = Bool(True, sync=True)  # Boolean to indicate if the attribute 'names' should be the primary key or not
+    names_unique = Bool(True, sync=True)
 
     enable_move = Bool(False, sync=True)
     enable_add = Bool(False, sync=True)
     enable_delete = Bool(False, sync=True)
-    restrict_x = Bool(False, sync=True)  # Boolean indicates if the "move" is restricted to only X
-    restrict_y = Bool(False, sync=True)  # Boolean indicates if the "move" is restricted to only Y
-    update_on_move = Bool(False, sync=True)  # Boolean to control if the data should be updated while moving itself. False means data update waits for release
+    restrict_x = Bool(False, sync=True)
+    restrict_y = Bool(False, sync=True)
+    update_on_move = Bool(False, sync=True)
 
     _view_name = Unicode('bqplot.Scatter', sync=True)
     _model_name = Unicode('bqplot.ScatterModel', sync=True)
@@ -295,7 +312,8 @@ class Hist(Mark):
 
     """Histogram mark.
 
-    In the case of the Hist mark, scales for "sample" and "counts" MUST be provided.
+    In the case of the Hist mark, scales for "sample" and "counts" MUST be
+    provided.
 
     Attributes
     ----------
@@ -316,14 +334,19 @@ class Hist(Mark):
     counts: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
     """
+    # Mark decoration
     icon = 'fa-signal'
     name = 'Histogram'
-    # Attributes 'midpoints' and 'counts' are read-only attributes which are
-    # set when the histogram is drawn
+
+    # Scaled attributes
     sample = NdArray(sync=True, display_index=1, display_name='Sample', scaled=True, rtype='Number', min_dim=1, max_dim=1)
-    bins = Int(10, sync=True, exposed=True, display_index=2, display_name='Number of bins')
-    midpoints = List(sync=True, display_index=3, display_name='Mid points')
     counts = NdArray(sync=True, display_index=4, display_name='Count', scaled=True, rtype='Number', read_only=True)
+    # counts is a read-only attribute that is set when the mark is drawn
+
+    # Other attributes
+    bins = Int(10, sync=True, exposed=True, display_index=2, display_name='Number of bins')
+    midpoints = List(sync=True, read_only=True, display_index=3, display_name='Mid points')
+    # midpoints is a read-only attribute that is set when the mark is drawn
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=5, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
@@ -363,6 +386,7 @@ class Bars(Mark):
     select_bars: bool
     stroke: color
     opacity: float
+        opacity of the mark. Then number must be bewteen 0 and 1
     base: float
         reference value from which the bars are drawn. defaults to 0.0
 
@@ -374,17 +398,20 @@ class Bars(Mark):
         color of the data points (1d array). Defaults to default_color when not
         privided or when a value is NaN
     """
+    # Mark decoration
     icon = 'fa-bar-chart'
     name = 'Bar chart'
+
+    # Scaled attributes
     x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
-    # Same as color attribute for the scatter
     color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', min_dim=1, max_dim=1)
-    color_mode = Enum(['auto', 'group', 'element'], default_value='auto', sync=True)  # No change handler for this attribute now
+
+    # Other attributes
+    color_mode = Enum(['auto', 'group', 'element'], default_value='auto', sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
-    padding = Float(0.05, sync=True)  # Attribute to control the spacing between the bars.
-    # Value is specified as a percentage of the width of the bar.
+    padding = Float(0.05, sync=True)
     select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
@@ -401,9 +428,11 @@ class Label(Mark):
     Attributes
     ----------
     x: float
-        horisontal position of the label, in data coordinates or in figure coordinates
+        horisontal position of the label, in data coordinates or in figure
+        coordinates
     y: float
-        vertical y position of the label, in data coordinates or in figure coordinates
+        vertical y position of the label, in data coordinates or in figure
+        coordinates
     x_offset: int
         horizontal offset in pixels from the stated x location
     y_offset: int
@@ -422,16 +451,14 @@ class Label(Mark):
         alignment of the text with respect to the provided location
     """
     # TODO: x = Float(sync=True) | Date(sync=True)
-    x = Float(sync=True)  # The x co-ordinate of the location of the label. Can be in terms of data or a value between [0, 1]
-    # which is interpreted in the figure scale.
-    y = Float(allow_none=True, default_value=None, sync=True)  # Same as the x attribute
-    x_offset = Int(sync=True)  # Offset from the stated x location in pixels
-    y_offset = Int(sync=True)  # Offset from the stated y location in pixels
-
-    color = Color(None, allow_none=True, sync=True)  # Color of the text
-    rotate_angle = Float(sync=True)  # Angle by which the text is to be rotated
-    text = Unicode(sync=True)  # Text to be displayed
-    font_size = Unicode(default_value='14px', sync=True)  # Font size in px em or ex
+    x = Float(sync=True)
+    y = Float(allow_none=True, default_value=None, sync=True)
+    x_offset = Int(sync=True)
+    y_offset = Int(sync=True)
+    color = Color(None, allow_none=True, sync=True)
+    rotate_angle = Float(sync=True)
+    text = Unicode(sync=True)
+    font_size = Unicode(default_value='14px', sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold', sync=True)
-    align = Enum(['start', 'middle', 'end'], default_value='start', sync=True)  # Alignment of the text with respect to the provided location
+    align = Enum(['start', 'middle', 'end'], default_value='start', sync=True)
     _view_name = Unicode('bqplot.Label', sync=True)
