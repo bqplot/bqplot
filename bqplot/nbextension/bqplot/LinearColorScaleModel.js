@@ -47,23 +47,6 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
                 this.trigger("domain_changed", [min, max]);
             }
         },
-        compute_and_set_domain: function(data_array, id) {
-            if(!this.min_from_data && !this.max_from_data) {
-                return;
-            }
-            if(data_array.length === 0) {
-               this.set_domain([0, 1], id);
-               return;
-            }
-            var data = data_array[0] instanceof Array ? data_array : [data_array];
-            var min = (!this.min_from_data) ? this.min : d3.min(data.map(function(d) {
-                return d3.min(d);
-            }));
-            var max = (!this.max_from_data) ? this.max : d3.max(data.map(function(d) {
-                return d3.max(d);
-            }));
-            this.set_domain([min, max], id);
-        },
     });
     WidgetManager.WidgetManager.register_widget_model("LinearColorScaleModel", LinearColorScaleModel);
     return [LinearColorScaleModel];

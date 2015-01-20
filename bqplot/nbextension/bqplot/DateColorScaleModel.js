@@ -54,23 +54,6 @@ define(["widgets/js/manager", "d3", "./DateScaleModel"], function(WidgetManager,
                 this.trigger("domain_changed", this.domain);
             }
         },
-        compute_and_set_domain: function(data_array, id) {
-            if(!this.min_from_data && !this.max_from_data) {
-                return;
-            }
-            if(data_array.length == 0) {
-               this.set_domain([], id);
-               return;
-            }
-            var data = data_array[0] instanceof Array ? data_array : [data_array];
-            var min = (!this.min_from_data) ? this.min : d3.min(data.map(function(d) {
-                return d3.min(d);
-            }));
-            var max = (!this.max_from_data) ? this.max : d3.max(data.map(function(d) {
-                return d3.max(d);
-            }));
-            this.set_domain([min, max], id);
-        },
     });
     WidgetManager.WidgetManager.register_widget_model("DateColorScaleModel", DateColorScaleModel);
     return [DateColorScaleModel];
