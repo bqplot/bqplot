@@ -24,9 +24,9 @@ define(["widgets/js/manager", "d3", "./Overlay" ], function(WidgetManager, d3, O
             this.mark_views_promise = this.populate_mark_views();
         },
         create_listeners: function() {
-            this.parent.on("margin_updated", this.rescale, this);
+            this.parent.on("margin_updated", this.relayout, this);
         },
-        rescale: function() {
+        relayout: function() {
             this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
             this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
         },

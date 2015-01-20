@@ -26,9 +26,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 .attr("height", this.parent.height - this.parent.margin.top - this.parent.margin.bottom)
                 .attr("pointer-events", "all")
                 .attr("visibility", "hidden");
-            this.parent.on("margin_updated", this.rescale, this);
+            this.parent.on("margin_updated", this.relayout, this);
         },
-        rescale: function() {
+        relayout: function() {
+            // Called when the figure margins are updated.
             this.el
                 .attr("width", this.parent.width - this.parent.margin.left - this.parent.margin.right)
                 .attr("height", this.parent.height - this.parent.margin.top - this.parent.margin.bottom);

@@ -79,7 +79,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }, this);
             this.model.on_some_change(["x", "y"], this.apply_net_transform, this);
         },
-        rescale: function() {
+        relayout: function() {
             this.set_ranges();
             this.apply_net_transform();
         },

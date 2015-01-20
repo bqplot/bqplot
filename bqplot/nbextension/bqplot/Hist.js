@@ -98,7 +98,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             }
             return bar_width;
         },
-        rescale: function() {
+        relayout: function() {
             this.set_ranges();
 
             var that = this;

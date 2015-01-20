@@ -361,8 +361,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 });
                 self.y_padding_arr[scale_id] = max;
             });
-            // This is for the figure to rescale everything in line with the
-            // updated paddings
+            // This is for the figure to relayout everything to account for the
+            // updated margins.
             this.trigger("margin_updated");
 
         },

@@ -57,7 +57,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.set_positional_scales();
                 that.initialize_additional_scales();
                 that.set_ranges();
-                that.rescale();
+                that.relayout();
             });
         },
         set_positional_scales: function() {
@@ -78,7 +78,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         create_listeners: function() {
             this.model.on("change:visible", this.update_visibility, this);
 
-            this.parent.on("margin_updated", this.rescale, this);
+            this.parent.on("margin_updated", this.relayout, this);
             this.model.on_some_change(["labels", "display_legend"], function() {
                 this.model.trigger("redraw_legend");
             }, this);
@@ -109,9 +109,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                model.trigger("unhighlight_axis");
             });
         },
-        rescale: function() {
-            // function called on resize of the Figure. To be overloaded in specific
-            // mark implementation.
+        relayout: function() {
+            // Called when the figure margins are updated. To be overloaded in
+            // specific mark implementation.
         },
         invert_range: function(start_pxl, end_pxl) {
             return [start_pxl, end_pxl];
