@@ -34,7 +34,24 @@ from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale
 from .traits import NumpyArray
 
 
-class Axis(Widget):
+def register_axis(key=None):
+    """Returns a decorator registering an axis class in the axis type registry.
+    If no key is provided, the class name is used as a key. A key is
+    provided for each core bqplot axis so that the frontend can use
+    this key regardless of the kernel language."""
+    def wrap(axis):
+        l = key if key is not None else axis.__module__ + axis.__name__
+        BaseAxis.axis_types[l] = axis
+        return axis
+    return wrap
+
+
+class BaseAxis(Widget):
+    axis_types = {}
+
+
+@register_axis('bqplot.Axis')
+class Axis(BaseAxis):
 
     """A line axis.
 
@@ -44,6 +61,8 @@ class Axis(Widget):
     ----------
         icon: string
             The font-awesome icon name for this object.
+        axis_types: dict
+            A registry of existing axis types.
         orientation: {'horizontal', 'vertical'}
             The orientation of the axis, either vertical or horizontal
         side: {'bottom', 'top', 'left', 'right'}
@@ -105,6 +124,7 @@ class Axis(Widget):
             return '.0f'
 
 
+@register_axis('bqplot.ColorAxis')
 class ColorAxis(Axis):
 
     """A colorbar axis.
