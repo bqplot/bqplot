@@ -142,7 +142,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.el.selectAll(".curve").selectAll("path")
               .attr("d", function(d) { return that.line(d.values); });
         },
-        rescale: function() {
+        relayout: function() {
             this.set_ranges();
             var that = this;
             this.el.selectAll(".curve").selectAll("path")

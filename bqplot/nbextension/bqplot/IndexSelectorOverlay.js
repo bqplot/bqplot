@@ -89,8 +89,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             this.background.remove();
             IndexSelector.__super__.remove.apply(this);
         },
-        rescale: function() {
-            IndexSelector.__super__.rescale.apply(this);
+        relayout: function() {
+            IndexSelector.__super__.relayout.apply(this);
             this.line.attr("y1", 0)
                 .attr("y2", this.height);
             this.background.attr("width", this.width)

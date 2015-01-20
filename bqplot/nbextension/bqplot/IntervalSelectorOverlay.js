@@ -114,8 +114,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             this.background.remove();
             IntervalSelector.__super__.remove.apply(this);
         },
-        rescale: function() {
-            IntervalSelector.__super__.rescale.apply(this);
+        relayout: function() {
+            IntervalSelector.__super__.relayout.apply(this);
             this.background.attr("width", this.width)
                 .attr("height", this.height);
             this.rect.attr("height", this.height);

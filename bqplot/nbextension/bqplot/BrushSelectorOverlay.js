@@ -98,9 +98,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         remove: function() {
             BrushSelector.__super__.remove.apply(this);
         },
-        rescale: function() {
-            //no need to do anything because the scales update automatically
-            BrushSelector.__super__.rescale.apply(this);
+        relayout: function() {
+            BrushSelector.__super__.relayout.apply(this);
             this.el.select(".background")
                 .attr("width", this.width)
                 .attr("height", this.height);
@@ -166,8 +165,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.brush.clear();
             BrushIntervalSelector.__super__.remove.apply(this);
         },
-        rescale: function() {
-            BrushIntervalSelector.__super__.rescale.apply(this);
+        relayout: function() {
+            BrushIntervalSelector.__super__.relayout.apply(this);
             this.el.selectAll("rect")
                 .attr("y", 0)
                 .attr("height", this.height);
@@ -381,8 +380,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.create_scale();
             this.create_brush();
         },
-        rescale: function() {
-            MultiSelector.__super__.rescale.apply(this);
+        relayout: function() {
+            MultiSelector.__super__.relayout.apply(this);
             this.el.selectAll(".brushintsel")
                 .selectAll("rect")
                 .attr("y", 0)

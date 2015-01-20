@@ -237,7 +237,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
            }
            return this.model.get("default_opacity");
         },
-        rescale: function() {
+        relayout: function() {
             this.set_ranges();
             this.el.select(".mouseeventrect")
               .attr("width", this.parent.plotarea_width)

@@ -93,7 +93,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("change:type", this.draw, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
         },
-        rescale: function() {
+        relayout: function() {
             this.set_ranges();
 
             this.el.select(".mouseeventrect")
