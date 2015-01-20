@@ -505,7 +505,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             return [x_start, y_start];
         },
         set_overlay: function(model) {
-            if (this.overlay_view) {this.overlay_view.remove()};
+            if (this.overlay_view) {this.overlay_view.remove();};
+            var that = this;
+            // Trigger index selection updates in the marks
+            Promise.all(that.mark_views.views).then(function(views) {
+                _.each(views, function(mark) { mark.invert_range(); } );
+            });
             if (model) {
                 // Sets the child overlay
                 var self = this;

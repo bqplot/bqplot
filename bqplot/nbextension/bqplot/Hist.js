@@ -296,6 +296,11 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             });
         },
         invert_range: function(start_pxl, end_pxl) {
+            if( start_pxl === undefined && end_pxl === undefined ) {
+                this.update_selected_colors(-1,-1);
+                idx_selected = [];
+                return idx_selected;
+            }
             var self = this;
             var data = [start_pxl, end_pxl].map(function(elem) {
                 return self.x_scale.scale.invert(elem);

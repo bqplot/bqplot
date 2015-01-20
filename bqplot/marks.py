@@ -31,6 +31,7 @@ Marks
 """
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
+from numpy import empty
 
 from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
@@ -540,3 +541,19 @@ class Label(Mark):
     align = Enum(['start', 'middle', 'end'], default_value='start',
                  allow_none=False, sync=True)
     _view_name = Unicode('bqplot.Label', sync=True)
+
+@register_mark('bqplot.OHLC')
+class OHLC(Mark):
+
+    """Open/High/Low/Close marks."""
+    icon = 'fa-ohlc-chart'
+    name = 'OHLC chart'
+    x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=2)
+    y = NdArray(sync=True, display_index=2, scaled=True, scale_range_type='numeric', min_dim=2, max_dim=2) # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
+    _y_default = empty([1,1]) # FIXME Need to do something about this... keep getting future warning because of it.
+    marker = Enum(['candle', 'bar'], sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
+    stroke = Color('white', sync=True, exposed=True, display_index=4, display_name='Stroke color')
+    color = Color('dodgerblue', sync=True, exposed=True, display_index=5, display_name='Fill color')
+    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
+    _view_name = Unicode('bqplot.OHLC', sync=True)
+    _model_name = Unicode('bqplot.OHLCModel', sync=True)
