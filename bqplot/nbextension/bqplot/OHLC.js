@@ -22,7 +22,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             return base_creation_promise.then(function() {
                 that.create_listeners();
-                that.draw();},
+                that.draw(); },
             null);
 		},
         set_ranges: function() {
@@ -50,7 +50,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         create_listeners: function() {
             OHLC.__super__.create_listeners.apply(this);
-            this.model.on('data_updated', this.draw, this);
             this.model.on('change:stroke', this.update_stroke, this);
             this.model.on('change:color', this.update_color, this);
             this.model.on('change:opacity', this.update_opacity, this);
@@ -194,11 +193,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if( indices === undefined || indices.length == 0 ) {
                 return;
             }
-
-            // TODO: Do we really need this?
-            if((typeof(style) == 'object') && (Object.keys(style).length == 0)) {
-                return;
-            }
             var elements = this.el.selectAll(".stick");
             var that = this;
             elements = elements.filter(function(data, index) {
@@ -304,7 +298,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return index;
         },
         draw: function() {
-        console.log("IN DRAW");
             this.set_ranges();
             var that = this;
             var color = this.model.get("color");
@@ -402,7 +395,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             // We have to redraw every time that we relayout
             var that = this;
-            //this.draw(); XXX
+            this.draw();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
@@ -479,27 +472,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             this.legend_el.exit().remove();
             return [1, max_length];
-        },
-        update_domains: function() {
-            var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
-
-            if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                    return elem.values.map(function(d) { return d.x; });
-                }), this.id);
-            } else {
-                x_scale.del_domain([], this.id);
-            }
-
-            if(!this.get("preserve_domain")["y"]) {
-                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                    return elem.values.map(function(d) { return d.y; });
-                }), this.id);
-            } else {
-                y_scale.del_domain([], this.id);
-            }
         },
     });
     WidgetManager.WidgetManager.register_widget_view("bqplot.OHLC", OHLC);

@@ -548,7 +548,7 @@ class OHLC(Mark):
     """Open/High/Low/Close marks."""
     icon = 'fa-ohlc-chart'
     name = 'OHLC chart'
-    x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=2)
+    x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=1)
     y = NdArray(sync=True, display_index=2, scaled=True, scale_range_type='numeric', min_dim=2, max_dim=2) # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
     _y_default = empty([1,1]) # FIXME Need to do something about this... keep getting future warning because of it.
     marker = Enum(['candle', 'bar'], sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')

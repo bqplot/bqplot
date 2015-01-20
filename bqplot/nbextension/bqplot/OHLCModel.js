@@ -23,17 +23,11 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.on("change:marker", this.update_bounding_box, this);
 	    },
         update_bounding_box: function(model, value) {
-            if( this.get("scales") === undefined ) return;
-            var x_scale = this.get("scales")["x"];
 
-            this.min_x = x_scale.domain[0];
-            this.max_x = x_scale.domain[1];
-            // TODO : Need to take physical size of view into account for when we scale
-            //var pad = ((this.max_x) - (this.min_x)) / (1000*60*60);
+            //if(this.pad === undefined) this.pad = 0;
             var pad = 0;
 
-        	this.x_padding = pad;
-            this.y_padding = Math.sqrt(pad);
+        	this.x_padding = this.y_padding = pad;
 	        this.trigger("mark_padding_updated");
         },
         update_data: function() {
