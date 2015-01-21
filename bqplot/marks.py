@@ -175,9 +175,9 @@ class Lines(Mark):
     # Other attributes
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4, display_name='Stroke width')
-    labels_visibility = Enum(['none', 'label'], default_value='none', sync=True, exposed=True, display_index=5, display_name='Labels visibility')
+    labels_visibility = Enum(['none', 'label'], default_value='none', allow_none=False, sync=True, exposed=True, display_index=5, display_name='Labels visibility')
     curves_subset = List([], sync=True)
-    line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid', sync=True, exposed=True, display_index=6, display_name='Line style')
+    line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid', allow_none=False, sync=True, exposed=True, display_index=6, display_name='Line style')
     _view_name = Unicode('bqplot.Lines', sync=True)
     _model_name = Unicode('bqplot.LinesModel', sync=True)
 
@@ -273,7 +273,7 @@ class Scatter(Mark):
     size = NdArray(sync=True, display_index=10, scaled=True, rtype='Number', min_dim=1, max_dim=1)
 
     # Other attributes
-    marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up'], sync=True, default_value='circle', exposed=True, display_index=3, display_name='Marker')
+    marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up'], default_value='circle', allow_none=False, sync=True, exposed=True, display_index=3, display_name='Marker')
     default_color = Color('green', sync=True, exposed=True, display_index=4, display_name='Default color')
     stroke = Color(None, allow_none=True, sync=True, exposed=True, display_index=5, display_name='Stroke color')
     default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=7, display_name='Default opacity')
@@ -408,8 +408,8 @@ class Bars(Mark):
     color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', min_dim=1, max_dim=1)
 
     # Other attributes
-    color_mode = Enum(['auto', 'group', 'element'], default_value='auto', sync=True)
-    type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True, exposed=True, display_index=3, display_name='Type')
+    color_mode = Enum(['auto', 'group', 'element'], default_value='auto', allow_none=False, sync=True)
+    type = Enum(['stacked', 'grouped'], default_value='stacked', allow_none=False, sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
     select_bars = Bool(False, sync=True)
@@ -459,6 +459,6 @@ class Label(Mark):
     rotate_angle = Float(sync=True)
     text = Unicode(sync=True)
     font_size = Unicode(default_value='14px', sync=True)
-    font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold', sync=True)
-    align = Enum(['start', 'middle', 'end'], default_value='start', sync=True)
+    font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold', allow_none=False, sync=True)
+    align = Enum(['start', 'middle', 'end'], default_value='start', allow_none=False, sync=True)
     _view_name = Unicode('bqplot.Label', sync=True)

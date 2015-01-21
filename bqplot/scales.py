@@ -200,7 +200,7 @@ class ColorScale(Scale):
     """
     rtype = 'Color'
     dtype = np.float
-    scale_type = Enum(['linear'], default_value='linear', sync=True)
+    scale_type = Enum(['linear'], default_value='linear', allow_none=False, sync=True)
     colors = List(sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
