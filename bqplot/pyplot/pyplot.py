@@ -52,8 +52,6 @@ from ..overlays import panzoom
 from IPython.html.widgets import VBox, HBox as ButtonGroup
 from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
 
-# TODO: use logging configurable for default figure settings
-_default_fig_options = {}
 _context = {
     'figure': None,
     'figure_registry': {},
@@ -174,14 +172,13 @@ def figure(key=None, fig=None, **kwargs):
         for arg in kwargs:
             setattr(_context['figure'], arg, kwargs[arg])
     else:                                                   # no fig provided
-        fig_options = dict(_default_fig_options, **kwargs)
         if key is None:                                     # no key provided
-            _context['figure'] = Figure(**fig_options)
+            _context['figure'] = Figure(**kwargs)
         else:                                               # a key is provided
             if key not in _context['figure_registry']:
-                if 'title' not in fig_options:
-                    fig_options['title'] = 'Figure' + ' ' + str(key)
-                _context['figure_registry'][key] = Figure(**fig_options)
+                if 'title' not in kwargs:
+                    kwargs['title'] = 'Figure' + ' ' + str(key)
+                _context['figure_registry'][key] = Figure(**kwargs)
             _context['figure'] = _context['figure_registry'][key]
             for arg in kwargs:
                 setattr(_context['figure'], arg, kwargs[arg])
