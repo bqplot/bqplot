@@ -123,7 +123,7 @@ class Figure(DOMWidget):
     padding_y = Float(0.025, sync=True)
     #: The legend location
     legend_location = Enum(['top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'],
-                           default_value='top-right', sync=True,
+                           default_value='top-right', allow_none=False, sync=True,
                            exposed=True, display_index=2, display_name='Legend position')
 
     def _scale_x_default(self):
