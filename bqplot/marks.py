@@ -73,7 +73,8 @@ class Mark(Widget):
     More decoration is added for automatic GUI generation purpose:
 
     exposed: bool
-        Indicates whether a mark attribute must be exposed in the generated GUI.
+        Indicates whether a mark attribute must be exposed in the generated
+        GUI.
     display_index:
         In the case a mark attribute is exposed, the display_index is a hint on
         the display order of mark attributes.
@@ -91,6 +92,11 @@ class Mark(Widget):
         must have a corresponding scale for the key 'x'.
         - The scale's range type should be equal to the scaled attribute's
         range type (rtype).
+    scales_metadata: Dict
+        A dictionary of dictionaries holding metadata on the way scales are
+        used by the mark. For example, a linear scale may be used to count
+        pixels horizontally or vertically. The content of this dictionnary
+        may change dynamically. It is an instance-level attribute.
     preserve_domain: dict
         Indicates if this mark affects the domain(s) of the specified scale(s).
         The keys of this dictionary are the same as the ones of the "scales"
@@ -118,6 +124,7 @@ class Mark(Widget):
     """
     mark_types = {}
     scales = Dict(sync=True)
+    scales_metadata = Dict(sync=True)
     preserve_domain = Dict(allow_none=False, sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1, display_name='Display legend')
     animate_dur = Int(0, sync=True, exposed=True, display_index=2, display_name='Animation duration')
@@ -175,6 +182,8 @@ class Lines(Mark):
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
 
     # Other attributes
+    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
+                            'y': {'orientation': 'vertical'}}, sync=True)
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4, display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none', allow_none=False, sync=True, exposed=True, display_index=5, display_name='Labels visibility')
@@ -275,6 +284,8 @@ class Scatter(Mark):
     size = NdArray(sync=True, display_index=10, scaled=True, rtype='Number', min_dim=1, max_dim=1)
 
     # Other attributes
+    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
+                            'y': {'orientation': 'vertical'}}, sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up'], default_value='circle', allow_none=False, sync=True, exposed=True, display_index=3, display_name='Marker')
     default_color = Color('green', sync=True, exposed=True, display_index=4, display_name='Default color')
     stroke = Color(None, allow_none=True, sync=True, exposed=True, display_index=5, display_name='Stroke color')
@@ -346,6 +357,8 @@ class Hist(Mark):
     # counts is a read-only attribute that is set when the mark is drawn
 
     # Other attributes
+    scales_metadata = Dict({'sample': {'orientation': 'horizontal'},
+                            'counts': {'orientation': 'vertical'}}, sync=True)
     bins = Int(10, sync=True, exposed=True, display_index=2, display_name='Number of bins')
     midpoints = List(sync=True, read_only=True, display_index=3, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
@@ -410,6 +423,8 @@ class Bars(Mark):
     color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     # Other attributes
+    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
+                            'y': {'orientation': 'vertical'}}, sync=True)
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto', allow_none=False, sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked', allow_none=False, sync=True, exposed=True, display_index=3, display_name='Type')
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
@@ -457,6 +472,8 @@ class Label(Mark):
     y = Float(allow_none=True, default_value=None, sync=True)
     x_offset = Int(sync=True)
     y_offset = Int(sync=True)
+    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
+                            'y': {'orientation': 'vertical'}}, sync=True)
     color = Color(None, allow_none=True, sync=True)
     rotate_angle = Float(sync=True)
     text = Unicode(sync=True)

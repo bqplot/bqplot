@@ -314,12 +314,8 @@ def axes(mark=None, **kwargs):
             continue
         key = mark.class_traits()[name].get_metadata('atype', 'bqplot.Axis')
         axis_type = Axis.axis_types[key]
-        axis_args = options.get(name, {})
-        # TODO: infer orientation from mark metadata
-        if name == 'y' or name == 'counts':
-            axis_args['orientation'] = 'vertical'
-        if name == 'x':
-            axis_args['orientation'] = 'horizontal'
+        axis_args = dict(mark.scales_metadata.get(name, {}),
+                         **(options.get(name, {})))
         axis = axis_type(scale=scales[name], **axis_args)
         fig_axes.append(axis)
         new_axes[name] = axis
