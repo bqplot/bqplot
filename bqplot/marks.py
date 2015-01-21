@@ -572,16 +572,22 @@ class OHLC(Mark):
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
     """
+
+    # Mark decoration
     icon = 'fa-birthday-cake'
     name = 'OHLC chart'
+
+    # Scaled attributes
     x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=2, max_dim=2)
     # FIXME Need to do something about this... keep getting future warning because of it.
-    _y_default = empty([1,1])
+    _y_default = None
+
+    # Other attributes
     marker = Enum(['candle', 'bar'], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
     stroke = Color('white', sync=True, exposed=True, display_index=4, display_name='Stroke color')
-    color = Color('dodgerblue', sync=True, exposed=True, display_index=5, display_name='Fill color')
+    colors = ColorList(['red','green'], sync=True, exposed=True, display_index=5, display_name='Fill Colors')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
     _view_name = Unicode('bqplot.OHLC', sync=True)
     _model_name = Unicode('bqplot.OHLCModel', sync=True)
