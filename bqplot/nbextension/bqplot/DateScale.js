@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, ScaleView) {
-    var BaseScale = ScaleView[0];
+define(["widgets/js/manager", "d3", "./LinearScale"], function(WidgetManager, d3, LinearScaleView) {
+    var BaseScale = LinearScaleView[0];
     var DateScale = BaseScale.extend({
          render: function() {
              this.scale = d3.time.scale();
