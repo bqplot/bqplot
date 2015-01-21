@@ -46,7 +46,7 @@ from IPython.display import display
 import numpy as np
 from ..figure import Figure
 from ..scales import Scale, LinearScale
-from ..axes import Axis, ColorAxis
+from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars
 from ..overlays import panzoom
 from IPython.html.widgets import VBox, HBox as ButtonGroup
@@ -54,12 +54,12 @@ from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleBut
 
 # TODO: use logging configurable for default figure settings
 _default_fig_options = {}
-_default_axes_options = {}
 _context = {
     'figure': None,
     'figure_registry': {},
     'scales': {},
-    'scale_registry': {}
+    'scale_registry': {},
+    'last_mark': None
 }
 
 
@@ -288,49 +288,43 @@ def set_lim(min, max, name):
     return scale
 
 
-def axes(**kwargs):
-    """Draws axes corresponding to the current scale context
+def axes(mark=None, **kwargs):
+    """Draws axes corresponding to the scales of a given mark and returns a
+    dictionary of drawn axes. If not mark is provided, the last drawn mark
+    is used.
 
     Parameters
     ----------
-    options: dict, optional
-        the options argument contains individual attributes for the different
-        axes that are going to be created.
-        For example, options['x'] must be a dictionary of the attributes to be
-        the used for the 'x' axis.
-
-        options['x']['type'] is related to the axis class to be used for this
-        axis.
+    mark: Mark, optional
+       The mark to inspect to create axes.
 
     """
+    if mark is None:
+        mark = _context['last_mark']
+    if mark is None:
+        return {}
     fig = kwargs.get('figure', current_figure())
-    scales = kwargs.get('scales', _context['scales'])
+    scales = mark.scales
     options = kwargs.get('options', {})
-    appended_axes = {}
-
-    # TODO: 1- determine Axis type based on Scale type decoration (rtype)
-    # TODO: 2= not assume that 'x' is horizontal etc, and use a new Mark type
-    # decoration on the meaning of the scale in that marks's context - i.e.
-    # axes should either take a mark argument and/or use the last mark created.
-    if 'x' in scales:  # horizontal
-        xargs = dict(_default_axes_options, **(options.get('x', {})))
-        xargs.update({'scale': scales['x']})
-        ax_x = Axis(**xargs)
-        fig.axes = [axis for axis in fig.axes] + [ax_x]
-        appended_axes['x'] = ax_x
-    if 'y' in scales:  # vertical
-        yargs = dict(_default_axes_options, **(options.get('y', {})))
-        yargs.update({'scale': scales['y'], 'orientation': 'vertical'})
-        ax_y = Axis(**yargs)
-        fig.axes = [axis for axis in fig.axes] + [ax_y]
-        appended_axes['y'] = ax_y
-    if 'color' in scales:  # color
-        colorargs = dict(_default_axes_options, **(options.get('color', {})))
-        colorargs.update({'scale': scales['color']})
-        ax_color = ColorAxis(**colorargs)
-        fig.axes = [axis for axis in fig.axes] + [ax_color]
-        appended_axes['color'] = ax_color
-    return appended_axes
+    new_axes = {}
+    fig_axes = [axis for axis in fig.axes]
+    for name in scales:
+        if name not in mark.class_trait_names(scaled=True):
+            # Pass if the scale is not to be used.
+            continue
+        key = mark.class_traits()[name].get_metadata('atype', 'bqplot.Axis')
+        axis_type = Axis.axis_types[key]
+        axis_args = options.get(name, {})
+        # TODO: infer orientation from mark metadata
+        if name == 'y' or name == 'counts':
+            axis_args['orientation'] = 'vertical'
+        if name == 'x':
+            axis_args['orientation'] = 'horizontal'
+        axis = axis_type(scale=scales[name], **axis_args)
+        fig_axes.append(axis)
+        new_axes[name] = axis
+    fig.axes = fig_axes
+    return new_axes
 
 
 def _draw_mark(mark_type, **kwargs):
@@ -350,10 +344,14 @@ def _draw_mark(mark_type, **kwargs):
                                   if Scale.scale_types[key].rtype == rtype
                                   and np.issubdtype(dtype,
                                                     Scale.scale_types[key].dtype)]
-            # TODO: something better than taking the first compatible scale type.
+            # TODO: something better than taking the FIRST compatible
+            # scale type.
             scales[name] = compat_scale_types[0](**options.get(name, {}))
     mark = mark_type(scales=scales, **kwargs)
+    _context['last_mark'] = mark
     fig.marks = [m for m in fig.marks] + [mark]
+    if kwargs.get('axes', None):
+        axes(mark)
     return mark
 
 

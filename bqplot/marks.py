@@ -53,8 +53,7 @@ class Mark(Widget):
 
     """The base mark class.
 
-    Traitlet mark attributes may be decorated with metadata, at the mark type
-    level.
+    Traitlet mark attributes may be decorated with metadata.
 
     Data Attribute Decoration
     -------------------------
@@ -65,6 +64,9 @@ class Mark(Widget):
         must be associated with a scale in order to be taken into account.
     rtype: string
         Range type of the associated scale.
+    atype: string
+        Key in bqplot's axis registry of the recommended axis type to represent
+        this scale. When not specified, the default is 'bqplot.Axis'.
 
     GUI Generation Decoration
     -------------------------
@@ -207,7 +209,7 @@ class FlexLine(Lines):
     name = 'Flexible lines'
 
     # Scaled attributes
-    color = NdArray(sync=True, display_index=5, scaled=True, rtype='Number')
+    color = NdArray(sync=True, display_index=5, scaled=True, rtype='Number', atype='bqplot.ColorAxis')
     width = NdArray(sync=True, display_index=6, scaled=True, rtype='Number')
 
     # Other attributes
@@ -268,7 +270,7 @@ class Scatter(Mark):
     # Scaled attribtes
     x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=1)
-    color = NdArray(sync=True, display_index=6, scaled=True, rtype='Color', min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=6, scaled=True, rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
     opacity = NdArray(sync=True, display_index=8, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     size = NdArray(sync=True, display_index=10, scaled=True, rtype='Number', min_dim=1, max_dim=1)
 
@@ -405,7 +407,7 @@ class Bars(Mark):
     # Scaled attributes
     x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
-    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     # Other attributes
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto', allow_none=False, sync=True)
