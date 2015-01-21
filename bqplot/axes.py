@@ -36,9 +36,9 @@ from .traits import NumpyArray
 
 def register_axis(key=None):
     """Returns a decorator registering an axis class in the axis type registry.
-    If no key is provided, the class name is used as a key. A key is
-    provided for each core bqplot axis so that the frontend can use
-    this key regardless of the kernel language."""
+    If no key is provided, the class name is used as a key. A key is provided
+    for each core bqplot axis so that the frontend can use this key regardless
+    of the kernel language."""
     def wrap(axis):
         l = key if key is not None else axis.__module__ + axis.__name__
         BaseAxis.axis_types[l] = axis
@@ -78,16 +78,20 @@ class Axis(BaseAxis):
         tick_values: numpy.ndarray or None
             Tick values for the axis
         offset: dict
-            Containing a scale and a value {'scale': scale or None, 'value': value of the offset}
-            If offset['scale'] is None, the corresponding figure scale is used instead.
+            Containing a scale and a value {'scale': scale or None,
+                                            'value': value of the offset}
+            If offset['scale'] is None, the corresponding figure scale is used
+            instead.
         label_location: {'middle', 'start', 'end'}
-            The location of the label along the axis, one of 'start', 'end' or 'middle'
+            The location of the label along the axis, one of 'start', 'end' or
+            'middle'
         label_color: string
             The axis label color
         color: string
             The line color
         label_offset: string
-            Label displacement from the axis line. Units allowed are em px and ex.
+            Label displacement from the axis line. Units allowed are 'em', 'px'
+            and 'ex'.
         visible: bool
             A visibility toggle for the axis
     """
@@ -116,7 +120,7 @@ class Axis(BaseAxis):
 
     def _tick_format_default(self):
         if isinstance(self.scale, DateScale):
-            # TODO: perhaps we should have a DateAxis subclass instead of this checking
+            # TODO: perhaps we should have a DateAxis subclass instead of this
             return None
         elif isinstance(self.scale, LogScale):
             return '.3g'

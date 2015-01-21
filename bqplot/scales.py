@@ -42,8 +42,8 @@ from .traits import Date
 
 
 def register_scale(key=None):
-    """Returns a decorator registering a scale class in the scale type registry.
-    If no key is provided, the class name is used as a key. A key is
+    """Returns a decorator registering a scale class in the scale type
+    registry. If no key is provided, the class name is used as a key. A key is
     provided for each core bqplot scale type so that the frontend can use
     this key regardless of the kernal language."""
     def wrap(scale):
@@ -57,7 +57,8 @@ class Scale(Widget):
 
     """The base scale class
 
-    Scale objects represent a mapping between data (the domain) and a visual quantity (The range).
+    Scale objects represent a mapping between data (the domain) and a visual
+    quantity (The range).
 
     Attributes
     ----------
@@ -68,7 +69,8 @@ class Scale(Widget):
     reverse: bool
         whether the scale should be reversed
     allow_padding: bool
-        indicates whether figures are allowed to add data padding to this scale or not
+        indicates whether figures are allowed to add data padding to this scale
+        or not
     """
     scale_types = {}
     domain_class = Type(Float, sync=False)
@@ -200,7 +202,8 @@ class ColorScale(Scale):
     """
     rtype = 'Color'
     dtype = np.float
-    scale_type = Enum(['linear'], default_value='linear', allow_none=False, sync=True)
+    scale_type = Enum(['linear'], default_value='linear', allow_none=False,
+                      sync=True)
     colors = List(sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)

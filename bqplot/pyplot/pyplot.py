@@ -247,13 +247,15 @@ def scales(key=None, scales={}):
     Every call to the function figure triggers a call to scales.
 
     """
-    old_context = _context['scales']
+    old_ctxt = _context['scales']
     if key is None:  # No key provided
         _context['scales'] = {k: scales[k] if scales[k] is not Ellipsis
-                              else old_context[k] for k in scales}
+                              else old_ctxt[k] for k in scales}
     else:  # A key is provided
         if key not in _context['scale_registry']:
-            _context['scale_registry'][key] = {k: scales[k] if scales[k] is not Ellipsis else old_context[k] for k in scales}
+            _context['scale_registry'][key] = {k: scales[k] if scales[k]
+                                               is not Ellipsis else old_ctxt[k]
+                                               for k in scales}
         _context['scales'] = _context['scale_registry'][key]
 
 
