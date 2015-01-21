@@ -37,12 +37,12 @@ class Figure(DOMWidget):
 
     """Main canvas for drawing a chart.
 
-    The Figure object holds the list of Marks and Axes. It also holds an optional
-    Overlay object that is responsible for figure-level mouse interactions, the
-    "interaction layer".
+    The Figure object holds the list of Marks and Axes. It also holds an
+    optional Overlay object that is responsible for figure-level mouse
+    interactions, the "interaction layer".
 
-    Besides, the Figure object has two reference scales, for positioning items in an absolute
-    fashion in the figure canvas.
+    Besides, the Figure object has two reference scales, for positioning items
+    in an absolute fashion in the figure canvas.
 
 
     .. rubric:: Data Attributes

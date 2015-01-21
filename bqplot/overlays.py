@@ -38,7 +38,8 @@ Overlays
 """
 
 import sys
-from IPython.utils.traitlets import Bool, Int, Float, Unicode, Dict, Any, Instance, List
+from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Any,
+                                     Instance, List)
 from IPython.html.widgets import Widget
 
 from .scales import Scale, DateScale
@@ -46,8 +47,8 @@ from .traits import NdArray
 
 
 def register_overlay(key=None):
-    """Returns a decorator registering an overlay class in the overlay type registry.
-    If no key is provided, the class name is used as a key. A key is
+    """Returns a decorator registering an overlay class in the overlay type
+    registry. If no key is provided, the class name is used as a key. A key is
     provided for each core bqplot overlay type so that the frontend can use
     this key regardless of the kernal language."""
     def wrap(overlay):
@@ -80,7 +81,7 @@ class Overlay(Widget):
     """
     overlay_types = {}
     _view_name = Unicode('bqplot.Overlay', sync=True)
-    _ipython_display_ = None  # We cannot display an overlay outside of a figure
+    _ipython_display_ = None  # We cannot display overlays outside of a figure
 
 
 @register_overlay('bqplot.HandDraw')
@@ -144,7 +145,8 @@ class PanZoom(Overlay):
         self.on_trait_change(self.snapshot, name='scales')
 
     def snapshot(self):
-        self.scales_states = {k: [s.get_state() for s in self.scales[k]] for k in self.scales}
+        self.scales_states = {k: [s.get_state() for s in self.scales[k]]
+                              for k in self.scales}
 
     def reset(self):
         for k in self.scales:
@@ -225,17 +227,19 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
 
     """Interval selector overlay.
 
-    This 1-D selector overlay is used to select an interval on the x-scale using
-    the mouse position.
-    The x-coordinate of the mouse controls the mid point of the interval selected
-    while the y-coordinate of the mouse controls the the width of the interval.
+    This 1-D selector overlay is used to select an interval on the x-scale
+    using the mouse position.
+    The x-coordinate of the mouse controls the mid point of the interval
+    selected while the y-coordinate of the mouse controls the the width of the
+    interval.
     The higher the y-coordinate, the wider the interval selected.
 
     Interval selector has three modes:
         1. default mode: This is the default mode in which the mouse controls
                 the location and width of the interval.
         2. fixed-width mode: In this mode the width of the interval is frozen
-                and only the location of the interval is controlled by the mouse.
+                and only the location of the interval is controlled with the
+                mouse.
                 A single click from the default mode takes you to this mode.
                 Another single click takes you back to the default mode.
         3. frozen mode: In this mode the selected interval is frozen and the
@@ -249,8 +253,8 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
         Two-element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
     idx_selected: list
-        A list of lists containing one two-element array for each mark passed in
-        the marks attribute. The two-element array contains the minimum and
+        A list of lists containing one two-element array for each mark passed
+        in the marks attribute. The two-element array contains the minimum and
         maximum index of the data of the mark for which the 'x' attribute is in
         the region selected.
     """
@@ -276,9 +280,9 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
     Attributes
     ----------
     selected: numpy.ndarray
-        A single element array containing the point corresponding the x-position
-        of the mouse. This attribute is updated as you move the mouse along the
-        x-direction on the figure.
+        A single element array containing the point corresponding the
+        x-position of the mouse. This attribute is updated as you move the
+        mouse along the x-direction on the figure.
     idx_selected: list
         A list of lists containing a single element array for each mark passed
         in the marks attribute. The element corresponds to the maximum index of
@@ -309,8 +313,8 @@ class BrushIntervalSelectorOverlay(OneDSelectorOverlay):
     Once an interval is drawn, the selector can be moved to a new interval by
     dragging the selector to the new interval.
 
-    A double click at the same point without moving the mouse in the x-direction
-    will result in the entire interval being selected.
+    A double click at the same point without moving the mouse in the
+    x-direction will result in the entire interval being selected.
 
     Attributes
     ----------
@@ -325,7 +329,8 @@ class BrushIntervalSelectorOverlay(OneDSelectorOverlay):
         The two element array contains the minimum index and maximum index of
         the data for which the the 'x' attribute lies in the region selected.
     brushing: bool
-        boolean attribute to indicate if the selector is being dragged right now.
+        boolean attribute to indicate if the selector is being dragged right
+        now.
         It is True when the selector is being moved and false when it is not.
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
@@ -343,15 +348,15 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
     """Brush interval selector overlay.
 
     This 2-D selector overlay enables the user to select an interval using the
-    mouse. A mouse-down marks the starting point of the interval. The drag after
-    the mouse down selects the rectangle of interest and a mouse-up signifies
-    the end point of the interval.
+    mouse. A mouse-down marks the starting point of the interval. The drag
+    after the mouse down selects the rectangle of interest and a mouse-up
+    signifies the end point of the interval.
 
     Once an interval is drawn, the selector can be moved to a new interval by
     dragging the selector to the new interval.
 
-    A double click at the same point without moving the mouse will result in the
-    entire interval being selected.
+    A double click at the same point without moving the mouse will result in
+    the entire interval being selected.
 
     Attributes
     ----------
@@ -365,7 +370,8 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
         The list contains the indices of the data for the points which lie in
         the interval selcted with the selector.
     brushing: bool
-        boolean attribute to indicate if the selector is being dragged right now.
+        boolean attribute to indicate if the selector is being dragged right
+        now.
         It is True when the selector is being moved and false when it is not.
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
@@ -378,8 +384,9 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
     selected = List([], sync=True)
 
     def __init__(self, **kwargs):
-        ## Stores information regarding the scales. The date scaled values have to be converted into
-        ## dateobjects because they are transmitted as strings.
+        # Stores information regarding the scales. The date scaled values have
+        # to be converted into dateobjects because they are transmitted as
+        # strings.
         try:
             self.read_json_x = kwargs.get('x_scale').domain_class.from_json
         except AttributeError:
@@ -406,9 +413,9 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
     """Multi selector overlay.
 
     This 1-D selector overlay enables the user to select multiple intervals
-    using the mouse. A mouse-down marks the start of the interval. The drag after
-    the mouse down in the x-direction selects the extent and a mouse-up signifies
-    the end of the interval.
+    using the mouse. A mouse-down marks the start of the interval. The drag
+    after the mouse down in the x-direction selects the extent and a mouse-up
+    signifies the end of the interval.
 
     The current selector is highlighted with a green border and the inactive
     selectors are highlighted with a red border.
@@ -423,40 +430,43 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
                 From the default mode, ctrl+click switches to the add mode.
         3. choose mode: In this mode, any of the existing inactive selectors
                 can be set as the active selector. When an inactive selector is
-                selected by clicking, the multi selector goes back to the default
-                mode.
+                selected by clicking, the multi selector goes back to the
+                default mode.
                 From the default mode, shift+click switches to the choose mode.
 
-    A double click at the same point without moving the mouse in the x-direction
-    will result in the entire interval being selected for the current selector.
+    A double click at the same point without moving the mouse in the
+    x-direction will result in the entire interval being selected for the
+    current selector.
 
     Attributes
     ----------
     selected: dict
-        A dictionary with keys being the names of the intervals and values being
-        the two element arrays containing the start and end of the interval
-        selected by that particular selector in terms of the scale of the selector.
+        A dictionary with keys being the names of the intervals and values
+        being the two element arrays containing the start and end of the
+        interval selected by that particular selector in terms of the scale of
+        the selector.
         This is a read-only attribute.
         This attribute changes while the selection is being made with the
         MultiSelectorOverlay.
     idx_selected: dict
-        A dictionary with keys being the names of the intervals and values being
-        the a list of lists containing one two element list for each mark in the
-        marks attribute.The two element array contains the minimum index and
-        maximum index of the data for which the the 'x' attribute lies in the
-        region selected.
+        A dictionary with keys being the names of the intervals and values
+        being the a list of lists containing one two element list for each mark
+        in the marks attribute.The two element array contains the minimum index
+        and maximum index of the data for which the the 'x' attribute lies in
+        the region selected.
         This is a read-only attribute.
         This attribute changes while the selection is being made with the
         MultiSelectorOverlay.
     brushing: bool
-        A boolean attribute to indicate if the selector is being dragged right now.
+        A boolean attribute to indicate if the selector is being dragged right
+        now.
         It is True when the selector is being moved and false when it is not.
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
     names: list
-        A list of strings indicating the keys of the different intervals. Default
-        values are 'int1', 'int2', 'int3' and so on.
+        A list of strings indicating the keys of the different intervals.
+        Default values are 'int1', 'int2', 'int3' and so on.
     show_names: bool
         Attribute to indicate if the names of the intervals are to be displayed
         along with the interval.

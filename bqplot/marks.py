@@ -39,8 +39,8 @@ from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
 def register_mark(key=None):
     """Returns a decorator registering a mark class in the mark type registry.
-    If no key is provided, the class name is used as a key. A key is
-    provided for each core bqplot mark so that the frontend can use
+    If no key is provided, the class name is used as a key. A key is provided
+    for each core bqplot mark so that the frontend can use
     this key regardless of the kernel language."""
     def wrap(mark):
         l = key if key is not None else mark.__module__ + mark.__name__

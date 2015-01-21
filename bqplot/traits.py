@@ -364,9 +364,10 @@ class PandasDataFrame(Instance):
 
     """
     traitlet for pandas data frame. json representation is array of dicts
-    which is amenable for consumption by JavaScript. also note that index name is ignored
-    and when deserializing will use the 'index' attribute as an index for the
-    df. This means if the data frame has a column called 'index' then there's a problem
+    which is amenable for consumption by JavaScript. also note that index name
+    is ignored and when deserializing will use the 'index' attribute as an
+    index for the df. This means if the data frame has a column called 'index'
+    then there's a problem
     """
     klass = pd.DataFrame
     info_text = 'a pandas DataFrame'
@@ -407,8 +408,8 @@ class PandasSeries(Instance):
     """
     traitlet for pandas series. json representation is array of dicts
     which is amenable for consumption by JavaScript. also note that index name
-    is ignored and when deserializing will use the 'index' attribute as an index
-    for the df. This means if the data frame has a column called 'index'.
+    is ignored and when deserializing will use the 'index' attribute as an
+    index for the df. This means if the data frame has a column called 'index'.
     then there's a problem.
     """
     klass = pd.Series
