@@ -231,17 +231,17 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
     while the y-coordinate of the mouse controls the the width of the interval.
     The higher the y-coordinate, the wider the interval selected.
 
-    Interval selector has three states:
-        1. default state: This is the default state in which the mouse controls
+    Interval selector has three modes:
+        1. default mode: This is the default mode in which the mouse controls
                 the location and width of the interval.
-        2. fixed-width state: In this state the width of the interval is frozen
+        2. fixed-width mode: In this mode the width of the interval is frozen
                 and only the location of the interval is controlled by the mouse.
-                A single click from the default state takes you to this state.
-                Another single click takes you back to the default state.
-        3. frozen state: In this state the selected interval is frozen and the
+                A single click from the default mode takes you to this mode.
+                Another single click takes you back to the default mode.
+        3. frozen mode: In this mode the selected interval is frozen and the
                 selector does not respond to mouse move.
-                A double click from the default state takes you to this state.
-                Another double click takes you back to the default state.
+                A double click from the default mode takes you to this mode.
+                Another double click takes you back to the default mode.
 
     Attributes
     ----------
@@ -267,11 +267,11 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
     This 1-D selector overlay uses the mouse x-cooridnate to select the
     corresponding point in terms of the selector scale.
 
-    Index Selector has two states:
-        1. default state: The mouse controls the x-position of the selector.
-        2. frozen state: In this state, the selector is frozen at a point and
+    Index Selector has two modes:
+        1. default mode: The mouse controls the x-position of the selector.
+        2. frozen mode: In this mode, the selector is frozen at a point and
                 does not respond to mouse events.
-        A single click switches between the two states.
+        A single click switches between the two modes.
 
     Attributes
     ----------
@@ -413,19 +413,19 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
     The current selector is highlighted with a green border and the inactive
     selectors are highlighted with a red border.
 
-    The multi selector has three states:
-        1. default state: In this state the overlay behaves exactly as the
+    The multi selector has three modes:
+        1. default mode: In this mode the overlay behaves exactly as the
                 brush selector overlay with the current selector.
-        2. add state: In this state a new selector can be added by clicking at
+        2. add mode: In this mode a new selector can be added by clicking at
                 a point and dragging over the interval of interest. Once a new
                 selector has been added, the multi selector is back in the
-                default state.
-                From the default state, ctrl+click switches to the add state.
-        3. choose state: In this state, any of the existing inactive selectors
+                default mode.
+                From the default mode, ctrl+click switches to the add mode.
+        3. choose mode: In this mode, any of the existing inactive selectors
                 can be set as the active selector. When an inactive selector is
                 selected by clicking, the multi selector goes back to the default
-                state.
-                From the default state, shift+click switches to the choose state.
+                mode.
+                From the default mode, shift+click switches to the choose mode.
 
     A double click at the same point without moving the mouse in the x-direction
     will result in the entire interval being selected for the current selector.
