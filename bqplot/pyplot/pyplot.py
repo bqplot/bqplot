@@ -308,11 +308,16 @@ def axes(mark=None, **kwargs):
     fig = kwargs.get('figure', current_figure())
     scales = mark.scales
     options = kwargs.get('options', {})
-    new_axes = {}
+    if not hasattr(mark, 'pyplot_axes'):
+        mark.pyplot_axes = {}
+    axes = mark.pyplot_axes.get(fig.model_id, {})
     fig_axes = [axis for axis in fig.axes]
     for name in scales:
         if name not in mark.class_trait_names(scaled=True):
-            # Pass if the scale is not to be used.
+            # Pass if the scale is not needed.
+            continue
+        if name in axes:
+            # Pass if there is already an axis for this scaled attribute.
             continue
         key = mark.class_traits()[name].get_metadata('atype', 'bqplot.Axis')
         axis_type = Axis.axis_types[key]
@@ -320,9 +325,10 @@ def axes(mark=None, **kwargs):
                          **(options.get(name, {})))
         axis = axis_type(scale=scales[name], **axis_args)
         fig_axes.append(axis)
-        new_axes[name] = axis
+        axes[name] = axis
+    mark.pyplot_axes[fig.model_id] = axes
     fig.axes = fig_axes
-    return new_axes
+    return axes
 
 
 def _draw_mark(mark_type, **kwargs):
@@ -348,7 +354,7 @@ def _draw_mark(mark_type, **kwargs):
     mark = mark_type(scales=scales, **kwargs)
     _context['last_mark'] = mark
     fig.marks = [m for m in fig.marks] + [mark]
-    if kwargs.get('axes', None):
+    if kwargs.get('axes', True):
         axes(mark)
     return mark
 
