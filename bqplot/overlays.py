@@ -91,10 +91,10 @@ class HandDraw(Overlay):
     This can be used to edit the 'y' value of an existing line using the mouse.
     The minimum and maximum x values of the line which can be edited may be
     passed as parameters.
-    To edit the line, click on the figure to set the minimum x-value for which
-    the y-value should be edited. The subsequent y-values are set according the
-    path along which the mouse is dragged till the mouse is released.
-
+    The y-values for any part of the line can be edited by drawing the desired
+    path while holding the mouse-down.
+    y-values corresponding to x-values smaller than min_x or greater than max_x
+    cannot be edited by HandDraw.
     Attributes
     ----------
     lines: an instance Lines mark or None
