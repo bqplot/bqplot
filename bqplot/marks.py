@@ -542,16 +542,44 @@ class Label(Mark):
                  allow_none=False, sync=True)
     _view_name = Unicode('bqplot.Label', sync=True)
 
+
 @register_mark('bqplot.OHLC')
 class OHLC(Mark):
 
-    """Open/High/Low/Close marks."""
-    icon = 'fa-ohlc-chart'
+    """Open/High/Low/Close marks.
+
+    Attributes
+    ----------
+    icon: string
+        font-awesome icon for that mark
+    name: string
+        user-friendly name of the mark
+    marker: {'candle', 'bar'}
+        marker type
+    stroke: color
+        stroke color of the marker
+    color: color
+        fill color of the marker
+    opacity: float
+        opacity of the marker
+
+    Data Attributes
+    ---------------
+    _y_default: numpy.ndarray
+        default 2 dimensional value for y
+    x: numpy.ndarray
+        abscissas of the data points (1d array)
+    y: numpy.ndarray
+        Open/High/Low/Close ordinates of the data points (2d array)
+    """
+    icon = 'fa-birthday-cake'
     name = 'OHLC chart'
-    x = NdArray(sync=True, display_index=1, scaled=True, scale_range_type='numeric', min_dim=1, max_dim=1)
-    y = NdArray(sync=True, display_index=2, scaled=True, scale_range_type='numeric', min_dim=2, max_dim=2) # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
-    _y_default = empty([1,1]) # FIXME Need to do something about this... keep getting future warning because of it.
-    marker = Enum(['candle', 'bar'], sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=2, max_dim=2)
+    # FIXME Need to do something about this... keep getting future warning because of it.
+    _y_default = empty([1,1])
+    marker = Enum(['candle', 'bar'], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
     stroke = Color('white', sync=True, exposed=True, display_index=4, display_name='Stroke color')
     color = Color('dodgerblue', sync=True, exposed=True, display_index=5, display_name='Fill color')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')

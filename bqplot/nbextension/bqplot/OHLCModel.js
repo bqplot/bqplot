@@ -14,25 +14,20 @@
  */
 
 define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
-	var MarkModel = MarkModel[1];
-	var OHLCModel = MarkModel.extend({
-	    initialize: function() {
+        var MarkModel = MarkModel[1];
+        var OHLCModel = MarkModel.extend({
+        initialize: function() {
             OHLCModel.__super__.initialize.apply(this);
-	        this.on_some_change(["x", "y"], this.update_data, this);
-	        this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.on("change:marker", this.update_bounding_box, this);
+            this.on_some_change(["x", "y"], this.update_data, this);
+            this.on_some_change(["preserve_domain"], this.update_domains, this);
 	    },
         update_bounding_box: function(model, value) {
-
-            //if(this.pad === undefined) this.pad = 0;
+            // TODO: Actually add some padding.
             var pad = 0;
-
-        	this.x_padding = this.y_padding = pad;
-	        this.trigger("mark_padding_updated");
+            this.x_padding = this.y_padding = pad;
+            this.trigger("mark_padding_updated");
         },
         update_data: function() {
-            var that = this;
-
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
@@ -50,21 +45,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("data_updated");
         },
         update_domains: function() {
-            var px = {
-                op: 0,
-                hi: 1,
-                lo: 2,
-                cl: 3
-            };
+            var px = { op: 0, hi: 1, lo: 2, cl: 3 };
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
-            var that = this;
 
-            if(this.x_data.length == 0) {
-                // Not sure what else to do here
-                return;
-            }
+            // Return if there is no data provided
+            if(this.x_data.length == 0) return;
 
             if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.x_data, this.id);

@@ -18,13 +18,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
     var OHLC = Mark.extend({
         render: function() {
             var base_creation_promise = OHLC.__super__.render.apply(this);
-
             var that = this;
+
             return base_creation_promise.then(function() {
                 that.create_listeners();
                 that.draw(); },
             null);
-		},
+        },
         set_ranges: function() {
             var x_scale = this.scales["x"];
             if(x_scale) {
@@ -50,17 +50,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         create_listeners: function() {
             OHLC.__super__.create_listeners.apply(this);
-            this.model.on('change:stroke', this.update_stroke, this);
-            this.model.on('change:color', this.update_color, this);
-            this.model.on('change:opacity', this.update_opacity, this);
-            this.model.on('change:marker', this.update_marker, this);
+            this.model.on("change:stroke", this.update_stroke, this);
+            this.model.on("change:color", this.update_color, this);
+            this.model.on("change:opacity", this.update_opacity, this);
+            this.model.on("change:marker", this.update_marker, this);
 
             this.listenTo(this.model, "change:idx_selected", this.update_idx_selected);
             this.model.on("change:selected_style", this.selected_style_updated, this);
             this.model.on("change:unselected_style", this.unselected_style_updated, this);
         },
         update_stroke: function() {
-            var that = this;
             var stroke = this.model.get("stroke");
             this.el.selectAll(".stick").style("stroke", stroke);
 
@@ -70,14 +69,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_color: function() {
-            var that = this;
             var color = this.model.get("color");
-            var px = {
-                op: 0,
-                hi: 1,
-                lo: 2,
-                cl: 3
-            };
+            var px = { op: 0, hi: 1, lo: 2, cl: 3 };
 
             // Only fill candles when close is lower than open
             this.el.selectAll(".stick").style("fill", function(d) {
@@ -89,7 +82,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_opacity: function() {
-            var that = this;
             var opacity = this.model.get("opacity");
             this.el.selectAll(".stick").style("opacity", opacity);
 
@@ -98,83 +90,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_marker: function() {
-            var that = this;
+            var marker = this.model.get("marker");
 
-            if (this.legend_el && that.rect_dim) {
-                var leg = this.legend_el;
-                leg.selectAll("path").remove()
-
+            if (this.legend_el && this.rect_dim) {
                 // Draw icon for legend
-                if( this.model.get("marker") === "candle" ) {
-                    leg.append("path")
-                       .attr("transform", function(d, i) {
-                           return "translate(" + (that.rect_dim/2) + "," +
-                                                 (that.rect_dim/2) + ")";
-                       })
-                       .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() {
-                           return "m0," + (-1*that.rect_dim/2) +
-                                 " l0," + (that.rect_dim/4);
-                       });
-                    leg.append("path")
-                       .attr("transform", function(d, i) {
-                           return "translate(" + (that.rect_dim/2) + "," +
-                                                 (that.rect_dim/2) + ")";
-                       })
-                       .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() {
-                           return "m0," + (that.rect_dim/2) +
-                                 " l0," + (-1*that.rect_dim/4);
-                       });
-                    leg.append("path")
-                       .attr("transform", function(d, i) {
-                           return "translate(" + (that.rect_dim/2) + "," +
-                                                 (that.rect_dim/2) + ")";
-                       })
-                       .attr("stroke", this.model.get("stroke"))
-                       .attr("fill", this.model.get("color"))
-                       .attr("d", function() {
-                           return "m" + (-1*that.rect_dim/4) + "," + (-1*that.rect_dim/4) +
-                                  " l" + (that.rect_dim/2) + ",0" +
-                                  " l0," + (that.rect_dim/2) +
-                                  " l" + (-1*that.rect_dim/2) + ",0 z";
-                       });
-                } else {
-                    // bar
-                    leg.append("path")
-                       .attr("transform", function(d, i) {
-                           return "translate(" + (that.rect_dim/2) + "," +
-                                                 (that.rect_dim/2) + ")";
-                       })
-                       .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() {
-                           return "m0," + (-1*that.rect_dim/2) +
-                                 " l0," + (that.rect_dim);
-                       });
-                    leg.append("path")
-                       .attr("transform", function(d, i) {
-                           return "translate(" + (that.rect_dim/2) + "," +
-                                                 (that.rect_dim/2) + ")";
-                       })
-                       .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() {
-                           return "m0," + (that.rect_dim/4) +
-                                   " l" + (-1*that.rect_dim/4) + ",0";
-                       });
-                    leg.append("path")
-                       .attr("transform", function(d, i) {
-                           return "translate(" + (that.rect_dim/2) + "," +
-                                                 (that.rect_dim/2) + ")";
-                       })
-                       .attr("stroke", this.model.get("stroke"))
-                       .attr("d", function() {
-                           return "m0," + (-1*that.rect_dim/4) +
-                                   " l" + (that.rect_dim/4) + ",0";
-                       });
-                }
+                this.draw_mark_paths(marker, this.rect_dim/2, this.legend_el);
             }
+
             // Redraw existing marks
-            this.draw();
+            this.draw_mark_paths(marker, this.calculate_mark_width(),
+                this.el.selectAll(".stick").data(this.model.y_data));
         },
         update_idx_selected: function(model, value) {
             this.selected_indices = value;
@@ -190,26 +115,26 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.set_style_on_elements(this.unselected_style, unselected_indices);
         },
         set_style_on_elements: function(style, indices) {
-            if( indices === undefined || indices.length == 0 ) {
+            if(indices === undefined || indices.length == 0) {
                 return;
             }
             var elements = this.el.selectAll(".stick");
-            var that = this;
             elements = elements.filter(function(data, index) {
                 return indices.indexOf(index) != -1;
             });
             elements.style(style);
         },
         set_default_style: function(indices) {
-            if( indices === undefined || indices.length == 0 ) {
+            if(indices === undefined || indices.length == 0) {
                 return;
             }
             var color = this.model.get("color");
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
-            var elements = this.el.selectAll(".stick").filter(function(data, index) {
-                return indices.indexOf(index) != -1;
-            });
+            var elements = this.el.selectAll(".stick")
+                .filter(function(data, index) {
+                    return indices.indexOf(index) != -1;
+                });
 
             elements.style("fill", function(d) {
                   return (d[0] > d[3] ? color : "none");
@@ -279,11 +204,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 return that.x_scale.scale.invert(elem);
             });
             var idx_start = d3.max([0, d3.bisectLeft(this.model.x_data, data[0])]);
-            var idx_end = d3.min([this.model.x_data.length, d3.bisectRight(this.model.x_data, data[1])]);
+            var idx_end = d3.min([this.model.x_data.length,
+                d3.bisectRight(this.model.x_data, data[1])]);
             this.update_selected_colors(idx_start, idx_end);
 
             var indices = _.range(this.model.x_data.length);
-            var selected_data = [this.model.x_data[idx_start], this.model.x_data[idx_end]];
+            var selected_data = [this.model.x_data[idx_start],
+                this.model.x_data[idx_end]];
             var idx_selected = _.filter(indices, function(index) {
                 var elem = that.model.x_data[index];
                 return (elem <= selected_data[1] && elem >= selected_data[0]);
@@ -301,89 +228,100 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.set_ranges();
             var that = this;
             var color = this.model.get("color");
-            var px = { // OHLC indices for y data
-                op : 0,
-                hi : 1,
-                lo : 2,
-                cl : 3
-            };
+            var px = { op : 0, hi : 1, lo : 2, cl : 3 };
             var mark_width = this.calculate_mark_width();
-            var stick = this.el.selectAll(".stick")
-                            .data(this.model.y_data);
+            var stick = this.el.selectAll(".stick").data(this.model.y_data);
 
-            // Update existing
-            stick.attr( "transform", function(d, i) {
-                return "translate(" + (that.x_scale.scale(that.model.x_data[i]) + that.x_offset) +
-                                "," + (that.y_scale.scale(d[px.hi]) + that.y_offset) + ")";
-            });
             // Create new
             var new_sticks = stick.enter()
-              .append("g")
-              .attr("class", "stick")
-              .attr("id", function(d, i) { return "stick"+i; })
-              .attr("transform", function(d, i) {
-                  return "translate(" + (that.x_scale.scale(that.model.x_data[i]) + that.x_offset) +
-                                  "," + (that.y_scale.scale(d[px.hi]) + that.y_offset) + ")";
-              })
-              .style("stroke", this.model.get("stroke"))
-              .style("opacity", this.model.get("opacity"))
-              .style("fill", function(d, i) {
-                  return (d[px.op] > d[px.cl]) ? color : "none";
-              });
-            new_sticks.append("path")
-                      .attr("class", "stick_piece_1");
-            new_sticks.append("path")
-                      .attr("class", "stick_piece_2");
-            new_sticks.append("path")
-                      .attr("class", "stick_piece_3");
+                .append("g")
+                .attr("class", "stick")
+                .attr("id", function(d, i) { return "stick"+i; })
+                .style("stroke", this.model.get("stroke"))
+                .style("opacity", this.model.get("opacity"));
 
-            // Determine OHLC marker type
-            if( this.model.get("marker") == 'candle' ) {
-                this.el.selectAll(".stick_piece_1")
-                  .attr("d", function(d, i) {
-                      var bigger = (d[px.op] > d[px.cl]) ? d[px.op] : d[px.cl];
-                      return "m0,0 l0," + (that.y_scale.scale(bigger)-that.y_scale.scale(d[px.hi]));
-                  });
-                this.el.selectAll(".stick_piece_2")
-                  .attr("d", function(d, i) {
-                      var smaller = (d[px.op] > d[px.cl]) ? d[px.cl] : d[px.op];
-                      return "m0," + (that.y_scale.scale(smaller)-that.y_scale.scale(d[px.hi])) +
-                             "l0," + (that.y_scale.scale(d[px.lo])-that.y_scale.scale(smaller));
-                  });
-                this.el.selectAll(".stick_piece_3")
-                  .attr("d", function(d, i) {
-                       return "m" + (-1*mark_width/2) +"," + (that.y_scale.scale(d[px.op])-that.y_scale.scale(d[px.hi])) +
-                             " l" + (mark_width) + ",0" +
-                           " l0," + (that.y_scale.scale(d[px.cl])-that.y_scale.scale(d[px.op])) +
-                             " l" + (-1*mark_width) + ",0 z";
-                  });
-            } else {
-                // bar
-                this.el.selectAll(".stick_piece_1")
-                  .attr("d", function(d, i) {
-                      return "m" + (-1*mark_width/2) + "," + (that.y_scale.scale(d[px.op])-that.y_scale.scale(d[px.hi])) +
-                            " l" + (mark_width/2) + ",0";
-                  });
-                this.el.selectAll(".stick_piece_2")
-                  .attr("d", function(d, i) {
-                      return "m0," + (that.y_scale.scale(d[px.cl])-that.y_scale.scale(d[px.hi])) +
-                              " l" + (mark_width/2) + ",0";
-                  });
-                this.el.selectAll(".stick_piece_3")
-                  .attr("d", function(d, i) {
-                      return "m0,0 l0," + (that.y_scale.scale(d[px.lo])-that.y_scale.scale(d[px.hi]));
-                  });
-            }
+            new_sticks.append("path").attr("class", "stick_head");
+            new_sticks.append("path").attr("class", "stick_tail");
+            new_sticks.append("path").attr("class", "stick_body");
 
-            // Remove extras
+            // Update all of the marks
+            this.el.selectAll(".stick")
+                .style("fill", function(d, i) {
+                    return (d[px.op] > d[px.cl]) ? color : "none";
+                })
+                .attr( "transform", function(d, i) {
+                    return "translate(" + (that.x_scale.scale(that.model.x_data[i])
+                                        + that.x_offset) + ","
+                                        + (that.y_scale.scale(d[px.hi])
+                                        + that.y_offset) + ")";
+                });
+
+            // Draw the mark paths
+            this.draw_mark_paths(this.model.get("marker"), mark_width, this.el);
+
             stick.exit().remove();
             this.apply_styles(this.selected_indices);
 
         },
+        draw_mark_paths: function(type, mark_width, selector) {
+            var px = { op: 0, hi: 1, lo: 2, cl: 3 };
+            var that = this;
+
+            // Determine OHLC marker type
+            if(type == "candle") {
+                selector.selectAll(".stick_head")
+                    .attr("d", function(d, i) {
+                        var bigger = (d[px.op] > d[px.cl]) ? d[px.op] : d[px.cl];
+                        return "m0,0 l0," + (that.y_scale.scale(bigger)
+                                          - that.y_scale.scale(d[px.hi]));
+                    });
+                selector.selectAll(".stick_tail")
+                    .attr("d", function(d, i) {
+                        var smaller = (d[px.op] > d[px.cl]) ? d[px.cl] : d[px.op];
+                        return "m0," + (that.y_scale.scale(smaller)
+                                     - that.y_scale.scale(d[px.hi])) +
+                               "l0," + (that.y_scale.scale(d[px.lo])
+                                     - that.y_scale.scale(smaller));
+                    });
+                selector.selectAll(".stick_body")
+                    .attr("d", function(d, i) {
+                        return "m" + (-1*mark_width/2) +","
+                                   + (that.y_scale.scale(d[px.op])
+                                   - that.y_scale.scale(d[px.hi])) +
+                              " l" + (mark_width) + ",0" +
+                            " l0," + (that.y_scale.scale(d[px.cl])
+                                   - that.y_scale.scale(d[px.op])) +
+                              " l" + (-1*mark_width) + ",0 z";
+                  });
+            } else {
+                // bar
+                selector.selectAll(".stick_head")
+                  .attr("d", function(d, i) {
+                      return "m" + (-1*mark_width/2) + ","
+                                 + (that.y_scale.scale(d[px.op])
+                                 - that.y_scale.scale(d[px.hi])) +
+                            " l" + (mark_width/2) + ",0";
+                  });
+                selector.selectAll(".stick_tail")
+                    .attr("d", function(d, i) {
+                        return "m0," + (that.y_scale.scale(d[px.cl])
+                                     - that.y_scale.scale(d[px.hi])) +
+                                " l" + (mark_width/2) + ",0";
+                    });
+                selector.selectAll(".stick_body")
+                    .attr("d", function(d, i) {
+                        return "m0,0 l0," + (that.y_scale.scale(d[px.lo])
+                                          - that.y_scale.scale(d[px.hi]));
+                    });
+            }
+        },
         calculate_mark_width: function() {
             var that = this;
-            var num_days = ((this.model.max_x - this.model.min_x) / (1000*60*60*24));
-            var mark_width = (that.x_scale.scale(this.model.max_x) - that.x_scale.scale(this.model.min_x)) / num_days;
+            var num_days_in_range = ((this.model.max_x - this.model.min_x)
+                                    / (1000*60*60*24));
+            var mark_width = (that.x_scale.scale(this.model.max_x)
+                            - that.x_scale.scale(this.model.min_x))
+                            / num_days_in_range;
             return mark_width;
         },
         relayout: function() {
@@ -394,77 +332,51 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("height", this.height);
 
             // We have to redraw every time that we relayout
-            var that = this;
             this.draw();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            this.legend_el = elem.selectAll(".legend" + this.uuid)
-                                 .data([this.model.x_data]);
             var stroke = this.model.get("stroke");
             var color = this.model.get("color");
             this.rect_dim = inter_y_disp * 0.8;
             var that = this;
-            var leg = this.legend_el.enter()
-              .append("g")
-              .attr("transform", function(d, i) {
-                  return "translate(0, " + (i * inter_y_disp + y_disp) + ")";
-              })
-              .attr("class", "legend" + this.uuid)
-              .attr("fill", color)
-              .on("mouseover", _.bind(this.highlight_axes, this))
-              .on("mouseout", _.bind(this.unhighlight_axes, this));
+
+            // Generate OHLC data to draw the legend icon
+            var leg_ohlc = [
+                that.y_scale.scale.invert((1/4)*that.rect_dim),
+                that.y_scale.scale.invert(0),
+                that.y_scale.scale.invert(that.rect_dim),
+                that.y_scale.scale.invert((3/4)*that.rect_dim)
+            ];
+            this.legend_el = elem.selectAll(".legend" + this.uuid).data([leg_ohlc]);
+
+            var leg = this.legend_el.enter().append("g")
+                .attr("transform", function(d, i) {
+                    return "translate(0, " + (i * inter_y_disp + y_disp) + ")";
+                })
+                .attr("class", "legend" + this.uuid)
+                .attr("fill", color)
+                .on("mouseover", _.bind(this.highlight_axes, this))
+                .on("mouseout", _.bind(this.unhighlight_axes, this));
+
+            leg.append("path").attr("class", "stick_head");
+            leg.append("path").attr("class", "stick_tail");
+            leg.append("path").attr("class", "stick_body").attr("fill", color);
+
+            // Add stroke color and set position
+            leg.selectAll("path")
+                .attr("stroke", stroke)
+                .attr("transform", "translate(" + (that.rect_dim/2) + ",0)");
 
             // Draw OHLC icon next to legend text
-            if( this.model.get("marker") === "candle" ) {
-                leg.append("path")
-                   .attr("transform", function(d, i) {
-                       return "translate(" + (that.rect_dim/2) + "," +
-                                             (that.rect_dim/2) + ")";
-                   })
-                   .attr("d", function() { return "m0," + (-1*that.rect_dim/2) +
-                                                  " l0," + (that.rect_dim/4); });
-                leg.append("path")
-                   .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                             (that.rect_dim/2) + ")"; })
-                   .attr("d", function() { return "m0," + (that.rect_dim/2) +
-                                                  " l0," + (-1*that.rect_dim/4); });
-                leg.append("path")
-                   .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                             (that.rect_dim/2) + ")"; })
-                   .attr("fill", color)
-                   .attr("d", function() { return "m" + (-1*that.rect_dim/4) + "," + (-1*that.rect_dim/4) +
-                                                  " l" + (that.rect_dim/2) + ",0" +
-                                                  " l0," + (that.rect_dim/2) +
-                                                  " l" + (-1*that.rect_dim/2) + ",0 z"; });
-            } else {
-                // bar
-                leg.append("path")
-                   .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                             (that.rect_dim/2) + ")"; })
-                   .attr("d", function() { return "m0," + (-1*that.rect_dim/2) +
-                                                  " l0," + (that.rect_dim); });
-                leg.append("path")
-                   .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                             (that.rect_dim/2) + ")"; })
-                   .attr("d", function() { return "m0," + (that.rect_dim/4) +
-                                                  " l" + (-1*that.rect_dim/4) + ",0"; });
-                leg.append("path")
-                   .attr("transform", function(d, i) { return "translate(" + (that.rect_dim/2) + "," +
-                                                                             (that.rect_dim/2) + ")"; })
-                   .attr("d", function() { return "m0," + (-1*that.rect_dim/4) +
-                                                  " l" + (that.rect_dim/4) + ",0"; });
-            }
-
-            // Add stroke color
-            leg.selectAll("path").attr("stroke", stroke);
+            this.draw_mark_paths(this.model.get("marker"), that.rect_dim/2, leg);
 
             this.legend_el.append("text")
-              .attr("class", "legendtext")
-              .attr("x", that.rect_dim * 1.2)
-              .attr("y", that.rect_dim / 2)
-              .attr("dy", "0.35em")
-              .text(function(d, i) { return that.model.get("labels")[i]; })
-              .style("fill", stroke);
+                .attr("class", "legendtext")
+                .attr("x", that.rect_dim * 1.2)
+                .attr("y", that.rect_dim / 2)
+                .attr("dy", "0.35em")
+                .text(function(d, i) { return that.model.get("labels")[i]; })
+                .style("fill", stroke);
 
             var max_length = d3.max(this.model.get("labels"), function(d) {
                 return d.length;
