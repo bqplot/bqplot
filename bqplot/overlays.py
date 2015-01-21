@@ -90,15 +90,15 @@ class HandDraw(Overlay):
 
     This can be used to edit the 'y' value of an existing line using the mouse.
     The minimum and maximum x values of the line which can be edited may be
-    passed as a parameter.
+    passed as parameters.
     To edit the line, click on the figure to set the minimum x-value for which
-    the y-value should be edited. The y-values are set according the path along
-    which the mouse is dragged.
+    the y-value should be edited. The subsequent y-values are set according the
+    path along which the mouse is dragged till the mouse is released.
 
     Attributes
     ----------
     lines: an instance Lines mark or None
-        The instance of lines which is edited using the hand-draw overlay. The
+        The instance of Lines which is edited using the hand-draw overlay. The
         'y' values of the line are changed according to the path of the mouse.
         If the lines has multi dimensional 'y', then the 'line_index' attribute
         is used to selected the 'y' to be edited.
@@ -234,7 +234,7 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
     Interval selector has three states:
         1. default state: This is the default state in which the mouse controls
                 the location and width of the interval.
-        2. fixed width state: In this state the width of the interval is frozen
+        2. fixed-width state: In this state the width of the interval is frozen
                 and only the location of the interval is controlled by the mouse.
                 A single click from the default state takes you to this state.
                 Another single click takes you back to the default state.
@@ -271,9 +271,7 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
         1. default state: The mouse controls the x-position of the selector.
         2. frozen state: In this state, the selector is frozen at a point and
                 does not respond to mouse events.
-                A single click in the default state switches to frozen state.
-                A single click in the frozen state switches back to the default
-                state.
+        A single click switches between the two states.
 
     Attributes
     ----------
@@ -416,7 +414,7 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
     selectors are highlighted with a red border.
 
     The multi selector has three states:
-        1. default state: In this statem the overlay behaves exactly as the
+        1. default state: In this state the overlay behaves exactly as the
                 brush selector overlay with the current selector.
         2. add state: In this state a new selector can be added by clicking at
                 a point and dragging over the interval of interest. Once a new
@@ -425,7 +423,7 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
                 From the default state, ctrl+click switches to the add state.
         3. choose state: In this state, any of the existing inactive selectors
                 can be set as the active selector. When an inactive selector is
-                selected by clicking, the multi selector is back in the default
+                selected by clicking, the multi selector goes back to the default
                 state.
                 From the default state, shift+click switches to the choose state.
 
