@@ -20,6 +20,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             OHLCModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.px = { op: 0, hi: 1, lo: 2, cl: 3 };
 	    },
         update_bounding_box: function(model, value) {
             // TODO: Actually add some padding.
@@ -28,51 +29,49 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("mark_padding_updated");
         },
         update_data: function() {
-            var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
+            var x_data = this.get_typed_field("x");
+            var y_data = this.get_typed_field("y");
 
-            this.x_data = this.get_typed_field("x");
-            this.y_data = this.get_typed_field("y");
-
-            if(this.x_data.length > this.y_data.length) {
-                this.x_data = this.x_data.slice(0, this.y_data.length);
+            if(x_data.length > y_data.length) {
+                x_data = x_data.slice(0, y_data.length);
+            } else if(x_data.length < y_data.length) {
+                y_data = y_data.slice(0, x_data.length);
             }
+            this.xy_data = _.zip(x_data, y_data);
 
             this.update_domains();
-            this.min_x = x_scale.domain[0];
-            this.max_x = x_scale.domain[1];
             this.trigger("data_updated");
         },
         update_domains: function() {
-            var px = { op: 0, hi: 1, lo: 2, cl: 3 };
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
-
-            // Return if there is no data provided
-            if(this.x_data.length == 0) return;
+            var that = this;
 
             if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.x_data, this.id);
+                x_scale.compute_and_set_domain(this.xy_data.map(function(xy) {
+                    return xy[0];
+                }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
+            this.min_x = x_scale.domain[0];
+            this.max_x = x_scale.domain[1];
+
             if(!this.get("preserve_domain")["y"]) {
                 // Remember that elem contains OHLC data here so we cannot use
                 // compute_and_set_domain
-                var min = d3.min(this.y_data.map(function(d) {
-                    return d[px.lo];
+                var min = d3.min(this.xy_data.map(function(d) {
+                    return d[1][that.px.lo];
                 }));
-                var max = d3.max(this.y_data.map(function(d) {
-                    return d[px.hi];
+                var max = d3.max(this.xy_data.map(function(d) {
+                    return d[1][that.px.hi];
                 }));
                 y_scale.set_domain([min,max], this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
-            this.update_bounding_box();
         },
     });
     WidgetManager.WidgetManager.register_widget_model("bqplot.OHLCModel", OHLCModel);
