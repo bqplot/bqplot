@@ -26,7 +26,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             //assumption.
             return base_render_promise.then(function() {
                 self.line = d3.svg.line()
-                  .interpolate(self.model.get("interpolate"))
+                  .interpolate(self.model.get("interpolation"))
                   .x(function(d) {
                       return self.x_scale.scale(d.x) + self.x_offset;
                   })
@@ -63,7 +63,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
-            this.model.on("change:interpolate", this.update_interpolate, this);
+            this.model.on("change:interpolation", this.update_interpolation, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:stroke_width", this.update_stroke_width, this);
