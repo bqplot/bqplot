@@ -37,11 +37,9 @@ Overlays
    panzoom
 """
 
-import sys
 from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Any,
-                                     Instance, List)
+                                     Instance, List, Union)
 from IPython.html.widgets import Widget
-import datetime as dt
 
 from .scales import Scale, DateScale
 from .traits import NdArray, Date
@@ -116,8 +114,10 @@ class HandDraw(Overlay):
     lines = Any(None, sync=True)
     line_index = Int(0, sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
-    min_x = Union([Float(allow_none=True, default_value=None, sync=True), Date(allow_none=True, default_value=None, sync=True)])
-    max_x = Union([Float(allow_none=True, default_value=None, sync=True), Date(default_value=None, allow_none=True, sync=True)])
+    # TODO: Once the new Union is merged in IPython, the sync on the whole
+    # trait can be removed
+    min_x = Union([Float(allow_none=True, default_value=None, sync=True), Date(allow_none=True, default_value=None, sync=True)], sync=True)
+    max_x = Union([Float(allow_none=True, default_value=None, sync=True), Date(default_value=None, allow_none=True, sync=True)], sync=True)
 
 
 @register_overlay('bqplot.PanZoom')

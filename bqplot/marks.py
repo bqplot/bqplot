@@ -472,7 +472,7 @@ class Label(Mark):
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     """
-    x = Union([Date(sync=True), Float(sync=True)])
+    x = Union([Date(sync=True), Float(sync=True)], sync=True)
     y = Float(allow_none=True, default_value=None, sync=True)
     x_offset = Int(sync=True)
     y_offset = Int(sync=True)
