@@ -31,7 +31,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.parent = this.options.parent;
             this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
-            this.vertical = this.model.get("orientation") === "vertical" ? true : false;
+            this.vertical = this.model.get("orientation") === "vertical";
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
             this.width = this.parent.width - (this.margin.left + this.margin.right);
 
@@ -312,7 +312,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 return {"text-anchor" : "middle"};
         },
         update_label: function() {
-            this.g_axisline.select("text.axislabel").text(this.model.get("label"));
+            this.g_axisline.select("text.axislabel")
+                .text(this.model.get("label"));
             this.el.selectAll(".axislabel").selectAll("text");
             if(this.model.get("label_color") !== ""
                && this.model.get("label_color") !== null) {
@@ -346,11 +347,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
             // Label_offset is a signed distance from the axis line. Positive
             // is away from the figure and negative is towards the figure. The
-            // notion of away and towards is different for left/ right and
+            // notion of away and towards is different for left/right and
             // top/bottom axis.
             var index = -1;
-            for(var iter = 0; (iter < units_array.length && index === -1); iter++) {
-                index = label_offset.indexOf(units_array[iter]);
+            for(var it = 0; (it < units_array.length && index === -1); it++) {
+                index = label_offset.indexOf(units_array[it]);
             }
             if(index === -1) {
                 return label_offset;

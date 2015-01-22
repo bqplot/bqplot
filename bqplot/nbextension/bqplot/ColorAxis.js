@@ -20,7 +20,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.parent = this.options.parent;
             this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
-            this.vertical = this.model.get("orientation") === "vertical" ? true : false;
+            this.vertical = this.model.get("orientation") === "vertical";
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
             this.width = this.parent.width - (this.margin.left + this.margin.right);
             this.unique_id = IPython.utils.uuid();
@@ -62,7 +62,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.model.on("change:visible", this.update_visibility, this);
             this.model.on("change:label", this.update_label, this);
             this.model.on_some_change(["side", "orientation"], function() {
-                this.vertical = this.model.get("orientation") === "vertical" ? true : false;
+                this.vertical = this.model.get("orientation") === "vertical";
                 this.side = this.model.get("side");
                 this.rescale_axis();
                 this.redraw_axis();
@@ -78,7 +78,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     view.trigger("displayed");
                 }, that);
                 that.axis_scale = view;
-                that.axis_scale.set_range();
                 that.axis_scale.on("domain_changed", that.redraw_axisline, that);
                 that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
                 that.axis_scale.on("highlight_axis", that.highlight, that);
@@ -97,8 +96,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         },
         append_axis: function() {
             // The label is allocated a space of 100px. If the label
-            // occupies more than 100px then you are out of luck :)
-            this.set_scales_range(); // TODO: remove
+            // occupies more than 100px then you are out of luck.
             var that = this;
             if(this.label) {
                 this.el.append("g")
@@ -135,7 +133,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             colorBar.selectAll(".g-defs")
                 .remove();
 
-            this.set_scales_range(); // TODO: remove
             this.colors = this.axis_scale.scale.range();
             var colorSpacing = 100 / (this.colors.length - 1);
 
@@ -233,6 +230,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             return "translate(" + this.x_offset + ", 0)";
         },
         set_scales_range: function() {
+            this.axis_scale.set_range();
             var range = (this.vertical) ? [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
             if(this.ordinal) {
                 this.axis_line_scale.rangeRoundBands(range, 0.05);
@@ -246,13 +244,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         },
         get_color_bar_width: function() {
             return (this.vertical) ? (this.height - (2 * this.x_offset)) : (this.width - 2 * this.x_offset);
-        },
-        tickformat_changed: function() {
-            this.tick_format = this.generate_tick_formatter();
-            this.axis.tickFormat(this.tick_format);
-            if(this.g_axisline) {
-                this.g_axisline.call(this.axis);
-            }
         },
         update_label: function(model, value) {
             this.label = value;
