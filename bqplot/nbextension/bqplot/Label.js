@@ -111,8 +111,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         apply_net_transform: function() {
             // this function gets the net transform after applying both the
             // rotate and x, y trasnforms
-            var net_transform = "translate(" + this.x_scale.scale(this.model.get("x")) 
-                                      + ", " + this.y_scale.scale(this.model.get("y")) + ")";
+            var x = (this.x_scale.model.type === "date") ? this.model.get_date_elem("x") : this.model.get("x");
+            var y = (this.y_scale.model.type === "date") ? this.model.get_date_elem("y") : this.model.get("y");
+            var net_transform = "translate(" + this.x_scale.scale(x)
+                                      + ", " + this.y_scale.scale(y) + ")";
             net_transform += this.get_extra_transform();
             this.el.selectAll(".label")
                 .attr("transform", net_transform);

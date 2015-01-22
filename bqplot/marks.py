@@ -30,9 +30,9 @@ Marks
    Bars
 """
 from IPython.html.widgets import Widget, CallbackDispatcher
-from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
+from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float, Union
 
-from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat
+from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
@@ -470,8 +470,7 @@ class Label(Mark):
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     """
-    # TODO: x = Float(sync=True) | Date(sync=True)
-    x = Float(sync=True)
+    x = Union([Date(sync=True), Float(sync=True)])
     y = Float(allow_none=True, default_value=None, sync=True)
     x_offset = Int(sync=True)
     y_offset = Int(sync=True)

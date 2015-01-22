@@ -224,8 +224,11 @@ class Date(TraitType):
     klass = dtime.datetime
 
     def validate(self, obj, value):
-        if(isinstance(value, dt) or np.issubdtype(np.dtype(value), np.datetime64)):
-            return value
+        try:
+            if(isinstance(value, dt) or np.issubdtype(np.dtype(value), np.datetime64)):
+                return value
+        except Exception as e:
+            raise TraitError("Incompatible Type. " + e.message)
         self.error(obj, value)
 
     def __init__(self, default_value=dt.today(), **kwargs):
