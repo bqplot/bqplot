@@ -587,7 +587,7 @@ class OHLC(Mark):
     # Other attributes
     marker = Enum(['candle', 'bar'], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
     stroke = Color('white', sync=True, exposed=True, display_index=4, display_name='Stroke color')
-    colors = ColorList(['red','green'], sync=True, exposed=True, display_index=5, display_name='Fill Colors')
+    color = Color('dodgerblue', sync=True, exposed=True, display_index=5, display_name='Fill color')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
     _view_name = Unicode('bqplot.OHLC', sync=True)
     _model_name = Unicode('bqplot.OHLCModel', sync=True)
