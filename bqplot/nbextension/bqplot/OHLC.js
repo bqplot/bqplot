@@ -91,17 +91,27 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         update_marker: function() {
             var marker = this.model.get("marker");
+            var that = this;
 
             if (this.legend_el && this.rect_dim) {
+                var leg_ohlc = [
+                    (1/4)*that.rect_dim,
+                    0,
+                    that.rect_dim,
+                    (3/4)*that.rect_dim
+                ];
                 // Draw icon for legend
-                this.draw_mark_paths(marker, this.rect_dim/2, this.legend_el);
+                this.draw_mark_paths(marker, this.rect_dim/2,
+                    this.legend_el, [leg_ohlc]);
             }
 
             // Redraw existing marks
             this.draw_mark_paths(marker, this.calculate_mark_width(),
-                this.el.selectAll(".stick").data(this.model.xy_data.map(function(d) {
-                    return d[1];
-                })));
+                this.el, this.model.xy_data.map(function(d) {
+                    return d[1].map(function(elem) {
+                        return that.y_scale.scale(elem);
+                    });
+                }));
         },
         update_idx_selected: function(model, value) {
             this.selected_indices = value;
@@ -249,7 +259,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var mark_width = this.calculate_mark_width();
             var stick = this.el.selectAll(".stick")
                 .data(this.model.xy_data.map(function(d) {
-                    return d[1];
+                    return d[1].map(function(elem) {
+                        return that.y_scale.scale(elem);
+                    });
                 }));
 
             // Create new
@@ -272,67 +284,74 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr( "transform", function(d, i) {
                     return "translate(" + (that.x_scale.scale(that.model.xy_data[i][0])
                                         + that.x_offset) + ","
-                                        + (that.y_scale.scale(d[that.model.px.hi])
+                                        + (d[that.model.px.hi]
                                         + that.y_offset) + ")";
                 });
 
             // Draw the mark paths
-            this.draw_mark_paths(this.model.get("marker"), mark_width, this.el);
+            this.draw_mark_paths(this.model.get("marker"), mark_width, this.el,
+                this.model.xy_data.map(function(d) {
+                    return d[1].map(function(elem) {
+                        return that.y_scale.scale(elem);
+                    } );
+                }));
 
             stick.exit().remove();
             this.apply_styles(this.selected_indices);
 
         },
-        draw_mark_paths: function(type, mark_width, selector) {
+        draw_mark_paths: function(type, mark_width, selector, dat) {
             var that = this;
 
             // Determine OHLC marker type
             if(type == "candle") {
-                selector.selectAll(".stick_head")
+                selector.selectAll(".stick_head").data(dat)
                     .attr("d", function(d, i) {
-                        var bigger = (d[that.model.px.op] > d[that.model.px.cl]) ?
+                        var bigger = (that.y_scale.scale.invert(d[that.model.px.op]) >
+                            that.y_scale.scale.invert(d[that.model.px.cl])) ?
                             d[that.model.px.op] : d[that.model.px.cl];
-                        return "m0,0 l0," + (that.y_scale.scale(bigger)
-                                          - that.y_scale.scale(d[that.model.px.hi]));
+                        return "m0,0 l0," + (bigger
+                                          - d[that.model.px.hi]);
                     });
-                selector.selectAll(".stick_tail")
+                selector.selectAll(".stick_tail").data(dat)
                     .attr("d", function(d, i) {
-                        var smaller = (d[that.model.px.op] > d[that.model.px.cl]) ?
+                        var smaller = (that.y_scale.scale.invert(d[that.model.px.op]) >
+                            that.y_scale.scale.invert(d[that.model.px.cl])) ?
                             d[that.model.px.cl] : d[that.model.px.op];
-                        return "m0," + (that.y_scale.scale(smaller)
-                                     - that.y_scale.scale(d[that.model.px.hi])) +
-                               "l0," + (that.y_scale.scale(d[that.model.px.lo])
-                                     - that.y_scale.scale(smaller));
+                        return "m0," + (smaller
+                                     - d[that.model.px.hi]) +
+                               "l0," + (d[that.model.px.lo]
+                                     - smaller);
                     });
-                selector.selectAll(".stick_body")
+                selector.selectAll(".stick_body").data(dat)
                     .attr("d", function(d, i) {
-                        return "m" + (-1*mark_width/2) +","
-                                   + (that.y_scale.scale(d[that.model.px.op])
-                                   - that.y_scale.scale(d[that.model.px.hi])) +
-                              " l" + (mark_width) + ",0" +
-                            " l0," + (that.y_scale.scale(d[that.model.px.cl])
-                                   - that.y_scale.scale(d[that.model.px.op])) +
+                        return "m" + (-1*mark_width/2) + ","
+                                   + (d[that.model.px.op]
+                                   - d[that.model.px.hi]) +
+                              " l" + mark_width + ",0" +
+                            " l0," + (d[that.model.px.cl]
+                                   - d[that.model.px.op]) +
                               " l" + (-1*mark_width) + ",0 z";
                   });
             } else {
                 // bar
-                selector.selectAll(".stick_head")
+                selector.selectAll(".stick_head").data(dat)
                   .attr("d", function(d, i) {
                       return "m" + (-1*mark_width/2) + ","
-                                 + (that.y_scale.scale(d[that.model.px.op])
-                                 - that.y_scale.scale(d[that.model.px.hi])) +
+                                 + (d[that.model.px.op]
+                                 - d[that.model.px.hi]) +
                             " l" + (mark_width/2) + ",0";
                   });
-                selector.selectAll(".stick_tail")
+                selector.selectAll(".stick_tail").data(dat)
                     .attr("d", function(d, i) {
-                        return "m0," + (that.y_scale.scale(d[that.model.px.cl])
-                                     - that.y_scale.scale(d[that.model.px.hi])) +
+                        return "m0," + (d[that.model.px.cl]
+                                     - d[that.model.px.hi]) +
                                 " l" + (mark_width/2) + ",0";
                     });
-                selector.selectAll(".stick_body")
+                selector.selectAll(".stick_body").data(dat)
                     .attr("d", function(d, i) {
-                        return "m0,0 l0," + (that.y_scale.scale(d[that.model.px.lo])
-                                          - that.y_scale.scale(d[that.model.px.hi]));
+                        return "m0,0 l0," + (d[that.model.px.lo]
+                                          - d[that.model.px.hi]);
                     });
             }
         },
@@ -363,10 +382,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             // Generate OHLC data to draw the legend icon
             var leg_ohlc = [
-                that.y_scale.scale.invert((1/4)*that.rect_dim),
-                that.y_scale.scale.invert(0),
-                that.y_scale.scale.invert(that.rect_dim),
-                that.y_scale.scale.invert((3/4)*that.rect_dim)
+                (1/4)*that.rect_dim,
+                0,
+                that.rect_dim,
+                (3/4)*that.rect_dim
             ];
             this.legend_el = elem.selectAll(".legend" + this.uuid).data([leg_ohlc]);
 
@@ -389,7 +408,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("transform", "translate(" + (that.rect_dim/2) + ",0)");
 
             // Draw OHLC icon next to legend text
-            this.draw_mark_paths(this.model.get("marker"), that.rect_dim/2, leg);
+            this.draw_mark_paths(this.model.get("marker"),
+                that.rect_dim/2, leg, [leg_ohlc]);
 
             this.legend_el.append("text")
                 .attr("class", "legendtext")
