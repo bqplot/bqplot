@@ -67,8 +67,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     this.redraw_axis();
                 }, this);
             });
-
-
         },
         set_scale: function(model) {
             // Sets the child scale
@@ -113,7 +111,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .style("text-anchor", this.vertical ? "middle" : "end");
             }
 
-            var colorBar = this.el.append("g").attr("id","colorBarG" + this.unique_id);
+            var colorBar = this.el.append("g")
+                .attr("id","colorBarG" + this.unique_id);
 
             this.draw_color_bar();
             this.axis_line_scale.domain(this.axis_scale.scale.domain());
@@ -180,7 +179,9 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .enter()
                     .append("stop")
                     .attr({
-                        "offset": function(d,i) { return colorSpacing * (i) + "%"; },
+                        "offset": function(d,i) {
+                            return colorSpacing * (i) + "%";
+                        },
                         "stop-color": function(d,i) { return that.colors[i]; },
                         "stop-opacity": 1
                     });
@@ -202,26 +203,33 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         get_topg_transform: function() {
             if(this.vertical){
                 if(this.side === "right") {
-                    return "translate(" + this.get_basic_transform() + "px, 0px)" + " translate(" + this.margin.right + "px, 0px)" +
-                         " translate(" + (-this.bar_height) + "px, 0px) translate(-5em, 0px)";
+                    return "translate(" + this.get_basic_transform() + "px, 0px)"
+                        + " translate(" + this.margin.right + "px, 0px)"
+                        + " translate(" + (-this.bar_height) + "px, 0px)"
+                        + " translate(-5em, 0px)";
                 }
-                    return "translate(" + this.get_basic_transform() + "px, 0px)" + " translate(" + -(this.margin.left) + "px, 0px)" +
-                         " translate(" + (this.bar_height) + "px, 0px) translate(5em, 0px)";
-
+                    return "translate(" + this.get_basic_transform() + "px, 0px)"
+                        + " translate(" + -(this.margin.left) + "px, 0px)"
+                        + " translate(" + (this.bar_height) + "px, 0px)"
+                        + " translate(5em, 0px)";
             } else {
-                return "translate(0px, " + this.get_basic_transform() + "px)" + "translate(0px, " + this.margin.bottom + "px)" +
-                         " translate(0px, " + (-this.bar_height) + "px) translate(0px, -2em)";
+                return "translate(0px, " + this.get_basic_transform() + "px)"
+                     + "translate(0px, " + this.margin.bottom + "px)"
+                     + " translate(0px, " + (-this.bar_height) + "px)"
+                     + " translate(0px, -2em)";
             }
         },
         get_label_transform: function() {
             if(this.vertical) {
-                return "translate(" + ((this.side === "right") ? (this.bar_height / 2) : (-this.bar_height / 2)) + ", " + (this.x_offset - 15) + ")";
+                return "translate(" + ((this.side === "right") ?
+                    (this.bar_height / 2) : (-this.bar_height / 2)) + ", " + (this.x_offset - 15) + ")";
             }
             return "translate(" + (this.x_offset - 5) + ", " + (this.bar_height / 2)+ ")";
         },
         get_axisline_transform: function() {
             if(this.vertical) {
-                return "translate(" + ((this.side === "right") ? this.bar_height : -(this.bar_height)) + ", 0)";
+                return "translate(" + ((this.side === "right") ?
+                    this.bar_height : -(this.bar_height)) + ", 0)";
             }
             return "translate(0, " + this.bar_height + ")";
         },
@@ -233,7 +241,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         },
         set_scales_range: function() {
             this.axis_scale.set_range();
-            var range = (this.vertical) ? [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
+            var range = (this.vertical) ?
+                [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
             if(this.ordinal) {
                 this.axis_line_scale.rangeRoundBands(range, 0.05);
             } else {
