@@ -356,14 +356,19 @@ def _draw_mark(mark_type, **kwargs):
     return mark
 
 
-def plot(x, y, **kwargs):
+def plot(*args, **kwargs):
     """Draws lines in the current context figure.
 
     The 'options' keyword argument is used to pass attributes for the scales to
     be created, or used.
     """
-    kwargs['x'] = x
-    kwargs['y'] = y
+    if len(args) == 2:
+        kwargs['x'] = args[0]
+        kwargs['y'] = args[1]
+    elif len(args) == 1:
+        kwargs['y'] = args[0]
+        length = len(args[0])
+        kwargs['x'] = np.linspace(0.0, length, length)
     return _draw_mark(Lines, **kwargs)
 
 
