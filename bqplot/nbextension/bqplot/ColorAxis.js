@@ -56,17 +56,19 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 that.set_scales_range();
                 that.append_axis();
                 that.parent.on("margin_updated", that.parent_margin_updated, that);
+
+                this.model.on("change:tick_format", this.tickformat_changed, this);
+                this.model.on("change:visible", this.update_visibility, this);
+                this.model.on("change:label", this.update_label, this);
+                this.model.on_some_change(["side", "orientation"], function() {
+                    this.vertical = this.model.get("orientation") === "vertical";
+                    this.side = this.model.get("side");
+                    this.rescale_axis();
+                    this.redraw_axis();
+                }, this);
             });
 
-            this.model.on("change:tick_format", this.tickformat_changed, this);
-            this.model.on("change:visible", this.update_visibility, this);
-            this.model.on("change:label", this.update_label, this);
-            this.model.on_some_change(["side", "orientation"], function() {
-                this.vertical = this.model.get("orientation") === "vertical";
-                this.side = this.model.get("side");
-                this.rescale_axis();
-                this.redraw_axis();
-            }, this);
+
         },
         set_scale: function(model) {
             // Sets the child scale
@@ -82,7 +84,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
                 that.axis_scale.on("highlight_axis", that.highlight, that);
                 that.axis_scale.on("unhighlight_axis", that.unhighlight, that);
-                 
+
                 // TODO: eventually removes what follows
                 if(that.axis_scale.model.type === "date_color_linear") {
                     that.axis_line_scale = d3.time.scale().nice();
@@ -290,13 +292,15 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.g_axisline.call(this.axis);
         },
         redraw_axisline: function() {
-            this.axis_line_scale.domain(this.axis_scale.scale.domain());
-            this.axis.orient(this.side)
-                .scale(this.axis_line_scale);
-            this.set_tick_values();
-            this.g_axisline
-                .attr("transform", this.get_axisline_transform())
-                .call(this.axis);
+            if (this.axis) {
+                this.axis_line_scale.domain(this.axis_scale.scale.domain());
+                this.axis.orient(this.side)
+                    .scale(this.axis_line_scale);
+                this.set_tick_values();
+                this.g_axisline
+                    .attr("transform", this.get_axisline_transform())
+                    .call(this.axis);
+            }
         },
         redraw_axis: function() {
             this.draw_color_bar();
