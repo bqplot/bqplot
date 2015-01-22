@@ -52,8 +52,6 @@ from ..overlays import panzoom
 from IPython.html.widgets import VBox, HBox as ButtonGroup
 from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
 
-# TODO: use logging configurable for default figure settings
-_default_fig_options = {}
 _context = {
     'figure': None,
     'figure_registry': {},
@@ -174,14 +172,13 @@ def figure(key=None, fig=None, **kwargs):
         for arg in kwargs:
             setattr(_context['figure'], arg, kwargs[arg])
     else:                                                   # no fig provided
-        fig_options = dict(_default_fig_options, **kwargs)
         if key is None:                                     # no key provided
-            _context['figure'] = Figure(**fig_options)
+            _context['figure'] = Figure(**kwargs)
         else:                                               # a key is provided
             if key not in _context['figure_registry']:
-                if 'title' not in fig_options:
-                    fig_options['title'] = 'Figure' + ' ' + str(key)
-                _context['figure_registry'][key] = Figure(**fig_options)
+                if 'title' not in kwargs:
+                    kwargs['title'] = 'Figure' + ' ' + str(key)
+                _context['figure_registry'][key] = Figure(**kwargs)
             _context['figure'] = _context['figure_registry'][key]
             for arg in kwargs:
                 setattr(_context['figure'], arg, kwargs[arg])
@@ -308,11 +305,16 @@ def axes(mark=None, **kwargs):
     fig = kwargs.get('figure', current_figure())
     scales = mark.scales
     options = kwargs.get('options', {})
-    new_axes = {}
+    if not hasattr(mark, 'pyplot_axes'):
+        mark.pyplot_axes = {}
+    axes = mark.pyplot_axes.get(fig.model_id, {})
     fig_axes = [axis for axis in fig.axes]
     for name in scales:
         if name not in mark.class_trait_names(scaled=True):
-            # Pass if the scale is not to be used.
+            # Pass if the scale is not needed.
+            continue
+        if name in axes:
+            # Pass if there is already an axis for this scaled attribute.
             continue
         key = mark.class_traits()[name].get_metadata('atype', 'bqplot.Axis')
         axis_type = Axis.axis_types[key]
@@ -320,9 +322,10 @@ def axes(mark=None, **kwargs):
                          **(options.get(name, {})))
         axis = axis_type(scale=scales[name], **axis_args)
         fig_axes.append(axis)
-        new_axes[name] = axis
+        axes[name] = axis
+    mark.pyplot_axes[fig.model_id] = axes
     fig.axes = fig_axes
-    return new_axes
+    return axes
 
 
 def _draw_mark(mark_type, **kwargs):
@@ -348,19 +351,24 @@ def _draw_mark(mark_type, **kwargs):
     mark = mark_type(scales=scales, **kwargs)
     _context['last_mark'] = mark
     fig.marks = [m for m in fig.marks] + [mark]
-    if kwargs.get('axes', None):
+    if kwargs.get('axes', True):
         axes(mark)
     return mark
 
 
-def plot(x, y, **kwargs):
+def plot(*args, **kwargs):
     """Draws lines in the current context figure.
 
     The 'options' keyword argument is used to pass attributes for the scales to
     be created, or used.
     """
-    kwargs['x'] = x
-    kwargs['y'] = y
+    if len(args) == 2:
+        kwargs['x'] = args[0]
+        kwargs['y'] = args[1]
+    elif len(args) == 1:
+        kwargs['y'] = args[0]
+        length = len(args[0])
+        kwargs['x'] = np.linspace(0.0, length, length)
     return _draw_mark(Lines, **kwargs)
 
 
