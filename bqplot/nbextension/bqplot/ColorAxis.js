@@ -23,9 +23,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.vertical = this.model.get("orientation") === "vertical";
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
             this.width = this.parent.width - (this.margin.left + this.margin.right);
-            this.unique_id = IPython.utils.uuid();
 
-            // scale data for drawing the axis
             var scale_promise = this.set_scale(this.model.get("scale"));
             this.model.on("change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
@@ -34,11 +32,10 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 this.rescale_axis();
             }, this);
 
-            // attributes used in drawing the color bar
+            this.side = this.model.get("side");
             this.x_offset = 100;
             this.y_offset = 40;
             this.bar_height = 20;
-            this.side = this.model.get("side");
             // Formatting data particular to the axis
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
                 .attr("class", "ColorBar")
@@ -112,7 +109,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             }
 
             var colorBar = this.el.append("g")
-                .attr("id","colorBarG" + this.unique_id);
+                .attr("id","colorBarG" + this.cid);
 
             this.draw_color_bar();
             this.axis_line_scale.domain(this.axis_scale.scale.domain());
@@ -125,7 +122,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.redraw_axisline();
         },
         draw_color_bar: function() {
-            var colorBar = this.el.select("#colorBarG" + this.unique_id);
+            var colorBar = this.el.select("#colorBarG" + this.cid);
             colorBar.attr("transform", this.get_colorbar_transform());
 
             var that = this;
@@ -168,7 +165,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .append("defs")
                     .append("linearGradient")
                     .attr({
-                        id : "colorBarGradient" + this.unique_id,
+                        id : "colorBarGradient" + this.cid,
                         x1 : "0%",
                         y1 : "0%",
                         x2 : "100%",
@@ -197,7 +194,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                         y: 0,
                         "stroke-width": 1
                     })
-                    .style("fill","url(#colorBarGradient" + this.unique_id + ")");
+                    .style("fill","url(#colorBarGradient" + this.cid + ")");
             }
         },
         get_topg_transform: function() {
@@ -271,7 +268,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             var self = this;
             var bar_width = this.get_color_bar_width() / this.colors.length;
             if(this.ordinal) {
-                var rectangles = this.el.select("#colorBarG" + this.unique_id)
+                var rectangles = this.el.select("#colorBarG" + this.cid)
                     .select(".g-rect")
                     .selectAll("rect")
                     .attr("width", bar_width);
@@ -285,7 +282,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     });
                 }
             } else {
-                this.el.select("#colorBarG" + this.unique_id)
+                this.el.select("#colorBarG" + this.cid)
                     .select(".g-rect")
                     .selectAll("rect")
                     .attr("width", this.get_color_bar_width())
