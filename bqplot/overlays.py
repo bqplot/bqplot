@@ -41,9 +41,10 @@ import sys
 from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Any,
                                      Instance, List)
 from IPython.html.widgets import Widget
+import datetime as dt
 
 from .scales import Scale, DateScale
-from .traits import NdArray
+from .traits import NdArray, Date
 
 
 def register_overlay(key=None):
@@ -81,7 +82,7 @@ class Overlay(Widget):
     """
     overlay_types = {}
     _view_name = Unicode('bqplot.Overlay', sync=True)
-    _ipython_display_ = None  # We cannot display overlays outside of a figure
+    _ipython_display_ = None  # We cannot display an overlay outside of a figure
 
 
 @register_overlay('bqplot.HandDraw')
@@ -115,8 +116,8 @@ class HandDraw(Overlay):
     lines = Any(None, sync=True)
     line_index = Int(0, sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
-    min_x = Float(-sys.float_info.max, sync=True)
-    max_x = Float(sys.float_info.max, sync=True)
+    min_x = Union([Float(allow_none=True, default_value=None, sync=True), Date(allow_none=True, default_value=None, sync=True)])
+    max_x = Union([Float(allow_none=True, default_value=None, sync=True), Date(default_value=None, allow_none=True, sync=True)])
 
 
 @register_overlay('bqplot.PanZoom')
