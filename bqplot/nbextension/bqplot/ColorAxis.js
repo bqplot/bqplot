@@ -26,25 +26,13 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.unique_id = IPython.utils.uuid();
 
             // scale data for drawing the axis
-            var scale = this.model.get("scale");
-            var that = this;
-            this.create_child_view(scale).then(function(view) {
-                that.axis_scale = view;
-                that.axis_scale.set_range();
-                that.axis_scale.on("domain_changed", that.redraw_axisline, that);
-                that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
-                if(that.axis_scale.model.type === "date_color_linear") {
-                    that.axis_line_scale = d3.time.scale().nice();
-                } else if(that.axis_scale.model.type === "ordinal") {
-                    that.axis_line_scale = d3.scale.ordinal();
-                    that.ordinal = true;
-                } else {
-                    that.axis_line_scale = d3.scale.linear();
-                }
-
-                that.tick_format = that.generate_tick_formatter();
-                that.append_axis();
-            });
+            var scale_promise = this.set_scale(this.model.get("scale"));
+            this.model.on("change:scale", function(model, value) {
+                this.update_scale(model.previous("scale"), value);
+                // TODO: rescale_axis does too many things. Decompose
+                this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
+                this.rescale_axis();
+            }, this);
 
             // attributes used in drawing the color bar
             this.x_offset = 100;
@@ -62,7 +50,14 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.num_ticks = this.model.get("num_ticks");
             this.tick_values = this.model.get("tick_values");
 
-            this.parent.on("margin_updated", this.parent_margin_updated, this);
+            var that = this;
+            scale_promise.then(function() {
+                that.tick_format = that.generate_tick_formatter();
+                that.set_scales_range();
+                that.append_axis();
+                that.parent.on("margin_updated", that.parent_margin_updated, that);
+            });
+
             this.model.on("change:tick_format", this.tickformat_changed, this);
             this.model.on("change:visible", this.update_visibility, this);
             this.model.on("change:label", this.update_label, this);
@@ -73,10 +68,37 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 this.redraw_axis();
             }, this);
         },
+        set_scale: function(model) {
+            // Sets the child scale
+            var that = this;
+            if (this.axis_scale) { this.axis_scale.remove(); }
+            return this.create_child_view(model).then(function(view) {
+                // Trigger the displayed event of the child view.
+                that.after_displayed(function() {
+                    view.trigger("displayed");
+                }, that);
+                that.axis_scale = view;
+                that.axis_scale.set_range();
+                that.axis_scale.on("domain_changed", that.redraw_axisline, that);
+                that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
+                that.axis_scale.on("highlight_axis", that.highlight, that);
+                that.axis_scale.on("unhighlight_axis", that.unhighlight, that);
+                 
+                // TODO: eventually removes what follows
+                if(that.axis_scale.model.type === "date_color_linear") {
+                    that.axis_line_scale = d3.time.scale().nice();
+                } else if(that.axis_scale.model.type === "ordinal") {
+                    that.axis_line_scale = d3.scale.ordinal();
+                    that.ordinal = true;
+                } else {
+                    that.axis_line_scale = d3.scale.linear();
+                }
+            });
+        },
         append_axis: function() {
             // The label is allocated a space of 100px. If the label
             // occupies more than 100px then you are out of luck :)
-            this.set_scales_range();
+            this.set_scales_range(); // TODO: remove
             var that = this;
             if(this.label) {
                 this.el.append("g")
@@ -113,7 +135,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             colorBar.selectAll(".g-defs")
                 .remove();
 
-            this.set_scales_range();
+            this.set_scales_range(); // TODO: remove
             this.colors = this.axis_scale.scale.range();
             var colorSpacing = 100 / (this.colors.length - 1);
 
