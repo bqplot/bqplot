@@ -298,10 +298,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // direction.
             if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {
                 d[0] = d3.event.x;
-                d[1] = that.y_scale.scale(d.y);
+                d[1] = (that.y_scale.scale(d.y) + that.y_offset);
             }
             else if (!(this.model.get("restrict_x")) && this.model.get("restrict_y")) {
-                d[0] = that.x_scale.scale(d.x);
+                d[0] = (that.x_scale.scale(d.x) + that.x_offset);
                 d[1] = d3.event.y;
             }
             else if (this.model.get("restrict_x") && this.model.get("restrict_y")) {
