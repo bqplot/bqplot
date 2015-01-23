@@ -54,15 +54,15 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 that.append_axis();
                 that.parent.on("margin_updated", that.parent_margin_updated, that);
 
-                this.model.on("change:tick_format", this.tickformat_changed, this);
-                this.model.on("change:visible", this.update_visibility, this);
-                this.model.on("change:label", this.update_label, this);
-                this.model.on_some_change(["side", "orientation"], function() {
+                that.model.on("change:tick_format", that.tickformat_changed, that);
+                that.model.on("change:visible", that.update_visibility, that);
+                that.model.on("change:label", that.update_label, that);
+                that.model.on_some_change(["side", "orientation"], function() {
                     this.vertical = this.model.get("orientation") === "vertical";
                     this.side = this.model.get("side");
                     this.rescale_axis();
                     this.redraw_axis();
-                }, this);
+                }, that);
             });
         },
         set_scale: function(model) {
