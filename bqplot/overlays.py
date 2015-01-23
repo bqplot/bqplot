@@ -38,7 +38,7 @@ Overlays
 """
 
 from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Any,
-                                     Instance, List, Union)
+                                     Instance, List)
 from IPython.html.widgets import Widget
 
 from .scales import Scale, DateScale
@@ -111,13 +111,14 @@ class HandDraw(Overlay):
         The maximum value of 'x' which should be edited via the handdraw.
     """
     _view_name = Unicode('bqplot.HandDraw', sync=True)
+    _model_name = Unicode('bqplot.BaseModel', sync=True)
     lines = Any(None, sync=True)
     line_index = Int(0, sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
     # TODO: Once the new Union is merged in IPython, the sync on the whole
     # trait can be removed
-    min_x = Union([Float(allow_none=True, default_value=None, sync=True), Date(allow_none=True, default_value=None, sync=True)], sync=True)
-    max_x = Union([Float(allow_none=True, default_value=None, sync=True), Date(default_value=None, allow_none=True, sync=True)], sync=True)
+    min_x = Float(allow_none=True, default_value=None, sync=True) | Date(allow_none=True, default_value=None, sync=True)
+    max_x = Float(allow_none=True, default_value=None, sync=True) | Date(default_value=None, allow_none=True, sync=True)
 
 
 @register_overlay('bqplot.PanZoom')
