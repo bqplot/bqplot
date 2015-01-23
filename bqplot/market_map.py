@@ -132,37 +132,30 @@ class MarketMap(DOMWidget):
     map_width = Int(1080, sync=True)
     map_height = Int(800, sync=True)
 
-    names = NumpyArray(sync=True)  # primary key for the data
-    groups = NumpyArray(sync=True)  # group by is run on this attribute
-    display_text = NumpyArray(sync=True)  # name to be displayed on the rectangle in the map. If this is empty it defaults to the names attribute
-    ref_data = PandasDataFrame(sync=True)  # Data frame to display the data which can be used for different operations
+    names = NumpyArray(sync=True)
+    groups = NumpyArray(sync=True)
+    display_text = NumpyArray(sync=True)
+    ref_data = PandasDataFrame(sync=True)
 
-    tooltip_fields = List(sync=True)  # names of the fields from the ref_data dataframe which should be displayed in the tooltip
-    tooltip_formats = List(sync=True)  # Formats for each of the fields for the tooltip data. Order should match the order of the tooltip_fields
-    show_groups = Bool(False, sync=True)  # attribute to determine if the groups should be displayed. If set to True, the finer elements are blurred
+    tooltip_fields = List(sync=True)
+    tooltip_formats = List(sync=True)
+    show_groups = Bool(False, sync=True)
 
-    cols = Int(sync=True, allow_none=True)  # Suggestion for no of columns in the map.
-    # If not specified, value is inferred from the no of rows and no of columns
-    rows = Int(sync=True, allow_none=True)  # No of rows in the map.
-    # If not specified, value is inferred from the no of cells and no of columns
-    # If both rows and columns are not specified, then a square is constructed
-    # basing on the no of cells
-    # The above two attributes are suggestions which are respected unless they
-    # are not feasible. One required condition is that, the number of columns
-    # is odd when row_groups is greater than 1.
+    cols = Int(sync=True, allow_none=True)
+    rows = Int(sync=True, allow_none=True)
 
     row_groups = Int(1, sync=True)
-    colors = List(CATEGORY10, sync=True)   # colors to be cycled in absence of data for the color
+    colors = List(CATEGORY10, sync=True)
     scales = Dict(sync=True)
-    axes = List(sync=True)  # Possibility to have a color axis
+    axes = List(sync=True)
     color_data = NumpyArray(sync=True)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
-    preserve_aspect = Bool(False, sync=True, display_name='Preserve aspect ratio')  #: Preserve the aspect ratio given by the minimum width and height
+    preserve_aspect = Bool(False, sync=True, display_name='Preserve aspect ratio')
 
-    stroke = Unicode('white', sync=True)   # Stroke of each of the cells of the market map
-    group_stroke = Unicode('black', sync=True)  # Stroke of the group of cells corresponding to a group
-    selected_stroke = Unicode("dodgerblue", sync=True)  # border of the selected cells
-    hovered_stroke = Unicode("orangered", sync=True)  # border of the cell being hovered on
+    stroke = Unicode('white', sync=True)
+    group_stroke = Unicode('black', sync=True)
+    selected_stroke = Unicode("dodgerblue", sync=True)
+    hovered_stroke = Unicode("orangered", sync=True)
 
     clickable = Bool(False, sync=True)
     selected = List([], sync=True)
