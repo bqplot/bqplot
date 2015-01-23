@@ -137,7 +137,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.group_iter = 1;
         },
         create_listeners: function() {
-            this.model.on("change:color_data", this.recolor_chart, this);
+            this.model.on("change:color", this.recolor_chart, this);
             this.model.on("change:show_groups", this.show_groups, this);
             this.model.on("change:selected_stroke", this.update_selected_stroke, this);
             this.model.on("change:hovered_stroke", this.update_hovered_stroke, this);
@@ -211,7 +211,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.colors = this.model.get('colors');
             var num_colors = this.colors.length;
             this.colors_map = function(d) { return self.get_color(d, num_colors);};
-            var color_data = this.model.get('color_data');
+            var color_data = this.model.get('color');
             var mapped_data = this.data.map(function(d, i) {
                 return {'display': display_text[i], 'name': d, 'color': color_data[i],
                         'group': self.group_data[i], 'ref_data': self.ref_data[i]};
@@ -232,7 +232,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         },
         update_domains: function() {
             var color_scale_model = this.model.get("scales")["color"];
-            var color_data = this.model.get("color_data");
+            var color_data = this.model.get("color");
             if(color_scale_model && color_data.length > 0) {
                 color_scale_model.compute_and_set_domain(color_data, this.model.id);
             }

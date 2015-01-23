@@ -148,7 +148,7 @@ class MarketMap(DOMWidget):
     colors = List(CATEGORY10, sync=True)
     scales = Dict(sync=True)
     axes = List(sync=True)
-    color_data = NumpyArray(sync=True)
+    color = NumpyArray(sync=True)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
     preserve_aspect = Bool(False, sync=True, display_name='Preserve aspect ratio')
 
