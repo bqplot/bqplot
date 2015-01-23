@@ -37,13 +37,12 @@ Overlays
    panzoom
 """
 
-import sys
 from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Any,
                                      Instance, List)
 from IPython.html.widgets import Widget
 
 from .scales import Scale, DateScale
-from .traits import NdArray
+from .traits import NdArray, Date
 
 
 def register_overlay(key=None):
@@ -81,7 +80,7 @@ class Overlay(Widget):
     """
     overlay_types = {}
     _view_name = Unicode('bqplot.Overlay', sync=True)
-    _ipython_display_ = None  # We cannot display overlays outside of a figure
+    _ipython_display_ = None  # We cannot display an overlay outside of a figure
 
 
 @register_overlay('bqplot.HandDraw')
@@ -112,11 +111,14 @@ class HandDraw(Overlay):
         The maximum value of 'x' which should be edited via the handdraw.
     """
     _view_name = Unicode('bqplot.HandDraw', sync=True)
+    _model_name = Unicode('bqplot.BaseModel', sync=True)
     lines = Any(None, sync=True)
     line_index = Int(0, sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
-    min_x = Float(-sys.float_info.max, sync=True)
-    max_x = Float(sys.float_info.max, sync=True)
+    # TODO: Once the new Union is merged in IPython, the sync on the whole
+    # trait can be removed
+    min_x = Float(allow_none=True, default_value=None, sync=True) | Date(allow_none=True, default_value=None, sync=True)
+    max_x = Float(allow_none=True, default_value=None, sync=True) | Date(default_value=None, allow_none=True, sync=True)
 
 
 @register_overlay('bqplot.PanZoom')

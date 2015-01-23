@@ -67,7 +67,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         create_listeners: function() {
             Label.__super__.create_listeners.apply(this);
             this.model.on("change:text", this.update_text, this);
-            this.model.on_some_change(["font_weight", "font_size", "color", "align"], this.update_style, this);
+            this.model.on_some_change(["font_weight", "font_size", "color",
+                                      "align"], this.update_style, this);
             this.model.on("change:rotate_angle", function(model, value) {
                 this.rotate_angle = value; this.apply_net_transform();
             }, this);
@@ -99,7 +100,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var total_transform = "";
             // The translate is applied first and then the rotate is applied
             if(this.x_offset !== undefined || this.y_offset !== undefined) {
-                total_transform += " translate(" + this.x_offset + ", " + this.y_offset + ")";
+                total_transform += " translate(" + this.x_offset + ", " +
+                    this.y_offset + ")";
             }
 
             if(this.rotate_angle !== undefined) {
@@ -111,8 +113,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         apply_net_transform: function() {
             // this function gets the net transform after applying both the
             // rotate and x, y trasnforms
-            var net_transform = "translate(" + this.x_scale.scale(this.model.get("x")) 
-                                      + ", " + this.y_scale.scale(this.model.get("y")) + ")";
+            var x = (this.x_scale.model.type === "date") ?
+                this.model.get_date_elem("x") : this.model.get("x");
+            var y = (this.y_scale.model.type === "date") ?
+                this.model.get_date_elem("y") : this.model.get("y");
+            var net_transform = "translate(" + this.x_scale.scale(x)
+                                      + ", " + this.y_scale.scale(y) + ")";
             net_transform += this.get_extra_transform();
             this.el.selectAll(".label")
                 .attr("transform", net_transform);

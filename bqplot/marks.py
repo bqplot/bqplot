@@ -32,7 +32,7 @@ Marks
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
 
-from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat
+from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
@@ -165,6 +165,10 @@ class Lines(Mark):
         in the list will have full opacity, while others will be faded.
     line_style: {'solid', 'dashed', 'dotted'}
         Line style.
+    interpolation: {'linear', 'basis', 'cardinal', 'monotone'}
+        interpolation scheme used for interpolation between the data points
+        provided. Please refer to the svg interpolate for details about the
+        different interpolation schemes.
 
     Data Attributes
     ---------------
@@ -189,6 +193,7 @@ class Lines(Mark):
     labels_visibility = Enum(['none', 'label'], default_value='none', allow_none=False, sync=True, exposed=True, display_index=5, display_name='Labels visibility')
     curves_subset = List([], sync=True)
     line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid', allow_none=False, sync=True, exposed=True, display_index=6, display_name='Line style')
+    interpolation = Enum(['linear', 'basis', 'cardinal', 'monotone'], default_value='linear', allow_none=False, sync=True, exposed=True, display_index=7, display_name='Interpolation')
     _view_name = Unicode('bqplot.Lines', sync=True)
     _model_name = Unicode('bqplot.LinesModel', sync=True)
 
@@ -467,8 +472,7 @@ class Label(Mark):
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     """
-    # TODO: x = Float(sync=True) | Date(sync=True)
-    x = Float(sync=True)
+    x = Date(sync=True) | Float(sync=True)
     y = Float(allow_none=True, default_value=None, sync=True)
     x_offset = Int(sync=True)
     y_offset = Int(sync=True)
