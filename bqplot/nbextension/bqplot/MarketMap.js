@@ -35,7 +35,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.num_rows = this.model.get("rows");
             this.num_cols = this.model.get("cols");
             this.row_groups = this.model.get("row_groups");
-            this.clickable = this.model.get("clickable");
+            this.enable_select = this.model.get("enable_select");
 
             this.update_data();
             // set the number of rows and columns in the map
@@ -450,23 +450,25 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             }
         },
         cell_click_handler: function(data, id, cell) {
-            var selected = this.model.get("selected").slice();
-            var index = selected.indexOf(data.name);
-            var cell_id = d3.select(cell).attr("id");
-            if(index == -1) {
-                //append a rectangle with the dimensions to the g-click
-                selected.push(data.name);
-                var transform = d3.select(cell).attr("transform");
-                this.add_selected_cell(cell_id, transform);
+            if(this.model.get("enable_select")) {
+                var selected = this.model.get("selected").slice();
+                var index = selected.indexOf(data.name);
+                var cell_id = d3.select(cell).attr("id");
+                if(index == -1) {
+                    //append a rectangle with the dimensions to the g-click
+                    selected.push(data.name);
+                    var transform = d3.select(cell).attr("transform");
+                    this.add_selected_cell(cell_id, transform);
+                }
+                else {
+                    this.fig_click.select("#click_" + cell_id)
+                        .remove();
+                    //remove the rectangle from the g-click
+                    selected.splice(index, 1);
+                }
+                this.model.set("selected", selected);
+                this.touch();
             }
-            else {
-                this.fig_click.select("#click_" + cell_id)
-                    .remove();
-                //remove the rectangle from the g-click
-                selected.splice(index, 1);
-            }
-            this.model.set("selected", selected);
-            this.touch();
         },
         apply_selected: function() {
             var selected = this.model.get("selected");
