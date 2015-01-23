@@ -17,21 +17,21 @@
 define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
      var units_array = ["em", "ex", "px"];
      var custom_time_format = d3.time.format.multi([
-                [".%L", function(d) { return d.getMilliseconds(); }],
-                [":%S", function(d) { return d.getSeconds(); }],
-                ["%I:%M", function(d) { return d.getMinutes(); }],
-                ["%I %p", function(d) { return d.getHours(); }],
-                ["%a %d", function(d) { return d.getDay() && d.getDate() !== 1; }],
-                ["%b %d", function(d) { return d.getDate() !== 1; }],
-                ["%b %Y", function(d) { return d.getMonth(); }],
-                ["%Y", function() { return true; }]
+         [".%L", function(d) { return d.getMilliseconds(); }],
+         [":%S", function(d) { return d.getSeconds(); }],
+         ["%I:%M", function(d) { return d.getMinutes(); }],
+         ["%I %p", function(d) { return d.getHours(); }],
+         ["%a %d", function(d) { return d.getDay() && d.getDate() !== 1; }],
+         ["%b %d", function(d) { return d.getDate() !== 1; }],
+         ["%b %Y", function(d) { return d.getMonth(); }],
+         ["%Y", function() { return true; }]
      ]);
      var Axis = widget.WidgetView.extend({
          render: function() {
             this.parent = this.options.parent;
             this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
-            this.vertical = this.model.get("orientation") === "vertical" ? true : false;
+            this.vertical = this.model.get("orientation") === "vertical";
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
             this.width = this.parent.width - (this.margin.left + this.margin.right);
 
@@ -166,16 +166,20 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             return d3.format(this.model.get("tick_format"));
         },
         set_scales_range: function() {
-            this.axis_scale.set_range((this.vertical) ? [this.height, 0] : [0, this.width]);
+            this.axis_scale.set_range((this.vertical) ?
+                [this.height, 0] : [0, this.width]);
             if(this.offset_scale_model) {
-                this.offset_scale.set_range((this.vertical) ? [0, this.width] : [this.height, 0]);
+                this.offset_scale.set_range((this.vertical) ?
+                    [0, this.width] : [this.height, 0]);
             }
         },
         create_axis_line: function() {
             if(this.vertical) {
-                this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side === "right" ? "right" : "left");
+                this.axis = d3.svg.axis().scale(this.axis_scale.scale)
+                .orient(this.side === "right" ? "right" : "left");
             } else {
-                this.axis = d3.svg.axis().scale(this.axis_scale.scale).orient(this.side === "top" ? "top" : "bottom");
+                this.axis = d3.svg.axis().scale(this.axis_scale.scale)
+                .orient(this.side === "top" ? "top" : "bottom");
             }
         },
         append_axis: function() {
@@ -204,16 +208,18 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.loc = this.model.get("offset");
             if(this.loc["value"] !== undefined && this.loc["value"] !== null) {
                 if(this.loc["scale"] === undefined) {
-                    this.offset_scale = (this.vertical) ? this.parent.scale_x : this.parent.scale_y;
+                    this.offset_scale = (this.vertical) ?
+                        this.parent.scale_x : this.parent.scale_y;
                 } else {
                     this.offset_scale_model = this.loc["scale"];
-                    return_promise = this.create_child_view(this.offset_scale_model).then(function(view) {
-                        that.offset_scale = view;
-                        if(that.offset_scale.model.type !== "ordinal") {
-                            that.offset_scale.scale.clamp(true);
-                        }
-                        that.offset_scale.on("domain_changed", that.rescale_axis, that);
-                    });
+                    return_promise = this.create_child_view(this.offset_scale_model)
+                        .then(function(view) {
+                            that.offset_scale = view;
+                            if(that.offset_scale.model.type !== "ordinal") {
+                                that.offset_scale.scale.clamp(true);
+                            }
+                            that.offset_scale.on("domain_changed", that.rescale_axis, that);
+                        });
                 }
                 this.offset_value = this.loc["value"];
             }
@@ -250,7 +256,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             } else {
                 var value = this.offset_scale.scale(this.offset_value);
                 // FIXME: must we check for null?
-                value = (value === undefined) ? this.get_basic_transform() : value;
+                value = (value === undefined) ?
+                    this.get_basic_transform() : value;
                 return this.offset_scale.offset + value;
             }
         },
@@ -305,7 +312,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 return {"text-anchor" : "middle"};
         },
         update_label: function() {
-            this.g_axisline.select("text.axislabel").text(this.model.get("label"));
+            this.g_axisline.select("text.axislabel")
+                .text(this.model.get("label"));
             this.el.selectAll(".axislabel").selectAll("text");
             if(this.model.get("label_color") !== ""
                && this.model.get("label_color") !== null) {
@@ -339,11 +347,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
             // Label_offset is a signed distance from the axis line. Positive
             // is away from the figure and negative is towards the figure. The
-            // notion of away and towards is different for left/ right and
+            // notion of away and towards is different for left/right and
             // top/bottom axis.
             var index = -1;
-            for(var iter = 0; (iter < units_array.length && index === -1); iter++) {
-                index = label_offset.indexOf(units_array[iter]);
+            for(var it = 0; (it < units_array.length && index === -1); it++) {
+                index = label_offset.indexOf(units_array[it]);
             }
             if(index === -1) {
                 return label_offset;
@@ -428,9 +436,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.update_grid_lines();
         },
         parent_margin_updated: function() {
-            //sets the new dimensions of the g element for the axis.
+            // sets the new dimensions of the g element for the axis.
             this.margin = this.parent.margin;
-            this.width =  this.parent.width - this.margin.left - this.margin.right;
+            this.width = this.parent.width - this.margin.left - this.margin.right;
             this.height = this.parent.height - this.margin.top - this.margin.bottom;
             this.rescale_axis();
         },

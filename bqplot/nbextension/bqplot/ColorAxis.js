@@ -20,37 +20,22 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.parent = this.options.parent;
             this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
-            this.vertical = this.model.get("orientation") === "vertical" ? true : false;
+            this.vertical = this.model.get("orientation") === "vertical";
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
             this.width = this.parent.width - (this.margin.left + this.margin.right);
-            this.unique_id = IPython.utils.uuid();
 
-            // scale data for drawing the axis
-            var scale = this.model.get("scale");
-            var that = this;
-            this.create_child_view(scale).then(function(view) {
-                that.axis_scale = view;
-                that.axis_scale.set_range();
-                that.axis_scale.on("domain_changed", that.redraw_axisline, that);
-                that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
-                if(that.axis_scale.model.type === "date_color_linear") {
-                    that.axis_line_scale = d3.time.scale().nice();
-                } else if(that.axis_scale.model.type === "ordinal") {
-                    that.axis_line_scale = d3.scale.ordinal();
-                    that.ordinal = true;
-                } else {
-                    that.axis_line_scale = d3.scale.linear();
-                }
+            var scale_promise = this.set_scale(this.model.get("scale"));
+            this.model.on("change:scale", function(model, value) {
+                this.update_scale(model.previous("scale"), value);
+                // TODO: rescale_axis does too many things. Decompose
+                this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
+                this.rescale_axis();
+            }, this);
 
-                that.tick_format = that.generate_tick_formatter();
-                that.append_axis();
-            });
-
-            // attributes used in drawing the color bar
+            this.side = this.model.get("side");
             this.x_offset = 100;
             this.y_offset = 40;
             this.bar_height = 20;
-            this.side = this.model.get("side");
             // Formatting data particular to the axis
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
                 .attr("class", "ColorBar")
@@ -62,21 +47,53 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.num_ticks = this.model.get("num_ticks");
             this.tick_values = this.model.get("tick_values");
 
-            this.parent.on("margin_updated", this.parent_margin_updated, this);
-            this.model.on("change:tick_format", this.tickformat_changed, this);
-            this.model.on("change:visible", this.update_visibility, this);
-            this.model.on("change:label", this.update_label, this);
-            this.model.on_some_change(["side", "orientation"], function() {
-                this.vertical = this.model.get("orientation") === "vertical" ? true : false;
-                this.side = this.model.get("side");
-                this.rescale_axis();
-                this.redraw_axis();
-            }, this);
+            var that = this;
+            scale_promise.then(function() {
+                that.tick_format = that.generate_tick_formatter();
+                that.set_scales_range();
+                that.append_axis();
+                that.parent.on("margin_updated", that.parent_margin_updated, that);
+
+                that.model.on("change:tick_format", that.tickformat_changed, that);
+                that.model.on("change:visible", that.update_visibility, that);
+                that.model.on("change:label", that.update_label, that);
+                that.model.on_some_change(["side", "orientation"], function() {
+                    this.vertical = this.model.get("orientation") === "vertical";
+                    this.side = this.model.get("side");
+                    this.rescale_axis();
+                    this.redraw_axis();
+                }, that);
+            });
+        },
+        set_scale: function(model) {
+            // Sets the child scale
+            var that = this;
+            if (this.axis_scale) { this.axis_scale.remove(); }
+            return this.create_child_view(model).then(function(view) {
+                // Trigger the displayed event of the child view.
+                that.after_displayed(function() {
+                    view.trigger("displayed");
+                }, that);
+                that.axis_scale = view;
+                that.axis_scale.on("domain_changed", that.redraw_axisline, that);
+                that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
+                that.axis_scale.on("highlight_axis", that.highlight, that);
+                that.axis_scale.on("unhighlight_axis", that.unhighlight, that);
+
+                // TODO: eventually removes what follows
+                if(that.axis_scale.model.type === "date_color_linear") {
+                    that.axis_line_scale = d3.time.scale().nice();
+                } else if(that.axis_scale.model.type === "ordinal") {
+                    that.axis_line_scale = d3.scale.ordinal();
+                    that.ordinal = true;
+                } else {
+                    that.axis_line_scale = d3.scale.linear();
+                }
+            });
         },
         append_axis: function() {
             // The label is allocated a space of 100px. If the label
-            // occupies more than 100px then you are out of luck :)
-            this.set_scales_range();
+            // occupies more than 100px then you are out of luck.
             var that = this;
             if(this.label) {
                 this.el.append("g")
@@ -91,7 +108,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .style("text-anchor", this.vertical ? "middle" : "end");
             }
 
-            var colorBar = this.el.append("g").attr("id","colorBarG" + this.unique_id);
+            var colorBar = this.el.append("g")
+                .attr("id","colorBarG" + this.cid);
 
             this.draw_color_bar();
             this.axis_line_scale.domain(this.axis_scale.scale.domain());
@@ -104,7 +122,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.redraw_axisline();
         },
         draw_color_bar: function() {
-            var colorBar = this.el.select("#colorBarG" + this.unique_id);
+            var colorBar = this.el.select("#colorBarG" + this.cid);
             colorBar.attr("transform", this.get_colorbar_transform());
 
             var that = this;
@@ -113,7 +131,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             colorBar.selectAll(".g-defs")
                 .remove();
 
-            this.set_scales_range();
             this.colors = this.axis_scale.scale.range();
             var colorSpacing = 100 / (this.colors.length - 1);
 
@@ -148,7 +165,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .append("defs")
                     .append("linearGradient")
                     .attr({
-                        id : "colorBarGradient" + this.unique_id,
+                        id : "colorBarGradient" + this.cid,
                         x1 : "0%",
                         y1 : "0%",
                         x2 : "100%",
@@ -159,7 +176,9 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .enter()
                     .append("stop")
                     .attr({
-                        "offset": function(d,i) { return colorSpacing * (i) + "%"; },
+                        "offset": function(d,i) {
+                            return colorSpacing * (i) + "%";
+                        },
                         "stop-color": function(d,i) { return that.colors[i]; },
                         "stop-opacity": 1
                     });
@@ -175,32 +194,39 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                         y: 0,
                         "stroke-width": 1
                     })
-                    .style("fill","url(#colorBarGradient" + this.unique_id + ")");
+                    .style("fill","url(#colorBarGradient" + this.cid + ")");
             }
         },
         get_topg_transform: function() {
             if(this.vertical){
                 if(this.side === "right") {
-                    return "translate(" + this.get_basic_transform() + "px, 0px)" + " translate(" + this.margin.right + "px, 0px)" +
-                         " translate(" + (-this.bar_height) + "px, 0px) translate(-5em, 0px)";
+                    return "translate(" + this.get_basic_transform() + "px, 0px)"
+                        + " translate(" + this.margin.right + "px, 0px)"
+                        + " translate(" + (-this.bar_height) + "px, 0px)"
+                        + " translate(-5em, 0px)";
                 }
-                    return "translate(" + this.get_basic_transform() + "px, 0px)" + " translate(" + -(this.margin.left) + "px, 0px)" +
-                         " translate(" + (this.bar_height) + "px, 0px) translate(5em, 0px)";
-
+                    return "translate(" + this.get_basic_transform() + "px, 0px)"
+                        + " translate(" + -(this.margin.left) + "px, 0px)"
+                        + " translate(" + (this.bar_height) + "px, 0px)"
+                        + " translate(5em, 0px)";
             } else {
-                return "translate(0px, " + this.get_basic_transform() + "px)" + "translate(0px, " + this.margin.bottom + "px)" +
-                         " translate(0px, " + (-this.bar_height) + "px) translate(0px, -2em)";
+                return "translate(0px, " + this.get_basic_transform() + "px)"
+                     + "translate(0px, " + this.margin.bottom + "px)"
+                     + " translate(0px, " + (-this.bar_height) + "px)"
+                     + " translate(0px, -2em)";
             }
         },
         get_label_transform: function() {
             if(this.vertical) {
-                return "translate(" + ((this.side === "right") ? (this.bar_height / 2) : (-this.bar_height / 2)) + ", " + (this.x_offset - 15) + ")";
+                return "translate(" + ((this.side === "right") ?
+                    (this.bar_height / 2) : (-this.bar_height / 2)) + ", " + (this.x_offset - 15) + ")";
             }
             return "translate(" + (this.x_offset - 5) + ", " + (this.bar_height / 2)+ ")";
         },
         get_axisline_transform: function() {
             if(this.vertical) {
-                return "translate(" + ((this.side === "right") ? this.bar_height : -(this.bar_height)) + ", 0)";
+                return "translate(" + ((this.side === "right") ?
+                    this.bar_height : -(this.bar_height)) + ", 0)";
             }
             return "translate(0, " + this.bar_height + ")";
         },
@@ -211,7 +237,9 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             return "translate(" + this.x_offset + ", 0)";
         },
         set_scales_range: function() {
-            var range = (this.vertical) ? [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
+            this.axis_scale.set_range();
+            var range = (this.vertical) ?
+                [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
             if(this.ordinal) {
                 this.axis_line_scale.rangeRoundBands(range, 0.05);
             } else {
@@ -224,13 +252,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         },
         get_color_bar_width: function() {
             return (this.vertical) ? (this.height - (2 * this.x_offset)) : (this.width - 2 * this.x_offset);
-        },
-        tickformat_changed: function() {
-            this.tick_format = this.generate_tick_formatter();
-            this.axis.tickFormat(this.tick_format);
-            if(this.g_axisline) {
-                this.g_axisline.call(this.axis);
-            }
         },
         update_label: function(model, value) {
             this.label = value;
@@ -247,7 +268,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             var self = this;
             var bar_width = this.get_color_bar_width() / this.colors.length;
             if(this.ordinal) {
-                var rectangles = this.el.select("#colorBarG" + this.unique_id)
+                var rectangles = this.el.select("#colorBarG" + this.cid)
                     .select(".g-rect")
                     .selectAll("rect")
                     .attr("width", bar_width);
@@ -261,7 +282,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     });
                 }
             } else {
-                this.el.select("#colorBarG" + this.unique_id)
+                this.el.select("#colorBarG" + this.cid)
                     .select(".g-rect")
                     .selectAll("rect")
                     .attr("width", this.get_color_bar_width())
@@ -277,13 +298,15 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.g_axisline.call(this.axis);
         },
         redraw_axisline: function() {
-            this.axis_line_scale.domain(this.axis_scale.scale.domain());
-            this.axis.orient(this.side)
-                .scale(this.axis_line_scale);
-            this.set_tick_values();
-            this.g_axisline
-                .attr("transform", this.get_axisline_transform())
-                .call(this.axis);
+            if (this.axis) {
+                this.axis_line_scale.domain(this.axis_scale.scale.domain());
+                this.axis.orient(this.side)
+                    .scale(this.axis_line_scale);
+                this.set_tick_values();
+                this.g_axisline
+                    .attr("transform", this.get_axisline_transform())
+                    .call(this.axis);
+            }
         },
         redraw_axis: function() {
             this.draw_color_bar();

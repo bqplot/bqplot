@@ -30,8 +30,10 @@ define(["widgets/js/manager", "d3", "./Scale", "./ColorUtils"], function(WidgetM
             } else {
                 this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
             }
-
-            this.model.on("domain_changed", this.model_domain_changed, this);
+            this.create_event_listeners();
+        },
+        create_event_listeners: function() {
+            LinearColorScale.__super__.create_event_listeners.apply(this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
         },
         set_range: function() {
