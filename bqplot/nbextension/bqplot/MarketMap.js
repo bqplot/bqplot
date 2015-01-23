@@ -510,8 +510,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .attr("width", this.column_width)
                     .attr("height", this.row_height)
                     .style({'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none'});
+                this.show_tooltip(d3.event, data);
             }
-            this.show_tooltip(d3.event, data);
         },
         update_selected_stroke: function(model, value) {
             this.selected_stroke = value;
@@ -525,10 +525,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             // is being updated you are not hovering over anything.
         },
         mouseout_handler: function(data, id, cell) {
-            if(this.model.get("enable_hover")) {
-                this.fig_hover.select(".hover_" + id)
-                    .remove();
-            }
+            this.fig_hover.select(".hover_" + id)
+                .remove();
             this.hide_tooltip();
         },
         show_tooltip: function(event, data) {
