@@ -96,16 +96,20 @@ class Axis(BaseAxis):
             A visibility toggle for the axis
     """
     icon = 'fa-arrows'
-    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal', allow_none=False, sync=True)
-    side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom', allow_none=False, sync=True)
+    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
+            allow_none=False, sync=True)
+    side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
+            allow_none=False, sync=True)
     label = Unicode(sync=True)
-    grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none', allow_none=False, sync=True)
+    grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
+            allow_none=False, sync=True)
     tick_format = Unicode(allow_none=True, sync=True)
     scale = Instance(Scale, sync=True)
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NumpyArray(sync=True)
     offset = Dict(dict(), sync=True)
-    label_location = Enum(['middle', 'start', 'end'], default_value='middle', allow_none=False, sync=True)
+    label_location = Enum(['middle', 'start', 'end'], default_value='middle',
+            allow_none=False, sync=True)
     label_color = Unicode(None, sync=True, allow_none=True)
     grid_color = Unicode(None, sync=True, allow_none=True)
     color = Unicode(None, sync=True, allow_none=True)
@@ -149,8 +153,10 @@ class ColorAxis(Axis):
     tick_format: string
         The axis tick format
     """
-    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal', allow_none=False, sync=True)
-    side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom', allow_none=False, sync=True)
+    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
+            allow_none=False, sync=True)
+    side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
+            allow_none=False, sync=True)
     label = Unicode(sync=True)
     scale = Instance(ColorScale, sync=True)
     tick_format = Unicode(sync=True)
