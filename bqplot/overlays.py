@@ -80,7 +80,8 @@ class Overlay(Widget):
     """
     overlay_types = {}
     _view_name = Unicode('bqplot.Overlay', sync=True)
-    _ipython_display_ = None  # We cannot display an overlay outside of a figure
+    _ipython_display_ = None  # We cannot display an overlay outside of a
+                              # figure
 
 
 @register_overlay('bqplot.HandDraw')
@@ -117,8 +118,10 @@ class HandDraw(Overlay):
     # TODO: Handle infinity in a meaningful way (json does not)
     # TODO: Once the new Union is merged in IPython, the sync on the whole
     # trait can be removed
-    min_x = Float(allow_none=True, default_value=None, sync=True) | Date(allow_none=True, default_value=None, sync=True)
-    max_x = Float(allow_none=True, default_value=None, sync=True) | Date(default_value=None, allow_none=True, sync=True)
+    min_x = (Float(allow_none=True, default_value=None, sync=True) |
+             Date(allow_none=True, default_value=None, sync=True))
+    max_x = (Float(allow_none=True, default_value=None, sync=True) |
+             Date(default_value=None, allow_none=True, sync=True))
 
 
 @register_overlay('bqplot.PanZoom')
@@ -482,7 +485,8 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
     # if present, into strings and send it across. It means writing a trait
     # which does that on top of a dictionary. I don't like that
     idx_selected = Dict({}, sync=True)
-    show_names = Bool(True, sync=True)  # TODO: Not a trait. The value has to be set at declaration time.
+    show_names = Bool(True, sync=True)  # TODO: Not a trait. The value has to
+                                        # be set at declaration time.
 
     def __init__(self, **kwargs):
         self.is_date = isinstance(kwargs.get('scale'), DateScale)
@@ -499,5 +503,6 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
             self.selected = self._selected
         else:
             for key in self._selected:
-                actual_selected[key] = [self.read_json(elem) for elem in self._selected[key]]
+                actual_selected[key] = [self.read_json(elem)
+                                        for elem in self._selected[key]]
             self.selected = actual_selected

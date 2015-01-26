@@ -39,7 +39,8 @@ Custom Traits
    safe_dlink
 """
 
-from IPython.utils.traitlets import Instance, Unicode, List, Int, Float, TraitError, TraitType
+from IPython.utils.traitlets import (Instance, Unicode, List, Int, Float,
+                                     TraitError, TraitType)
 import numpy as np
 import pandas as pd
 import re
@@ -64,7 +65,8 @@ class safe_directional_link(object):
     Examples
     --------
 
-    # >>> c = directional_link((src, 'value'), (tgt1, 'value'), (tgt2, 'value'))
+    # >>> c = directional_link((src, 'value'), (tgt1, 'value'),
+    # (tgt2, 'value'))
     # >>> src.value = 5  # updates target objects
     # >>> tgt1.value = 6 # does not update other objects
     """
@@ -119,7 +121,8 @@ class safe_directional_link(object):
                     setattr(self.readout[0], self.readout[1], e.message)
 
     def unlink(self):
-        self.source[0].on_trait_change(self._update, self.source[1], remove=True)
+        self.source[0].on_trait_change(self._update, self.source[1],
+                                       remove=True)
         self.source = None
         self.targets = []
 
@@ -225,7 +228,8 @@ class Date(TraitType):
 
     def validate(self, obj, value):
         try:
-            if(isinstance(value, dt) or np.issubdtype(np.dtype(value), np.datetime64)):
+            if(isinstance(value, dt)
+               or np.issubdtype(np.dtype(value), np.datetime64)):
                 return value
         except Exception:
             self.error(obj, value)
@@ -284,9 +288,11 @@ class NumpyArray(CInstance):
         max_dim = self._metadata.get('max_dim', np.inf)
         dim = len(value.shape)
         if dim > max_dim:
-            raise TraitError("Dimension mismatch: max: %s, actual: %s" % (max_dim, dim))
+            raise TraitError("Dimension mismatch: max: %s, actual: %s"
+                             % (max_dim, dim))
         if dim < min_dim:
-            raise TraitError("Dimension mismatch: min: %s, actual: %s" % (min_dim, dim))
+            raise TraitError("Dimension mismatch: min: %s, actual: %s"
+                             % (min_dim, dim))
         return value
 
     _cast = _asarray
@@ -316,21 +322,27 @@ class NdArray(CInstance):
         if value is None or len(value) == 0:
             return np.asarray(value)
         return_value = []
-        if(isinstance(value, list) or (isinstance(value, np.ndarray) and value.dtype == 'object')):
-            ## Pandas to_datetime handles all the cases where the passed in data could
-            ## be any of the combinations of [list, nparray] X [python_datetime, np.datetime]
-            ## Because of the coerce=True flag, any non-compatible date time type will be converted
-            ## to pd.NaT. By this comparision, we can figure out if it is date castable or not.
+        if (isinstance(value, list) or
+           (isinstance(value, np.ndarray) and value.dtype == 'object')):
+            # Pandas to_datetime handles all the cases where the passed in
+            # data could be any of the combinations of
+            #            [list, nparray] X [python_datetime, np.datetime]
+            # Because of the coerce=True flag, any non-compatible datetime type
+            # will be converted to pd.NaT. By this comparision, we can figure
+            # out if it is date castable or not.
             if(len(np.shape(value)) == 2):
                 for elem in value:
-                    temp_val = pd.to_datetime(elem, coerce=True, box=False, infer_datetime_format=True)
+                    temp_val = pd.to_datetime(elem, coerce=True, box=False,
+                                              infer_datetime_format=True)
                     temp_val = elem if (temp_val[0] == np.datetime64('NaT')) else temp_val
                     return_value.append(temp_val)
             elif(isinstance(value, list)):
-                temp_val = pd.to_datetime(value, coerce=True, box=False, infer_datetime_format=True)
+                temp_val = pd.to_datetime(value, coerce=True, box=False,
+                                          infer_datetime_format=True)
                 return_value = value if (temp_val[0] == np.datetime64('NaT')) else temp_val
             else:
-                temp_val = pd.to_datetime(value, coerce=True, box=False, infer_datetime_format=True)
+                temp_val = pd.to_datetime(value, coerce=True, box=False,
+                                          infer_datetime_format=True)
                 temp_val = value if (temp_val[0] == np.datetime64('NaT')) else temp_val
                 return_value = temp_val
         else:
@@ -351,7 +363,8 @@ class NdArray(CInstance):
     @staticmethod
     def _asarray(value):
         if value is not None:
-            array_dtype = np.datetime64 if (value.get('type') == 'date') else object
+            array_dtype = (np.datetime64 if (value.get('type') == 'date')
+                           else object)
             return np.asarray(value['values'], dtype=array_dtype)
 
     def __init__(self, *args, **kwargs):

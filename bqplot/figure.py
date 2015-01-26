@@ -27,7 +27,8 @@ Figure
 """
 
 from IPython.html.widgets import DOMWidget, register
-from IPython.utils.traitlets import Unicode, Instance, List, Dict, Any, CFloat, Bool, Enum, Float
+from IPython.utils.traitlets import (Unicode, Instance, List, Dict, Any,
+                                     CFloat, Bool, Enum, Float)
 
 from .scales import Scale, LinearScale
 
@@ -94,7 +95,8 @@ class Figure(DOMWidget):
     _view_name = Unicode('bqplot.Figure', sync=True)
 
     #: The title of the figure
-    title = Unicode(sync=True, exposed=True, display_index=1, display_name='Title')
+    title = Unicode(sync=True,
+                    exposed=True, display_index=1, display_name='Title')
     #: List of axes
     axes = List(allow_none=False, sync=True)
     #: List of marks
@@ -110,21 +112,31 @@ class Figure(DOMWidget):
     min_width = CFloat(800.0, sync=True)
     #: Minimum height for the figure, including the figure margins
     min_height = CFloat(600.0, sync=True)
-    #: Preserve the aspect ratio of the figure box specified with `min_width` and `min_height`.
-    #: This does not guarantee that the data coordinates will have any specific aspect ratio.
-    preserve_aspect = Bool(False, sync=True, exposed=True, display_index=3, display_name='Preserve aspect ratio')
+    #: Preserve the aspect ratio of the figure box specified with `min_width`
+    #: and `min_height`.
+    #: This does not guarantee that the data coordinates will have any specific
+    #: aspect ratio.
+    preserve_aspect = Bool(False, sync=True, exposed=True, display_index=3,
+                           display_name='Preserve aspect ratio')
 
-    #: Dictionary of figure margins, containing 'top', 'bottom', 'left' and 'right' margins.
-    #: The user is responsible for making sure that the width and height are greater than the sum of the margins.
-    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)
-    #: Padding to be applied around the data points in the figure in the horizontal direction on both sides
+    #: Dictionary of figure margins, containing 'top', 'bottom', 'left' and
+    #: 'right' margins.
+    #: The user is responsible for making sure that the width and height are
+    #: greater than the sum of the margins.
+    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60),
+                      sync=True)
+    #: Padding to be applied around the data points in the figure in the
+    #: horizontal direction on both sides
     padding_x = Float(0, sync=True)
-    #: Padding to be applied around the data points in the figure in the vertical direction on both sides
+    #: Padding to be applied around the data points in the figure in the
+    #: vertical direction on both sides
     padding_y = Float(0.025, sync=True)
     #: The legend location
-    legend_location = Enum(['top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'],
-                           default_value='top-right', allow_none=False, sync=True,
-                           exposed=True, display_index=2, display_name='Legend position')
+    legend_location = Enum(['top-right', 'top', 'top-left', 'left',
+                           'bottom-left', 'bottom', 'bottom-right', 'right'],
+                           default_value='top-right', allow_none=False,
+                           sync=True, exposed=True, display_index=2,
+                           display_name='Legend position')
 
     def _scale_x_default(self):
         return LinearScale(min=0, max=1)

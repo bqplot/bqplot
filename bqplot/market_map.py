@@ -27,7 +27,8 @@ Market Map
    SquareMarketMap
 """
 # from .figure import Figure
-from IPython.utils.traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance
+from IPython.utils.traitlets import (Int, Unicode, List, Dict, Enum, Bool,
+                                     Instance)
 from IPython.html.widgets import DOMWidget, CallbackDispatcher
 
 from .traits import NumpyArray, PandasDataFrame
@@ -95,13 +96,13 @@ class MarketMap(DOMWidget):
         Suggestion for no of columns in the map.If not specified, value is
         inferred from the no of rows and no of cells
     rows: int
-        No of rows in the map.If not specified, value is inferred from the no of
-        cells and no of columns.
-        If both rows and columns are not specified, then a square is constructed
-        basing on the no of cells.
-        The above two attributes are suggestions which are respected unless they
-        are not feasible. One required condition is that, the number of columns
-        is odd when row_groups is greater than 1.
+        No of rows in the map.If not specified, value is inferred from the no
+        of cells and no of columns.
+        If both rows and columns are not specified, then a square is
+        constructed basing on the no of cells.
+        The above two attributes are suggestions which are respected unless
+        they are not feasible. One required condition is that, the number of
+        columns is odd when row_groups is greater than 1.
     row_groups: int
         No of groups the rows should be divided into. This can be used to draw
         more square cells for each of the groups
@@ -150,7 +151,8 @@ class MarketMap(DOMWidget):
     axes = List(sync=True)
     color_data = NumpyArray(sync=True)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
-    preserve_aspect = Bool(False, sync=True, display_name='Preserve aspect ratio')
+    preserve_aspect = Bool(False, sync=True,
+                           display_name='Preserve aspect ratio')
 
     stroke = Unicode('white', sync=True)
     group_stroke = Unicode('black', sync=True)
@@ -179,5 +181,6 @@ class MarketMap(DOMWidget):
 class SquareMarketMap(MarketMap):
     margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
     data = Dict(sync=True)
-    mode = Enum(['squarify', 'slice', 'dice', 'slice-dice'], default_value='squarify', sync=True)
+    mode = Enum(['squarify', 'slice', 'dice', 'slice-dice'],
+                default_value='squarify', allow_none=False, sync=True)
     _view_name = Unicode("SquareMarketMap", sync=True)
