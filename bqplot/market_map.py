@@ -53,7 +53,7 @@ class MarketMap(DOMWidget):
     ref_data: PandasDataFrame
         Additional data associated with each element of the map. The data in
         this data frame can be displayed as a tooltip.
-    color_data: NumpyArray
+    color: NumpyArray
         Data to represent the color for each of the cells. If the value of the
         data is NaN for a cell, then the color of the cell is the color of the
         group it belongs to in absence of data for color
@@ -123,7 +123,7 @@ class MarketMap(DOMWidget):
 
     Other Attributes
     ----------------
-    clickable: bool
+    enable_select: bool
         boolean to control the ability to select the cells of the map by
         clicking
     enable_hover: bool
@@ -149,7 +149,7 @@ class MarketMap(DOMWidget):
     colors = List(CATEGORY10, sync=True)
     scales = Dict(sync=True)
     axes = List(sync=True)
-    color_data = NumpyArray(sync=True)
+    color = NumpyArray(sync=True)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
     preserve_aspect = Bool(False, sync=True,
                            display_name='Preserve aspect ratio')
@@ -159,9 +159,9 @@ class MarketMap(DOMWidget):
     selected_stroke = Unicode("dodgerblue", sync=True)
     hovered_stroke = Unicode("orangered", sync=True)
 
-    clickable = Bool(False, sync=True)
     selected = List([], sync=True)
     enable_hover = Bool(True, sync=True)
+    enable_select = Bool(True, sync=True)
     tooltip_widget = Instance(DOMWidget, sync=True)
     _view_name = Unicode("MarketMap", sync=True)
 

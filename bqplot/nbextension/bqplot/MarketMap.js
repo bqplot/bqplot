@@ -35,7 +35,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.num_rows = this.model.get("rows");
             this.num_cols = this.model.get("cols");
             this.row_groups = this.model.get("row_groups");
-            this.clickable = this.model.get("clickable");
+            this.enable_select = this.model.get("enable_select");
 
             this.update_data();
             // set the number of rows and columns in the map
@@ -137,7 +137,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.group_iter = 1;
         },
         create_listeners: function() {
-            this.model.on("change:color_data", this.recolor_chart, this);
+            this.model.on("change:color", this.recolor_chart, this);
             this.model.on("change:show_groups", this.show_groups, this);
             this.model.on("change:selected_stroke", this.update_selected_stroke, this);
             this.model.on("change:hovered_stroke", this.update_hovered_stroke, this);
@@ -211,7 +211,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.colors = this.model.get('colors');
             var num_colors = this.colors.length;
             this.colors_map = function(d) { return self.get_color(d, num_colors);};
-            var color_data = this.model.get('color_data');
+            var color_data = this.model.get('color');
             var mapped_data = this.data.map(function(d, i) {
                 return {'display': display_text[i], 'name': d, 'color': color_data[i],
                         'group': self.group_data[i], 'ref_data': self.ref_data[i]};
@@ -232,7 +232,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         },
         update_domains: function() {
             var color_scale_model = this.model.get("scales")["color"];
-            var color_data = this.model.get("color_data");
+            var color_data = this.model.get("color");
             if(color_scale_model && color_data.length > 0) {
                 color_scale_model.compute_and_set_domain(color_data, this.model.id);
             }
@@ -450,23 +450,25 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             }
         },
         cell_click_handler: function(data, id, cell) {
-            var selected = this.model.get("selected").slice();
-            var index = selected.indexOf(data.name);
-            var cell_id = d3.select(cell).attr("id");
-            if(index == -1) {
-                //append a rectangle with the dimensions to the g-click
-                selected.push(data.name);
-                var transform = d3.select(cell).attr("transform");
-                this.add_selected_cell(cell_id, transform);
+            if(this.model.get("enable_select")) {
+                var selected = this.model.get("selected").slice();
+                var index = selected.indexOf(data.name);
+                var cell_id = d3.select(cell).attr("id");
+                if(index == -1) {
+                    //append a rectangle with the dimensions to the g-click
+                    selected.push(data.name);
+                    var transform = d3.select(cell).attr("transform");
+                    this.add_selected_cell(cell_id, transform);
+                }
+                else {
+                    this.fig_click.select("#click_" + cell_id)
+                        .remove();
+                    //remove the rectangle from the g-click
+                    selected.splice(index, 1);
+                }
+                this.model.set("selected", selected);
+                this.touch();
             }
-            else {
-                this.fig_click.select("#click_" + cell_id)
-                    .remove();
-                //remove the rectangle from the g-click
-                selected.splice(index, 1);
-            }
-            this.model.set("selected", selected);
-            this.touch();
         },
         apply_selected: function() {
             var selected = this.model.get("selected");
@@ -510,8 +512,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     .attr("width", this.column_width)
                     .attr("height", this.row_height)
                     .style({'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none'});
+                this.show_tooltip(d3.event, data);
             }
-            this.show_tooltip(d3.event, data);
         },
         update_selected_stroke: function(model, value) {
             this.selected_stroke = value;
@@ -525,10 +527,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             // is being updated you are not hovering over anything.
         },
         mouseout_handler: function(data, id, cell) {
-            if(this.model.get("enable_hover")) {
-                this.fig_hover.select(".hover_" + id)
-                    .remove();
-            }
+            this.fig_hover.select(".hover_" + id)
+                .remove();
             this.hide_tooltip();
         },
         show_tooltip: function(event, data) {
