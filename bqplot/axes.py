@@ -59,25 +59,25 @@ class Axis(BaseAxis):
 
     Attributes
     ----------
-        icon: string
+        icon: string (class-level attribute)
             The font-awesome icon name for this object.
-        axis_types: dict
+        axis_types: dict (class-level attribute)
             A registry of existing axis types.
         orientation: {'horizontal', 'vertical'}
             The orientation of the axis, either vertical or horizontal
         side: {'bottom', 'top', 'left', 'right'}
             The side of the axis, either bottom, top, left or right
-        label: string
+        label: string (default: '')
             The axis label
-        tick_format: string
+        tick_format: string or None (default: '')
             The tick format for the axis.
         scale: Scale
             The scale represented by the axis
-        num_ticks: int
+        num_ticks: int or None (default: None)
             If tick_values is None, number of ticks
-        tick_values: numpy.ndarray or None
+        tick_values: numpy.ndarray or None (default: [])
             Tick values for the axis
-        offset: dict
+        offset: dict, (default: {})
             Containing a scale and a value {'scale': scale or None,
                                             'value': value of the offset}
             If offset['scale'] is None, the corresponding figure scale is used
@@ -85,34 +85,35 @@ class Axis(BaseAxis):
         label_location: {'middle', 'start', 'end'}
             The location of the label along the axis, one of 'start', 'end' or
             'middle'
-        label_color: string
+        label_color: string or None (default: None)
             The axis label color
-        color: string
+        color: string or None (default: None)
             The line color
-        label_offset: string
+        label_offset: string or None (default: None)
             Label displacement from the axis line. Units allowed are 'em', 'px'
             and 'ex'.
-        visible: bool
+        visible: bool (default: True)
             A visibility toggle for the axis
     """
     icon = 'fa-arrows'
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
-            allow_none=False, sync=True)
+                       allow_none=False, sync=True)
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
-            allow_none=False, sync=True)
+                allow_none=False, sync=True)
     label = Unicode(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
-            allow_none=False, sync=True)
-    tick_format = Unicode(allow_none=True, sync=True)
-    scale = Instance(Scale, sync=True)
+                      allow_none=False, sync=True)
+    tick_format = Unicode(allow_none=True, sync=True)   # TODO: should we set None as default value
+    scale = Instance(Scale, sync=True)                  # TODO: check for allow_none
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NumpyArray(sync=True)
-    offset = Dict(dict(), sync=True)
+    offset = Dict({}, allow_none=False, sync=True)
     label_location = Enum(['middle', 'start', 'end'], default_value='middle',
-            allow_none=False, sync=True)
-    label_color = Unicode(None, sync=True, allow_none=True)
-    grid_color = Unicode(None, sync=True, allow_none=True)
-    color = Unicode(None, sync=True, allow_none=True)
+                          allow_none=False, sync=True)
+    label_color = Unicode(None, sync=True, allow_none=True)  # TODO: should we use a color traitlet?
+    grid_color = Unicode(None, sync=True, allow_none=True)   # TODO: should we use a color traitlet?
+                                                             # TODO: document
+    color = Unicode(None, sync=True, allow_none=True)        # TODO: should we use a color traitlet?
     label_offset = Unicode(default_value=None, sync=True, allow_none=True)
     # Positive values are away from the figure and negative values are towards
     # the figure with resepect to the axis line.
@@ -124,7 +125,8 @@ class Axis(BaseAxis):
 
     def _tick_format_default(self):
         if isinstance(self.scale, DateScale):
-            # TODO: perhaps we should have a DateAxis subclass instead of this
+            # TODO: We should probably have a DateAxis subclass instead of this
+            # check at runtime.
             return None
         elif isinstance(self.scale, LogScale):
             return '.3g'
@@ -146,19 +148,19 @@ class ColorAxis(Axis):
         Orientation of the color axis
     side: {'bottom', 'top', 'left', right}
         Position of the color axis
-    label: string
+    label: string (default: '')
         Label of the color axis
     scale: ColorScale
         The scale represented by the axis
-    tick_format: string
+    tick_format: string (default: '')
         The axis tick format
     """
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
-            allow_none=False, sync=True)
+                       allow_none=False, sync=True)
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
-            allow_none=False, sync=True)
+                allow_none=False, sync=True)
     label = Unicode(sync=True)
-    scale = Instance(ColorScale, sync=True)
+    scale = Instance(ColorScale, sync=True)  # TODO: check for allow_none
     tick_format = Unicode(sync=True)
     _view_name = Unicode('bqplot.ColorAxis', sync=True)
     _model_name = Unicode('bqplot.AxisModel', sync=True)

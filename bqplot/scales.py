@@ -38,7 +38,7 @@ from IPython.html.widgets import Widget
 from IPython.utils.traitlets import Unicode, List, Enum, Float, Bool, Type
 
 import numpy as np
-from .traits import Date
+from .traits import Date, ColorList
 
 
 def register_scale(key=None):
@@ -62,18 +62,18 @@ class Scale(Widget):
 
     Attributes
     ----------
-    scale_types: dict
+    scale_types: dict (class-level attributes)
         A registry of existing scale types.
-    domain_class: type
-        type of the domain of the scale. Default value is float
-    reverse: bool
+    domain_class: type (default: Float)
+        traitlet type used to validate values in of the domain of the scale.
+    reverse: bool (default: False)
         whether the scale should be reversed
-    allow_padding: bool
+    allow_padding: bool (default: True)
         indicates whether figures are allowed to add data padding to this scale
         or not
     """
     scale_types = {}
-    domain_class = Type(Float, sync=False)
+    domain_class = Type(Float, allow_none=False, sync=False)
     reverse = Bool(False, sync=True)
     allow_padding = Bool(True, sync=True)
     _view_name = Unicode('Scale', sync=True)
@@ -90,13 +90,15 @@ class LinearScale(Scale):
 
     Attributes
     ----------
-    min: float (optional)
+    min: float or None (default: None)
         if not None, min is the minimal value of the domain
-    max: float (optional)
+    max: float or None (default: None)
         if not None, max is the maximal value of the domain
-    rtype: string
+    rtype: string (class-level attribute)
         This attribute should not be modifed. The range type of a linear
         scale is numerical.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
     """
     rtype = 'Number'
     dtype = np.float
@@ -115,13 +117,15 @@ class LogScale(Scale):
 
     Attributes
     ----------
-    min: float (optional)
+    min: float or None (default: None)
         if not None, min is the minimal value of the domain
-    max: float (optional)
+    max: float or None (default: None)
         if not None, max is the maximal value of the domain
-    rtype: string
+    rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
         The range type of a linear scale is numerical.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
     """
     rtype = 'Number'
     dtype = np.float
@@ -140,21 +144,27 @@ class DateScale(Scale):
 
     Attributes
     ----------
-    min: date (optional)
+    min: Date or None (default: None)
         if not None, min is the minimal value of the domain
-    max: date (optional)
+    max: Date (default: None)
         if not None, max is the maximal value of the domain
-    date_format: string
-    rtype: string
+    domain_class: type (default: Date)
+         traitlet type used to validate values in of the domain of the scale.
+    date_format: string (default: '')
+
+    rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
         The range type of a linear scale is numerical.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
     """
     rtype = 'Number'
     dtype = np.datetime64
-    domain_class = Type(Date, sync=False)
+    domain_class = Type(Date, allow_none=False, sync=False)
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
-    date_format = Unicode('', sync=True)
+    date_format = Unicode('', sync=True)  # TODO: should we allow_none and
+                                          # default to None?
     _view_name = Unicode('DateScale', sync=True)
     _model_name = Unicode('DateScaleModel', sync=True)
 
@@ -168,15 +178,17 @@ class OrdinalScale(Scale):
 
     Attributes
     ----------
-    domain: list
+    domain: list (default: [])
         The discrete values mapped by the ordinal scale
-    rtype: string
+    rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
         The range type of a linear scale is numerical.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
     """
     rtype = 'Number'
     dtype = np.str
-    domain = List(sync=True)
+    domain = List(allow_none=False, sync=True)
     _view_name = Unicode('OrdinalScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
 
@@ -190,21 +202,29 @@ class ColorScale(Scale):
 
     Attributes
     ----------
-    scale_type: enum
-    colors: list
-    min: float
-    max: float
-    mid: float
-    scheme: string
-    rtype: string
+    scale_type: {'linear'}
+
+    colors: list of colors (default: [])
+
+    min: float or None (default: None)
+
+    max: float or None (default: None)
+
+    mid: float or None (default: None)
+
+    scheme: string (default: 'RdYlGn')
+
+    rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
-        The range type of a color scale is 'color'.
+        The range type of a color scale is 'Color'.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
     """
     rtype = 'Color'
     dtype = np.float
     scale_type = Enum(['linear'], default_value='linear', allow_none=False,
                       sync=True)
-    colors = List(sync=True)
+    colors = ColorList(allow_none=False, sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
     mid = Float(default_value=None, sync=True, allow_none=True)
@@ -222,20 +242,26 @@ class DateColorScale(ColorScale):
 
     Attributes
     ----------
-    min: date
-    max: date
-    mid: date
-    date_format: string
-    rtype: string
+    min: Date or None (default: None)
+
+    max: Date or None (default: None)
+
+    mid: Date or None (default: None)
+
+    date_format: string (default: '')
+
+    rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
-        The range type of a color scale is 'color'.
+        The range type of a color scale is 'Color'.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
     """
     rtype = 'Color'
     dtype = np.datetime64
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
     mid = Unicode(default_value=None, sync=True, allow_none=True)
-    date_format = Unicode("", sync=True)
+    date_format = Unicode(sync=True)
     _view_name = Unicode('DateColorScale', sync=True)
     _model_name = Unicode('DateColorScaleModel', sync=True)
 
@@ -249,14 +275,16 @@ class OrdinalColorScale(ColorScale):
 
     Attributes
     ----------
-    domain: list
+    domain: list (default: [])
         The discrete values mapped by the ordinal scales.
-    rtype: string
+    rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
         The range type of a color scale is 'color'.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
     """
     rtype = 'Color'
     dtype = np.str
-    domain = List(sync=True)
+    domain = List(allow_none=False, sync=True)
     _view_name = Unicode('OrdinalColorScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
