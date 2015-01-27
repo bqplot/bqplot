@@ -201,14 +201,12 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             if(this.vertical){
                 if(this.side === "right") {
                     return "translate(" + this.get_basic_transform() + "px, 0px)"
-                        + " translate(" + this.margin.right + "px, 0px)"
-                        + " translate(" + (-this.bar_height) + "px, 0px)"
-                        + " translate(-5em, 0px)";
+                        + " translate(" + (this.margin.right/2) + "px, 0px)"
+                        + " translate(" + (-this.bar_height) + "px, 0px)";
                 }
                     return "translate(" + this.get_basic_transform() + "px, 0px)"
-                        + " translate(" + -(this.margin.left) + "px, 0px)"
-                        + " translate(" + (this.bar_height) + "px, 0px)"
-                        + " translate(5em, 0px)";
+                        + " translate(" + -(this.margin.left/2) + "px, 0px)"
+                        + " translate(" + (this.bar_height) + "px, 0px)";
             } else {
                 if(this.side === "top") {
                     return "translate(0px, " + this.get_basic_transform() + "px)"
@@ -232,7 +230,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         get_axisline_transform: function() {
             if(this.vertical) {
                 return "translate(" + ((this.side === "right") ?
-                    this.bar_height : -(this.bar_height)) + ", 0)";
+                    this.bar_height : 0) + ", 0)";
             }
             return "translate(0, " + ((this.side === "top") ?
                     0 : this.bar_height) + ")";
