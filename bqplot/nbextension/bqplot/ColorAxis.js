@@ -210,6 +210,12 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                         + " translate(" + (this.bar_height) + "px, 0px)"
                         + " translate(5em, 0px)";
             } else {
+                if(this.side === "top") {
+                    return "translate(0px, " + this.get_basic_transform() + "px)"
+                        + "translate(0px, " + -(this.margin.top) + "px)"
+                        + " translate(0px, " + (this.bar_height) + "px)"
+                        + " translate(0px, 2em)";
+                }
                 return "translate(0px, " + this.get_basic_transform() + "px)"
                      + "translate(0px, " + this.margin.bottom + "px)"
                      + " translate(0px, " + (-this.bar_height) + "px)"
@@ -228,7 +234,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 return "translate(" + ((this.side === "right") ?
                     this.bar_height : -(this.bar_height)) + ", 0)";
             }
-            return "translate(0, " + this.bar_height + ")";
+            return "translate(0, " + ((this.side === "top") ?
+                    0 : this.bar_height) + ")";
         },
         get_colorbar_transform: function() {
             if(this.vertical) {
