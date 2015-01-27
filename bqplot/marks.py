@@ -289,7 +289,7 @@ class Scatter(Mark):
         ordinates of the data points (1d array)
     color: numpy.ndarray or None (default: [])
         color of the data points (1d array). Defaults to default_color when not
-        privided or when a value is NaN
+        provided or when a value is NaN
     opacity: numpy.ndarray or None (default: [])
         opacity of the data points (1d array). Defaults to default_opacity when
         not provided or when a value is NaN
