@@ -53,8 +53,21 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
                 .attr("pointer-events", "none")
                 .attr("display", "none");
 
+                if(self.model.get("color")!=null) {
+                    self.rect.style("fill", self.model.get("color"));
+                }
+
                 self.create_listeners();
             }, null);
+        },
+        create_listeners: function() {
+            this.model.on("change:color", this.color_change, this);
+            this.parent.on("margin_updated", this.relayout, this);
+        },
+        color_change: function() {
+            if(this.model.get("color")!=null){
+                this.rect.style("fill", this.model.get("color"));
+            }
         },
         click: function () {
             this.active = true;
