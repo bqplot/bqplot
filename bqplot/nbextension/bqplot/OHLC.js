@@ -50,7 +50,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         create_listeners: function() {
             OHLC.__super__.create_listeners.apply(this);
             this.model.on("change:stroke", this.update_stroke, this);
-            this.model.on("change:color", this.update_color, this);
+            this.model.on("change:colors", this.update_colors, this);
             this.model.on("change:opacity", this.update_opacity, this);
             this.model.on("change:marker", this.update_marker, this);
 
@@ -70,7 +70,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.legend_el.selectAll("text").style("fill", stroke);
             }
         },
-        update_color: function() {
+        update_colors: function() {
             var that = this;
             var colors = this.model.get("colors");
             var up_color = (colors[0] ? colors[0] : "none");
@@ -195,8 +195,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             var stroke = this.model.get("stroke");
             var colors = this.model.get("colors");
-            var up_color = (colors[0] ? colors[0] : "none");
-            var down_color = (colors[1] ? colors[1] : "none");
+            var up_color = (colors[0] ? colors[0] : stroke);
+            var down_color = (colors[1] ? colors[1] : stroke);
 
             _.range(0, this.model.mark_data.length)
              .forEach(function(d) {
