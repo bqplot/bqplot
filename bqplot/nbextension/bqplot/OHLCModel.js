@@ -37,6 +37,23 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             } else if(x_data.length < y_data.length) {
                 y_data = y_data.slice(0, x_data.length);
             }
+
+            // Verify that our OHLC data is valid
+            for(var i = 0; i < y_data.length; i++) {
+                if(y_data[i].length !== 4
+                || y_data[i][this.px.high] < y_data[i][this.px.open]
+                || y_data[i][this.px.high] < y_data[i][this.px.close]
+                || y_data[i][this.px.low] > y_data[i][this.px.open]
+                || y_data[i][this.px.low] > y_data[i][this.px.close])
+                {
+                    // Truncate and notify console of error in data
+                    y_data = [];
+                    x_data = [];
+                    if(console) {
+                        console.error("Invalid OHLC data at index " + i);
+                    }
+                }
+            }
             this.mark_data = _.zip(x_data, y_data);
 
             this.update_domains();

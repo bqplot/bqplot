@@ -328,8 +328,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var headline_bottom     = [];
             var to_left_side        = [];
             var scaled_mark_widths  = [];
-            // TODO: Not satisfied with this. Will move it somewhere where
-            // we only recalculate when the data gets updated. XXX
+
             for(var i = 0; i < dat.length; i++) {
                 open[i]             = dat[i][this.model.px.open];
                 high[i]             = dat[i][this.model.px.high];
