@@ -71,17 +71,19 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_color: function() {
-            var color = this.model.get("color");
             var that = this;
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : "none");
+            var down_color = (colors[1] ? colors[1] : "none");
 
             // Only fill candles when close is lower than open
             this.el.selectAll(".stick").style("fill", function(d) {
                 return (d[that.model.px.open] > d[that.model.px.close] ?
-                    color : "none");
+                    down_color : up_color);
             });
 
             if(this.legend_el) {
-                this.legend_el.selectAll("path").attr("fill", color);
+                this.legend_el.selectAll("path").attr("fill", up_color);
             }
         },
         update_opacity: function() {
@@ -103,9 +105,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // Redraw existing marks
             this.draw_mark_paths(marker, this.calculate_mark_width(),
                 this.el, this.model.mark_data.map(function(d) {
-                    return d[1].map(function(elem) {
-                        return that.y_scale.scale(elem);
-                    });
+                    return d[1];
                 }));
         },
         update_idx_selected: function(model, value) {
@@ -137,7 +137,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(indices === undefined || indices.length == 0) {
                 return;
             }
-            var color = this.model.get("color");
+            var that = this;
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : "none");
+            var down_color = (colors[1] ? colors[1] : "none");
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             var elements = this.el.selectAll(".stick")
@@ -146,7 +149,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 });
 
             elements.style("fill", function(d) {
-                  return (d[0] > d[3] ? color : "none");
+                  return (d[that.model.px.open] > d[that.model.px.close] ?
+                    down_color : up_color);
               })
               .style("stroke", stroke)
               .style("opacity", opacity);
@@ -190,7 +194,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
             var that = this;
             var stroke = this.model.get("stroke");
-            var selected_stroke = this.model.get("color");
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : "none");
+            var down_color = (colors[1] ? colors[1] : "none");
 
             _.range(0, this.model.mark_data.length)
              .forEach(function(d) {
@@ -200,7 +206,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             current_range.forEach(function(d) {
                 that.el.selectAll("#stick" + d)
-                  .style("stroke", selected_stroke);
+                    .style("stroke", function(d) {
+                        return d[that.model.px.open] > d[that.model.px.close] ?
+                            down_color : up_color;
+                    });
             });
         },
         invert_range: function(start_pxl, end_pxl) {
@@ -223,6 +232,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 d3.bisectRight(this.model.mark_data.map(function(d){
                     return d[0];
                 }), data[1])]);
+            if(idx_start >= this.model.mark_data.length) {
+                idx_start = idx_end = this.model.mark_data.length - 1;
+            }
             this.update_selected_colors(idx_start, idx_end);
 
             if((idx_end === this.model.mark_data.length) &&
@@ -252,13 +264,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         draw: function() {
             this.set_ranges();
             var that = this;
-            var color = this.model.get("color");
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : "none");
+            var down_color = (colors[1] ? colors[1] : "none");
             var mark_width = this.calculate_mark_width();
             var stick = this.el.selectAll(".stick")
                 .data(this.model.mark_data.map(function(d) {
-                    return d[1].map(function(elem) {
-                        return that.y_scale.scale(elem);
-                    });
+                    return d[1];
                 }));
 
             // Create new
@@ -279,21 +291,19 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.el.selectAll(".stick")
                 .style("fill", function(d, i) {
                     return (d[that.model.px.open] > d[that.model.px.close]) ?
-                        color : "none";
+                        down_color : up_color;
                 })
                 .attr( "transform", function(d, i) {
                     return "translate(" + (that.x_scale.scale(that.model.mark_data[i][0])
                                         + that.x_offset) + ","
-                                        + (d[that.model.px.high]
+                                        + (that.y_scale.scale(d[that.model.px.high])
                                         + that.y_offset) + ")";
                 });
 
             // Draw the mark paths
             this.draw_mark_paths(this.model.get("marker"), mark_width, this.el,
                 this.model.mark_data.map(function(d) {
-                    return d[1].map(function(elem) {
-                        return that.y_scale.scale(elem);
-                    } );
+                    return d[1];
                 }));
 
             this.apply_styles(this.selected_indices);
@@ -330,10 +340,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var scaled_mark_widths  = [];
 
             for(var i = 0; i < dat.length; i++) {
-                open[i]             = dat[i][this.model.px.open];
-                high[i]             = dat[i][this.model.px.high];
-                low[i]              = dat[i][this.model.px.low];
-                close[i]            = dat[i][this.model.px.close];
+                open[i]     = that.y_scale.scale(dat[i][this.model.px.open]);
+                high[i]     = that.y_scale.scale(dat[i][this.model.px.high]);
+                low[i]      = that.y_scale.scale(dat[i][this.model.px.low]);
+                close[i]    = that.y_scale.scale(dat[i][this.model.px.close]);
                 headline_top[i]     = (that.y_scale.scale.invert(open[i]) >
                                         that.y_scale.scale.invert(close[i])) ?
                                         open[i] : close[i];
@@ -475,7 +485,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var stroke = this.model.get("stroke");
-            var color = this.model.get("color");
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : "none");
+            var down_color = (colors[1] ? colors[1] : "none");
             this.rect_dim = inter_y_disp * 0.8;
             var that = this;
 
@@ -487,13 +499,14 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     return "translate(0, " + (i * inter_y_disp + y_disp) + ")";
                 })
                 .attr("class", "legend" + this.uuid)
-                .attr("fill", color)
+                .attr("fill", up_color)
                 .on("mouseover", _.bind(this.highlight_axes, this))
                 .on("mouseout", _.bind(this.unhighlight_axes, this));
 
             leg.append("path").attr("class", "stick_head");
             leg.append("path").attr("class", "stick_tail");
-            leg.append("path").attr("class", "stick_body").attr("fill", color);
+            leg.append("path").attr("class", "stick_body")
+                              .attr("fill", up_color);
 
             // Add stroke color and set position
             leg.selectAll("path")
