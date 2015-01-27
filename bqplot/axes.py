@@ -31,7 +31,7 @@ from IPython.html.widgets import Widget
 from IPython.utils.traitlets import Int, Unicode, Instance, Enum, Dict, Bool
 
 from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale
-from .traits import NumpyArray
+from .traits import NumpyArray, Color
 
 
 def register_axis(key=None):
@@ -85,10 +85,12 @@ class Axis(BaseAxis):
         label_location: {'middle', 'start', 'end'}
             The location of the label along the axis, one of 'start', 'end' or
             'middle'
-        label_color: string or None (default: None)
-            The axis label color
-        color: string or None (default: None)
-            The line color
+        label_color: Color or None (default: None)
+            The color of the axis label
+        grid_color: Color or None (default: None)
+            The color of the grid lines
+        color: Color or None (default: None)
+            The color of the line
         label_offset: string or None (default: None)
             Label displacement from the axis line. Units allowed are 'em', 'px'
             and 'ex'.
@@ -110,10 +112,9 @@ class Axis(BaseAxis):
     offset = Dict({}, allow_none=False, sync=True)
     label_location = Enum(['middle', 'start', 'end'], default_value='middle',
                           allow_none=False, sync=True)
-    label_color = Unicode(None, sync=True, allow_none=True)  # TODO: should we use a color traitlet?
-    grid_color = Unicode(None, sync=True, allow_none=True)   # TODO: should we use a color traitlet?
-                                                             # TODO: document
-    color = Unicode(None, sync=True, allow_none=True)        # TODO: should we use a color traitlet?
+    label_color = Color(None, sync=True, allow_none=True)
+    grid_color = Color(None, sync=True, allow_none=True)
+    color = Color(None, sync=True, allow_none=True)
     label_offset = Unicode(default_value=None, sync=True, allow_none=True)
     # Positive values are away from the figure and negative values are towards
     # the figure with resepect to the axis line.
