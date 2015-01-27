@@ -20,7 +20,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             OHLCModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.px = { op: 0, hi: 1, lo: 2, cl: 3 };
+            this.px = { open: 0, high: 1, low: 2, close: 3 };
 	    },
         update_bounding_box: function(model, value) {
             // TODO: Actually add some padding.
@@ -37,7 +37,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             } else if(x_data.length < y_data.length) {
                 y_data = y_data.slice(0, x_data.length);
             }
-            this.xy_data = _.zip(x_data, y_data);
+            this.mark_data = _.zip(x_data, y_data);
 
             this.update_domains();
             this.trigger("data_updated");
@@ -49,24 +49,21 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var that = this;
 
             if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.xy_data.map(function(xy) {
+                x_scale.compute_and_set_domain(this.mark_data.map(function(xy) {
                     return xy[0];
                 }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
-            this.min_x = x_scale.domain[0];
-            this.max_x = x_scale.domain[1];
-
             if(!this.get("preserve_domain")["y"]) {
                 // Remember that elem contains OHLC data here so we cannot use
                 // compute_and_set_domain
-                var min = d3.min(this.xy_data.map(function(d) {
-                    return d[1][that.px.lo];
+                var min = d3.min(this.mark_data.map(function(d) {
+                    return d[1][that.px.low];
                 }));
-                var max = d3.max(this.xy_data.map(function(d) {
-                    return d[1][that.px.hi];
+                var max = d3.max(this.mark_data.map(function(d) {
+                    return d[1][that.px.high];
                 }));
                 y_scale.set_domain([min,max], this.id);
             } else {
