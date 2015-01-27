@@ -22,9 +22,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         remove: function() {
             this.model.off(null, null, this);
             this.svg.remove();
+            $(this.options.cell).off("output_area_resize."+this.id);
             this.tooltip_div.remove();
         },
         render: function(options) {
+            this.id = utils.uuid();
             this.width = this.model.get("map_width");
             this.height = this.model.get("map_height");
 
@@ -104,7 +106,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 this.draw_group_names();
                 this.create_tooltip_widget();
             });
-            $(this.options.cell).on("output_area_resize", function() {
+            $(this.options.cell).on("output_area_resize"+this.id, function() {
                 self.update_layout();
             });
         },
