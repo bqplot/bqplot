@@ -76,7 +76,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var up_color = (colors[0] ? colors[0] : "none");
             var down_color = (colors[1] ? colors[1] : "none");
 
-            // Only fill candles when close is lower than open
+            // Fill candles based on the opening and closing values
             this.el.selectAll(".stick").style("fill", function(d) {
                 return (d[that.model.px.open] > d[that.model.px.close] ?
                     down_color : up_color);
@@ -220,36 +220,21 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 idx_selected = [];
                 return idx_selected;
             }
-            var that = this;
-            var data = [start_pxl, end_pxl].map(function(elem) {
-                return that.x_scale.scale.invert(elem);
+            var that            = this;
+            var min             = this.x_scale.scale.invert(start_pxl);
+            var max             = this.x_scale.scale.invert(end_pxl);
+            var idx_start       = -1;
+            var idx_end         = -1;
+            var indices         = _.range(this.model.mark_data.length);
+            var idx_selected    = _.filter(indices, function(index) {
+                var elem = that.model.mark_data[index];
+                return (elem[0] >= min && elem[0] <= max);
             });
-            var idx_start = d3.max([0,
-                d3.bisectLeft(this.model.mark_data.map(function(d){
-                    return d[0];
-                }), data[0])]);
-            var idx_end = d3.min([this.model.mark_data.length,
-                d3.bisectRight(this.model.mark_data.map(function(d){
-                    return d[0];
-                }), data[1])]);
-            if(idx_start >= this.model.mark_data.length) {
-                idx_start = idx_end = this.model.mark_data.length - 1;
+            if(idx_selected.length > 0) {
+                idx_start = idx_selected[0];
+                idx_end = idx_selected[idx_selected.length - 1];
             }
             this.update_selected_colors(idx_start, idx_end);
-
-            if((idx_end === this.model.mark_data.length) &&
-                (this.model.mark_data.length > 0))
-            {
-                // Decrement so that we stay in bounds for [] operator
-                idx_end -= 1;
-            }
-            var indices = _.range(this.model.mark_data.length);
-            var selected_data = [this.model.mark_data[idx_start][0],
-                this.model.mark_data[idx_end][1]];
-            var idx_selected = _.filter(indices, function(index) {
-                var elem = that.model.mark_data[index][0];
-                return (elem <= selected_data[1] && elem >= selected_data[0]);
-            });
             return idx_selected;
         },
         invert_point: function(pixel) {
