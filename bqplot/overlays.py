@@ -262,6 +262,8 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
         in the marks attribute. The two-element array contains the minimum and
         maximum index of the data of the mark for which the 'x' attribute is in
         the region selected.
+    color: Color or None (default: None)
+        color of the rectangle representing the interval selector
     """
     _view_name = Unicode('bqplot.IntervalSelectorOverlay', sync=True)
     selected = NdArray(sync=True)
@@ -294,7 +296,7 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
         in the marks attribute. The element corresponds to the maximum index of
         the data for which the 'x' attribute is less than or equal to the value
         selected.
-    color: Color (default: 'red')
+    color: Color or None (default: None)
         color of the line representing the index selector
     line_width: nonnegative integer (default: 0)
         width of the line represetning the index selector
