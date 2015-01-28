@@ -128,6 +128,12 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                     .selectAll("rect")
                     .attr("y", 0)
                     .attr("height", self.height);
+
+                if(self.model.get("color")!=null) {
+                    self.el.selectAll("rect")
+                        .style("fill", self.model.get("color"));
+                }
+
                 self.create_listeners();
             });
         },
@@ -270,6 +276,10 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                 .selectAll("rect")
                 .attr("y", 0)
                 .attr("height", this.height);
+
+            if(self.model.get("color")!=null) {
+                new_brush_g.selectAll("rect").style("fill", self.model.get("color"));
+            }
 
             new_brush_g.append("text")
                 .attr("y", 30)
