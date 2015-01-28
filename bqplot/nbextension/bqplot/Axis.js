@@ -363,8 +363,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             return label_offset;
         },
         remove: function() {
-            Axis.__super__.remove.apply(this);
+            this.model.off(null, null, this);
             this.el.remove();
+            Axis.__super__.remove.apply(this);
         },
         update_grid_lines: function() {
             var axis_type = (this.vertical) ? "y" : "x";
