@@ -343,6 +343,8 @@ class BrushIntervalSelectorOverlay(OneDSelectorOverlay):
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
+    color: Color or None (default: None)
+        color of the rectangle representing the brush selector
     """
     _view_name = Unicode('bqplot.BrushIntervalSelectorOverlay', sync=True)
     brushing = Bool(False, sync=True)
@@ -385,6 +387,8 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
+    color: Color or None (default: None)
+        color of the rectangle representing the brush selector
     """
     _view_name = Unicode('bqplot.BrushSelectorOverlay', sync=True)
     clear = Bool(False, sync=True)
