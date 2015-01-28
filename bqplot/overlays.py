@@ -42,7 +42,7 @@ from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Any,
 from IPython.html.widgets import Widget
 
 from .scales import Scale, DateScale
-from .traits import NdArray, Date
+from .traits import Color, Date, NdArray
 
 
 def register_overlay(key=None):
@@ -262,10 +262,13 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
         in the marks attribute. The two-element array contains the minimum and
         maximum index of the data of the mark for which the 'x' attribute is in
         the region selected.
+    color: Color or None (default: None)
+        color of the rectangle representing the interval selector
     """
     _view_name = Unicode('bqplot.IntervalSelectorOverlay', sync=True)
     selected = NdArray(sync=True)
     idx_selected = List([], allow_none=False, sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
 
 @register_overlay('bqplot.IndexSelectorOverlay')
@@ -293,7 +296,7 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
         in the marks attribute. The element corresponds to the maximum index of
         the data for which the 'x' attribute is less than or equal to the value
         selected.
-    color: Color (default: 'red')
+    color: Color or None (default: None)
         color of the line representing the index selector
     line_width: nonnegative integer (default: 0)
         width of the line represetning the index selector
@@ -301,8 +304,8 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
     _view_name = Unicode('bqplot.IndexSelectorOverlay', sync=True)
     selected = NdArray(sync=True)
     idx_selected = List([], allow_none=False, sync=True)
-    color = Unicode('red', sync=True)
     line_width = Int(2, sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
 
 @register_overlay('bqplot.BrushIntervalSelectorOverlay')
@@ -340,11 +343,14 @@ class BrushIntervalSelectorOverlay(OneDSelectorOverlay):
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
+    color: Color or None (default: None)
+        color of the rectangle representing the brush selector
     """
     _view_name = Unicode('bqplot.BrushIntervalSelectorOverlay', sync=True)
     brushing = Bool(False, sync=True)
     selected = NdArray(sync=True)
     idx_selected = List([], sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
 
 @register_overlay('bqplot.BrushSelectorOverlay')
@@ -381,12 +387,15 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
+    color: Color or None (default: None)
+        color of the rectangle representing the brush selector
     """
     _view_name = Unicode('bqplot.BrushSelectorOverlay', sync=True)
     clear = Bool(False, sync=True)
     brushing = Bool(False, sync=True)
     idx_selected = List([], sync=True)
     selected = List([], sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
     def __init__(self, **kwargs):
         # Stores information regarding the scales. The date scaled values have

@@ -18,7 +18,6 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
     var IntervalSelector = BaseXSelector.extend({
         render : function() {
             IntervalSelector.__super__.render.apply(this);
-
             this.freeze_but_move = true;
             this.freeze_dont_move = false;
             this.active = false;
@@ -53,8 +52,21 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
                 .attr("pointer-events", "none")
                 .attr("display", "none");
 
+                if(self.model.get("color")!=null) {
+                    self.rect.style("fill", self.model.get("color"));
+                }
+
                 self.create_listeners();
             }, null);
+        },
+        create_listeners: function() {
+            IntervalSelector.__super__.create_listeners.apply(this);
+            this.model.on("change:color", this.color_change, this);
+        },
+        color_change: function() {
+            if(this.model.get("color")!=null){
+                this.rect.style("fill", this.model.get("color"));
+            }
         },
         click: function () {
             this.active = true;

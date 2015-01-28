@@ -37,10 +37,23 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
                 self.is_x_date = (self.x_scale.model.type === "date");
                 self.is_y_date = (self.y_scale.model.type === "date");
 
-                self.el.attr("class", "selector brushintsel")
+                self.brushsel = self.el.attr("class", "selector brushintsel")
                     .call(self.brush);
+
+                if (self.model.get("color") != null) {
+                    self.brushsel.style("fill", self.model.get("color"));
+                }
                 self.create_listeners();
             });
+        },
+        create_listeners: function() {
+            BrushSelector.__super__.create_listeners.apply(this);
+            this.model.on("change:color", this.color_change, this);
+        },
+        color_change: function() {
+             if (this.model.get("color") != null) {
+                this.brushsel.style("fill", this.model.get("color"));
+            }
         },
         brush_start: function () {
             this.model.set("brushing", true);
@@ -124,12 +137,26 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
 
                 self.el.attr("class", "selector brushintsel");
 
-                self.el.call(self.brush)
+                self.brushsel = self.el.call(self.brush)
                     .selectAll("rect")
                     .attr("y", 0)
                     .attr("height", self.height);
+
+                if(self.model.get("color")!=null) {
+                    self.brushsel.style("fill", self.model.get("color"));
+                }
+
                 self.create_listeners();
             });
+        },
+        create_listeners: function() {
+            BrushSelector.__super__.create_listeners.apply(this);
+            this.model.on("change:color", this.color_change, this);
+        },
+        change_color: function() {
+            if (this.model.get("color") != null) {
+                this.brushsel.style("fill", this.model.get("color"));
+            }
         },
         brush_start: function () {
             this.model.set("brushing", true);
@@ -266,10 +293,14 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             var new_brush_g = this.el.append("g")
                 .attr("class", "selector brushintsel active");
 
-            new_brush_g.call(brush)
+            self.new_brushsel = new_brush_g.call(brush)
                 .selectAll("rect")
                 .attr("y", 0)
                 .attr("height", this.height);
+
+            if(self.model.get("color")!=null) {
+                self.new_brushsel.style("fill", self.model.get("color"));
+            }
 
             new_brush_g.append("text")
                 .attr("y", 30)
