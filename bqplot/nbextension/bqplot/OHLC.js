@@ -103,7 +103,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         update_selected_colors: function(idx_start, idx_end) {
             var stick_sel       = this.el.selectAll(".stick");
-            var current_range   = _.range(idx_start, idx_end);
+            var current_range   = _.range(idx_start, idx_end + 1);
             if(current_range.length == this.model.mark_data.length) {
                 current_range   = [];
             }

@@ -21,12 +21,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.px = { open: 0, high: 1, low: 2, close: 3 };
-	    },
-        update_bounding_box: function(model, value) {
-            // TODO: Actually add some padding.
-            var pad = 0;
-            this.x_padding = this.y_padding = pad;
-            this.trigger("mark_padding_updated");
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");
@@ -60,15 +54,36 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("data_updated");
         },
         update_domains: function() {
-            var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
-            var that = this;
+            var that            = this;
+            var scales          = this.get("scales");
+            var x_scale         = scales["x"];
+            var y_scale         = scales["y"];
+            var min_x_dist      = Number.POSITIVE_INFINITY;
+            var max_y_height    = 0;
+            var dist = height   = 0;
+
+            for(var i = 0; i < this.mark_data.length; i++) {
+                if(i > 0) {
+                    dist = this.mark_data[i][0] - this.mark_data[i-1][0];
+                    if(dist < min_x_dist) min_x_dist = dist;
+                }
+                height = this.mark_data[i][this.px.high] -
+                            this.mark_data[i][this.px.low];
+                if(height > max_y_height) max_y_height = height;
+            }
+            if(min_x_dist === Number.POSITIVE_INFINITY) {
+                min_x_dist = 0;
+            }
 
             if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.mark_data.map(function(xy) {
-                    return xy[0];
-                }), this.id);
+                var min = d3.min(this.mark_data.map(function(d) {
+                    return d[0];
+                }));
+                var max = d3.max(this.mark_data.map(function(d) {
+                    return d[0];
+                }));
+                if(max instanceof Date) max = max.getTime();
+                x_scale.set_domain([min - min_x_dist/2, max + min_x_dist/2], this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
@@ -82,7 +97,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 var max = d3.max(this.mark_data.map(function(d) {
                     return d[1][that.px.high];
                 }));
-                y_scale.set_domain([min,max], this.id);
+                if(max instanceof  Date) max = max.getTime();
+                y_scale.set_domain([min - max_y_height, max + max_y_height], this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }

@@ -558,8 +558,8 @@ class OHLC(Mark):
         marker type
     stroke: color
         stroke color of the marker
-    color: color
-        fill color of the marker
+    colors: ColorList
+        fill colors for the markers (up/down)
     opacity: float
         opacity of the marker
 
