@@ -48,7 +48,10 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         },
         create_listeners: function() {
             BrushSelector.__super__.create_listeners.apply(this);
-            if (this.model.get("color") != null) {
+            this.model.on("change:color", this.color_change, this);
+        },
+        color_change: function() {
+             if (this.model.get("color") != null) {
                 this.brushsel.style("fill", this.model.get("color"));
             }
         },
