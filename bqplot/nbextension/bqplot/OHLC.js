@@ -17,8 +17,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
     var Mark = mark[0];
     var OHLC = Mark.extend({
         render: function() {
-            var base_creation_promise = OHLC.__super__.render.apply(this);
-            var that = this;
+            var base_creation_promise   = OHLC.__super__.render.apply(this);
+            var that                    = this;
             return base_creation_promise.then(function() {
                 that.create_listeners();
                 that.draw(); },
@@ -64,10 +64,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_colors: function() {
-            var that = this;
-            var colors = this.model.get("colors");
-            var up_color = (colors[0] ? colors[0] : "none");
-            var down_color = (colors[1] ? colors[1] : "none");
+            var that        = this;
+            var colors      = this.model.get("colors");
+            var up_color    = (colors[0] ? colors[0] : "none");
+            var down_color  = (colors[1] ? colors[1] : "none");
 
             // Fill candles based on the opening and closing values
             this.el.selectAll(".stick").style("fill", function(d) {
@@ -88,8 +88,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_marker: function() {
-            var marker = this.model.get("marker");
-            var that = this;
+            var marker  = this.model.get("marker");
+            var that    = this;
 
             if(this.legend_el && this.rect_dim) {
                 this.draw_legend_icon(this.rect_dim, this.legend_el);
@@ -102,16 +102,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 }));
         },
         update_selected_colors: function(idx_start, idx_end) {
-            var stick_sel = this.el.selectAll(".stick");
-            var current_range = _.range(idx_start, idx_end);
+            var stick_sel       = this.el.selectAll(".stick");
+            var current_range   = _.range(idx_start, idx_end);
             if(current_range.length == this.model.mark_data.length) {
-                current_range = [];
+                current_range   = [];
             }
-            var that = this;
-            var stroke = this.model.get("stroke");
-            var colors = this.model.get("colors");
-            var up_color = (colors[0] ? colors[0] : stroke);
-            var down_color = (colors[1] ? colors[1] : stroke);
+            var that            = this;
+            var stroke          = this.model.get("stroke");
+            var colors          = this.model.get("colors");
+            var up_color        = (colors[0] ? colors[0] : stroke);
+            var down_color      = (colors[1] ? colors[1] : stroke);
 
             _.range(0, this.model.mark_data.length)
              .forEach(function(d) {
@@ -145,7 +145,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 var elem = that.model.mark_data[index];
                 return (elem[0] >= min && elem[0] <= max);
             });
-            if(idx_selected.length > 0) {
+            if(idx_selected.length > 0 &&
+                (start_pxl !== that.x_scale.scale.range()[0] ||
+                    end_pxl !== that.x_scale.scale.range()[1]))
+            {
                 idx_start = idx_selected[0];
                 idx_end = idx_selected[idx_selected.length - 1];
             }
@@ -163,11 +166,11 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         draw: function() {
             this.set_ranges();
-            var that = this;
-            var colors = this.model.get("colors");
-            var up_color = (colors[0] ? colors[0] : "none");
-            var down_color = (colors[1] ? colors[1] : "none");
-            var mark_width = this.calculate_mark_width();
+            var that        = this;
+            var colors      = this.model.get("colors");
+            var up_color    = (colors[0] ? colors[0] : "none");
+            var down_color  = (colors[1] ? colors[1] : "none");
+            var mark_width  = this.calculate_mark_width();
             var stick = this.el.selectAll(".stick")
                 .data(this.model.mark_data.map(function(d) {
                     return d[1];
@@ -382,15 +385,15 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.draw();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            var stroke = this.model.get("stroke");
-            var colors = this.model.get("colors");
-            var up_color = (colors[0] ? colors[0] : "none");
-            var down_color = (colors[1] ? colors[1] : "none");
-            this.rect_dim = inter_y_disp * 0.8;
-            var that = this;
+            var stroke      = this.model.get("stroke");
+            var colors      = this.model.get("colors");
+            var up_color    = (colors[0] ? colors[0] : "none");
+            var down_color  = (colors[1] ? colors[1] : "none");
+            this.rect_dim   = inter_y_disp * 0.8;
+            var that        = this;
 
-            this.legend_el = elem.selectAll(".legend" + this.uuid)
-                                 .data([this.model.mark_data]);
+            this.legend_el  = elem.selectAll(".legend" + this.uuid)
+                                  .data([this.model.mark_data]);
 
             var leg = this.legend_el.enter().append("g")
                 .attr("transform", function(d, i) {
@@ -434,10 +437,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
              * Drawing the icon like this means we can avoid scaling when we
              * already know what the size of the mark is in pixels
              */
-            var height = size;
-            var width = size/2;
+            var height          = size;
+            var width           = size/2;
             var bottom_y_offset = size*3/4;
-            var top_y_offset = size/4;
+            var top_y_offset    = size/4;
             if(this.model.get("marker") === "candle") {
                 selector.selectAll(".stick_head").attr("d",
                     this.head_path_candle(width/2));
