@@ -37,7 +37,6 @@ Overlays
    panzoom
 """
 
-import sys
 from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Any,
                                      Instance, List)
 from IPython.html.widgets import Widget
@@ -75,13 +74,13 @@ class Overlay(Widget):
 
     Attributes
     ----------
-    overlay_types: dict
+    overlay_types: dict (class-level attribute)
         A registry of existing overlay types.
-
     """
     overlay_types = {}
     _view_name = Unicode('bqplot.Overlay', sync=True)
-    _ipython_display_ = None  # We cannot display overlays outside of a figure
+    _ipython_display_ = None  # We cannot display an overlay outside of a
+                              # figure
 
 
 @register_overlay('bqplot.HandDraw')
@@ -96,27 +95,33 @@ class HandDraw(Overlay):
     path while holding the mouse-down.
     y-values corresponding to x-values smaller than min_x or greater than max_x
     cannot be edited by HandDraw.
+
     Attributes
     ----------
-    lines: an instance Lines mark or None
+    lines: an instance Lines mark or None (default: None)
         The instance of Lines which is edited using the hand-draw overlay. The
         'y' values of the line are changed according to the path of the mouse.
         If the lines has multi dimensional 'y', then the 'line_index' attribute
         is used to selected the 'y' to be edited.
-    line_index: nonnegative integer
+    line_index: nonnegative integer (default: 0)
         For a line with multi-dimensional 'y', this indicates the index of the
         'y' to be edited by the handdraw.
-    min_x: float
+    min_x: float or Date or None (default: None)
         The minimum value of 'x' which should be edited via the handdraw.
-    max_x: float
+    max_x: float or Date or None (default: None)
         The maximum value of 'x' which should be edited via the handdraw.
     """
     _view_name = Unicode('bqplot.HandDraw', sync=True)
+    _model_name = Unicode('bqplot.BaseModel', sync=True)
     lines = Any(None, sync=True)
     line_index = Int(0, sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
-    min_x = Float(-sys.float_info.max, sync=True)
-    max_x = Float(sys.float_info.max, sync=True)
+    # TODO: Once the new Union is merged in IPython, the sync on the whole
+    # trait can be removed
+    min_x = (Float(allow_none=True, default_value=None, sync=True) |
+             Date(allow_none=True, default_value=None, sync=True))
+    max_x = (Float(allow_none=True, default_value=None, sync=True) |
+             Date(default_value=None, allow_none=True, sync=True))
 
 
 @register_overlay('bqplot.PanZoom')
@@ -126,11 +131,11 @@ class PanZoom(Overlay):
 
         Attributes
         ----------
-        allow_pan: bool
+        allow_pan: bool (default: True)
             attribute to set the ability to pan the figure or not
-        allow_zoom: bool
+        allow_zoom: bool (default: True)
             attribute to set the ability to zoom the figure or not
-        scales: dictionary
+        scales: dictionary (default: {})
             Dictionary with keys as 'x' and 'y' and values being the scales in
             the corresponding direction which should be panned or zoomed.
     """
@@ -174,13 +179,13 @@ class SelectorOverlay(Overlay):
 
     Attributes
     ----------
-    marks: list
+    marks: list (default: [])
         list of marks for which the idx_selected is updated based on the data
         selected by the selector.
     """
     _view_name = Unicode('bqplot.SelectorOverlay', sync=True)
     _model_name = Unicode('bqplot.BaseModel', sync=True)
-    marks = List([], sync=True)
+    marks = List([], allow_none=False, sync=True)
 
 
 class OneDSelectorOverlay(SelectorOverlay):
@@ -252,7 +257,7 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
     selected: numpy.ndarray
         Two-element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
-    idx_selected: list
+    idx_selected: list (default: [])
         A list of lists containing one two-element array for each mark passed
         in the marks attribute. The two-element array contains the minimum and
         maximum index of the data of the mark for which the 'x' attribute is in
@@ -260,7 +265,8 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
     """
     _view_name = Unicode('bqplot.IntervalSelectorOverlay', sync=True)
     selected = NdArray(sync=True)
-    idx_selected = List([], sync=True)
+    idx_selected = List([], allow_none=False, sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
 
 @register_overlay('bqplot.IndexSelectorOverlay')
@@ -283,21 +289,21 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
         A single element array containing the point corresponding the
         x-position of the mouse. This attribute is updated as you move the
         mouse along the x-direction on the figure.
-    idx_selected: list
+    idx_selected: list (default: [])
         A list of lists containing a single element array for each mark passed
         in the marks attribute. The element corresponds to the maximum index of
         the data for which the 'x' attribute is less than or equal to the value
         selected.
-    color: color
+    color: Color (default: 'red')
         color of the line representing the index selector
-    line_width: int
+    line_width: nonnegative integer (default: 0)
         width of the line represetning the index selector
     """
     _view_name = Unicode('bqplot.IndexSelectorOverlay', sync=True)
     selected = NdArray(sync=True)
-    idx_selected = List([], sync=True)
-    color = Unicode('red', sync=True)
+    idx_selected = List([], allow_none=False, sync=True)
     line_width = Int(2, sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
 
 @register_overlay('bqplot.BrushIntervalSelectorOverlay')
@@ -340,6 +346,7 @@ class BrushIntervalSelectorOverlay(OneDSelectorOverlay):
     brushing = Bool(False, sync=True)
     selected = NdArray(sync=True)
     idx_selected = List([], sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
 
 @register_overlay('bqplot.BrushSelectorOverlay')
@@ -369,7 +376,7 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
         A list of lists containing a list for each mark in the marks attribute.
         The list contains the indices of the data for the points which lie in
         the interval selcted with the selector.
-    brushing: bool
+    brushing: bool (default: False)
         boolean attribute to indicate if the selector is being dragged right
         now.
         It is True when the selector is being moved and false when it is not.
@@ -382,6 +389,7 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
     brushing = Bool(False, sync=True)
     idx_selected = List([], sync=True)
     selected = List([], sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
     def __init__(self, **kwargs):
         # Stores information regarding the scales. The date scaled values have
@@ -457,7 +465,7 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
         This is a read-only attribute.
         This attribute changes while the selection is being made with the
         MultiSelectorOverlay.
-    brushing: bool
+    brushing: bool (default: False)
         A boolean attribute to indicate if the selector is being dragged right
         now.
         It is True when the selector is being moved and false when it is not.
@@ -467,7 +475,7 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
     names: list
         A list of strings indicating the keys of the different intervals.
         Default values are 'int1', 'int2', 'int3' and so on.
-    show_names: bool
+    show_names: bool (default: True)
         Attribute to indicate if the names of the intervals are to be displayed
         along with the interval.
     """
@@ -480,7 +488,8 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
     # if present, into strings and send it across. It means writing a trait
     # which does that on top of a dictionary. I don't like that
     idx_selected = Dict({}, sync=True)
-    show_names = Bool(True, sync=True)  # TODO: Not a trait. The value has to be set at declaration time.
+    show_names = Bool(True, sync=True)  # TODO: Not a trait. The value has to
+                                        # be set at declaration time.
 
     def __init__(self, **kwargs):
         self.is_date = isinstance(kwargs.get('scale'), DateScale)
@@ -497,5 +506,6 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
             self.selected = self._selected
         else:
             for key in self._selected:
-                actual_selected[key] = [self.read_json(elem) for elem in self._selected[key]]
+                actual_selected[key] = [self.read_json(elem)
+                                        for elem in self._selected[key]]
             self.selected = actual_selected

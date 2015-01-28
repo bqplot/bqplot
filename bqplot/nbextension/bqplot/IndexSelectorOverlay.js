@@ -49,8 +49,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             });
         },
         create_listeners: function() {
+            IndexSelector.__super__.create_listeners.apply(this);
             this.model.on("change:color", this.color_change, this);
-            this.parent.on("margin_updated", this.relayout, this);
         },
         color_change: function() {
             if(this.model.get("color")!=null){
