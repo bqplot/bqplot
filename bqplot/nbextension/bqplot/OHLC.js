@@ -53,13 +53,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("change:opacity", this.update_opacity, this);
             this.model.on("change:marker", this.update_marker, this);
-
-            this.listenTo(this.model, "change:idx_selected",
-                          this.update_idx_selected);
-            this.model.on("change:selected_style",
-                          this.selected_style_updated, this);
-            this.model.on("change:unselected_style",
-                          this.unselected_style_updated, this);
         },
         update_stroke: function() {
             var stroke = this.model.get("stroke");
@@ -107,84 +100,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.el, this.model.mark_data.map(function(d) {
                     return d[1];
                 }));
-        },
-        update_idx_selected: function(model, value) {
-            this.selected_indices = value;
-            this.apply_styles(value);
-        },
-        apply_styles: function(indices) {
-            var all_indices = _.range(this.model.mark_data.length);
-            this.set_default_style(all_indices);
-
-            this.set_style_on_elements(this.selected_style,
-                                       this.selected_indices);
-            var unselected_indices = (indices == undefined) ?
-                [] : _.difference(all_indices, indices);
-            this.set_style_on_elements(this.unselected_style,
-                                       unselected_indices);
-        },
-        set_style_on_elements: function(style, indices) {
-            if(indices === undefined || indices.length == 0) {
-                return;
-            }
-            var elements = this.el.selectAll(".stick");
-            elements = elements.filter(function(data, index) {
-                return indices.indexOf(index) != -1;
-            });
-            elements.style(style);
-        },
-        set_default_style: function(indices) {
-            if(indices === undefined || indices.length == 0) {
-                return;
-            }
-            var that = this;
-            var colors = this.model.get("colors");
-            var up_color = (colors[0] ? colors[0] : "none");
-            var down_color = (colors[1] ? colors[1] : "none");
-            var stroke = this.model.get("stroke");
-            var opacity = this.model.get("opacity");
-            var elements = this.el.selectAll(".stick")
-                .filter(function(data, index) {
-                    return indices.indexOf(index) != -1;
-                });
-
-            elements.style("fill", function(d) {
-                  return (d[that.model.px.open] > d[that.model.px.close] ?
-                    down_color : up_color);
-              })
-              .style("stroke", stroke)
-              .style("opacity", opacity);
-        },
-        clear_style: function(style_dict, indices) {
-            var elements = this.el.selectAll(".stick");
-            if(indices != undefined) {
-                elements = elements.filter(function(d, index) {
-                    return indices.indexOf(index) != -1;
-                });
-            }
-            var clearing_style = {};
-            for(var key in style_dict) {
-                clearing_style[key] = null;
-            }
-            elements.style(clearing_style);
-        },
-        style_updated: function(new_style, indices) {
-            this.set_default_style(indices);
-            this.set_style_on_elements(new_style, indices);
-        },
-        selected_style_updated: function(model, style) {
-            this.selected_style = style;
-            this.style_updated(style, this.selected_indices);
-        },
-        unselected_style_updated: function(model, style) {
-            this.unselected_style = style;
-            var sel_indices = this.selected_indices;
-            var unselected_indices = (sel_indices ?
-                _.range(this.model.mark_data.length)
-                    .filter(function(index) {
-                        return sel_indices.indexOf(index) == -1; })
-                : []);
-            this.style_updated(style, unselected_indices);
         },
         update_selected_colors: function(idx_start, idx_end) {
             var stick_sel = this.el.selectAll(".stick");
@@ -290,8 +205,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.model.mark_data.map(function(d) {
                     return d[1];
                 }));
-
-            this.apply_styles(this.selected_indices);
         },
         draw_mark_paths: function(type, min_x_difference, selector, dat) {
             /* Calculate some values so that we can draw the marks
