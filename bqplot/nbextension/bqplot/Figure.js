@@ -174,8 +174,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }, null);
         },
         remove: function() {
-            this.mark_views.update([]);
-            this.axis_views.update([]);
             this.model.off(null, null, this);
             this.svg.remove();
             $(this.options.cell).off("output_area_resize."+this.id);
