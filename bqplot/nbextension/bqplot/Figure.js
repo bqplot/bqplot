@@ -518,7 +518,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             return [x_start, y_start];
         },
         set_overlay: function(model) {
-            if (this.overlay_view) {this.overlay_view.remove()};
+            if (this.overlay_view) { this.overlay_view.remove(); }
             if (model) {
                 // Sets the child overlay
                 var self = this;

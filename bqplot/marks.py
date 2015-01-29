@@ -31,6 +31,7 @@ Marks
 """
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
+from numpy import empty
 
 from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
@@ -540,3 +541,53 @@ class Label(Mark):
     align = Enum(['start', 'middle', 'end'], default_value='start',
                  allow_none=False, sync=True)
     _view_name = Unicode('bqplot.Label', sync=True)
+
+
+@register_mark('bqplot.OHLC')
+class OHLC(Mark):
+
+    """Open/High/Low/Close marks.
+
+    Attributes
+    ----------
+    icon: string
+        font-awesome icon for that mark
+    name: string
+        user-friendly name of the mark
+    marker: {'candle', 'bar'}
+        marker type
+    stroke: color
+        stroke color of the marker
+    colors: ColorList
+        fill colors for the markers (up/down)
+    opacity: float
+        opacity of the marker
+
+    Data Attributes
+    ---------------
+    _y_default: numpy.ndarray
+        default 2 dimensional value for y
+    x: numpy.ndarray
+        abscissas of the data points (1d array)
+    y: numpy.ndarray
+        Open/High/Low/Close ordinates of the data points (2d array)
+    """
+
+    # Mark decoration
+    icon = 'fa-birthday-cake'
+    name = 'OHLC chart'
+
+    # Scaled attributes
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=2, max_dim=2)
+    # FIXME Need to do something about this... keep getting future warning because of it.
+    _y_default = None
+
+    # Other attributes
+    marker = Enum(['candle', 'bar'], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
+    stroke = Color('white', sync=True, exposed=True, display_index=4, display_name='Stroke color')
+    colors = ColorList(['limegreen','red'], allow_none_element=True, allow_none=False, display_index=5, sync=True, name='Colors')
+    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
+    _view_name = Unicode('bqplot.OHLC', sync=True)
+    _model_name = Unicode('bqplot.OHLCModel', sync=True)
