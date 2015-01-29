@@ -135,9 +135,12 @@ def show(key=None, display_toolbar=True):
         figure = _context['figure_registry'][key]
     if display_toolbar:
         toolbar = _default_toolbar(figure)
-        display(VBox([figure, toolbar]))
+        pyplot = VBox([figure, toolbar])
+        display(pyplot)
     else:
-        display(figure)
+        pyplot = figure
+        display(pyplot)
+    figure.pyplot = pyplot
 
 
 def figure(key=None, fig=None, **kwargs):
@@ -202,7 +205,7 @@ def close(key):
         return
     if _context['figure'] == figure_registry[key]:
         figure()
-    figure_registry[key].close()
+    figure_registry[key].pyplot.close()
     del figure_registry[key]
 
 
