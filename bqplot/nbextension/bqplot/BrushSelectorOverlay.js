@@ -151,7 +151,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
         },
         create_listeners: function() {
             BrushSelector.__super__.create_listeners.apply(this);
-            this.model.on("change:color", this.color_change, this);
+            this.model.on("change:color", this.change_color, this);
         },
         change_color: function() {
             if (this.model.get("color") != null) {
