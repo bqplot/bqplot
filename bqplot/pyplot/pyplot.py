@@ -31,6 +31,7 @@ Pyplot
    scatter
    hist
    bar
+   ohlc
 
    clear
    close
@@ -47,7 +48,7 @@ import numpy as np
 from ..figure import Figure
 from ..scales import Scale, LinearScale
 from ..axes import Axis
-from ..marks import Lines, Scatter, Hist, Bars
+from ..marks import Lines, Scatter, Hist, Bars, OHLC
 from ..overlays import panzoom
 from IPython.html.widgets import VBox, HBox as ButtonGroup
 from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
@@ -409,6 +410,40 @@ def plot(*args, **kwargs):
         length = len(args[0])
         kwargs['x'] = np.linspace(0.0, length - 1, length)
     return _draw_mark(Lines, **kwargs)
+
+
+def ohlc(*args, **kwargs):
+    """Draws ohlc bars or candle bars in the current context figure.
+
+    Signature: ohlc(x, y, **kwargs) or ohlc(y, **kwargs), depending of the
+    length of the list of positional arguments. In the case where the `x` array
+    is not provided
+
+    Parameters
+    ----------
+    x: numpy.ndarray or list, 1d (optional)
+        The x-coordinates of the plotted line. When not provided, the function
+        defaults to numpy.linspace(0.0, len(y)-1, len(y)).
+    y: numpy.ndarray or list, 2d
+        The ohlc (open/high/low/close) information. A two dimensional array. y
+        must have the shape (n, 4).
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
+    if len(args) == 2:
+        kwargs['x'] = args[0]
+        kwargs['y'] = args[1]
+    elif len(args) == 1:
+        kwargs['y'] = args[0]
+        length = len(args[0])
+        kwargs['x'] = np.linspace(0.0, length - 1, length)
+    return _draw_mark(OHLC, **kwargs)
 
 
 def scatter(x, y, **kwargs):

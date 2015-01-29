@@ -31,7 +31,6 @@ Marks
 """
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
-from numpy import empty
 
 from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
@@ -571,6 +570,7 @@ class OHLC(Mark):
         abscissas of the data points (1d array)
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
+        If this does not contain OHLC data, the behaviour is undefined.
     """
 
     # Mark decoration
@@ -578,16 +578,23 @@ class OHLC(Mark):
     name = 'OHLC chart'
 
     # Scaled attributes
-    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
-    # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
-    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=2, max_dim=2)
-    # FIXME Need to do something about this... keep getting future warning because of it.
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number',
+                min_dim=1, max_dim=1)
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number',
+                min_dim=2, max_dim=2)
+    # FIXME Future warnings
     _y_default = None
 
     # Other attributes
-    marker = Enum(['candle', 'bar'], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
-    stroke = Color('white', sync=True, exposed=True, display_index=4, display_name='Stroke color')
-    colors = ColorList(['limegreen','red'], allow_none_element=True, allow_none=False, display_index=5, sync=True, name='Colors')
-    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
+    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
+                            'y': {'orientation': 'vertical'}}, sync=True)
+    marker = Enum(['candle', 'bar'], allow_none=False, default_value='candle',
+                  exposed=True, display_index=3, display_name='Marker', sync=True)
+    stroke = Color('white', sync=True, exposed=True, display_index=4,
+                   display_name='Stroke color')
+    colors = ColorList(['limegreen', 'red'], allow_none_element=True, allow_none=False,
+                       display_index=5, sync=True, display_name='Colors')
+    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
+                           exposed=True, display_index=6, display_name='Opacity')
     _view_name = Unicode('bqplot.OHLC', sync=True)
     _model_name = Unicode('bqplot.OHLCModel', sync=True)
