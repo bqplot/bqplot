@@ -31,6 +31,7 @@ Pyplot
    scatter
    hist
    bar
+   ohlc
 
    clear
    close
