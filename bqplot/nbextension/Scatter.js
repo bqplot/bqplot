@@ -54,17 +54,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }, null);
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales["x"],
+                y_scale = this.scales["y"],
+                size_scale = this.scales["size"],
+                color_scale = this.scales["color"],
+                opacity_scale = this.scales["opacity"];
             if(x_scale) {
                 x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
-                this.x_offset = x_scale.offset;
             }
-            var y_scale = this.scales["y"];
             if(y_scale) {
                 y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
-                this.y_offset = y_scale.offset;
             }
-            var size_scale = this.scales["size"];
             if(size_scale) {
                 // I don't know how to set the lower bound on the range of the
                 // values that the size scale takes. I guess a reasonable
@@ -78,23 +78,21 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]),
                                      this.model.get("default_size")]);
             }
-            var color_scale = this.scales["color"];
             if(color_scale) {
                 color_scale.set_range();
             }
-            var opacity_scale = this.scales["opacity"];
             if(opacity_scale) {
                 opacity_scale.set_range([0.2, 1]);
             }
         },
         set_positional_scales: function() {
-            this.x_scale = this.scales["x"];
-            this.y_scale = this.scales["y"];
+            var x_scale = this.scales["x"],
+                y_scale = this.scales["y"];
             var self = this;
-            this.listenTo(this.x_scale, "domain_changed", function() {
+            this.listenTo(x_scale, "domain_changed", function() {
                 if (!self.model.dirty) { self.draw(); }
             });
-            this.listenTo(this.y_scale, "domain_changed", function() {
+            this.listenTo(y_scale, "domain_changed", function() {
                 if (!self.model.dirty) { self.draw(); }
             });
         },
@@ -102,25 +100,25 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // function to create the additional scales and create the
             // listeners for the additional scales
             var self = this;
-            this.color_scale =  this.scales["color"];
-            this.size_scale = this.scales["size"];
-            this.opacity_scale = this.scales["opacity"];
-            // the following change handler is for the case when the colors of
-            // the scale change. The positional data does not need to be changed.
-            if(this.color_scale) {
-                this.listenTo(this.color_scale, "domain_changed", function() {
-                    self.color_scale_updated();
+            var color_scale = this.scales["color"],
+                size_scale = this.scales["size"],
+                opacity_scale = this.scales["opacity"];
+            // the following handlers are for changes in data that does not
+            // impact the position of the elements
+            if(color_scale) {
+                this.listenTo(color_scale, "domain_changed", function() {
+                    this.color_scale_updated();
                 });
-                this.color_scale.on("color_scale_range_changed",
-                                    this.color_scale_updated, this);
+                color_scale.on("color_scale_range_changed",
+                                this.color_scale_updated, this);
             }
-            if(this.size_scale) {
-                this.listenTo(this.size_scale, "domain_changed", function() {
+            if(size_scale) {
+                this.listenTo(size_scale, "domain_changed", function() {
                     self.update_default_size();
                 });
             }
-            if(this.opacity_scale) {
-                this.listenTo(this.opacity_scale, "domain_changed", function() {
+            if(opacity_scale) {
+                this.listenTo(opacity_scale, "domain_changed", function() {
                     self.update_default_opacity();
                 });
             }
@@ -220,22 +218,25 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         // points of entry to that logic which makes it easier to manage and to
         // keep consistent across different places where we use it.
         get_element_color: function(data) {
-           if(this.color_scale && data.z !== undefined && data.z !== null) {
-              return this.color_scale.scale(data.z);
-           }
-           return this.model.get("default_color");
+            var color_scale = this.scales["color"];
+            if(color_scale && data.z !== undefined && data.z !== null) {
+                return color_scale.scale(data.z);
+            }
+            return this.model.get("default_color");
         },
         get_element_size: function(data) {
-           if(this.size_scale && data.size !== undefined) {
-              return this.size_scale.scale(data.size);
-           }
-           return this.model.get("default_size");
+            var size_scale = this.scales["size"];
+            if(size_scale && data.size !== undefined) {
+                return size_scale.scale(data.size);
+            }
+            return this.model.get("default_size");
         },
         get_element_opacity: function(data) {
-           if(this.opacity_scale && data.opacity !== undefined) {
-              return this.opacity_scale.scale(data.opacity);
-           }
-           return this.model.get("default_opacity");
+            var opacity_scale = this.scales["opacity"];
+            if(opacity_scale && data.opacity !== undefined) {
+                return opacity_scale.scale(data.opacity);
+            }
+            return this.model.get("default_opacity");
         },
         relayout: function() {
             this.set_ranges();
@@ -243,21 +244,24 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("width", this.parent.plotarea_width)
               .attr("height", this.parent.plotarea_height);
 
-            var that = this;
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
 
             this.el.selectAll(".dot_grp").transition().duration(this.model.get("animate_dur"))
               .attr("transform", function(d) {
-                    return "translate(" + (that.x_scale.scale(d.x) + that.x_offset) +
-                    "," + (that.y_scale.scale(d.y) + that.y_offset) + ")";
+                    return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
+                                    "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
               });
         },
         update_array: function(d, i) {
+            var x_scale = this.scales["x"],
+                y_scale = this.scales["y"];
+
             if (!this.model.get("restrict_y")){
                 var x_data = [];
                 this.model.get_typed_field("x").forEach(function(elem) {
                     x_data.push(elem);
                 });
-                x_data[i] = this.x_scale.scale.invert(d[0]);
+                x_data[i] = x_scale.scale.invert(d[0]);
                 this.model.set_typed_field("x", x_data);
             }
             if (!this.model.get("restrict_x")){
@@ -265,7 +269,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.model.get_typed_field("y").forEach(function(elem) {
                     y_data.push(elem);
                 });
-                y_data[i] = this.y_scale.scale.invert(d[1]);
+                y_data[i] = y_scale.scale.invert(d[1]);
                 this.model.set_typed_field("y", y_data);
             }
             this.touch();
@@ -292,16 +296,15 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(!this.model.get("enable_move")) {
                 return;
             }
-            var that = this;
-
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             // If restrict_x is true, then the move is restricted only to the X
             // direction.
             if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {
                 d[0] = d3.event.x;
-                d[1] = (that.y_scale.scale(d.y) + that.y_offset);
+                d[1] = (y_scale.scale(d.y) + y_scale.offset);
             }
             else if (!(this.model.get("restrict_x")) && this.model.get("restrict_y")) {
-                d[0] = (that.x_scale.scale(d.x) + that.x_offset);
+                d[0] = (x_scale.scale(d.x) + x_scale.offset);
                 d[1] = d3.event.y;
             }
             else if (this.model.get("restrict_x") && this.model.get("restrict_y")) {
@@ -331,13 +334,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var dot = this.dot;
             dot.size(this.model.get("default_size"));
 
-            var that = this;
             d3.select(dragged_node)
               .select("path")
               .transition()
               .attr("d", dot)
-              .style("fill",  that.model.get("default_color"))
-              .style("stroke", that.model.get("default_color"));
+              .style("fill",  this.model.get("default_color"))
+              .style("stroke", this.model.get("default_color"));
 
             this.update_array(d, i);
             this.send({event: "drag_end",
@@ -354,8 +356,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
             var mouse_pos = d3.mouse(this.el.node());
             var curr_pos = [mouse_pos[0], mouse_pos[1]];
-            var that = this;
 
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             //add the new point to dat
             var x_data = [];
             this.model.get_typed_field("x").forEach(function(d) {
@@ -365,8 +367,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.get_typed_field("y").forEach(function(d) {
                 y_data.push(d);
             });
-            x_data.push(this.x_scale.scale.invert(curr_pos[0]));
-            y_data.push(this.y_scale.scale.invert(curr_pos[1]));
+            x_data.push(x_scale.scale.invert(curr_pos[0]));
+            y_data.push(y_scale.scale.invert(curr_pos[1]));
             this.model.set_typed_field("x", x_data);
             this.model.set_typed_field("y", y_data);
             this.touch();
@@ -381,6 +383,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var labels = this.model.get("labels");
             var fill = this.model.get("fill");
 
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var elements = this.el.selectAll(".dot_grp")
               .data(this.model.mark_data, function(d) {
                   return d.unique_id;
@@ -394,8 +397,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             elements.transition().duration(animate_dur)
               .attr("transform", function(d) {
-                  return "translate(" + (that.x_scale.scale(d.x) + that.x_offset) + ","
-                                      + (that.y_scale.scale(d.y) + that.y_offset) + ")";
+                  return "translate(" + (x_scale.scale(d.x) + x_scale.offset) + ","
+                                      + (y_scale.scale(d.y) + y_scale.offset) + ")";
               });
 
             var text_loc = Math.sqrt(this.model.get("default_size")) / 2.0;
@@ -491,10 +494,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.touch();
                 return _.range(this.model.mark_data.length);
             }
-            var xmin = this.x_scale.scale.invert(x_start),
-                xmax = this.x_scale.scale.invert(x_end),
-                ymin = this.y_scale.scale.invert(y_start),
-                ymax = this.y_scale.scale.invert(y_end);
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+
+            var xmin = x_scale.scale.invert(x_start),
+                xmax = x_scale.scale.invert(x_end),
+                ymin = y_scale.scale.invert(y_start),
+                ymax = y_scale.scale.invert(y_end);
 
             var indices = _.range(this.model.mark_data.length);
             var that = this;
