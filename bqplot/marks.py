@@ -604,3 +604,58 @@ class OHLC(Mark):
                            exposed=True, display_index=6, display_name='Opacity')
     _view_name = Unicode('bqplot.OHLC', sync=True)
     _model_name = Unicode('bqplot.OHLCModel', sync=True)
+
+@register_mark('bqplot.Pie')
+class Pie(Mark):
+
+    """Piechart mark.
+    color_mode: {'auto', 'group', 'element'}
+        enum attribute to specify if color should be the same for all bars with
+        the same x or for all bars which belong to the same array in Y
+        'group' means for every x all bars have same color.
+        'element' means for every dimension of y, all bars have same color.
+        'auto' picks 'group' and 'element' for 1-d and 2-d values of
+        Y respectively.
+    type: {'stacked', 'grouped'}
+    colors: list of colors
+        list of colors for the slices.
+    padding: float
+        attribute to control the spacing between the slices
+        value is specified as a percentage angle
+    select_slices: bool
+    stroke: color
+    opacity: float
+        opacity of the mark. Then number must be between 0 and 1
+
+    Data Attributes
+    ---------------
+    data: numpy.ndarray
+    color: numpy.ndarray
+        color of the data points (1d array). Defaults to default_color when not
+        privided or when a value is NaN
+    """
+    # Mark decoration
+    icon = ''
+    name = 'Pie chart'
+
+    # Scaled attributes
+    data = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+
+    # Other attributes
+    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
+                            'y': {'orientation': 'vertical'}}, sync=True)
+    color_mode = Enum(['auto', 'group', 'element'], default_value='auto', allow_none=False, sync=True)
+    type = Enum(['stacked', 'grouped'], default_value='stacked', allow_none=False, sync=True, exposed=True, display_index=3, display_name='Type')
+    colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
+    padding = Float(0.05, sync=True)
+    select_slices = Bool(False, sync=True)
+    stroke = Color('white', allow_none=True, sync=True)
+    base = Float(default_value=0.0, sync=True)
+    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
+    radius = BoundedFloat(default_value=1.0, min=0.0, max=1.0, sync=True)
+    inner_radius = BoundedFloat(default_value=0.0, min=0.0, max=1.0, sync=True)
+    start_angle = BoundedFloat(default_value=0.0, min=0.0, max=360.0, sync=True, exposed=True)
+    end_angle = BoundedFloat(default_value=360.0, min=0.0, max=360.0, sync=True, exposed=True)
+    _view_name = Unicode('bqplot.Pie', sync=True)
+    _model_name = Unicode('bqplot.PieModel', sync=True)
