@@ -31,24 +31,22 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             var x_scale = this.scales["sample"];
             if(x_scale) {
                 x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
-                this.x_offset = x_scale.offset;
             }
             var y_scale = this.scales["counts"];
             if(y_scale) {
                 y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
-                this.y_offset = y_scale.offset;
             }
         },
         set_positional_scales: function() {
             // In the case of Hist, a change in the "sample" scale triggers
             // a full "update_data" instead of a simple redraw.
-            this.x_scale = this.scales["sample"];
-            this.y_scale = this.scales["counts"];
+            var x_scale = this.scales["sample"],
+                y_scale = this.scales["counts"];
             var that = this;
-            this.listenTo(this.x_scale, "domain_changed", function() {
+            this.listenTo(x_scale, "domain_changed", function() {
                 if (!that.model.dirty) { that.model.update_data(); }
             });
-            this.listenTo(this.y_scale, "domain_changed", function() {
+            this.listenTo(y_scale, "domain_changed", function() {
                 if (!that.model.dirty) { that.draw(); }
             });
         },
@@ -73,9 +71,11 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             this.selector.touch();
         },
         update_colors: function(model, colors) {
-            this.el.selectAll(".bar").selectAll("rect").attr("fill", this.get_colors(0));
+            this.el.selectAll(".bar").selectAll("rect")
+              .attr("fill", this.get_colors(0));
             if (model.get("labels") && colors.length > 1) {
-                this.el.selectAll(".bar").selectAll("text").attr("fill", this.get_colors(1));
+                this.el.selectAll(".bar").selectAll("text")
+                  .attr("fill", this.get_colors(1));
             }
             if (this.legend_el) {
                 this.legend_el.selectAll("rect")
@@ -92,7 +92,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
               .style("opacity", opacity);
         },
         calculate_bar_width: function() {
-            var bar_width = (this.x_scale.scale(this.model.max_x) - this.x_scale.scale(this.model.min_x)) / this.model.num_bins;
+            var x_scale = this.scales["sample"];
+            var bar_width = (x_scale.scale(this.model.max_x) - x_scale.scale(this.model.min_x)) / this.model.num_bins;
             if (bar_width >= 10) {
                 bar_width -= 2;
             }
@@ -101,11 +102,12 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
         relayout: function() {
             this.set_ranges();
 
-            var that = this;
+            var x_scale = this.scales["sample"],
+                y_scale = this.scales["counts"];
 			this.el.selectAll(".bar")
 			  .attr("transform", function(d) {
-                  return "translate(" + that.x_scale.scale(d.x)
-                                + "," + that.y_scale.scale(d.y) + ")";
+                  return "translate(" + x_scale.scale(d.x)
+                                + "," + y_scale.scale(d.y) + ")";
               });
             var bar_width = this.calculate_bar_width();
             this.el.selectAll(".bar").select("rect")
@@ -113,11 +115,10 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
 		      .attr("x", 2)
               .attr("width", bar_width)
 		      .attr("height", function(d) {
-                  return that.y_scale.scale(0) - that.y_scale.scale(d.y);
+                  return y_scale.scale(0) - y_scale.scale(d.y);
               });
         },
         draw: function() {
-            var that = this;
             this.set_ranges();
             var colors = this.model.get("colors");
             var fill_color = colors[0];
@@ -128,6 +129,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 indices.push(i);
             });
 
+            var x_scale = this.scales["sample"],
+                y_scale = this.scales["counts"];
             var that = this;
             this.el.selectAll(".bar").remove();
             var bar_width = this.calculate_bar_width();
@@ -136,8 +139,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
 		      .enter().append("g")
 			  .attr("class","bar")
 			  .attr("transform", function(d) {
-                  return "translate(" + that.x_scale.scale(d.x) + ","
-                                      + that.y_scale.scale(d.y) + ")";
+                  return "translate(" + x_scale.scale(d.x) + ","
+                                      + y_scale.scale(d.y) + ")";
               });
 
 		    bar.append("rect")
@@ -146,7 +149,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
 		      .attr("x", 2)
               .attr("width", bar_width)
 		      .attr("height", function(d) {
-                  return that.y_scale.scale(0) - that.y_scale.scale(d.y);
+                  return y_scale.scale(0) - y_scale.scale(d.y);
               })
               .attr("fill", fill_color)
               .on("click", function(d, i) {
@@ -301,9 +304,9 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 idx_selected = [];
                 return idx_selected;
             }
-            var self = this;
+            var x_scale = this.scales["sample"];
             var data = [start_pxl, end_pxl].map(function(elem) {
-                return self.x_scale.scale.invert(elem);
+                return x_scale.scale.invert(elem);
             });
             var idx_start = d3.max([0, d3.bisectLeft(this.model.x_bins, data[0]) - 1]);
             var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.model.x_bins, data[1])]);
