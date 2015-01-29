@@ -184,7 +184,8 @@ class BoundedFloat(Float):
 class ColorList(List):
 
     def validate(self, obj, value):
-        if all(isrgbcolor(col) is True for col in value):
+        if all(col is None and self._metadata.get('allow_none_element')
+                or isrgbcolor(col) for col in value):
             return value
         self.error(obj, value)
 

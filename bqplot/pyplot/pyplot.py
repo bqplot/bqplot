@@ -108,6 +108,9 @@ def show(key=None, display_toolbar=True):
     ----------
     key : hashable, optional
         Any variable that can be used as a key for a dictionary.
+    display_toolbar: bool (default: True)
+        If True, a toolbar for different mouse interaction is displayed with
+        the figure.
 
     Raises
     ------
@@ -287,16 +290,20 @@ def set_lim(min, max, name):
     return scale
 
 
-def axes(mark=None, **kwargs):
+def axes(mark=None, options={}, **kwargs):
     """Draws axes corresponding to the scales of a given mark and returns a
     dictionary of drawn axes. If not mark is provided, the last drawn mark
     is used.
 
     Parameters
     ----------
-    mark: Mark, optional
-       The mark to inspect to create axes.
-
+    mark: Mark or None (default: None)
+        The mark to inspect to create axes. If None, the last mark drawn is
+        used instead.
+    options: dict (default: {})
+        Options for the axes to be created. If a scale labeled 'x' is required
+        for that mark, options['x'] contains optional keyword arguments for the
+        constructor of the corresponding axis type.
     """
     if mark is None:
         mark = _context['last_mark']
@@ -304,7 +311,6 @@ def axes(mark=None, **kwargs):
         return {}
     fig = kwargs.get('figure', current_figure())
     scales = mark.scales
-    options = kwargs.get('options', {})
     if not hasattr(mark, 'pyplot_axes'):
         mark.pyplot_axes = {}
     axes = mark.pyplot_axes.get(fig.model_id, {})
@@ -328,10 +334,24 @@ def axes(mark=None, **kwargs):
     return axes
 
 
-def _draw_mark(mark_type, **kwargs):
+def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
+    """Draws the mark of type mark_type.
+
+    Parameters
+    ----------
+    mark_type: type
+        The type of mark to be drawn
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', _context['scales'])
-    options = kwargs.pop('options', {})
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
         # TODO: the following should also happen if name in kwargs and
@@ -352,15 +372,34 @@ def _draw_mark(mark_type, **kwargs):
     _context['last_mark'] = mark
     fig.marks = [m for m in fig.marks] + [mark]
     if kwargs.get('axes', True):
-        axes(mark)
+        axes(mark, options=axes_options)
     return mark
 
 
 def plot(*args, **kwargs):
     """Draws lines in the current context figure.
 
-    The 'options' keyword argument is used to pass attributes for the scales to
-    be created, or used.
+    Signature: plot(x, y, **kwargs) or plot(y, **kwargs), depending of the
+    length of the list of positional arguments. In the case where the `x` array
+    is not provided
+
+    Parameters
+    ----------
+    x: numpy.ndarray or list, 1d or 2d (optional)
+        The x-coordinates of the plotted line. When not provided, the function
+        defaults to numpy.linspace(0.0, len(y)-1, len(y))
+        x can be 1-dimensional or 2-dimensional.
+    y: numpy.ndarray or list, 1d or 2d
+        The y-coordinates of the plotted line. If argument `x` is 2-dimensional
+        it must also be 2-dimensional.
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
     """
     if len(args) == 2:
         kwargs['x'] = args[0]
@@ -368,41 +407,74 @@ def plot(*args, **kwargs):
     elif len(args) == 1:
         kwargs['y'] = args[0]
         length = len(args[0])
-        kwargs['x'] = np.linspace(0.0, length, length)
+        kwargs['x'] = np.linspace(0.0, length - 1, length)
     return _draw_mark(Lines, **kwargs)
 
 
 def scatter(x, y, **kwargs):
     """Draws a scatter in the current context figure.
 
-    The 'options' keyword argument is used to pass attributes for the scales to
-    be created, or used.
+    Parameters
+    ----------
+    x: numpy.ndarray, 1d
+        The x-coordinates of the data points.
+    y: numpy.ndarray, 1d
+        The y-coordinates of the data points.
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
     """
     kwargs['x'] = x
     kwargs['y'] = y
     return _draw_mark(Scatter, **kwargs)
 
 
-def hist(sample, **kwargs):
+def hist(sample, options={}, **kwargs):
     """Draws a histogram in the current context figure.
 
-    The 'options' keyword argument is used to pass attributes for the scales to
-    be created, or used.
+    Parameters
+    ----------
+    sample: numpy.ndarray, 1d
+        The sample for which the histogram must be generated
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'counts'
+        is required for that mark, options['counts'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'counts' is
+        required for that mark, axes_options['counts'] contains optional
+        keyword arguments for the constructor of the corresponding axis type.
     """
     kwargs['sample'] = sample
-    options = kwargs.get('options', {})
     scales = kwargs.pop('scales', _context['scales'])
     if 'counts' not in scales:
         scales['counts'] = LinearScale(**options.get('counts', {}))
     kwargs['scales'] = scales
-    return _draw_mark(Hist, **kwargs)
+    return _draw_mark(Hist, options=options, **kwargs)
 
 
 def bar(x, y, **kwargs):
     """Draws a BarChart in the current context figure.
 
-    The 'options' keyword argument is used to pass attributes for the scales to
-    be created or used.
+    Parameters
+    ----------
+    x: numpy.ndarray, 1d
+        The x-coordinates of the data points.
+    y: numpy.ndarray, 1d
+        The y-coordinates of the data pints.
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
     """
     kwargs['x'] = x
     kwargs['y'] = y

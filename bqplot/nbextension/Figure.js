@@ -95,6 +95,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.overlay = this.fig.append("g");
 
             /*
+             * The following is the structure of the DOM element constructed
             <svg>
                 <g class="svg-figure" transform='margin translation'>
                     <g class="svg-axes"></g>
@@ -158,13 +159,25 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     this.set_overlay(value);
                 }, that);
 
-                $(that.options.cell).on("output_area_resize", function() {
+                // that.id is added to namespace the event to this particular
+                // view. This is required because we are adding the event on
+                // the output cell and hence we need to unbind it when this
+                // view is being removed. To identify the event listener
+                // corresponding to this view, we need the id.
+                $(that.options.cell).on("output_area_resize."+that.id, function() {
                     that.update_layout();
                 });
+
                 that.after_displayed(function() {
                     that.update_layout();
-                })
+                });
             }, null);
+        },
+        remove: function() {
+            this.model.off(null, null, this);
+            this.svg.remove();
+            $(this.options.cell).off("output_area_resize."+this.id);
+            Figure.__super__.remove.apply(this);
         },
         create_figure_scales: function() {
             // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
@@ -505,7 +518,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             return [x_start, y_start];
         },
         set_overlay: function(model) {
-            if (this.overlay_view) {this.overlay_view.remove()};
+            if (this.overlay_view) { this.overlay_view.remove(); }
             if (model) {
                 // Sets the child overlay
                 var self = this;

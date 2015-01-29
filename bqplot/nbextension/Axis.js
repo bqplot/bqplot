@@ -76,6 +76,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.model.on("change:label_offset", this.update_label_offset, this);
             this.model.on("change:visible", this.update_visibility, this);
             this.model.on_some_change(["side", "orientation"], this.update_display, this);
+            this.model.on("change:offset", function() {
+                var offset_creation_promise = this.get_offset();
+                offset_creation_promise.then(function() {
+                    that.set_scales_range();
+                    that.g_axisline.attr("transform", that.get_axis_transform());
+                });
+            }, this);
         },
         update_display: function() {
             this.side = this.model.get("side");
@@ -363,8 +370,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             return label_offset;
         },
         remove: function() {
-            Axis.__super__.remove.apply(this);
+            this.model.off(null, null, this);
             this.el.remove();
+            Axis.__super__.remove.apply(this);
         },
         update_grid_lines: function() {
             var axis_type = (this.vertical) ? "y" : "x";

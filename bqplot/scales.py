@@ -288,3 +288,4 @@ class OrdinalColorScale(ColorScale):
     domain = List(allow_none=False, sync=True)
     _view_name = Unicode('OrdinalColorScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
+

@@ -55,6 +55,8 @@ define([
     "./Bars",
     "./HistModel",
     "./Hist",
+    "./OHLCModel",
+    "./OHLC",
     "./FlexLine",
     "./Label",
     "./ColorAxis",

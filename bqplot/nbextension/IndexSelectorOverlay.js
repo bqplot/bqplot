@@ -28,7 +28,6 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
                 .attr("y1", 0)
                 .attr("x2", 0)
                 .attr("y2", self.height)
-                .attr("stroke", self.model.get("color"))
                 .attr("stroke-width", self.model.get("line_width"))
                 .attr("pointer-events", "none")
                 .attr("visibility", "hidden");
@@ -45,8 +44,18 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
 
                 self.background.on("mousemove", _.bind(self.mousemove, self))
                     .on("click", _.bind(self.initial_click, self));
+
                 self.create_listeners();
             });
+        },
+        create_listeners: function() {
+            IndexSelector.__super__.create_listeners.apply(this);
+            this.model.on("change:color", this.color_change, this);
+        },
+        color_change: function() {
+            if(this.model.get("color")!=null){
+                this.line.style("stroke", this.model.get("color"));
+            }
         },
         initial_click: function() {
             this.line.attr("visibility", "visible");
