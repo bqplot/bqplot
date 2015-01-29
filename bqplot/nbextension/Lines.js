@@ -218,15 +218,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .style("stroke-dasharray", _.bind(this.get_line_style, this))
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
 
+            var curve_labels = this.model.get("labels");
+
             this.legend_el.append("text")
               .attr("class", "legendtext")
               .attr("x", rect_dim * 1.2)
               .attr("y", rect_dim / 2)
               .attr("dy", "0.35em")
-              .text(function(d, i) { return that.model.curve_labels[i]; })
+              .text(function(d, i) { return curve_labels[i]; })
               .style("fill", function(d,i) { return that.get_colors(i); });
 
-            var max_length = d3.max(this.model.curve_labels, function(d) {
+            var max_length = d3.max(curve_labels, function(d) {
                 return d.length;
             });
             this.legend_el.exit().remove();
