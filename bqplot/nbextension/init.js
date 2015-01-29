@@ -26,6 +26,7 @@ requirejs.config({
 
 define([
     "less!./bqplot",
+    "less!./worldmap",
     "./Figure",
     "./AxisModel",
     "./Axis",
@@ -68,4 +69,5 @@ define([
     "./PanZoom",
     "./MarketMap",
     "./SquareMarketMap",
+    "./Map",
 ], function () { console.log('loaded bqplot'); });

@@ -1,0 +1,98 @@
+/* Copyright 2015 Bloomberg Finance L.P.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.common() {
+
+    .world_map path {
+        stroke: #FFF;
+        stroke-width: 0.25px;
+    }
+
+    .world_map	.country:hover{
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+
+    .world_map	.text{
+        font-size:10px;
+        text-transform:capitalize;
+    }
+    .world_map	#container {
+        margin:10px 10%;
+        border:2px solid #000;
+        border-radius: 5px;
+        height:100%;
+        overflow:hidden;
+        background: #F0F8FF;
+    }
+    .world_map	.hidden {
+        display: none;
+    }
+    .world_map	div.tooltip {
+        color: #222;
+        background: #fff;
+        padding: .5em;
+        text-shadow: #f5f5f5 0 1px 0;
+        border-radius: 2px;
+        box-shadow: 0px 0px 2px 0px #a6a6a6;
+        opacity: 0.9;
+        position: absolute;
+        z-index: 1010;
+    }
+    .world_map	.graticule {
+        fill: none;
+        stroke: #bbb;
+        stroke-width: .5px;
+        stroke-opacity: .5;
+    }
+    .world_map	.equator {
+        stroke: #ccc;
+        stroke-width: 1px;
+    }
+
+    #world_tooltip {
+        position: absolute;
+        height: auto;
+        padding: 10px;
+        background-color: white;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+        z-index: 1010;
+    }
+
+    #world_tooltip.hidden {
+        display: none;
+    }
+
+    #world_tooltip p {
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 16px;
+        line-height: 20px;
+    }
+}
+
+.theme-dark {
+    .common();
+}
+
+.theme-light {
+    .common();
+}
