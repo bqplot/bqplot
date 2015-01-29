@@ -62,6 +62,12 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var max_y_height    = 0;
             var dist = height   = 0;
 
+            /*
+             * Compute the minimum x distance between the data points. We will
+             * use this to pad either side of the x domain.
+             * Also compute the maximum height of all of the marks (i.e. maximum
+             * distance from high to low) and use that to pad the y domain.
+             */
             for(var i = 0; i < this.mark_data.length; i++) {
                 if(i > 0) {
                     dist = this.mark_data[i][0] - this.mark_data[i-1][0];
