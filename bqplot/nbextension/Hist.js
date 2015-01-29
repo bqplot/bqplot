@@ -42,12 +42,11 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             // a full "update_data" instead of a simple redraw.
             var x_scale = this.scales["sample"],
                 y_scale = this.scales["counts"];
-            var that = this;
             this.listenTo(x_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.model.update_data(); }
+                if (!this.model.dirty) { this.model.update_data(); }
             });
             this.listenTo(y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+                if (!this.model.dirty) { this.draw(); }
             });
         },
         create_listeners: function() {

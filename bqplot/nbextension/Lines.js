@@ -51,13 +51,11 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         set_positional_scales: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
-
-            var that = this;
             this.listenTo(x_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+                if (!this.model.dirty) { this.draw(); }
             });
             this.listenTo(y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+                if (!this.model.dirty) { this.draw(); }
             });
         },
         create_listeners: function() {

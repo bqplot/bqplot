@@ -88,12 +88,11 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         set_positional_scales: function() {
             var x_scale = this.scales["x"],
                 y_scale = this.scales["y"];
-            var self = this;
             this.listenTo(x_scale, "domain_changed", function() {
-                if (!self.model.dirty) { self.draw(); }
+                if (!this.model.dirty) { this.draw(); }
             });
             this.listenTo(y_scale, "domain_changed", function() {
-                if (!self.model.dirty) { self.draw(); }
+                if (!this.model.dirty) { this.draw(); }
             });
         },
         initialize_additional_scales: function() {
