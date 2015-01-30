@@ -29,7 +29,7 @@ requirejs.config({
             "exports": "d3",
         },
         "colorbrewer": {
-            "export": "colorbrewer",
+            "exports": "colorbrewer",
         },
     },
 })
