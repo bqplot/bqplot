@@ -305,6 +305,11 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         redraw_axisline: function() {
             if (this.axis) {
                 this.axis_line_scale.domain(this.axis_scale.scale.domain());
+                // We need to set the range here again. Only because, if the
+                // domain has changed from a two element array to a three
+                // element one, the range of the axis has to be changed
+                // accordingly.
+                this.set_scales_range();
                 this.axis.orient(this.side)
                     .scale(this.axis_line_scale);
                 this.set_tick_values();
