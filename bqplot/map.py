@@ -12,6 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+r"""
+
+======
+Map
+======
+
+.. currentmodule:: bqplot.map
+
+.. autosummary::
+   :toctree: generate/
+
+   Map
+"""
 
 from IPython.utils.traitlets import Unicode, List, Dict, Float, Bool, Instance
 from IPython.html.widgets import DOMWidget, CallbackDispatcher
@@ -21,6 +34,59 @@ from .axes import Axis
 
 
 class Map(DOMWidget):
+
+    """Class to generate a waffle wrapped map of the list of data provided.
+
+    Map Drawing Attributes
+    ------------------
+    map_width: int
+        minimum width of the entire map
+    map_height: int
+        minimum height of the entire map
+    map_margin: dict
+        margin for the market map plot area with respect to the entire display
+        area
+    preserve_aspect: bool
+        boolean to control if the aspect ratio should be preserved or not
+        during a resize
+    cols: int
+        Suggestion for no of columns in the map.If not specified, value is
+        inferred from the no of rows and no of cells
+    rows: int
+        No of rows in the map.If not specified, value is inferred from the no
+        of cells and no of columns.
+        If both rows and columns are not specified, then a square is
+        constructed basing on the no of cells.
+        The above two attributes are suggestions which are respected unless
+        they are not feasible. One required condition is that, the number of
+        columns is odd when row_groups is greater than 1.
+    row_groups: int
+        No of groups the rows should be divided into. This can be used to draw
+        more square cells for each of the groups
+
+    Display Attributes
+    ------------------
+    colors: list of colors
+        colors for each of the groups which are cycled over to cover all the
+        groups
+    stroke: color
+        Stroke of each of the cells of the market map
+    group_stroke: color
+        Stroke of the border for the group of cells corresponding to a group
+    selected_stroke: color
+        stroke for the selected cells
+    hovered_stroke: color
+        stroke for the cell being hovered on
+
+    Other Attributes
+    ----------------
+    enable_select: bool
+        boolean to control the ability to select the cells of the map by
+        clicking
+    enable_hover: bool
+        boolean to control if the map should be aware of which cell is being
+        hovered on. If it is set to False, tooltip will not be displayed
+    """
     fig_margin = Dict(dict(top=0, bottom=20, left=50, right=50), sync=True)   # Margin with respect to the parent. Width, height etc are determined by this
     min_width = Float(800, sync=True)
     min_height = Float(600, sync=True)
