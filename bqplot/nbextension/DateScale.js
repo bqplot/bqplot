@@ -22,7 +22,6 @@ define(["widgets/js/manager", "d3", "./LinearScale"], function(WidgetManager, d3
                  this.scale.domain(this.model.domain);
              }
              this.offset = 0;
-             this.ticks = this.model.ticks;
              this.create_event_listeners();
              this.format_date = this.model.format_date;
          },

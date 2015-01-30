@@ -22,7 +22,6 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
             this.min_from_data = true;
             this.max_from_data = true;
             this.on("change:domain", this.domain_changed, this);
-            this.ticks = [];
             this.on("change:ticks", this.ticks_changed, this);
         },
         domain_changed: function() {

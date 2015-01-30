@@ -22,7 +22,6 @@ define(["widgets/js/manager", "d3", "./Scale", "./ColorUtils"], function(WidgetM
                 this.scale.domain(this.model.domain);
             }
             this.offset = 0;
-            this.ticks = this.model.ticks;
             this.scheme = this.model.scheme = this.model.get("scheme");
 
             if(this.model.get("colors").length === 0) {

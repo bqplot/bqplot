@@ -17,7 +17,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
      var Scale = widget.WidgetView.extend({
          render: function(){
              this.offset = 0;
-             this.ticks = this.model.ticks;
          },
          create_event_listeners: function() {
              this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);

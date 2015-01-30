@@ -19,7 +19,6 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
         initialize: function(range) {
             LogScaleModel.__super__.initialize.apply(this);
             this.type = "log";
-            this.ticks = [];
             this.global_min = Number.MIN_VALUE;
             this.global_max = Number.POSITIVE_INFINITY;
             this.on_some_change(["min", "max"], this.min_max_changed, this);
