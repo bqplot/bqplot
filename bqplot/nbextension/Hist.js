@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetManager, d3, mark, utils) {
+define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, mark, utils) {
     var Mark = mark[0];
     var Hist = Mark.extend({
         render: function() {
@@ -69,7 +69,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
             });
             this.bar_index_sel = [];
             this.sel_indices = [];
-            this.selector_model.set("selected", jQuery.extend(true, [], []));
+            this.selector_model.set("selected", []);
             this.selector.touch();
         },
         update_colors: function(model, colors) {
@@ -220,7 +220,7 @@ define(["widgets/js/manager", "d3", "./Mark", "base/js/utils"], function(WidgetM
                   buffer_index.forEach(function(data_elem) {
                       that.sel_indices.push(data_elem);
                   });
-                  that.selector_model.set("selected", jQuery.extend(true, [], that.sel_indices));
+                  that.selector_model.set("selected", utils.deepCopy(that.sel_indices));
                   that.selector.touch();
                   if (!d3.event) {
                       d3.event = window.event;

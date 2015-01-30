@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManager, d3, BaseSelectors) {
+define(["widgets/js/manager", "d3", "./SelectorOverlay", "./utils"], function(WidgetManager, d3, BaseSelectors, utils) {
     var BaseXSelector = BaseSelectors[1];
     var BaseXYSelector = BaseSelectors[2];
     var BrushSelector = BaseXYSelector.extend({
@@ -259,8 +259,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
 
             var data = _.range(this.curr_index + 1);
             var self = this;
-            var selected = jQuery.extend(true, {}, this.model.get("selected"));
-            var idx_selected = jQuery.extend(true, {}, this.model.get("idx_selected"));
+            var selected = utils.deepCopy(this.model.get("selected"));
+            var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
             //TODO: Use do diff?
             data.forEach(function(elem) {
                 var label = self.get_label(elem);
@@ -389,8 +389,8 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay"  ], function(WidgetManag
             this.touch();
         },
         convert_and_save: function(extent, item) {
-            var selected = jQuery.extend(true, {}, this.model.get("_selected"));
-            var idx_selected = jQuery.extend(true, {}, this.model.get("idx_selected"));
+            var selected = utils.deepCopy(this.model.get("_selected"));
+            var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
             var self = this;
             var item_idx_selected = this.mark_views.map(function(mark_view) {
                 return mark_view.invert_range(self.scale.scale(extent[0]), self.scale.scale(extent[1]));

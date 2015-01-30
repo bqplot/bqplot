@@ -26,11 +26,12 @@ define(["d3"], function(d3) {
             }
             return [d3.scale.linear().range([first, pivot]), d3.scale.linear().range([pivot, end])];
         },
-        deep_2d_copy: function(array) {
-            // FIXME: Nooooo!
-            return array.map(function(d) {
-                return d.slice(0);
-            });
-        }
+        deepCopy: function (obj) {
+            // This makes a deep copy of JSON-parsable objects
+            // (no cycling or recombining)
+            // Backbone model attributes must be JSON parsable. Hence there is
+            // no need for a fancier logic, and it is surprisingly efficient.
+            return JSON.parse(JSON.stringify(obj));
+        },
     }
 });
