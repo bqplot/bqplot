@@ -31,7 +31,7 @@ from IPython.html.widgets import Widget
 from IPython.utils.traitlets import Int, Unicode, Instance, Enum, Dict, Bool
 
 from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale
-from .traits import NumpyArray, Color
+from .traits import NdArray, Color
 
 
 def register_axis(key=None):
@@ -108,7 +108,7 @@ class Axis(BaseAxis):
     tick_format = Unicode(allow_none=True, sync=True)   # TODO: should we set None as default value
     scale = Instance(Scale, sync=True)                  # TODO: check for allow_none
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
-    tick_values = NumpyArray(sync=True)
+    tick_values = NdArray(sync=True)
     offset = Dict({}, allow_none=False, sync=True)
     label_location = Enum(['middle', 'start', 'end'], default_value='middle',
                           allow_none=False, sync=True)

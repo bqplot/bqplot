@@ -47,7 +47,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.padding = this.model.get("padding");
             this.offset = 0;
             this.num_ticks = this.model.get("num_ticks");
-            this.tick_values = this.model.get("tick_values");
+            this.tick_values = this.model.get_typed_field("tick_values");
             this.label_loc = this.model.get("label_location");
             this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
 
@@ -141,7 +141,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
         },
         tickvalues_changed: function() {
-            this.tick_values = this.model.get("tick_values");
+            this.tick_values = this.model.get_typed_field("tick_values");
             this.set_tick_values();
         },
         tickformat_changed: function() {
