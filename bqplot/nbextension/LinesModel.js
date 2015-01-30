@@ -38,8 +38,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.y_data = this.get_typed_field("y");
 
             var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
+            var x_scale = scales["x"], y_scale = scales["y"];
+            var curve_labels = this.get("labels");
             if (this.x_data.length == 0 || this.y_data.length == 0) {
                 this.mark_data = [];
             } else {
@@ -51,7 +51,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
 
                 if (this.x_data.length == 1 && this.y_data.length > 1) {
                     // same x for all y
-                    this.mark_data = this.curve_labels.map(function(name, i) {
+                    this.mark_data = curve_labels.map(function(name, i) {
                         return {
                             name: name,
                             values: that.y_data[i].map(function(d, j) {
@@ -61,7 +61,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                         };
                     });
                 } else {
-                    this.mark_data = this.curve_labels.map(function(name, i) {
+                    this.mark_data = curve_labels.map(function(name, i) {
                         var xy_data = d3.zip(that.x_data[i], that.y_data[i]);
                         return {
                             name: name,
@@ -81,23 +81,21 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             // Function to set the labels appropriately.
             // Setting the labels to the value sent and filling in the
             // remaining values.
-            var that = this;
-            this.curve_labels = this.get("labels");
+            var curve_labels = this.get("labels");
             var data_length = (this.x_data.length == 1) ?
                 (this.y_data.length) : Math.min(this.x_data.length, this.y_data.length);
-            if(this.curve_labels.length > data_length) {
-                this.curve_labels = this.curve_labels.slice(0, data_length);
+            if(curve_labels.length > data_length) {
+                curve_labels = curve_labels.slice(0, data_length);
             }
-            else if(this.curve_labels.length < data_length) {
-                _.range(this.curve_labels.length, data_length).forEach(function(index) {
-                    that.curve_labels[index] = "C" + (index+1);
+            else if(curve_labels.length < data_length) {
+                _.range(curve_labels.length, data_length).forEach(function(index) {
+                    curve_labels[index] = "C" + (index+1);
                 });
             }
         },
         update_domains: function() {
             var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
+            var x_scale = scales["x"], y_scale = scales["y"];
 
             if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {

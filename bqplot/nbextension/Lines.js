@@ -25,13 +25,15 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             //created. Make sure none of the event handler functions make that
             //assumption.
             return base_render_promise.then(function() {
+                var x_scale = self.scales["x"], y_scale = self.scales["y"];
+
                 self.line = d3.svg.line()
                   .interpolate(self.model.get("interpolation"))
                   .x(function(d) {
-                      return self.x_scale.scale(d.x) + self.x_offset;
+                      return x_scale.scale(d.x) + x_scale.offset;
                   })
                   .y(function(d) {
-                      return self.y_scale.scale(d.y) + self.y_offset;
+                      return y_scale.scale(d.y) + y_scale.offset;
                   })
                   .defined(function(d) { return d.y !== null; });
                 self.create_listeners();
@@ -39,31 +41,26 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }, null);
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             if(x_scale) {
                 x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
-                this.x_offset = x_scale.offset;
             }
-            var y_scale = this.scales["y"];
             if(y_scale) {
                 y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
-                this.y_offset = y_scale.offset;
             }
         },
         set_positional_scales: function() {
-            this.x_scale = this.scales["x"];
-            this.y_scale = this.scales["y"];
-            var that = this;
-            this.listenTo(that.x_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            this.listenTo(x_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
             });
-            this.listenTo(that.y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+            this.listenTo(y_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
             });
         },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
-            this.model.on("change:interpolation", this.update_interpolation, this);
+            this.model.on("change:interpolation", this.update_interpolion, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:stroke_width", this.update_stroke_width, this);
@@ -152,8 +149,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         invert_range: function(start_pxl, end_pxl) {
             var self = this;
-            var start = this.x_scale.scale.invert(start_pxl);
-            var end = this.x_scale.scale.invert(end_pxl);
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var start = x_scale.scale.invert(start_pxl);
+            var end = x_scale.scale.invert(end_pxl);
             var data = this.model.x_data[0] instanceof Array ?
                 this.model.x_data[0] : this.model.x_data;
 
@@ -166,7 +164,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return indices;
         },
         invert_point: function(pixel) {
-            var data_point = this.x_scale.scale.invert(pixel);
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var data_point = x_scale.scale.invert(pixel);
             var data = this.model.x_data[0] instanceof Array ?
                 this.model.x_data[0] : this.model.x_data;
 
@@ -177,7 +176,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return index;
         },
         update_multi_range: function(brush_extent) {
-            var that = this;
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var x_start = brush_extent[0];
             var x_end = brush_extent[1];
 
@@ -187,10 +186,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var idx_end = Math.min(this.bisect(data, x_end),
 								   Math.max((data.length - 1), 0));
 
-            x_start = (this.x_scale.model.type === "date") ?
-                this.x_scale.format_date(x_start) : x_start;
-            x_end = (this.x_scale.model.type === "date") ?
-                this.x_scale.format_date(x_end) : x_end;
+            x_start = (x_scale.model.type === "date") ?
+                x_scale.format_date(x_start) : x_start;
+            x_end = (x_scale.model.type === "date") ?
+                x_scale.format_date(x_end) : x_end;
 
             this.selector_model.set("idx_selected", [idx_start, idx_end]);
             this.selector.touch();
@@ -217,15 +216,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .style("stroke-dasharray", _.bind(this.get_line_style, this))
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
 
+            var curve_labels = this.model.get("labels");
+
             this.legend_el.append("text")
               .attr("class", "legendtext")
               .attr("x", rect_dim * 1.2)
               .attr("y", rect_dim / 2)
               .attr("dy", "0.35em")
-              .text(function(d, i) { return that.model.curve_labels[i]; })
+              .text(function(d, i) { return curve_labels[i]; })
               .style("fill", function(d,i) { return that.get_colors(i); });
 
-            var max_length = d3.max(this.model.curve_labels, function(d) {
+            var max_length = d3.max(curve_labels, function(d) {
                 return d.length;
             });
             this.legend_el.exit().remove();
@@ -233,6 +234,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         create_labels: function() {
             var curves_sel = this.el.selectAll(".curve");
+
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+
             var that = this;
 
             curves_sel.selectAll(".curve_label").remove();
@@ -241,8 +245,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .datum(function(d) {
                   return {name: d.name, value: d.values[d.values.length - 1]};
               }).attr("transform", function(d) {
-                  return "translate(" + that.x_scale.scale(d.value.x)
-                                + "," + that.y_scale.scale(d.value.y) + ")";
+                  return "translate(" + x_scale.scale(d.value.x)
+                                + "," + y_scale.scale(d.value.y) + ")";
               }).attr("x", 3)
               .attr("dy", ".35em")
               .attr("display", function(d) {

@@ -21,13 +21,15 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var self = this;
 
             return base_render_promise.then(function() {
+                var x_scale = self.scales["x"], y_scale = self.scales["y"];
+
                 self.line = d3.svg.line()
-                  .interpolate(self.model.get("interpolate"))
+                  .interpolate(self.model.get("interpolation"))
                   .x(function(d) {
-                      return self.x_scale.scale(d.x) + self.x_offset;
+                      return x_scale.scale(d.x) + x_scale.offset;
                   })
                   .y(function(d) {
-                      return self.y_scale.scale(d.y) + self.y_offset;
+                      return y_scale.scale(d.y) + y_scale.offset;
                   })
                   .defined(function(d) { return d.y !== null; });
                 self.create_listeners();
@@ -47,6 +49,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
         },
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
+            this.model.on("change:interpolation", this.update_interpolation, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("change:stroke_width", this.update_stroke_width, this);
             this.model.on("change:labels_visibility", this.update_legend_labels, this);
@@ -102,8 +105,6 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var curves_sel = this.el.selectAll(".curve")
               .data(this.model.new_mark_data, function(d, i) { return d.name; });
 
-            var that = this;
-
             curves_sel.enter().append("g")
               .attr("class", "curve");
 
@@ -111,15 +112,18 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
               .transition().duration(this.model.get("animate_dur"))
               .remove();
 
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+
+            var that = this;
             curves_sel[0].forEach(function(elem, index) {
                 var lines = d3.select(elem).selectAll("line")
                   .data(that.model.new_mark_data[index]["values"]);
                 lines.enter().append("line");
                 lines.attr("class", "line-elem")
-                  .attr({"x1": function(dataelem) { return that.x_scale.scale(dataelem.x1); },
-                         "x2": function(dataelem) { return that.x_scale.scale(dataelem.x2); },
-                         "y1": function(dataelem) { return that.y_scale.scale(dataelem.y1); },
-                         "y2": function(dataelem) { return that.y_scale.scale(dataelem.y2); }})
+                  .attr({"x1": function(dataelem) { return x_scale.scale(dataelem.x1); },
+                         "x2": function(dataelem) { return x_scale.scale(dataelem.x2); },
+                         "y1": function(dataelem) { return y_scale.scale(dataelem.y1); },
+                         "y2": function(dataelem) { return y_scale.scale(dataelem.y2); }})
                   .attr("stroke", function(dataelem) {
                       return that.get_element_color(dataelem);
                   }).attr("stroke-width", function(dataelem) {
@@ -167,13 +171,16 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
         relayout: function() {
             Line.__super__.relayout.apply(this);
             this.set_ranges();
+
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
               .transition().duration(this.model.get("animate_dur"))
-              .attr({"x1": function(dataelem) { return that.x_scale.scale(dataelem.x1); },
-                     "x2": function(dataelem) { return that.x_scale.scale(dataelem.x2); },
-                     "y1": function(dataelem) { return that.y_scale.scale(dataelem.y1); },
-                     "y2": function(dataelem) { return that.y_scale.scale(dataelem.y2); },
+              .attr({"x1": function(dataelem) { return x_scale.scale(dataelem.x1); },
+                     "x2": function(dataelem) { return x_scale.scale(dataelem.x2); },
+                     "y1": function(dataelem) { return y_scale.scale(dataelem.y1); },
+                     "y2": function(dataelem) { return y_scale.scale(dataelem.y2); },
               });
         },
         create_labels: function() {

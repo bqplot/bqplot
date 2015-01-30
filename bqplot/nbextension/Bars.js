@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, mark, utils) {
     var Mark = mark[0];
     var Bars = Mark.extend({
         render: function() {
@@ -37,36 +37,36 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .on("click", _.bind(this.reset_selection, this));
 
             return base_creation_promise.then(function() {
-                self.color_scale = self.scales["color"];
                 self.create_listeners();
                 self.draw();
             }, null);
         },
         set_ranges: function() {
-            if(this.x_scale.model.type !== "ordinal") {
-                this.x_scale.set_range(this.parent.get_padded_xrange(this.x_scale.model));
+            var x_scale = this.scales["x"],
+                y_scale = this.scales["y"],
+                color_scale = this.scales["color"];
+            if(x_scale.model.type !== "ordinal") {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
             } else {
-                this.x_scale.set_range(this.parent.get_padded_xrange(this.x_scale.model), this.padding);
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model), this.padding);
             }
-            this.y_scale.set_range(this.parent.get_padded_yrange(this.y_scale.model));
+            y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
             // x_offset is set later by the adjust_offset method
             // This differs because it is not constant for a scale.
             // Changes based on the data.
             this.x_offset = 0;
-            this.y_offset = this.y_scale.offset;
-            if(this.color_scale) {
-                this.color_scale.set_range();
+            this.y_offset = y_scale.offset;
+            if(color_scale) {
+                color_scale.set_range();
             }
         },
         set_positional_scales: function() {
-            this.x_scale = this.scales["x"];
-            this.y_scale = this.scales["y"];
-            var that = this;
-            this.listenTo(that.x_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            this.listenTo(x_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
             });
-            this.listenTo(that.y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+            this.listenTo(y_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
             });
         },
         set_internal_scales: function() {
@@ -79,7 +79,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // the value have to be negatively offset by half of the width of
             // the bars, because ordinal scales give the values corresponding
             // to the start of the bin but linear scale gives the actual value.
-            if(this.x_scale.model.type !== "ordinal") {
+            var x_scale = this.scales["x"];
+            if(x_scale.model.type !== "ordinal") {
                 this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
             } else {
                 this.x_offset = 0;
@@ -94,6 +95,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
         },
         relayout: function() {
+            var y_scale = this.scales["y"];
             this.set_ranges();
 
             this.el.select(".mouseeventrect")
@@ -103,8 +105,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.el.select(".zeroLine")
               .attr("x1",  0)
               .attr("x2", this.parent.plotarea_width)
-              .attr("y1", this.y_scale.scale(this.model.base_value))
-              .attr("y2", this.y_scale.scale(this.model.base_value));
+              .attr("y1", y_scale.scale(this.model.base_value))
+              .attr("y2", y_scale.scale(this.model.base_value));
 
             var bar_groups = this.el.selectAll(".bargroup");
             var bars_sel = bar_groups.selectAll(".bar");
@@ -123,16 +125,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 return d.key;
             });
 
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             // this.x is the ordinal scale used to draw the bars. If a linear
             // scale is given, then the ordinal scale is created from the
             // linear scale.
-            if(this.x_scale.model.type !== "ordinal") {
+            if(x_scale.model.type !== "ordinal") {
                 var model_domain = this.model.mark_data.map(function(elem) {
                     return elem.key;
                 });
                 this.x.domain(model_domain);
             } else {
-                this.x.domain(this.x_scale.scale.domain());
+                this.x.domain(x_scale.scale.domain());
             }
             this.x.rangeRoundBands(this.set_x_range(), this.padding);
             this.adjust_offset();
@@ -165,41 +168,42 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("class", "zeroLine")
               .attr("x1",  0)
               .attr("x2", this.parent.plotarea_width)
-              .attr("y1", this.y_scale.scale(this.model.base_value))
-              .attr("y2", this.y_scale.scale(this.model.base_value));
+              .attr("y1", y_scale.scale(this.model.base_value))
+              .attr("y2", y_scale.scale(this.model.base_value));
         },
         draw_bars: function() {
             var bar_groups = this.el.selectAll(".bargroup");
             var bars_sel = bar_groups.selectAll(".bar");
             var that = this;
 
-            if(this.x_scale.model.type === "ordinal") {
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            if(x_scale.model.type === "ordinal") {
                 var x_max = d3.max(this.parent.get_xrange());
                 bar_groups.attr("transform", function(d) {
-                    return "translate(" + ((that.x_scale.scale(d.key) !== undefined ?
-                                            that.x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
+                    return "translate(" + ((x_scale.scale(d.key) !== undefined ?
+                                            x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
                 });
             } else {
                 bar_groups.attr("transform", function(d) {
-                    return "translate(" + (that.x_scale.scale(d.key) + that.x_offset) + ", 0)";
+                    return "translate(" + (x_scale.scale(d.key) + that.x_offset) + ", 0)";
                 });
             }
             if(this.model.get("type") === "stacked") {
                 bars_sel.attr("x", 0)
                     .attr("width", this.x.rangeBand().toFixed(2))
                     .attr("y", function(d) {
-                        return that.y_scale.scale(d.y1);
+                        return y_scale.scale(d.y1);
                     }).attr("height", function(d) {
-                        return Math.abs(that.y_scale.scale(d.y1 + d.val) - that.y_scale.scale(d.y1));
+                        return Math.abs(y_scale.scale(d.y1 + d.val) - y_scale.scale(d.y1));
                     });
             } else {
                 bars_sel.attr("x", function(datum, index) {
                         return that.x1(index);
                   }).attr("width", this.x1.rangeBand().toFixed(2))
                   .attr("y", function(d) {
-                      return d3.min([that.y_scale.scale(d.val), that.y_scale.scale(that.model.base_value)]);
+                      return d3.min([y_scale.scale(d.val), y_scale.scale(that.model.base_value)]);
                   }).attr("height", function(d) {
-                      return Math.abs(that.y_scale.scale(that.model.base_value) - (that.y_scale.scale(d.val)));
+                      return Math.abs(y_scale.scale(that.model.base_value) - (y_scale.scale(d.val)));
                   });
             }
         },
@@ -217,21 +221,22 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             //if y is multi-dimensional, the correspoding values should be of
             //the same color.
             var that = this;
-            if(this.color_scale) {
-                this.color_scale.set_range();
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                color_scale.set_range();
             }
             if(this.model.mark_data.length > 0) {
                 if(!(this.model.is_y_2d)) {
                     this.el.selectAll(".bar").style("fill", function(d, i) {
-                        return (d.color !== undefined && that.color_scale !== undefined) ?
-                            that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                        return (d.color !== undefined && color_scale !== undefined) ?
+                            color_scale.scale(d.color) : that.get_colors(d.color_index);
                     });
                 } else {
                     this.el.selectAll(".bargroup")
                        .selectAll(".bar")
                        .style("fill", function(d, i) {
-                       return (d.color !== undefined && that.color_scale !== undefined) ?
-                           that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                       return (d.color !== undefined && color_scale !== undefined) ?
+                           color_scale.scale(d.color) : that.get_colors(d.color_index);
                     });
                 }
             }
@@ -239,13 +244,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(this.legend_el) {
                 this.legend_el.selectAll(".legendrect")
                     .style("fill", function(d, i) {
-                    return (d.color && that.color_scale) ?
-                        that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                    return (d.color && color_scale) ?
+                        color_scale.scale(d.color) : that.get_colors(d.color_index);
                 });
                 this.legend_el.selectAll(".legendtext")
                     .style("fill", function(d, i) {
-                    return (d.color !== undefined && that.color_scale !== undefined) ?
-                        that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                    return (d.color !== undefined && color_scale !== undefined) ?
+                        color_scale.scale(d.color) : that.get_colors(d.color_index);
                 });
             }
         },
@@ -271,8 +276,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .append("rect")
               .classed("legendrect", true)
               .style("fill", function(d,i) {
-                  return (d.color !== undefined && that.color_scale !== undefined) ?
-                      that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                  return (d.color !== undefined && color_scale !== undefined) ?
+                      color_scale.scale(d.color) : that.get_colors(d.color_index);
               }).attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
 
             this.legend_el.append("text")
@@ -282,8 +287,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("dy", "0.35em")
               .text(function(d, i) { return that.model.get("labels")[i]; })
               .style("fill", function(d,i) {
-                  return (d.color !== undefined && that.color_scale !== undefined) ?
-                      that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                  return (d.color !== undefined && color_scale !== undefined) ?
+                      color_scale.scale(d.color) : that.get_colors(d.color_index);
               });
 
             var max_length = d3.max(this.model.get("labels"), function(d) {
@@ -336,18 +341,18 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.update_stroke_and_opacity();
         },
         set_x_range: function() {
-            if(this.x_scale.model.type === "ordinal") {
-                return this.x_scale.scale.rangeExtent();
-            }
-            else {
-                return [this.x_scale.scale(d3.min(this.x.domain())),
-                        this.x_scale.scale(d3.max(this.x.domain()))];
+            var x_scale = this.scales["x"];
+            if(x_scale.model.type === "ordinal") {
+                return x_scale.scale.rangeExtent();
+            } else {
+                return [x_scale.scale(d3.min(this.x.domain())),
+                        x_scale.scale(d3.max(this.x.domain()))];
             }
         },
         bar_click_handler: function (data, index) {
             var that = this;
             if(this.model.get("select_bars")) {
-                var idx_selected = jQuery.extend(true, [], this.model.get("idx_selected"));
+                var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
                 var elem_index = idx_selected.indexOf(index);
                 // index of bar i. Checking if it is already present in the
                 // list
