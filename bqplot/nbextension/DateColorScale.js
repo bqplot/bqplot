@@ -22,10 +22,8 @@ define(["widgets/js/manager", "d3", "./LinearColorScale", "./ColorUtils"], funct
                 this.scale.domain(this.model.domain);
             }
             this.offset = 0;
-            this.scheme = this.model.scheme = this.model.get("scheme");
-
             if(this.model.get("colors").length == 0) {
-               this.divergent = this.model.divergent = ColorUtils.is_divergent(this.scheme);
+               this.divergent = this.model.divergent = ColorUtils.is_divergent(this.model.get("scheme"));
             } else {
                 this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
             }
