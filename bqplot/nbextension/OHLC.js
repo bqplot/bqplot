@@ -17,34 +17,29 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
     var Mark = mark[0];
     var OHLC = Mark.extend({
         render: function() {
-            var base_creation_promise   = OHLC.__super__.render.apply(this);
-            var that                    = this;
+            var base_creation_promise = OHLC.__super__.render.apply(this);
+            var that = this;
             return base_creation_promise.then(function() {
                 that.create_listeners();
                 that.draw(); },
             null);
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             if(x_scale) {
                 x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
-                this.x_offset = x_scale.offset;
             }
-            var y_scale = this.scales["y"];
             if(y_scale) {
                 y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
-                this.y_offset = y_scale.offset;
             }
         },
         set_positional_scales: function() {
-            this.x_scale = this.scales["x"];
-            this.y_scale = this.scales["y"];
-            var that = this;
-            this.listenTo(that.x_scale, "domain_changed", function() {
-                if(!that.model.dirty) { that.draw(); }
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            this.listenTo(x_scale, "domain_changed", function() {
+                if(!this.model.dirty) { this.draw(); }
             });
-            this.listenTo(that.y_scale, "domain_changed", function() {
-                if(!that.model.dirty) { that.draw(); }
+            this.listenTo(y_scale, "domain_changed", function() {
+                if(!this.model.dirty) { this.draw(); }
             });
         },
         create_listeners: function() {
@@ -64,10 +59,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_colors: function() {
-            var that        = this;
-            var colors      = this.model.get("colors");
-            var up_color    = (colors[0] ? colors[0] : "none");
-            var down_color  = (colors[1] ? colors[1] : "none");
+            var that = this;
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : "none");
+            var down_color = (colors[1] ? colors[1] : "none");
 
             // Fill candles based on the opening and closing values
             this.el.selectAll(".stick").style("fill", function(d) {
@@ -88,8 +83,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_marker: function() {
-            var marker  = this.model.get("marker");
-            var that    = this;
+            var marker = this.model.get("marker");
 
             if(this.legend_el && this.rect_dim) {
                 this.draw_legend_icon(this.rect_dim, this.legend_el);
@@ -102,16 +96,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 }));
         },
         update_selected_colors: function(idx_start, idx_end) {
-            var stick_sel       = this.el.selectAll(".stick");
-            var current_range   = _.range(idx_start, idx_end + 1);
+            var stick_sel = this.el.selectAll(".stick");
+            var current_range = _.range(idx_start, idx_end + 1);
             if(current_range.length == this.model.mark_data.length) {
-                current_range   = [];
+                current_range = [];
             }
-            var that            = this;
-            var stroke          = this.model.get("stroke");
-            var colors          = this.model.get("colors");
-            var up_color        = (colors[0] ? colors[0] : stroke);
-            var down_color      = (colors[1] ? colors[1] : stroke);
+            var that = this;
+            var stroke = this.model.get("stroke");
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : stroke);
+            var down_color = (colors[1] ? colors[1] : stroke);
 
             _.range(0, this.model.mark_data.length)
              .forEach(function(d) {
@@ -135,19 +129,20 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 idx_selected = [];
                 return idx_selected;
             }
-            var that            = this;
-            var min             = this.x_scale.scale.invert(start_pxl);
-            var max             = this.x_scale.scale.invert(end_pxl);
-            var idx_start       = -1;
-            var idx_end         = -1;
-            var indices         = _.range(this.model.mark_data.length);
-            var idx_selected    = _.filter(indices, function(index) {
+
+            var x_scale = this.scales["x"];
+            var min = x_scale.scale.invert(start_pxl);
+            var max = x_scale.scale.invert(end_pxl);
+            var idx_start = -1;
+            var idx_end = -1;
+            var indices = _.range(this.model.mark_data.length);
+            var idx_selected = _.filter(indices, function(index) {
                 var elem = that.model.mark_data[index];
                 return (elem[0] >= min && elem[0] <= max);
             });
             if(idx_selected.length > 0 &&
-                (start_pxl !== that.x_scale.scale.range()[0] ||
-                    end_pxl !== that.x_scale.scale.range()[1]))
+                (start_pxl !== x_scale.scale.range()[0] ||
+                    end_pxl !== x_scale.scale.range()[1]))
             {
                 idx_start = idx_selected[0];
                 idx_end = idx_selected[idx_selected.length - 1];
@@ -156,7 +151,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return idx_selected;
         },
         invert_point: function(pixel) {
-            var point = this.x_scale.scale.invert(pixel);
+            var x_scale = this.scales["x"];
+            var point = x_scale.scale.invert(pixel);
             var index = this.bisect(this.model.mark_data.map(function(d) {
                 return d[0];
             }), point);
@@ -165,12 +161,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return index;
         },
         draw: function() {
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             this.set_ranges();
-            var that        = this;
-            var colors      = this.model.get("colors");
-            var up_color    = (colors[0] ? colors[0] : "none");
-            var down_color  = (colors[1] ? colors[1] : "none");
-            var mark_width  = this.calculate_mark_width();
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : "none");
+            var down_color = (colors[1] ? colors[1] : "none");
+            var mark_width = this.calculate_mark_width();
             var stick = this.el.selectAll(".stick")
                 .data(this.model.mark_data.map(function(d) {
                     return d[1];
@@ -190,6 +186,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             stick.exit().remove();
 
+            var that = this;
             // Update all of the marks
             this.el.selectAll(".stick")
                 .style("fill", function(d, i) {
@@ -197,10 +194,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                         down_color : up_color;
                 })
                 .attr( "transform", function(d, i) {
-                    return "translate(" + (that.x_scale.scale(that.model.mark_data[i][0])
-                                        + that.x_offset) + ","
-                                        + (that.y_scale.scale(d[that.model.px.high])
-                                        + that.y_offset) + ")";
+                    return "translate(" + (x_scale.scale(that.model.mark_data[i][0])
+                                        + x_scale.offset) + ","
+                                        + (y_scale.scale(d[that.model.px.high])
+                                        + y_scale.offset) + ")";
                 });
 
             // Draw the mark paths
@@ -230,29 +227,32 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
              *      |____ <- close
              *      | <----- low
              */
-            var that                = this;
-            var open                = [];
-            var high                = [];
-            var low                 = [];
-            var close               = [];
-            var headline_top        = [];
-            var headline_bottom     = [];
-            var to_left_side        = [];
-            var scaled_mark_widths  = [];
+
+            var that = this;
+            var open = [];
+            var high = [];
+            var low = [];
+            var close = [];
+            var headline_top = [];
+            var headline_bottom = [];
+            var to_left_side = [];
+            var scaled_mark_widths = [];
+
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
 
             for(var i = 0; i < dat.length; i++) {
-                open[i]     = that.y_scale.scale(dat[i][this.model.px.open]);
-                high[i]     = that.y_scale.scale(dat[i][this.model.px.high]);
-                low[i]      = that.y_scale.scale(dat[i][this.model.px.low]);
-                close[i]    = that.y_scale.scale(dat[i][this.model.px.close]);
-                headline_top[i]     = (that.y_scale.scale.invert(open[i]) >
-                                        that.y_scale.scale.invert(close[i])) ?
+                open[i] = y_scale.scale(dat[i][this.model.px.open]);
+                high[i] = y_scale.scale(dat[i][this.model.px.high]);
+                low[i] = y_scale.scale(dat[i][this.model.px.low]);
+                close[i] = y_scale.scale(dat[i][this.model.px.close]);
+                headline_top[i] = (y_scale.scale.invert(open[i]) >
+                                        y_scale.scale.invert(close[i])) ?
                                         open[i] : close[i];
-                headline_bottom[i]  = (that.y_scale.scale.invert(open[i]) <
-                                        that.y_scale.scale.invert(close[i])) ?
+                headline_bottom[i] = (y_scale.scale.invert(open[i]) <
+                                        y_scale.scale.invert(close[i])) ?
                                         open[i] : close[i];
 
-                if(that.x_scale.model.type == "date") {
+                if(x_scale.model.type == "date") {
                     if( min_x_difference instanceof Date) {
                         min_x_difference = min_x_difference.getTime();
                     } // TODO what if the mark data is not a date?
@@ -262,8 +262,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     var offset_in_x_units = that.model.mark_data[i][0]
                                             + min_x_difference;
                 }
-                scaled_mark_widths[i] = (that.x_scale.scale(offset_in_x_units)
-                                       - that.x_scale.scale(that.model.mark_data[i][0]))
+                scaled_mark_widths[i] = (x_scale.scale(offset_in_x_units)
+                                       - x_scale.scale(that.model.mark_data[i][0]))
                                         * 0.75;
                 to_left_side[i] = -1*scaled_mark_widths[i]/2;
             }
@@ -355,10 +355,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
              * Calculate the mark width for this data set based on the minimum
              * distance between consecutive points.
              */
-            var that            = this;
-            var min_distance    = Number.POSITIVE_INFINITY;
-            var sum             = 0;
-            var average_height  = 0;
+            var that = this;
+            var min_distance = Number.POSITIVE_INFINITY;
+            var sum = 0;
+            var average_height = 0;
             for(var i = 1; i < that.model.mark_data.length; i++) {
                 var dist = that.model.mark_data[i][0]
                          - that.model.mark_data[i-1][0];
@@ -366,8 +366,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
             // Check if there are less than two data points
             if(min_distance === Number.POSITIVE_INFINITY) {
-                min_distance = (this.x_scale.model.domain[1]
-                              - this.x_scale.model.domain[0]) / 2;
+                min_distance = (x_scale.model.domain[1]
+                              - x_scale.model.domain[0]) / 2;
             }
             if(min_distance < 0) {
                 mind_distance = -1*min_distance;
@@ -385,12 +385,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.draw();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            var stroke      = this.model.get("stroke");
-            var colors      = this.model.get("colors");
-            var up_color    = (colors[0] ? colors[0] : "none");
-            var down_color  = (colors[1] ? colors[1] : "none");
-            this.rect_dim   = inter_y_disp * 0.8;
-            var that        = this;
+            var stroke = this.model.get("stroke");
+            var colors = this.model.get("colors");
+            var up_color = (colors[0] ? colors[0] : "none");
+            var down_color = (colors[1] ? colors[1] : "none");
+            this.rect_dim = inter_y_disp * 0.8;
+            var that = this;
 
             this.legend_el  = elem.selectAll(".legend" + this.uuid)
                                   .data([this.model.mark_data]);
@@ -437,10 +437,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
              * Drawing the icon like this means we can avoid scaling when we
              * already know what the size of the mark is in pixels
              */
-            var height          = size;
-            var width           = size/2;
-            var bottom_y_offset = size*3/4;
-            var top_y_offset    = size/4;
+            var height = size;
+            var width = size / 2;
+            var bottom_y_offset = size * 3 / 4;
+            var top_y_offset = size / 4;
             if(this.model.get("marker") === "candle") {
                 selector.selectAll(".stick_head").attr("d",
                     this.head_path_candle(width/2));

@@ -18,15 +18,12 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
 
         render: function() {
             HandDraw.__super__.render.apply(this);
-            var that = this;
             this.el.style({"cursor": "crosshair"});
             this.active = false;
 
-            // Underlying line mark
-            this.lines_model = this.model.get("lines");
-
             // Register the mouse callback when the mark view promises are
             // resolved.
+            var that = this;
             this.set_lines_view().then(function() {
                 that.el.on("mousedown", function() {
                     return that.mousedown();
@@ -42,12 +39,13 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
         },
         set_lines_view: function() {
             var fig = this.parent;
+            var lines_model = this.model.get("lines");
             var self = this;
             return Promise.all(fig.mark_views.views).then(function(views) {
                 var fig_mark_ids = fig.mark_views._models.map(function(mark_model) {
                     return mark_model.id; // Model ids of the marks in the figure
                 });
-                var mark_index = fig_mark_ids.indexOf(self.lines_model.id);
+                var mark_index = fig_mark_ids.indexOf(lines_model.id);
                 self.lines_view = views[mark_index];
             });
         },
@@ -62,7 +60,8 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
         mouseup: function () {
             if (this.active) {
                 this.mouse_entry(true);
-                this.lines_model.set_typed_field("y", utils.deepCopy(this.lines_model.y_data));
+                var lines_model = this.model.get("lines");
+                lines_model.set_typed_field("y", utils.deepCopy(lines_model.y_data));
                 this.lines_view.touch();
                 this.active = false;
                 this.el.on("mousemove", null);
@@ -77,9 +76,9 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
             // If memory is set to true, itermediate positions between the last
             // position of the mouse and the current one will be interpolated.
             if (this.active) {
-                var that  = this;
+                var lines_model = this.model.get("lines");
                 var xindex = Math.min(this.line_index,
-                                      this.lines_model.x_data.length - 1);
+                                      lines_model.x_data.length - 1);
                 var mouse_pos = d3.mouse(this.el.node());
                 if (!memory || !("previous_pos" in this)) {
                     this.previous_pos = mouse_pos;
@@ -91,21 +90,22 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                 var newy = scale_y.invert(mouse_pos[1]);
                 var oldx = scale_x.invert(this.previous_pos[0]);
                 var oldy = scale_y.invert(this.previous_pos[1]);
-                var old_index = this.nns(this.lines_model.x_data[xindex], oldx);
-                var new_index = this.nns(this.lines_model.x_data[xindex], newx);
+                var old_index = this.nns(lines_model.x_data[xindex], oldx);
+                var new_index = this.nns(lines_model.x_data[xindex], newx);
                 var min = Math.min(old_index, new_index);
                 var max = Math.max(old_index, new_index);
                 for (var i=min; i<=max; ++i) {
                     if ( (!(this.valid_min) ||
-                          this.lines_model.x_data[xindex][i] >= this.min_x)
+                          lines_model.x_data[xindex][i] >= this.min_x)
                      && ((!this.valid_max) ||
-                         this.lines_model.x_data[xindex][i] <= this.max_x)) {
-                        this.lines_model.y_data[this.line_index][i] = newy;
+                         lines_model.x_data[xindex][i] <= this.max_x)) {
+                        lines_model.y_data[this.line_index][i] = newy;
                     }
                 }
-                var xy_data = this.lines_model.x_data[xindex].map(function(d, i)
+                var that  = this;
+                var xy_data = lines_model.x_data[xindex].map(function(d, i)
                 {
-                    return {x: d, y: that.lines_model.y_data[that.line_index][i]};
+                    return {x: d, y: lines_model.y_data[that.line_index][i]};
                 });
                 this.lines_view.el.select("#curve" + (that.line_index + 1))
                     .attr("d", function(d) {

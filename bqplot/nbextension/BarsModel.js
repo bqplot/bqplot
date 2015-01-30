@@ -36,8 +36,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
-            y_data = (y_data.length === 0 || y_data[0] instanceof Array) ? y_data : [y_data];
-            this.curve_labels = this.get("labels");
+            y_data = (y_data.length === 0 || y_data[0] instanceof Array) ?
+                y_data : [y_data];
             var self = this;
 
             this.base_value = this.get("base");

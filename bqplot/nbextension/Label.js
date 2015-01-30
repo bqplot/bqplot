@@ -47,28 +47,27 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         set_positional_scales: function() {
-            // If no scale for "x" or "y" is specified, figure scales are used.
             this.x_scale = this.scales["x"];
             this.y_scale = this.scales["y"];
+            // If no scale for "x" or "y" is specified, figure scales are used.
             if(!this.x_scale) {
                 this.x_scale = this.parent.scale_x;
             }
-            var that = this;
-            this.listenTo(this.x_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
-            });
-            if(!that.y_scale) {
+            if(!this.y_scale) {
                 this.y_scale = this.parent.scale_y;
             }
+            this.listenTo(this.x_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
+            });
             this.listenTo(this.y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+                if (!this.model.dirty) { this.draw(); }
             });
         },
         create_listeners: function() {
             Label.__super__.create_listeners.apply(this);
             this.model.on("change:text", this.update_text, this);
             this.model.on_some_change(["font_weight", "font_size", "color",
-                                      "align"], this.update_style, this);
+                                       "align"], this.update_style, this);
             this.model.on("change:rotate_angle", function(model, value) {
                 this.rotate_angle = value; this.apply_net_transform();
             }, this);
