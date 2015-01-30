@@ -19,7 +19,6 @@ define(["widgets/js/manager", "d3", "./DateScaleModel"], function(WidgetManager,
         initialize: function(range) {
             DateColorScaleModel.__super__.initialize.apply(this);
             this.type = "date_color_linear";
-            this.scheme = "RdYlGn";
             this.divergent = false;
             this.on("change:mid", this.mid_changed, this);
         },

@@ -16,12 +16,22 @@
 requirejs.config({
     paths: {
         "require-less": "/nbextensions/bqplot/require-less",
+        "d3": "/nbextensions/bqplot/d3/d3.min",
+        "colorbrewer": "/nbextensions/bqplot/d3/lib/colorbrewer/colorbrewer",
     },
     map: {
         "*": {
             "less": "require-less/less",
         }
-    }
+    },
+    shim: {
+        "d3": {
+            "exports": "d3",
+        },
+        "colorbrewer": {
+            "exports": "colorbrewer",
+        },
+    },
 })
 
 define([

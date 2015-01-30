@@ -19,7 +19,6 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
         initialize: function(range) {
             LinearScaleModel.__super__.initialize.apply(this);
             this.type = "linear";
-            this.ticks = [];
             this.global_min = Number.NEGATIVE_INFINITY;
             this.global_max = Number.POSITIVE_INFINITY;
             this.on_some_change(["min", "max"], this.min_max_changed, this);

@@ -18,10 +18,8 @@ define(["widgets/js/manager", "d3", "./OrdinalScale", "./ColorUtils"], function(
     var OrdinalColorScale = BaseScaleView.extend({
         render: function(){
             OrdinalColorScale.__super__.render.apply(this);
-            this.scheme = this.model.scheme = this.model.get("scheme");
             this.model.on("domain_changed", this.model_domain_changed, this);
             this.model.on("set_ticks", this.model_ticks_changed, this);
-            this.colors = this.model.get("colors");
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
         },
         set_range: function() {

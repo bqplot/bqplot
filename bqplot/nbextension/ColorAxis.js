@@ -45,7 +45,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.label = this.model.get("label");
             this.ordinal = false;
             this.num_ticks = this.model.get("num_ticks");
-            this.tick_values = this.model.get("tick_values");
+            this.tick_values = this.model.get_typed_field("tick_values");
 
             var that = this;
             scale_promise.then(function() {
@@ -305,6 +305,11 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         redraw_axisline: function() {
             if (this.axis) {
                 this.axis_line_scale.domain(this.axis_scale.scale.domain());
+                // We need to set the range here again. Only because, if the
+                // domain has changed from a two element array to a three
+                // element one, the range of the axis has to be changed
+                // accordingly.
+                this.set_scales_range();
                 this.axis.orient(this.side)
                     .scale(this.axis_line_scale);
                 this.set_tick_values();
