@@ -19,7 +19,6 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
         initialize: function(range) {
             LinearColorScaleModel.__super__.initialize.apply(this);
             this.type = "color_linear";
-            this.scheme = "RdYlGn";
             this.divergent = false;
             this.on("change:mid", this.mid_changed, this);
         },

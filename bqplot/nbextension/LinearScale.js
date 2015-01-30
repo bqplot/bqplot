@@ -21,7 +21,6 @@ define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, Scal
              if(this.model.domain.length > 0)
                  this.scale.domain(this.model.domain);
              this.offset = 0;
-             this.ticks = this.model.ticks;
              this.create_event_listeners();
          },
          expand_domain: function(old_range, new_range) {
