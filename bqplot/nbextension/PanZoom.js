@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetManager, d3, utils, Overlay) {
+define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], function(WidgetManager, ipy_utils, d3, utils, Overlay) {
 
     // TODO avoid duplication of 'x' and 'y'
 
@@ -31,28 +31,33 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
 
             this.update_scales();
             this.model.on("change:scales", this.update_scales, this);
+
             this.set_ranges();
             this.parent.on("margin_updated", this.set_ranges, this);
         },
         update_scales: function() {
             var scales = this.model.get("scales");
             var that = this;
-            var xscale_promises = Promise.all(scales["x"].map(function(model) {
-                return that.create_child_view(model);
-            }));
-            var yscale_promises = Promise.all(scales["y"].map(function(model) {
-                return that.create_child_view(model);
-            }));
-            this.scale_promises = Promise.all([xscale_promises, yscale_promises]);
+            this.scale_promises = ipy_utils.resolve_promises_dict({
+                "x": Promise.all(scales["x"].map(function(model) {
+                        return that.create_child_view(model);
+                     })),
+                "y": Promise.all(scales["y"].map(function(model) {
+                        return that.create_child_view(model);
+                     })),
+            })
         },
         set_ranges: function() {
            var that = this;
-           this.scale_promises.then(function(prom) {
-               var xscale_views = prom[0], yscale_views = prom[1];
+           this.scale_promises.then(function(scale_views) {
+               var xscale_views = scale_views["x"],
+                   yscale_views = scale_views["y"];
                for (var i=0; i<xscale_views.length; i++) {
+                   // "get_padded_xrange"
                    xscale_views[i].set_range(that.parent.get_padded_xrange(xscale_views[i].model));
                }
                for (var i=0; i<yscale_views.length; i++) {
+                   // "get_padded_yrange"
                    yscale_views[i].set_range(that.parent.get_padded_yrange(yscale_views[i].model));
                }
            });
@@ -82,8 +87,8 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                 }
                 var scales = this.model.get("scales");
                 var that = this;
-                this.scale_promises.then(function(prom) {
-                    var xscale_views = prom[0];
+                this.scale_promises.then(function(scale_views) {
+                    var xscale_views = scale_views["x"];
                     var xdiffs = xscale_views.map(function(view) {
                         if (view.scale.invert) { // Categorical scales don't have an inversion.
                             return view.scale.invert(mouse_pos[0])
@@ -100,7 +105,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                         xscale_views[i].touch();
                     }
 
-                    var yscale_views = prom[1];
+                    var yscale_views = scale_views["y"];
                     var ydiffs = yscale_views.map(function(view) {
                         if (view.scale.invert) { // Categorical scales don't have an inversion.
                             return view.scale.invert(mouse_pos[1])
@@ -132,8 +137,8 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                     }
                     var scales = this.model.get("scales");
                     var that = this;
-                    this.scale_promises.then(function(prom) {
-                        var xscale_views = prom[0];
+                    this.scale_promises.then(function(scale_views) {
+                        var xscale_views = scale_views["x"];
                         var xpos = xscale_views.map(function(view) {
                              return view.scale.invert(mouse_pos[0]);
                         });
@@ -148,7 +153,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetMana
                             xscale_views[i].touch();
                         }
 
-                        var yscale_views = prom[1];
+                        var yscale_views = scale_views["y"];
                         var ypos = yscale_views.map(function(view) {
                             return view.scale.invert(mouse_pos[1]);
                         });
