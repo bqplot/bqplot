@@ -327,10 +327,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             }
         },
         update_plotarea_dimensions: function() {
-            this.rect_width = this.width - this.margin.left - this.margin.right;
-            this.rect_height = this.height - this.margin.top - this.margin.bottom;
-            this.column_width = parseFloat((this.rect_width / this.num_cols).toFixed(2));
-            this.row_height = parseFloat((this.rect_height / this.num_rows).toFixed(2));
+
         },
         change_selected_stroke: function(that){
             if (that.model.get("selected_stroke")=="" || that.model.get("selected_stroke")==null){
