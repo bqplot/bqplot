@@ -102,13 +102,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
               .attr("width", "100%")
               .attr("height", "100%");
 
-            var svg_over = d3.select(this.el).append("svg")
+            this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
                 .attr("width", "100%")
                 .on("click", function(d) { that.ocean_clicked(that); });
 
             if (this.model.get("axis")!=null){
-                svg_over.attr("height", "85%");
+                this.svg_over.attr("height", "85%");
 
                 that.ax_g = this.svg.append("g")
                 // .attr("transform", "translate(0, 75)");
@@ -123,10 +123,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 });
             }
             else {
-                svg_over.attr("height", "100%");
+                this.svg_over.attr("height", "100%");
             }
 
-            this.transformed_g = svg_over.append("g").attr("class", "world_map");
+            this.transformed_g = this.svg_over.append("g").attr("class", "world_map");
 
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
@@ -413,16 +413,15 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         view.trigger("displayed");
                     });
 
+                    that.fill_g.selectAll("path").style("fill", function(d, i) { return that.fill_g_colorfill(d,i, that);})
+
                 });
             }
 
-           that.fill_g.selectAll("path").style("fill", function(d, i) { return that.fill_g_colorfill(d,i, that);})
-
-
             if (this.model.get("axis")!=null){
-                svg_over.attr("height", "85%");
+                this.svg_over.attr("height", "85%");
 
-                this.ax_g = d3.select(this.svg).append("g")
+                this.ax_g = this.svg.append("g")
                 // .attr("transform", "translate(0, 75)");
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
