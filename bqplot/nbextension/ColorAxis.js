@@ -45,7 +45,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.label = this.model.get("label");
             this.ordinal = false;
             this.num_ticks = this.model.get("num_ticks");
-            this.tick_values = this.model.get("tick_values");
+            this.tick_values = this.model.get_typed_field("tick_values");
 
             var that = this;
             scale_promise.then(function() {
