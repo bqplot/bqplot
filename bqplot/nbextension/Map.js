@@ -56,7 +56,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.model.on("change:selected_fill", function() { that.change_selected_fill(that); });
             this.model.on("change:selected_stroke", function() { that.change_selected_stroke(that); });
 
-            var fmt = d3.format(this.model.get("text_format"));
+            this.fmt = d3.format(this.model.get("text_format"));
 
             var scales = this.model.get("color_scale");
             this.color_data = this.model.get("color_data");
@@ -86,7 +86,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
                 });
             }
+        this.draw_map();
+        },
+        draw_map: function() {
 
+            var that = this;
             var w = this.width;
             var h = this.height;
 
@@ -96,7 +100,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 			path = path.projection(projection);
 
 			this.svg = d3.select(this.el)
-
 
             this.svg.attr("viewBox", "0 0 "+ w +' '+ h)
               .attr("width", "100%")
@@ -134,8 +137,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             this.div = d3.select("body").append("div")
                 .attr("id", "world_tooltip");
-
-            var that = this;
 
             //Bind data and create one path per GeoJSON feature
             this.fill_g.selectAll("path")
@@ -192,7 +193,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                             .style("background-color", that.model.get("tooltip_color"))
                             .style("color", that.model.get("text_color"))
 				            .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
-				            .text(name + ": " + fmt(that.model.get("color_data")[d.id]));
+				            .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
                         }
                         else {
                             d3.select("#world_tooltip")
@@ -209,7 +210,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 				          .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
                         if(that.model.get("text_data")[d.id]!==undefined && that.model.get("text_data")[d.id]!==null) {
 				            d3.select("#world_tooltip")
-                              .text(name + ": " + fmt(that.model.get("text_data")[d.id]));
+                              .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
                         }
                         else {
                             d3.select("#world_tooltip")

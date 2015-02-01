@@ -44,15 +44,31 @@ class Map(DOMWidget):
     min_height: int
         minimum height of the entire map
     fig_margin: dict
-        margin for the market map plot area with respect to the entire display
+        margin for the map plot area with respect to the entire display
         area
 
     Display Attributes
     ------------------
+    color: color
+        default color for the map when no color data is passed
+    tooltip_color: color
+        color for the background of the tooltip
+    text_color: color
+        color for the text inside a tooltip
+    text_format: string
+        format for the text inside a tooltip
+    selected_fill: color
+        fill for the selected countries
     selected_stroke: color
         stroke for the selected countries
+    selected_stroke_width: float
+        stroke width for the selected countries
+    hover_fill: color
+        fill for the country being hovered on
     hover_stroke: color
         stroke for the country being hovered on
+    hover_stroke_width: float
+        stroke width for the countru being hovered on
 
     Other Attributes
     ----------------
@@ -62,6 +78,15 @@ class Map(DOMWidget):
     enable_hover: bool
         boolean to control if the map should be aware of which country is being
         hovered on. If it is set to False, tooltip will not be displayed
+    color_data: Dict
+        dictionary containing the data associated with every country for the
+        color scale
+    color_scale: ColorScale
+        ColorScale Instance for the color of each country in the map
+    axis: ColorAxis
+        ColorAxis Instance if one needs to be displayed
+    display_tooltip: bool
+        boolen to control whether tooltips are displayed or not
     """
     fig_margin = Dict(dict(top=0, bottom=20, left=50, right=50), sync=True)   # Margin with respect to the parent. Width, height etc are determined by this
     min_width = Float(800, sync=True)
