@@ -95,7 +95,7 @@ class Map(DOMWidget):
     hover_fill = Unicode("Orange", sync=True, allow_none=True)
     hover_stroke = Unicode("", sync=True, allow_none=True)
     hover_stroke_width = Float(5.0, sync=True)
-    stroke_color = Unicode("White", sync=True)
+    stroke_color = Unicode(None, sync=True, allow_none=True)
     color = Unicode("DodgerBlue", sync=True)
     color_data = Dict(sync=True)
     color_scale = Instance(ColorScale, sync=True)

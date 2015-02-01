@@ -51,11 +51,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             var that = this;
 
-            this.model.on("change:enable_hover", function() {that.change_hover(that);});
-            this.model.on("change:hover_fill", function() { that.hover_fill = that.model.get("hover_fill"); });
-            this.model.on("change:selected_fill", function() { that.change_selected_fill(that); });
-            this.model.on("change:selected_stroke", function() { that.change_selected_stroke(that); });
-
             this.fmt = d3.format(this.model.get("text_format"));
 
             var scales = this.model.get("color_scale");
@@ -86,7 +81,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
                 });
             }
-        this.draw_map();
+
+            this.draw_map();
+            this.create_listeners();
+
         },
         draw_map: function() {
 
@@ -146,14 +144,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 				.attr("d", path)
 				.style("fill", function(d, i) { return that.fill_g_colorfill(d, i, that); });
 
-
             this.stroke_g.selectAll("path")
 			    .data(topojson.feature(world, world.objects.countries).features)
 				.enter()
 				.append("path")
 				.attr("d", path)
-                //.classed("id".concat(this.id.toString()), true)
-                .style("stroke", that.stroke_color)
                 .style("fill-opacity", 0.0)
 				.on("mouseover", function(d){
                     if(!that.enable_hover){
@@ -234,6 +229,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 				})
 				.on("click", function(d) { return that.click_highlight(d, this);})
 
+            if(that.stroke_color!=null && that.stroke_color!=undefined && that.stroke_color!="") {
+                that.stroke_g.selectAll("path").style("stroke", that.stroke_color);
+            }
+
 
 			var zoomed = function(){
 				var t = d3.event.translate;
@@ -267,14 +266,24 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 						.on("zoom", zoomed);
 			this.svg.call(zoom);
 			this.svg.on("dblclick.zoom", null);
+
             var that = this;
+
+            $(this.options.cell).on("output_area_resize", function() {
+                that.update_layout();
+            });
+        },
+        create_listeners: function() {
+            var that = this;
+
             this.model.on('change:color_data', function() {that.color_change(that);});
             this.model.on("change:stroke_color", function() { that.change_stroke_color(that); });
             this.model.on("change:color", function() { that.change_map_color(that); });
             this.model.on("change:selected", function() { that.change_selected(that); });
-            $(this.options.cell).on("output_area_resize", function() {
-                that.update_layout();
-            });
+            this.model.on("change:enable_hover", function() {that.change_hover(that);});
+            this.model.on("change:hover_fill", function() { that.hover_fill = that.model.get("hover_fill"); });
+            this.model.on("change:selected_fill", function() { that.change_selected_fill(that); });
+            this.model.on("change:selected_stroke", function() { that.change_selected_stroke(that); });
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
