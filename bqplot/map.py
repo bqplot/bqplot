@@ -35,7 +35,7 @@ from .axes import Axis
 
 class Map(DOMWidget):
 
-    """Class to generate a waffle wrapped map of the list of data provided.
+    """Class to generate an interactive geographical map.
 
     Map Drawing Attributes
     ------------------
