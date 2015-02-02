@@ -25,7 +25,6 @@ Map
 
    Map
 """
-
 from IPython.utils.traitlets import Unicode, List, Dict, Float, Bool, Instance
 from IPython.html.widgets import DOMWidget, CallbackDispatcher
 
