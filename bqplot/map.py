@@ -48,7 +48,7 @@ class Map(DOMWidget):
 
     Display Attributes
     ------------------
-    color: color
+    color: Color or None (default: None)
         default color for the map when no color data is passed
     tooltip_color: color
         color for the background of the tooltip
