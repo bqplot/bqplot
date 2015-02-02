@@ -50,15 +50,13 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], fu
         set_ranges: function() {
            var that = this;
            this.scale_promises.then(function(scale_views) {
-               var xscale_views = scale_views["x"],
-                   yscale_views = scale_views["y"];
+               var xscale_views = scale_views["x"];
                for (var i=0; i<xscale_views.length; i++) {
-                   // "get_padded_xrange"
-                   xscale_views[i].set_range(that.parent.get_padded_xrange(xscale_views[i].model));
+                   xscale_views[i].set_range(that.parent.padded_range("x", xscale_views[i].model));
                }
+               var yscale_views = scale_views["y"];
                for (var i=0; i<yscale_views.length; i++) {
-                   // "get_padded_yrange"
-                   yscale_views[i].set_range(that.parent.get_padded_yrange(yscale_views[i].model));
+                   yscale_views[i].set_range(that.parent.padded_range("y", yscale_views[i].model));
                }
            });
         },

@@ -60,10 +60,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 color_scale = this.scales["color"],
                 opacity_scale = this.scales["opacity"];
             if(x_scale) {
-                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
             if(y_scale) {
-                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
             if(size_scale) {
                 // I don't know how to set the lower bound on the range of the
