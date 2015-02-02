@@ -87,7 +87,7 @@ class Map(DOMWidget):
     display_tooltip: bool
         boolen to control whether tooltips are displayed or not
     """
-    fig_margin = Dict(dict(top=0, bottom=20, left=0, right=20), sync=True)   # Margin with respect to the parent. Width, height etc are determined by this
+    fig_margin = Dict(dict(top=0, bottom=20, left=0, right=0), sync=True)   # Margin with respect to the parent. Width, height etc are determined by this
     min_width = Float(800, sync=True)
     min_height = Float(600, sync=True)
     enable_hover = Bool(True, sync=True)
