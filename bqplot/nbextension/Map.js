@@ -46,10 +46,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.def_ht = this.options.height;
 
             this.title = this.model.get("title");
-            this.width = (this.def_wt) ?
-                this.def_wt : this.model.get("min_width") - this.margin.left - this.margin.right;
-            this.height = (this.def_ht) ?
-                this.def_ht : this.model.get("min_height") - this.margin.top - this.margin.bottom;
+            this.width = this.model.get("min_width") - this.margin.left - this.margin.right;
+            this.height = this.model.get("min_height") - this.margin.top - this.margin.bottom;
+
+            this.$el.css({"flex-grow": "1",
+                          "flex-shrink": "1",
+                          "align-self": "stretch",
+                          "min-width": this.width,
+                          "min-height": this.height});
 
             var that = this;
 
@@ -85,16 +89,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             }
 
             this.draw_map();
+            this.update_layout();
             this.create_listeners();
 
         },
-        remove: function() {
+        remove_map: function() {
             $('.world_map').remove();
-            $('.world_tooltip').remove();
+            $('#world_tooltip').remove();
             $('.world_viewbox').remove();
             $('.ColorBar').remove();
             $('.color_axis').remove();
-            $(this.options.cell).off("output_area_resize."+this.id);
         },
         draw_map: function() {
 
@@ -110,8 +114,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 			this.svg = d3.select(this.el)
 
             this.svg.attr("viewBox", "0 0 "+ w +' '+ h)
-              .attr("width", "100%")
-              .attr("height", "100%");
+              //.attr("width", "100%")
+              //.attr("height", "100%");
 
             this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
@@ -325,9 +329,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             var that = this;
 
-            $(this.options.cell).on("output_area_resize", function() {
-                that.update_layout();
-            });
+
         },
         create_listeners: function() {
             var that = this;
@@ -355,6 +357,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             });
             this.model.on("change:selected_stroke", function() {
                 that.change_selected_stroke(that);
+            });
+            $(this.options.cell).on("output_area_resize."+this.id, function() {
+                that.update_layout();
             });
         },
         update_layout: function() {
@@ -384,10 +389,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.update_plotarea_dimensions();
 
             this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
-            //this.svg.attr("width", this.width);
+            this.svg.attr("width", this.width);
             // transform figure
             //this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-            this.remove();
+            this.remove_map();
             this.draw_map();
 
             // Drawing the selected cells
