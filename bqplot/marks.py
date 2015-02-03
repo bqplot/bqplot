@@ -602,6 +602,8 @@ class OHLC(Mark):
         fill colors for the markers (up/down)
     opacity: float
         opacity of the marker
+    format: string
+        description of y data being passed
 
     Data Attributes
     ---------------
@@ -637,6 +639,8 @@ class OHLC(Mark):
                        display_index=5, sync=True, display_name='Colors')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
                            exposed=True, display_index=6, display_name='Opacity')
+    format = Unicode(default_value='ohlc', allow_none=False, exposed=True,
+                     display_index=7, display_name='Format', sync=True)
     _view_name = Unicode('OHLC', sync=True)
     _view_module = Unicode('nbextensions/bqplot/OHLC', sync=True)
     _model_name = Unicode('OHLCModel', sync=True)

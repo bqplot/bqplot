@@ -140,7 +140,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var indices = _.range(this.model.mark_data.length);
             var that = this;
             var idx_selected = _.filter(indices, function(index) {
-                var elem = that.model.mark_data[index];
+            var elem = this.model.mark_data[index];
                 return (elem[0] >= min && elem[0] <= max);
             });
             if(idx_selected.length > 0 &&
@@ -362,7 +362,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var min_distance = Number.POSITIVE_INFINITY;
             var sum = 0;
             var average_height = 0;
-            var x_scale = this.scales["x"];
+            var scales = this.model.get("scales");
+            var x_scale = scales["x"];
+
             for(var i = 1; i < that.model.mark_data.length; i++) {
                 var dist = that.model.mark_data[i][0] -
                            that.model.mark_data[i-1][0];

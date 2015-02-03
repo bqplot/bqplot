@@ -21,11 +21,76 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             OHLCModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.px = { open: 0, high: 1, low: 2, close: 3 };
+            this.on("change:format", this.update_data, this);
+            this.px = { open: -1, high: -1, low: -1, close: -1 };
+            this.mark_data = [];
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
+            var format = this.get("format")
+            this.px = { open: -1, high: -1, low: -1, close: -1 };
+
+            // Local private function to report errors in format
+            function print_bad_format(format) {
+                if(console) {
+                    console.error("Invalid OHLC format: '" + format + "'");
+                }
+            }
+ 
+            // We should have 4 data points (o,h,l,c)
+            // This avoids iterating over a huge string
+            if(format.length !== 4) {
+                print_bad_format(format);
+                x_data = [];
+                y_data = [];
+            } else {
+                for(var i = 0; i < format.length; i++) {
+                    switch(format[i]) {
+                      case 'o':
+                        if(this.px.open === -1) {
+                            this.px.open = i;
+                        } else {
+                            print_bad_format(format);
+                            x_data = [];
+                            y_data = [];
+                        }
+                        break;
+                      case 'h':
+                        if(this.px.high === -1) {
+                            this.px.high = i;
+                        } else {
+                            print_bad_format(format);
+                            x_data = [];
+                            y_data = [];
+                        }
+                        break;
+                      case 'l':
+                        if(this.px.low === -1) {
+                            this.px.low = i;
+                        } else {
+                            print_bad_format(format);
+                            x_data = [];
+                            y_data = [];
+                        }
+                        break;
+                      case 'c':
+                        if(this.px.close === -1) {
+                            this.px.close = i;
+                        } else {
+                            print_bad_format(format);
+                            x_data = [];
+                            y_data = [];
+                        }
+                        break;
+                      default:
+                        print_bad_format(format);
+                        x_data = [];
+                        y_data = [];
+                        break;
+                    }
+                }
+            }
 
             if(x_data.length > y_data.length) {
                 x_data = x_data.slice(0, y_data.length);
@@ -79,11 +144,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             this.mark_data[i][this.px.low];
                 if(height > max_y_height) max_y_height = height;
             }
-            if(min_x_dist === Number.POSITIVE_INFINITY) {
+            if(this.mark_data.length < 2) {
                 min_x_dist = 0;
             }
 
-            if(!this.get("preserve_domain")["x"]) {
+            if((!this.get("preserve_domain")["x"]) && this.mark_data.length !== 0) {
                 var min = d3.min(this.mark_data.map(function(d) {
                     return d[0];
                 }));
@@ -96,7 +161,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 x_scale.del_domain([], this.id);
             }
 
-            if(!this.get("preserve_domain")["y"]) {
+            if((!this.get("preserve_domain")["y"]) && this.mark_data.length !== 0) {
                 // Remember that elem contains OHLC data here so we cannot use
                 // compute_and_set_domain
                 var min = d3.min(this.mark_data.map(function(d) {
