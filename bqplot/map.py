@@ -71,6 +71,8 @@ class Map(DOMWidget):
 
     Other Attributes
     ----------------
+    selected: List (default: [])
+        list containing the selected countries in the map
     enable_select: bool (default: True)
         boolean to control the ability to select the countries of the map by
         clicking
