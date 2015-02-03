@@ -521,7 +521,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         },
         fill_g_colorfill: function(d, j, that) {
             var select = this.model.get("selected").slice();
-            if (this.is_object_empty(that.color_data)){
+            if (this.is_object_empty(that.color_data) && that.map_color!=undefined && that.map_color!=null){
                 return that.map_color;
             }
             else if (that.color_data[d.id]==undefined || that.color_data[d.id]=="nan" || that.color_scale==undefined)
