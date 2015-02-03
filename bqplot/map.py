@@ -26,12 +26,13 @@ Map
    Map
 """
 from IPython.utils.traitlets import Unicode, List, Dict, Float, Bool, Instance
-from IPython.html.widgets import DOMWidget, CallbackDispatcher
+from IPython.html.widgets import DOMWidget, CallbackDispatcher, register
 
 from .scales import ColorScale
 from .axes import Axis
 
 
+@register('bqplot.Map')
 class Map(DOMWidget):
 
     """Class to generate an interactive geographical map.

@@ -46,8 +46,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.def_ht = this.options.height;
 
             this.title = this.model.get("title");
-            this.width = (this.def_wt) ?  this.def_wt : this.model.get("min_width") - this.margin.left - this.margin.right;
-            this.height = (this.def_ht) ? this.def_ht : this.model.get("min_height") - this.margin.top - this.margin.bottom;
+            this.width = (this.def_wt) ?
+                this.def_wt : this.model.get("min_width") - this.margin.left - this.margin.right;
+            this.height = (this.def_ht) ?
+                this.def_ht : this.model.get("min_height") - this.margin.top - this.margin.bottom;
 
             var that = this;
 
@@ -60,7 +62,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
                 that.create_child_view(scales).then(function(view) {
                     that.color_scale = view;
-                    var z_data = Object.keys(that.color_data).map( function (d) {
+                    var z_data = Object.keys(that.color_data).map(function (d) {
                         return that.color_data[d];
                     });
 
@@ -136,7 +138,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 this.svg_over.attr("height", "100%");
             }
 
-            this.transformed_g = this.svg_over.append("g").attr("class", "world_map");
+            this.transformed_g = this.svg_over.append("g")
+                                              .attr("class", "world_map");
 
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
@@ -151,7 +154,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 				.enter()
 				.append("path")
 				.attr("d", path)
-				.style("fill", function(d, i) { return that.fill_g_colorfill(d, i, that); });
+				.style("fill", function(d, i) {
+                    return that.fill_g_colorfill(d, i, that);
+                });
 
             this.stroke_g.selectAll("path")
 			    .data(topojson.feature(world, world.objects.countries).features)
@@ -168,22 +173,49 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
                     var select = that.model.get("selected").slice();
 
-                    if((that.model.get("hover_stroke")!="" &&  that.model.get("hover_stroke")!=null) && select.indexOf(d.id)==-1){
-                        that.highlight_g.append(function() {return that2.cloneNode(true)}).style("stroke", that.model.get("hover_stroke")).classed("hovered", true).style("stroke-width", that.model.get("hover_stroke_width"));
+                    if((that.model.get("hover_stroke")!="" &&
+                        that.model.get("hover_stroke")!=null) &&
+                        select.indexOf(d.id)==-1) {
+                        that.highlight_g.append(function() {
+                            return that2.cloneNode(true)
+                        }).style("stroke", that.model.get("hover_stroke"))
+                          .classed("hovered", true)
+                          .style("stroke-width", that.model.get("hover_stroke_width"));
                     }
-                    if((that.model.get("hover_stroke")=="" || that.model.get("hover_stroke")==null) && (that.model.get("hover_fill")!="" && that.model.get("hover_fill")!=null) && select.indexOf(d.id)==-1){
-                        that.highlight_g.append(function() {return that2.cloneNode(true)}).classed("hovered", true).style("fill-opacity", 1.0).style("fill", function(){ return that.model.get("hover_fill"); });
+                    if((that.model.get("hover_stroke")=="" ||
+                        that.model.get("hover_stroke")==null) &&
+                        (that.model.get("hover_fill")!="" &&
+                        that.model.get("hover_fill")!=null) &&
+                        select.indexOf(d.id)==-1) {
+
+                        that.highlight_g.append(function() {
+                            return that2.cloneNode(true)
+                        }).classed("hovered", true)
+                          .style("fill-opacity", 1.0)
+                          .style("fill", function() {
+                              return that.model.get("hover_fill");
+                          });
+
                     }
-                    if((that.model.get("hover_fill")!="" &&  that.model.get("hover_fill")!=null) && (that.model.get("hover_stroke")!="" && that.model.get("hover_stroke")!=null) && select.indexOf(d.id)==-1) {
-                        that.highlight_g.selectAll(".hovered").style("fill-opacity", 1.0).style("fill", function() { return that.model.get("hover_fill"); });
+                    if((that.model.get("hover_fill")!="" &&
+                        that.model.get("hover_fill")!=null) &&
+                        (that.model.get("hover_stroke")!="" &&
+                        that.model.get("hover_stroke")!=null) &&
+                        select.indexOf(d.id)==-1) {
+
+                        that.highlight_g.selectAll(".hovered")
+                                        .style("fill-opacity", 1.0)
+                                        .style("fill", function() {
+                                            return that.model.get("hover_fill");
+                                        });
                     }
                 })
 				.on("mousemove", function(d){
-                    if(!that.enable_hover){
+                    if(!that.enable_hover) {
                         return;
                     }
 					var name;
-					for(var i = 0; i< countries.length; i++){
+					for(var i = 0; i< countries.length; i++) {
 						if(d.id == countries[i].id){
 							name = countries[i].Name;
 						}
@@ -192,34 +224,34 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 if (that.model.get("display_tooltip")) {
                    //Update the tooltip position and value
                    if (that.is_object_empty(that.model.get("text_data"))) {
-                        if (that.color_data[d.id]!==undefined && that.color_data[d.id]!==null){
+                        if (that.color_data[d.id]!==undefined &&
+                            that.color_data[d.id]!==null) {
                             d3.select("#world_tooltip")
                             .style("background-color", that.model.get("tooltip_color"))
                             .style("color", that.model.get("text_color"))
 				            .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
 				            .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
-                        }
-                        else {
+                        } else {
                             d3.select("#world_tooltip")
                             .style("background-color", that.model.get("tooltip_color"))
                             .style("color", that.model.get("text_color"))
 				            .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
 				            .text(name);
                         }
-                    }
-                    else {
+                    } else {
                         d3.select("#world_tooltip")
                           .style("background-color", that.model.get("tooltip_color"))
                           .style("color", that.model.get("text_color"))
 				          .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
-                        if(that.model.get("text_data")[d.id]!==undefined && that.model.get("text_data")[d.id]!==null) {
+
+                          if(that.model.get("text_data")[d.id]!==undefined &&
+                             that.model.get("text_data")[d.id]!==null) {
 				            d3.select("#world_tooltip")
                               .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
-                        }
-                        else {
+                          } else {
                             d3.select("#world_tooltip")
                               .text(name);
-                        }
+                          }
                     }
 
 				    //Show the tooltip
@@ -227,23 +259,36 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                     that.send({event:'hover', country:name, id:d.id});
 
 				}})
-				.on("mouseout", function(d){
-                    if (!that.enable_hover){
+				.on("mouseout", function(d) {
+                    if (!that.enable_hover) {
                         return;
                     }
+
 				    d3.select("#world_tooltip").classed("hidden", true);
-					d3.select(this).transition().style("fill", function(d, i) { return that.fill_g_colorfill(d, i, that);});
-                    d3.select(this).transition().style("stroke", function(d, i) { return that.hoverfill(d, i, that);});
+
+					d3.select(this).transition().style("fill", function(d, i) {
+                        return that.fill_g_colorfill(d, i, that);
+                    });
+
+                    d3.select(this).transition()
+                      .style("stroke", function(d, i) {
+                          return that.hoverfill(d, i, that);
+                      });
+
                     that.highlight_g.selectAll(".hovered").remove();
 				})
-				.on("click", function(d) { return that.click_highlight(d, this);})
+				.on("click", function(d) {
+                    return that.click_highlight(d, this);
+                })
 
-            if(that.stroke_color!=null && that.stroke_color!=undefined && that.stroke_color!="") {
-                that.stroke_g.selectAll("path").style("stroke", that.stroke_color);
+            if(that.stroke_color!=null &&
+               that.stroke_color!=undefined && that.stroke_color!="") {
+                that.stroke_g.selectAll("path")
+                             .style("stroke", that.stroke_color);
             }
 
 
-			var zoomed = function(){
+			var zoomed = function() {
 				var t = d3.event.translate;
 				var s = d3.event.scale;
 				var height = h/3;
@@ -253,10 +298,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 				t[1] = Math.min(height / 2 * (s - 1) + h * s, Math.max(height / 2 * (1 - s) - h * s, t[1]));
 
 				zoom.translate(t);
-				that.transformed_g.style("stroke-width", 1 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
+				that.transformed_g.style("stroke-width", 1 / s)
+                                  .attr("transform", "translate(" + t + ")scale(" + s + ")");
 			};
 
-			this.svg.on("dblclick", function(){
+			this.svg.on("dblclick", function() {
 				var t = [0, 0];
 				var s = 1;
 				var height = h/3;
@@ -267,7 +313,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
 				zoom.translate(t);
 				zoom.scale(s);
-				that.transformed_g.style("stroke-width", 1 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
+				that.transformed_g.style("stroke-width", 1 / s)
+                                  .attr("transform", "translate(" + t + ")scale(" + s + ")");
 			});
 
 			var zoom = d3.behavior.zoom()
@@ -285,14 +332,30 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         create_listeners: function() {
             var that = this;
 
-            this.model.on('change:color_data', function() {that.color_change(that);});
-            this.model.on("change:stroke_color", function() { that.change_stroke_color(that); });
-            this.model.on("change:color", function() { that.change_map_color(that); });
-            this.model.on("change:selected", function() { that.change_selected(that); });
-            this.model.on("change:enable_hover", function() {that.change_hover(that);});
-            this.model.on("change:hover_fill", function() { that.hover_fill = that.model.get("hover_fill"); });
-            this.model.on("change:selected_fill", function() { that.change_selected_fill(that); });
-            this.model.on("change:selected_stroke", function() { that.change_selected_stroke(that); });
+            this.model.on('change:color_data', function() {
+                that.color_change(that);
+            });
+            this.model.on("change:stroke_color", function() {
+                that.change_stroke_color(that);
+            });
+            this.model.on("change:color", function() {
+                that.change_map_color(that);
+            });
+            this.model.on("change:selected", function() {
+                that.change_selected(that);
+            });
+            this.model.on("change:enable_hover", function() {
+                that.change_hover(that);
+            });
+            this.model.on("change:hover_fill", function() {
+                that.hover_fill = that.model.get("hover_fill");
+            });
+            this.model.on("change:selected_fill", function() {
+                that.change_selected_fill(that);
+            });
+            this.model.on("change:selected_stroke", function() {
+                that.change_selected_stroke(that);
+            });
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -338,23 +401,31 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             //this.hide_tooltip();
             //this.trigger("margin_updated");
         },
-        change_selected_fill: function(that){
-            if (that.model.get("selected_fill")=="" || that.model.get("selected_fill")==null){
-                that.highlight_g.selectAll(".selected").style("fill-opacity", 0.0);
+        change_selected_fill: function(that) {
+            if (that.model.get("selected_fill")==="" ||
+                that.model.get("selected_fill")===null) {
+                that.highlight_g.selectAll(".selected")
+                                .style("fill-opacity", 0.0);
             }
             else {
-                that.highlight_g.selectAll(".selected").style("fill-opacity", 1.0).style("fill", that.model.get("selected_fill"));
+                that.highlight_g.selectAll(".selected")
+                                .style("fill-opacity", 1.0)
+                                .style("fill", that.model.get("selected_fill"));
             }
         },
         update_plotarea_dimensions: function() {
 
         },
-        change_selected_stroke: function(that){
-            if (that.model.get("selected_stroke")=="" || that.model.get("selected_stroke")==null){
-                that.highlight_g.selectAll(".selected").style("stroke-width", 0.0);
+        change_selected_stroke: function(that) {
+            if (that.model.get("selected_stroke")=="" ||
+                that.model.get("selected_stroke")==null) {
+                that.highlight_g.selectAll(".selected")
+                                .style("stroke-width", 0.0);
             }
             else {
-                that.highlight_g.selectAll(".selected").style("stroke-width", that.model.get("selected_stroke_width")).style("stroke", that.model.get("selected_stroke"));
+                that.highlight_g.selectAll(".selected")
+                                .style("stroke-width", that.model.get("selected_stroke_width"))
+                                .style("stroke", that.model.get("selected_stroke"));
             }
         },
         change_selected: function(that){
@@ -364,14 +435,32 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             var that2=this;
             var select = this.model.get("selected").slice()
             var temp = this.stroke_g.selectAll("path").data()
-            that.stroke_g.selectAll("path").style("stroke", function(d, i) { return that.hoverfill(d, i, that); });
+            that.stroke_g.selectAll("path").style("stroke", function(d, i) {
+                return that.hoverfill(d, i, that);
+            });
             var nodes = this.stroke_g.selectAll("path")
             for (i=0; i<temp.length; i++) {
                 if(select.indexOf(temp[i].id) > -1) {
-                    that2.highlight_g.append(function() { return nodes[0][i].cloneNode(true); }).attr("id", temp[i].id)
-                                    .style("fill-opacity", function() { if (that2.model.get("selected_fill")!=null && that2.model.get("selected_fill")!="") { return 1.0; } else { return 0.0; }})
+                    that2.highlight_g.append(function() {
+                                            return nodes[0][i].cloneNode(true);
+                                    }).attr("id", temp[i].id)
+                                    .style("fill-opacity", function() {
+                                        if (that2.model.get("selected_fill")!=null &&
+                                            that2.model.get("selected_fill")!="") {
+                                               return 1.0;
+                                            } else {
+                                               return 0.0;
+                                            }
+                                    })
                                     .style("fill", that2.model.get("selected_fill"))
-                                    .style("stroke-opacity", function() { if (that2.model.get("selected_stroke")!=null && that2.model.get("selected_stroke")!="") { return 1.0; } else { return 0.0; }})
+                                    .style("stroke-opacity", function() {
+                                        if (that2.model.get("selected_stroke")!=null &&
+                                            that2.model.get("selected_stroke")!="") {
+                                                return 1.0;
+                                        } else {
+                                                return 0.0;
+                                        }
+                                    })
                                     .style("stroke", that2.model.get("selected_stroke"))
                                     .style("stroke-width", that2.model.get("selected_stroke_width"))
                                     .classed("selected", true);
@@ -380,7 +469,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         },
         ocean_clicked: function(that){
             e = window.event;
-            if(!e.altKey){
+            if(!e.altKey) {
                 return;
             }
             that.model.set("selected", []);
@@ -388,12 +477,18 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             that.highlight_g.selectAll(".selected").remove();
             $("path").removeClass("selected");
             $("path").removeClass("hovered");
-            that.stroke_g.selectAll("path").style("stroke", function(d, i) { return that.hoverfill(d, i, that); });
-            that.fill_g.selectAll("path").classed("selected", false).style("fill", function(d, i) { return that.fill_g_colorfill(d,i, that);})
+            that.stroke_g.selectAll("path").style("stroke", function(d, i) {
+                return that.hoverfill(d, i, that);
+            });
+            that.fill_g.selectAll("path").classed("selected", false)
+                                         .style("fill", function(d, i) {
+                                             return that.fill_g_colorfill(d,i, that);
+                                         })
         },
         change_stroke_color: function(that){
             that.stroke_color = that.model.get("stroke_color");
-            that.stroke_g.selectAll("path").style("stroke", that.model.get("stroke_color"));
+            that.stroke_g.selectAll("path")
+                         .style("stroke", that.model.get("stroke_color"));
         },
         change_map_color: function(that){
             if (!that.is_object_empty(that.color_data)){
@@ -415,7 +510,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 that2.create_child_view(scales).then(function(view) {
                     that2.color_scale = view;
                     var z_data = Object.keys(that2.color_data).map( function (d) {
-                        return that2.color_data[d]; })
+                        return that2.color_data[d];
+                    })
                     if (that2.color_scale) {
                         that2.color_scale.compute_and_set_domain(z_data, 0);
                         that2.color_scale.set_range();
@@ -430,7 +526,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         view.trigger("displayed");
                     });
 
-                    that.fill_g.selectAll("path").style("fill", function(d, i) { return that.fill_g_colorfill(d,i, that);})
+                    that.fill_g.selectAll("path").style("fill", function(d, i) {
+                        return that.fill_g_colorfill(d,i, that);
+                    })
 
                 });
             }
@@ -453,23 +551,22 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         click_highlight: function(d, that) {
             e = window.event
 			var name;
-			for(var i = 0; i< countries.length; i++){
-				if(d.id == countries[i].id){
+			for(var i = 0; i< countries.length; i++) {
+				if(d.id == countries[i].id) {
 					name = countries[i].Name;
 				}
 			};
-            if(e.ctrlKey){
+            if(e.ctrlKey) {
 	            this.send({event:'click', country:name, id:d.id});
                 return;
-            }
-            else {
-                if (!this.model.get("enable_select")){
+            } else {
+                if (!this.model.get("enable_select")) {
                     return;
                 }
                 var selected = this.model.get("selected").slice();
                 index = selected.indexOf(d.id)
                 var that2 = this;
-                if(index > -1){
+                if(index > -1) {
                     selected.splice(index, 1);
                     that2.model.set("selected", selected);
                     that2.model.save_changes();
@@ -480,17 +577,37 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 }
                 else {
                     that2.highlight_g.selectAll(".hovered").remove();
-                    that2.highlight_g.append(function() {return that.cloneNode(true)}).attr("id", d.id).classed("selected", true);
-                    if (that2.model.get("selected_fill")!="" && that2.model.get("selected_fill")!=null) {
-                        that2.highlight_g.selectAll(".selected").style("fill-opacity", 1.0).style("fill", that2.model.get("selected_fill"));
-                    }
-                    if ((that2.model.get("selected_stroke")!="" && that2.model.get("selected_stroke")!=null) && (that2.model.get("selected_fill")!="" && that2.model.get("selected_fill")!=null)) {
-                        that2.highlight_g.selectAll(".selected").style("stroke", that2.model.get("selected_stroke")).style("stroke-width", that2.model.get("selected_stroke_width"));
-                    }
-                    if((that2.model.get("selected_fill")=="" || that2.model.get("selected_fill")==null) && (that2.model.get("selected_stroke")!="" && that2.model.get("selected_stroke")!=null)){
+                    that2.highlight_g.append(function() {
+                            return that.cloneNode(true)
+                         })
+                         .attr("id", d.id)
+                         .classed("selected", true);
+
+                    if (that2.model.get("selected_fill")!="" &&
+                        that2.model.get("selected_fill")!=null) {
                         that2.highlight_g.selectAll(".selected")
-                            .style("stroke", that2.model.get("selected_stroke")).style("stroke-width", that2.model.get("selected_stroke_width"));
+                                         .style("fill-opacity", 1.0)
+                                        .style("fill", that2.model.get("selected_fill"));
                     }
+
+                    if ((that2.model.get("selected_stroke")!="" &&
+                         that2.model.get("selected_stroke")!=null) &&
+                         (that2.model.get("selected_fill")!="" &&
+                         that2.model.get("selected_fill")!=null)) {
+                        that2.highlight_g.selectAll(".selected")
+                                         .style("stroke", that2.model.get("selected_stroke"))
+                                         .style("stroke-width", that2.model.get("selected_stroke_width"));
+                    }
+
+                    if((that2.model.get("selected_fill")=="" ||
+                        that2.model.get("selected_fill")==null) &&
+                        (that2.model.get("selected_stroke")!="" &&
+                         that2.model.get("selected_stroke")!=null)) {
+                        that2.highlight_g.selectAll(".selected")
+                             .style("stroke", that2.model.get("selected_stroke"))
+                             .style("stroke-width", that2.model.get("selected_stroke_width"));
+                    }
+
                     selected.push(d.id);
                     that2.model.set("selected", selected);
                     that2.model.save_changes();
@@ -500,12 +617,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         change_hover: function(d){
             d.enable_hover = this.model.get("enable_hover");
             var that = this;
-            that.fill_g.selectAll("path").style("fill", function(d, i) { return that.fill_g_colorfill(d, i, that); });
+            that.fill_g.selectAll("path").style("fill", function(d, i) {
+                return that.fill_g_colorfill(d, i, that);
+            });
             return;
         },
         is_object_empty: function(object){
             var is_empty = true;
-            for(keys in object){
+            for(keys in object) {
                 is_empty = false;
                 break; // exiting since we found that the object is not empty
             }
@@ -513,34 +632,40 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         },
         hoverfill: function(d, j, that) {
             var select = this.model.get("selected").slice();
-            if (select.indexOf(d.id)>-1 && that.model.get("selected_stroke")!="" && that.model.get("selected_stroke")!=null)
+            if (select.indexOf(d.id)>-1 &&
+                that.model.get("selected_stroke")!="" &&
+                    that.model.get("selected_stroke")!=null) {
                 return that.model.get("selected_stroke");
-            else {
+            } else {
                 return that.model.get("stroke_color");
             }
         },
         fill_g_colorfill: function(d, j, that) {
             var select = this.model.get("selected").slice();
-            if (this.is_object_empty(that.color_data) && that.map_color!=undefined && that.map_color!=null){
+            if (this.is_object_empty(that.color_data) &&
+                that.map_color!=undefined && that.map_color!=null) {
                 return that.map_color;
-            }
-            else if (that.color_data[d.id]==undefined || that.color_data[d.id]=="nan" || that.color_scale==undefined)
+            } else if (that.color_data[d.id]==undefined ||
+                       that.color_data[d.id]=="nan" ||
+                       that.color_scale==undefined) {
                 return "Grey";
-            else
+            } else {
                 return that.color_scale.scale(that.color_data[d.id]);
-
+            }
         },
         colorfill: function(d, j, that) {
             var select = this.model.get("selected").slice();
-            if (select.indexOf(d.id)>-1 && that.model.get("selected_fill")!="" && that.model.get("selected_fill")!=null)
+            if (select.indexOf(d.id)>-1 &&
+                that.model.get("selected_fill") !== "" &&
+                that.model.get("selected_fill") !== null) {
                 return that.model.get("selected_fill");
-            else if (this.is_object_empty(that.color_data)){
+            } else if (this.is_object_empty(that.color_data)) {
                 return that.map_color;
-            }
-            else if (that.color_data[d.id]==undefined || that.color_data[d.id]=="nan")
+            } else if (that.color_data[d.id]==undefined || that.color_data[d.id]=="nan") {
                 return "Grey";
-            else
+            } else {
                 return that.color_scale.scale(that.color_data[d.id]);
+            }
         }
     });
     WidgetManager.WidgetManager.register_widget_view("Map", Map);
