@@ -38,11 +38,11 @@ class Map(DOMWidget):
 
     Map Drawing Attributes
     ------------------
-    min_width: int
+    min_width: int (default: 800)
         minimum width of the entire map
-    min_height: int
+    min_height: int (default: 600)
         minimum height of the entire map
-    fig_margin: dict
+    fig_margin: dict (default: {top: 0, bottom: 20, left: 0, right: 0}
         margin for the map plot area with respect to the entire display
         area
 
@@ -50,41 +50,44 @@ class Map(DOMWidget):
     ------------------
     color: Color or None (default: None)
         default color for the map when no color data is passed
-    tooltip_color: color
+    tooltip_color: color (default: None)
         color for the background of the tooltip
-    text_color: color
+    text_color: color (default: None)
         color for the text inside a tooltip
-    text_format: string
+    text_format: string (default: '.2f')
         format for the text inside a tooltip
-    selected_fill: color
+    selected_fill: color (default: 'Red')
         fill for the selected countries
-    selected_stroke: color
+    selected_stroke: color (default: None)
         stroke for the selected countries
-    selected_stroke_width: float
+    selected_stroke_width: float (default: 5.0)
         stroke width for the selected countries
-    hover_fill: color
+    hover_fill: color (default: 'Orange')
         fill for the country being hovered on
-    hover_stroke: color
+    hover_stroke: color (default: None)
         stroke for the country being hovered on
-    hover_stroke_width: float
+    hover_stroke_width: float (default: 5.0)
         stroke width for the countru being hovered on
 
     Other Attributes
     ----------------
-    enable_select: bool
+    enable_select: bool (default: True)
         boolean to control the ability to select the countries of the map by
         clicking
-    enable_hover: bool
+    enable_hover: bool (default: True)
         boolean to control if the map should be aware of which country is being
         hovered on. If it is set to False, tooltip will not be displayed
-    color_data: Dict
+    color_data: Dict or None (default: None)
         dictionary containing the data associated with every country for the
         color scale
-    color_scale: ColorScale
+    text_data: Dict or None (default: None)
+        dictionary containing the text data associated with every country for
+        the tooltip
+    color_scale: ColorScale or None (default: None)
         ColorScale Instance for the color of each country in the map
-    axis: ColorAxis
+    axis: ColorAxis or None (default: None)
         ColorAxis Instance if one needs to be displayed
-    display_tooltip: bool
+    display_tooltip: bool (default: True)
         boolen to control whether tooltips are displayed or not
     """
     fig_margin = Dict(dict(top=0, bottom=20, left=0, right=0), sync=True)   # Margin with respect to the parent. Width, height etc are determined by this
@@ -92,7 +95,7 @@ class Map(DOMWidget):
     min_height = Float(600, sync=True)
     enable_hover = Bool(True, sync=True)
     hover_fill = Unicode("Orange", sync=True, allow_none=True)
-    hover_stroke = Unicode("", sync=True, allow_none=True)
+    hover_stroke = Unicode(sync=True, allow_none=True)
     hover_stroke_width = Float(5.0, sync=True)
     stroke_color = Unicode(None, sync=True, allow_none=True)
     color = Unicode("DodgerBlue", sync=True)
@@ -102,7 +105,7 @@ class Map(DOMWidget):
     enable_select = Bool(True, sync=True)
     selected = List([], sync=True)
     selected_fill = Unicode("Red", sync=True, allow_none=True)
-    selected_stroke = Unicode("", sync=True, allow_none=True)
+    selected_stroke = Unicode(sync=True, allow_none=True)
     selected_stroke_width = Float(5.0, sync=True)
     axis = Instance(Axis, sync=True)
     tooltip_color = Unicode("White", sync=True)
