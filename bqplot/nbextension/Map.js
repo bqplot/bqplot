@@ -86,6 +86,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.create_listeners();
 
         },
+        remove: function() {
+            $('.world_map').remove();
+            $('.world_tooltip').remove();
+            $('.world_viewbox').remove();
+            $('.ColorBar').remove();
+            $('.color_axis').remove();
+            $(this.options.cell).off("output_area_resize."+this.id);
+        },
         draw_map: function() {
 
             var that = this;
@@ -106,13 +114,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
                 .attr("width", "100%")
+                .attr("class", "world_viewbox")
                 .on("click", function(d) { that.ocean_clicked(that); });
 
             if (this.model.get("axis")!=null){
                 this.svg_over.attr("height", "85%");
 
                 that.ax_g = this.svg.append("g")
-                // .attr("transform", "translate(0, 75)");
+                                    .attr("class", "color_axis")
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
                     that.axes_view = view;
@@ -298,7 +307,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             setTimeout(_.bind(this.update_layout3, this), 0);
         },
         update_layout3: function() {
-            var preserve_aspect = this.model.get("preserve_aspect");
+            var preserve_aspect = true;
             if (preserve_aspect === true) {
                 var aspect_ratio = this.model.get("min_width")/this.model.get("min_height");
                 if (this.width/this.height > aspect_ratio) {
@@ -312,10 +321,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.update_plotarea_dimensions();
 
             this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
-            this.svg.attr("width", this.width);
+            //this.svg.attr("width", this.width);
             // transform figure
             //this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-            //this.draw_map();
+            this.remove();
+            this.draw_map();
 
             // Drawing the selected cells
             //this.clear_selected();
@@ -429,7 +439,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 this.svg_over.attr("height", "85%");
 
                 this.ax_g = this.svg.append("g")
-                // .attr("transform", "translate(0, 75)");
+                                .attr("class", "color_axis");
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
                    that.axes_view = view;
