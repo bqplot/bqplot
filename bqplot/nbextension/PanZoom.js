@@ -15,18 +15,18 @@
 
 define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], function(WidgetManager, ipy_utils, d3, utils, Overlay) {
 
-    // TODO avoid duplication of 'x' and 'y'
+    // TODO avoid code duplication of 'x' and 'y'
 
     var PanZoom = Overlay.extend({
         render: function() {
             PanZoom.__super__.render.apply(this);
             var that = this;
             this.el
-                .style({"cursor": "move"})
-                .on("mousedown", function() { that.mousedown(); })
-                .on("mousemove", function() { that.mousemove(); })
-                .on("mouseup", function() { that.mouseup(); })
-                .on("mousewheel", function() { that.mousewheel(); });
+              .style({"cursor": "move"})
+              .on("mousedown", function() { that.mousedown(); })
+              .on("mousemove", function() { that.mousemove(); })
+              .on("mouseup", function() { that.mouseup(); })
+              .on("mousewheel", function() { that.mousewheel(); });
             this.active = false;
 
             this.update_scales();
@@ -45,18 +45,20 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], fu
                 "y": Promise.all(scales["y"].map(function(model) {
                         return that.create_child_view(model);
                      })),
-            })
+            });
         },
         set_ranges: function() {
            var that = this;
            this.scale_promises.then(function(scale_views) {
                var xscale_views = scale_views["x"];
                for (var i=0; i<xscale_views.length; i++) {
-                   xscale_views[i].set_range(that.parent.padded_range("x", xscale_views[i].model));
+                   xscale_views[i].set_range(that.parent.padded_range("x",
+                                                    xscale_views[i].model));
                }
                var yscale_views = scale_views["y"];
                for (var i=0; i<yscale_views.length; i++) {
-                   yscale_views[i].set_range(that.parent.padded_range("y", yscale_views[i].model));
+                   yscale_views[i].set_range(that.parent.padded_range("y",
+                                                    yscale_views[i].model));
                }
            });
         },
@@ -65,20 +67,25 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], fu
             this.active = true;
             this.el.style({"cursor": "move"});
             this.previous_pos = d3.mouse(this.el.node());
-            this.xdomains = scales["x"].map(function(s) {
+            // A copy of the original domains is required to avoid additional
+            //  drift when Paning.
+            this.domains = {
+                "x": scales["x"].map(function(s) {
                 return s.domain.slice(0);
-            });
-            this.ydomains = scales["y"].map(function(s) {
+                }),
+                "y": scales["y"].map(function(s) {
                 return s.domain.slice(0);
-            });
+                }),
+            }
         },
         mouseup: function () {
             this.active = false;
         },
         mousemove: function() {
             if (this.active && this.model.get("allow_pan")) {
-                // If memory is set to true, intermediate positions between the last
-                // position of the mouse and the current one will be interpolated.
+                // If memory is set to true, intermediate positions between the
+                // last position of the mouse and the current one will be
+                // interpolated.
                 var mouse_pos = d3.mouse(this.el.node());
                 if (!("previous_pos" in this)) {
                     this.previous_pos = mouse_pos;
@@ -87,14 +94,16 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], fu
                 var that = this;
                 this.scale_promises.then(function(scale_views) {
                     var xscale_views = scale_views["x"];
+                    var xdomains = that.domains["x"];
                     var xdiffs = xscale_views.map(function(view) {
-                        if (view.scale.invert) { // Categorical scales don't have an inversion.
+                        if (view.scale.invert) {
+                            // Categorical scales don't have an inversion.
                             return view.scale.invert(mouse_pos[0])
                                  - view.scale.invert(that.previous_pos[0]);
                         }
                     });
                     for (var i=0; i<xscale_views.length; i++) {
-                        var domain = that.xdomains[i];
+                        var domain = xdomains[i];
                         var min = domain[0] - xdiffs[i];
                         var max = domain[1] - xdiffs[i];
                         that.set_scale_attribute(scales["x"][i], "min", min);
@@ -104,14 +113,16 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], fu
                     }
 
                     var yscale_views = scale_views["y"];
+                    var ydomains = that.domains["y"];
                     var ydiffs = yscale_views.map(function(view) {
-                        if (view.scale.invert) { // Categorical scales don't have an inversion.
+                        if (view.scale.invert) {
+                            // Categorical scales don't have an inversion.
                             return view.scale.invert(mouse_pos[1])
                                  - view.scale.invert(that.previous_pos[1]);
                         }
                     });
                     for (var i=0; i<yscale_views.length; i++) {
-                        var domain = that.ydomains[i];
+                        var domain = ydomains[i];
                         var min = domain[0] - ydiffs[i];
                         var max = domain[1] - ydiffs[i];
                         that.set_scale_attribute(scales["y"][i], "min", min);
@@ -143,10 +154,11 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], fu
                         var factor = Math.exp(-delta * 0.001);
                         for (var i=0; i<xscale_views.length; i++) {
                             var domain = scales["x"][i].domain;
-                            var min = domain[0];
-                            var max = domain[1];
-                            that.set_scale_attribute(scales["x"][i], "min", (1 - factor) * xpos[i] + factor * min);
-                            that.set_scale_attribute(scales["x"][i], "max", (1 - factor) * xpos[i] + factor * max);
+                            var min = domain[0], max = domain[1];
+                            that.set_scale_attribute(scales["x"][i], "min",
+                                        (1 - factor) * xpos[i] + factor * min);
+                            that.set_scale_attribute(scales["x"][i], "max",
+                                        (1 - factor) * xpos[i] + factor * max);
                             // TODO? Only do in mouseup?
                             xscale_views[i].touch();
                         }
@@ -157,10 +169,11 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], fu
                         });
                         for (var i=0; i<yscale_views.length; i++) {
                             var domain = scales["y"][i].domain;
-                            var min = domain[0];
-                            var max = domain[1];
-                            that.set_scale_attribute(scales["y"][i], "min", (1 - factor) * ypos[i] + factor * min);
-                            that.set_scale_attribute(scales["y"][i], "max", (1 - factor) * ypos[i] + factor * max);
+                            var min = domain[0], max = domain[1];
+                            that.set_scale_attribute(scales["y"][i], "min",
+                                        (1 - factor) * ypos[i] + factor * min);
+                            that.set_scale_attribute(scales["y"][i], "max",
+                                        (1 - factor) * ypos[i] + factor * max);
                             // TODO? Only do this on mouseup?
                             yscale_views[i].touch();
                         }
@@ -176,8 +189,7 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], fu
                 //TODO: Function for setting date can be made the same as for
                 //other scale once the _pack_models is fixes
                 scale.set_date_elem(attribute_name, value);
-            }
-            else {
+            } else {
                 scale.set(attribute_name, value);
             }
         },
