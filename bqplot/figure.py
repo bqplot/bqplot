@@ -45,32 +45,46 @@ class Figure(DOMWidget):
     Besides, the Figure object has two reference scales, for positioning items
     in an absolute fashion in the figure canvas.
 
+    Data Attributes
+    ---------------
+    Data attributes are decorated with the following values:
 
-    .. rubric:: Data Attributes
+    title: string (default: "")
+        title of the figure
+    axes: List (default: [])
+        list containing the instances of the axes for the figure
+    marks: List (default: [])
+        list containing the marks which are to be appended to the figure
+    overlay: any (default: )
+        Instance of the overlay for the figure
+    scale_x: Scale
+        Scale representing the x values of the figure
+    scale_y: Scale
+        Scale representing the y values of the figure
 
-    .. autosummary::
+    Layout Attributes
+    -----------------
+    min_width: CFloat (default: 800.0)
+        minimum width of the figure including the figure margins
+    min_height: CFloat (default: 600.0)
+        minimum height of the figure including the figure margins
+    preserve_aspect: bool (default: False)
+        Determines whether the aspect ratio for the figure specified by
+        min_width and min_height is preserved during resizing
+    fig_margin: dict (default: {top=60, bottom=60, left=60, right=60})
+        dictionary containing the top, bottom, left and right margins
+    padding_x: float (default: 0.0)
+        Padding to be applied in pixels in the horizontal direction of the
+        figure around the data points
+    padding_y: float (default: 0.025)
+        Padding to be applied in pixels in the vertical direction of the figure
+        around the data points
+    legend_location: enum (default:'top-right')
+        location of the legend relative to the center of the figure
 
-       title
-       axes
-       marks
-       overlay
-       scale_x
-       scale_y
-
-    .. rubric:: Layout Attributes
-
-    .. autosummary::
-
-       min_width
-       min_height
-       preserve_aspect
-       fig_margin
-       padding_x
-       padding_y
-       legend_location
-
-
-    .. rubric:: HTML Attributes
+    HTML Attributes
+    ---------------
+    border_color
 
     .. autosummary::
 
@@ -127,7 +141,7 @@ class Figure(DOMWidget):
                       sync=True)
     #: Padding to be applied around the data points in the figure in the
     #: horizontal direction on both sides
-    padding_x = Float(0, sync=True)
+    padding_x = Float(0.0, sync=True)
     #: Padding to be applied around the data points in the figure in the
     #: vertical direction on both sides
     padding_y = Float(0.025, sync=True)
