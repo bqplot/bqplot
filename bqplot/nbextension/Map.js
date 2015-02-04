@@ -31,6 +31,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
     var Map = baseFigure.extend({
 
         render: function() {
+            this.map_id = utils.uuid();
             this.margin = this.model.get("fig_margin");
             this.enable_hover = this.model.get("enable_hover");
             this.hover_fill = this.model.get("hover_fill");
@@ -93,12 +94,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.create_listeners();
 
         },
-        remove_map: function() {
-            $('.world_map').remove();
+        remove_map: function(that) {
+            $('.world_map .'+that.map_id).remove();
             $('#world_tooltip').remove();
-            $('.world_viewbox').remove();
-            $('.ColorBar').remove();
-            $('.color_axis').remove();
+            $('.world_viewbox .'+that.map_id).remove();
+            $('.'+that.map_id).remove();
         },
         draw_map: function() {
 
@@ -120,14 +120,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
                 .attr("width", "100%")
-                .attr("class", "world_viewbox")
+                .attr("class", "world_viewbox "+this.map_id)
                 .on("click", function(d) { that.ocean_clicked(that); });
 
             if (this.model.get("axis")!=null){
                 this.svg_over.attr("height", "85%");
 
                 that.ax_g = this.svg.append("g")
-                                    .attr("class", "color_axis")
+                                    .attr("class", "color_axis "+this.map_id)
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
                     that.axes_view = view;
@@ -143,7 +143,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             }
 
             this.transformed_g = this.svg_over.append("g")
-                                              .attr("class", "world_map");
+                                              .attr("class", "world_map "+this.map_id);
 
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
@@ -169,7 +169,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 				.attr("d", path)
                 .style("fill-opacity", 0.0)
 				.on("mouseover", function(d){
-                    if(!that.enable_hover){
+                    if(!that.model.get("enable_hover")){
                         return;
                     }
 
@@ -215,7 +215,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                     }
                 })
 				.on("mousemove", function(d){
-                    if(!that.enable_hover) {
+                    if(!that.model.get("enable_hover")) {
                         return;
                     }
 					var name;
@@ -264,7 +264,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
 				}})
 				.on("mouseout", function(d) {
-                    if (!that.enable_hover) {
+                    if (!that.model.get("enable_hover")) {
                         return;
                     }
 
@@ -346,9 +346,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.model.on("change:selected", function() {
                 that.change_selected(that);
             });
-            this.model.on("change:enable_hover", function() {
-                that.change_hover(that);
-            });
             this.model.on("change:hover_fill", function() {
                 that.hover_fill = that.model.get("hover_fill");
             });
@@ -358,7 +355,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.model.on("change:selected_stroke", function() {
                 that.change_selected_stroke(that);
             });
-            $(this.options.cell).on("output_area_resize."+this.id, function() {
+            $(this.options.cell).on("output_area_resize."+this.map_id, function() {
                 that.update_layout();
             });
         },
@@ -392,7 +389,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.svg.attr("width", this.width);
             // transform figure
             //this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-            this.remove_map();
+            this.remove_map(this);
             this.draw_map();
 
             // Drawing the selected cells
@@ -542,7 +539,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 this.svg_over.attr("height", "85%");
 
                 this.ax_g = this.svg.append("g")
-                                .attr("class", "color_axis");
+                                .attr("class", "color_axis "+this.map_id);
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
                    that.axes_view = view;
@@ -620,12 +617,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             }
         },
         change_hover: function(d){
-            d.enable_hover = this.model.get("enable_hover");
+            /*d.enable_hover = this.model.get("enable_hover");
             var that = this;
             that.fill_g.selectAll("path").style("fill", function(d, i) {
                 return that.fill_g_colorfill(d, i, that);
             });
-            return;
+            return;*/
         },
         is_object_empty: function(object){
             var is_empty = true;
