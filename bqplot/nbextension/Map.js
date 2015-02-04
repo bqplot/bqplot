@@ -391,6 +391,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             //this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
             this.remove_map(this);
             this.draw_map();
+            this.change_selected(this);
 
             // Drawing the selected cells
             //this.clear_selected();
@@ -615,14 +616,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                     that2.model.save_changes();
                 }
             }
-        },
-        change_hover: function(d){
-            /*d.enable_hover = this.model.get("enable_hover");
-            var that = this;
-            that.fill_g.selectAll("path").style("fill", function(d, i) {
-                return that.fill_g_colorfill(d, i, that);
-            });
-            return;*/
         },
         is_object_empty: function(object){
             var is_empty = true;
