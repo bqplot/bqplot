@@ -171,7 +171,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.after_displayed(function() {
                     that.update_layout();
                 });
-            }, null);
+            });
         },
         remove: function() {
             this.model.off(null, null, this);

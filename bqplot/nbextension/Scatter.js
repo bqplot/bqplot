@@ -51,7 +51,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.draw();
-            }, null);
+            });
         },
         set_ranges: function() {
             var x_scale = this.scales["x"],
