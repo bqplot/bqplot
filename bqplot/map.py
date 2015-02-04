@@ -50,7 +50,7 @@ class Map(DOMWidget):
     Display Attributes
     ------------------
     color: Color or None (default: None)
-        default color for the map when no color data is passed
+        default color for items of the map when no color data is passed
     tooltip_color: color (default: None)
         color for the background of the tooltip
     text_color: color (default: None)
@@ -70,6 +70,12 @@ class Map(DOMWidget):
     hover_stroke_width: float (default: 5.0)
         stroke width for the countru being hovered on
 
+    Data Attributes
+    ---------------
+    color_data: Dict or None (default: None)
+        dictionary containing the data associated with every country for the
+        color scale
+
     Other Attributes
     ----------------
     selected: List (default: [])
@@ -80,14 +86,12 @@ class Map(DOMWidget):
     enable_hover: bool (default: True)
         boolean to control if the map should be aware of which country is being
         hovered on. If it is set to False, tooltip will not be displayed
-    color_data: Dict or None (default: None)
-        dictionary containing the data associated with every country for the
-        color scale
     text_data: Dict or None (default: None)
         dictionary containing the text data associated with every country for
         the tooltip
     color_scale: ColorScale or None (default: None)
-        ColorScale Instance for the color of each country in the map
+        ColorScale Instance for the color of each country in the map. Required
+        when color data is passed
     axis: ColorAxis or None (default: None)
         ColorAxis Instance if one needs to be displayed
     display_tooltip: bool (default: True)
@@ -104,7 +108,6 @@ class Map(DOMWidget):
     color = Unicode(sync=True, allow_none=True)
     color_data = Dict(sync=True)
     color_scale = Instance(ColorScale, sync=True)
-    _view_name = Unicode("Map", sync=True)
     enable_select = Bool(True, sync=True)
     selected = List([], sync=True)
     selected_fill = Unicode("Red", sync=True, allow_none=True)
@@ -116,6 +119,7 @@ class Map(DOMWidget):
     text_data = Dict(sync=True)
     text_color = Unicode("Black", sync=True)
     text_format = Unicode(".2f", sync=True)
+    _view_name = Unicode("Map", sync=True)
 
     def __init__(self, **kwargs):
         """Constructor for WorldMapWidget"""
