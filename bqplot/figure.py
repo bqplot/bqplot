@@ -79,7 +79,8 @@ class Figure(DOMWidget):
     padding_y: float (default: 0.025)
         Padding to be applied in pixels in the vertical direction of the figure
         around the data points
-    legend_location: enum (default:'top-right')
+    legend_location:  {'top-right', 'top', 'top-left', 'left',
+                       'bottom-left', 'bottom', 'bottom-right', 'right'}
         location of the legend relative to the center of the figure
 
     HTML Attributes

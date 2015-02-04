@@ -228,12 +228,13 @@ class FlexLine(Lines):
     name: string (class-level attributes)
         user-friendly name of the mark
     colors: list of colors (default: CATEGORY10)
+        List of colors for the Lines
 
     Data Attributes
     ---------------
     color: numpy.ndarray or None (default: [])
-
     width: numpy.ndarray or None (default: [])
+        Array controlling the widths of the Lines.
     """
     # Mark decoration
     name = 'Flexible lines'
@@ -448,9 +449,9 @@ class Bars(Mark):
         attribute to control the spacing between the bars
         value is specified as a percentage of the width of the bar
     select_bars: bool (default: False)
-
+        make bars selectable or otherwise
     stroke: color (default: 'white')
-
+        stroke color for the bars
     opacity: float (default: 1.0)
         opacity of the mark. Then number must be bewteen 0 and 1
     base: float (default: 0.0)
@@ -459,9 +460,9 @@ class Bars(Mark):
     Data Attributes
     ---------------
     x: numpy.ndarray
-
+        abscissas of the data points (1d array)
     y: numpy.ndarray
-
+        ordinates of the values for the data points
     color: numpy.ndarray
         color of the data points (1d array). Defaults to default_color when not
         privided or when a value is NaN
