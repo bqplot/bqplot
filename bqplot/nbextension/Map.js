@@ -114,8 +114,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 			this.svg = d3.select(this.el)
 
             this.svg.attr("viewBox", "0 0 "+ w +' '+ h)
-              //.attr("width", "100%")
-              //.attr("height", "100%");
 
             this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
@@ -387,22 +385,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
             this.svg.attr("width", this.width);
-            // transform figure
-            //this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
             this.remove_map(this);
             this.draw_map();
             this.change_selected(this);
-
-            // Drawing the selected cells
-            //this.clear_selected();
-            //this.apply_selected();
-
-            // When map is expanded or contracted, there should not be any
-            // accidental hovers. To prevent this, the following call is made.
-            //this.fig_hover.selectAll("rect")
-                //.remove();
-            //this.hide_tooltip();
-            //this.trigger("margin_updated");
         },
         change_selected_fill: function(that) {
             if (that.model.get("selected_fill")==="" ||
@@ -621,8 +606,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             var is_empty = true;
             for(keys in object) {
                 is_empty = false;
-                break; // exiting since we found that the object is not empty
-            }
+                break;             }
+
             return is_empty;
         },
         hoverfill: function(d, j, that) {
