@@ -59,7 +59,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
-            var r_scale = scales["radius"];
 
             if(x_scale) {
                 if(!this.get("preserve_domain")["x"]) {
@@ -73,14 +72,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                     y_scale.compute_and_set_domain([this.get("y")], this.id);
                 } else {
                     y_scale.del_domain([], this.id);
-                }
-            }
-            if(r_scale) {
-                if(!this.get("preserve_domain")["radius"]) {
-                    r_scale.compute_and_set_domain(
-                        [this.get("radius"), this.get("inner_radius")], this.id);
-                } else {
-                    r_scale.del_domain([], this.id);
                 }
             }
         },

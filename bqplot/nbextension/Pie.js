@@ -52,27 +52,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
                 this.y_offset = y_scale.offset;
             }
-            var r_scale = this.scales["radius"];
-            if(r_scale) {
-                var min = d3.min([d3.max(this.y_scale.scale.range()), d3.max(this.x_scale.scale.range())]) / 2.0;
-                r_scale.set_range([0.0, min]);
-                this.r_offset = 0.0;
-            }
         },
         set_positional_scales: function() {
             // If no scale for "x" or "y" is specified, figure scales are used.
             this.x_scale = this.scales["x"] ? this.scales["x"] : this.parent.scale_x;
             this.y_scale = this.scales["y"] ? this.scales["y"] : this.parent.scale_y;
-            this.r_scale = this.scales["radius"] ? this.scales["radius"] : this.parent.scale_y;
 
             var that = this;
             this.listenTo(this.x_scale, "domain_changed", function() {
                 if (!that.model.dirty) { that.draw(); }
             });
             this.listenTo(this.y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
-            });
-            this.listenTo(this.r_scale, "domain_changed", function() {
                 if (!that.model.dirty) { that.draw(); }
             });
         },
@@ -106,15 +96,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("transform", transform);
         },
         update_radii: function() {
-            this.set_ranges();
-            var radius = (this.r_scale.model.type === "date") ?
-                this.model.get_date_elem("radius") : this.model.get("radius");
-            var inner_radius = (this.r_scale.model.type === "date") ?
-                this.model.get_date_elem("radius") : this.model.get("inner_radius");
-
             var arc = d3.svg.arc()
-                .outerRadius(60)//this.r_scale.scale(radius))
-                .innerRadius(0)//this.r_scale.scale(inner_radius));
+                .outerRadius(this.model.get("radius"))
+                .innerRadius(this.model.get("inner_radius"));
 
             this.el.select(".pielayout").selectAll(".slice").select("path")
                 .transition().duration(this.model.get("animate_dur"))

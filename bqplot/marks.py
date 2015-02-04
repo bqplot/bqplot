@@ -31,6 +31,7 @@ Marks
 """
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
+from numpy import empty
 
 from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
@@ -576,7 +577,6 @@ class OHLC(Mark):
         abscissas of the data points (1d array)
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
-        If this does not contain OHLC data, the behaviour is undefined.
     """
 
     # Mark decoration
@@ -584,24 +584,17 @@ class OHLC(Mark):
     name = 'OHLC chart'
 
     # Scaled attributes
-    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number',
-                min_dim=1, max_dim=1)
-    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number',
-                min_dim=2, max_dim=2)
-    # FIXME Future warnings
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=2, max_dim=2)
+    # FIXME Need to do something about this... keep getting future warning because of it.
     _y_default = None
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
-                            'y': {'orientation': 'vertical'}}, sync=True)
-    marker = Enum(['candle', 'bar'], allow_none=False, default_value='candle',
-                  exposed=True, display_index=3, display_name='Marker', sync=True)
-    stroke = Color('white', sync=True, exposed=True, display_index=4,
-                   display_name='Stroke color')
-    colors = ColorList(['limegreen', 'red'], allow_none_element=True, allow_none=False,
-                       display_index=5, sync=True, display_name='Colors')
-    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
-                           exposed=True, display_index=6, display_name='Opacity')
+    marker = Enum(['candle', 'bar'], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
+    stroke = Color('white', sync=True, exposed=True, display_index=4, display_name='Stroke color')
+    colors = ColorList(['limegreen','red'], allow_none_element=True, allow_none=False, display_index=5, sync=True, name='Colors')
+    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
     _view_name = Unicode('bqplot.OHLC', sync=True)
     _model_name = Unicode('bqplot.OHLCModel', sync=True)
 
@@ -629,9 +622,13 @@ class Pie(Mark):
     x: Date or float
         horizontal position of the pie center, in data coordinates or in figure
         coordinates
-    y: float or None (default: None)
+    y: Float or None (default: None)
         vertical y position of the pie center, in data coordinates or in figure
         coordinates
+    radius: Float
+        radius of the pie, in pixels
+    inner_radius: Float
+        inner radius of the pie, in pixels
 
     Data Attributes
     ---------------
@@ -661,8 +658,8 @@ class Pie(Mark):
     stroke = Color('white', allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
-    radius = BoundedFloat(default_value=1.0, min=0.0, max=1.0, sync=True)
-    inner_radius = BoundedFloat(default_value=0.0, min=0.0, max=1.0, sync=True)
+    radius = BoundedFloat(default_value=100.0, min=0.0, max=float("inf"), sync=True)
+    inner_radius = BoundedFloat(default_value=0.1, min=0.0, max=float("inf"), sync=True)
     start_angle = Float(default_value=0.0, sync=True, exposed=True)
     end_angle = Float(default_value=360.0, sync=True, exposed=True)
     _view_name = Unicode('bqplot.Pie', sync=True)
