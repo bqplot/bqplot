@@ -24,20 +24,27 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 this.trigger("colors_updated");
             }, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.on("change:labels", this.update_labels, this);
         },
         update_data: function() {
             var sizes = this.get_typed_field("sizes");
             var color = this.get_typed_field("color");
+            var labels = this.get("labels");
             this.mark_data = sizes.map(function(d, i) {
                 return {size: d,
                         color: color[i],
-                        };
+                        label: labels[i]};
             })
-            //y_data = (y_data.length === 0 || y_data[0] instanceof Array) ? y_data : [y_data];
-            this.curve_labels = this.get("labels");
             this.update_color();
             this.update_domains();
             this.trigger("data_updated");
+        },
+        update_labels: function() {
+            var labels = this.get("labels");
+            this.mark_data.forEach( function(data, index) {
+                data["label"] = labels[index];
+            });
+            this.trigger("labels_updated");
         },
         update_color: function() {
             var color = this.get_typed_field("color");

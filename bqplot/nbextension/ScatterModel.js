@@ -33,6 +33,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("mark_padding_updated");
         },
         update_data: function() {
+            var that = this;
             this.dirty = true;
             var x_data = this.get_typed_field("x");
             var scales = this.get("scales");
@@ -52,11 +53,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 //length, throws an error on the JS side
                 var min_len = Math.min(x_data.length, y_data.length);
                 x_data = x_data.slice(0, min_len);
-                var xformat = d3.format(this.get("xformat"));
                 var color = this.get_typed_field("color");
                 var size = this.get_typed_field("size");
                 var opacity = this.get_typed_field("opacity");
-                var names = this.get_typed_field("names");
 
                 if(color_scale) {
                     if(!this.get("preserve_domain")["color"]) {
