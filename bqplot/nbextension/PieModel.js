@@ -18,7 +18,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
     var PieModel = MarkModel.extend({
         initialize: function() {
             PieModel.__super__.initialize.apply(this);
-            this.on("change:data", this.update_data, this);
+            this.on("change:sizes", this.update_data, this);
             this.on("change:color", function() {
                 this.update_color();
                 this.trigger("colors_updated");
@@ -26,12 +26,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.on_some_change(["preserve_domain"], this.update_domains, this);
         },
         update_data: function() {
-            data = this.get_typed_field("data");
-            /*this.mark_data = data.map(function(d, i) {
-                return {data: d,
+            var sizes = this.get_typed_field("sizes");
+            var color = this.get_typed_field("color");
+            this.mark_data = sizes.map(function(d, i) {
+                return {size: d,
                         color: color[i],
                         };
-            })*/
+            })
             //y_data = (y_data.length === 0 || y_data[0] instanceof Array) ? y_data : [y_data];
             this.curve_labels = this.get("labels");
             this.update_color();
@@ -41,19 +42,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         update_color: function() {
             var color = this.get_typed_field("color");
             var color_scale = this.get("scales")["color"];
-            /*this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
-                single_bar_d.values.forEach(function(bar_d, bar_index) {
-                    bar_d.color_index = (apply_color_to_groups) ? bar_grp_index : bar_index;
-                    bar_d.color = color[bar_d.color_index];
-                });
-            });
-            if(color_scale && color.length > 0) {
-                    if(!this.get("preserve_domain")["color"]) {
-                        color_scale.compute_and_set_domain(color, this.id);
-                    } else {
-                        color_scale.del_domain([], this.id);
-                    }
-            }*/
+            if(color_scale) {
+                if(!this.get("preserve_domain")["color"]) {
+                    color_scale.compute_and_set_domain(color, this.id);
+                } else {
+                    color_scale.del_domain([], this.id);
+                }
+            }
         },
         update_domains: function() {
             var scales = this.get("scales");

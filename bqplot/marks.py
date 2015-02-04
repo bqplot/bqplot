@@ -467,7 +467,7 @@ class Bars(Mark):
         ordinates of the values for the data points
     color: numpy.ndarray
         color of the data points (1d array). Defaults to default_color when not
-        privided or when a value is NaN
+        provided or when a value is NaN
     """
     # Mark decoration
     icon = 'fa-bar-chart'
@@ -598,18 +598,11 @@ class OHLC(Mark):
     _view_name = Unicode('bqplot.OHLC', sync=True)
     _model_name = Unicode('bqplot.OHLCModel', sync=True)
 
+
 @register_mark('bqplot.Pie')
 class Pie(Mark):
 
     """Piechart mark.
-    color_mode: {'auto', 'group', 'element'}
-        enum attribute to specify if color should be the same for all bars with
-        the same x or for all bars which belong to the same array in Y
-        'group' means for every x all bars have same color.
-        'element' means for every dimension of y, all bars have same color.
-        'auto' picks 'group' and 'element' for 1-d and 2-d values of
-        Y respectively.
-    type: {'stacked', 'grouped'}
     colors: list of colors
         list of colors for the slices.
     padding: float
@@ -632,17 +625,18 @@ class Pie(Mark):
 
     Data Attributes
     ---------------
-    data: numpy.ndarray
+    sizes: numpy.ndarray
+        proportions of the pie slices
     color: numpy.ndarray
         color of the data points (1d array). Defaults to default_color when not
-        privided or when a value is NaN
+        provided or when a value is NaN
     """
     # Mark decoration
     icon = ''
     name = 'Pie chart'
 
     # Scaled attributes
-    data = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    sizes = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
     x = Date(sync=True) | Float(sync=True)
     y = Float(allow_none=True, default_value=None, sync=True)

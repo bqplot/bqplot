@@ -36,7 +36,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             var self = this;
             return base_creation_promise.then(function() {
-                //self.color_scale = self.scales["color"];
                 self.create_listeners();
                 self.draw();
             }, null);
@@ -111,25 +110,23 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .attr("class", "pielayout");
             this.position_center();
 
-            var data = this.model.get_typed_field("data");
-
             var pie = d3.layout.pie()
                 .sort(null)
                 .startAngle(this.model.get("start_angle")*2*Math.PI/360)
                 .endAngle(this.model.get("end_angle")*2*Math.PI/360)
-                .value(function(d) { return d; });
+                .value(function(d) { return d.size; });
 
             var arcs = layout.selectAll(".slice")
-                .data(pie(data))
+                .data(pie(this.model.mark_data))
                .enter().append("g")
                 .attr("class", "slice");
 
             var that = this;
             arcs.append("path")
-                .style("fill", function(d, i) { return that.get_colors(i); });
 
             this.update_radii();
             var colors = this.model.get("colors");
+            this.apply_styles();
         },
             /*bar_groups.enter()
               .append("g")
@@ -149,39 +146,34 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         update_stroke_and_opacity: function() {
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
-            this.el.selectAll(".bar")
+            this.el.select(".pielayout").selectAll(".slice")
                 .style("stroke", (stroke === undefined || stroke === null) ? "none" : stroke)
                 .style("opacity", opacity);
         },
         update_colors: function() {
-            //the following if condition is to handle the case of single
-            //dimensional data.
-            //if y is 1-d, each bar should be of 1 color.
-            //if y is multi-dimensional, the corresponding values should be of
-            //the same color.
             var that = this;
-            if(this.color_scale) {
-                this.color_scale.set_range();
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                color_scale.set_range();
             }
-            if(this.model.mark_data.length > 0) {
-                this.el.selectAll(".bar").style("fill", function(d, i) {
-                    return (d.color !== undefined && that.color_scale !== undefined) ?
-                        that.color_scale.scale(d.color) : that.get_colors(d.color_index);
-                    });
-            }
-            //legend color update
+            this.el.select(".pielayout").selectAll(".slice")
+                .style("fill", function(d, i) {
+                    return (d.data.color !== undefined && color_scale !== undefined) ?
+                        color_scale.scale(d.data.color) : that.get_colors(i);
+                });
+            /*//legend color update
             if(this.legend_el) {
                 this.legend_el.selectAll(".legendrect")
                     .style("fill", function(d, i) {
                     return (d.color && that.color_scale) ?
-                        that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                        that.color_scale.scale(d.color) : that.get_colors(i);
                 });
                 this.legend_el.selectAll(".legendtext")
                     .style("fill", function(d, i) {
                     return (d.color !== undefined && that.color_scale !== undefined) ?
-                        that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                        that.color_scale.scale(d.color) : that.get_colors(i);
                 });
-            }
+            }*/
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             if(!(this.model.is_y_2d) &&
@@ -204,9 +196,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .on("mouseout", _.bind(this.unhighlight_axes, this))
               .append("rect")
               .classed("legendrect", true)
-              .style("fill", function(d,i) {
+              .style("fill", function(d, i) {
                   return (d.color !== undefined && that.color_scale !== undefined) ?
-                      that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                      that.color_scale.scale(d.color) : that.get_colors(i);
               }).attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
 
             this.legend_el.append("text")
@@ -215,9 +207,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("y", rect_dim / 2)
               .attr("dy", "0.35em")
               .text(function(d, i) { return that.model.get("labels")[i]; })
-              .style("fill", function(d,i) {
+              .style("fill", function(d, i) {
                   return (d.color !== undefined && that.color_scale !== undefined) ?
-                      that.color_scale.scale(d.color) : that.get_colors(d.color_index);
+                      that.color_scale.scale(d.color) : that.get_colors(i);
               });
 
             var max_length = d3.max(this.model.get("labels"), function(d) {
@@ -229,13 +221,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
-            // chart.If indices is null, clears the style on all elements. If
+            // chart. If indices is null, clears the style on all elements. If
             // not, clears on only the elements whose indices are mathcing.
             //
             // This function is not used right now. But it can be used if we
             // decide to accomodate more properties than those set by default.
             // Because those have to cleared specifically.
-            var elements = this.el.selectAll(".bargroup");
+            var elements = this.el.select(".pielayout").selectAll(".slice")
             if(indices !== undefined) {
                 elements = elements.filter(function(d, index) {
                     return indices.indexOf(index) !== -1;
@@ -245,7 +237,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             for(var key in style_dict) {
                 clearing_style[key] = null;
             }
-            elements.selectAll(".bar").style(clearing_style);
+            elements.style(clearing_style);
         },
         set_style_on_elements: function(style, indices) {
             // If the index array is undefined or of length=0, exit the
@@ -257,11 +249,11 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(Object.keys(style).length === 0) {
                 return;
             }
-            var elements = this.el.selectAll(".bargroup");
+            var elements = this.el.select(".pielayout").selectAll(".slice")
             elements = elements.filter(function(data, index) {
                 return indices.indexOf(index) !== -1;
             });
-            elements.selectAll(".bar").style(style);
+            elements.style(style);
         },
         set_default_style: function(indices) {
             // For all the elements with index in the list indices, the default
@@ -327,7 +319,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         reset_selection: function() {
-            if(this.model.get("select_bars")) {
+            if(this.model.get("select_slices")) {
                 this.model.set("idx_selected", null);
                 this.touch();
                 this.selected_indices = null;
