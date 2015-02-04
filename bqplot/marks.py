@@ -509,7 +509,7 @@ class Label(Mark):
     Attributes
     ----------
     x: Date or float
-        horisontal position of the label, in data coordinates or in figure
+        horizontal position of the label, in data coordinates or in figure
         coordinates
     y: float or None (default: None)
         vertical y position of the label, in data coordinates or in figure
@@ -626,6 +626,12 @@ class Pie(Mark):
     stroke: color
     opacity: float
         opacity of the mark. Then number must be between 0 and 1
+    x: Date or float
+        horizontal position of the pie center, in data coordinates or in figure
+        coordinates
+    y: float or None (default: None)
+        vertical y position of the pie center, in data coordinates or in figure
+        coordinates
 
     Data Attributes
     ---------------
@@ -641,6 +647,8 @@ class Pie(Mark):
     # Scaled attributes
     data = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+    x = Date(sync=True) | Float(sync=True)
+    y = Float(allow_none=True, default_value=None, sync=True)
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
@@ -655,7 +663,7 @@ class Pie(Mark):
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
     radius = BoundedFloat(default_value=1.0, min=0.0, max=1.0, sync=True)
     inner_radius = BoundedFloat(default_value=0.0, min=0.0, max=1.0, sync=True)
-    start_angle = BoundedFloat(default_value=0.0, min=0.0, max=360.0, sync=True, exposed=True)
-    end_angle = BoundedFloat(default_value=360.0, min=0.0, max=360.0, sync=True, exposed=True)
+    start_angle = Float(default_value=0.0, sync=True, exposed=True)
+    end_angle = Float(default_value=360.0, sync=True, exposed=True)
     _view_name = Unicode('bqplot.Pie', sync=True)
     _model_name = Unicode('bqplot.PieModel', sync=True)

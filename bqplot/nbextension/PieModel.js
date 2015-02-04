@@ -23,9 +23,15 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 this.update_color();
                 this.trigger("colors_updated");
             }, this);
+            this.on_some_change(["preserve_domain"], this.update_domains, this);
         },
         update_data: function() {
-            this.mark_data = this.get_typed_field("data");
+            data = this.get_typed_field("data");
+            /*this.mark_data = data.map(function(d, i) {
+                return {data: d,
+                        color: color[i],
+                        };
+            })*/
             //y_data = (y_data.length === 0 || y_data[0] instanceof Array) ? y_data : [y_data];
             this.curve_labels = this.get("labels");
             this.update_color();
@@ -48,6 +54,35 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                         color_scale.del_domain([], this.id);
                     }
             }*/
+        },
+        update_domains: function() {
+            var scales = this.get("scales");
+            var x_scale = scales["x"];
+            var y_scale = scales["y"];
+            var r_scale = scales["radius"];
+
+            if(x_scale) {
+                if(!this.get("preserve_domain")["x"]) {
+                    x_scale.compute_and_set_domain([this.get("x")], this.id);
+                } else {
+                    x_scale.del_domain([], this.id);
+                }
+            }
+            if(y_scale) {
+                if(!this.get("preserve_domain")["y"]) {
+                    y_scale.compute_and_set_domain([this.get("y")], this.id);
+                } else {
+                    y_scale.del_domain([], this.id);
+                }
+            }
+            if(r_scale) {
+                if(!this.get("preserve_domain")["radius"]) {
+                    r_scale.compute_and_set_domain(
+                        [this.get("radius"), this.get("inner_radius")], this.id);
+                } else {
+                    r_scale.del_domain([], this.id);
+                }
+            }
         },
     });
     WidgetManager.WidgetManager.register_widget_model("bqplot.PieModel", PieModel);

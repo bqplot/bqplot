@@ -42,6 +42,39 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }, null);
         },
         set_ranges: function() {
+            var x_scale = this.scales["x"];
+            if(x_scale) {
+                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                this.x_offset = x_scale.offset;
+            }
+            var y_scale = this.scales["y"];
+            if(y_scale) {
+                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                this.y_offset = y_scale.offset;
+            }
+            var r_scale = this.scales["radius"];
+            if(r_scale) {
+                var min = d3.min([d3.max(this.y_scale.scale.range()), d3.max(this.x_scale.scale.range())]) / 2.0;
+                r_scale.set_range([0.0, min]);
+                this.r_offset = 0.0;
+            }
+        },
+        set_positional_scales: function() {
+            // If no scale for "x" or "y" is specified, figure scales are used.
+            this.x_scale = this.scales["x"] ? this.scales["x"] : this.parent.scale_x;
+            this.y_scale = this.scales["y"] ? this.scales["y"] : this.parent.scale_y;
+            this.r_scale = this.scales["radius"] ? this.scales["radius"] : this.parent.scale_y;
+
+            var that = this;
+            this.listenTo(this.x_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            this.listenTo(this.y_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
+            this.listenTo(this.r_scale, "domain_changed", function() {
+                if (!that.model.dirty) { that.draw(); }
+            });
         },
         create_listeners: function() {
             Pie.__super__.create_listeners.apply(this);
@@ -49,45 +82,70 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+            this.model.on_some_change(["x", "y"], this.position_center, this);
+            this.model.on_some_change(["inner_radius", "radius"], this.update_radii, this);
+            this.model.on_some_change(["start_angle", "end_angle"], this.draw, this);
         },
         relayout: function() {
-
+            this.set_ranges();
             this.el.select(".mouseeventrect")
               .attr("width", this.parent.plotarea_width)
               .attr("height", this.parent.plotarea_height);
 
-            var bar_groups = this.el.selectAll(".bargroup");
-            var bars_sel = bar_groups.selectAll(".bar");
+            this.position_center();
+            this.update_radii();
+        },
+        position_center: function() {
+            var x = (this.x_scale.model.type === "date") ?
+                this.model.get_date_elem("x") : this.model.get("x");
+            var y = (this.y_scale.model.type === "date") ?
+                this.model.get_date_elem("y") : this.model.get("y");
+            var transform = "translate(" + this.x_scale.scale(x)
+                                      + ", " + this.y_scale.scale(y) + ")";
+            this.el.select(".pielayout")
+                .attr("transform", transform);
+        },
+        update_radii: function() {
+            this.set_ranges();
+            var radius = (this.r_scale.model.type === "date") ?
+                this.model.get_date_elem("radius") : this.model.get("radius");
+            var inner_radius = (this.r_scale.model.type === "date") ?
+                this.model.get_date_elem("radius") : this.model.get("inner_radius");
+
+            var arc = d3.svg.arc()
+                .outerRadius(60)//this.r_scale.scale(radius))
+                .innerRadius(0)//this.r_scale.scale(inner_radius));
+
+            this.el.select(".pielayout").selectAll(".slice").select("path")
+                .transition().duration(this.model.get("animate_dur"))
+                .attr("d", arc);
         },
         draw: function() {
+            this.set_ranges();
+            this.el.selectAll(".pielayout").remove();
+            var layout = this.el.append("g")
+                .attr("class", "pielayout");
+            this.position_center();
+
             var data = this.model.get_typed_field("data");
-            this.el.selectAll(".slice").remove();
-            var arc = d3.svg.arc()
-                .outerRadius(100)
-                .innerRadius(10);
 
             var pie = d3.layout.pie()
                 .sort(null)
-                .startAngle(this.model.get("start_angle"))
-                .endAngle(this.model.get("end_angle"))
-                .value(function(d) {return d;});
+                .startAngle(this.model.get("start_angle")*2*Math.PI/360)
+                .endAngle(this.model.get("end_angle")*2*Math.PI/360)
+                .value(function(d) { return d; });
 
-            var arcs = this.el.append("g")
-                .attr("transform", "translate("+this.plot_area_width+","+this.plot_area_height)
-                .selectAll(".slice")
+            var arcs = layout.selectAll(".slice")
                 .data(pie(data))
                .enter().append("g")
                 .attr("class", "slice");
 
             var that = this;
             arcs.append("path")
-                .attr("d", arc)
-                .style("fill", function(d, i) {return that.get_colors(i)});
+                .style("fill", function(d, i) { return that.get_colors(i); });
 
-            this.set_ranges();
+            this.update_radii();
             var colors = this.model.get("colors");
-            var that = this;
-            var animate_dur = this.model.get("animate_dur");
         },
             /*bar_groups.enter()
               .append("g")
@@ -103,17 +161,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .append("rect")
               .attr("class", "bar");
             this.draw_bars();
-            this.apply_styles();
-
-            this.el.selectAll(".zeroLine").remove();
-            this.el.append("g")
-              .append("line")
-              .attr("class", "zeroLine")
-              .attr("x1",  0)
-              .attr("x2", this.parent.plotarea_width)
-              .attr("y1", this.y_scale.scale(this.model.base_value))
-              .attr("y2", this.y_scale.scale(this.model.base_value));
-             */
+            this.apply_styles();*/
         update_stroke_and_opacity: function() {
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
@@ -125,7 +173,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             //the following if condition is to handle the case of single
             //dimensional data.
             //if y is 1-d, each bar should be of 1 color.
-            //if y is multi-dimensional, the correspoding values should be of
+            //if y is multi-dimensional, the corresponding values should be of
             //the same color.
             var that = this;
             if(this.color_scale) {
@@ -248,8 +296,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                     // if the index is already selected and if ctrl key is
                     // pressed, remove the element from the list
                     idx_selected.splice(elem_index, 1);
-                }
-                else {
+                } else {
                     if(d3.event.shiftKey) {
                         //If shift is pressed and the element is already
                         //selected, do not do anything
@@ -271,8 +318,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                                 idx_selected.push(i);
                             });
                         }
-                    }
-                    else if(!(d3.event.ctrlKey)) {
+                    } else if(!(d3.event.ctrlKey)) {
                         idx_selected = [];
                     }
                     // updating the array containing the bar indexes selected
