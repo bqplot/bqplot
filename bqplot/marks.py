@@ -233,6 +233,7 @@ class FlexLine(Lines):
     Data Attributes
     ---------------
     color: numpy.ndarray or None (default: [])
+        Array controlling the color of the data points
     width: numpy.ndarray or None (default: [])
         Array controlling the widths of the Lines.
     """
