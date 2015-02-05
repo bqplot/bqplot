@@ -273,7 +273,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                                             open[i] : close[i];
                 }
 
-                // We never have high without close and vice versa, so we can
+                // We never have high without low and vice versa, so we can
                 // check everything at once
                 if(this.model.px.high === -1 || this.model.px.low === -1) {
                     high[i] = open[i];
