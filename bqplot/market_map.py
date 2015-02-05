@@ -164,6 +164,7 @@ class MarketMap(DOMWidget):
     enable_select = Bool(True, sync=True)
     tooltip_widget = Instance(DOMWidget, sync=True)
     _view_name = Unicode("MarketMap", sync=True)
+    _model_name = Unicode("bqplot.BaseModel", sync=True)
 
     def __init__(self, **kwargs):
         super(MarketMap, self).__init__(**kwargs)
