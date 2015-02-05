@@ -604,6 +604,7 @@ class OHLC(Mark):
         opacity of the marker
     format: string
         description of y data being passed
+        supports all permutations of ohlc, ohl, hlc, oc, hl
 
     Data Attributes
     ---------------
@@ -613,7 +614,6 @@ class OHLC(Mark):
         abscissas of the data points (1d array)
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
-        If this does not contain OHLC data, the behaviour is undefined.
     """
 
     # Mark decoration
