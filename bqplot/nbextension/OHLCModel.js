@@ -44,7 +44,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
  
             // We should have at most 4 data points (o,h,l,c)
             // Also, we cannot have high without low and vice versa
-            if((format.length !== 2 && format.length !== 4)
+            if(format.length < 2 || format.length > 4
             || (this.px.high !== -1 && this.px.low === -1)
             || (this.px.high === -1 && this.px.low !== -1)) {
                 print_bad_format(format);

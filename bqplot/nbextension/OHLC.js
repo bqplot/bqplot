@@ -252,15 +252,19 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
 
             for(var i = 0; i < dat.length; i++) {
-                // Without the open and close values, we cannot compute these.
-                if(this.model.px.open === -1 || this.model.px.close === -1) {
+                if(this.model.px.open === -1) {
                     open[i] = undefined;
-                    close[i] = undefined;
-                    headline_top[i] = undefined;
-                    headline_bottom[i] = undefined;
                 } else {
                     open[i] = y_scale.scale(dat[i][this.model.px.open]);
+                }
+                if(this.model.px.close === -1) {
+                    close[i] = undefined;
+                } else {
                     close[i] = y_scale.scale(dat[i][this.model.px.close]);
+                }
+                // We can only compute these (and only need to compute these)
+                // when we have both the open and the close values
+                if(this.model.px.open !== -1 && this.model.px.close !== -1) {
                     headline_top[i] = (y_scale.scale.invert(open[i]) >
                                             y_scale.scale.invert(close[i])) ?
                                             open[i] : close[i];
@@ -268,6 +272,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                                             y_scale.scale.invert(close[i])) ?
                                             open[i] : close[i];
                 }
+
+                // We never have high without close and vice versa, so we can
+                // check everything at once
                 if(this.model.px.high === -1 || this.model.px.low === -1) {
                     high[i] = open[i];
                     low[i] = close[i];
@@ -337,20 +344,23 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                  *      |____ <---- tail (horizontal piece)
                  *      |
                  */
-                if( this.model.px.open !== -1 && this.model.px.close !== -1) {
+                if(this.model.px.open !== -1) {
                     selector.selectAll(".stick_head").data(dat)
                         .attr("d", function(d, i) {
                             return that.head_path_bar(to_left_side[i],
                                                       open[i] - high[i],
                                                       to_left_side[i]*-1);
                         });
+                } else {
+                    selector.selectAll(".stick_head").data(dat).attr("d", "");
+                }
+                if(this.model.px.close !== -1) {
                     selector.selectAll(".stick_tail").data(dat)
                         .attr("d", function(d, i) {
                             return that.tail_path_bar(close[i] - high[i],
                                                       to_left_side[i]*-1);
                         });
                 } else {
-                    selector.selectAll(".stick_head").data(dat).attr("d", "");
                     selector.selectAll(".stick_tail").data(dat).attr("d", "");
                 }
                 selector.selectAll(".stick_body").data(dat)
