@@ -53,6 +53,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             } else {
                 for(var i = 0; i < format.length; i++) {
                     switch(format[i]) {
+                      case 'O':
                       case 'o':
                         if(this.px.open === -1) {
                             this.px.open = i;
@@ -62,6 +63,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             y_data = [];
                         }
                         break;
+                      case 'H':
                       case 'h':
                         if(this.px.high === -1) {
                             this.px.high = i;
@@ -71,6 +73,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             y_data = [];
                         }
                         break;
+                      case 'L':
                       case 'l':
                         if(this.px.low === -1) {
                             this.px.low = i;
@@ -80,6 +83,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             y_data = [];
                         }
                         break;
+                      case 'C':
                       case 'c':
                         if(this.px.close === -1) {
                             this.px.close = i;
