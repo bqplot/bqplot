@@ -21,9 +21,13 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             OHLCModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.on("change:format", this.update_data, this);
+            this.on("change:format", this.update_format, this);
             this.px = { open: -1, high: -1, low: -1, close: -1 };
             this.mark_data = [];
+        },
+        update_format: function() {
+            this.update_data();
+            this.trigger("format_updated");
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");
@@ -38,9 +42,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
             }
  
-            // We should have 4 data points (o,h,l,c)
+            // We should have at most 4 data points (o,h,l,c)
             // This avoids iterating over a huge string
-            if(format.length !== 4) {
+            if(format.length !== 4 && format.length !== 2) {
                 print_bad_format(format);
                 x_data = [];
                 y_data = [];
@@ -83,7 +87,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             y_data = [];
                         }
                         break;
-                      default:
+                      default: // Invalid character
                         print_bad_format(format);
                         x_data = [];
                         y_data = [];
@@ -99,23 +103,53 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
 
             // Verify that our OHLC data is valid
-            for(var i = 0; i < y_data.length; i++) {
-                if(y_data[i].length !== 4
-                || y_data[i][this.px.high] < y_data[i][this.px.open]
-                || y_data[i][this.px.high] < y_data[i][this.px.close]
-                || y_data[i][this.px.low] > y_data[i][this.px.open]
-                || y_data[i][this.px.low] > y_data[i][this.px.close])
-                {
-                    // Truncate and notify console of error in data
-                    y_data = [];
-                    x_data = [];
-                    if(console) {
-                        console.error("Invalid OHLC data at index " + i);
+            if(this.px.open !== -1 && this.px.close !== -1
+            && this.px.high !== -1 && this.px.low !== -1)
+            {
+                for(var i = 0; i < y_data.length; i++) {
+                    if(y_data[i].length !== format.length
+                    || y_data[i][this.px.high] < y_data[i][this.px.open]
+                    || y_data[i][this.px.high] < y_data[i][this.px.close]
+                    || y_data[i][this.px.low] > y_data[i][this.px.open]
+                    || y_data[i][this.px.low] > y_data[i][this.px.close])
+                    {
+                        // Truncate and notify console of error in data
+                        y_data = [];
+                        x_data = [];
+                        if(console) {
+                            console.error("Invalid OHLC data at index " + i);
+                        }
                     }
                 }
+            } else if(this.px.high !== -1 && this.px.low !== -1) {
+                for(var i = 0; i < y_data.length; i++) {
+                    if(y_data[i].length !== format.length
+                    || y_data[i][this.px.high] < y_data[i][this.px.low])
+                    {
+                        y_data = [];
+                        x_data = [];
+                        if(console) {
+                            console.error("Invalid OHLC data at index " + i);
+                        }
+                    }
+                }
+            } else if(this.px.close !== -1 && this.px.open !== -1) {
+                for(var i = 0; i < y_data.length; i++) {
+                    if(y_data[i].length !== format.length) {
+                        if(console) {
+                            console.error("Invalid OHLC data at index " + i);
+                        }
+                    }
+                }
+            } else {
+                x_data = [];
+                y_data = [];
+                if(console) {
+                    console.error("Invalid OHLC data at index " + i);
+                }
             }
-            this.mark_data = _.zip(x_data, y_data);
 
+            this.mark_data = _.zip(x_data, y_data);
             this.update_domains();
             this.trigger("data_updated");
         },
@@ -164,11 +198,17 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             if((!this.get("preserve_domain")["y"]) && this.mark_data.length !== 0) {
                 // Remember that elem contains OHLC data here so we cannot use
                 // compute_and_set_domain
+                var top = this.px.high;
+                var bottom = this.px.low;
+                if(top === -1 || bottom === -1) {
+                    top = this.px.open;
+                    bottom = this.px.close;
+                }
                 var min = d3.min(this.mark_data.map(function(d) {
-                    return d[1][that.px.low];
+                    return (d[1][bottom] < d[1][top]) ? d[1][bottom] : d[1][top];
                 }));
                 var max = d3.max(this.mark_data.map(function(d) {
-                    return d[1][that.px.high];
+                    return (d[1][top] > d[1][bottom]) ? d[1][top] : d[1][bottom];
                 }));
                 if(max instanceof  Date) max = max.getTime();
                 y_scale.set_domain([min - max_y_height, max + max_y_height], this.id);

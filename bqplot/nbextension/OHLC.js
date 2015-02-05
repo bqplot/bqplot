@@ -50,6 +50,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("change:opacity", this.update_opacity, this);
             this.model.on("change:marker", this.update_marker, this);
+            this.model.on("format_updated", this.draw, this);
         },
         update_stroke: function() {
             var stroke = this.model.get("stroke");
@@ -132,6 +133,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 return idx_selected;
             }
 
+            var that = this;
             var x_scale = this.scales["x"];
             var min = x_scale.scale.invert(start_pxl);
             var max = x_scale.scale.invert(end_pxl);
@@ -140,7 +142,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var indices = _.range(this.model.mark_data.length);
             var that = this;
             var idx_selected = _.filter(indices, function(index) {
-            var elem = this.model.mark_data[index];
+                var elem = that.model.mark_data[index];
                 return (elem[0] >= min && elem[0] <= max);
             });
             if(idx_selected.length > 0 &&
@@ -190,6 +192,12 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             stick.exit().remove();
 
             var that = this;
+
+            // Determine offset to use for translation
+            var y_index  = this.model.px.high;
+            if(this.model.px.high === -1) {
+                y_index = this.model.px.open;
+            }
             // Update all of the marks
             this.el.selectAll(".stick")
                 .style("fill", function(d, i) {
@@ -197,10 +205,10 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                         down_color : up_color;
                 })
                 .attr( "transform", function(d, i) {
-                    return "translate(" + (x_scale.scale(that.model.mark_data[i][0]) +
-                                           x_scale.offset) + "," +
-                                          (y_scale.scale(d[that.model.px.high]) +
-                                           y_scale.offset) + ")";
+                    return "translate(" + (x_scale.scale(that.model.mark_data[i][0])
+                                        + x_scale.offset) + ","
+                                        + (y_scale.scale(d[y_index])
+                                        + y_scale.offset) + ")";
                 });
 
             // Draw the mark paths
@@ -244,17 +252,30 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
 
             for(var i = 0; i < dat.length; i++) {
-                open[i] = y_scale.scale(dat[i][this.model.px.open]);
-                high[i] = y_scale.scale(dat[i][this.model.px.high]);
-                low[i] = y_scale.scale(dat[i][this.model.px.low]);
-                close[i] = y_scale.scale(dat[i][this.model.px.close]);
-                headline_top[i] = (y_scale.scale.invert(open[i]) >
-                                        y_scale.scale.invert(close[i])) ?
-                                        open[i] : close[i];
-                headline_bottom[i] = (y_scale.scale.invert(open[i]) <
-                                        y_scale.scale.invert(close[i])) ?
-                                        open[i] : close[i];
-                var offset_in_x_units;
+                // Without the open and close values, we cannot compute these.
+                if(this.model.px.open === -1 || this.model.px.close === -1) {
+                    open[i] = undefined;
+                    close[i] = undefined;
+                    headline_top[i] = undefined;
+                    headline_bottom[i] = undefined;
+                } else {
+                    open[i] = y_scale.scale(dat[i][this.model.px.open]);
+                    close[i] = y_scale.scale(dat[i][this.model.px.close]);
+                    headline_top[i] = (y_scale.scale.invert(open[i]) >
+                                            y_scale.scale.invert(close[i])) ?
+                                            open[i] : close[i];
+                    headline_bottom[i] = (y_scale.scale.invert(open[i]) <
+                                            y_scale.scale.invert(close[i])) ?
+                                            open[i] : close[i];
+                }
+                if(this.model.px.high === -1 || this.model.px.low === -1) {
+                    high[i] = open[i];
+                    low[i] = close[i];
+                } else {
+                    high[i] = y_scale.scale(dat[i][this.model.px.high]);
+                    low[i] = y_scale.scale(dat[i][this.model.px.low]);
+                }
+
                 if(x_scale.model.type == "date") {
                     if( min_x_difference instanceof Date) {
                         min_x_difference = min_x_difference.getTime();
@@ -272,7 +293,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             }
 
             // Determine OHLC marker type
-            if(type == "candle") {
+            // Note: if we do not have open or close data then we have to draw
+            // a bar.
+            if(type == "candle" && this.model.px.open !== -1 && this.model.px.close !== -1) {
                 /*
                  *      | <-------- head
                  *  ---------
@@ -282,15 +305,20 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                  *  ---------
                  *      | <-------- tail
                  */
-                selector.selectAll(".stick_head").data(dat)
-                    .attr("d", function(d, i) {
-                        return that.head_path_candle(headline_top[i] - high[i]);
-                    });
-                selector.selectAll(".stick_tail").data(dat)
-                    .attr("d", function(d, i) {
-                        return that.tail_path_candle(headline_bottom[i] - high[i],
-                                                     low[i] - headline_bottom[i]);
-                    });
+                if(this.model.px.high !== -1 || this.model.px.low !== -1) {
+                    selector.selectAll(".stick_head").data(dat)
+                        .attr("d", function(d, i) {
+                            return that.head_path_candle(headline_top[i] - high[i]);
+                        });
+                    selector.selectAll(".stick_tail").data(dat)
+                        .attr("d", function(d, i) {
+                            return that.tail_path_candle(headline_bottom[i] - high[i],
+                                                         low[i] - headline_bottom[i]);
+                        });
+                } else {
+                    selector.selectAll(".stick_head").data(dat).attr("d", "");
+                    selector.selectAll(".stick_tail").data(dat).attr("d", "");
+                }
                 selector.selectAll(".stick_body").data(dat)
                     .attr("d", function(d, i) {
                         return that.body_path_candle(to_left_side[i],
@@ -309,17 +337,22 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                  *      |____ <---- tail (horizontal piece)
                  *      |
                  */
-                selector.selectAll(".stick_head").data(dat)
-                    .attr("d", function(d, i) {
-                        return that.head_path_bar(to_left_side[i],
-                                                  open[i] - high[i],
-                                                  to_left_side[i]*-1);
-                    });
-                selector.selectAll(".stick_tail").data(dat)
-                    .attr("d", function(d, i) {
-                        return that.tail_path_bar(close[i] - high[i],
-                                                  to_left_side[i]*-1);
-                    });
+                if( this.model.px.open !== -1 && this.model.px.close !== -1) {
+                    selector.selectAll(".stick_head").data(dat)
+                        .attr("d", function(d, i) {
+                            return that.head_path_bar(to_left_side[i],
+                                                      open[i] - high[i],
+                                                      to_left_side[i]*-1);
+                        });
+                    selector.selectAll(".stick_tail").data(dat)
+                        .attr("d", function(d, i) {
+                            return that.tail_path_bar(close[i] - high[i],
+                                                      to_left_side[i]*-1);
+                        });
+                } else {
+                    selector.selectAll(".stick_head").data(dat).attr("d", "");
+                    selector.selectAll(".stick_tail").data(dat).attr("d", "");
+                }
                 selector.selectAll(".stick_body").data(dat)
                     .attr("d", function(d, i) {
                         return that.body_path_bar(low[i]-high[i]);
