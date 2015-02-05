@@ -43,8 +43,10 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
  
             // We should have at most 4 data points (o,h,l,c)
-            // This avoids iterating over a huge string
-            if(format.length !== 4 && format.length !== 2) {
+            // Also, we cannot have high without low and vice versa
+            if((format.length !== 2 && format.length !== 4)
+            || (this.px.high !== -1 && this.px.low === -1)
+            || (this.px.high === -1 && this.px.low !== -1)) {
                 print_bad_format(format);
                 x_data = [];
                 y_data = [];
@@ -103,49 +105,26 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
 
             // Verify that our OHLC data is valid
-            if(this.px.open !== -1 && this.px.close !== -1
-            && this.px.high !== -1 && this.px.low !== -1)
-            {
-                for(var i = 0; i < y_data.length; i++) {
-                    if(y_data[i].length !== format.length
-                    || y_data[i][this.px.high] < y_data[i][this.px.open]
-                    || y_data[i][this.px.high] < y_data[i][this.px.close]
-                    || y_data[i][this.px.low] > y_data[i][this.px.open]
-                    || y_data[i][this.px.low] > y_data[i][this.px.close])
-                    {
-                        // Truncate and notify console of error in data
-                        y_data = [];
-                        x_data = [];
-                        if(console) {
-                            console.error("Invalid OHLC data at index " + i);
-                        }
+            // That is, that high is highest and low is lowest
+            for(var i = 0; i < y_data.length; i++) {
+                if(y_data[i].length != format.length
+                || (this.px.high !== -1 && this.px.low !== -1 &&
+                    y_data[i][this.px.high] < y_data[i][this.px.low])
+                || (this.px.high !== -1 && this.px.close !== -1 &&
+                    y_data[i][this.px.high] < y_data[i][this.px.close])
+                || (this.px.high !== -1 && this.px.open !== -1 &&
+                    y_data[i][this.px.high] < y_data[i][this.px.open])
+                || (this.px.low !== -1 && this.px.close !== -1 &&
+                    y_data[i][this.px.close] < y_data[i][this.px.low])
+                || (this.px.low !== -1 && this.px.open !== -1 &&
+                    y_data[i][this.px.open] < y_data[i][this.px.low]))
+                {
+                    // Truncate and notify console of error in data
+                    y_data = [];
+                    x_data = [];
+                    if(console) {
+                        console.error("Invalid OHLC data at index " + i);
                     }
-                }
-            } else if(this.px.high !== -1 && this.px.low !== -1) {
-                for(var i = 0; i < y_data.length; i++) {
-                    if(y_data[i].length !== format.length
-                    || y_data[i][this.px.high] < y_data[i][this.px.low])
-                    {
-                        y_data = [];
-                        x_data = [];
-                        if(console) {
-                            console.error("Invalid OHLC data at index " + i);
-                        }
-                    }
-                }
-            } else if(this.px.close !== -1 && this.px.open !== -1) {
-                for(var i = 0; i < y_data.length; i++) {
-                    if(y_data[i].length !== format.length) {
-                        if(console) {
-                            console.error("Invalid OHLC data at index " + i);
-                        }
-                    }
-                }
-            } else {
-                x_data = [];
-                y_data = [];
-                if(console) {
-                    console.error("Invalid OHLC data at index " + i);
                 }
             }
 
