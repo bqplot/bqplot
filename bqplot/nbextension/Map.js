@@ -217,12 +217,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                                             return that.model.get("hover_fill");
                                         });
                     }
-                })
-				.on("mousemove", function(d){
-                    if(!that.model.get("enable_hover")) {
-                        return;
-                    }
-					var name;
 					for(var i = 0; i< countries.length; i++) {
 						if(d.id == countries[i].id){
 							name = countries[i].Name;
@@ -239,48 +233,59 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                               .style("background-color", "transparent")
 				              .style({"left":(event.pageX+5)+"px", "top":(event.pageY-5)+"px", "width":"300px", "height":"200px"});
 
+                            if (that.tooltip_view) {
+                                that.tooltip_view.remove();
+                            }
+
                             var tooltip_widget_creation_promise = that.create_child_view(that.tooltip_widget);
                             tooltip_widget_creation_promise.then(function(view) {
-                                that.tooltip_node = that.tooltip_div.node().appendChild(view.$el[0]);
+                                    that.tooltip_view = view
+                                    that.tooltip_div.node().appendChild(view.$el[0]);
                             });
-                        } else {
+                    } else {
                             //Update the tooltip position and value
 
-                            if (that.is_object_empty(that.model.get("text_data"))) {
-                                if (that.color_data[d.id]!==undefined &&
-                                    that.color_data[d.id]!==null) {
-                                    d3.select("#world_tooltip")
-                                      .style("background-color", that.model.get("tooltip_color"))
-                                      .style("color", that.model.get("text_color"))
-				                      .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
-				                      .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
-                                } else {
-                                    d3.select("#world_tooltip")
-                                      .style("background-color", that.model.get("tooltip_color"))
-                                      .style("color", that.model.get("text_color"))
-				                      .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
-				                      .text(name);
-                                }
+                        if (that.is_object_empty(that.model.get("text_data"))) {
+                            if (that.color_data[d.id]!==undefined &&
+                                that.color_data[d.id]!==null) {
+                                d3.select("#world_tooltip")
+                                  .style("background-color", that.model.get("tooltip_color"))
+                                  .style("color", that.model.get("text_color"))
+				                  .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
+				                  .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
                             } else {
                                 d3.select("#world_tooltip")
                                   .style("background-color", that.model.get("tooltip_color"))
                                   .style("color", that.model.get("text_color"))
-				                  .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
-
-                                if(that.model.get("text_data")[d.id]!==undefined &&
-                                   that.model.get("text_data")[d.id]!==null) {
-				                    d3.select("#world_tooltip")
-                                      .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
-                                } else {
-                                    d3.select("#world_tooltip")
-                                      .text(name);
+				                  .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
+				                  .text(name);
                                 }
+                        } else {
+                            d3.select("#world_tooltip")
+                              .style("background-color", that.model.get("tooltip_color"))
+                              .style("color", that.model.get("text_color"))
+				              .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
+
+                            if(that.model.get("text_data")[d.id]!==undefined &&
+                                that.model.get("text_data")[d.id]!==null) {
+				                d3.select("#world_tooltip")
+                                  .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
+                            } else {
+                                d3.select("#world_tooltip")
+                                  .text(name);
                             }
                         }
+                    }
+                }
+                })
+				.on("mousemove", function(d){
+                    if(!that.model.get("enable_hover")) {
+                        return;
+                    }
+					var name;
+
 
 				    //Show the tooltip
-
-				    }
 
                 that.send({event:'hover', country:name, id:d.id});
 
@@ -290,7 +295,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         return;
                     }
 
-                    that.tooltip_div[0][0].innerHTML = "";
+                    if (that.tooltip_view) {
+                        that.tooltip_view.remove();
+                    }
                     d3.select("#world_tooltip").classed("hidden", true);
 
 					d3.select(this).transition().style("fill", function(d, i) {
