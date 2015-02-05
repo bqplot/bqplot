@@ -241,8 +241,10 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             }
             return "translate(" + this.x_offset + ", 0)";
         },
-        set_scales_range: function() {
+        set_color_scale_range: function() {
             this.axis_scale.set_range();
+        },
+        set_axisline_scale_range: function() {
             var range = (this.vertical) ?
                 [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
             if(this.ordinal) {
@@ -254,6 +256,10 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     this.axis_line_scale.range(range);
                 }
             }
+        },
+        set_scales_range: function() {
+            this.set_color_scale_range();
+            this.set_axisline_scale_range();
         },
         get_color_bar_width: function() {
             return (this.vertical) ? (this.height - (2 * this.x_offset)) : (this.width - 2 * this.x_offset);
@@ -267,7 +273,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             // rescale the axis
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
             this.width = this.parent.width - (this.margin.left + this.margin.right);
-            this.set_scales_range();
+            // this.set_scales_range();
+            this.set_axisline_scale_range();
             // shifting the entire g of the color bar first.
             this.el.style("transform", this.get_topg_transform());
             var self = this;
@@ -305,12 +312,11 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         redraw_axisline: function() {
             if (this.axis) {
                 this.axis_line_scale.domain(this.axis_scale.scale.domain());
-                // We need to set the range here again. Only because, if the
-                // domain has changed from a two element array to a three
-                // element one, the range of the axis has to be changed
-                // accordingly.
-
-                // this.set_scales_range();
+                // We need to set the range of the axis line scale here again.
+                // Only because, if the domain has changed from a two element
+                // array to a three element one, the range of the axis has to
+                // be changed accordingly.
+                this.set_axisline_scale_range();
                 this.axis.orient(this.side)
                     .scale(this.axis_line_scale);
                 this.set_tick_values();
