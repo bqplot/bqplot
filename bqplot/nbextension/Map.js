@@ -58,7 +58,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             var that = this;
 
-            this.fmt = d3.format(this.model.get("text_format"));
+            this.fmt = d3.format(this.model.get("tooltip_format"));
 
             var scales = this.model.get("color_scale");
             this.color_data = this.model.get("color_data");
@@ -147,8 +147,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.highlight_g = this.transformed_g.append("g");
             this.stroke_g = this.transformed_g.append("g");
 
-            this.div = d3.select("body").append("div")
-                .attr("id", "world_tooltip");
+            if ($('#world_tooltip').length===0) {
+                this.tooltip_div = d3.select("body").append("div")
+                .attr("id", "world_tooltip")
+                .style("pointer-events", "none")
+                .style("z-index", 1001);
+            } else {
+                this.tooltip_div = d3.select('#world_tooltip')
+            }
 
             //Bind data and create one path per GeoJSON feature
             this.fill_g.selectAll("path")
@@ -223,50 +229,69 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 						}
 					};
 
-                if (that.model.get("display_tooltip")) {
-                   //Update the tooltip position and value
-                   if (that.is_object_empty(that.model.get("text_data"))) {
-                        if (that.color_data[d.id]!==undefined &&
-                            that.color_data[d.id]!==null) {
-                            d3.select("#world_tooltip")
-                            .style("background-color", that.model.get("tooltip_color"))
-                            .style("color", that.model.get("text_color"))
-				            .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
-				            .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
-                        } else {
-                            d3.select("#world_tooltip")
-                            .style("background-color", that.model.get("tooltip_color"))
-                            .style("color", that.model.get("text_color"))
-				            .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
-				            .text(name);
-                        }
-                    } else {
-                        d3.select("#world_tooltip")
-                          .style("background-color", that.model.get("tooltip_color"))
-                          .style("color", that.model.get("text_color"))
-				          .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
+				    d3.select("#world_tooltip").classed("hidden", false);
 
-                          if(that.model.get("text_data")[d.id]!==undefined &&
-                             that.model.get("text_data")[d.id]!==null) {
-				            d3.select("#world_tooltip")
-                              .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
-                          } else {
+                    that.tooltip_widget = that.model.get("tooltip_widget");
+
+                    if (that.model.get("display_tooltip")) {
+                        if (that.tooltip_widget) {
                             d3.select("#world_tooltip")
-                              .text(name);
-                          }
-                    }
+                              .style("background-color", "transparent")
+				              .style({"left":(event.pageX+5)+"px", "top":(event.pageY-5)+"px", "width":"300px", "height":"200px"});
+
+                            var tooltip_widget_creation_promise = that.create_child_view(that.tooltip_widget);
+                            tooltip_widget_creation_promise.then(function(view) {
+                                that.tooltip_node = that.tooltip_div.node().appendChild(view.$el[0]);
+                            });
+                        } else {
+                            //Update the tooltip position and value
+
+                            if (that.is_object_empty(that.model.get("text_data"))) {
+                                if (that.color_data[d.id]!==undefined &&
+                                    that.color_data[d.id]!==null) {
+                                    d3.select("#world_tooltip")
+                                      .style("background-color", that.model.get("tooltip_color"))
+                                      .style("color", that.model.get("text_color"))
+				                      .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
+				                      .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
+                                } else {
+                                    d3.select("#world_tooltip")
+                                      .style("background-color", that.model.get("tooltip_color"))
+                                      .style("color", that.model.get("text_color"))
+				                      .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
+				                      .text(name);
+                                }
+                            } else {
+                                d3.select("#world_tooltip")
+                                  .style("background-color", that.model.get("tooltip_color"))
+                                  .style("color", that.model.get("text_color"))
+				                  .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
+
+                                if(that.model.get("text_data")[d.id]!==undefined &&
+                                   that.model.get("text_data")[d.id]!==null) {
+				                    d3.select("#world_tooltip")
+                                      .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
+                                } else {
+                                    d3.select("#world_tooltip")
+                                      .text(name);
+                                }
+                            }
+                        }
 
 				    //Show the tooltip
-				    d3.select("#world_tooltip").classed("hidden", false);
-                    that.send({event:'hover', country:name, id:d.id});
 
-				}})
+				    }
+
+                that.send({event:'hover', country:name, id:d.id});
+
+                })
 				.on("mouseout", function(d) {
                     if (!that.model.get("enable_hover")) {
                         return;
                     }
 
-				    d3.select("#world_tooltip").classed("hidden", true);
+                    that.tooltip_div[0][0].innerHTML = "";
+                    d3.select("#world_tooltip").classed("hidden", true);
 
 					d3.select(this).transition().style("fill", function(d, i) {
                         return that.fill_g_colorfill(d, i, that);
