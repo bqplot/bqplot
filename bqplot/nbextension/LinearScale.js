@@ -32,6 +32,9 @@ define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, Scal
              // state of the scale. Referring to the model domain and then
              // setting the range to be the old range in case it is not.
              var unpadded_scale = this.scale.copy();
+             // To handle the case for a clamped scale for which we have to
+             // expand the domain, the copy should be unclamped.
+             unpadded_scale.clamp(false);
              unpadded_scale.domain(this.model.domain);
              unpadded_scale.range(old_range);
              this.scale.domain(new_range.map(function(limit) {

@@ -62,7 +62,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
               .style("display", this.model.get("visible") ? "inline" : "none");
 
-            this.model.on("change:tick_values", this.tickvalues_changed, this);
+            this.model.on("change:tick_values", this.set_tick_values, this);
             this.model.on("change:tick_format", this.tickformat_changed, this);
             this.model.on("change:num_ticks", function(model, value) {
                 this.num_ticks = value;
@@ -79,6 +79,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 var offset_creation_promise = this.get_offset();
                 offset_creation_promise.then(function() {
                     that.set_scales_range();
+                    that.update_offset_scale_domain();
                     that.g_axisline.attr("transform", that.get_axis_transform());
                 });
             }, this);
@@ -158,6 +159,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.axis_scale.expand_domain(initial_range, target_range);
             this.axis.scale(this.axis_scale.scale);
         },
+        update_offset_scale_domain: function() {
+            if(this.offset_scale) {
+                var initial_range = (!this.vertical)
+                    ? this.parent.get_padded_yrange(this.offset_scale.model)
+                    : this.parent.get_padded_xrange(this.offset_scale.model);
+                var target_range = (!this.vertical) ? this.parent.get_yrange()
+                                                    : this.parent.get_xrange();
+                this.offset_scale.expand_domain(initial_range, target_range);
+            }
+        },
         generate_tick_formatter: function() {
             if(this.axis_scale.model.type === "date" ||
                this.axis_scale.model.type === "date_color_linear") {
@@ -182,15 +193,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         create_axis_line: function() {
             if(this.vertical) {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                  .orient(this.side === "right" ? "right" : "left");
+                .orient(this.side === "right" ? "right" : "left");
             } else {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                  .orient(this.side === "top" ? "top" : "bottom");
+                .orient(this.side === "top" ? "top" : "bottom");
             }
         },
         append_axis: function() {
             this.create_axis_line();
             this.update_axis_domain();
+            this.update_offset_scale_domain();
 
             this.g_axisline = this.el.append("g")
               .attr("class", "axis")
@@ -217,8 +229,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                     this.offset_scale = (this.vertical) ?
                         this.parent.scale_x : this.parent.scale_y;
                 } else {
-                    this.offset_scale_model = this.loc["scale"];
-                    return_promise = this.create_child_view(this.offset_scale_model)
+                    var offset_scale_model = this.loc["scale"];
+                    return_promise = this.create_child_view(offset_scale_model)
                         .then(function(view) {
                             that.offset_scale = view;
                             if(that.offset_scale.model.type !== "ordinal") {
@@ -422,6 +434,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             // TODO: Doesn't do what it states.
             // Has to redraw from a clean slate
             this.update_axis_domain();
+            this.update_offset_scale_domain();
 
             this.set_tick_values();
             this.update_grid_lines();
@@ -430,7 +443,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             //function to be called when the range of the axis has been updated
             //or the axis has to be repositioned.
             this.set_scales_range();
+            //The following two calls to update domains are made as the domain
+            //of the axis scale needs to be recalculated as the expansion due
+            //to the padding depends on the size of the canvas.
             this.update_axis_domain();
+            this.update_offset_scale_domain();
 
             this.g_axisline.attr("transform", this.get_axis_transform());
             this.g_axisline.call(this.axis);
