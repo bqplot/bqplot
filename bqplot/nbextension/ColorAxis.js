@@ -42,10 +42,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 .attr("display", (this.model.get("visible") ? "inline" : "none"))
                 .style("transform", this.get_topg_transform());
 
-            this.label = this.model.get("label");
             this.ordinal = false;
             this.num_ticks = this.model.get("num_ticks");
-            this.tick_values = this.model.get_typed_field("tick_values");
 
             var that = this;
             scale_promise.then(function() {
@@ -95,7 +93,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             // The label is allocated a space of 100px. If the label
             // occupies more than 100px then you are out of luck.
             var that = this;
-            if(this.label) {
+            if(this.model.get("label") !== undefined && this.model.get("label") !== null) {
                 this.el.append("g")
                     .attr("transform", this.get_label_transform())
                     .attr("class", "axis label_g")
@@ -265,9 +263,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             return (this.vertical) ? (this.height - (2 * this.x_offset)) : (this.width - 2 * this.x_offset);
         },
         update_label: function(model, value) {
-            this.label = value;
             this.el.select("#text_elem")
-                .text(this.label);
+                .text(this.model.get("label"));
         },
         rescale_axis: function() {
             // rescale the axis
@@ -300,7 +297,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .attr("width", this.get_color_bar_width())
                     .attr("x", (this.vertical) ? -(this.height - 2 * this.x_offset) : 0);
             }
-            if(this.label) {
+            if(this.model.get("label") !== undefined && this.model.get("label") !== null) {
                 this.el.select(".label_g")
                     .attr("transform", this.get_label_transform())
                     .select("#text_elem")
