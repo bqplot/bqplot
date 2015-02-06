@@ -133,10 +133,23 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 return idx_selected;
             }
 
+            var mark_width = this.calculate_mark_width();
+            if(mark_width instanceof Date) mark_width = mark_width.getTime();
             var that = this;
             var x_scale = this.scales["x"];
             var min = x_scale.scale.invert(start_pxl);
             var max = x_scale.scale.invert(end_pxl);
+            if(min instanceof Date && min !== 0) min = min.getTime();
+            if(max instanceof Date && max !== 0) max = max.getTime();
+
+            // Avoid accounting for width if there is no width to account for
+            if(this.model.px.open !== -1) max += mark_width * 0.75 * 0.5;
+            if(this.model.px.close !== -1) min -= mark_width * 0.75 * 0.5;
+            if(x_scale.model.type === 'date') {
+                min = new Date(min);
+                max = new Date(max);
+            }
+
             var idx_start = -1;
             var idx_end = -1;
             var indices = _.range(this.model.mark_data.length);
