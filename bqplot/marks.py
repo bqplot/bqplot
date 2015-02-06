@@ -605,31 +605,34 @@ class Pie(Mark):
     """Piechart mark.
     colors: list of colors
         list of colors for the slices.
-    padding: float
-        attribute to control the spacing between the slices
-        value is specified as a percentage angle
     select_slices: bool
     stroke: color
     opacity: float
         opacity of the mark. Then number must be between 0 and 1
+    sort: bool (default: False)
+        sort the pie slices by descending sizes
+
     x: Date or float
         horizontal position of the pie center, in data coordinates or in figure
         coordinates
-    y: Float or None (default: None)
+    y: Float (default: 0.5)
         vertical y position of the pie center, in data coordinates or in figure
         coordinates
     radius: Float
         radius of the pie, in pixels
     inner_radius: Float
         inner radius of the pie, in pixels
+    start_angle: Float (default: 0.0)
+        start angle of the pie (from top), in degrees
+    end_angle: Float (default: 360.0)
+        end angle of the pie (from top), in degrees
 
     Data Attributes
     ---------------
     sizes: numpy.ndarray
         proportions of the pie slices
     color: numpy.ndarray
-        color of the data points (1d array). Defaults to default_color when not
-        provided or when a value is NaN
+        color of the data points (1d array). Defaults to colors when not provided
     """
     # Mark decoration
     icon = ''
@@ -638,21 +641,18 @@ class Pie(Mark):
     # Scaled attributes
     sizes = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
     color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
-    x = Date(sync=True) | Float(sync=True)
-    y = Float(allow_none=True, default_value=None, sync=True)
+    x = Float(default_value=0.5, sync=True) | Date(sync=True)
+    y = Float(default_value=0.5, sync=True)
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
-    color_mode = Enum(['auto', 'group', 'element'], default_value='auto', allow_none=False, sync=True)
-    type = Enum(['stacked', 'grouped'], default_value='stacked', allow_none=False, sync=True, exposed=True, display_index=3, display_name='Type')
+    sort = Bool(False, sync=True)
     colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
-    padding = Float(0.05, sync=True)
     select_slices = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
-    base = Float(default_value=0.0, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
-    radius = BoundedFloat(default_value=100.0, min=0.0, max=float("inf"), sync=True)
+    radius = BoundedFloat(default_value=300.0, min=0.0, max=float("inf"), sync=True)
     inner_radius = BoundedFloat(default_value=0.1, min=0.0, max=float("inf"), sync=True)
     start_angle = Float(default_value=0.0, sync=True, exposed=True)
     end_angle = Float(default_value=360.0, sync=True, exposed=True)

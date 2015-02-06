@@ -63,8 +63,10 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var y_scale = scales["y"];
 
             if(x_scale) {
+                var x = (x_scale.type === "date") ?
+                    this.get_date_elem("x") : this.get("x");
                 if(!this.get("preserve_domain")["x"]) {
-                    x_scale.compute_and_set_domain([this.get("x")], this.id);
+                    x_scale.compute_and_set_domain([x], this.id);
                 } else {
                     x_scale.del_domain([], this.id);
                 }

@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, mark, utils) {
     var Mark = mark[0];
     var Pie = Mark.extend({
         render: function() {
-            this.padding = this.model.get("padding");
             var base_creation_promise = Pie.__super__.render.apply(this);
             this.selected_indices = this.model.get("idx_selected");
             this.selected_style = this.model.get("selected_style");
@@ -54,14 +53,14 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         set_positional_scales: function() {
             // If no scale for "x" or "y" is specified, figure scales are used.
-            this.x_scale = this.scales["x"] ? this.scales["x"] : this.parent.scale_x;
-            this.y_scale = this.scales["y"] ? this.scales["y"] : this.parent.scale_y;
+            var x_scale = this.scales["x"] ? this.scales["x"] : this.parent.scale_x;
+            var y_scale = this.scales["y"] ? this.scales["y"] : this.parent.scale_y;
 
             var that = this;
-            this.listenTo(this.x_scale, "domain_changed", function() {
+            this.listenTo(x_scale, "domain_changed", function() {
                 if (!that.model.dirty) { that.draw(); }
             });
-            this.listenTo(this.y_scale, "domain_changed", function() {
+            this.listenTo(y_scale, "domain_changed", function() {
                 if (!that.model.dirty) { that.draw(); }
             });
         },
@@ -73,8 +72,14 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.model.on_some_change(["x", "y"], this.position_center, this);
             this.model.on_some_change(["inner_radius", "radius"], this.update_radii, this);
-            this.model.on_some_change(["start_angle", "end_angle"], this.draw, this);
+            this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
             this.model.on("labels_updated", this.update_labels, this);
+            this.model.on("change:select_slices", this.reset_selection, this);
+            var that = this;
+            this.model.on("change:idx_selected", function() {
+                that.selected_indices = that.model.get("idx_selected");
+                that.selected_style_updated();
+            }, this);
         },
         relayout: function() {
             this.set_ranges();
@@ -86,12 +91,14 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.update_radii();
         },
         position_center: function() {
-            var x = (this.x_scale.model.type === "date") ?
+            var x_scale = this.scales["x"] ? this.scales["x"] : this.parent.scale_x;
+            var y_scale = this.scales["y"] ? this.scales["y"] : this.parent.scale_y;
+            var x = (x_scale.model.type === "date") ?
                 this.model.get_date_elem("x") : this.model.get("x");
-            var y = (this.y_scale.model.type === "date") ?
+            var y = (y_scale.model.type === "date") ?
                 this.model.get_date_elem("y") : this.model.get("y");
-            var transform = "translate(" + this.x_scale.scale(x)
-                                      + ", " + this.y_scale.scale(y) + ")";
+            var transform = "translate(" + x_scale.scale(x)
+                                      + ", " + y_scale.scale(y) + ")";
             this.el.select(".pielayout")
                 .attr("transform", transform);
         },
@@ -101,18 +108,14 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .innerRadius(this.model.get("inner_radius"));
 
             var elements = this.el.select(".pielayout").selectAll(".slice")
-            // Update the position of the labels
-            elements.selectAll("text").remove()
-            elements.append("text")
-                .attr("transform", function(d) {
-                        return "translate(" + arc.centroid(d) + ")"; })
-                .attr("dy", ".35em")
-                .attr("pointer-events", "none")
-                .style("text-anchor", "middle")
-            // Update the paths
-            this.el.select(".pielayout").selectAll(".slice").select("path")
+
+            elements.select("path")
                 .transition().duration(this.model.get("animate_dur"))
                 .attr("d", arc);
+
+            elements.select("text")
+                .attr("transform", function(d) {
+                        return "translate(" + arc.centroid(d) + ")"; });
         },
         draw: function() {
             this.set_ranges();
@@ -122,21 +125,27 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.position_center();
 
             var pie = d3.layout.pie()
-                .sort(null)
                 .startAngle(this.model.get("start_angle")*2*Math.PI/360)
                 .endAngle(this.model.get("end_angle")*2*Math.PI/360)
                 .value(function(d) { return d.size; });
+            if (!this.model.get("sort")) { pie.sort(null); }
+
             var that = this;
             var arcs = layout.selectAll(".slice")
                 .data(pie(this.model.mark_data))
                .enter().append("g")
                 .attr("class", "slice")
-                .on("click", function(d, i) {return that.click_handler(d, i);})
-                .append("path");
+                .on("click", function(d, i) {return that.click_handler(d, i);});
+
+            arcs.append("path");
+            arcs.append("text")
+                .attr("dy", ".35em")
+                .attr("pointer-events", "none")
+                .style("text-anchor", "middle");
 
             this.update_radii();
-            this.apply_styles();
             this.update_labels();
+            this.apply_styles();
         },
         update_stroke_and_opacity: function() {
             var stroke = this.model.get("stroke");
@@ -164,7 +173,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
             // chart. If indices is null, clears the style on all elements. If
-            // not, clears on only the elements whose indices are mathcing.
+            // not, clears on only the elements whose indices are matching.
             //
             // This function is not used right now. But it can be used if we
             // decide to accomodate more properties than those set by default.
@@ -187,10 +196,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(indices === undefined || indices === null || indices.length === 0) {
                 return;
             }
-            // Also, return if the style object itself is blank
-            if(Object.keys(style).length === 0) {
-                return;
-            }
             var elements = this.el.select(".pielayout").selectAll(".slice")
             elements = elements.filter(function(data, index) {
                 return indices.indexOf(index) !== -1;
@@ -206,7 +211,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         click_handler: function (data, index) {
             var that = this;
             if(this.model.get("select_slices")) {
-                var idx_selected = jQuery.extend(true, [], this.model.get("idx_selected"));
+                var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
                 var elem_index = idx_selected.indexOf(index);
                 // index of slice i. Checking if it is already present in the
                 // list
