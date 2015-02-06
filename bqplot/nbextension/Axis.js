@@ -141,9 +141,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 this.g_axisline.call(this.axis);
             }
         },
-        tickvalues_changed: function() {
-            this.set_tick_values();
-        },
         tickformat_changed: function() {
             this.tick_format = this.generate_tick_formatter();
             this.axis.tickFormat(this.tick_format);
@@ -223,23 +220,29 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         get_offset: function() {
             var that = this;
             var return_promise = Promise.resolve();
-            this.loc = this.model.get("offset");
-            if(this.loc["value"] !== undefined && this.loc["value"] !== null) {
-                if(this.loc["scale"] === undefined) {
+            var offset = this.model.get("offset");
+            if(offset["value"] !== undefined && offset["value"] !== null) {
+                //If scale is undefined but, the value is defined, then we have
+                //to
+                if(offset["scale"] === undefined) {
                     this.offset_scale = (this.vertical) ?
                         this.parent.scale_x : this.parent.scale_y;
                 } else {
-                    var offset_scale_model = this.loc["scale"];
+                    var offset_scale_model = offset["scale"];
                     return_promise = this.create_child_view(offset_scale_model)
                         .then(function(view) {
                             that.offset_scale = view;
                             if(that.offset_scale.model.type !== "ordinal") {
                                 that.offset_scale.scale.clamp(true);
                             }
-                            that.offset_scale.on("domain_changed", that.rescale_axis, that);
+                            that.offset_scale.on("domain_changed",
+                                                 function() {
+                                                    this.update_offset_scale_domain();
+                                                    this.g_axisline.attr("transform", this.get_axis_transform());
+                                                 }, that);
                         });
                 }
-                this.offset_value = this.loc["value"];
+                this.offset_value = offset["value"];
             }
             return return_promise;
         },
@@ -268,14 +271,15 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
         },
         process_offset: function() {
-            if(this.loc["scale"] === undefined &&
-               this.loc["value"] === undefined) {
+            if(this.offset_scale === undefined || this.offset_scale === null) {
                 return this.get_basic_transform();
             } else {
                 var value = this.offset_scale.scale(this.offset_value);
-                // FIXME: must we check for null?
-                value = (value === undefined) ?
-                    this.get_basic_transform() : value;
+                //The null check is required for two reasons. Value may be null
+                //or the scale is ordinal which does not include the value in
+                //its domain.
+                value = (value === undefined) ? this.get_basic_transform()
+                                              : value;
                 return this.offset_scale.offset + value;
             }
         },
@@ -386,15 +390,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             Axis.__super__.remove.apply(this);
         },
         update_grid_lines: function() {
-            var axis_type = (this.vertical) ? "y" : "x";
             this.el.select("g." + "grid_lines").remove();
-
             var grid_lines = this.el.append("g")
                                    .attr("class", "grid_lines");
 
             grid_lines.selectAll("line.grid-line").remove();
             var grid_type = this.model.get("grid_lines");
-            var is_x = axis_type === "x";
+            var is_x = !(this.vertical) ;
 
             //will not work for ordinal scale
             if(grid_type !== "none") {
@@ -445,7 +447,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.set_scales_range();
             //The following two calls to update domains are made as the domain
             //of the axis scale needs to be recalculated as the expansion due
-            //to the padding depends on the size of the canvas.
+            //to the padding depends on the size of the canvas because of the
+            //presence of fixed pixel padding for the bounding box.
             this.update_axis_domain();
             this.update_offset_scale_domain();
 
