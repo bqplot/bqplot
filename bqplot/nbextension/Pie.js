@@ -78,7 +78,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             var that = this;
             this.model.on("change:idx_selected", function() {
                 that.selected_indices = that.model.get("idx_selected");
-                that.selected_style_updated();
+                that.apply_styles(this.selected_indices);
             }, this);
         },
         relayout: function() {
@@ -179,7 +179,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             // decide to accomodate more properties than those set by default.
             // Because those have to cleared specifically.
             var elements = this.el.select(".pielayout").selectAll(".slice")
-            if(indices !== undefined) {
+            if(indices) {
                 elements = elements.filter(function(d, index) {
                     return indices.indexOf(index) !== -1;
                 });
@@ -211,7 +211,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
         click_handler: function (data, index) {
             var that = this;
             if(this.model.get("select_slices")) {
-                var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
+                var idx = this.model.get("idx_selected");
+                var idx_selected = idx ? utils.deepCopy(idx) : [];
                 var elem_index = idx_selected.indexOf(index);
                 // index of slice i. Checking if it is already present in the
                 // list
