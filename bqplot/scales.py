@@ -47,8 +47,8 @@ def register_scale(key=None):
     provided for each core bqplot scale type so that the frontend can use
     this key regardless of the kernal language."""
     def wrap(scale):
-        l = key if key is not None else scale.__module__ + scale.__name__
-        Scale.scale_types[l] = scale
+        label = key if key is not None else scale.__module__ + scale.__name__
+        Scale.scale_types[label] = scale
         return scale
     return wrap
 
@@ -62,7 +62,7 @@ class Scale(Widget):
 
     Attributes
     ----------
-    scale_types: dict (class-level attributes)
+    scale_types: dict (class-level attribute)
         A registry of existing scale types.
     domain_class: type (default: Float)
         traitlet type used to validate values in of the domain of the scale.
@@ -101,7 +101,7 @@ class LinearScale(Scale):
         the associated data type / domain type
     """
     rtype = 'Number'
-    dtype = np.float
+    dtype = np.number
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
     _view_name = Unicode('LinearScale', sync=True)
@@ -128,7 +128,7 @@ class LogScale(Scale):
         the associated data type / domain type
     """
     rtype = 'Number'
-    dtype = np.float
+    dtype = np.number
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
     _view_name = Unicode('LogScale', sync=True)
@@ -221,7 +221,7 @@ class ColorScale(Scale):
         the associated data type / domain type
     """
     rtype = 'Color'
-    dtype = np.float
+    dtype = np.number
     scale_type = Enum(['linear'], default_value='linear', allow_none=False,
                       sync=True)
     colors = ColorList(allow_none=False, sync=True)
