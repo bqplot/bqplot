@@ -352,7 +352,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
         bar_click_handler: function (data, index) {
             var that = this;
             if(this.model.get("select_bars")) {
-                var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
+                var idx = this.model.get("idx_selected");
+                var idx_selected = idx ? utils.deepCopy(idx) : [];
                 var elem_index = idx_selected.indexOf(index);
                 // index of bar i. Checking if it is already present in the
                 // list

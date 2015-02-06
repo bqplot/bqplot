@@ -133,8 +133,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("change:fill", this.update_fill, this);
             this.model.on("change:display_names", this.update_display_names, this);
             this.listenTo(this.model, "change:idx_selected", this.update_idx_selected);
-            this.model.on("change:selected_style", this.selected_style_updated, this);
-            this.model.on("change:unselected_style", this.unselected_style_updated, this);
         },
         update_default_color: function(model, new_color) {
             if(!this.model.dirty) {
