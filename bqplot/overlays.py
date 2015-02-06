@@ -254,7 +254,7 @@ class IntervalSelectorOverlay(OneDSelectorOverlay):
 
     Attributes
     ----------
-    selected: numpy.ndarray
+    selected: numpy.ndarray (default: array([]))
         Two-element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
     idx_selected: list (default: [])
@@ -287,7 +287,7 @@ class IndexSelectorOverlay(OneDSelectorOverlay):
 
     Attributes
     ----------
-    selected: numpy.ndarray
+    selected: numpy.ndarray (default: array([]))
         A single element array containing the point corresponding the
         x-position of the mouse. This attribute is updated as you move the
         mouse along the x-direction on the figure.
@@ -326,17 +326,17 @@ class BrushIntervalSelectorOverlay(OneDSelectorOverlay):
 
     Attributes
     ----------
-    selected: numpy.ndarray
+    selected: numpy.ndarray (default: array([]))
         Two element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
         This attribute changes while the selection is being made with the
         BrushIntervalSelectorOverlay
-    idx_selected: list
+    idx_selected: list (default: [])
         A list of lists containing one two element list for each mark in the
         marks attribute.
         The two element array contains the minimum index and maximum index of
         the data for which the the 'x' attribute lies in the region selected.
-    brushing: bool
+    brushing: bool (default: False)
         boolean attribute to indicate if the selector is being dragged right
         now.
         It is True when the selector is being moved and false when it is not.
@@ -371,12 +371,12 @@ class BrushSelectorOverlay(TwoDSelectorOverlay):
 
     Attributes
     ----------
-    selected: numpy.ndarray
+    selected: numpy.ndarray (default: array([]))
         Two element array containing the start and end of the interval selected
         in terms of the scales of the selector. This is a read-only attribute.
         This attribute changes while the selection is being made with the
         BrushIntervalSelectorOverlay
-    idx_selected: list
+    idx_selected: list (default: [])
         A list of lists containing a list for each mark in the marks attribute.
         The list contains the indices of the data for the points which lie in
         the interval selcted with the selector.
@@ -454,7 +454,7 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
 
     Attributes
     ----------
-    selected: dict
+    selected: dict (default: {})
         A dictionary with keys being the names of the intervals and values
         being the two element arrays containing the start and end of the
         interval selected by that particular selector in terms of the scale of
@@ -462,7 +462,7 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
         This is a read-only attribute.
         This attribute changes while the selection is being made with the
         MultiSelectorOverlay.
-    idx_selected: dict
+    idx_selected: dict (default: {})
         A dictionary with keys being the names of the intervals and values
         being the a list of lists containing one two element list for each mark
         in the marks attribute.The two element array contains the minimum index
@@ -478,7 +478,7 @@ class MultiSelectorOverlay(OneDSelectorOverlay):
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
-    names: list
+    names: list (default: [])
         A list of strings indicating the keys of the different intervals.
         Default values are 'int1', 'int2', 'int3' and so on.
     show_names: bool (default: True)
