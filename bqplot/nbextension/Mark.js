@@ -135,19 +135,19 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             return this.colors[index % len];
         },
         // Style related functions
-        selected_style_updated: function(model, style, previous_style) {
+        selected_style_updated: function(model, style) {
             this.selected_style = style;
-            this.clear_style(previous_style, this.selected_indices);
+            this.clear_style(model.previous("selected_style"), this.selected_indices);
             this.style_updated(style, this.selected_indices);
         },
-        unselected_style_updated: function(model, style, previous_style) {
+        unselected_style_updated: function(model, style) {
             this.unselected_style = style;
             var sel_indices = this.selected_indices;
             var unselected_indices = (sel_indices) ?
                 _.range(this.model.mark_data.length).filter(function(index){
                     return sel_indices.indexOf(index) === -1;
                 }) : [];
-            this.clear_style(previous_style, unselected_indices);
+            this.clear_style(model.previous("selected_style"), unselected_indices);
             this.style_updated(style, unselected_indices);
         },
         style_updated: function(new_style, indices) {
