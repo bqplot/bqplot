@@ -28,6 +28,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
      ]);
      var Axis = widget.WidgetView.extend({
          render: function() {
+
+            this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
+              .style("display", this.model.get("visible") ? "inline" : "none");
+
             this.parent = this.options.parent;
             this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
@@ -36,13 +40,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.width = this.parent.width - (this.margin.left + this.margin.right);
 
             var scale_promise = this.set_scale(this.model.get("scale"));
-            this.model.on("change:scale", function(model, value) {
-                this.update_scale(model.previous("scale"), value);
-                // TODO: rescale_axis does too many things. Decompose
-                this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
-                this.rescale_axis();
-            }, this);
-
             this.side = this.model.get("side");
             this.padding = this.model.get("padding");
             this.offset = 0;
@@ -53,14 +50,20 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             var offset_promise = this.get_offset();
             var that = this;
             Promise.all([scale_promise, offset_promise]).then(function() {
+                that.create_listeners();
                 that.tick_format = that.generate_tick_formatter();
                 that.set_scales_range();
                 that.append_axis();
-                that.parent.on("margin_updated", that.parent_margin_updated, that);
             });
-
-            this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
-              .style("display", this.model.get("visible") ? "inline" : "none");
+        },
+        create_listeners: function() {
+            var that = this;
+            this.model.on("change:scale", function(model, value) {
+                this.update_scale(model.previous("scale"), value);
+                // TODO: rescale_axis does too many things. Decompose
+                this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
+                this.rescale_axis();
+            }, this);
 
             this.model.on("change:tick_values", this.set_tick_values, this);
             this.model.on("change:tick_format", this.tickformat_changed, this);
@@ -83,6 +86,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                     that.g_axisline.attr("transform", that.get_axis_transform());
                 });
             }, this);
+            this.parent.on("margin_updated", this.parent_margin_updated, this);
         },
         update_display: function() {
             this.side = this.model.get("side");
@@ -243,6 +247,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                         });
                 }
                 this.offset_value = offset["value"];
+            } else {
+                //required if the offset has been changed from a valid value
+                //to null
+                this.offset_scale = this.offset_value = undefined;
             }
             return return_promise;
         },

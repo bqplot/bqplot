@@ -25,13 +25,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.width = this.parent.width - (this.margin.left + this.margin.right);
 
             var scale_promise = this.set_scale(this.model.get("scale"));
-            this.model.on("change:scale", function(model, value) {
-                this.update_scale(model.previous("scale"), value);
-                // TODO: rescale_axis does too many things. Decompose
-                this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
-                this.rescale_axis();
-            }, this);
-
             this.side = this.model.get("side");
             this.x_offset = 100;
             this.y_offset = 40;
@@ -44,24 +37,37 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
 
             this.ordinal = false;
             this.num_ticks = this.model.get("num_ticks");
-
             var that = this;
             scale_promise.then(function() {
+                that.create_listeners();
                 that.tick_format = that.generate_tick_formatter();
                 that.set_scales_range();
                 that.append_axis();
-                that.parent.on("margin_updated", that.parent_margin_updated, that);
-
-                that.model.on("change:tick_format", that.tickformat_changed, that);
-                that.model.on("change:visible", that.update_visibility, that);
-                that.model.on("change:label", that.update_label, that);
-                that.model.on_some_change(["side", "orientation"], function() {
-                    this.vertical = this.model.get("orientation") === "vertical";
-                    this.side = this.model.get("side");
-                    this.rescale_axis();
-                    this.redraw_axis();
-                }, that);
             });
+        },
+        create_listeners: function() {
+            var that = this;
+            this.axis_scale.on("domain_changed", this.redraw_axisline, this);
+            this.axis_scale.on("color_scale_range_changed", this.redraw_axis, this);
+            this.axis_scale.on("highlight_axis", this.highlight, this);
+            this.axis_scale.on("unhighlight_axis", this.unhighlight, this);
+
+            this.parent.on("margin_updated", this.parent_margin_updated, this);
+            this.model.on("change:tick_format", this.tickformat_changed, this);
+            this.model.on("change:visible", this.update_visibility, this);
+            this.model.on("change:label", this.update_label, this);
+            this.model.on_some_change(["side", "orientation"], function() {
+                this.vertical = this.model.get("orientation") === "vertical";
+                this.side = this.model.get("side");
+                this.rescale_axis();
+                this.redraw_axis();
+            }, this);
+            this.model.on("change:scale", function(model, value) {
+                this.update_scale(model.previous("scale"), value);
+                // TODO: rescale_axis does too many things. Decompose
+                this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
+                this.rescale_axis();
+            }, this);
         },
         set_scale: function(model) {
             // Sets the child scale
@@ -73,11 +79,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     view.trigger("displayed");
                 }, that);
                 that.axis_scale = view;
-                that.axis_scale.on("domain_changed", that.redraw_axisline, that);
-                that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
-                that.axis_scale.on("highlight_axis", that.highlight, that);
-                that.axis_scale.on("unhighlight_axis", that.unhighlight, that);
-
                 // TODO: eventually removes what follows
                 if(that.axis_scale.model.type === "date_color_linear") {
                     that.axis_line_scale = d3.time.scale().nice();
