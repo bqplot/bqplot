@@ -464,8 +464,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.g_axisline.call(this.axis);
             this.g_axisline.select("text.axislabel")
                 .attr(this.get_label_attributes())
-                .style(this.get_text_styling())
-                .text(this.model.get("label"));
+                .style(this.get_text_styling());
             // TODO: what follows is currently part of redraw_axisline
             this.set_tick_values();
             this.update_grid_lines();
