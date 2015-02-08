@@ -77,7 +77,7 @@ class Axis(BaseAxis):
             If tick_values is None, number of ticks
         tick_values: numpy.ndarray or None (default: [])
             Tick values for the axis
-        offset: dict, (default: {})
+        offset: dict (default: {})
             Containing a scale and a value {'scale': scale or None,
                                             'value': value of the offset}
             If offset['scale'] is None, the corresponding figure scale is used
