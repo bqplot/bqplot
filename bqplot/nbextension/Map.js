@@ -74,6 +74,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                     if (that.color_scale) {
                         that.color_scale.compute_and_set_domain(z_data, 0);
                         that.color_scale.set_range();
+                        that.color_scale.on("color_scale_range_changed", function() {
+                                that.color_change(that)
+                        }, that);
 
                         //TODO: I am forcing the map to update colors by
                         //calling the function below after the color scale is
@@ -113,7 +116,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
 			this.svg = d3.select(this.el)
 
-            this.svg.attr("viewBox", "0 0 "+ w +' '+ h)
+            this.svg.attr("viewBox", "0 0 "+ this.width +' '+ this.height);
 
             this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
@@ -325,9 +328,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 			this.svg.call(zoom);
 			this.svg.on("dblclick.zoom", null);
 
-            var that = this;
-
-
         },
         create_listeners: function() {
             var that = this;
@@ -493,10 +493,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             if (!this.is_object_empty(that.color_data)){
 
-                //var that = this;
 
-                that2.create_child_view(scales).then(function(view) {
-                    that2.color_scale = view;
                     var z_data = Object.keys(that2.color_data).map( function (d) {
                         return that2.color_data[d];
                     })
@@ -509,32 +506,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         //created. Bad way to do this. See if the draw can be
                         //called in the resolve handler.
                     }
-                    // Trigger the displayed event of the child view.
-                    that2.after_displayed(function() {
-                        view.trigger("displayed");
-                    });
 
                     that.fill_g.selectAll("path").style("fill", function(d, i) {
                         return that.fill_g_colorfill(d,i, that);
                     })
 
-                });
             }
 
-            if (this.model.get("axis")!=null){
-                this.svg_over.attr("height", "85%");
-
-                this.ax_g = this.svg.append("g")
-                                .attr("class", "color_axis "+this.map_id);
-
-                this.create_child_view(this.model.get("axis")).then(function(view) {
-                   that.axes_view = view;
-                    that.ax_g.node().appendChild(view.el.node());
-                    that.after_displayed(function() {
-                        view.trigger("displayed");
-                    });
-                });
-            }
         },
         click_highlight: function(d, that) {
             e = window.event
