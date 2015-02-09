@@ -36,6 +36,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var that = this;
             this.x_data = this.get_typed_field("x");
             this.y_data = this.get_typed_field("y");
+            this.color_data = this.get_typed_field("color");
 
             var scales = this.get("scales");
             var x_scale = scales["x"], y_scale = scales["y"];
@@ -97,6 +98,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         update_domains: function() {
             var scales = this.get("scales");
             var x_scale = scales["x"], y_scale = scales["y"];
+            var color_scale = scales["color"];
 
             if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -113,6 +115,15 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             } else {
                 y_scale.del_domain([], this.id);
             }
+            /*
+            if(!this.get("preserve_domain")["color"]) {
+                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.values.map(function(d) { return d.y; });
+                }), this.id);
+            } else {
+                y_scale.del_domain([], this.id);
+            }
+           */
         },
     });
     WidgetManager.WidgetManager.register_widget_model("bqplot.LinesModel", LinesModel);
