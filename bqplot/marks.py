@@ -644,7 +644,7 @@ class Pie(Mark):
         provided
     """
     # Mark decoration
-    icon = ''
+    icon = 'fa-pie-chart'
     name = 'Pie chart'
 
     # Scaled attributes
