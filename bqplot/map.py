@@ -26,7 +26,7 @@ Map
    Map
 """
 from IPython.utils.traitlets import Unicode, List, Dict, Float, Bool, Instance
-from IPython.html.widgets import DOMWidget, CallbackDispatcher, register
+from IPython.html.widgets import DOMWidget, Widget, CallbackDispatcher, register
 
 from .scales import ColorScale
 from .axes import Axis
@@ -118,7 +118,8 @@ class Map(DOMWidget):
     display_tooltip = Bool(True, sync=True)
     text_data = Dict(sync=True)
     text_color = Unicode("Black", sync=True)
-    text_format = Unicode(".2f", sync=True)
+    tooltip_format = Unicode(".2f", sync=True)
+    tooltip_widget = Instance(Widget, sync=True)
     _view_name = Unicode("Map", sync=True)
 
     def __init__(self, **kwargs):

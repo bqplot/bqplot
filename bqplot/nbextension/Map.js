@@ -58,7 +58,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             var that = this;
 
-            this.fmt = d3.format(this.model.get("text_format"));
+            this.fmt = d3.format(this.model.get("tooltip_format"));
 
             var scales = this.model.get("color_scale");
             this.color_data = this.model.get("color_data");
@@ -92,14 +92,31 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 });
             }
 
+            $('#world_tooltip').remove();
             this.draw_map();
             this.update_layout();
             this.create_listeners();
+            this.create_tooltip_widget(this);
 
+        },
+        create_tooltip_widget: function(self) {
+            this.tooltip_widget = this.model.get("tooltip_widget");
+
+            if (self.tooltip_view) {
+                self.tooltip_view.remove();
+            }
+
+            if(this.tooltip_widget) {
+                var tooltip_widget_creation_promise = this.create_child_view(this.tooltip_widget);
+                tooltip_widget_creation_promise.then(function(view) {
+                    self.tooltip_view = view;
+                    self.tooltip_div.node().appendChild(d3.select(view.el).node());
+                });
+            }
         },
         remove_map: function(that) {
             $('.world_map .'+that.map_id).remove();
-            $('#world_tooltip').remove();
+            //$('#world_tooltip').remove();
             $('.world_viewbox .'+that.map_id).remove();
             $('.'+that.map_id).remove();
         },
@@ -150,8 +167,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.highlight_g = this.transformed_g.append("g");
             this.stroke_g = this.transformed_g.append("g");
 
-            this.div = d3.select("body").append("div")
-                .attr("id", "world_tooltip");
+            if ($('#world_tooltip').length===0) {
+                this.tooltip_div = d3.select("body").append("div")
+                .attr("id", "world_tooltip")
+                .style("pointer-events", "none")
+                .style("z-index", 1001);
+            } else {
+                this.tooltip_div = d3.select('#world_tooltip')
+            }
 
             //Bind data and create one path per GeoJSON feature
             this.fill_g.selectAll("path")
@@ -214,62 +237,75 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                                             return that.model.get("hover_fill");
                                         });
                     }
+
                 })
 				.on("mousemove", function(d){
                     if(!that.model.get("enable_hover")) {
                         return;
                     }
+
 					var name;
+
 					for(var i = 0; i< countries.length; i++) {
 						if(d.id == countries[i].id){
 							name = countries[i].Name;
 						}
 					};
 
-                if (that.model.get("display_tooltip")) {
-                   //Update the tooltip position and value
-                   if (that.is_object_empty(that.model.get("text_data"))) {
-                        if (that.color_data[d.id]!==undefined &&
-                            that.color_data[d.id]!==null) {
+				    d3.select("#world_tooltip").classed("hidden", false);
+
+                    if (that.model.get("display_tooltip")) {
+                        if (that.tooltip_widget) {
                             d3.select("#world_tooltip")
-                            .style("background-color", that.model.get("tooltip_color"))
-                            .style("color", that.model.get("text_color"))
-				            .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
-				            .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
+                              .style("background-color", "transparent")
+				              .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px", "width":"300px", "height":"200px"});
+
+                    } else {
+                            //Update the tooltip position and value
+
+                        if (that.is_object_empty(that.model.get("text_data"))) {
+                            if (that.color_data[d.id]!==undefined &&
+                                that.color_data[d.id]!==null) {
+                                d3.select("#world_tooltip")
+                                  .style("background-color", that.model.get("tooltip_color"))
+                                  .style("color", that.model.get("text_color"))
+				                  .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
+				                  .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
+                            } else {
+                                d3.select("#world_tooltip")
+                                  .style("background-color", that.model.get("tooltip_color"))
+                                  .style("color", that.model.get("text_color"))
+				                  .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
+				                  .text(name);
+                                }
                         } else {
                             d3.select("#world_tooltip")
-                            .style("background-color", that.model.get("tooltip_color"))
-                            .style("color", that.model.get("text_color"))
-				            .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
-				            .text(name);
+                              .style("background-color", that.model.get("tooltip_color"))
+                              .style("color", that.model.get("text_color"))
+				              .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
+
+                            if(that.model.get("text_data")[d.id]!==undefined &&
+                                that.model.get("text_data")[d.id]!==null) {
+				                d3.select("#world_tooltip")
+                                  .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
+                            } else {
+                                d3.select("#world_tooltip")
+                                  .text(name);
+                            }
                         }
-                    } else {
-                        d3.select("#world_tooltip")
-                          .style("background-color", that.model.get("tooltip_color"))
-                          .style("color", that.model.get("text_color"))
-				          .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
-
-                          if(that.model.get("text_data")[d.id]!==undefined &&
-                             that.model.get("text_data")[d.id]!==null) {
-				            d3.select("#world_tooltip")
-                              .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
-                          } else {
-                            d3.select("#world_tooltip")
-                              .text(name);
-                          }
                     }
-
+                }
 				    //Show the tooltip
-				    d3.select("#world_tooltip").classed("hidden", false);
-                    that.send({event:'hover', country:name, id:d.id});
 
-				}})
+                that.send({event:'hover', country:name, id:d.id});
+
+                })
 				.on("mouseout", function(d) {
                     if (!that.model.get("enable_hover")) {
                         return;
                     }
 
-				    d3.select("#world_tooltip").classed("hidden", true);
+                    d3.select("#world_tooltip").classed("hidden", true);
 
 					d3.select(this).transition().style("fill", function(d, i) {
                         return that.fill_g_colorfill(d, i, that);
@@ -352,6 +388,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             });
             this.model.on("change:selected_stroke", function() {
                 that.change_selected_stroke(that);
+            });
+            this.model.on("change:tooltip_widget", function() {
+                that.create_tooltip_widget(that);
             });
             $(this.options.cell).on("output_area_resize."+this.map_id, function() {
                 that.update_layout();
