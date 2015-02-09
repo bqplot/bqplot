@@ -92,14 +92,31 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 });
             }
 
+            $('#world_tooltip').remove();
             this.draw_map();
             this.update_layout();
             this.create_listeners();
+            this.create_tooltip_widget(this);
 
+        },
+        create_tooltip_widget: function(self) {
+            this.tooltip_widget = this.model.get("tooltip_widget");
+
+            if (self.tooltip_view) {
+                self.tooltip_view.remove();
+            }
+
+            if(this.tooltip_widget) {
+                var tooltip_widget_creation_promise = this.create_child_view(this.tooltip_widget);
+                tooltip_widget_creation_promise.then(function(view) {
+                    self.tooltip_view = view;
+                    self.tooltip_div.node().appendChild(d3.select(view.el).node());
+                });
+            }
         },
         remove_map: function(that) {
             $('.world_map .'+that.map_id).remove();
-            $('#world_tooltip').remove();
+            //$('#world_tooltip').remove();
             $('.world_viewbox .'+that.map_id).remove();
             $('.'+that.map_id).remove();
         },
@@ -220,6 +237,15 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                                             return that.model.get("hover_fill");
                                         });
                     }
+
+                })
+				.on("mousemove", function(d){
+                    if(!that.model.get("enable_hover")) {
+                        return;
+                    }
+
+					var name;
+
 					for(var i = 0; i< countries.length; i++) {
 						if(d.id == countries[i].id){
 							name = countries[i].Name;
@@ -228,23 +254,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
 				    d3.select("#world_tooltip").classed("hidden", false);
 
-                    that.tooltip_widget = that.model.get("tooltip_widget");
-
                     if (that.model.get("display_tooltip")) {
                         if (that.tooltip_widget) {
                             d3.select("#world_tooltip")
                               .style("background-color", "transparent")
-				              .style({"left":(event.pageX+5)+"px", "top":(event.pageY-5)+"px", "width":"300px", "height":"200px"});
+				              .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px", "width":"300px", "height":"200px"});
 
-                            if (that.tooltip_view) {
-                                that.tooltip_view.remove();
-                            }
-
-                            var tooltip_widget_creation_promise = that.create_child_view(that.tooltip_widget);
-                            tooltip_widget_creation_promise.then(function(view) {
-                                    that.tooltip_view = view
-                                    that.tooltip_div.node().appendChild(view.$el[0]);
-                            });
                     } else {
                             //Update the tooltip position and value
 
@@ -280,14 +295,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         }
                     }
                 }
-                })
-				.on("mousemove", function(d){
-                    if(!that.model.get("enable_hover")) {
-                        return;
-                    }
-					var name;
-
-
 				    //Show the tooltip
 
                 that.send({event:'hover', country:name, id:d.id});
@@ -298,9 +305,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         return;
                     }
 
-                    if (that.tooltip_view) {
-                        that.tooltip_view.remove();
-                    }
                     d3.select("#world_tooltip").classed("hidden", true);
 
 					d3.select(this).transition().style("fill", function(d, i) {
@@ -384,6 +388,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             });
             this.model.on("change:selected_stroke", function() {
                 that.change_selected_stroke(that);
+            });
+            this.model.on("change:tooltip_widget", function() {
+                that.create_tooltip_widget(that);
             });
             $(this.options.cell).on("output_area_resize."+this.map_id, function() {
                 that.update_layout();
