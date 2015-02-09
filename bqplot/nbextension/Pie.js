@@ -22,6 +22,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
 
+            var self = this;
             this.el.append("rect")
                 .attr("class", "mouseeventrect")
                 .attr("x", 0)
@@ -31,9 +32,11 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 .attr("pointer-events", "all")
                 .attr("height", this.parent.plotarea_height)
                 .style("pointer-events", "all")
-                .on("click", _.bind(this.reset_selection, this));
+                .on("click", function() {
+                    if (self.model.get("select_slices"))
+                        { self.reset_selection(); }
+                });
 
-            var self = this;
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.draw();
@@ -74,11 +77,13 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             this.model.on_some_change(["inner_radius", "radius"], this.update_radii, this);
             this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
             this.model.on("labels_updated", this.update_labels, this);
-            this.model.on("change:select_slices", this.reset_selection, this);
-            var that = this;
+            this.model.on("change:select_slices", function() {
+                if (!this.model.get("select_slices"))
+                    { this.reset_selection(); };
+            }, this);
             this.model.on("change:idx_selected", function() {
-                that.selected_indices = that.model.get("idx_selected");
-                that.apply_styles(this.selected_indices);
+                this.selected_indices = this.model.get("idx_selected");
+                this.apply_styles(this.selected_indices);
             }, this);
         },
         relayout: function() {
@@ -174,10 +179,6 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             // Function to clear the style of a dict on some or all the elements of the
             // chart. If indices is null, clears the style on all elements. If
             // not, clears on only the elements whose indices are matching.
-            //
-            // This function is not used right now. But it can be used if we
-            // decide to accomodate more properties than those set by default.
-            // Because those have to cleared specifically.
             var elements = this.el.select(".pielayout").selectAll(".slice")
             if(indices) {
                 elements = elements.filter(function(d, index) {
@@ -267,15 +268,12 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             }
         },
         reset_selection: function() {
-            if(this.model.get("select_slices")) {
-                this.model.set("idx_selected", null);
-                this.touch();
-                this.selected_indices = null;
-                this.clear_style(this.selected_style);
-                this.clear_style(this.unselected_style);
-                this.set_default_style();
-            }
-
+            this.model.set("idx_selected", null);
+            this.touch();
+            this.selected_indices = null;
+            this.clear_style(this.selected_style);
+            this.clear_style(this.unselected_style);
+            this.set_default_style();
         },
     });
     WidgetManager.WidgetManager.register_widget_view("bqplot.Pie", Pie);
