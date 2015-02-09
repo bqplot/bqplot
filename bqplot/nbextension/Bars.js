@@ -39,18 +39,18 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.draw();
-            }, null);
+            });
         },
         set_ranges: function() {
             var x_scale = this.scales["x"],
                 y_scale = this.scales["y"],
                 color_scale = this.scales["color"];
             if(x_scale.model.type !== "ordinal") {
-                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             } else {
-                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model), this.padding);
+                x_scale.set_range(this.parent.padded_range("x", x_scale.model), this.padding);
             }
-            y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+            y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             // x_offset is set later by the adjust_offset method
             // This differs because it is not constant for a scale.
             // Changes based on the data.
@@ -178,7 +178,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
 
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             if(x_scale.model.type === "ordinal") {
-                var x_max = d3.max(this.parent.get_xrange());
+                var x_max = d3.max(this.parent.range("x"));
                 bar_groups.attr("transform", function(d) {
                     return "translate(" + ((x_scale.scale(d.key) !== undefined ?
                                             x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
@@ -352,7 +352,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
         bar_click_handler: function (data, index) {
             var that = this;
             if(this.model.get("select_bars")) {
-                var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
+                var idx = this.model.get("idx_selected");
+                var idx_selected = idx ? utils.deepCopy(idx) : [];
                 var elem_index = idx_selected.indexOf(index);
                 // index of bar i. Checking if it is already present in the
                 // list

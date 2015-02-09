@@ -30,7 +30,6 @@ Custom Traits
    ColorList
    Date
    NdArray
-   NumpyArray
    PandasDataFrame
    PandasSeries
    UnicodeList
@@ -256,47 +255,6 @@ class Date(TraitType):
     @staticmethod
     def from_json(value):
         return np.datetime64(value)
-
-
-class NumpyArray(CInstance):
-    klass = np.ndarray
-    info_text = 'a numpy array'
-
-    def __init__(self, *args, **kwargs):
-        self.dtype = kwargs.pop('dtype', None)
-        kwargs.setdefault('from_json', self._asarray)
-        kwargs.setdefault('to_json', self._to_json)
-        kwargs.setdefault('args', (0,))
-        super(NumpyArray, self).__init__(*args, **kwargs)
-
-    def _asarray(self, value):
-        if value is not None:
-            return np.asarray(value, dtype=self.dtype)
-
-    def _to_json(self, a):
-        if a is not None:
-            if a.dtype in (float, int):
-                # replace nan with None
-                a = np.where(np.isnan(a), None, a)
-            elif np.issubdtype(a.dtype, np.datetime64):
-                a = a.astype('string')
-            return a.tolist()
-
-    def validate(self, obj, value):
-        if not isinstance(value, self.klass):
-            value = self._cast(value)
-        min_dim = self._metadata.get('min_dim', 0)
-        max_dim = self._metadata.get('max_dim', np.inf)
-        dim = len(value.shape)
-        if dim > max_dim:
-            raise TraitError("Dimension mismatch: max: %s, actual: %s"
-                             % (max_dim, dim))
-        if dim < min_dim:
-            raise TraitError("Dimension mismatch: min: %s, actual: %s"
-                             % (min_dim, dim))
-        return value
-
-    _cast = _asarray
 
 
 class NdArray(CInstance):

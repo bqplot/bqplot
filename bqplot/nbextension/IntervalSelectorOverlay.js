@@ -57,7 +57,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
                 }
 
                 self.create_listeners();
-            }, null);
+            });
         },
         create_listeners: function() {
             IntervalSelector.__super__.create_listeners.apply(this);

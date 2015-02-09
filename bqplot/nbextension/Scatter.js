@@ -51,7 +51,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.draw();
-            }, null);
+            });
         },
         set_ranges: function() {
             var x_scale = this.scales["x"],
@@ -60,10 +60,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 color_scale = this.scales["color"],
                 opacity_scale = this.scales["opacity"];
             if(x_scale) {
-                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
             if(y_scale) {
-                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
             if(size_scale) {
                 // I don't know how to set the lower bound on the range of the
@@ -133,8 +133,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.model.on("change:fill", this.update_fill, this);
             this.model.on("change:display_names", this.update_display_names, this);
             this.listenTo(this.model, "change:idx_selected", this.update_idx_selected);
-            this.model.on("change:selected_style", this.selected_style_updated, this);
-            this.model.on("change:unselected_style", this.unselected_style_updated, this);
         },
         update_default_color: function(model, new_color) {
             if(!this.model.dirty) {

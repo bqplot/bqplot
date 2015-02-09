@@ -30,11 +30,11 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
         set_ranges: function() {
             var x_scale = this.scales["sample"];
             if(x_scale) {
-                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
             var y_scale = this.scales["counts"];
             if(y_scale) {
-                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
         },
         set_positional_scales: function() {

@@ -171,7 +171,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.after_displayed(function() {
                     that.update_layout();
                 });
-            }, null);
+            });
         },
         remove: function() {
             this.model.off(null, null, this);
@@ -196,38 +196,34 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             });
             return Promise.all([x_scale_promise, y_scale_promise]);
         },
-        get_padded_xrange: function(scale_model) {
-            // Function to be called by mark which respects padding.
+        padded_range: function(direction, scale_model) {
+            // Functions to be called by mark which respects padding.
             // Typically all marks do this. Axis do not do this.
             // Also, if a mark does not set the domain, it can potentially call
             // the unpadded ranges.
             if(!(scale_model.get("allow_padding"))) {
-                return this.get_xrange();
+                return this.range(direction);
             }
-
             var scale_id = scale_model.id;
-            var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
-                this.x_padding_arr[scale_id] : 0;
-            var fig_padding = (this.plotarea_width) * this.figure_padding_x;
-            return [(fig_padding + scale_padding), (this.plotarea_width - fig_padding - scale_padding)];
-        },
-        get_padded_yrange: function(scale_model) {
-            // Please refer to the comments for get_padded_xrange
-            if(!(scale_model.get("allow_padding"))) {
-                return this.get_yrange();
+
+            if(direction==="x") {
+                var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
+                    this.x_padding_arr[scale_id] : 0;
+                var fig_padding = (this.plotarea_width) * this.figure_padding_x;
+                return [(fig_padding + scale_padding), (this.plotarea_width - fig_padding - scale_padding)];
+            } else if(direction==="y") {
+                var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
+                    this.y_padding_arr[scale_id] : 0;
+                var fig_padding = (this.plotarea_height) * this.figure_padding_y;
+                return [this.plotarea_height - scale_padding - fig_padding, scale_padding + fig_padding];
             }
-
-            var scale_id = scale_model.id;
-            var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
-                this.y_padding_arr[scale_id] : 0;
-            var fig_padding = (this.plotarea_height) * this.figure_padding_y;
-            return [this.plotarea_height - scale_padding - fig_padding, scale_padding + fig_padding];
         },
-        get_xrange: function() {
-            return [0, this.plotarea_width];
-        },
-        get_yrange: function() {
-            return [this.plotarea_height, 0];
+        range: function(direction) {
+            if(direction==="x") {
+                return [0, this.plotarea_width];
+            } else if(direction==="y") {
+                return [this.plotarea_height, 0];
+            }
         },
         get_mark_plotarea_height: function(scale_model) {
             if(!(scale_model.get("allow_padding"))) {

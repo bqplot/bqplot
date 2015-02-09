@@ -31,7 +31,7 @@ from IPython.utils.traitlets import (Int, Unicode, List, Dict, Enum, Bool,
                                      Instance)
 from IPython.html.widgets import DOMWidget, CallbackDispatcher
 
-from .traits import NumpyArray, PandasDataFrame
+from .traits import NdArray, PandasDataFrame
 from .marks import CATEGORY10
 
 
@@ -41,19 +41,19 @@ class MarketMap(DOMWidget):
 
     Attributes
     ----------
-    names: NumpyArray of strings or objects convertable to strings
+    names: numpy.ndarray of strings or objects convertable to strings (default: [])
         primary key for the data of the map. One rectangle is created for each
         unique entry in this array
-    groups: NumpyArray
+    groups: numpy.ndarray (default: [])
         attribute on which the groupby is run. If this is an empty arrray, then
         there is no group by for the map.
-    display_text: NumpyArray
+    display_text: numpy.ndarray (default: [])
         data to be displayed on each rectangle of the map.If this is empty it
         defaults to the names attribute.
     ref_data: PandasDataFrame
         Additional data associated with each element of the map. The data in
         this data frame can be displayed as a tooltip.
-    color: NumpyArray
+    color: numpy.ndarray (default: [])
         Data to represent the color for each of the cells. If the value of the
         data is NaN for a cell, then the color of the cell is the color of the
         group it belongs to in absence of data for color
@@ -133,9 +133,9 @@ class MarketMap(DOMWidget):
     map_width = Int(1080, sync=True)
     map_height = Int(800, sync=True)
 
-    names = NumpyArray(sync=True)
-    groups = NumpyArray(sync=True)
-    display_text = NumpyArray(sync=True)
+    names = NdArray(sync=True)
+    groups = NdArray(sync=True)
+    display_text = NdArray(sync=True)
     ref_data = PandasDataFrame(sync=True)
 
     tooltip_fields = List(sync=True)
@@ -149,7 +149,7 @@ class MarketMap(DOMWidget):
     colors = List(CATEGORY10, sync=True)
     scales = Dict(sync=True)
     axes = List(sync=True)
-    color = NumpyArray(sync=True)
+    color = NdArray(sync=True)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
     preserve_aspect = Bool(False, sync=True,
                            display_name='Preserve aspect ratio')
@@ -164,6 +164,7 @@ class MarketMap(DOMWidget):
     enable_select = Bool(True, sync=True)
     tooltip_widget = Instance(DOMWidget, sync=True)
     _view_name = Unicode("MarketMap", sync=True)
+    _model_name = Unicode("bqplot.BaseModel", sync=True)
 
     def __init__(self, **kwargs):
         super(MarketMap, self).__init__(**kwargs)

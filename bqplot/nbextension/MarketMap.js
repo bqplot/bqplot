@@ -85,7 +85,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
 
             var scale_creation_promise = this.create_scale_views();
             scale_creation_promise.then(function() {
-                var color_scale = self.scales['color'];
+                var color_scale = self.scales["color"];
                 if(color_scale){
                     color_scale.set_range();
                     color_scale.on("color_scale_range_changed", self.update_map_colors, self);
@@ -203,17 +203,17 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         },
         update_data: function() {
             var self = this;
-            this.data = this.model.get("names");
+            this.data = this.model.get_typed_field("names");
             this.ref_data = this.model.get("ref_data");
-            this.group_data = this.model.get("groups");
+            this.group_data = this.model.get_typed_field("groups");
             this.groups = _.uniq(this.group_data, true);
-            var display_text = this.model.get("display_text");
+            var display_text = this.model.get_typed_field("display_text");
             display_text = (display_text == undefined || display_text.length == 0) ? this.data : display_text;
 
-            this.colors = this.model.get('colors');
+            this.colors = this.model.get("colors");
             var num_colors = this.colors.length;
             this.colors_map = function(d) { return self.get_color(d, num_colors);};
-            var color_data = this.model.get('color');
+            var color_data = this.model.get_typed_field("color");
             var mapped_data = this.data.map(function(d, i) {
                 return {'display': display_text[i], 'name': d, 'color': color_data[i],
                         'group': self.group_data[i], 'ref_data': self.ref_data[i]};
@@ -234,7 +234,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
         },
         update_domains: function() {
             var color_scale_model = this.model.get("scales")["color"];
-            var color_data = this.model.get("color");
+            var color_data = this.model.get_typed_field("color");
             if(color_scale_model && color_data.length > 0) {
                 color_scale_model.compute_and_set_domain(color_data, this.model.id);
             }

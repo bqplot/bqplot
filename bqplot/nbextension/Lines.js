@@ -38,15 +38,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                   .defined(function(d) { return d.y !== null; });
                 self.create_listeners();
                 self.draw();
-            }, null);
+            });
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales["x"];
             if(x_scale) {
-                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
+            var y_scale = this.scales["y"];
             if(y_scale) {
-                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
         },
         set_positional_scales: function() {

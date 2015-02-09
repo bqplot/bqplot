@@ -34,7 +34,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
                   .defined(function(d) { return d.y !== null; });
                 self.create_listeners();
                 self.draw();
-            }, null);
+            });
         },
         set_ranges: function() {
             FlexLine.__super__.set_ranges.apply(this);

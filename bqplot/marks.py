@@ -155,24 +155,24 @@ class Lines(Mark):
     Attributes
     ----------
     icon: string (class-level attribute)
-        font-awesome icon for that mark
+        Font-awesome icon for the respective mark
     name: string (class-level attribute)
-        user-friendly name of the mark
+        User-friendly name of the mark
     colors: list of colors (default: CATEGORY10)
-        list of colors of the lines
+        List of colors of the Lines
     stroke_width: float (default: 1.5)
-        stroke width of the lines
+        Stroke width of the Lines
     labels_visibility: {'none', 'label'}
-        visibility of the curve labels
-    curve_subset: list of integers or None
-        if st to None, all the lines are displayed. Otherwise, only the items
+        Visibility of the curve labels
+    curve_subset: list of integers or None (default: [])
+        If set to None, all the lines are displayed. Otherwise, only the items
         in the list will have full opacity, while others will be faded.
     line_style: {'solid', 'dashed', 'dotted'}
         Line style.
     interpolation: {'linear', 'basis', 'cardinal', 'monotone'}
-        interpolation scheme used for interpolation between the data points
-        provided. Please refer to the svg interpolate for details about the
-        different interpolation schemes.
+        Interpolation scheme used for interpolation between the data points
+        provided. Please refer to the svg interpolate documentation for details
+        about the different interpolation schemes.
 
     Data Attributes
     ---------------
@@ -219,21 +219,23 @@ class FlexLine(Lines):
     """Flexible Lines mark.
 
     In the case of the FlexLines mark, scales for "x" and "y" MUST be provided.
-    Scales for color and width data attributes are optional. In the case where
-    another data attribute than "x" or "y" is provided but the corresponding
-    scale is missing, the data attribute is ignored.
+    Scales for the color and width data attributes are optional. In the case
+    where another data attribute than "x" or "y" is provided but the
+    corresponding scale is missing, the data attribute is ignored.
 
     Attributes
     ----------
     name: string (class-level attributes)
         user-friendly name of the mark
     colors: list of colors (default: CATEGORY10)
+        List of colors for the Lines
 
     Data Attributes
     ---------------
     color: numpy.ndarray or None (default: [])
-
+        Array controlling the color of the data points
     width: numpy.ndarray or None (default: [])
+        Array controlling the widths of the Lines.
     """
     # Mark decoration
     name = 'Flexible lines'
@@ -262,23 +264,27 @@ class Scatter(Mark):
     Attributes
     ----------
     icon: string (class-level attribute)
-        font-awesome icon for that mark
+        Font-awesome icon for that mark
     name: string (class-level attribute)
-        user-friendly name of the mark
+        User-friendly name of the mark
     marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
              'triangle-up'}
-        marker shape
+        Marker shape
     default_color: Color (default: 'green')
-        default color of the marker
+        Default color of the marker
     stroke: Color or None (default: None)
-        stroke color of the marker
-    default_opacity: float
+        Stroke color of the marker
+    default_opacity: float (default: 1.0)
         This number is validated to be between 0 and 1.
-    default_size: nonnegative int
+    default_size: nonnegative int (default: 64)
         Default marker size in pixel.
         If size data is provided with a scale, default_size stands for the
         maximal marker size (i.e. the maximum value for the 'size' scale range)
-    names, display_names, fill, drag_color, names_unique, enable_move, enable_add,
+    names: numpy.ndarray (default: [])
+        Labels for the points of the chart
+    display_names: bool (default: True)
+        Controls whether names are displayed for points in the scatter
+    fill, drag_color, names_unique, enable_move, enable_add,
     enable_delete, restrict_x, restrict_y, update_on_move.
 
     Data Attributes
@@ -444,9 +450,9 @@ class Bars(Mark):
         attribute to control the spacing between the bars
         value is specified as a percentage of the width of the bar
     select_bars: bool (default: False)
-
+        make bars selectable or otherwise
     stroke: color (default: 'white')
-
+        stroke color for the bars
     opacity: float (default: 1.0)
         opacity of the mark. Then number must be bewteen 0 and 1
     base: float (default: 0.0)
@@ -455,9 +461,9 @@ class Bars(Mark):
     Data Attributes
     ---------------
     x: numpy.ndarray
-
+        abscissas of the data points (1d array)
     y: numpy.ndarray
-
+        ordinates of the values for the data points
     color: numpy.ndarray
         color of the data points (1d array). Defaults to default_color when not
         privided or when a value is NaN

@@ -77,6 +77,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         },
         create_listeners: function() {
             this.model.on("change:visible", this.update_visibility, this);
+            this.model.on("change:selected_style", this.selected_style_updated, this);
+            this.model.on("change:unselected_style", this.unselected_style_updated, this);
 
             this.parent.on("margin_updated", this.relayout, this);
             this.model.on_some_change(["labels", "display_legend"], function() {
@@ -135,6 +137,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         // Style related functions
         selected_style_updated: function(model, style) {
             this.selected_style = style;
+            this.clear_style(model.previous("selected_style"), this.selected_indices);
             this.style_updated(style, this.selected_indices);
         },
         unselected_style_updated: function(model, style) {
@@ -144,6 +147,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 _.range(this.model.mark_data.length).filter(function(index){
                     return sel_indices.indexOf(index) === -1;
                 }) : [];
+            this.clear_style(model.previous("selected_style"), unselected_indices);
             this.style_updated(style, unselected_indices);
         },
         style_updated: function(new_style, indices) {
