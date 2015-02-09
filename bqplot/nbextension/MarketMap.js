@@ -547,7 +547,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 .style("top", (mouse_pos[1] + this.el.offsetTop + 5) + "px");
 
             tooltip_div.select("table").remove();
-            if(! this.tooltip_widget) {
+            if(! this.tooltip_view) {
                 var tooltip_table = tooltip_div.append("table")
                     .selectAll("tr").data(this.tooltip_fields);
 
@@ -571,19 +571,17 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 .style("opacity", 0);
         },
         create_tooltip_widget: function() {
-            var prev_tooltip = this.model.previous("tooltip_widget");
             var tooltip_model = this.model.get("tooltip_widget");
-            if((prev_tooltip !== null && prev_tooltip !== undefined)
-               (this.tooltip_widget !== null && this.tooltip_widget !== undefined)) {
+            if((this.tooltip_view !== null && this.tooltip_view !== undefined)) {
                 //remove the previous tooltip
-                this.tooltip_widget.remove();
-                this.tooltip_widget = null;
+                this.tooltip_view.remove();
+                this.tooltip_view = null;
             }
             var self = this;
             if(tooltip_model) {
                 var tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
                 tooltip_widget_creation_promise.then(function(view) {
-                    self.tooltip_widget = view;
+                    self.tooltip_view = view;
                     self.tooltip_div.node().appendChild(d3.select(view.el).node());
                 });
             }
