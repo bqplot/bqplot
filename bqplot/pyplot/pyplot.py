@@ -48,7 +48,7 @@ import numpy as np
 from ..figure import Figure
 from ..scales import Scale, LinearScale
 from ..axes import Axis
-from ..marks import Lines, Scatter, Hist, Bars, OHLC
+from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie
 from ..overlays import panzoom
 from IPython.html.widgets import VBox, HBox as ButtonGroup
 from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
@@ -517,6 +517,26 @@ def bar(x, y, **kwargs):
     kwargs['x'] = x
     kwargs['y'] = y
     return _draw_mark(Bars, **kwargs)
+
+
+def pie(sizes, **kwargs):
+    """Draws a Pie in the current context figure.
+
+    Parameters
+    ----------
+    sizes: numpy.ndarray, 1d
+        The proportions to be represented by the pie.
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
+    kwargs['sizes'] = sizes
+    return _draw_mark(Pie, **kwargs)
 
 
 def clear():

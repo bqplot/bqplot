@@ -640,15 +640,18 @@ class Pie(Mark):
     sizes: numpy.ndarray
         proportions of the pie slices
     color: numpy.ndarray
-        color of the data points (1d array). Defaults to colors when not provided
+        color of the data points (1d array). Defaults to colors when not
+        provided
     """
     # Mark decoration
-    icon = ''
+    icon = 'fa-pie-chart'
     name = 'Pie chart'
 
     # Scaled attributes
-    sizes = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
-    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+    sizes = NdArray(sync=True, display_index=1, rtype='Number',
+                    min_dim=1, max_dim=1)
+    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color',
+                    atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
     x = Float(default_value=0.5, sync=True) | Date(sync=True)
     y = Float(default_value=0.5, sync=True)
 
@@ -656,12 +659,16 @@ class Pie(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
     sort = Bool(False, sync=True)
-    colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4, display_name='Colors')
+    colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4,
+                       display_name='Colors')
     select_slices = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
-    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True, exposed=True, display_index=7, display_name='Opacity')
-    radius = BoundedFloat(default_value=300.0, min=0.0, max=float("inf"), sync=True)
-    inner_radius = BoundedFloat(default_value=0.1, min=0.0, max=float("inf"), sync=True)
+    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
+                           exposed=True, display_index=7, display_name='Opacity')
+    radius = BoundedFloat(default_value=300.0, min=0.0, max=float("inf"),
+                          sync=True)
+    inner_radius = BoundedFloat(default_value=0.1, min=0.0, max=float("inf"),
+                                sync=True)
     start_angle = Float(default_value=0.0, sync=True, exposed=True)
     end_angle = Float(default_value=360.0, sync=True, exposed=True)
     _view_name = Unicode('bqplot.Pie', sync=True)
