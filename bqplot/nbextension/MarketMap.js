@@ -157,6 +157,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.model.on("change:row_groups", function(model, value) { this.row_groups = value;
                                                                         this.compute_dimensions_and_draw();
                                                                       }, this);
+            this.model.on("change:tooltip_widget", this.create_tooltip_widget, this);
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -570,11 +571,19 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 .style("opacity", 0);
         },
         create_tooltip_widget: function() {
-            this.tooltip_widget = this.model.get("tooltip_widget");
+            var prev_tooltip = this.model.previous("tooltip_widget");
+            var tooltip_model = this.model.get("tooltip_widget");
+            if((prev_tooltip !== null && prev_tooltip !== undefined)
+               (this.tooltip_widget !== null && this.tooltip_widget !== undefined)) {
+                //remove the previous tooltip
+                this.tooltip_widget.remove();
+                this.tooltip_widget = null;
+            }
             var self = this;
-            if(this.tooltip_widget) {
-                var tooltip_widget_creation_promise = this.create_child_view(this.tooltip_widget);
+            if(tooltip_model) {
+                var tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
                 tooltip_widget_creation_promise.then(function(view) {
+                    self.tooltip_widget = view;
                     self.tooltip_div.node().appendChild(d3.select(view.el).node());
                 });
             }
