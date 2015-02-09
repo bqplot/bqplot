@@ -29,7 +29,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.x_offset = 100;
             this.y_offset = 40;
             this.bar_height = 20;
-            // Formatting data particular to the axis
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
                 .attr("class", "ColorBar")
                 .attr("display", (this.model.get("visible") ? "inline" : "none"))
