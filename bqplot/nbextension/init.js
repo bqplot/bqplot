@@ -80,4 +80,6 @@ define([
     "./MarketMap",
     "./SquareMarketMap",
     "./Map",
+    "./Pie",
+    "./PieModel"
 ], function () { console.log('loaded bqplot'); });

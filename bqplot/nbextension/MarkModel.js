@@ -18,7 +18,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         get_typed_field: function(param) {
             // function that reads in an array of a field that is typed. It
             // performs tpe conversions that you may require and returns you
-            // the appropirate array
+            // the appropriate array
             var value = this.get(param);
             var return_value = [];
             var self = this;
@@ -45,8 +45,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         set_typed_field: function(param, value) {
             // function takes a value which has to be set for a typed field and
             // performs the conversion needed before sending it across to
-            // Python. This **only** sets the atrribute. The caller is
-            // responsible for calling save_chagnes
+            // Python. This **only** sets the attribute. The caller is
+            // responsible for calling save_changes
             var saved_value = value;
             var is_date = false;
             var return_object = {};

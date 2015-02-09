@@ -86,7 +86,7 @@ class LinearScale(Scale):
 
     """A linear scale
 
-    An affine mapping from a numerical domain and a numerical range.
+    An affine mapping from a numerical domain to a numerical range.
 
     Attributes
     ----------
@@ -198,7 +198,7 @@ class ColorScale(Scale):
 
     """A color scale.
 
-    A mapping from Numbers to Colors. The relation is affine by part.
+    A mapping from numbers to colors. The relation is affine by part.
 
     Attributes
     ----------
@@ -271,7 +271,7 @@ class OrdinalColorScale(ColorScale):
 
     """An ordinal color scale.
 
-    A mapping between a discrete set of value to colors.
+    A mapping from a discrete set of values to colors.
 
     Attributes
     ----------

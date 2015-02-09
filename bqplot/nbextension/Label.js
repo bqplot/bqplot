@@ -131,7 +131,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.color = this.model.get("color");
             this.el.select(".label")
                 .style("font-size", this.model.get("font_size"))
-                .style("font-weight",this.model.get("font_weight"))
+                .style("font-weight", this.model.get("font_weight"))
                 .style("text-anchor", this.model.get("align"));
 
             if(this.color !== undefined) {
