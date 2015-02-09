@@ -69,7 +69,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.model.on("change:tick_format", this.tickformat_changed, this);
             this.model.on("change:num_ticks", function(model, value) {
                 this.num_ticks = value;
-                this.tickvalues_changed();
+                this.set_tick_values();
             }, this);
             this.model.on("change:color", this.update_color, this);
             this.model.on_some_change(["label", "label_color"], this.update_label, this);
@@ -163,10 +163,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         update_offset_scale_domain: function() {
             if(this.offset_scale) {
                 var initial_range = (!this.vertical)
-                    ? this.parent.get_padded_yrange(this.offset_scale.model)
-                    : this.parent.get_padded_xrange(this.offset_scale.model);
-                var target_range = (!this.vertical) ? this.parent.get_yrange()
-                                                    : this.parent.get_xrange();
+                    ? this.parent.padded_range("y", this.offset_scale.model)
+                    : this.parent.padded_range("x", this.offset_scale.model);
+                var target_range = (!this.vertical) ? this.parent.range("y")
+                                                    : this.parent.range("x");
                 this.offset_scale.expand_domain(initial_range, target_range);
             }
         },
@@ -186,7 +186,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         set_scales_range: function() {
             this.axis_scale.set_range((this.vertical) ?
                 [this.height, 0] : [0, this.width]);
-            if(this.offset_scale_model) {
+            if(this.offset_scale) {
                 this.offset_scale.set_range((this.vertical) ?
                     [0, this.width] : [this.height, 0]);
             }
