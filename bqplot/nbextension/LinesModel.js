@@ -59,6 +59,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                                 return {x: that.x_data[0][j], y: d};
                             }),
                             opacity: 1,
+                            color: that.color_data[i],
                         };
                     });
                 } else {
@@ -70,6 +71,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                                 return {x: d[0], y: d[1]};
                             }),
                             opacity: 1,
+                            color: that.color_data[i],
                         };
                     });
                 }
@@ -115,15 +117,15 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             } else {
                 y_scale.del_domain([], this.id);
             }
-            /*
-            if(!this.get("preserve_domain")["color"]) {
-                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                    return elem.values.map(function(d) { return d.y; });
-                }), this.id);
-            } else {
-                y_scale.del_domain([], this.id);
+            if(color_scale !== null && color_scale !== undefined) {
+                if(!this.get("preserve_domain")["color"]) {
+                    color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                        return elem.color;
+                    }), this.id);
+                } else {
+                    color_scale.del_domain([], this.id);
+                }
             }
-           */
         },
     });
     WidgetManager.WidgetManager.register_widget_model("bqplot.LinesModel", LinesModel);
