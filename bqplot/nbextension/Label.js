@@ -37,12 +37,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         set_ranges: function() {
             var x_scale = this.scales["x"];
             if(x_scale) {
-                x_scale.set_range(this.parent.get_padded_xrange(x_scale.model));
+                x_scale.set_range(this.parent.padded_range("x", x_scale.model));
                 this.x_offset = x_scale.offset;
             }
             var y_scale = this.scales["y"];
             if(y_scale) {
-                y_scale.set_range(this.parent.get_padded_yrange(y_scale.model));
+                y_scale.set_range(this.parent.padded_range("y", y_scale.model));
                 this.y_offset = y_scale.offset;
             }
         },

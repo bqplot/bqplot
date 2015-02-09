@@ -153,20 +153,20 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         update_axis_domain: function() {
             var initial_range = (this.vertical) ?
-                this.parent.get_padded_yrange(this.axis_scale.model) : this.parent.get_padded_xrange(this.axis_scale.model);
+                this.parent.padded_range("y", this.axis_scale.model) : this.parent.padded_range("x", this.axis_scale.model);
             var target_range = (this.vertical) ?
-                this.parent.get_yrange() : this.parent.get_xrange();
-
+                this.parent.range("y") : this.parent.range("x");
             this.axis_scale.expand_domain(initial_range, target_range);
             this.axis.scale(this.axis_scale.scale);
         },
         generate_tick_formatter: function() {
             if(this.axis_scale.model.type === "date" ||
                this.axis_scale.model.type === "date_color_linear") {
-                if(this.model.get("tick_format"))
+                if(this.model.get("tick_format")) {
                     return d3.time.format(this.model.get("tick_format"));
-                else
+                } else {
                     return custom_time_format;
+                }
             } else if (this.axis_scale.model.type === "ordinal") {
                 return function(d) { return d; };
             }
@@ -183,10 +183,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         create_axis_line: function() {
             if(this.vertical) {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                .orient(this.side === "right" ? "right" : "left");
+                  .orient(this.side === "right" ? "right" : "left");
             } else {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                .orient(this.side === "top" ? "top" : "bottom");
+                  .orient(this.side === "top" ? "top" : "bottom");
             }
         },
         append_axis: function() {
