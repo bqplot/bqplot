@@ -231,22 +231,11 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             }
             return "translate(" + (this.x_offset - 5) + ", " + (this.bar_height / 2)+ ")";
         },
-        get_axisline_transform: function() {
-            if(this.vertical) {
-                return "translate(" + ((this.side === "right") ?
-                    this.bar_height : 0) + ", 0)";
-            }
-            return "translate(0, " + ((this.side === "top") ?
-                    0 : this.bar_height) + ")";
-        },
         get_colorbar_transform: function() {
             if(this.vertical) {
                 return "translate(0, " + (this.x_offset) + ")" ;
             }
             return "translate(" + this.x_offset + ", 0)";
-        },
-        set_color_scale_range: function() {
-            this.axis_scale.set_range();
         },
         set_axisline_scale_range: function() {
             var range = (this.vertical) ?
@@ -262,7 +251,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             }
         },
         set_scales_range: function() {
-            this.set_color_scale_range();
+            //Setting the range of the color scale
+            this.axis_scale.set_range();
             this.set_axisline_scale_range();
         },
         get_color_bar_width: function() {
@@ -319,8 +309,16 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 this.axis.orient(this.side)
                     .scale(this.axis_line_scale);
                 this.set_tick_values();
-                this.g_axisline
-                    .attr("transform", this.get_axisline_transform())
+
+                var transform;
+                if(this.vertical) {
+                    transfom = "translate(" + ((this.side === "right") ?
+                        this.bar_height : 0) + ", 0)";
+                } else {
+                    transform = "translate(0, " + ((this.side === "top") ?
+                            0 : this.bar_height) + ")";
+                }
+                this.g_axisline.attr("transform", transform)
                     .call(this.axis);
             }
         },

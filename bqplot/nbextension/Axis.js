@@ -476,10 +476,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.height = this.parent.height - this.margin.top - this.margin.bottom;
             this.rescale_axis();
         },
-        update_visibility: function(model, visible){
+        update_visibility: function(model, visible) {
             this.el.style("display", visible ? "inline" : "none");
         },
-        get_ticks: function(data_array){
+        get_ticks: function(data_array) {
             // Have to do different things based on the type of the scale.
             // If an array is passed, then just scale and return equally spaced
             // points in the array. This is the way it is done for ordinal
