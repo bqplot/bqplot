@@ -33,7 +33,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("mark_padding_updated");
         },
         update_data: function() {
-            var that = this;
             this.dirty = true;
             var x_data = this.get_typed_field("x");
             var scales = this.get("scales");
