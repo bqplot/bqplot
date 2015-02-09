@@ -157,6 +157,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.model.on("change:row_groups", function(model, value) { this.row_groups = value;
                                                                         this.compute_dimensions_and_draw();
                                                                       }, this);
+            this.model.on("change:tooltip_widget", this.create_tooltip_widget, this);
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -546,7 +547,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 .style("top", (mouse_pos[1] + this.el.offsetTop + 5) + "px");
 
             tooltip_div.select("table").remove();
-            if(! this.tooltip_widget) {
+            if(! this.tooltip_view) {
                 var tooltip_table = tooltip_div.append("table")
                     .selectAll("tr").data(this.tooltip_fields);
 
@@ -570,11 +571,17 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                 .style("opacity", 0);
         },
         create_tooltip_widget: function() {
-            this.tooltip_widget = this.model.get("tooltip_widget");
+            var tooltip_model = this.model.get("tooltip_widget");
+            if((this.tooltip_view !== null && this.tooltip_view !== undefined)) {
+                //remove the previous tooltip
+                this.tooltip_view.remove();
+                this.tooltip_view = null;
+            }
             var self = this;
-            if(this.tooltip_widget) {
-                var tooltip_widget_creation_promise = this.create_child_view(this.tooltip_widget);
+            if(tooltip_model) {
+                var tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
                 tooltip_widget_creation_promise.then(function(view) {
+                    self.tooltip_view = view;
                     self.tooltip_div.node().appendChild(d3.select(view.el).node());
                 });
             }
