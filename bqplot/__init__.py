@@ -50,7 +50,7 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 .. automodule:: bqplot.marks
 .. automodule:: bqplot.axes
 .. automodule:: bqplot.market_map
-.. automodule:: bqplot.overlays
+.. automodule:: bqplot.interacts
 .. automodule:: bqplot.traits
 
 .. automodule:: bqplot.pyplot
@@ -63,12 +63,13 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 # ignore the IPython future warning that widgets might change
 import warnings
 warnings.filterwarnings('ignore', module='IPython.html.widgets',
-                        category = FutureWarning)
+                        category=FutureWarning)
 
 from .figure import *
 from .axes import *
 from .marks import *
 from .scales import *
+
 
 def install_nbextension(**kwargs):
     """Install the appropriate html and javascript into the IPython nbextension.
@@ -80,4 +81,3 @@ def install_nbextension(**kwargs):
     pkgdir = os.path.dirname(__file__)
     kwargs['destination'] = 'bqplot'
     nbextensions.install_nbextension(os.path.join(pkgdir, 'nbextension'), **kwargs)
-

@@ -49,7 +49,7 @@ from ..figure import Figure
 from ..scales import Scale, LinearScale
 from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie
-from ..overlays import panzoom
+from ..interacts import panzoom
 from IPython.html.widgets import VBox, HBox as ButtonGroup
 from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
 
@@ -80,7 +80,7 @@ def _default_toolbar(figure):
         # Traitlets closure
         def cb():
             if btn.value:
-                figure.overlay = value
+                figure.interaction = value
         return cb
 
     def snapshot(_):
@@ -97,7 +97,7 @@ def _default_toolbar(figure):
 
     snapshot_btn.on_click(snapshot)
     reset_btn.on_click(reset)
-    figure.overlay = None
+    figure.interaction = None
 
     return ButtonGroup([normal_btn, pz_btn, snapshot_btn, reset_btn])
 

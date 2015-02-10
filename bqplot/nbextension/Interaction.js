@@ -14,7 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
-    var Overlay = widget.WidgetView.extend({
+    var Interaction = widget.WidgetView.extend({
         render: function() {
             this.parent = this.options.parent;
 
@@ -35,12 +35,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 .attr("height", this.parent.height - this.parent.margin.top - this.parent.margin.bottom);
         },
         remove: function() {
-            Overlay.__super__.remove.apply(this);
+            Interaction.__super__.remove.apply(this);
             _.each(this.mark_views, function(mark) { mark.invert_range(); });
             this.el.remove();
         }
     });
 
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Overlay", Overlay);
-    return Overlay;
+    WidgetManager.WidgetManager.register_widget_view("bqplot.Interaction", Interaction);
+    return Interaction;
 });
