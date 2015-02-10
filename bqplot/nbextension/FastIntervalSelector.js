@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManager, d3, BaseSelectors) {
+define(["widgets/js/manager", "d3", "./Selector" ], function(WidgetManager, d3, BaseSelectors) {
     var BaseXSelector = BaseSelectors[1];
-    var IntervalSelector = BaseXSelector.extend({
+    var FastIntervalSelector = BaseXSelector.extend({
         render : function() {
-            IntervalSelector.__super__.render.apply(this);
+            FastIntervalSelector.__super__.render.apply(this);
             this.freeze_but_move = true;
             this.freeze_dont_move = false;
             this.active = false;
@@ -60,7 +60,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             });
         },
         create_listeners: function() {
-            IntervalSelector.__super__.create_listeners.apply(this);
+            FastIntervalSelector.__super__.create_listeners.apply(this);
             this.model.on("change:color", this.color_change, this);
         },
         color_change: function() {
@@ -124,16 +124,16 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
         remove: function() {
             this.rect.remove();
             this.background.remove();
-            IntervalSelector.__super__.remove.apply(this);
+            FastIntervalSelector.__super__.remove.apply(this);
         },
         relayout: function() {
-            IntervalSelector.__super__.relayout.apply(this);
+            FastIntervalSelector.__super__.relayout.apply(this);
             this.background.attr("width", this.width)
                 .attr("height", this.height);
             this.rect.attr("height", this.height);
             this.set_range([this.scale]);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.IntervalSelectorOverlay", IntervalSelector);
+    WidgetManager.WidgetManager.register_widget_view("bqplot.FastIntervalSelector", FastIntervalSelector);
 });
 

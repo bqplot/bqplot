@@ -55,7 +55,7 @@ class Figure(DOMWidget):
         list containing the instances of the axes for the figure
     marks: List (default: [])
         list containing the marks which are to be appended to the figure
-    overlay: any (default: )
+    interaction: any (default: )
         optional interaction layer for the figure
     scale_x: Scale
         Scale representing the x values of the figure

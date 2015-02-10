@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./SelectorOverlay", "./utils"], function(WidgetManager, d3, BaseSelectors, utils) {
+define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetManager, d3, BaseSelectors, utils) {
     var BaseXSelector = BaseSelectors[1];
     var BaseXYSelector = BaseSelectors[2];
     var BrushSelector = BaseXYSelector.extend({
@@ -121,7 +121,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay", "./utils"], function(Wi
             this.set_y_range([this.y_scale]);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.BrushSelectorOverlay", BrushSelector);
+    WidgetManager.WidgetManager.register_widget_view("bqplot.BrushSelector", BrushSelector);
 
     var BrushIntervalSelector = BaseXSelector.extend({
         render : function() {
@@ -205,7 +205,7 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay", "./utils"], function(Wi
             this.set_range([this.scale]);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.BrushIntervalSelectorOverlay", BrushIntervalSelector);
+    WidgetManager.WidgetManager.register_widget_view("bqplot.BrushIntervalSelector", BrushIntervalSelector);
 
     var add_remove_classes = function(selection, add_classes, remove_classes) {
         //adds the classes present in add_classes and removes the classes in
@@ -429,6 +429,6 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay", "./utils"], function(Wi
             MultiSelector.__super__.remove.apply(this);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.MultiSelectorOverlay", MultiSelector);
+    WidgetManager.WidgetManager.register_widget_view("bqplot.MultiSelector", MultiSelector);
 });
 

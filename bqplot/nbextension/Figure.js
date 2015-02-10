@@ -92,7 +92,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
-            this.overlay = this.fig.append("g");
+            this.interaction = this.fig.append("g");
 
             /*
              * The following is the structure of the DOM element constructed
@@ -100,7 +100,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 <g class="svg-figure" transform='margin translation'>
                     <g class="svg-axes"></g>
                     <g class="svg-marks"></g>
-                    <g class="svg-overlay"></g>
+                    <g class="svg-interaction"></g>
                 </g>
             </svg>
             */
@@ -127,9 +127,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 Promise.all(that.mark_views.views).then(function(views) {
                     that.update_marks(views);
                     that.update_legend();
-                    // Update Overlay
+                    // Update Interaction layer
                     // This has to be done after the marks are created
-                    that.set_overlay(that.model.get("overlay"));
+                    that.set_interaction(that.model.get("interaction"));
                 });
 
                 that.axis_views = new widget.ViewList(that.add_axis, null, that);
@@ -155,8 +155,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.model.on("change:legend_location", that.update_legend, that);
                 that.model.on("change:title", that.update_title, that);
 
-                that.model.on("change:overlay", function(model, value) {
-                    this.set_overlay(value);
+                that.model.on("change:interaction", function(model, value) {
+                    this.set_interaction(value);
                 }, that);
 
                 // that.id is added to namespace the event to this particular
@@ -513,14 +513,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             }
             return [x_start, y_start];
         },
-        set_overlay: function(model) {
-            if (this.overlay_view) { this.overlay_view.remove(); }
+        set_interaction: function(model) {
+            if (this.interaction_view) { this.interaction_view.remove(); }
             if (model) {
-                // Sets the child overlay
+                // Sets the child interaction
                 var self = this;
                 this.create_child_view(model).then(function(view) {
-                    self.overlay_view = view;
-                    self.overlay.node().appendChild(view.el.node());
+                    self.interaction_view = view;
+                    self.interaction.node().appendChild(view.el.node());
                     // Trigger the displayed event of the child view.
                     self.after_displayed(function() {
                         view.trigger("displayed");

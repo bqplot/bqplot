@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Overlay"], function(WidgetManager, ipy_utils, d3, utils, Overlay) {
+define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Interaction"], function(WidgetManager, ipy_utils, d3, utils, Interaction) {
 
     // TODO avoid code duplication of 'x' and 'y'
 
-    var PanZoom = Overlay.extend({
+    var PanZoom = Interaction.extend({
         render: function() {
             PanZoom.__super__.render.apply(this);
             var that = this;

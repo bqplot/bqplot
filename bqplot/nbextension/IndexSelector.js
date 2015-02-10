@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManager, d3, BaseSelectors) {
+define(["widgets/js/manager", "d3", "./Selector" ], function(WidgetManager, d3, BaseSelectors) {
     var BaseXSelector = BaseSelectors[1];
     var IndexSelector = BaseXSelector.extend({
         render : function() {
@@ -112,6 +112,6 @@ define(["widgets/js/manager", "d3", "./SelectorOverlay" ], function(WidgetManage
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.IndexSelectorOverlay", IndexSelector);
+    WidgetManager.WidgetManager.register_widget_view("bqplot.IndexSelector", IndexSelector);
 });
 
