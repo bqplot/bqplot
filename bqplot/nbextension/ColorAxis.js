@@ -25,45 +25,53 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.width = this.parent.width - (this.margin.left + this.margin.right);
 
             var scale_promise = this.set_scale(this.model.get("scale"));
+            this.side = this.model.get("side");
+            this.x_offset = 100;
+            this.y_offset = 40;
+            this.bar_height = 20;
+            this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
+                .attr("class", "ColorBar")
+                .attr("display", (this.model.get("visible") ? "inline" : "none"))
+                .style("transform", this.get_topg_transform());
+
+            this.ordinal = false;
+            this.num_ticks = this.model.get("num_ticks");
+            var that = this;
+            scale_promise.then(function() {
+                that.create_listeners();
+                that.tick_format = that.generate_tick_formatter();
+                that.set_scales_range();
+                that.append_axis();
+            });
+        },
+        create_listeners: function() {
+            this.axis_scale.on("domain_changed", this.redraw_axisline, this);
+            this.axis_scale.on("color_scale_range_changed", this.redraw_axis, this);
+            this.axis_scale.on("highlight_axis", this.highlight, this);
+            this.axis_scale.on("unhighlight_axis", this.unhighlight, this);
+
+            this.parent.on("margin_updated", this.parent_margin_updated, this);
+            this.model.on("change:tick_format", this.tickformat_changed, this);
+            this.model.on("change:visible", this.update_visibility, this);
+            this.model.on("change:label", this.update_label, this);
+            this.model.on_some_change(["side", "orientation"], function() {
+                this.vertical = this.model.get("orientation") === "vertical";
+                this.side = this.model.get("side");
+                this.rescale_axis();
+                this.el.select("#colorBarG" + this.cid)
+                    .attr("transform", this.get_colorbar_transform());
+                this.el.select("#colorBarG" + this.cid)
+                    .select(".g-rect")
+                    .attr("transform", this.vertical ? "rotate(-90)" : "");
+
+                this.redraw_axisline();
+            }, this);
             this.model.on("change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
                 // TODO: rescale_axis does too many things. Decompose
                 this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
                 this.rescale_axis();
             }, this);
-
-            this.side = this.model.get("side");
-            this.x_offset = 100;
-            this.y_offset = 40;
-            this.bar_height = 20;
-            // Formatting data particular to the axis
-            this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
-                .attr("class", "ColorBar")
-                .attr("display", (this.model.get("visible") ? "inline" : "none"))
-                .style("transform", this.get_topg_transform());
-
-            this.label = this.model.get("label");
-            this.ordinal = false;
-            this.num_ticks = this.model.get("num_ticks");
-            this.tick_values = this.model.get_typed_field("tick_values");
-
-            var that = this;
-            scale_promise.then(function() {
-                that.tick_format = that.generate_tick_formatter();
-                that.set_scales_range();
-                that.append_axis();
-                that.parent.on("margin_updated", that.parent_margin_updated, that);
-
-                that.model.on("change:tick_format", that.tickformat_changed, that);
-                that.model.on("change:visible", that.update_visibility, that);
-                that.model.on("change:label", that.update_label, that);
-                that.model.on_some_change(["side", "orientation"], function() {
-                    this.vertical = this.model.get("orientation") === "vertical";
-                    this.side = this.model.get("side");
-                    this.rescale_axis();
-                    this.redraw_axis();
-                }, that);
-            });
         },
         set_scale: function(model) {
             // Sets the child scale
@@ -75,11 +83,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     view.trigger("displayed");
                 }, that);
                 that.axis_scale = view;
-                that.axis_scale.on("domain_changed", that.redraw_axisline, that);
-                that.axis_scale.on("color_scale_range_changed", that.redraw_axis, that);
-                that.axis_scale.on("highlight_axis", that.highlight, that);
-                that.axis_scale.on("unhighlight_axis", that.unhighlight, that);
-
                 // TODO: eventually removes what follows
                 if(that.axis_scale.model.type === "date_color_linear") {
                     that.axis_line_scale = d3.time.scale().nice();
@@ -95,7 +98,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             // The label is allocated a space of 100px. If the label
             // occupies more than 100px then you are out of luck.
             var that = this;
-            if(this.label) {
+            if(this.model.get("label") !== undefined && this.model.get("label") !== null) {
                 this.el.append("g")
                     .attr("transform", this.get_label_transform())
                     .attr("class", "axis label_g")
@@ -107,7 +110,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .attr("class", "axislabel")
                     .style("text-anchor", this.vertical ? "middle" : "end");
             }
-
             var colorBar = this.el.append("g")
                 .attr("id","colorBarG" + this.cid);
 
@@ -124,7 +126,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         draw_color_bar: function() {
             var colorBar = this.el.select("#colorBarG" + this.cid);
             colorBar.attr("transform", this.get_colorbar_transform());
-
             var that = this;
             colorBar.selectAll(".g-rect")
                 .remove();
@@ -138,7 +139,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 var bar_width = this.get_color_bar_width() / this.colors.length;
                 var rects = colorBar.append("g")
                     .attr("class", "g-rect axis")
-                    .style("transform", (this.vertical) ? "rotate(-90deg)" : "")
                     .selectAll("rect")
                     .data(this.colors);
 
@@ -185,7 +185,6 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
 
                 colorBar.append("g")
                     .attr("class", "g-rect axis")
-                    .style("transform", (this.vertical) ? "rotate(-90deg)" : "")
                     .append("rect")
                     .attr({
                         "width": this.get_color_bar_width(),
@@ -195,6 +194,10 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                         "stroke-width": 1
                     })
                     .style("fill","url(#colorBarGradient" + this.cid + ")");
+            }
+            if(this.vertical) {
+                colorBar.select(".g-rect")
+                    .attr("transform", "rotate(-90)");
             }
         },
         get_topg_transform: function() {
@@ -227,22 +230,13 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             }
             return "translate(" + (this.x_offset - 5) + ", " + (this.bar_height / 2)+ ")";
         },
-        get_axisline_transform: function() {
-            if(this.vertical) {
-                return "translate(" + ((this.side === "right") ?
-                    this.bar_height : 0) + ", 0)";
-            }
-            return "translate(0, " + ((this.side === "top") ?
-                    0 : this.bar_height) + ")";
-        },
         get_colorbar_transform: function() {
             if(this.vertical) {
-                return "translate(0, " + (this.x_offset) + ")";
+                return "translate(0, " + (this.x_offset) + ")" ;
             }
             return "translate(" + this.x_offset + ", 0)";
         },
-        set_scales_range: function() {
-            this.axis_scale.set_range();
+        set_axisline_scale_range: function() {
             var range = (this.vertical) ?
                 [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
             if(this.ordinal) {
@@ -255,19 +249,21 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                 }
             }
         },
+        set_scales_range: function() {
+            //Setting the range of the color scale
+            this.axis_scale.set_range();
+            this.set_axisline_scale_range();
+        },
         get_color_bar_width: function() {
             return (this.vertical) ? (this.height - (2 * this.x_offset)) : (this.width - 2 * this.x_offset);
         },
         update_label: function(model, value) {
-            this.label = value;
             this.el.select("#text_elem")
-                .text(this.label);
+                .text(this.model.get("label"));
         },
         rescale_axis: function() {
             // rescale the axis
-            this.height = this.parent.height - (this.margin.top + this.margin.bottom);
-            this.width = this.parent.width - (this.margin.left + this.margin.right);
-            this.set_scales_range();
+            this.set_axisline_scale_range();
             // shifting the entire g of the color bar first.
             this.el.style("transform", this.get_topg_transform());
             var self = this;
@@ -293,11 +289,10 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
                     .attr("width", this.get_color_bar_width())
                     .attr("x", (this.vertical) ? -(this.height - 2 * this.x_offset) : 0);
             }
-            if(this.label) {
+            if(this.model.get("label") !== undefined && this.model.get("label") !== null) {
                 this.el.select(".label_g")
                     .attr("transform", this.get_label_transform())
                     .select("#text_elem")
-                    .text(this.model.get("label"))
                     .style("text-anchor", this.vertical ? "middle" : "end");
             }
             this.g_axisline.call(this.axis);
@@ -305,17 +300,24 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         redraw_axisline: function() {
             if (this.axis) {
                 this.axis_line_scale.domain(this.axis_scale.scale.domain());
-                // We need to set the range here again. Only because, if the
-                // domain has changed from a two element array to a three
-                // element one, the range of the axis has to be changed
-                // accordingly.
-
-                // this.set_scales_range();
+                // We need to set the range of the axis line scale here again.
+                // Only because, if the domain has changed from a two element
+                // array to a three element one, the range of the axis has to
+                // be changed accordingly.
+                this.set_axisline_scale_range();
                 this.axis.orient(this.side)
                     .scale(this.axis_line_scale);
                 this.set_tick_values();
-                this.g_axisline
-                    .attr("transform", this.get_axisline_transform())
+
+                var transform;
+                if(this.vertical) {
+                    transfom = "translate(" + ((this.side === "right") ?
+                        this.bar_height : 0) + ", 0)";
+                } else {
+                    transform = "translate(0, " + ((this.side === "top") ?
+                            0 : this.bar_height) + ")";
+                }
+                this.g_axisline.attr("transform", transform)
                     .call(this.axis);
             }
         },

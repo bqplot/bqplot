@@ -28,6 +28,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
      ]);
      var Axis = widget.WidgetView.extend({
          render: function() {
+
+            this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
+              .style("display", this.model.get("visible") ? "inline" : "none");
+
             this.parent = this.options.parent;
             this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
@@ -36,6 +40,24 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.width = this.parent.width - (this.margin.left + this.margin.right);
 
             var scale_promise = this.set_scale(this.model.get("scale"));
+            this.side = this.model.get("side");
+            this.padding = this.model.get("padding");
+            this.offset = 0;
+            this.num_ticks = this.model.get("num_ticks");
+            this.label_loc = this.model.get("label_location");
+            this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
+
+            var offset_promise = this.get_offset();
+            var that = this;
+            Promise.all([scale_promise, offset_promise]).then(function() {
+                that.create_listeners();
+                that.tick_format = that.generate_tick_formatter();
+                that.set_scales_range();
+                that.append_axis();
+            });
+        },
+        create_listeners: function() {
+            var that = this;
             this.model.on("change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
                 // TODO: rescale_axis does too many things. Decompose
@@ -43,31 +65,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 this.rescale_axis();
             }, this);
 
-            this.side = this.model.get("side");
-            this.padding = this.model.get("padding");
-            this.offset = 0;
-            this.num_ticks = this.model.get("num_ticks");
-            this.tick_values = this.model.get_typed_field("tick_values");
-            this.label_loc = this.model.get("label_location");
-            this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
-
-            var offset_promise = this.get_offset();
-            var that = this;
-            Promise.all([scale_promise, offset_promise]).then(function() {
-                that.tick_format = that.generate_tick_formatter();
-                that.set_scales_range();
-                that.append_axis();
-                that.parent.on("margin_updated", that.parent_margin_updated, that);
-            });
-
-            this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
-              .style("display", this.model.get("visible") ? "inline" : "none");
-
-            this.model.on("change:tick_values", this.tickvalues_changed, this);
+            this.model.on("change:tick_values", this.set_tick_values, this);
             this.model.on("change:tick_format", this.tickformat_changed, this);
             this.model.on("change:num_ticks", function(model, value) {
                 this.num_ticks = value;
-                this.tickvalues_changed();
+                this.set_tick_values();
             }, this);
             this.model.on("change:color", this.update_color, this);
             this.model.on_some_change(["label", "label_color"], this.update_label, this);
@@ -80,9 +82,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 var offset_creation_promise = this.get_offset();
                 offset_creation_promise.then(function() {
                     that.set_scales_range();
+                    that.update_offset_scale_domain();
                     that.g_axisline.attr("transform", that.get_axis_transform());
                 });
             }, this);
+            this.parent.on("margin_updated", this.parent_margin_updated, this);
         },
         update_display: function() {
             this.side = this.model.get("side");
@@ -96,8 +100,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.rescale_axis();
         },
         set_tick_values: function() {
-            if (this.tick_values.length > 0) {
-                this.axis.tickValues(this.tick_values);
+            var tick_values = this.model.get_typed_field("tick_values");
+            if (tick_values !== undefined && tick_values !== null && tick_values.length > 0) {
+                this.axis.tickValues(tick_values);
             } else if (this.num_ticks !== undefined && this.num_ticks !== null) {
                 this.axis.tickValues(this.get_ticks());
             } else {
@@ -140,10 +145,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 this.g_axisline.call(this.axis);
             }
         },
-        tickvalues_changed: function() {
-            this.tick_values = this.model.get_typed_field("tick_values");
-            this.set_tick_values();
-        },
         tickformat_changed: function() {
             this.tick_format = this.generate_tick_formatter();
             this.axis.tickFormat(this.tick_format);
@@ -158,6 +159,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 this.parent.range("y") : this.parent.range("x");
             this.axis_scale.expand_domain(initial_range, target_range);
             this.axis.scale(this.axis_scale.scale);
+        },
+        update_offset_scale_domain: function() {
+            if(this.offset_scale) {
+                var initial_range = (!this.vertical)
+                    ? this.parent.padded_range("y", this.offset_scale.model)
+                    : this.parent.padded_range("x", this.offset_scale.model);
+                var target_range = (!this.vertical) ? this.parent.range("y")
+                                                    : this.parent.range("x");
+                this.offset_scale.expand_domain(initial_range, target_range);
+            }
         },
         generate_tick_formatter: function() {
             if(this.axis_scale.model.type === "date" ||
@@ -175,7 +186,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         set_scales_range: function() {
             this.axis_scale.set_range((this.vertical) ?
                 [this.height, 0] : [0, this.width]);
-            if(this.offset_scale_model) {
+            if(this.offset_scale) {
                 this.offset_scale.set_range((this.vertical) ?
                     [0, this.width] : [this.height, 0]);
             }
@@ -183,15 +194,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         create_axis_line: function() {
             if(this.vertical) {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                  .orient(this.side === "right" ? "right" : "left");
+                .orient(this.side === "right" ? "right" : "left");
             } else {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                  .orient(this.side === "top" ? "top" : "bottom");
+                .orient(this.side === "top" ? "top" : "bottom");
             }
         },
         append_axis: function() {
             this.create_axis_line();
             this.update_axis_domain();
+            this.update_offset_scale_domain();
 
             this.g_axisline = this.el.append("g")
               .attr("class", "axis")
@@ -212,23 +224,33 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         get_offset: function() {
             var that = this;
             var return_promise = Promise.resolve();
-            this.loc = this.model.get("offset");
-            if(this.loc["value"] !== undefined && this.loc["value"] !== null) {
-                if(this.loc["scale"] === undefined) {
+            var offset = this.model.get("offset");
+            if(offset["value"] !== undefined && offset["value"] !== null) {
+                //If scale is undefined but, the value is defined, then we have
+                //to
+                if(offset["scale"] === undefined) {
                     this.offset_scale = (this.vertical) ?
                         this.parent.scale_x : this.parent.scale_y;
                 } else {
-                    this.offset_scale_model = this.loc["scale"];
-                    return_promise = this.create_child_view(this.offset_scale_model)
+                    var offset_scale_model = offset["scale"];
+                    return_promise = this.create_child_view(offset_scale_model)
                         .then(function(view) {
                             that.offset_scale = view;
                             if(that.offset_scale.model.type !== "ordinal") {
                                 that.offset_scale.scale.clamp(true);
                             }
-                            that.offset_scale.on("domain_changed", that.rescale_axis, that);
+                            that.offset_scale.on("domain_changed",
+                                                 function() {
+                                                    this.update_offset_scale_domain();
+                                                    this.g_axisline.attr("transform", this.get_axis_transform());
+                                                 }, that);
                         });
                 }
-                this.offset_value = this.loc["value"];
+                this.offset_value = offset["value"];
+            } else {
+                //required if the offset has been changed from a valid value
+                //to null
+                this.offset_scale = this.offset_value = undefined;
             }
             return return_promise;
         },
@@ -257,14 +279,15 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             }
         },
         process_offset: function() {
-            if(this.loc["scale"] === undefined &&
-               this.loc["value"] === undefined) {
+            if(this.offset_scale === undefined || this.offset_scale === null) {
                 return this.get_basic_transform();
             } else {
                 var value = this.offset_scale.scale(this.offset_value);
-                // FIXME: must we check for null?
-                value = (value === undefined) ?
-                    this.get_basic_transform() : value;
+                //The null check is required for two reasons. Value may be null
+                //or the scale is ordinal which does not include the value in
+                //its domain.
+                value = (value === undefined) ? this.get_basic_transform()
+                                              : value;
                 return this.offset_scale.offset + value;
             }
         },
@@ -375,15 +398,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             Axis.__super__.remove.apply(this);
         },
         update_grid_lines: function() {
-            var axis_type = (this.vertical) ? "y" : "x";
             this.el.select("g." + "grid_lines").remove();
-
             var grid_lines = this.el.append("g")
                                    .attr("class", "grid_lines");
 
             grid_lines.selectAll("line.grid-line").remove();
             var grid_type = this.model.get("grid_lines");
-            var is_x = axis_type === "x";
+            var is_x = !(this.vertical) ;
 
             //will not work for ordinal scale
             if(grid_type !== "none") {
@@ -423,6 +444,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             // TODO: Doesn't do what it states.
             // Has to redraw from a clean slate
             this.update_axis_domain();
+            this.update_offset_scale_domain();
 
             this.set_tick_values();
             this.update_grid_lines();
@@ -431,14 +453,18 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             //function to be called when the range of the axis has been updated
             //or the axis has to be repositioned.
             this.set_scales_range();
+            //The following two calls to update domains are made as the domain
+            //of the axis scale needs to be recalculated as the expansion due
+            //to the padding depends on the size of the canvas because of the
+            //presence of fixed pixel padding for the bounding box.
             this.update_axis_domain();
+            this.update_offset_scale_domain();
 
             this.g_axisline.attr("transform", this.get_axis_transform());
             this.g_axisline.call(this.axis);
             this.g_axisline.select("text.axislabel")
                 .attr(this.get_label_attributes())
-                .style(this.get_text_styling())
-                .text(this.model.get("label"));
+                .style(this.get_text_styling());
             // TODO: what follows is currently part of redraw_axisline
             this.set_tick_values();
             this.update_grid_lines();
@@ -450,10 +476,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.height = this.parent.height - this.margin.top - this.margin.bottom;
             this.rescale_axis();
         },
-        update_visibility: function(model, visible){
+        update_visibility: function(model, visible) {
             this.el.style("display", visible ? "inline" : "none");
         },
-        get_ticks: function(data_array){
+        get_ticks: function(data_array) {
             // Have to do different things based on the type of the scale.
             // If an array is passed, then just scale and return equally spaced
             // points in the array. This is the way it is done for ordinal
