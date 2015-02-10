@@ -18,7 +18,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
     var LinesModel = MarkModel.extend({
         initialize: function() {
             LinesModel.__super__.initialize.apply(this);
-            this.on_some_change(["x", "y"], this.update_data, this);
+            this.on_some_change(["x", "y", "color"], this.update_data, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that

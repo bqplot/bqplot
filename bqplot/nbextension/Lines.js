@@ -63,6 +63,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 if (!this.model.dirty) { this.draw(); }
             });
         },
+        initialize_additional_scales: function() {
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                this.listenTo(color_scale, "domain_changed", function() {
+                    this.update_colors();
+                });
+                color_scale.on("color_scale_range_changed",
+                                this.update_colors, this);
+            }
+        },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
             this.model.on("change:interpolation", this.update_interpolion, this);
