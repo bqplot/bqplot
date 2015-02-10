@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./utils", "./Overlay"], function(WidgetManager, d3, utils, Overlay) {
-    var HandDraw = Overlay.extend({
+define(["widgets/js/manager", "d3", "./utils", "./Interaction"], function(WidgetManager, d3, utils, Interaction) {
+    var HandDraw = Interaction.extend({
 
         render: function() {
             HandDraw.__super__.render.apply(this);

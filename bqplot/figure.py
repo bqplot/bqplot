@@ -39,7 +39,7 @@ class Figure(DOMWidget):
     """Main canvas for drawing a chart.
 
     The Figure object holds the list of Marks and Axes. It also holds an
-    optional Overlay object that is responsible for figure-level mouse
+    optional Interaction object that is responsible for figure-level mouse
     interactions, the "interaction layer".
 
     Besides, the Figure object has two reference scales, for positioning items
@@ -92,7 +92,7 @@ class Figure(DOMWidget):
                     exposed=True, display_index=1, display_name='Title')
     axes = List(allow_none=False, sync=True)
     marks = List(allow_none=False, sync=True)
-    overlay = Any(None, sync=True)
+    interaction = Any(None, sync=True)
     scale_x = Instance(Scale, sync=True)
     scale_y = Instance(Scale, sync=True)
 
