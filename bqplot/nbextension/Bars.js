@@ -261,6 +261,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 return [0, 0];
             }
 
+            var color_scale = this.scales["color"];
             this.legend_el = elem.selectAll(".legend" + this.uuid)
                 .data(this.model.mark_data[0].values);
 
