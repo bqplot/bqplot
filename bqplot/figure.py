@@ -27,10 +27,11 @@ Figure
 """
 
 from IPython.html.widgets import DOMWidget, register
-from IPython.utils.traitlets import (Unicode, Instance, List, Dict, Any,
+from IPython.utils.traitlets import (Unicode, Instance, List, Dict,
                                      CFloat, Bool, Enum, Float)
 
 from .scales import Scale, LinearScale
+from .interacts import Interaction
 
 
 @register('bqplot.Figure')
@@ -92,7 +93,7 @@ class Figure(DOMWidget):
                     exposed=True, display_index=1, display_name='Title')
     axes = List(allow_none=False, sync=True)
     marks = List(allow_none=False, sync=True)
-    interaction = Any(None, sync=True)
+    interaction = Instance(Interaction, allow_none=True, sync=True)
     scale_x = Instance(Scale, sync=True)
     scale_y = Instance(Scale, sync=True)
 
