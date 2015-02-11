@@ -49,6 +49,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                color_scale.set_range();
+            }
         },
         set_positional_scales: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
@@ -58,6 +62,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.listenTo(y_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.draw(); }
             });
+        },
+        initialize_additional_scales: function() {
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                this.listenTo(color_scale, "domain_changed", function() {
+                    this.update_colors();
+                });
+                color_scale.on("color_scale_range_changed",
+                                this.update_colors, this);
+            }
         },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
@@ -120,17 +134,17 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // update curve colors
             this.el.selectAll(".curve").select("path")
               .style("stroke", function(d, i) {
-                  return that.get_colors(i);
+                  return that.get_element_color(d, i);
               });
             // update legend colors
             if (this.legend_el){
                 this.legend_el.select("line")
                   .style("stroke", function(d, i) {
-                      return that.get_colors(i);
+                      return that.get_element_color(d, i);
                   });
                 this.legend_el.select("text")
                   .style("fill", function(d, i) {
-                      return that.get_colors(i);
+                      return that.get_element_color(d, i);
                   });
             }
         },
@@ -212,7 +226,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 }).on("mouseover", _.bind(this.highlight_axes, this))
                 .on("mouseout", _.bind(this.unhighlight_axes, this))
               .append("line")
-                .style("stroke", function(d,i) { return that.get_colors(i); })
+                .style("stroke", function(d,i) { return that.get_element_color(d, i); })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", _.bind(this.get_line_style, this))
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
@@ -223,7 +237,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("y", rect_dim / 2)
               .attr("dy", "0.35em")
               .text(function(d, i) { return curve_labels[i]; })
-              .style("fill", function(d,i) { return that.get_colors(i); });
+              .style("fill", function(d,i) { return that.get_element_color(d, i); });
 
             var max_length = d3.max(curve_labels, function(d) {
                 return d.length;
@@ -289,6 +303,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                   });
             }
         },
+        get_element_color: function(data, index) {
+            var color_scale = this.scales["color"];
+            if(color_scale && data.color !== undefined && data.color !== null) {
+                return color_scale.scale(data.color);
+            }
+            return this.get_colors(index);
+        },
         draw: function() {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
@@ -303,7 +324,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             curves_sel.select("path")
               .attr("id", function(d, i) { return "curve" + (i+1); })
-              .style("stroke", function(d, i) { return that.get_colors(i); })
+              .style("stroke", function(d, i) { return that.get_element_color(d, i); })
               .style("stroke-width", this.model.get("stroke_width"))
               .style("stroke-dasharray", _.bind(this.get_line_style, this));
 

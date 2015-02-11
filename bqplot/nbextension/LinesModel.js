@@ -18,7 +18,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
     var LinesModel = MarkModel.extend({
         initialize: function() {
             LinesModel.__super__.initialize.apply(this);
-            this.on_some_change(["x", "y"], this.update_data, this);
+            this.on_some_change(["x", "y", "color"], this.update_data, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
@@ -36,6 +36,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var that = this;
             this.x_data = this.get_typed_field("x");
             this.y_data = this.get_typed_field("y");
+            this.color_data = this.get_typed_field("color");
 
             var scales = this.get("scales");
             var x_scale = scales["x"], y_scale = scales["y"];
@@ -58,6 +59,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                                 return {x: that.x_data[0][j], y: d};
                             }),
                             opacity: 1,
+                            color: that.color_data[i],
                         };
                     });
                 } else {
@@ -69,6 +71,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                                 return {x: d[0], y: d[1]};
                             }),
                             opacity: 1,
+                            color: that.color_data[i],
                         };
                     });
                 }
@@ -97,6 +100,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         update_domains: function() {
             var scales = this.get("scales");
             var x_scale = scales["x"], y_scale = scales["y"];
+            var color_scale = scales["color"];
 
             if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -112,6 +116,15 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 }), this.id);
             } else {
                 y_scale.del_domain([], this.id);
+            }
+            if(color_scale !== null && color_scale !== undefined) {
+                if(!this.get("preserve_domain")["color"]) {
+                    color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                        return elem.color;
+                    }), this.id);
+                } else {
+                    color_scale.del_domain([], this.id);
+                }
             }
         },
     });

@@ -31,7 +31,6 @@ Marks
 """
 from IPython.html.widgets import Widget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
-from numpy import empty
 
 from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
@@ -181,6 +180,11 @@ class Lines(Mark):
         abscissas of the data points (1d or 2d array)
     y: numpy.ndarray (default: [])
         ordinates of the data points (1d or 2d array)
+    color: numpy.ndarray (default: [])
+        colors of the different lines based on data. If it is [], then the
+        colors from the colors attribute are used. Each line has a single color
+        and if the size of colors is less than the number of lines, the
+        remaining lines are given the default colors.
     """
     # Mark decoration
     icon = 'fa-line-chart'
@@ -191,6 +195,8 @@ class Lines(Mark):
                 display_index=1, scaled=True, rtype='Number')
     y = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=2,
                 display_index=2, scaled=True, rtype='Number')
+    color = NdArray(sync=True, display_index=6, scaled=True, rtype='Color',
+                    atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},

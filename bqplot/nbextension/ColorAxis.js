@@ -311,7 +311,7 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
 
                 var transform;
                 if(this.vertical) {
-                    transfom = "translate(" + ((this.side === "right") ?
+                    transform = "translate(" + ((this.side === "right") ?
                         this.bar_height : 0) + ", 0)";
                 } else {
                     transform = "translate(0, " + ((this.side === "top") ?

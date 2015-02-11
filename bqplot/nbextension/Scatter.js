@@ -98,7 +98,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         initialize_additional_scales: function() {
             // function to create the additional scales and create the
             // listeners for the additional scales
-            var self = this;
             var color_scale = this.scales["color"],
                 size_scale = this.scales["size"],
                 opacity_scale = this.scales["opacity"];
@@ -113,12 +112,12 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
             if(size_scale) {
                 this.listenTo(size_scale, "domain_changed", function() {
-                    self.update_default_size();
+                    this.update_default_size();
                 });
             }
             if(opacity_scale) {
                 this.listenTo(opacity_scale, "domain_changed", function() {
-                    self.update_default_opacity();
+                    this.update_default_opacity();
                 });
             }
         },
