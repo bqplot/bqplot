@@ -321,15 +321,19 @@ def axes(mark=None, options={}, **kwargs):
     fig_axes = [axis for axis in fig.axes]
     for name in scales:
         if name not in mark.class_trait_names(scaled=True):
-            # Pass if the scale is not needed.
+            # The scale is not needed.
             continue
-        if name in axes:
-            # Pass if there is already an axis for this scaled attribute.
-            continue
-        key = mark.class_traits()[name].get_metadata('atype', 'bqplot.Axis')
-        axis_type = Axis.axis_types[key]
         axis_args = dict(mark.scales_metadata.get(name, {}),
                          **(options.get(name, {})))
+        if name in axes:
+            # There is already an axis for this scaled attribute.
+            for arg in axis_args:
+                setattr(axes[name], arg, axis_args[arg])
+            continue
+        # An axis must be created. We fetch the type from the registry
+        # the key being provided in the scaled attribute decoration
+        key = mark.class_traits()[name].get_metadata('atype', 'bqplot.Axis')
+        axis_type = Axis.axis_types[key]
         axis = axis_type(scale=scales[name], **axis_args)
         fig_axes.append(axis)
         axes[name] = axis
