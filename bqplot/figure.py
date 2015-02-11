@@ -32,6 +32,8 @@ from IPython.utils.traitlets import (Unicode, Instance, List, Dict,
 
 from .scales import Scale, LinearScale
 from .interacts import Interaction
+from .marks import Mark
+from .axes import Axis
 
 
 @register('bqplot.Figure')
@@ -91,8 +93,8 @@ class Figure(DOMWidget):
 
     title = Unicode(sync=True,
                     exposed=True, display_index=1, display_name='Title')
-    axes = List(allow_none=False, sync=True)
-    marks = List(allow_none=False, sync=True)
+    axes = List(Instance(Axis), allow_none=False, sync=True)
+    marks = List(Instance(Mark), allow_none=False, sync=True)
     interaction = Instance(Interaction, allow_none=True, sync=True)
     scale_x = Instance(Scale, sync=True)
     scale_y = Instance(Scale, sync=True)
@@ -102,8 +104,7 @@ class Figure(DOMWidget):
     preserve_aspect = Bool(False, sync=True, exposed=True, display_index=3,
                            display_name='Preserve aspect ratio')
 
-    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60),
-                      sync=True)
+    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)
     padding_x = Float(0.0, sync=True)
     padding_y = Float(0.025, sync=True)
     legend_location = Enum(['top-right', 'top', 'top-left', 'left',
