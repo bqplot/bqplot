@@ -37,10 +37,10 @@ Interacts
    panzoom
 """
 
-from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Any,
-                                     Instance, List)
+from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance, List)
 from IPython.html.widgets import Widget
 
+from .marks import Lines
 from .scales import Scale, DateScale
 from .traits import Color, Date, NdArray
 
@@ -111,7 +111,7 @@ class HandDraw(Interaction):
     """
     _view_name = Unicode('bqplot.HandDraw', sync=True)
     _model_name = Unicode('bqplot.BaseModel', sync=True)
-    lines = Any(None, sync=True)
+    lines = Instance(Lines, sync=True)
     line_index = Int(0, sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
     # TODO: Once the new Union is merged in IPython, the sync on the whole
