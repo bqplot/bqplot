@@ -134,7 +134,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                   .style("stroke-width", stroke_width);
             }
         },
-        update_style: function(model, colors) {
+        update_style: function() {
             var that = this;
             var colors = this.model.get("fill");
             var opacity = this.model.get("opacity");
@@ -180,7 +180,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
               .transition().duration(this.model.get("animate_dur"))
-              .attr("d", function(d) { return that.line(d.values) + that.path_closure(); });
+              .attr("d", function(d) {
+                  return that.line(d.values) + that.path_closure();
+              });
             this.create_labels();
         },
         invert_range: function(start_pxl, end_pxl) {
@@ -249,7 +251,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 }).on("mouseover", _.bind(this.highlight_axes, this))
                 .on("mouseout", _.bind(this.unhighlight_axes, this))
               .append("line")
-                .style("stroke", function(d,i) { return that.get_element_color(d, i); })
+                .style("stroke", function(d,i) {
+                    return that.get_element_color(d, i); 
+                })
                 .style("fill", function(d, i) { return fill_color[i]; })
                 .style("fill_opacity", function(d, i) { return fill_opacity[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
@@ -262,7 +266,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("y", rect_dim / 2)
               .attr("dy", "0.35em")
               .text(function(d, i) { return curve_labels[i]; })
-              .style("fill", function(d,i) { return that.get_element_color(d, i); });
+              .style("fill", function(d,i) { 
+                  return that.get_element_color(d, i); 
+              });
 
             var max_length = d3.max(curve_labels, function(d) {
                 return d.length;
@@ -351,14 +357,18 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             curves_sel.select("path")
               .attr("id", function(d, i) { return "curve" + (i+1); })
-              .style("stroke", function(d, i) { return that.get_element_color(d, i); })
+              .style("stroke", function(d, i) {
+                  return that.get_element_color(d, i);
+              })
               .style("fill", function(d, i) { return fill_color[i]; })
               .style("stroke-width", this.model.get("stroke_width"))
               .style("stroke-dasharray", _.bind(this.get_line_style, this));
 
             curves_sel.select("path")
               .transition().duration(this.model.get("animate_dur"))
-              .attr("d", function(d) { return that.line(d.values) + that.path_closure(); });
+              .attr("d", function(d) {
+                  return that.line(d.values) + that.path_closure();
+              });
 
             curves_sel.exit()
               .transition().duration(this.model.get("animate_dur"))
