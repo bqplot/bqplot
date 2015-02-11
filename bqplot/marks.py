@@ -159,7 +159,15 @@ class Lines(Mark):
     name: string (class-level attribute)
         User-friendly name of the mark
     colors: list of colors (default: CATEGORY10)
-        List of colors of the Lines
+        List of colors of the Lines. If the list is shorter than the number
+        of lines, the colors are reused.
+    close_path: bool (default: False)
+        Whether to close the paths or not.
+    fill: list of colors (default: [])
+        Fill color for the patches. Defaults to no-fill when no color provided.
+    opacity: list of floats (default: [])
+        Opacity for the patches. Defaults to 1 when list is too short, or set 
+        to None.
     stroke_width: float (default: 1.5)
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
@@ -216,6 +224,12 @@ class Lines(Mark):
                          default_value='linear', allow_none=False, sync=True,
                          exposed=True, display_index=7,
                          display_name='Interpolation')
+    close_path = Bool(sync=True, exposed=True, display_index=8,
+                      display_name='Close path')
+    fill = ColorList([], sync=True, exposed=True, display_index=9,
+                     display_name='Fill Color')
+    opacity = List([], sync=True, exposed=True, display_index=10,
+                        display_name='Opacity')
     _view_name = Unicode('bqplot.Lines', sync=True)
     _model_name = Unicode('bqplot.LinesModel', sync=True)
 
