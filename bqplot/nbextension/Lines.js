@@ -196,7 +196,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             this.selector.touch();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            this.model.update_labels();
+            var curve_labels = this.model.update_labels();
             this.legend_el = elem.selectAll(".legend" + this.uuid)
               .data(this.model.mark_data, function(d, i) {
                   return d.name;
@@ -216,8 +216,6 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", _.bind(this.get_line_style, this))
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
-
-            var curve_labels = this.model.get("labels");
 
             this.legend_el.append("text")
               .attr("class", "legendtext")

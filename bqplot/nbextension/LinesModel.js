@@ -47,7 +47,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                     this.x_data : [this.x_data];
                 this.y_data = this.y_data[0] instanceof Array ?
                     this.y_data : [this.y_data];
-                this.update_labels();
+                curve_labels = this.update_labels();
 
                 if (this.x_data.length == 1 && this.y_data.length > 1) {
                     // same x for all y
@@ -92,6 +92,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                     curve_labels[index] = "C" + (index+1);
                 });
             }
+            return curve_labels;
         },
         update_domains: function() {
             var scales = this.get("scales");
