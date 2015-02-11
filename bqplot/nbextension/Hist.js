@@ -301,6 +301,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             if( start_pxl === undefined && end_pxl === undefined ) {
                 this.update_selected_colors(-1,-1);
                 idx_selected = [];
+                this.model.set("idx_selected", idx_selected);
+                this.touch();
                 return idx_selected;
             }
             var x_scale = this.scales["sample"];
@@ -318,6 +320,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 var elem = x_data[index];
                 return (elem <= selected_data[1] && elem >= selected_data[0]);
             });
+            this.model.set("idx_selected", idx_selected);
+            this.touch();
             return idx_selected;
         },
     });
