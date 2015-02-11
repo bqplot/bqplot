@@ -75,10 +75,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
-            this.model.on("change:interpolation", this.update_interpolation, this);
-            this.model.on("change:colors", this.update_colors, this);
-            this.model.on("change:fill", this.update_fill, this);
-            this.model.on("change:opacity", this.update_fill, this);
+            // FIXME: multiple calls to update_path_style. Use on_some_change.
+            this.model.on("change:interpolation", this.update_path_style, this);
+            this.model.on("change:close_path", this.update_path_style, this);
+            // FIXME: multiple calls to update_style. Use on_some_change.
+            this.model.on("change:colors", this.update_style, this);
+            this.model.on("change:fill", this.update_style, this);
+            this.model.on("change:opacity", this.update_style, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:stroke_width", this.update_stroke_width, this);
             this.model.on("change:labels_visibility", this.update_legend_labels, this);
@@ -131,12 +134,20 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                   .style("stroke-width", stroke_width);
             }
         },
-        update_colors: function(model, colors) {
+        update_style: function(model, colors) {
             var that = this;
+            var colors = this.model.get("fill");
+            var opacity = this.model.get("opacity");
             // update curve colors
             this.el.selectAll(".curve").select("path")
               .style("stroke", function(d, i) {
                   return that.get_element_color(d, i);
+              })
+              .style("fill", function(d, i) {
+                  return colors[i];
+              })
+              .style("opacity", function(d, i) {
+                  return opacity[i];
               });
             // update legend colors
             if (this.legend_el){
@@ -147,29 +158,22 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.legend_el.select("text")
                   .style("fill", function(d, i) {
                       return that.get_element_color(d, i);
+                  })
+                  .style("opacity", function(d, i) {
+                      return opacity[i];
                   });
             }
-        },
-        update_fill: function() {
-            // update path fill
-            var colors = this.model.get("fill");
-            var fill_opacity = this.model.get("opacity");
-            this.el.selectAll(".curve").select("path")
-              .style("fill", function(d, i) {
-                  return colors[i];
-              })
-              .style("opacity", function(d, i) {
-                  return fill_opacity[i];
-              });
         },
         path_closure: function() {
             return this.model.get("close_path") ? "Z" : "";
         },
-        update_interpolation: function(model, interpolate) {
+        update_path_style: function() {
             var that = this;
-            this.line.interpolate(interpolate);
             this.el.selectAll(".curve").selectAll("path")
-              .attr("d", function(d) { return that.line(d.values) + that.path_closure(); });
+              .attr("d", function(d) {
+                  that.line.interpolate(that.model.get("interpolation"));
+                  return that.line(d.values) + that.path_closure();
+              });
         },
         relayout: function() {
             this.set_ranges();
