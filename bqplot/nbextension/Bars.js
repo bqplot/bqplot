@@ -407,7 +407,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 }
                 e.preventDefault();
                 this.selected_indices = idx_selected;
-                this.apply_styles(this.selected_indices);
+                this.apply_styles();
             }
         },
         reset_selection: function() {

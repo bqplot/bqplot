@@ -72,9 +72,9 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
+            this.model.on("radii_updated", this.update_radii, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.model.on_some_change(["x", "y"], this.position_center, this);
-            this.model.on_some_change(["inner_radius", "radius"], this.update_radii, this);
             this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
             this.model.on("labels_updated", this.update_labels, this);
             this.model.on("change:select_slices", function() {
@@ -83,7 +83,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             }, this);
             this.model.on("change:idx_selected", function() {
                 this.selected_indices = this.model.get("idx_selected");
-                this.apply_styles(this.selected_indices);
+                this.apply_styles();
             }, this);
         },
         relayout: function() {
@@ -264,7 +264,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 }
                 e.preventDefault();
                 this.selected_indices = idx_selected;
-                this.apply_styles(this.selected_indices);
+                this.apply_styles();
             }
         },
         reset_selection: function() {
