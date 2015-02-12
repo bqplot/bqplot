@@ -152,46 +152,24 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 this.y_data = this.y_data[0] instanceof Array ?
                     this.y_data : [this.y_data];
                 curve_labels = this.update_labels();
+                var color_data = this.get_typed_field("color");
+                var width_data = this.get_typed_field("width");
 
-                if (this.x_data.length == 1 && this.y_data.length > 1) {
-                    // same x for all y
-                    this.mark_data = curve_labels.map(function(name, i) {
-                        return {
-                            name: name,
-                            values: that.y_data[i].map(function(d, j) {
-                                return {x: that.x_data[0][j], y: d};
+                this.mark_data = [this.x_data[0]].map(function(curve_elem) {
+                    return {   name: curve_labels[0],
+                            values: curve_elem.slice(0, curve_elem.length - 1)
+                                .map(function(val, index) {
+                                return {x1: val,
+                                        y1: that.y_data[0][index],
+                                        x2: that.x_data[0][index+1],
+                                        y2: that.y_data[0][index+1],
+                                        color: color_data[index],
+                                        size: width_data[index]};
                             }),
                         };
-                    });
-                } else {
-                    this.mark_data = curve_labels.map(function(name, i) {
-                        var xy_data = d3.zip(that.x_data[i], that.y_data[i]);
-                        return {
-                            name: name,
-                            values: xy_data.map(function(d, j) {
-                                return {x: d[0], y: d[1]};
-                            }),
-                        };
-                    });
-                }
+                });
             }
 
-            var color_data = this.get_typed_field("color");
-            var width_data = this.get_typed_field("width");
-
-            this.new_mark_data = this.mark_data.map(function(curve_elem) {
-                return {   name: curve_elem["name"],
-                           values: curve_elem["values"].slice(0, curve_elem["values"].length - 1)
-                             .map(function(val, index, values_array) {
-                               return {x1: val["x"],
-                                       y1: val["y"],
-                                       x2: curve_elem["values"][index+1]["x"],
-                                       y2: curve_elem["values"][index+1]["y"],
-                                       color: color_data[index],
-                                       size: width_data[index]};
-                           }),
-                       };
-            });
             this.update_domains();
             this.dirty = false;
             this.trigger("data_updated");
@@ -203,24 +181,20 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var width_scale = scales["width"];
 
             if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                    return elem.values.map(function(d) { return d.x; });
-                }), this.id);
+                x_scale.compute_and_set_domain(this.x_data[0], this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
             if(!this.get("preserve_domain")["y"]) {
-                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                    return elem.values.map(function(d) { return d.y; });
-                }), this.id);
+                y_scale.compute_and_set_domain(this.y_data[0], this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
 
             if(color_scale !== null && color_scale !== undefined) {
                 if(!this.get("preserve_domain")["color"]) {
-                    color_scale.compute_and_set_domain(this.new_mark_data.map(function(elem) {
+                    color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.values.map(function(d) { return d.color; })
                     }), this.id);
                 } else {
@@ -229,7 +203,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             }
             if(width_scale !== null && width_scale !== undefined) {
                 if(!this.get("preserve_domain")["width"]) {
-                    width_scale.compute_and_set_domain(this.new_mark_data.map(function(elem) {
+                    width_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.values.map(function(d) { return d.size; })
                     }), this.id);
                 } else {
