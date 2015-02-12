@@ -44,6 +44,8 @@ define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, 
                     .attr("pointer-events", "all")
                     .style("cursor", "crosshair")
                     .call(drag);
+
+                self.create_listeners();
             });
         },
         drag_start: function() {
@@ -86,6 +88,10 @@ define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, 
                 this.el.select("#l" + this.lasso_counter).remove();
                 this.lasso_counter--;
             }
+        },
+        relayout: function() {
+            LassoSelector.__super__.relayout.apply(this);
+            this.background.attr("width", this.width).attr("height", this.height);
         },
         keydown: function() {
            //delete key pressed
