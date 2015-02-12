@@ -283,17 +283,17 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             this.remove_from_padding_dict(this.x_pad_dict, model, prev_scale_models["x"]);
             this.remove_from_padding_dict(this.y_pad_dict, model, prev_scale_models["y"]);
 
-            var scale_models = model.get("scales");
-            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.y_padding);
+            var scale_models = model.get("scales")
+            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
+            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.net_y_padding);
 
             this.update_paddings();
         },
         mark_padding_updated: function(model) {
             var scale_models = model.get("scales");
 
-            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.y_padding);
+            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
+            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.net_y_padding);
 
             this.update_paddings();
         },
@@ -314,28 +314,21 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             view.remove();
         },
         add_mark: function(model) {
-            var that  = this;
-            model.state_change.then(function() {
-                model.on("data_updated redraw_legend", that.update_legend, that);
-                model.on("scales_updated", function() {
-                    that.mark_scales_updated(model);
-                }, that);
-                model.on("mark_padding_updated", function() {
-                    that.mark_padding_updated(model);
-                }, that);
+            var self = this;
 
-                var child_x_scale = model.get("scales")["x"];
-                var child_y_scale = model.get("scales")["y"];
+            model.on("data_updated redraw_legend", this.update_legend, this);
+            model.on("scales_updated", function() {
+                self.mark_scales_updated(model);
+            }, this);
+            model.on("mark_padding_updated", function() {
+                self.mark_padding_updated(model);
+            }, this);
 
-                if(child_x_scale == undefined) {
-                    child_x_scale = that.scale_x.model;
-                }
-                if(child_y_scale == undefined) {
-                    child_y_scale = that.scale_y.model;
-                }
+            var child_x_scale = model.get("scales")["x"];
+            var child_y_scale = model.get("scales")["y"];
 
-                that.update_padding_dict(that.x_pad_dict, model, child_x_scale, model.x_padding);
-                that.update_padding_dict(that.y_pad_dict, model, child_y_scale, model.y_padding);
+                that.update_padding_dict(that.x_pad_dict, model, child_x_scale, model.net_x_padding);
+                that.update_padding_dict(that.y_pad_dict, model, child_y_scale, model.net_y_padding);
             });
             var dummy = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
                 return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
@@ -518,6 +511,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         set_interaction: function(model) {
             if (this.interaction_view) { this.interaction_view.remove(); }
             if (model) {
+                // Sets the child interaction
                 var self = this;
                 model.state_change.then(function() {
                     // Sets the child interaction

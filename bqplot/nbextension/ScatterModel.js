@@ -31,7 +31,8 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
         },
         update_bounding_box: function(model, value) {
             this.x_padding = this.y_padding = Math.sqrt(this.get("default_size")) / 2 + 1;
-            this.trigger("mark_padding_updated");
+            // this.trigger("mark_padding_updated");
+            this.calculate_bounding_box();
         },
         update_data: function() {
             this.dirty = true;

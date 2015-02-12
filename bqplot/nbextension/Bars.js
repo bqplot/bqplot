@@ -422,6 +422,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
 
         },
+        get_view_padding: function() {
+            //This function returns a dictionary with keys as the scales and
+            //value as the pixel padding required for the rendering of the
+            //mark. This is required if the mark has a view specific padding.
+            return {'x': (this.x.rangeBand() / 2.0)};
+        },
     });
 
     return {
