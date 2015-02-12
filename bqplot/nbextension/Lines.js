@@ -75,8 +75,13 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
-            this.model.on("change:interpolation", this.update_interpolion, this);
-            this.model.on("change:colors", this.update_colors, this);
+            // FIXME: multiple calls to update_path_style. Use on_some_change.
+            this.model.on("change:interpolation", this.update_path_style, this);
+            this.model.on("change:close_path", this.update_path_style, this);
+            // FIXME: multiple calls to update_style. Use on_some_change.
+            this.model.on("change:colors", this.update_style, this);
+            this.model.on("change:fill", this.update_style, this);
+            this.model.on("change:opacity", this.update_style, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:stroke_width", this.update_stroke_width, this);
             this.model.on("change:labels_visibility", this.update_legend_labels, this);
@@ -129,12 +134,20 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                   .style("stroke-width", stroke_width);
             }
         },
-        update_colors: function(model, colors) {
+        update_style: function() {
             var that = this;
+            var colors = this.model.get("fill");
+            var opacity = this.model.get("opacity");
             // update curve colors
             this.el.selectAll(".curve").select("path")
               .style("stroke", function(d, i) {
                   return that.get_element_color(d, i);
+              })
+              .style("fill", function(d, i) {
+                  return colors[i];
+              })
+              .style("opacity", function(d, i) {
+                  return opacity[i];
               });
             // update legend colors
             if (this.legend_el){
@@ -145,21 +158,31 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.legend_el.select("text")
                   .style("fill", function(d, i) {
                       return that.get_element_color(d, i);
+                  })
+                  .style("opacity", function(d, i) {
+                      return opacity[i];
                   });
             }
         },
-        update_interpolate: function(model, interpolate) {
+        path_closure: function() {
+            return this.model.get("close_path") ? "Z" : "";
+        },
+        update_path_style: function() {
             var that = this;
-            this.line.interpolate(interpolate);
             this.el.selectAll(".curve").selectAll("path")
-              .attr("d", function(d) { return that.line(d.values); });
+              .attr("d", function(d) {
+                  that.line.interpolate(that.model.get("interpolation"));
+                  return that.line(d.values) + that.path_closure();
+              });
         },
         relayout: function() {
             this.set_ranges();
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
               .transition().duration(this.model.get("animate_dur"))
-              .attr("d", function(d) { return that.line(d.values); });
+              .attr("d", function(d) {
+                  return that.line(d.values) + that.path_closure();
+              });
             this.create_labels();
         },
         invert_range: function(start_pxl, end_pxl) {
@@ -218,6 +241,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
+            var fill_color = this.model.get("fill");
+            var fill_opacity = this.model.get("fill_opacity");
             this.legend_el.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
@@ -226,7 +251,11 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 }).on("mouseover", _.bind(this.highlight_axes, this))
                 .on("mouseout", _.bind(this.unhighlight_axes, this))
               .append("line")
-                .style("stroke", function(d,i) { return that.get_element_color(d, i); })
+                .style("stroke", function(d,i) {
+                    return that.get_element_color(d, i); 
+                })
+                .style("fill", function(d, i) { return fill_color[i]; })
+                .style("fill_opacity", function(d, i) { return fill_opacity[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", _.bind(this.get_line_style, this))
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
@@ -237,7 +266,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("y", rect_dim / 2)
               .attr("dy", "0.35em")
               .text(function(d, i) { return curve_labels[i]; })
-              .style("fill", function(d,i) { return that.get_element_color(d, i); });
+              .style("fill", function(d,i) { 
+                  return that.get_element_color(d, i); 
+              });
 
             var max_length = d3.max(curve_labels, function(d) {
                 return d.length;
@@ -321,16 +352,23 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("class", "line")
               .attr("fill", "none");
 
+            var fill_color = this.model.get("fill");
+
             var that = this;
             curves_sel.select("path")
               .attr("id", function(d, i) { return "curve" + (i+1); })
-              .style("stroke", function(d, i) { return that.get_element_color(d, i); })
+              .style("stroke", function(d, i) {
+                  return that.get_element_color(d, i);
+              })
+              .style("fill", function(d, i) { return fill_color[i]; })
               .style("stroke-width", this.model.get("stroke_width"))
               .style("stroke-dasharray", _.bind(this.get_line_style, this));
 
             curves_sel.select("path")
               .transition().duration(this.model.get("animate_dur"))
-              .attr("d", function(d) { return that.line(d.values) });
+              .attr("d", function(d) {
+                  return that.line(d.values) + that.path_closure();
+              });
 
             curves_sel.exit()
               .transition().duration(this.model.get("animate_dur"))
