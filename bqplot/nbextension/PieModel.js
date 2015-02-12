@@ -40,6 +40,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("data_updated");
         },
         update_labels: function() {
+            if(!this.mark_data) {
+                return;
+            }
             var labels = this.get("labels");
             this.mark_data.forEach( function(data, index) {
                 data["label"] = labels[index];
@@ -47,6 +50,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("labels_updated");
         },
         update_color: function() {
+            if(!this.mark_data) {
+                return;
+            }
             var color = this.get_typed_field("color");
             var color_scale = this.get("scales")["color"];
             if(color_scale) {
