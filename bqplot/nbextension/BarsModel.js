@@ -86,6 +86,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             //this is taken care of by the update_data itself. This is separate
             //in bars because update data does a lot more complex calculations
             //which should be avoided when possible
+            if(!this.mark_data) {
+                return;
+            }
             var color = this.get_typed_field("color");
             var color_scale = this.get("scales")["color"];
             var color_mode = this.get("color_mode");
