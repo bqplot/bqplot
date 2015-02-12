@@ -67,10 +67,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var color_scale = this.scales["color"];
             if(color_scale) {
                 this.listenTo(color_scale, "domain_changed", function() {
-                    this.update_colors();
+                    this.update_style();
                 });
                 color_scale.on("color_scale_range_changed",
-                                this.update_colors, this);
+                                this.update_style, this);
             }
         },
         create_listeners: function() {
@@ -242,7 +242,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
             var fill_color = this.model.get("fill");
-            var fill_opacity = this.model.get("fill_opacity");
+            var fill_opacity = this.model.get("opacity");
             this.legend_el.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
@@ -252,7 +252,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 .on("mouseout", _.bind(this.unhighlight_axes, this))
               .append("line")
                 .style("stroke", function(d,i) {
-                    return that.get_element_color(d, i); 
+                    return that.get_element_color(d, i);
                 })
                 .style("fill", function(d, i) { return fill_color[i]; })
                 .style("fill_opacity", function(d, i) { return fill_opacity[i]; })
@@ -266,8 +266,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .attr("y", rect_dim / 2)
               .attr("dy", "0.35em")
               .text(function(d, i) { return curve_labels[i]; })
-              .style("fill", function(d,i) { 
-                  return that.get_element_color(d, i); 
+              .style("fill", function(d,i) {
+                  return that.get_element_color(d, i);
               });
 
             var max_length = d3.max(curve_labels, function(d) {
