@@ -423,7 +423,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             // The only way to call the function after all of the elements are
             // removed is round-about and doesn't look very nice visually.
             elements.exit().remove();
-            this.apply_styles(this.selected_indices);
+            this.apply_styles();
         },
         color_scale_updated: function() {
             var that = this;
@@ -510,7 +510,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         update_idx_selected: function(model, value) {
             this.selected_indices = value;
-            this.apply_styles(value);
+            this.apply_styles();
         },
         set_style_on_elements: function(style, indices) {
             // If the index array is undefined or of length=0, exit the

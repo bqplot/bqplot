@@ -631,6 +631,7 @@ class OHLC(Mark):
 class Pie(Mark):
 
     """Piechart mark.
+
     colors: list of colors
         list of colors for the slices.
     select_slices: bool
@@ -640,7 +641,7 @@ class Pie(Mark):
     sort: bool (default: False)
         sort the pie slices by descending sizes
 
-    x: Date or float
+    x: Float (default: 0.5) or Date
         horizontal position of the pie center, in data coordinates or in figure
         coordinates
     y: Float (default: 0.5)

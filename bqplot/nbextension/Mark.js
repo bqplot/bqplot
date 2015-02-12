@@ -147,7 +147,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 _.range(this.model.mark_data.length).filter(function(index){
                     return sel_indices.indexOf(index) === -1;
                 }) : [];
-            this.clear_style(model.previous("selected_style"), unselected_indices);
+            this.clear_style(model.previous("unselected_style"), unselected_indices);
             this.style_updated(style, unselected_indices);
         },
         style_updated: function(new_style, indices) {
@@ -155,7 +155,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.set_default_style(indices);
             this.set_style_on_elements(new_style, indices);
         },
-        apply_styles: function(indices) {
+        apply_styles: function() {
             var all_indices = _.range(this.model.mark_data.length);
             this.clear_style(this.selected_style);
             this.clear_style(this.unselected_style);
@@ -163,7 +163,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.set_default_style(all_indices);
 
             this.set_style_on_elements(this.selected_style, this.selected_indices);
-            var unselected_indices = (!indices) ? [] : _.difference(all_indices, indices);
+            var unselected_indices = (!this.selected_indices) ?
+                [] : _.difference(all_indices, this.selected_indices);
             this.set_style_on_elements(this.unselected_style, unselected_indices);
         },
         // Abstract functions which have to be overridden by the specific mark

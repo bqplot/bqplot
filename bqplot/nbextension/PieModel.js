@@ -23,8 +23,22 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 this.update_color();
                 this.trigger("colors_updated");
             }, this);
+            this.on_some_change(["inner_radius", "radius"], function() {
+                this.update_bounding_box();
+                this.trigger("radii_updated");
+            }, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:labels", this.update_labels, this);
+        },
+        update_bounding_box: function() {
+            var scales = this.get("scales");
+            var x_scale = scales["x"];
+            var y_scale = scales["y"];
+            if (!x_scale && !y_scale) { return; }
+            var r = d3.max([this.get("radius"), this.get("inner_radius")]);
+            if (x_scale) { this.x_padding = r; }
+            if (y_scale) { this.y_padding = r; }
+            this.trigger("mark_padding_updated");
         },
         update_data: function() {
             var sizes = this.get_typed_field("sizes");
