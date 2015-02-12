@@ -54,13 +54,16 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("data_updated");
         },
         update_domains: function() {
-            var that            = this;
-            var scales          = this.get("scales");
-            var x_scale         = scales["x"];
-            var y_scale         = scales["y"];
-            var min_x_dist      = Number.POSITIVE_INFINITY;
-            var max_y_height    = 0;
-            var dist = height   = 0;
+            if(!this.mark_data) {
+                return;
+            }
+            var that = this;
+            var scales = this.get("scales");
+            var x_scale = scales["x"];
+            var y_scale = scales["y"];
+            var min_x_dist = Number.POSITIVE_INFINITY;
+            var max_y_height = 0;
+            var dist = height = 0;
 
             /*
              * Compute the minimum x distance between the data points. We will

@@ -68,6 +68,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.trigger("data_updated");
         },
         update_domains: function() {
+            if(!this.mark_data) {
+                return;
+            }
             // For histogram, changing the x-scale domain changes a lot of
             // things including the data which is to be plotted. So the x-domain
             // change is handled by the update_data function and only the

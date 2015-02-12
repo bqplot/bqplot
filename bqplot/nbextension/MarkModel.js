@@ -119,13 +119,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.trigger("data_updated");
         },
         update_domains: function() {
-            // update_domains is typically overlaoded in each mark to update
+            // update_domains is typically overloaded in each mark to update
             // the domains related to it's scales
         },
         update_scales: function() {
             this.unregister_all_scales(this.previous("scales"));
             this.trigger("scales_updated");
-            this.update_data();
+            this.update_domains();
         },
         unregister_all_scales: function(scales) {
             // disassociates the mark with the scale

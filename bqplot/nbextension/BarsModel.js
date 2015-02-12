@@ -106,6 +106,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             }
         },
         update_domains: function() {
+            if(!this.mark_data) {
+                return;
+            }
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
