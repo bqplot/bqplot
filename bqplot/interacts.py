@@ -37,8 +37,8 @@ Interacts
    panzoom
 """
 
-from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance, List, 
-                                     TraitError)
+from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance,
+                                     List, TraitError)
 from IPython.html.widgets import Widget
 
 from .scales import Scale, DateScale
@@ -542,7 +542,8 @@ class LassoSelector(TwoDSelector):
     by drawing lassos on the figure. Lasso Selector is currently supported only
     for Lines and Scatter marks. A mouse-down starts drawing the lasso and
     after the mouse-up the lasso is closed and idx_selected property of each
-    mark gets updated with the data in the lasso.
+    mark gets updated with the data in the lasso. A lasso which doesn't
+    encompass any mark data will be automatically deleted
 
     The user can select(de-select) by clicking on lassos and can delete them
     (and their associsted data) by pressing 'Delete' button
