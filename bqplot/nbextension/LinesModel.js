@@ -146,6 +146,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var curve_labels = this.get("labels");
             if (this.x_data.length == 0 || this.y_data.length == 0) {
                 this.mark_data = [];
+                this.data_len = 0;
             } else {
                 this.x_data = this.x_data[0] instanceof Array ?
                     this.x_data : [this.x_data];
@@ -154,20 +155,19 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 curve_labels = this.update_labels();
                 var color_data = this.get_typed_field("color");
                 var width_data = this.get_typed_field("width");
+                this.data_len = Math.min(this.x_data[0].length, this.y_data[0].length);
 
-                this.mark_data = [this.x_data[0]].map(function(curve_elem) {
-                    return {   name: curve_labels[0],
-                            values: curve_elem.slice(0, curve_elem.length - 1)
+                this.mark_data = [{ name: curve_labels[0],
+                            values: _.range(this.data_len - 1)
                                 .map(function(val, index) {
-                                return {x1: val,
+                                return {x1: that.x_data[0][index],
                                         y1: that.y_data[0][index],
                                         x2: that.x_data[0][index+1],
                                         y2: that.y_data[0][index+1],
                                         color: color_data[index],
                                         size: width_data[index]};
-                            }),
-                        };
-                });
+                            })
+                        }];
             }
 
             this.update_domains();
@@ -181,13 +181,13 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var width_scale = scales["width"];
 
             if(!this.get("preserve_domain")["x"]) {
-                x_scale.compute_and_set_domain(this.x_data[0], this.id);
+                x_scale.compute_and_set_domain(this.x_data[0].slice(0, this.data_len), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
             if(!this.get("preserve_domain")["y"]) {
-                y_scale.compute_and_set_domain(this.y_data[0], this.id);
+                y_scale.compute_and_set_domain(this.y_data[0].slice(0, this.data_len), this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
