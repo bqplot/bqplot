@@ -92,11 +92,13 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 });
             }
 
-            $('#world_tooltip #'+this.map_id).remove();
-            this.draw_map();
-            this.update_layout();
-            this.create_listeners();
-            this.create_tooltip_widget(this);
+            this.after_displayed(function() {
+                d3.select(this.el.parentNode).selectAll('#world_tooltip').remove();
+                this.draw_map();
+                this.update_layout();
+                this.create_listeners();
+                this.create_tooltip_widget(this);
+            });
 
         },
         create_tooltip_widget: function(self) {
@@ -116,7 +118,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         },
         remove_map: function(that) {
             $('.world_map .'+that.map_id).remove();
-            //$('#world_tooltip').remove();
             $('.world_viewbox .'+that.map_id).remove();
             $('.'+that.map_id).remove();
         },
@@ -167,13 +168,15 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             this.highlight_g = this.transformed_g.append("g");
             this.stroke_g = this.transformed_g.append("g");
 
-            if ($('#world_tooltip').length===0) {
-                this.tooltip_div = d3.select("body").append("div")
-                .attr("id", "world_tooltip "+this.map_id)
+            if (!this.tooltip_div) {
+                this.tooltip_div = d3.select(this.el.parentNode).append("div")
+                .attr("id", "world_tooltip")
                 .style("pointer-events", "none")
-                .style("z-index", 1001);
+                .style("z-index", 1001)
+                .classed("hidden", true);
             } else {
-                this.tooltip_div = d3.select('#world_tooltip #'+this.map_id)
+                this.tooltip_div = d3.select(this.el.parentNode)
+                                     .select('#world_tooltip')
             }
 
             //Bind data and create one path per GeoJSON feature
@@ -252,13 +255,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 						}
 					};
 
-				    d3.select("#world_tooltip").classed("hidden", false);
+                    var mouse_pos = d3.mouse(that.el);
+
+				    d3.select(that.el.parentNode).select("#world_tooltip").classed("hidden", false);
 
                     if (that.model.get("display_tooltip")) {
                         if (that.tooltip_widget) {
-                            d3.select("#world_tooltip")
+                            d3.select(that.el.parentNode)
+                              .select("#world_tooltip")
                               .style("background-color", "transparent")
-				              .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px", "width":"300px", "height":"200px"});
+				              .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px", "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px", "width":"300px", "height":"200px"});
 
                     } else {
                             //Update the tooltip position and value
@@ -266,30 +272,35 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         if (that.is_object_empty(that.model.get("text_data"))) {
                             if (that.color_data[d.id]!==undefined &&
                                 that.color_data[d.id]!==null) {
-                                d3.select("#world_tooltip")
+                                d3.select(that.el.parentNode)
+                                  .select("#world_tooltip")
                                   .style("background-color", that.model.get("tooltip_color"))
                                   .style("color", that.model.get("text_color"))
-				                  .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
+                                  .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px", "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px"})
 				                  .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
                             } else {
-                                d3.select("#world_tooltip")
+                                d3.select(that.el.parentNode)
+                                  .select("#world_tooltip")
                                   .style("background-color", that.model.get("tooltip_color"))
                                   .style("color", that.model.get("text_color"))
-				                  .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"})
+				                  .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px", "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px"})
 				                  .text(name);
                                 }
                         } else {
-                            d3.select("#world_tooltip")
+                            d3.select(that.el.parentNode)
+                              .select("#world_tooltip")
                               .style("background-color", that.model.get("tooltip_color"))
                               .style("color", that.model.get("text_color"))
-				              .style({"left":(d3.event.x+5)+"px", "top":(d3.event.y-5)+"px"});
+				              .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px", "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px"})
 
                             if(that.model.get("text_data")[d.id]!==undefined &&
                                 that.model.get("text_data")[d.id]!==null) {
-				                d3.select("#world_tooltip")
+				                d3.select(that.el.parentNode)
+                                  .select("#world_tooltip")
                                   .text(name + ": " + that.fmt(that.model.get("text_data")[d.id]));
                             } else {
-                                d3.select("#world_tooltip")
+                                d3.select(that.el.parentNode)
+                                  .select("#world_tooltip")
                                   .text(name);
                             }
                         }
@@ -305,7 +316,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         return;
                     }
 
-                    d3.select("#world_tooltip").classed("hidden", true);
+                    d3.select(that.el.parentNode)
+                      .select("#world_tooltip").classed("hidden", true);
 
 					d3.select(this).transition().style("fill", function(d, i) {
                         return that.fill_g_colorfill(d, i, that);
