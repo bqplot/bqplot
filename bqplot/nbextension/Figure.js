@@ -278,7 +278,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             }
             dict[scale_id][mark_model.id] = value;
         },
-        mark_scales_updated: function(model) {
+        /* mark_scales_updated: function(model) {
             var prev_scale_models = model.previous("scales");
             this.remove_from_padding_dict(this.x_pad_dict, model, prev_scale_models["x"]);
             this.remove_from_padding_dict(this.y_pad_dict, model, prev_scale_models["y"]);
@@ -290,6 +290,27 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             this.update_paddings();
         },
         mark_padding_updated: function(model) {
+            var scale_models = model.get("scales");
+
+            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
+            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.net_y_padding);
+
+            this.update_paddings();
+        },*/
+        mark_scales_updated: function(view) {
+            var model = view.model;
+            var prev_scale_models = model.previous("scales");
+            this.remove_from_padding_dict(this.x_pad_dict, model, prev_scale_models["x"]);
+            this.remove_from_padding_dict(this.y_pad_dict, model, prev_scale_models["y"]);
+
+            var scale_models = model.get("scales")
+            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
+            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.net_y_padding);
+
+            this.update_paddings();
+        },
+        mark_padding_updated: function(view) {
+            var model = view.model;
             var scale_models = model.get("scales");
 
             this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
@@ -314,18 +335,25 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             view.remove();
         },
         add_mark: function(model) {
-            var self = this;
+            var that = this;
 
             model.on("data_updated redraw_legend", this.update_legend, this);
-            model.on("scales_updated", function() {
+            /* model.on("scales_updated", function() {
                 self.mark_scales_updated(model);
             }, this);
             model.on("mark_padding_updated", function() {
                 self.mark_padding_updated(model);
-            }, this);
+            }, this); */
 
             var child_x_scale = model.get("scales")["x"];
             var child_y_scale = model.get("scales")["y"];
+
+            if(child_x_scale == undefined) {
+                child_x_scale = this.scale_x.model;
+            }
+            if(child_y_scale == undefined) {
+                child_y_scale = this.scale_y.model;
+            }
 
                 that.update_padding_dict(that.x_pad_dict, model, child_x_scale, model.net_x_padding);
                 that.update_padding_dict(that.y_pad_dict, model, child_y_scale, model.net_y_padding);
@@ -333,6 +361,12 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             var dummy = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
                 return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
                     dummy.parentNode.replaceChild(view.el.node(), dummy);
+		            view.model.on("mark_padding_updated", function() {
+		                that.mark_padding_updated(view);
+		            }, that);
+		            view.on("mark_scales_updated", function() {
+		                that.mark_scales_updated(view);
+		            }, that);
                     // Trigger the displayed event of the child view.
                     that.after_displayed(function() {
                         view.trigger("displayed");

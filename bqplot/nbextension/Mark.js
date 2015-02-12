@@ -60,6 +60,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 that.initialize_additional_scales();
                 that.set_ranges();
                 that.draw();
+                that.trigger("mark_scales_updated");
             });
         },
         set_positional_scales: function() {

@@ -102,6 +102,9 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
         initialize: function() {
             this.x_padding = 0;
             this.y_padding = 0;
+            this.net_x_padding = 0;
+            this.net_y_padding = 0;
+
             this.on("change:scales", this.update_scales, this);
             this.once("destroy", this.handle_destroy, this);
             // `this.dirty` is set to `true` before starting computations that
