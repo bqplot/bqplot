@@ -38,8 +38,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             return scale_creation_promise;
         },
         set_scale_models: function() {
-            // first, if this.scales was already define, unregister to any
-            // event on the old one.
+            // first, if this.scales was already defined, unregister from the
+            // old ones.
             for (var key in this.scales) {
                 this.stopListening(this.scales[key]);
             }
@@ -57,7 +57,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.set_positional_scales();
                 that.initialize_additional_scales();
                 that.set_ranges();
-                that.relayout();
+                that.draw();
             });
         },
         set_positional_scales: function() {
