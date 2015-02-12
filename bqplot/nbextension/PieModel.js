@@ -31,7 +31,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.on("change:labels", this.update_labels, this);
         },
         update_bounding_box: function() {
-            // FIXME: Only updating the padding if x or y scales are passed
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
