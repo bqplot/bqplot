@@ -37,12 +37,13 @@ Interacts
    panzoom
 """
 
-from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance, List)
+from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance, List, 
+                                     TraitError)
 from IPython.html.widgets import Widget
 
-from .marks import Lines
 from .scales import Scale, DateScale
 from .traits import Color, Date, NdArray
+from .marks import Lines, Scatter
 
 
 def register_interaction(key=None):
@@ -530,3 +531,37 @@ class MultiSelector(OneDSelector):
 
     _view_name = Unicode('MultiSelector', sync=True)
     _view_module = Unicode('nbextensions/bqplot/BrushSelector', sync=True)
+
+
+@register_interaction('bqplot.LassoSelector')
+class LassoSelector(TwoDSelector):
+
+    """Lasso selector interaction.
+
+    This 2-D selector enables the user to select multiple sets of data points
+    by drawing lassos on the figure. Lasso Selector is currently supported only
+    for Lines and Scatter marks. A mouse-down starts drawing the lasso and
+    after the mouse-up the lasso is closed and idx_selected property of each
+    mark gets updated with the data in the lasso.
+
+    The user can select(de-select) by clicking on lassos and can delete them
+    (and their associsted data) by pressing 'Delete' button
+
+    """
+    marks = List(Instance(Lines) | Instance(Scatter), sync=True)
+
+    def __init__(self, marks=None, **kwargs):
+        _marks = []
+        if marks is not None:
+            for mark in marks:
+                try:
+                    mark_trait = self.class_traits()['marks']
+                    _marks.append(mark_trait.validate_elements(self, [mark])[0])
+                except TraitError:
+                    pass
+
+        kwargs['marks'] = _marks
+        super(LassoSelector, self).__init__(**kwargs)
+
+    _view_name = Unicode('bqplot.LassoSelector', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/LassoSelector', sync=True)

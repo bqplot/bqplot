@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./Mark"], function(d3, MarkViewModule) {
+define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
     "use strict";
 
     var Lines = MarkViewModule.Mark.extend({
@@ -398,6 +398,46 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
                   });
             }
             this.create_labels();
+        },
+        update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
+                                               point_in_lasso_func)
+        {
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
+            if (idx_selected == null)
+               idx_selected = [];
+            var data_in_lasso = false;
+            var that = this;
+            if(lasso_vertices != null && lasso_vertices.length > 0) {
+                //go thru each line and check if its data is in lasso
+                _.each(this.model.mark_data, function(line_data) {
+                   var line_name = line_data.name;
+                   var data = line_data.values;
+                   var indices = _.range(data.length);
+                   var idx_in_lasso = _.filter(indices, function(index) {
+                       var elem = data[index];
+                       var point = [x_scale.scale(elem.x), y_scale.scale(elem.y)];
+                       return point_in_lasso_func(point, lasso_vertices);
+                   });
+                   if (idx_in_lasso.length > 0) {
+                       data_in_lasso = true;
+                       idx_selected.push({line_name: line_name,
+                                         lasso_name: lasso_name,
+                                         indices: idx_in_lasso});
+                   }
+               });
+               that.model.set("idx_selected", idx_selected);
+               that.touch();
+            } else { //delete the lasso specific idx_selected
+                filtered_idx_selected = _.filter(idx_selected, function(lasso) {
+                    return lasso.lasso_name !== lasso_name;
+                });
+                this.model.set("idx_selected", filtered_idx_selected);
+                this.touch();
+            }
+
+            //return true if there are any mark data inside lasso
+            return data_in_lasso;
         },
     });
 
