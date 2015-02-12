@@ -92,7 +92,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 });
             }
 
-            $('#world_tooltip').remove();
+            $('#world_tooltip #'+this.map_id).remove();
             this.draw_map();
             this.update_layout();
             this.create_listeners();
@@ -169,11 +169,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             if ($('#world_tooltip').length===0) {
                 this.tooltip_div = d3.select("body").append("div")
-                .attr("id", "world_tooltip")
+                .attr("id", "world_tooltip "+this.map_id)
                 .style("pointer-events", "none")
                 .style("z-index", 1001);
             } else {
-                this.tooltip_div = d3.select('#world_tooltip')
+                this.tooltip_div = d3.select('#world_tooltip #'+this.map_id)
             }
 
             //Bind data and create one path per GeoJSON feature
