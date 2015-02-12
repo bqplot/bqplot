@@ -44,13 +44,13 @@ Pyplot
 """
 
 from IPython.display import display
+from IPython.html.widgets import VBox, HBox
 import numpy as np
 from ..figure import Figure
 from ..scales import Scale, LinearScale
 from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie
 from ..interacts import panzoom
-from IPython.html.widgets import VBox, HBox as ButtonGroup
 from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
 
 _context = {
@@ -99,7 +99,9 @@ def _default_toolbar(figure):
     reset_btn.on_click(reset)
     figure.interaction = None
 
-    return ButtonGroup([normal_btn, pz_btn, snapshot_btn, reset_btn])
+    button_group = HBox([normal_btn, pz_btn, snapshot_btn, reset_btn])
+    button_group._dom_classes = list(button_group._dom_classes) + ['btn-group']
+    return button_group
 
 
 def show(key=None, display_toolbar=True):
