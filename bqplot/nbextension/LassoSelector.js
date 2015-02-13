@@ -48,18 +48,27 @@ define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, 
                 self.create_listeners();
             });
         },
+        create_listeners: function() {
+            LassoSelector.__super__.create_listeners.apply(this);
+            this.model.on("change:color", this.change_color, this);
+        },
+        change_color: function(model, color) {
+            this.el.selectAll("path").attr("stroke", color);
+        },
         drag_start: function() {
+            var self = this;
             this.lasso_vertices = [];
             this.el.append("path")
                 .attr("id", "l" + ++this.lasso_counter)
                 .attr("fill", "none")
-                .attr("stroke", "orange")
+                .attr("stroke", this.model.get("color"))
                 .attr("stroke-width", 4)
                 .on("click", function() {
+                    //toggle the opacity of lassos
                     var lasso = d3.select(this);
                     var selected = lasso.classed("selected");
                     lasso.classed("selected", !selected)
-                        .attr("stroke", !selected ? "red" : "orange"); });
+                        .attr("opacity", !selected ? 0.4 : 1.0); });
         },
         drag_move: function() {
             this.lasso_vertices.push(d3.mouse(this.background.node()));

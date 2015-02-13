@@ -546,10 +546,16 @@ class LassoSelector(TwoDSelector):
     encompass any mark data will be automatically deleted
 
     The user can select(de-select) by clicking on lassos and can delete them
-    (and their associsted data) by pressing 'Delete' button
+    (and their associated data) by pressing the 'Delete' button
+
+    Attributes
+    ----------
+    color: string
+        color of the lasso
 
     """
     marks = List(Instance(Lines) | Instance(Scatter), sync=True)
+    color = Unicode(default_value='orange', sync=True)
 
     def __init__(self, marks=None, **kwargs):
         _marks = []
