@@ -17,11 +17,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
     "use strict";
 
     var Mark = Widget.WidgetView.extend({
-        initialize: function() {
+        render: function() {
             this.x_padding = 0;
             this.y_padding = 0;
-        },
-        render: function() {
             this.parent = this.options.parent;
             this.uuid = utils.uuid();
             var scale_creation_promise = this.set_scale_views();

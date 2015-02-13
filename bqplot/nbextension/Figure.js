@@ -262,21 +262,21 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 });
             });
         },
-        remove_from_padding_dict: function(dict, mark_model, scale_model) {
+        remove_from_padding_dict: function(dict, mark_view, scale_model) {
             var scale_id = scale_model.id;
             if(dict[scale_id] !== undefined) {
-                delete dict[scale_id][mark_model.id];
+                delete dict[scale_id][mark_view.model.id+'_'+mark_view.cid];
             }
-            if(Object.keys(dict[scale_id]).length === 0) {
+            if(Object.keys(dict[scale_id]).length == 0) {
                 delete dict[scale_id];
             }
         },
-        update_padding_dict: function(dict, mark_model, scale_model, value) {
+        update_padding_dict: function(dict, mark_view, scale_model, value) {
             var scale_id = scale_model.id;
             if(!(dict[scale_id])) {
                 dict[scale_id]= {};
             }
-            dict[scale_id][mark_model.id] = value;
+            dict[scale_id][mark_view.model.id+'_'+mark_view.cid] = value;
         },
         /* mark_scales_updated: function(model) {
             var prev_scale_models = model.previous("scales");
@@ -300,12 +300,12 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         mark_scales_updated: function(view) {
             var model = view.model;
             var prev_scale_models = model.previous("scales");
-            this.remove_from_padding_dict(this.x_pad_dict, model, prev_scale_models["x"]);
-            this.remove_from_padding_dict(this.y_pad_dict, model, prev_scale_models["y"]);
+            this.remove_from_padding_dict(this.x_pad_dict, view, prev_scale_models["x"]);
+            this.remove_from_padding_dict(this.y_pad_dict, view, prev_scale_models["y"]);
 
             var scale_models = model.get("scales")
-            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.net_y_padding);
+            this.update_padding_dict(this.x_pad_dict, view, scale_models["x"], view.x_padding);
+            this.update_padding_dict(this.y_pad_dict, view, scale_models["y"], view.y_padding);
 
             this.update_paddings();
         },
@@ -313,8 +313,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             var model = view.model;
             var scale_models = model.get("scales");
 
-            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.net_y_padding);
+            this.update_padding_dict(this.x_pad_dict, view, scale_models["x"], view.x_padding);
+            this.update_padding_dict(this.y_pad_dict, view, scale_models["y"], view.y_padding);
 
             this.update_paddings();
         },
@@ -330,8 +330,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             model.off("mark_padding_updated", null, this);
 
             var scale_models = model.get("scales");
-            this.remove_from_padding_dict(this.x_pad_dict, model, scale_models["x"]);
-            this.remove_from_padding_dict(this.y_pad_dict, model, scale_models["y"]);
+            this.remove_from_padding_dict(this.x_pad_dict, view, scale_models["x"]);
+            this.remove_from_padding_dict(this.y_pad_dict, view, scale_models["y"]);
             view.remove();
         },
         add_mark: function(model) {
@@ -354,9 +354,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             if(child_y_scale == undefined) {
                 child_y_scale = this.scale_y.model;
             }
-
-                that.update_padding_dict(that.x_pad_dict, model, child_x_scale, model.net_x_padding);
-                that.update_padding_dict(that.y_pad_dict, model, child_y_scale, model.net_y_padding);
             });
             var dummy = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
                 return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
@@ -367,6 +364,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
 		            view.on("mark_scales_updated", function() {
 		                that.mark_scales_updated(view);
 		            }, that);
+                    // Trigger the displayed event of the child view.
+                    that.update_padding_dict(that.x_pad_dict, view, child_x_scale, view.x_padding);
+                    that.update_padding_dict(that.y_pad_dict, view, child_y_scale, view.y_padding);
                     // Trigger the displayed event of the child view.
                     that.after_displayed(function() {
                         view.trigger("displayed");
