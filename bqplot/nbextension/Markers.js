@@ -16,19 +16,22 @@
 define(["d3"], function(d3) {
 
     var pi = Math.PI
-    var tan10 = Math.tan(10 * pi / 180);
+    var tan5 = Math.tan(5 * pi / 180);
+    var tan30 = Math.tan(30 * pi / 180);
+    var tan60 = Math.tan(60 * pi / 180);
 
     var bqSymbolTypes = d3.map({
-        "arrow": function(size) {
-            var ry = Math.sqrt(size / tan10),
-                rx = ry * tan10;
+        "arrow": function(size, eccentricity) {
+            var ecc = tan60 + (tan5 - tan60) * eccentricity
+            var ry = Math.sqrt(size / ecc),
+                rx = ry * ecc / 2;
             return "M0," + -ry
                 + "L" + rx +"," + ry
                 + " " + -rx + "," + ry
                 + "Z";
         },
         "ellipse": function(size, eccentricity) {
-            var ecc = Math.pow(2, eccentricity)
+            var ecc = Math.pow(10, eccentricity)
             var rx = Math.sqrt(size / (pi * ecc));
             var ry = rx * ecc;
             return "M0," + ry
@@ -36,8 +39,8 @@ define(["d3"], function(d3) {
                 + "A" + rx + "," + ry + " 0 1,1 0," + ry
                 + "Z";
         },
-        "square": function(size, eccentricity) {
-            var ecc = Math.pow(2, eccentricity)
+        "rectangle": function(size, eccentricity) {
+            var ecc = Math.pow(10, eccentricity)
             var rx = Math.sqrt(size / ecc) / 2;
             var ry = rx * ecc;
             return "M" + -rx + "," + -ry
@@ -57,7 +60,7 @@ define(["d3"], function(d3) {
     }
 
     function symbolEccentricity() {
-        return 0;
+        return 0.5;
     }
 
 
@@ -84,7 +87,7 @@ define(["d3"], function(d3) {
             return symbol;
         };
 
-        // eccentricity of symbol,
+        // eccentricity of symbol, in [0, 1]
         symbol.eccentricity = function(x) {
             if (!arguments.length) return eccentricity;
             eccentricity = d3.functor(x);

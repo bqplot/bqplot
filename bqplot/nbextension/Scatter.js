@@ -15,17 +15,24 @@
 
 define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
     "use strict";
-
     var min_size = 10;
-
     var Scatter = MarkViewModule.Mark.extend({
         render: function() {
             var base_creation_promise = Scatter.__super__.render.apply(this);
             this.stroke = this.model.get("stroke");
             this.default_opacity = this.model.get("default_opacity");
-            this.dot = d3.svg.symbol()
-              .type(this.model.get("marker"))
-              .size(this.model.get("default_size"));
+
+            var marker_type = this.model.get("marker");
+            if (d3.svg.symbolTypes.indexOf(marker_type) != -1) {
+                this.dot = d3.svg.symbol()
+                  .type(marker_type)
+                  .size(this.model.get("default_size"));
+            } else {
+                this.dot = bqSymbol()
+                  .type(marker_type)
+                  .size(this.model.get("default_size"))
+                  .eccentricity(this.model.get("default_eccentricity"));
+            };
 
             //container for mouse clicks
             this.el.append("rect")
@@ -129,6 +136,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:default_color", this.update_default_color, this);
             this.model.on("change:stroke", this.update_stroke, this);
             this.model.on("change:default_opacity", this.update_default_opacity, this);
+            this.model.on("change:default_eccentricity", this.update_default_eccentricity, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:marker", this.update_marker, this);
             this.model.on("change:default_size", this.update_default_size, this);
@@ -196,16 +204,21 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         update_marker: function(model, marker) {
-            this.dot.type(this.model.get("marker"));
-            this.el.selectAll(".dot").attr("d", this.dot);
-            if (this.legend_el) {
-                this.legend_el.select("path").attr("d", this.dot.size(64));
+
+
+        },
+        update_default_eccentricity: function(model) {
+            if(!model.dirty && d3.svg.symbolTypes.indexOf(model.get("marker")) == -1) {
+                var that = this;
+                this.el.selectAll(".dot").attr("d", this.dot.eccentricity(function(data) {
+                    return that.get_element_eccentricity(data);
+                }));
             }
         },
-        update_default_size: function(model, new_size) {
+        update_default_size: function(model) {
             this.compute_view_padding();
             // update size scale range?
-            if(!this.model.dirty) {
+            if(!model.dirty) {
                 var that = this;
                 this.el.selectAll(".dot").attr("d", this.dot.size(function(data) {
                     return that.get_element_size(data);
@@ -237,6 +250,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 return opacity_scale.scale(data.opacity);
             }
             return this.model.get("default_opacity");
+        },
+        get_element_eccentricity: function(data) {
+            var eccentricity_scale = this.scales["eccentricity"];
+            if(eccentricity_scale && data.eccentricity !== undefined) {
+                return eccentricity_scale.scale(data.opacity);
+            }
+            return this.model.get("default_eccentricity");
         },
         relayout: function() {
             this.set_ranges();

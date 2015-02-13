@@ -293,13 +293,16 @@ class Scatter(Mark):
     name: string (class-level attribute)
         User-friendly name of the mark
     marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
-             'triangle-up'}
+             'triangle-up', 'arrow', 'rectangle', 'ellipse'}
         Marker shape
     default_color: Color (default: 'green')
         Default color of the marker
     stroke: Color or None (default: None)
         Stroke color of the marker
     default_opacity: float (default: 1.0)
+        This number is validated to be between 0 and 1.
+    default_eccentricity: float (default: 0.5)
+        Default eccentricity of the marker.
         This number is validated to be between 0 and 1.
     default_size: nonnegative int (default: 64)
         Default marker size in pixel.
@@ -348,7 +351,8 @@ class Scatter(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
-                  'triangle-up'], default_value='circle', allow_none=False,
+                  'triangle-up', 'arrow', 'rectangle', 'ellipse'],
+                  default_value='circle', allow_none=False,
                   sync=True, exposed=True, display_index=3,
                   display_name='Marker')
     default_color = Color('green', sync=True, exposed=True, display_index=4,
@@ -358,6 +362,8 @@ class Scatter(Mark):
     default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
                                    exposed=True, display_index=7,
                                    display_name='Default opacity')
+    default_eccentricity = BoundedFloat(default_value=0.5, min=0, max=1,
+                                        sync=True)
     default_size = Int(64, sync=True, exposed=True, display_index=9,
                        display_name='Default size')  # dot size in pixels
     names = NdArray(sync=True)
