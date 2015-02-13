@@ -278,25 +278,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             }
             dict[scale_id][mark_view.model.id+'_'+mark_view.cid] = value;
         },
-        /* mark_scales_updated: function(model) {
-            var prev_scale_models = model.previous("scales");
-            this.remove_from_padding_dict(this.x_pad_dict, model, prev_scale_models["x"]);
-            this.remove_from_padding_dict(this.y_pad_dict, model, prev_scale_models["y"]);
-
-            var scale_models = model.get("scales")
-            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.net_y_padding);
-
-            this.update_paddings();
-        },
-        mark_padding_updated: function(model) {
-            var scale_models = model.get("scales");
-
-            this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.net_x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.net_y_padding);
-
-            this.update_paddings();
-        },*/
         mark_scales_updated: function(view) {
             var model = view.model;
             var prev_scale_models = model.previous("scales");
@@ -338,13 +319,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             var that = this;
 
             model.on("data_updated redraw_legend", this.update_legend, this);
-            /* model.on("scales_updated", function() {
-                self.mark_scales_updated(model);
-            }, this);
-            model.on("mark_padding_updated", function() {
-                self.mark_padding_updated(model);
-            }, this); */
-
             var child_x_scale = model.get("scales")["x"];
             var child_y_scale = model.get("scales")["y"];
 
