@@ -39,6 +39,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             return base_creation_promise.then(function() {
                 self.create_listeners();
+                self.get_view_padding();
                 self.draw();
             });
         },
@@ -98,6 +99,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         relayout: function() {
             var y_scale = this.scales["y"];
             this.set_ranges();
+            this.get_view_padding();
 
             this.el.select(".mouseeventrect")
               .attr("width", this.parent.plotarea_width)
@@ -425,8 +427,20 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         get_view_padding: function() {
             //This function returns a dictionary with keys as the scales and
             //value as the pixel padding required for the rendering of the
-            //mark. This is required if the mark has a view specific padding.
-            return {};
+            //mark.
+            var scales = this.scales;
+            var x_scale = scales["x"];
+            var x_padding = 0;
+            if(x_scale) {
+                if(x_scale.model.type !== "ordinal" && (this.x !== null && this.x !== undefined && this.x.domain().length != 0)) {
+                    x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1);
+                }
+            }
+            if(x_padding !== this.x_padding) {
+                this.x_padding = x_padding;
+                this.trigger("mark_padding_updated");
+                //dispatch the event
+            }
         },
     });
 
