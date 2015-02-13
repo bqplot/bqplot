@@ -100,11 +100,6 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
         // These two attributes are the pixel values which should be appended
         // to the area of the plot to make sure that the entire mark is visible
         initialize: function() {
-            this.x_padding = 0;
-            this.y_padding = 0;
-            this.net_x_padding = 0;
-            this.net_y_padding = 0;
-
             this.on("change:scales", this.update_scales, this);
             this.once("destroy", this.handle_destroy, this);
             // `this.dirty` is set to `true` before starting computations that
@@ -113,10 +108,6 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
             // of `this.dirty` before rendering
             this.dirty = false;
             this.padding_from_view = false;
-        },
-        update_bounding_box: function(model, value) {
-            //base class function which does not do anything
-            this.calculate_bounding_box();
         },
         update_data : function() {
             // Update_data is typically overloaded in each mark
@@ -142,32 +133,6 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
         },
         handle_destroy: function() {
             this.unregister_all_scales(this.get("scales"));
-        },
-        calculate_bounding_box: function() {
-            // Used to aggregate the bounding box for each of the views and set
-            // the maximum values to be the actual bounding box
-            if(!this.padding_from_view) {
-                this.net_x_padding = this.x_padding;
-                this.net_y_padding = this.y_padding;
-                this.trigger("mark_padding_updated");
-                return;
-            }
-            var that = this;
-            var current_x = this.x_padding, current_y = this.y_padding;
-            if(this.views !== null && this.views !== undefined) {
-                utils.resolve_promises_dict(this.views).then(function(views) {
-                   for(var key in views) {
-                        var padding = views[key].get_view_padding();
-                        if(padding['x'])
-                            current_x = Math.max(current_x, padding['x']);
-                        if(padding['y'])
-                            current_y = Math.max(current_y, padding['y']);
-                   }
-                   that.net_x_padding = current_x;
-                   that.net_y_padding = current_y;
-                   that.trigger("mark_padding_updated");
-                });
-            }
         },
     });
 

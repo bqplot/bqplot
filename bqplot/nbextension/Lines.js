@@ -27,6 +27,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // assumption.
             return base_render_promise.then(function() {
                 that.create_listeners();
+				that.get_view_padding();
                 that.draw();
             });
         },
@@ -117,6 +118,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         update_stroke_width: function(model, stroke_width) {
+            this.get_view_padding();
             this.el.selectAll(".curve").selectAll("path")
               .style("stroke-width", stroke_width);
             if (this.legend_el) {
@@ -403,8 +405,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //This function returns a dictionary with keys as the scales and
             //value as the pixel padding required for the rendering of the
             //mark.
-            this.x_padding = this.model.get("stroke_width")/2.0;
-            this.y_padding = this.model.get("stroke_width")/2.0;
+            var x_padding = this.model.get("stroke_width")/2.0;
+            var y_padding = x_padding;
+            if(x_padding !== this.x_padding || y_padding !== this.y_padding) {
+                this.x_padding = x_padding;
+                this.y_padding = y_padding;
+                this.trigger("mark_padding_updated");
+                //dispatch the event
+            }
             return {'x': this.x_padding, 'y': this.y_padding};
 		},
         update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
