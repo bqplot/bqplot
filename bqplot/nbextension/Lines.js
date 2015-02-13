@@ -403,12 +403,11 @@ define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                                                point_in_lasso_func)
         {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
-            if (idx_selected == null)
-               idx_selected = [];
+            var idx = this.model.get("idx_selected");
+            idx_selected = idx ? utils.deepCopy(idx) : [];
             var data_in_lasso = false;
             var that = this;
-            if(lasso_vertices != null && lasso_vertices.length > 0) {
+            if(lasso_vertices !== null && lasso_vertices.length > 0) {
                 //go thru each line and check if its data is in lasso
                 _.each(this.model.mark_data, function(line_data) {
                    var line_name = line_data.name;

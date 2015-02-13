@@ -545,13 +545,15 @@ class LassoSelector(TwoDSelector):
     mark gets updated with the data in the lasso. A lasso which doesn't
     encompass any mark data will be automatically deleted
 
-    The user can select(de-select) by clicking on lassos and can delete them
+    The user can select (de-select) by clicking on lassos and can delete them
     (and their associated data) by pressing the 'Delete' button
 
     Attributes
     ----------
-    color: string
-        color of the lasso
+    marks: list of marks which are instances of {Lines, Scatter} (dafault: [])
+        List of marks on which lasso selector will be applied.
+    color: Color (default: None)
+        Color of the lasso
 
     """
     marks = List(Instance(Lines) | Instance(Scatter), sync=True)
