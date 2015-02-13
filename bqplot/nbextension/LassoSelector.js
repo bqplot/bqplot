@@ -33,13 +33,14 @@ define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, 
 
                 d3.select(window).on("keydown", _.bind(self.keydown, self));
 
+                self.el.attr("class", "lassoselector");
+
                 //container for mouse events
                 self.background = self.el.append("rect")
                     .attr("x", 0)
                     .attr("y", 0)
                     .attr("width", self.width)
                     .attr("height", self.height)
-                    .attr("class", "selector lasso")
                     .attr("visibility", "hidden")
                     .attr("pointer-events", "all")
                     .style("cursor", "crosshair")
@@ -53,22 +54,24 @@ define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, 
             this.model.on("change:color", this.change_color, this);
         },
         change_color: function(model, color) {
-            this.el.selectAll("path").attr("stroke", color);
+            if (color) {
+                this.el.selectAll("path").style("stroke", color);
+            }
         },
         drag_start: function() {
             var self = this;
             this.lasso_vertices = [];
-            this.el.append("path")
+            var lasso = this.el.append("path")
                 .attr("id", "l" + ++this.lasso_counter)
-                .attr("fill", "none")
-                .attr("stroke", this.model.get("color"))
-                .attr("stroke-width", 4)
                 .on("click", function() {
                     //toggle the opacity of lassos
                     var lasso = d3.select(this);
-                    var selected = lasso.classed("selected");
-                    lasso.classed("selected", !selected)
-                        .attr("opacity", !selected ? 0.4 : 1.0); });
+                    lasso.classed("selected", !lasso.classed("selected"));
+                });
+            var color = this.model.get("color");
+            if (color) {
+                lasso.style("stroke", color);
+            }
         },
         drag_move: function() {
             this.lasso_vertices.push(d3.mouse(this.background.node()));

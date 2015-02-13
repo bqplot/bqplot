@@ -555,7 +555,7 @@ class LassoSelector(TwoDSelector):
 
     """
     marks = List(Instance(Lines) | Instance(Scatter), sync=True)
-    color = Unicode(default_value='orange', sync=True)
+    color = Color(None, sync=True, allow_none=True)
 
     def __init__(self, marks=None, **kwargs):
         _marks = []
