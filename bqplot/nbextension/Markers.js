@@ -19,7 +19,7 @@ define(["d3"], function(d3) {
     var tan10 = Math.tan(10 * pi / 180);
 
     var bqSymbolTypes = d3.map({
-        'arrow': function(size) {
+        "arrow": function(size) {
             var ry = Math.sqrt(size / tan10),
                 rx = ry * tan10;
             return "M0," + -ry
@@ -27,14 +27,24 @@ define(["d3"], function(d3) {
                 + " " + -rx + "," + ry
                 + "Z";
         },
-        'ellipsis': function(size, orientation) {
-            var slant = Math.pow(2, orientation)
-            var rx = Math.sqrt(size / (pi * slant));
-            var ry = rx * slant;
+        "ellipse": function(size, eccentricity) {
+            var ecc = Math.pow(2, eccentricity)
+            var rx = Math.sqrt(size / (pi * ecc));
+            var ry = rx * ecc;
             return "M0," + ry
                 + "A" + rx + "," + ry + " 0 1,1 0," + (-ry)
                 + "A" + rx + "," + ry + " 0 1,1 0," + ry
-                    + "Z";
+                + "Z";
+        },
+        "square": function(size, eccentricity) {
+            var ecc = Math.pow(2, eccentricity)
+            var rx = Math.sqrt(size / ecc) / 2;
+            var ry = rx * ecc;
+            return "M" + -rx + "," + -ry
+                + "L" + rx + "," + -ry
+                + " " + rx + "," + ry
+                + " " + -rx + "," + ry
+            + "Z";
         }
     });
 
@@ -46,7 +56,7 @@ define(["d3"], function(d3) {
         return "arrow";
     }
 
-    function symbolOrientation() {
+    function symbolEccentricity() {
         return 0;
     }
 
@@ -54,11 +64,11 @@ define(["d3"], function(d3) {
     var bqSymbol = function() {
         var type = symbolType,
             size = symbolSize;
-            orientation = symbolOrientation;
+            eccentricity = symbolEccentricity;
 
         function symbol(d,i) {
             return bqSymbolTypes.get(type.call(this,d,i))
-                (size.call(this,d,i), orientation.call(this, d, i));
+                (size.call(this,d,i), eccentricity.call(this, d, i));
         }
 
         symbol.type = function(x) {
@@ -74,15 +84,15 @@ define(["d3"], function(d3) {
             return symbol;
         };
 
-        // orientation of symbol, in [-1,1]
-        symbol.orientation = function(x) {
-            if (!arguments.length) return orientation;
-            orientation = d3.functor(x);
+        // eccentricity of symbol,
+        symbol.eccentricity = function(x) {
+            if (!arguments.length) return eccentricity;
+            eccentricity = d3.functor(x);
             return symbol;
         };
 
         return symbol;
     };
 
-    return bqSymbol
+    return {symbol: bqSymbol, types: bqSymbolTypes.keys()}
 });
