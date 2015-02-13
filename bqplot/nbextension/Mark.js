@@ -18,8 +18,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         render: function() {
             this.parent = this.options.parent;
             this.uuid = utils.uuid();
-            var scale_creation_promise = this.set_scale_models();
-            this.model.on("scales_updated", this.set_scale_models, this);
+            var scale_creation_promise = this.set_scale_views();
+            this.model.on("scales_updated", this.set_scale_views, this);
 
             this.colors = this.model.get("colors");
 
@@ -37,9 +37,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.el.style("display", (this.model.get("visible") ? "inline" : "none"));
             return scale_creation_promise;
         },
-        set_scale_models: function() {
-            // first, if this.scales was already define, unregister to any
-            // event on the old one.
+        set_scale_views: function() {
+            // first, if this.scales was already defined, unregister from the
+            // old ones.
             for (var key in this.scales) {
                 this.stopListening(this.scales[key]);
             }
@@ -57,7 +57,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 that.set_positional_scales();
                 that.initialize_additional_scales();
                 that.set_ranges();
-                that.relayout();
+                that.draw();
             });
         },
         set_positional_scales: function() {

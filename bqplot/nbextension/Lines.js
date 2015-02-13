@@ -18,26 +18,15 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
     var Lines = Mark.extend({
         render: function() {
             var base_render_promise = Lines.__super__.render.apply(this);
-            var self = this;
+            var that = this;
 
-            //TODO: create_listeners is put inside the promise success handler
-            //because some of the functions depend on child scales being
-            //created. Make sure none of the event handler functions make that
-            //assumption.
+            // TODO: create_listeners is put inside the promise success handler
+            // because some of the functions depend on child scales being
+            // created. Make sure none of the event handler functions make that
+            // assumption.
             return base_render_promise.then(function() {
-                var x_scale = self.scales["x"], y_scale = self.scales["y"];
-
-                self.line = d3.svg.line()
-                  .interpolate(self.model.get("interpolation"))
-                  .x(function(d) {
-                      return x_scale.scale(d.x) + x_scale.offset;
-                  })
-                  .y(function(d) {
-                      return y_scale.scale(d.y) + y_scale.offset;
-                  })
-                  .defined(function(d) { return d.y !== null; });
-                self.create_listeners();
-                self.draw();
+                that.create_listeners();
+                that.draw();
             });
         },
         set_ranges: function() {
@@ -343,6 +332,16 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
         draw: function() {
             this.set_ranges();
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            this.line = d3.svg.line()
+                .interpolate(this.model.get("interpolation"))
+                .x(function(d) {
+                    return x_scale.scale(d.x) + x_scale.offset;
+                })
+                .y(function(d) {
+                    return y_scale.scale(d.y) + y_scale.offset;
+                })
+                .defined(function(d) { return d.y !== null; });
             var curves_sel = this.el.selectAll(".curve")
               .data(this.model.mark_data, function(d, i) { return d.name; });
 

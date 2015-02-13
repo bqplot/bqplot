@@ -97,6 +97,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             });
         },
         update_domains: function() {
+            if (!this.mark_data) {
+                return;
+            }
             // color scale needs an issue in DateScaleModel to be fixed. It
             // should be moved here as soon as that is fixed.
 
