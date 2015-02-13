@@ -67,6 +67,19 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 print_bad_format(format);
                 x_data = [];
                 y_data = [];
+            } else {
+                // Verify that OHLC data is valid
+                var that = this;
+                if(this.px.high !== -1
+                && !y_data.every(function(d) {
+                    return (d[that.px.high] === d3.max(d) &&
+                            d[that.px.low] === d3.min(d) &&
+                            d.length === format.length); }))
+                {
+                    x_data = [];
+                    y_data = [];
+                    if(console) console.error("Invalid OHLC data");
+                }
             }
 
             if(x_data.length > y_data.length) {
@@ -75,33 +88,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 y_data = y_data.slice(0, x_data.length);
             }
 
-            // Verify that our OHLC data is valid
-            // That is, that high is highest and low is lowest
-            for(var i = 0; i < y_data.length; i++) {
-                if(this.is_bad_ohlc_data(format, y_data[i])) {
-                    y_data = [];
-                    x_data = [];
-                    if(console) {
-                        console.error("Invalid OHLC data at index " + i);
-                    }
-                }
-            }
             this.mark_data = _.zip(x_data, y_data);
             this.update_domains();
             this.trigger("data_updated");
-        },
-        is_bad_ohlc_data: function(format, ohlc_data) {
-            return (ohlc_data.length != format.length
-            || (this.px.high !== -1 && this.px.low !== -1 &&
-                ohlc_data[this.px.high] < ohlc_data[this.px.low])
-            || (this.px.high !== -1 && this.px.close !== -1 &&
-                ohlc_data[this.px.high] < ohlc_data[this.px.close])
-            || (this.px.high !== -1 && this.px.open !== -1 &&
-                ohlc_data[this.px.high] < ohlc_data[this.px.open])
-            || (this.px.low !== -1 && this.px.close !== -1 &&
-                ohlc_data[this.px.close] < ohlc_data[this.px.low])
-            || (this.px.low !== -1 && this.px.open !== -1 &&
-                ohlc_data[this.px.open] < ohlc_data[this.px.low]));
         },
         update_domains: function() {
             if(!this.mark_data) {
