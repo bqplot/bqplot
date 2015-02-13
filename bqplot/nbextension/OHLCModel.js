@@ -63,18 +63,20 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
 
             // We cannot have high without low and vice versa
             if((this.px.high !== -1 && this.px.low === -1)
-            || (this.px.high === -1 && this.px.low !== -1)) {
+            || (this.px.high === -1 && this.px.low !== -1)
+            || format.length < 2 || format.length > 4) {
                 print_bad_format(format);
                 x_data = [];
                 y_data = [];
             } else {
                 // Verify that OHLC data is valid
                 var that = this;
-                if(this.px.high !== -1
+                if((this.px.high !== -1
                 && !y_data.every(function(d) {
                     return (d[that.px.high] === d3.max(d) &&
-                            d[that.px.low] === d3.min(d) &&
-                            d.length === format.length); }))
+                            d[that.px.low] === d3.min(d)); }))
+                || !y_data.every(function(d) {
+                    return d.length === format.length; }))
                 {
                     x_data = [];
                     y_data = [];
@@ -82,6 +84,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
             }
 
+            // Make x and y data the same length
             if(x_data.length > y_data.length) {
                 x_data = x_data.slice(0, y_data.length);
             } else if(x_data.length < y_data.length) {
