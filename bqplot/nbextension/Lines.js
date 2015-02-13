@@ -399,6 +399,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
             this.create_labels();
         },
+        get_view_padding: function() {
+            //This function returns a dictionary with keys as the scales and
+            //value as the pixel padding required for the rendering of the
+            //mark.
+            this.x_padding = this.model.get("stroke_width")/2.0;
+            this.y_padding = this.model.get("stroke_width")/2.0;
+            return {'x': this.x_padding, 'y': this.y_padding};
+		},
         update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
                                                point_in_lasso_func)
         {

@@ -571,6 +571,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
             elements.style(clearing_style);
         },
+        get_view_padding: function() {
+            //This function returns a dictionary with keys as the scales and
+            //value as the pixel padding required for the rendering of the
+            //mark.
+            this.x_padding = this.y_padding = Math.sqrt(this.model.get("default_size")) / 2 + 1;
+            return {'x': this.x_padding, 'y': this.y_padding};
+		},
         update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
                                                point_in_lasso_func)
         {
