@@ -36,6 +36,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             var y_scale = scales["y"];
             var color_scale = scales["color"];
             var opacity_scale = scales["opacity"];
+            var eccentricity_scale = scales["eccentricity"];
             var size_scale = scales["size"];
             var y_data = this.get_typed_field("y");
 
@@ -51,6 +52,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 var color = this.get_typed_field("color");
                 var size = this.get_typed_field("size");
                 var opacity = this.get_typed_field("opacity");
+                //var eccentricity = this.get_typed_field("eccentricity");
 
                 if(color_scale) {
                     if(!this.get("preserve_domain")["color"]) {
@@ -66,6 +68,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             z: color[i],
                             size: size[i],
                             opacity: opacity[i],
+                            //eccentricity: eccentricity[i],
                             };
                 });
             }
@@ -104,6 +107,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             var y_scale = scales["y"];
             var size_scale = scales["size"];
             var opacity_scale = scales["opacity"];
+            var eccentricity_scale = scales["eccentricity"];
 
             if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -135,6 +139,15 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     }), this.id);
                 } else {
                     opacity_scale.del_domain([], this.id);
+                }
+            }
+            if(eccentricity_scale) {
+                if(!this.get("preserve_domain")["eccentricity"]) {
+                    eccentricity_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                        return elem.eccentricity;
+                    }), this.id);
+                } else {
+                    eccentricity_scale.del_domain([], this.id);
                 }
             }
         },
