@@ -40,6 +40,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             return base_creation_promise.then(function() {
                 self.create_listeners();
+                self.get_view_padding();
                 self.draw();
             }, null);
         },
@@ -73,7 +74,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
-            this.model.on("radii_updated", this.update_radii, this);
+            this.model.on_some_change(["inner_radius", "radius"], function() {
+                this.get_view_padding();
+                this.update_radii();
+            }, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.model.on_some_change(["x", "y"], this.position_center, this);
             this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
@@ -110,6 +114,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 .attr("transform", transform);
         },
         update_radii: function() {
+
             var arc = d3.svg.arc()
                 .outerRadius(this.model.get("radius"))
                 .innerRadius(this.model.get("inner_radius"));
@@ -276,6 +281,18 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.clear_style(this.selected_style);
             this.clear_style(this.unselected_style);
             this.set_default_style();
+        },
+        get_view_padding: function() {
+            var scales = this.model.get("scales");
+            var r = d3.max([this.model.get("radius"), this.model.get("inner_radius")]);
+
+            var x_padding = (scales["x"]) ? (r+1) : 0;
+            var y_padding = (scales["y"]) ? (r+1) : 0;
+            if(x_padding !== this.x_padding || y_padding !== this.y_padding) {
+                this.x_padding = x_padding;
+                this.y_padding = y_padding;
+                this.trigger("mark_padding_updated");
+            }
         },
     });
 
