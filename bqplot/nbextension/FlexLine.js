@@ -103,7 +103,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
         draw: function() {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
-              .data(this.model.new_mark_data, function(d, i) { return d.name; });
+              .data(this.model.mark_data, function(d, i) { return d.name; });
 
             curves_sel.enter().append("g")
               .attr("class", "curve");
@@ -117,7 +117,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             var that = this;
             curves_sel[0].forEach(function(elem, index) {
                 var lines = d3.select(elem).selectAll("line")
-                  .data(that.model.new_mark_data[index]["values"]);
+                  .data(that.model.mark_data[index]["values"]);
                 lines.enter().append("line");
                 lines.attr("class", "line-elem")
                   .attr({"x1": function(dataelem) { return x_scale.scale(dataelem.x1); },

@@ -135,46 +135,84 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
 
     var FlexLineModel = LinesModel.extend({
         update_data:function() {
-            FlexLineModel.__super__.update_data.apply(this);
+            this.dirty = true;
+            // Handling data updates
+            var that = this;
+            this.x_data = this.get_typed_field("x");
+            this.y_data = this.get_typed_field("y");
+
             var scales = this.get("scales");
+            var x_scale = scales["x"], y_scale = scales["y"];
+            var curve_labels = this.get("labels");
+            if (this.x_data.length == 0 || this.y_data.length == 0) {
+                this.mark_data = [];
+                this.data_len = 0;
+            } else {
+                this.x_data = this.x_data[0] instanceof Array ?
+                    this.x_data : [this.x_data];
+                this.y_data = this.y_data[0] instanceof Array ?
+                    this.y_data : [this.y_data];
+                curve_labels = this.update_labels();
+                var color_data = this.get_typed_field("color");
+                var width_data = this.get_typed_field("width");
+                this.data_len = Math.min(this.x_data[0].length, this.y_data[0].length);
 
-            var color_data = this.get_typed_field("color");
-            var x_data = this.get_typed_field("x");
-            var width_data = this.get_typed_field("width");
+                this.mark_data = [{ name: curve_labels[0],
+                            values: _.range(this.data_len - 1)
+                                .map(function(val, index) {
+                                return {x1: that.x_data[0][index],
+                                        y1: that.y_data[0][index],
+                                        x2: that.x_data[0][index+1],
+                                        y2: that.y_data[0][index+1],
+                                        color: color_data[index],
+                                        size: width_data[index]};
+                            })
+                        }];
+            }
 
+            this.update_domains();
+            this.dirty = false;
+            this.trigger("data_updated");
+        },
+        update_domains: function() {
+            if(!this.mark_data) {
+                return;
+            }
+            var scales = this.get("scales");
+            var x_scale = scales["x"], y_scale = scales["y"];
             var color_scale = scales["color"];
             var width_scale = scales["width"];
 
-            if(color_scale && color_data.length > 0){
+            if(!this.get("preserve_domain")["x"]) {
+                x_scale.compute_and_set_domain(this.x_data[0].slice(0, this.data_len), this.id);
+            } else {
+                x_scale.del_domain([], this.id);
+            }
+
+            if(!this.get("preserve_domain")["y"]) {
+                y_scale.compute_and_set_domain(this.y_data[0].slice(0, this.data_len), this.id);
+            } else {
+                y_scale.del_domain([], this.id);
+            }
+
+            if(color_scale !== null && color_scale !== undefined) {
                 if(!this.get("preserve_domain")["color"]) {
-                    color_scale.compute_and_set_domain(color_data, this.id);
+                    color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.values.map(function(d) { return d.color; })
+                    }), this.id);
                 } else {
                     color_scale.del_domain([], this.id);
                 }
             }
-
-            if(width_scale && width_data.length > 0){
+            if(width_scale !== null && width_scale !== undefined) {
                 if(!this.get("preserve_domain")["width"]) {
-                    width_scale.compute_and_set_domain(width_data, this.id);
+                    width_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                    return elem.values.map(function(d) { return d.size; })
+                    }), this.id);
                 } else {
                     width_scale.del_domain([], this.id);
                 }
             }
-
-            this.new_mark_data = this.mark_data.map(function(curve_elem) {
-                return {   name: curve_elem["name"],
-                           values: curve_elem["values"].slice(0, curve_elem["values"].length - 1)
-                             .map(function(val, index, values_array) {
-                               return {x1: val["x"],
-                                       y1: val["y"],
-                                       x2: curve_elem["values"][index+1]["x"],
-                                       y2: curve_elem["values"][index+1]["y"],
-                                       color: color_data[index],
-                                       size: width_data[index]};
-                           }),
-                       };
-            });
-            this.trigger("data_updated");
         },
     });
     WidgetManager.WidgetManager.register_widget_model("bqplot.FlexLineModel", FlexLineModel);
