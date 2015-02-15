@@ -228,8 +228,7 @@ class Lines(Mark):
                       display_name='Close path')
     fill = ColorList([], sync=True, exposed=True, display_index=9,
                      display_name='Fill Color')
-    opacity = List([], sync=True, exposed=True, display_index=10,
-                        display_name='Opacity')
+    opacity = List([], sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('bqplot.Lines', sync=True)
     _model_name = Unicode('bqplot.LinesModel', sync=True)
 
