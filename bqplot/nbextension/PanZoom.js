@@ -14,9 +14,8 @@
  */
 
 define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Interaction"], function(WidgetManager, ipy_utils, d3, utils, Interaction) {
-
+    "use strict";
     // TODO avoid code duplication of 'x' and 'y'
-
     var PanZoom = Interaction.extend({
         render: function() {
             PanZoom.__super__.render.apply(this);
@@ -71,12 +70,12 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Interaction"]
             //  drift when Paning.
             this.domains = {
                 "x": scales["x"].map(function(s) {
-                return s.domain.slice(0);
+                    return s.domain.slice(0);
                 }),
                 "y": scales["y"].map(function(s) {
-                return s.domain.slice(0);
+                    return s.domain.slice(0);
                 }),
-            }
+            };
         },
         mouseup: function () {
             this.active = false;
@@ -98,8 +97,8 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Interaction"]
                     var xdiffs = xscale_views.map(function(view) {
                         if (view.scale.invert) {
                             // Categorical scales don't have an inversion.
-                            return view.scale.invert(mouse_pos[0])
-                                 - view.scale.invert(that.previous_pos[0]);
+                            return view.scale.invert(mouse_pos[0]) -
+                                   view.scale.invert(that.previous_pos[0]);
                         }
                     });
                     for (var i=0; i<xscale_views.length; i++) {
@@ -117,8 +116,8 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Interaction"]
                     var ydiffs = yscale_views.map(function(view) {
                         if (view.scale.invert) {
                             // Categorical scales don't have an inversion.
-                            return view.scale.invert(mouse_pos[1])
-                                 - view.scale.invert(that.previous_pos[1]);
+                            return view.scale.invert(mouse_pos[1]) -
+                                   view.scale.invert(that.previous_pos[1]);
                         }
                     });
                     for (var i=0; i<yscale_views.length; i++) {

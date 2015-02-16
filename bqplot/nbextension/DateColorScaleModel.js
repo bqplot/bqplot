@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./DateScaleModel"], function(WidgetManager, d3, DateScaleModel) {
+    "use strict";
     var BaseScaleModel = DateScaleModel[0];
     var DateColorScaleModel = BaseScaleModel.extend({
         initialize: function(range) {

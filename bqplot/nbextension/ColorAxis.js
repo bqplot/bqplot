@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], function(WidgetManager, d3, utils, Col_Pic, Axis) {
+    "use strict";
     var AxisView = Axis[0];
     var ColorBar = AxisView.extend({
         render: function() {
@@ -203,24 +204,24 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
         get_topg_transform: function() {
             if(this.vertical){
                 if(this.side === "right") {
-                    return "translate(" + this.get_basic_transform() + "px, 0px)"
-                        + " translate(" + (this.margin.right/2) + "px, 0px)"
-                        + " translate(" + (-this.bar_height) + "px, 0px)";
+                    return "translate(" + this.get_basic_transform() + "px, 0px)" +
+                          " translate(" + (this.margin.right/2) + "px, 0px)" +
+                          " translate(" + (-this.bar_height) + "px, 0px)";
                 }
-                    return "translate(" + this.get_basic_transform() + "px, 0px)"
-                        + " translate(" + -(this.margin.left/2) + "px, 0px)"
-                        + " translate(" + (this.bar_height) + "px, 0px)";
+                    return "translate(" + this.get_basic_transform() + "px, 0px)" +
+                          " translate(" + -(this.margin.left/2) + "px, 0px)" +
+                          " translate(" + (this.bar_height) + "px, 0px)";
             } else {
                 if(this.side === "top") {
-                    return "translate(0px, " + this.get_basic_transform() + "px)"
-                        + "translate(0px, " + -(this.margin.top) + "px)"
-                        + " translate(0px, " + (this.bar_height) + "px)"
-                        + " translate(0px, 2em)";
+                    return "translate(0px, " + this.get_basic_transform() + "px)" +
+                          " translate(0px, " + -(this.margin.top) + "px)" +
+                          " translate(0px, " + (this.bar_height) + "px)" +
+                          " translate(0px, 2em)";
                 }
-                return "translate(0px, " + this.get_basic_transform() + "px)"
-                     + "translate(0px, " + this.margin.bottom + "px)"
-                     + " translate(0px, " + (-this.bar_height) + "px)"
-                     + " translate(0px, -2em)";
+                return "translate(0px, " + this.get_basic_transform() + "px)" +
+                      " translate(0px, " + this.margin.bottom + "px)" +
+                      " translate(0px, " + (-this.bar_height) + "px)" +
+                      " translate(0px, -2em)";
             }
         },
         get_label_transform: function() {

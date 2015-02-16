@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-// Axis view to display the axis
 define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+    "use strict";
      var units_array = ["em", "ex", "px"];
      var custom_time_format = d3.time.format.multi([
          [".%L", function(d) { return d.getMilliseconds(); }],
@@ -101,6 +101,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         set_tick_values: function() {
             var tick_values = this.model.get_typed_field("tick_values");
+            var useticks = [];
             if (tick_values !== undefined && tick_values !== null && tick_values.length > 0) {
                 this.axis.tickValues(tick_values);
             } else if (this.num_ticks !== undefined && this.num_ticks !== null) {
@@ -114,7 +115,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                     if (oom < 2) {
                         this.axis.tickValues(allticks);
                     } else if (oom < 7) {
-                        var useticks = [];
+                        useticks = [];
                         for (var i = 0; i < allticks.length; i++) {
                             var r = Math.abs(Math.log10(allticks[i]) % 1);
                             if ((Math.abs(r) < 0.001) ||
@@ -126,8 +127,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                         }
                         this.axis.tickValues(useticks);
                     } else {
-                        var useticks = [];
-                        var s = Math.round(oom / 10)
+                        useticks = [];
+                        var s = Math.round(oom / 10);
                         for (var i = 0; i < allticks.length; i++) {
                             var r = Math.abs(Math.log10(allticks[i]) % s);
                             if ((Math.abs(r) < 0.001) || (Math.abs(r-s) < 0.001)) {
@@ -162,11 +163,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
         update_offset_scale_domain: function() {
             if(this.offset_scale) {
-                var initial_range = (!this.vertical)
-                    ? this.parent.padded_range("y", this.offset_scale.model)
-                    : this.parent.padded_range("x", this.offset_scale.model);
-                var target_range = (!this.vertical) ? this.parent.range("y")
-                                                    : this.parent.range("x");
+                var initial_range = (!this.vertical) ?
+                    this.parent.padded_range("y", this.offset_scale.model) :
+                    this.parent.padded_range("x", this.offset_scale.model);
+                var target_range = (!this.vertical) ?
+                    this.parent.range("y") :
+                    this.parent.range("x");
                 this.offset_scale.expand_domain(initial_range, target_range);
             }
         },
@@ -345,8 +347,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.g_axisline.select("text.axislabel")
                 .text(this.model.get("label"));
             this.el.selectAll(".axislabel").selectAll("text");
-            if(this.model.get("label_color") !== ""
-               && this.model.get("label_color") !== null) {
+            if(this.model.get("label_color") !== "" &&
+               this.model.get("label_color") !== null) {
                 this.g_axisline.select("text.axislabel")
                   .style("fill", this.model.get("label_color"));
                 this.el.selectAll(".axislabel").selectAll("text")
@@ -494,7 +496,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                     return data_array;
                 } else {
                    var step = Math.floor(data_array.length / (this.num_ticks - 1));
-                   indices = _.range(0, data_array.length, step);
+                   var indices = _.range(0, data_array.length, step);
                    return indices.map(function(index) {
                        return data_array[index];
                    });

@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+    "use strict";
     var min_size = 10;
     var Mark = mark[0];
     var Scatter = Mark.extend({
@@ -193,7 +194,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
         update_marker: function(model, marker) {
-            this.dot.type(this.model.get("marker"))
+            this.dot.type(this.model.get("marker"));
             this.el.selectAll(".dot").attr("d", this.dot);
             if (this.legend_el) {
                 this.legend_el.select("path").attr("d", this.dot.size(64));
@@ -274,7 +275,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             if (!this.model.get("enable_move")) {
                 return;
             }
-            this.drag_started = true
+            this.drag_started = true;
             var dot = this.dot;
             dot.size(5 * this.model.get("default_size"));
 
@@ -393,8 +394,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             elements.transition().duration(animate_dur)
               .attr("transform", function(d) {
-                  return "translate(" + (x_scale.scale(d.x) + x_scale.offset) + ","
-                                      + (y_scale.scale(d.y) + y_scale.offset) + ")";
+                  return "translate(" + (x_scale.scale(d.x) + x_scale.offset) + "," +
+                                        (y_scale.scale(d.y) + y_scale.offset) + ")";
               });
 
             var text_loc = Math.sqrt(this.model.get("default_size")) / 2.0;
@@ -405,7 +406,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
 
             elements.call(this.drag_listener);
 
-            var names = this.model.get_typed_field("names")
+            var names = this.model.get_typed_field("names");
             var show_names = (this.model.get("display_names") && names.length !== 0);
 
             elements.select("text")
@@ -477,7 +478,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             return [1, max_length];
         },
         update_display_names: function(model, value) {
-            var names = this.model.get_typed_field("names")
+            var names = this.model.get_typed_field("names");
             var show_names = (value && names.length !== 0);
             this.el.selectAll(".dot_grp").select("text")
                 .attr("display", function(d) {

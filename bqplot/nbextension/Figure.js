@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], function(WidgetManager, widget, d3, utils) {
+    "use strict";
     var Figure = widget.DOMWidgetView.extend({
 
         initialize : function() {
@@ -265,7 +266,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             if(dict[scale_id] !== undefined) {
                 delete dict[scale_id][mark_model.id];
             }
-            if(Object.keys(dict[scale_id]).length == 0) {
+            if(Object.keys(dict[scale_id]).length === 0) {
                 delete dict[scale_id];
             }
         },
@@ -281,7 +282,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.remove_from_padding_dict(this.x_pad_dict, model, prev_scale_models["x"]);
             this.remove_from_padding_dict(this.y_pad_dict, model, prev_scale_models["y"]);
 
-            var scale_models = model.get("scales")
+            var scale_models = model.get("scales");
             this.update_padding_dict(this.x_pad_dict, model, scale_models["x"], model.x_padding);
             this.update_padding_dict(this.y_pad_dict, model, scale_models["y"], model.y_padding);
 
@@ -343,7 +344,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     view.trigger("displayed");
                 });
                 return view;
-            })
+            });
         },
         update_paddings: function() {
             // Iterate over the paddings of the marks for each scale and store
@@ -382,12 +383,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
             this.svg.attr("width", null);
-            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width")
-                                      + " " + this.model.get("min_height"));
+            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") +
+                                        " " + this.model.get("min_height"));
             setTimeout(_.bind(this.update_layout2, this), 0);
         },
         update_layout2: function() {
-            rect = this.el.getBoundingClientRect();
+            var rect = this.el.getBoundingClientRect();
             this.width = rect.width > 0 ? rect.width : this.model.get("min_width");
             this.height = rect.height > 0 ? rect.height : this.model.get("min_height");
             setTimeout(_.bind(this.update_layout3, this), 0);
@@ -412,8 +413,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             this.scale_x.set_range([0, this.plotarea_width]);
             this.scale_y.set_range([this.plotarea_height, 0]);
             // transform figure
-            this.fig.attr("transform", "translate(" + this.margin.left + ","
-                                                    + this.margin.top + ")");
+            this.fig.attr("transform", "translate(" + this.margin.left + "," +
+                                                      this.margin.top + ")");
             this.title.attr({x: (0.5 * (this.plotarea_width)),
                              y: -(this.margin.top / 2.0),
                              dy: "1em"});
@@ -467,9 +468,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                 max_label_len = (legend_location === "top" ||
                                  legend_location === "top-right" ||
                                  legend_location === "right") ? -(max_label_len + 2) : 1;
-                legend_g.style({"transform": "translate(" + (coords[0]) + "px, "
-                                                          + (coords[1]) + "px) "
-                                         + " translateX(" + (max_label_len) + "em)"});
+                legend_g.style({"transform": "translate(" + (coords[0]) + "px, " +
+                                                            (coords[1]) + "px) " +
+                                           " translateX(" + (max_label_len) + "em)"});
             });
         },
         get_legend_coords: function(legend_location, width, height, disp) {

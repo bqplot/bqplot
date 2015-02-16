@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
+    "use strict";
     var BaseModel = MarkModel[0];
     var ScaleModel = BaseModel.extend({
         initialize: function(range) {

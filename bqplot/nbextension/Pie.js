@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, mark, utils) {
+    "use strict";
     var Mark = mark[0];
     var Pie = Mark.extend({
         render: function() {
@@ -78,8 +79,9 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
             this.model.on("labels_updated", this.update_labels, this);
             this.model.on("change:select_slices", function() {
-                if (!this.model.get("select_slices"))
-                    { this.reset_selection(); };
+                if (!this.model.get("select_slices")) {
+                    this.reset_selection();
+                }
             }, this);
             this.model.on("change:idx_selected", function() {
                 this.selected_indices = this.model.get("idx_selected");
@@ -102,8 +104,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 this.model.get_date_elem("x") : this.model.get("x");
             var y = (y_scale.model.type === "date") ?
                 this.model.get_date_elem("y") : this.model.get("y");
-            var transform = "translate(" + x_scale.scale(x)
-                                      + ", " + y_scale.scale(y) + ")";
+            var transform = "translate(" + x_scale.scale(x) +
+                                    ", " + y_scale.scale(y) + ")";
             this.el.select(".pielayout")
                 .attr("transform", transform);
         },
@@ -112,7 +114,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 .outerRadius(this.model.get("radius"))
                 .innerRadius(this.model.get("inner_radius"));
 
-            var elements = this.el.select(".pielayout").selectAll(".slice")
+            var elements = this.el.select(".pielayout").selectAll(".slice");
 
             elements.select("path")
                 .transition().duration(this.model.get("animate_dur"))
@@ -173,13 +175,13 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
         },
         update_labels: function() {
             this.el.select(".pielayout").selectAll(".slice").select("text")
-                .text(function(d) {return d.data.label});
+                .text(function(d) { return d.data.label; });
         },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
             // chart. If indices is null, clears the style on all elements. If
             // not, clears on only the elements whose indices are matching.
-            var elements = this.el.select(".pielayout").selectAll(".slice")
+            var elements = this.el.select(".pielayout").selectAll(".slice");
             if(indices) {
                 elements = elements.filter(function(d, index) {
                     return indices.indexOf(index) !== -1;
@@ -197,7 +199,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             if(indices === undefined || indices === null || indices.length === 0) {
                 return;
             }
-            var elements = this.el.select(".pielayout").selectAll(".slice")
+            var elements = this.el.select(".pielayout").selectAll(".slice");
             elements = elements.filter(function(data, index) {
                 return indices.indexOf(index) !== -1;
             });
@@ -230,9 +232,9 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                         }
                         //Add elements before or after the index of the current
                         //slice which has been clicked
-                        min_index = (idx_selected.length !== 0) ?
+                        var min_index = (idx_selected.length !== 0) ?
                             d3.min(idx_selected) : -1;
-                        max_index = (idx_selected.length !== 0) ?
+                        var max_index = (idx_selected.length !== 0) ?
                             d3.max(idx_selected) : that.model.mark_data.length;
                         if(index > max_index){
                             _.range(max_index+1, index).forEach(function(i) {

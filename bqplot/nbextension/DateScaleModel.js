@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManager, d3, ScaleModel) {
+    "use strict";
     var BaseScaleModel = ScaleModel[0];
     var DateScaleModel = BaseScaleModel.extend({
         initialize: function(range) {

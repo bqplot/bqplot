@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./LinearScale"], function(WidgetManager, d3, LinearScaleView) {
+    "use strict";
     var BaseScale = LinearScaleView[0];
     var DateScale = BaseScale.extend({
          render: function() {

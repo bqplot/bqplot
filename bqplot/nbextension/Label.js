@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+    "use strict";
     var Mark = mark[0];
     var Label = Mark.extend({
         render: function() {
@@ -116,8 +117,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 this.model.get_date_elem("x") : this.model.get("x");
             var y = (this.y_scale.model.type === "date") ?
                 this.model.get_date_elem("y") : this.model.get("y");
-            var net_transform = "translate(" + this.x_scale.scale(x)
-                                      + ", " + this.y_scale.scale(y) + ")";
+            var net_transform = "translate(" + this.x_scale.scale(x) +
+                                        ", " + this.y_scale.scale(y) + ")";
             net_transform += this.get_extra_transform();
             this.el.selectAll(".label")
                 .attr("transform", net_transform);

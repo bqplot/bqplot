@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./LinearColorScale", "./ColorUtils"], function(WidgetManager, d3, ScaleView, ColorUtils) {
+    "use strict";
     var LinearColorScaleView = ScaleView[0];
     var DateColorScale = LinearColorScaleView.extend({
         render: function(){
@@ -22,7 +23,7 @@ define(["widgets/js/manager", "d3", "./LinearColorScale", "./ColorUtils"], funct
                 this.scale.domain(this.model.domain);
             }
             this.offset = 0;
-            if(this.model.get("colors").length == 0) {
+            if(this.model.get("colors").length === 0) {
                this.divergent = this.model.divergent = ColorUtils.is_divergent(this.model.get("scheme"));
             } else {
                 this.divergent = this.model.divergent = (this.model.get("colors").length > 2);

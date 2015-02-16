@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Selector" ], function(WidgetManager, d3, BaseSelectors) {
+    "use strict";
     var BaseXSelector = BaseSelectors[1];
     var FastIntervalSelector = BaseXSelector.extend({
         render : function() {

@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetManager, d3, BaseSelectors, utils) {
+    "use strict";
     var BaseXSelector = BaseSelectors[1];
     var BaseXYSelector = BaseSelectors[2];
     var BrushSelector = BaseXYSelector.extend({

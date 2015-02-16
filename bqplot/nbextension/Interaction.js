@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+    "use strict";
     var Interaction = widget.WidgetView.extend({
         render: function() {
             this.parent = this.options.parent;

@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3, ScaleModel) {
+    "use strict";
     var BaseScaleModel = ScaleModel[0];
     var OrdinalScaleModel = BaseScaleModel.extend({
         initialize: function(range) {
@@ -40,7 +41,8 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
         },
         update_domain: function() {
             var domain = [];
-            for (id in this.domains) {
+            // TODO: check for hasOwnProperty
+            for (var id in this.domains) {
                 domain = _.union(domain, this.domains[id]);
             }
             if(this.domain.length !== domain.length ||
