@@ -572,5 +572,5 @@ class LassoSelector(TwoDSelector):
         kwargs['marks'] = _marks
         super(LassoSelector, self).__init__(**kwargs)
 
-    _view_name = Unicode('bqplot.LassoSelector', sync=True)
+    _view_name = Unicode('LassoSelector', sync=True)
     _view_module = Unicode('nbextensions/bqplot/LassoSelector', sync=True)

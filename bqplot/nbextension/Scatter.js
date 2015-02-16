@@ -576,7 +576,7 @@ define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var idx = this.model.get("idx_selected");
-            idx_selected = idx ? utils.deepCopy(idx) : [];
+            var idx_selected = idx ? utils.deepCopy(idx) : [];
             var data_in_lasso = false;
             if(lasso_vertices !== null && lasso_vertices.length > 0) {
                 var indices = _.range(this.model.mark_data.length);

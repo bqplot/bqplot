@@ -62,7 +62,7 @@ define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, 
             var self = this;
             this.lasso_vertices = [];
             var lasso = this.el.append("path")
-                .attr("id", "l" + ++this.lasso_counter)
+                .attr("id", "l" + (++this.lasso_counter))
                 .on("click", function() {
                     //toggle the opacity of lassos
                     var lasso = d3.select(this);
