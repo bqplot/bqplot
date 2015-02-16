@@ -138,7 +138,9 @@ class Mark(Widget):
     selected_style = Dict({}, sync=True)
     unselected_style = Dict({}, sync=True)
     idx_selected = List(sync=True, allow_none=True)
-    _model_name = Unicode('bqplot.MarkModel', sync=True)
+
+    _model_name = Unicode('MarkModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
     _ipython_display_ = None
 
     def _idx_selected_default(self):
@@ -166,7 +168,7 @@ class Lines(Mark):
     fill: list of colors (default: [])
         Fill color for the patches. Defaults to no-fill when no color provided.
     opacity: list of floats (default: [])
-        Opacity for the patches. Defaults to 1 when list is too short, or set 
+        Opacity for the patches. Defaults to 1 when list is too short, or set
         to None.
     stroke_width: float (default: 1.5)
         Stroke width of the Lines
@@ -229,8 +231,10 @@ class Lines(Mark):
     fill = ColorList([], sync=True, exposed=True, display_index=9,
                      display_name='Fill Color')
     opacity = List([], sync=True, display_index=10, display_name='Opacity')
-    _view_name = Unicode('bqplot.Lines', sync=True)
-    _model_name = Unicode('bqplot.LinesModel', sync=True)
+    _view_name = Unicode('Lines', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
+    _model_name = Unicode('LinesModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/LinesModel', sync=True)
 
 
 @register_mark('bqplot.FlexLine')
@@ -267,8 +271,9 @@ class FlexLine(Lines):
 
     # Other attributes
     colors = ColorList(CATEGORY10, sync=True)
-    _view_name = Unicode('bqplot.FlexLine', sync=True)
-    _model_name = Unicode('bqplot.FlexLineModel', sync=True)
+    _view_name = Unicode('FlexLine', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/FlexLine', sync=True)
+    _model_name = Unicode('FlexLineModel', sync=True)
 
 
 @register_mark('bqplot.Scatter')
@@ -369,9 +374,6 @@ class Scatter(Mark):
     restrict_y = Bool(False, sync=True)
     update_on_move = Bool(False, sync=True)
 
-    _view_name = Unicode('bqplot.Scatter', sync=True)
-    _model_name = Unicode('bqplot.ScatterModel', sync=True)
-
     def __init__(self, **kwargs):
         super(Scatter, self).__init__(**kwargs)
         self._drag_end_handlers = CallbackDispatcher()
@@ -383,6 +385,11 @@ class Scatter(Mark):
     def _handle_custom_msgs(self, _, content):
         if content.get('event', '') == 'drag_end':
             self._drag_end_handlers(self, content)
+
+    _view_name = Unicode('Scatter', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Scatter', sync=True)
+    _model_name = Unicode('ScatterModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/ScatterModel', sync=True)
 
 
 @register_mark('bqplot.Hist')
@@ -436,8 +443,11 @@ class Hist(Mark):
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
-    _view_name = Unicode('bqplot.Hist', sync=True)
-    _model_name = Unicode('bqplot.HistModel', sync=True)
+
+    _view_name = Unicode('Hist', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Hist', sync=True)
+    _model_name = Unicode('HistModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/HistModel', sync=True)
 
 
 @register_mark('bqplot.Bars')
@@ -517,8 +527,11 @@ class Bars(Mark):
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
-    _view_name = Unicode('bqplot.Bars', sync=True)
-    _model_name = Unicode('bqplot.BarsModel', sync=True)
+
+    _view_name = Unicode('Bars', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Bars', sync=True)
+    _model_name = Unicode('BarsModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/BarsModel', sync=True)
 
 
 @register_mark('bqplot.Label')
@@ -565,7 +578,9 @@ class Label(Mark):
                        allow_none=False, sync=True)
     align = Enum(['start', 'middle', 'end'], default_value='start',
                  allow_none=False, sync=True)
-    _view_name = Unicode('bqplot.Label', sync=True)
+
+    _view_name = Unicode('Label', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Label', sync=True)
 
 
 @register_mark('bqplot.OHLC')
@@ -622,8 +637,10 @@ class OHLC(Mark):
                        display_index=5, sync=True, display_name='Colors')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
                            exposed=True, display_index=6, display_name='Opacity')
-    _view_name = Unicode('bqplot.OHLC', sync=True)
-    _model_name = Unicode('bqplot.OHLCModel', sync=True)
+    _view_name = Unicode('OHLC', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/OHLC', sync=True)
+    _model_name = Unicode('OHLCModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/OHLCModel', sync=True)
 
 
 @register_mark('bqplot.Pie')
@@ -691,5 +708,8 @@ class Pie(Mark):
                                 sync=True)
     start_angle = Float(default_value=0.0, sync=True, exposed=True)
     end_angle = Float(default_value=360.0, sync=True, exposed=True)
-    _view_name = Unicode('bqplot.Pie', sync=True)
-    _model_name = Unicode('bqplot.PieModel', sync=True)
+
+    _view_name = Unicode('Pie', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Pie', sync=True)
+    _model_name = Unicode('PieModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/PieModel', sync=True)

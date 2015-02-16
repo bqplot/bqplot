@@ -13,36 +13,39 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, ScaleView) {
+define(["d3", "./Scale"], function(d3, ScaleViewModule) {
     "use strict";
-    var BaseScale = ScaleView[0];
-    var LinearScale = BaseScale.extend({
-         render: function(){
-             this.scale = d3.scale.linear();
-             if(this.model.domain.length > 0)
-                 this.scale.domain(this.model.domain);
-             this.offset = 0;
-             this.create_event_listeners();
-         },
-         expand_domain: function(old_range, new_range) {
-             // if you have a current range and then a new range and want to
-             // expand the domain to expand to the new range but keep it
-             // consistent with the previous one, this is the function you use.
 
-             // the following code is required to make a copy of the actual
-             // state of the scale. Referring to the model domain and then
-             // setting the range to be the old range in case it is not.
-             var unpadded_scale = this.scale.copy();
-             // To handle the case for a clamped scale for which we have to
-             // expand the domain, the copy should be unclamped.
-             unpadded_scale.clamp(false);
-             unpadded_scale.domain(this.model.domain);
-             unpadded_scale.range(old_range);
-             this.scale.domain(new_range.map(function(limit) {
-                 return unpadded_scale.invert(limit);
-             }));
-         },
-     });
-    WidgetManager.WidgetManager.register_widget_view("LinearScale", LinearScale);
-    return [LinearScale];
+    var LinearScale = ScaleViewModule.Scale.extend({
+        render: function(){
+            this.scale = d3.scale.linear();
+            if(this.model.domain.length > 0)
+                this.scale.domain(this.model.domain);
+            this.offset = 0;
+            this.create_event_listeners();
+        },
+        expand_domain: function(old_range, new_range) {
+            // If you have a current range and then a new range and want to
+            // expand the domain to expand to the new range but keep it
+            // consistent with the previous one, this is the function you use.
+
+            // The following code is required to make a copy of the actual
+            // state of the scale. Referring to the model domain and then
+            // setting the range to be the old range in case it is not.
+            var unpadded_scale = this.scale.copy();
+
+            // To handle the case for a clamped scale for which we have to
+            // expand the domain, the copy should be unclamped.
+            unpadded_scale.clamp(false);
+            unpadded_scale.domain(this.model.domain);
+            unpadded_scale.range(old_range);
+            this.scale.domain(new_range.map(function(limit) {
+                return unpadded_scale.invert(limit);
+            }));
+        },
+    });
+
+    return {
+        LinearScale: LinearScale,
+    };
 });

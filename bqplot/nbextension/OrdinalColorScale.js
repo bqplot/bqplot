@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./OrdinalScale", "./ColorUtils"], function(WidgetManager, d3, OrdinalScaleView, ColorUtils) {
+define(["d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleViewModule, ColorUtils) {
     "use strict";
-    var BaseScaleView = OrdinalScaleView[0];
-    var OrdinalColorScale = BaseScaleView.extend({
+
+    var OrdinalColorScale = OrdinalScaleViewModule.OrdinalScale.extend({
         render: function(){
             OrdinalColorScale.__super__.render.apply(this);
             this.model.on("domain_changed", this.model_domain_changed, this);
@@ -39,6 +39,8 @@ define(["widgets/js/manager", "d3", "./OrdinalScale", "./ColorUtils"], function(
             this.set_range();
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("OrdinalColorScale", OrdinalColorScale);
-    return [OrdinalColorScale];
+
+    return {
+        OrdinalColorScale: OrdinalColorScale,
+    };
 });

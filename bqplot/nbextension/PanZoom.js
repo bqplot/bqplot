@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Interaction"], function(WidgetManager, ipy_utils, d3, utils, Interaction) {
+define(["base/js/utils", "d3", "./utils", "./Interaction"], function(ipy_utils, d3, utils, InteractionViewModule) {
     "use strict";
+
     // TODO avoid code duplication of 'x' and 'y'
-    var PanZoom = Interaction.extend({
+
+    var PanZoom = InteractionViewModule.Interaction.extend({
         render: function() {
             PanZoom.__super__.render.apply(this);
             var that = this;
@@ -194,6 +196,8 @@ define(["widgets/js/manager", "base/js/utils", "d3", "./utils", "./Interaction"]
         },
     });
 
-    WidgetManager.WidgetManager.register_widget_view("bqplot.PanZoom", PanZoom);
+    return {
+        PanZoom: PanZoom,
+    };
 });
 

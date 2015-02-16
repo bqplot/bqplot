@@ -76,7 +76,11 @@ class Interaction(Widget):
         A registry of existing interaction types.
     """
     types = {}
-    _view_name = Unicode('bqplot.Interaction', sync=True)
+
+    _view_name = Unicode('Interaction', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Interaction', sync=True)
+    _model_name = Unicode('BaseModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
     _ipython_display_ = None  # We cannot display an interaction outside of a
                               # figure
 
@@ -109,8 +113,6 @@ class HandDraw(Interaction):
     max_x: float or Date or None (default: None)
         The maximum value of 'x' which should be edited via the handdraw.
     """
-    _view_name = Unicode('bqplot.HandDraw', sync=True)
-    _model_name = Unicode('bqplot.BaseModel', sync=True)
     lines = Instance(Lines, sync=True)
     line_index = Int(0, sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
@@ -120,6 +122,9 @@ class HandDraw(Interaction):
              Date(allow_none=True, default_value=None, sync=True))
     max_x = (Float(allow_none=True, default_value=None, sync=True) |
              Date(default_value=None, allow_none=True, sync=True))
+
+    _view_name = Unicode('HandDraw', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/HandDraw', sync=True)
 
 
 @register_interaction('bqplot.PanZoom')
@@ -137,7 +142,6 @@ class PanZoom(Interaction):
             Dictionary with keys as 'x' and 'y' and values being the scales in
             the corresponding direction which should be panned or zoomed.
     """
-    _view_name = Unicode('bqplot.PanZoom', sync=True)
     allow_pan = Bool(True, sync=True)
     allow_zoom = Bool(True, sync=True)
     scales = Dict({}, allow_none=False, sync=True)
@@ -156,6 +160,9 @@ class PanZoom(Interaction):
             for i in xrange(len(self.scales[k])):
                 self.scales[k][i].set_state(self.scales_states[k][i])
                 self.scales[k][i].send_state()
+
+    _view_name = Unicode('PanZoom', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/PanZoom', sync=True)
 
 
 def panzoom(marks):
@@ -181,9 +188,10 @@ class Selector(Interaction):
         list of marks for which the idx_selected is updated based on the data
         selected by the selector.
     """
-    _view_name = Unicode('bqplot.Selector', sync=True)
-    _model_name = Unicode('bqplot.BaseModel', sync=True)
     marks = List([], allow_none=False, sync=True)
+
+    _view_name = Unicode('Selector', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Selector', sync=True)
 
 
 class OneDSelector(Selector):
@@ -262,10 +270,12 @@ class FastIntervalSelector(OneDSelector):
     color: Color or None (default: None)
         color of the rectangle representing the interval selector
     """
-    _view_name = Unicode('bqplot.FastIntervalSelector', sync=True)
     selected = NdArray(sync=True)
     idx_selected = List([], allow_none=False, sync=True)
     color = Color(None, sync=True, allow_none=True)
+
+    _view_name = Unicode('FastIntervalSelector', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/FastIntervalSelector', sync=True)
 
 
 @register_interaction('bqplot.IndexSelector')
@@ -298,11 +308,13 @@ class IndexSelector(OneDSelector):
     line_width: nonnegative integer (default: 0)
         width of the line represetning the index selector
     """
-    _view_name = Unicode('bqplot.IndexSelector', sync=True)
     selected = NdArray(sync=True)
     idx_selected = List([], allow_none=False, sync=True)
     line_width = Int(2, sync=True)
     color = Color(None, sync=True, allow_none=True)
+
+    _view_name = Unicode('IndexSelector', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/IndexSelector', sync=True)
 
 
 @register_interaction('bqplot.BrushIntervalSelector')
@@ -343,11 +355,13 @@ class BrushIntervalSelector(OneDSelector):
     color: Color or None (default: None)
         color of the rectangle representing the brush selector
     """
-    _view_name = Unicode('bqplot.BrushIntervalSelector', sync=True)
     brushing = Bool(False, sync=True)
     selected = NdArray(sync=True)
     idx_selected = List([], sync=True)
     color = Color(None, sync=True, allow_none=True)
+
+    _view_name = Unicode('BrushIntervalSelector', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/BrushSelector', sync=True)
 
 
 @register_interaction('bqplot.BrushSelector')
@@ -387,7 +401,6 @@ class BrushSelector(TwoDSelector):
     color: Color or None (default: None)
         color of the rectangle representing the brush selector
     """
-    _view_name = Unicode('bqplot.BrushSelector', sync=True)
     clear = Bool(False, sync=True)
     brushing = Bool(False, sync=True)
     idx_selected = List([], sync=True)
@@ -416,6 +429,9 @@ class BrushSelector(TwoDSelector):
             if(self.read_json_y is not None):
                 self.selected[0][1] = self.read_json_y(self.selected[0][1])
                 self.selected[1][1] = self.read_json_y(self.selected[1][1])
+
+    _view_name = Unicode('BrushSelector', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/BrushSelector', sync=True)
 
 
 @register_interaction('bqplot.MultiSelector')
@@ -482,7 +498,6 @@ class MultiSelector(OneDSelector):
         Attribute to indicate if the names of the intervals are to be displayed
         along with the interval.
     """
-    _view_name = Unicode('bqplot.MultiSelector', sync=True)
     names = List([], sync=True)
     brushing = Bool(False, sync=True)
     selected = Dict({}, sync=True)
@@ -512,3 +527,6 @@ class MultiSelector(OneDSelector):
                 actual_selected[key] = [self.read_json(elem)
                                         for elem in self._selected[key]]
             self.selected = actual_selected
+
+    _view_name = Unicode('MultiSelector', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/BrushSelector', sync=True)

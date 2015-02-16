@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, BaseModels) {
+define(["d3", "./MarkModel"], function(d3, MarkModelModule) {
     "use strict";
-    var BaseModel = BaseModels[0];
-    var AxisModel = BaseModel.extend({
+
+    var AxisModel = MarkModelModule.MarkModel.extend({
         initialize: function() {
             this.on("change:side", this.validate_orientation, this);
             this.on("change:orientation", this.validate_side, this);
@@ -46,6 +46,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             this.save_changes();
         }
     });
-    WidgetManager.WidgetManager.register_widget_model("bqplot.AxisModel", AxisModel);
-    return [AxisModel];
+
+    return {
+        AxisModel: AxisModel,
+    };
 });

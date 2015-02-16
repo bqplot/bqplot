@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], function(WidgetManager, d3, utils, Col_Pic, Axis) {
+define(["d3", "./utils", "./ColorUtils", "./Axis"], function(d3, utils, Col_Pic, AxisViewModule) {
     "use strict";
-    var AxisView = Axis[0];
-    var ColorBar = AxisView.extend({
+
+    var ColorBar = AxisViewModule.Axis.extend({
         render: function() {
             this.parent = this.options.parent;
             this.enable_highlight = this.options.enable_highlight;
@@ -327,5 +327,8 @@ define(["widgets/js/manager", "d3", "./utils", "./ColorUtils", "./Axis"], functi
             this.redraw_axisline();
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.ColorAxis", ColorBar);
+
+    return {
+        ColorAxis: ColorBar,
+    };
 });

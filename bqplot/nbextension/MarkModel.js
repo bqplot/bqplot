@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+define(["widgets/js/widget", "d3"], function(Widget, d3) {
     "use strict";
-    var BaseModel = widget.WidgetModel.extend({
+
+    var BaseModel = Widget.WidgetModel.extend({
         get_typed_field: function(param) {
             // function that reads in an array of a field that is typed. It
             // performs tpe conversions that you may require and returns you
@@ -94,7 +95,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
 
     });
-    WidgetManager.WidgetManager.register_widget_model("bqplot.BaseModel", BaseModel);
 
     var MarkModel = BaseModel.extend({
         // These two attributes are the pixel values which should be appended
@@ -139,6 +139,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.unregister_all_scales(this.get("scales"));
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("bqplot.MarkModel", MarkModel);
-    return [BaseModel, MarkModel];
+
+    return {
+        BaseModel: BaseModel,
+        MarkModel: MarkModel,
+    };
 });

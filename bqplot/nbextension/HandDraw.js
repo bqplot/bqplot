@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./utils", "./Interaction"], function(WidgetManager, d3, utils, Interaction) {
+define(["d3", "./utils", "./Interaction"], function(d3, utils, InteractionViewModule) {
     "use strict";
-    var HandDraw = Interaction.extend({
+
+    var HandDraw = InteractionViewModule.Interaction.extend({
 
         render: function() {
             HandDraw.__super__.render.apply(this);
@@ -155,6 +156,9 @@ define(["widgets/js/manager", "d3", "./utils", "./Interaction"], function(Widget
             this.line_index = this.model.get("line_index");
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.HandDraw", HandDraw);
+
+    return {
+        HandDraw: HandDraw,
+    };
 });
 

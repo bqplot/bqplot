@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3, ScaleModel) {
+define(["d3", "./ScaleModel"], function(d3, ScaleModelModule) {
     "use strict";
-    var BaseScaleModel = ScaleModel[0];
-    var OrdinalScaleModel = BaseScaleModel.extend({
+
+    var OrdinalScaleModel = ScaleModelModule.ScaleModel.extend({
         initialize: function(range) {
             OrdinalScaleModel.__super__.initialize.apply(this);
             this.type = "ordinal";
@@ -65,5 +65,8 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
             this.set_domain(_.flatten(data_array), id);
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("OrdinalScaleModel", OrdinalScaleModel);
+
+    return {
+        OrdinalScaleModel: OrdinalScaleModel,
+    };
 });

@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+define(["widgets/js/widget", "d3"], function(Widget, d3) {
     "use strict";
-    var Interaction = widget.WidgetView.extend({
+
+    var Interaction = Widget.WidgetView.extend({
         render: function() {
             this.parent = this.options.parent;
 
@@ -23,8 +24,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "rect"))
                 .attr("x", 0)
                 .attr("y", 0)
-                .attr("width", this.parent.width - this.parent.margin.left - this.parent.margin.right)
-                .attr("height", this.parent.height - this.parent.margin.top - this.parent.margin.bottom)
+                .attr("width", this.parent.width -
+                               this.parent.margin.left -
+                               this.parent.margin.right)
+                .attr("height", this.parent.height -
+                                this.parent.margin.top -
+                                this.parent.margin.bottom)
                 .attr("pointer-events", "all")
                 .attr("visibility", "hidden");
             this.parent.on("margin_updated", this.relayout, this);
@@ -32,8 +37,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         relayout: function() {
             // Called when the figure margins are updated.
             this.el
-                .attr("width", this.parent.width - this.parent.margin.left - this.parent.margin.right)
-                .attr("height", this.parent.height - this.parent.margin.top - this.parent.margin.bottom);
+                .attr("width", this.parent.width -
+                               this.parent.margin.left -
+                               this.parent.margin.right)
+                .attr("height", this.parent.height -
+                                this.parent.margin.top -
+                                this.parent.margin.bottom);
         },
         remove: function() {
             Interaction.__super__.remove.apply(this);
@@ -42,6 +51,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         }
     });
 
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Interaction", Interaction);
-    return Interaction;
+    return {
+        Interaction: Interaction,
+    };
 });

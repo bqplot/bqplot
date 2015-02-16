@@ -76,8 +76,11 @@ class Scale(Widget):
     domain_class = Type(Float, allow_none=False, sync=False)
     reverse = Bool(False, sync=True)
     allow_padding = Bool(True, sync=True)
+
     _view_name = Unicode('Scale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Scale', sync=True)
     _model_name = Unicode('ScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/ScaleModel', sync=True)
     _ipython_display_ = None  # We cannot display a scale outside of a figure
 
 
@@ -104,8 +107,11 @@ class LinearScale(Scale):
     dtype = np.number
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
+
     _view_name = Unicode('LinearScale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/LinearScale', sync=True)
     _model_name = Unicode('LinearScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/LinearScaleModel', sync=True)
 
 
 @register_scale('bqplot.LogScale')
@@ -131,8 +137,11 @@ class LogScale(Scale):
     dtype = np.number
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
+
     _view_name = Unicode('LogScale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/LogScale', sync=True)
     _model_name = Unicode('LogScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/LogScaleModel', sync=True)
 
 
 @register_scale('bqplot.DateScale')
@@ -163,10 +172,12 @@ class DateScale(Scale):
     domain_class = Type(Date, allow_none=False, sync=False)
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
-    date_format = Unicode('', sync=True)  # TODO: should we allow_none and
-                                          # default to None?
+    date_format = Unicode('', sync=True)  # TODO: allow and default to None?
+
     _view_name = Unicode('DateScale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/DateScale', sync=True)
     _model_name = Unicode('DateScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/DateScaleModel', sync=True)
 
 
 @register_scale('bqplot.OrdinalScale')
@@ -189,8 +200,11 @@ class OrdinalScale(Scale):
     rtype = 'Number'
     dtype = np.str
     domain = List(allow_none=False, sync=True)
+
     _view_name = Unicode('OrdinalScale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/OrdinalScale', sync=True)
     _model_name = Unicode('OrdinalScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/OrdinalScaleModel', sync=True)
 
 
 @register_scale('bqplot.ColorScale')
@@ -229,8 +243,11 @@ class ColorScale(Scale):
     max = Float(default_value=None, sync=True, allow_none=True)
     mid = Float(default_value=None, sync=True, allow_none=True)
     scheme = Unicode('RdYlGn', sync=True)
+
     _view_name = Unicode('LinearColorScale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/LinearColorScale', sync=True)
     _model_name = Unicode('LinearColorScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/LinearColorScaleModel', sync=True)
 
 
 @register_scale('bqplot.DateColorScale')
@@ -262,8 +279,11 @@ class DateColorScale(ColorScale):
     max = Date(default_value=None, sync=True, allow_none=True)
     mid = Unicode(default_value=None, sync=True, allow_none=True)
     date_format = Unicode(sync=True)
+
     _view_name = Unicode('DateColorScale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/DateColorScale', sync=True)
     _model_name = Unicode('DateColorScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/DateColorScaleModel', sync=True)
 
 
 @register_scale('bqplot.OrdinalColorScale')
@@ -286,6 +306,8 @@ class OrdinalColorScale(ColorScale):
     rtype = 'Color'
     dtype = np.str
     domain = List(allow_none=False, sync=True)
-    _view_name = Unicode('OrdinalColorScale', sync=True)
-    _model_name = Unicode('OrdinalScaleModel', sync=True)
 
+    _view_name = Unicode('OrdinalColorScale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/OrdinalColorScale', sync=True)
+    _model_name = Unicode('OrdinalScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/OrdinalScaleModel', sync=True)

@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
+define(["d3", "./MarkModel"], function(d3, MarkModelModule) {
     "use strict";
-    MarkModel = MarkModel[1];
-    var ScatterModel = MarkModel.extend({
+
+    var ScatterModel = MarkModelModule.MarkModel.extend({
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
@@ -144,7 +144,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("bqplot.ScatterModel", ScatterModel);
-    return [ScatterModel];
+
+    return {
+        ScatterModel: ScatterModel,
+    };
 });
 

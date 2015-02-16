@@ -13,19 +13,21 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, ScaleView) {
+define(["d3", "./Scale"], function(d3, ScaleViewModule) {
     "use strict";
-    var BaseScale = ScaleView[0];
-    var LogScale = BaseScale.extend({
-         render: function() {
-             this.scale = d3.scale.log();
-             if(this.model.domain.length > 0) {
-                 this.scale.domain(this.model.domain);
-             }
-             this.offset = 0;
-             this.create_event_listeners();
-         },
-     });
-    WidgetManager.WidgetManager.register_widget_view("LogScale", LogScale);
-    return [LogScale];
+
+    var LogScale = ScaleViewModule.Scale.extend({
+        render: function() {
+            this.scale = d3.scale.log();
+            if(this.model.domain.length > 0) {
+                this.scale.domain(this.model.domain);
+            }
+            this.offset = 0;
+            this.create_event_listeners();
+        },
+    });
+
+    return {
+        LogScale: LogScale,
+    };
 });

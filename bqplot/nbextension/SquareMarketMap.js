@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+define(["widgets/js/widget", "d3"], function(Widget, d3) {
     "use strict";
-    var MarketMap = widget.DOMWidgetView.extend({
+
+    var SquareMarketMap = Widget.DOMWidgetView.extend({
         render: function() {
             this.width = this.model.get("width");
             this.height = this.model.get("height");
@@ -39,7 +40,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 .style("left", this.margin.left + "px")
                 .style("top", this.margin.top + "px");
 
-
             this.margin = this.model.get("margin");
 
             this.tree_map = d3.layout.treemap()
@@ -54,7 +54,12 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 .enter().append("div")
                 .attr("class", "node")
                 .call(this.position)
-                .style({"background": function(d, i) { return d.children ? color(d.name): null; }, 'border': 'solid white'})
+                .style({
+                    "background": function(d, i) {
+                        return d.children ? color(d.name): null;
+                    },
+                    "border": "solid white"
+                })
                 .text(function(d) { return d.children ? null : d.name; })
 	            .style({'font': '11px sans-serif', 'position': 'absolute', 'text-align': 'center', 'overflow': 'hidden',
                        'color': 'white'});
@@ -67,6 +72,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
                 .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("SquareMarketMap", MarketMap);
-    return [MarketMap];
+
+    return {
+        SquareMarketMap: SquareMarketMap,
+    };
 });

@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
+define(["d3", "./MarkModel"], function(d3, MarkModelModule) {
     "use strict";
-        var MarkModel = MarkModel[1];
-        var OHLCModel = MarkModel.extend({
+
+    var OHLCModel = MarkModelModule.MarkModel.extend({
         initialize: function() {
             OHLCModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
@@ -112,7 +112,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("bqplot.OHLCModel", OHLCModel);
-    return [OHLCModel];
+
+    return {
+        OHLCModel: OHLCModel,
+    };
 });
 

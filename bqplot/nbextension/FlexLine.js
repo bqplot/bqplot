@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line) {
+define(["d3", "./Lines"], function(d3, LinesViewModule) {
     "use strict";
-    var Line = line[0];
-    var FlexLine = Line.extend({
+
+    var FlexLine = LinesViewModule.Lines.extend({
         render: function() {
-            var base_render_promise = Line.__super__.render.apply(this);
+            var base_render_promise = LinesViewModule.Lines.__super__.render.apply(this);
             var self = this;
 
             return base_render_promise.then(function() {
@@ -171,7 +171,7 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             return this.model.get("stroke_width");
         },
         relayout: function() {
-            Line.__super__.relayout.apply(this);
+            LinesViewModule.Lines.__super__.relayout.apply(this);
             this.set_ranges();
 
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
@@ -189,5 +189,8 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
             //do nothing
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.FlexLine", FlexLine);
+
+    return {
+        FlexLine: FlexLine,
+    }
 });

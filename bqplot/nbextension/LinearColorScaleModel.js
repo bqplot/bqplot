@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManager, d3, LinearScaleModel) {
+define(["d3", "./LinearScaleModel"], function(d3, LinearScaleModel) {
     "use strict";
-    var BaseScaleModel = LinearScaleModel[0];
-    var LinearColorScaleModel = BaseScaleModel.extend({
+
+    var LinearColorScaleModel = LinearScaleModel.LinearScaleModel.extend({
         initialize: function(range) {
             LinearColorScaleModel.__super__.initialize.apply(this);
             this.type = "color_linear";
@@ -30,24 +30,32 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
         update_domain: function() {
             var that = this;
             var max_index = (this.divergent) ? 2 : 1;
-            var min = (!this.min_from_data) ? this.min : d3.min(_.map(this.domains, function(d) {
-                return d.length > 0 ? d[0] : that.global_max;
-            }));
-            var max = (!this.max_from_data) ? this.max : d3.max(_.map(this.domains, function(d) {
-                return d.length > max_index ? d[max_index] : (d.length) > 1 ? d[1] : that.global_min;
-            }));
+            var min = (!this.min_from_data) ?
+                this.min : d3.min(_.map(this.domains, function(d) {
+                    return d.length > 0 ? d[0] : that.global_max;
+                }));
+            var max = (!this.max_from_data) ?
+                this.max : d3.max(_.map(this.domains, function(d) {
+                    return d.length > max_index ?
+                        d[max_index] : (d.length) > 1 ? d[1] : that.global_min;
+                }));
             var prev_domain = this.domain;
             if(min != prev_domain[0] || max != prev_domain[max_index]) {
                 if(this.divergent) {
-                    var mid = (this.mid === undefined || this.mid === null) ? (min + max) / 2 : this.mid;
-                    this.domain = (this.reverse) ? [max, mid, min] : [min, mid, max];
+                    var mid = (this.mid === undefined || this.mid === null) ?
+                        (min + max) / 2 : this.mid;
+                    this.domain = (this.reverse) ?
+                        [max, mid, min] : [min, mid, max];
                 } else {
-                    this.domain = (this.reverse) ? [max, min] : [min, max];
+                    this.domain = (this.reverse) ?
+                        [max, min] : [min, max];
                 }
                 this.trigger("domain_changed", [min, max]);
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("LinearColorScaleModel", LinearColorScaleModel);
-    return [LinearColorScaleModel];
+
+    return {
+        LinearColorScaleModel: LinearColorScaleModel,
+    };
 });

@@ -101,7 +101,7 @@ class Map(DOMWidget):
     min_width = Float(800, sync=True)
     min_height = Float(600, sync=True)
     enable_hover = Bool(True, sync=True)
-    hover_fill = Unicode("Orange", sync=True, allow_none=True)
+    hover_fill = Unicode('Orange', sync=True, allow_none=True)
     hover_stroke = Unicode(sync=True, allow_none=True)
     hover_stroke_width = Float(5.0, sync=True)
     stroke_color = Unicode(sync=True, allow_none=True)
@@ -114,13 +114,12 @@ class Map(DOMWidget):
     selected_stroke = Unicode(sync=True, allow_none=True)
     selected_stroke_width = Float(5.0, sync=True)
     axis = Instance(Axis, sync=True)
-    tooltip_color = Unicode("White", sync=True)
+    tooltip_color = Unicode('White', sync=True)
     display_tooltip = Bool(True, sync=True)
     text_data = Dict(sync=True)
-    text_color = Unicode("Black", sync=True)
-    tooltip_format = Unicode(".2f", sync=True)
+    text_color = Unicode('Black', sync=True)
+    tooltip_format = Unicode('.2f', sync=True)
     tooltip_widget = Instance(DOMWidget, sync=True)
-    _view_name = Unicode("Map", sync=True)
 
     def __init__(self, **kwargs):
         """Constructor for WorldMapWidget"""
@@ -140,3 +139,6 @@ class Map(DOMWidget):
             self._ctrl_click_handlers(self, content)
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
+
+    _view_name = Unicode('Map', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Map', sync=True)

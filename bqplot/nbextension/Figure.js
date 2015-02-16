@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], function(WidgetManager, widget, d3, utils) {
+define(["widgets/js/widget", "d3", "base/js/utils"], function(Widget, d3, utils) {
     "use strict";
-    var Figure = widget.DOMWidgetView.extend({
+
+    var Figure = Widget.DOMWidgetView.extend({
 
         initialize : function() {
             this.setElement(document.createElementNS(d3.ns.prefix.svg, "svg"));
@@ -123,7 +124,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             var figure_scale_promise = this.create_figure_scales();
             var that = this;
             figure_scale_promise.then(function() {
-                that.mark_views = new widget.ViewList(that.add_mark, that.remove_mark, that);
+                that.mark_views = new Widget.ViewList(that.add_mark, that.remove_mark, that);
                 that.mark_views.update(that.model.get("marks"));
                 Promise.all(that.mark_views.views).then(function(views) {
                     that.update_marks(views);
@@ -133,7 +134,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
                     that.set_interaction(that.model.get("interaction"));
                 });
 
-                that.axis_views = new widget.ViewList(that.add_axis, null, that);
+                that.axis_views = new Widget.ViewList(that.add_axis, null, that);
                 that.axis_views.update(that.model.get("axes"));
 
                 // TODO: move to the model
@@ -534,7 +535,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
         },
 
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Figure", Figure);
-    return [Figure];
+
+    return {
+        Figure: Figure,
+    };
 });
 

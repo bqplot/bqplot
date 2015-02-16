@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, mark, utils) {
+define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
     "use strict";
-    var Mark = mark[0];
-    var Hist = Mark.extend({
+
+    var Hist = MarkViewModule.Mark.extend({
         render: function() {
             var base_creation_promise = Hist.__super__.render.apply(this);
             this.sel_indices = [-1];
@@ -326,5 +326,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             return idx_selected;
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Hist", Hist);
+
+    return {
+        Hist: Hist,
+    };
 });

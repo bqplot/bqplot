@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
+define(["d3", "./MarkModel"], function(d3, MarkModelModule) {
     "use strict";
-    MarkModel = MarkModel[1];
-    var HistModel = MarkModel.extend({
+
+    var HistModel = MarkModelModule.MarkModel.extend({
         initialize: function() {
             // TODO: should not need to set this.data
             HistModel.__super__.initialize.apply(this);
@@ -94,6 +94,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             return return_val;
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("bqplot.HistModel", HistModel);
-    return [HistModel];
+
+    return {
+        HistModel: HistModel,
+    };
 });

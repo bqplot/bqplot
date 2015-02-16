@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, Mark, utils) {
+define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
     "use strict";
-    Mark = Mark[0];
-    var Bars = Mark.extend({
+
+    var Bars = MarkViewModule.Mark.extend({
         render: function() {
             this.padding = this.model.get("padding");
             var base_creation_promise = Bars.__super__.render.apply(this);
@@ -423,7 +423,10 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
 
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Bars", Bars);
+
+    return {
+        Bars: Bars,
+    };
 });
 
 

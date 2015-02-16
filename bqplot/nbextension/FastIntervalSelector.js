@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Selector" ], function(WidgetManager, d3, BaseSelectors) {
+define(["d3", "./Selector" ], function(d3, BaseSelectors) {
     "use strict";
-    var BaseXSelector = BaseSelectors[1];
-    var FastIntervalSelector = BaseXSelector.extend({
+
+    var FastIntervalSelector = BaseSelectors.BaseXSelector.extend({
         render : function() {
             FastIntervalSelector.__super__.render.apply(this);
             this.freeze_but_move = true;
@@ -135,6 +135,9 @@ define(["widgets/js/manager", "d3", "./Selector" ], function(WidgetManager, d3, 
             this.set_range([this.scale]);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.FastIntervalSelector", FastIntervalSelector);
+
+    return {
+        FastIntervalSelector: FastIntervalSelector,
+    }
 });
 
