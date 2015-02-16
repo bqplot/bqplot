@@ -14,7 +14,8 @@
  */
 
 define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
-    var MarkModel = MarkModel[1];
+    "use strict";
+    MarkModel = MarkModel[1];
     var LinesModel = MarkModel.extend({
         initialize: function() {
             LinesModel.__super__.initialize.apply(this);
@@ -41,7 +42,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             var scales = this.get("scales");
             var x_scale = scales["x"], y_scale = scales["y"];
             var curve_labels = this.get("labels");
-            if (this.x_data.length == 0 || this.y_data.length == 0) {
+            if (this.x_data.length === 0 || this.y_data.length === 0) {
                 this.mark_data = [];
             } else {
                 this.x_data = this.x_data[0] instanceof Array ?

@@ -14,6 +14,7 @@
  */
 
 define(["d3", "colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
+    "use strict";
     var color_schemes = ["Paired", "Set3", "Pastel1", "Set1", "Greys", "Greens", "Reds", "Purples", "Oranges", "YlOrRd", "YlOrBr", "YlGnBu", "YlGn", "RdPu",
                          "PuRd", "PuBuGn", "PuBu", "OrRd", "GnBu", "BuPu", "BuGn", "BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral"];
     return {
@@ -25,10 +26,11 @@ define(["d3", "colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
             scale_left.domain([0, (count - 1)/ 2]);
             scale_right.domain([(count - 1)/2, count - 1]);
             var ret_colors = [];
-            for (var i = 0; i < (count - 1)/ 2; i++) {
+            var i;
+            for (i = 0; i < (count - 1)/ 2; i++) {
                 ret_colors.push(scale_left(i));
             }
-            for(var i = (count - 1) /2 + 1; i < count; i++) {
+            for(i = (count - 1) /2 + 1; i < count; i++) {
                 ret_colors.push(scale_right(i));
             }
             return ret_colors;
@@ -38,6 +40,7 @@ define(["d3", "colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
                 .domain([0, count - 1])
                 .range(d3.extent[colors]);
             var incr = (count < colors.length) ? Math.floor(colors.length / count) : 1;
+            var ret_colors = [];
             for (var i = 0; i < count; i=i+incr) {
                 ret_colors.push(scale(i));
             }
@@ -116,5 +119,5 @@ define(["d3", "colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
             }
             return (index > 21);
         },
-    }
+    };
 });

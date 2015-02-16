@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Interaction" ], function(WidgetManager, d3, InteractionView) {
+    "use strict";
     var BaseSelector = InteractionView.extend({
         render: function() {
             this.parent = this.options.parent;

@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+    "use strict";
     var Mark = mark[0];
     var Lines = Mark.extend({
         render: function() {
@@ -278,8 +279,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               .datum(function(d) {
                   return {name: d.name, value: d.values[d.values.length - 1]};
               }).attr("transform", function(d) {
-                  return "translate(" + x_scale.scale(d.value.x)
-                                + "," + y_scale.scale(d.value.y) + ")";
+                  return "translate(" + x_scale.scale(d.value.x) +
+                                  "," + y_scale.scale(d.value.y) + ")";
               }).attr("x", 3)
               .attr("dy", ".35em")
               .attr("display", function(d) {
@@ -381,7 +382,8 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
               });
 
             // alter the display only if a few of the curves are visible
-            if(this.model.get("curves_subset").length > 0) {
+            var curves_subset = this.model.get("curves_subset");
+            if(curves_subset.length > 0) {
                 this.el.selectAll(".curve")
                   .select("path")
                   .attr("display", function(d, i) {

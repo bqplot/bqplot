@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./utils", "./Interaction"], function(WidgetManager, d3, utils, Interaction) {
+    "use strict";
     var HandDraw = Interaction.extend({
 
         render: function() {
@@ -95,9 +96,9 @@ define(["widgets/js/manager", "d3", "./utils", "./Interaction"], function(Widget
                 var min = Math.min(old_index, new_index);
                 var max = Math.max(old_index, new_index);
                 for (var i=min; i<=max; ++i) {
-                    if ( (!(this.valid_min) ||
-                          lines_model.x_data[xindex][i] >= this.min_x)
-                     && ((!this.valid_max) ||
+                    if ((!(this.valid_min) ||
+                         lines_model.x_data[xindex][i] >= this.min_x) &&
+                        ((!this.valid_max) ||
                          lines_model.x_data[xindex][i] <= this.max_x)) {
                         lines_model.y_data[this.line_index][i] = newy;
                     }
@@ -142,7 +143,7 @@ define(["widgets/js/manager", "d3", "./utils", "./Interaction"], function(Widget
         },
         nns: function(x_data, x) {
             // Nearest neighbor search
-            idx = this.lines_view.bisect(x_data, x);
+            var idx = this.lines_view.bisect(x_data, x);
             if (x - x_data[idx-1] > x_data[idx] - x) {
                 return idx;
             } else {

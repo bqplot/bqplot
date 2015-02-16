@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, mark, utils) {
-    var Mark = mark[0];
+define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, Mark, utils) {
+    "use strict";
+    Mark = Mark[0];
     var Bars = Mark.extend({
         render: function() {
             this.padding = this.model.get("padding");
@@ -154,7 +155,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             bar_groups.exit().remove();
 
             var bars_sel = bar_groups.selectAll(".bar")
-              .data(function(d) { return d.values; })
+              .data(function(d) { return d.values; });
             bars_sel.enter()
               .append("rect")
               .attr("class", "bar");
@@ -372,9 +373,9 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                         }
                         //Add elements before or after the index of the current
                         //bar which has been clicked
-                        min_index = (idx_selected.length !== 0) ?
+                        var min_index = (idx_selected.length !== 0) ?
                             d3.min(idx_selected) : -1;
-                        max_index = (idx_selected.length !== 0) ?
+                        var max_index = (idx_selected.length !== 0) ?
                             d3.max(idx_selected) : that.model.mark_data.length;
                         if(index > max_index){
                             _.range(max_index+1, index).forEach(function(i) {

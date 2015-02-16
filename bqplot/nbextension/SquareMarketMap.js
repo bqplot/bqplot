@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+    "use strict";
     var MarketMap = widget.DOMWidgetView.extend({
         render: function() {
             this.width = this.model.get("width");

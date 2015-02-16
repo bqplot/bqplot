@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManager, d3, LinearScaleModel) {
+    "use strict";
     var BaseScaleModel = LinearScaleModel[0];
     var LinearColorScaleModel = BaseScaleModel.extend({
         initialize: function(range) {

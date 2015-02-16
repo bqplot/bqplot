@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, BaseModels) {
+    "use strict";
     var BaseModel = BaseModels[0];
     var AxisModel = BaseModel.extend({
         initialize: function() {

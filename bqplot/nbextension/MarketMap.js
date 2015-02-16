@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/utils"], function(WidgetManager, Widget, d3, FigureView, utils) {
+    "use strict";
     var baseFigure = FigureView[0];
     var MarketMap = baseFigure.extend({
         initialize: function() {
@@ -145,9 +146,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             this.model.on("change:hovered_stroke", this.update_hovered_stroke, this);
             this.model.on("change:selected", function() { this.clear_selected(); this.apply_selected(); }, this);
             this.model.on_some_change(["names", "groups", "ref_data"], function() {
-                                                                           this.update_data();
-                                                                           this.compute_dimensions_and_draw();
-                                                                        }, this);
+                this.update_data();
+                this.compute_dimensions_and_draw();
+            }, this);
             this.model.on("change:rows", function(model, value) { this.num_rows = value;
                                                                   this.compute_dimensions_and_draw();
                                                                 }, this);
@@ -166,7 +167,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             setTimeout(_.bind(this.update_layout2, this), 0);
         },
         update_layout2: function() {
-            rect = this.el.getBoundingClientRect();
+            var rect = this.el.getBoundingClientRect();
             this.width = rect.width > 0 ? rect.width : this.model.get("map_width");
             this.height = rect.height > 0 ? rect.height : this.model.get("map_height");
             setTimeout(_.bind(this.update_layout3, this), 0);
@@ -221,7 +222,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             });
 
             this.update_domains();
-            this.grouped_data = _.groupBy(mapped_data, function(d, i) {return self.group_data[i];});
+            this.grouped_data = _.groupBy(mapped_data, function(d, i) { return self.group_data[i]; });
             this.groups = [];
             this.running_sums = [];
             this.running_sums[0] = 0;
@@ -292,7 +293,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             var formats = this.model.get("tooltip_formats");
             this.tooltip_formats = this.tooltip_fields.map(function(field, index) {
                 var fmt = formats[index];
-                if(fmt == undefined || fmt == "") {return function(d) { return d;}}
+                if(fmt == undefined || fmt == "") {return function(d) { return d; }; }
                 else return d3.format(fmt);
             });
         },
@@ -751,8 +752,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
 
                 if(no_cont_cols > cols_remaining){
                     start_col = (init_x == 1) ? this.num_cols - 1 : 0;
-                    if(cols_remaining != 0)
-                        this.calc_end_point_dest(start_col, top_row, init_x, -1).forEach(function(d) { end_points.push(d); });
+                    if(cols_remaining != 0) {
+                        this.calc_end_point_dest(start_col, top_row, init_x, -1)
+                            .forEach(function(d) { end_points.push(d); });
+                    }
                     no_cont_cols = cols_remaining;
                     cols_remaining = this.num_cols;
                     group_iter += 1;
@@ -761,12 +764,14 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                     start_row = top_row;
                     init_x = -1 * init_x;
                     init_y = Math.pow(-1, no_cont_cols) * init_y * (-1);
-                    this.calc_end_point_dest(start_col, bottom_row - 1, (-1) * init_x, 1).forEach(function(d) { end_points.push(d); });
+                    this.calc_end_point_dest(start_col, bottom_row - 1, (-1) * init_x, 1)
+                        .forEach(function(d) { end_points.push(d); });
                 } else if (no_cont_cols == cols_remaining) {
                     start_col = (init_x == 1) ? this.num_cols - 1 : 0;
-                    if(cols_remaining != 0)
-                        this.calc_end_point_dest(start_col, top_row, init_x, -1).forEach(function(d) { end_points.push(d); });
-
+                    if(cols_remaining != 0) {
+                        this.calc_end_point_dest(start_col, top_row, init_x, -1)
+                            .forEach(function(d) { end_points.push(d); });
+                    }
                     no_cont_cols = cols_remaining;
                     cols_remaining = this.num_cols;
                     group_iter += 1;
@@ -846,14 +851,15 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             //best way seems to be horizaontal followed by vertical
             var props = ['x', 'y'];
             var iter = 0;
-            prop = props[iter % 2];
-            other_prop = props[(iter + 1) % 2];
+            var prop = props[iter % 2];
+            var other_prop = props[(iter + 1) % 2];
             var curr_elem = values[0];
             var match = curr_elem[prop];
             var dim = curr_elem[other_prop];
             var max_iter = 2 * editing_copy.length;
+            var final_val = 0;
             while(editing_copy.length > 1 && max_iter > 0){
-                filtered_array = editing_copy.filter(function(elem) { return elem[prop] == match; });
+                var filtered_array = editing_copy.filter(function(elem) { return elem[prop] == match; });
                 if(filtered_array.length > 0) {
                     iter++;
                     var min_elem = d3.min(filtered_array, function(elem) { return elem[other_prop]; });
@@ -890,9 +896,9 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
                             final_val = max_elem;
                         }
                     }
-                    match_elem = editing_copy.filter(function(elem) { return elem[prop] == match && elem[other_prop] == final_val});
+                    var match_elem = editing_copy.filter(function(elem) { return elem[prop] == match && elem[other_prop] == final_val});
                     match_elem.forEach(function(elem) { editing_copy.splice(editing_copy.indexOf(elem), 1);} );
-                    value = {};
+                    var value = {};
                     value[prop] = match;
                     value[other_prop] = final_val;
                     values.push(value);

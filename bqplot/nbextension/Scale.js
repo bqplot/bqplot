@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+     "use strict";
      var Scale = widget.WidgetView.extend({
          render: function(){
              this.offset = 0;

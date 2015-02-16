@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./OrdinalScale", "./ColorUtils"], function(WidgetManager, d3, OrdinalScaleView, ColorUtils) {
+    "use strict";
     var BaseScaleView = OrdinalScaleView[0];
     var OrdinalColorScale = BaseScaleView.extend({
         render: function(){

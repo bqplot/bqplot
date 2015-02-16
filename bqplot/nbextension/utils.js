@@ -14,6 +14,7 @@
  */
 
 define(["d3"], function(d3) {
+    "use strict";
     return {
         getCustomRange: function(array) {
             var first = array[0];
@@ -33,5 +34,5 @@ define(["d3"], function(d3) {
             // no need for a fancier logic, and it is surprisingly efficient.
             return JSON.parse(JSON.stringify(obj));
         },
-    }
+    };
 });

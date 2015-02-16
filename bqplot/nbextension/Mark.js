@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], function(WidgetManager, widget, d3, utils) {
+    "use strict";
     var Mark = widget.WidgetView.extend({
         render: function() {
             this.parent = this.options.parent;
@@ -119,7 +120,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "base/js/utils"], funct
             return [start_pxl, end_pxl];
         },
         invert_point: function(pxl) {
-            return [start_pxl, end_pxl];
+            return [pxl];
         },
         // is the following function really required?
         invert_multi_range: function(array_pixels) {

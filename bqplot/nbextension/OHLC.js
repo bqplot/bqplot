@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+    "use strict";
     var Mark = mark[0];
     var OHLC = Mark.extend({
         render: function() {
@@ -137,6 +138,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var idx_start = -1;
             var idx_end = -1;
             var indices = _.range(this.model.mark_data.length);
+            var that = this;
             var idx_selected = _.filter(indices, function(index) {
                 var elem = that.model.mark_data[index];
                 return (elem[0] >= min && elem[0] <= max);
@@ -195,10 +197,10 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                         down_color : up_color;
                 })
                 .attr( "transform", function(d, i) {
-                    return "translate(" + (x_scale.scale(that.model.mark_data[i][0])
-                                        + x_scale.offset) + ","
-                                        + (y_scale.scale(d[that.model.px.high])
-                                        + y_scale.offset) + ")";
+                    return "translate(" + (x_scale.scale(that.model.mark_data[i][0]) +
+                                           x_scale.offset) + "," +
+                                          (y_scale.scale(d[that.model.px.high]) +
+                                           y_scale.offset) + ")";
                 });
 
             // Draw the mark paths
@@ -252,20 +254,20 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
                 headline_bottom[i] = (y_scale.scale.invert(open[i]) <
                                         y_scale.scale.invert(close[i])) ?
                                         open[i] : close[i];
-
+                var offset_in_x_units;
                 if(x_scale.model.type == "date") {
                     if( min_x_difference instanceof Date) {
                         min_x_difference = min_x_difference.getTime();
                     } // TODO what if the mark data is not a date?
-                    var offset_in_x_units = that.model.mark_data[i][0].getTime()
-                                            + min_x_difference;
+                    offset_in_x_units = that.model.mark_data[i][0].getTime() +
+                                              min_x_difference;
                 } else {
-                    var offset_in_x_units = that.model.mark_data[i][0]
-                                            + min_x_difference;
+                    offset_in_x_units = that.model.mark_data[i][0] +
+                                              min_x_difference;
                 }
-                scaled_mark_widths[i] = (x_scale.scale(offset_in_x_units)
-                                       - x_scale.scale(that.model.mark_data[i][0]))
-                                        * 0.75;
+                scaled_mark_widths[i] = (x_scale.scale(offset_in_x_units) -
+                                         x_scale.scale(that.model.mark_data[i][0])) *
+                                         0.75;
                 to_left_side[i] = -1*scaled_mark_widths[i]/2;
             }
 
@@ -360,20 +362,21 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             var min_distance = Number.POSITIVE_INFINITY;
             var sum = 0;
             var average_height = 0;
+            var x_scale = this.scales["x"];
             for(var i = 1; i < that.model.mark_data.length; i++) {
-                var dist = that.model.mark_data[i][0]
-                         - that.model.mark_data[i-1][0];
+                var dist = that.model.mark_data[i][0] -
+                           that.model.mark_data[i-1][0];
                 if(dist < min_distance) min_distance = dist;
             }
             // Check if there are less than two data points
             if(min_distance === Number.POSITIVE_INFINITY) {
-                min_distance = (x_scale.model.domain[1]
-                              - x_scale.model.domain[0]) / 2;
+                min_distance = (x_scale.model.domain[1] -
+                                x_scale.model.domain[0]) / 2;
             }
             if(min_distance < 0) {
-                mind_distance = -1*min_distance;
+                min_distance = -1 * min_distance;
             }
-            return min_distance
+            return min_distance;
         },
         relayout: function() {
             OHLC.__super__.relayout.apply(this);

@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
+    "use strict";
         var MarkModel = MarkModel[1];
         var OHLCModel = MarkModel.extend({
         initialize: function() {
@@ -59,11 +60,9 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             }
             var that = this;
             var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
+            var x_scale = scales["x"], y_scale = scales["y"];
             var min_x_dist = Number.POSITIVE_INFINITY;
-            var max_y_height = 0;
-            var dist = height = 0;
+            var max_y_height = 0, dist = 0, height = 0;
 
             /*
              * Compute the minimum x distance between the data points. We will

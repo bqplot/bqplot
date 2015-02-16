@@ -14,7 +14,8 @@
  */
 
 define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
-    var MarkModel = MarkModel[1]
+    "use strict";
+    MarkModel = MarkModel[1];
     var HistModel = MarkModel.extend({
         initialize: function() {
             // TODO: should not need to set this.data
@@ -46,7 +47,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             x_data = x_data.filter(function(d) {
                 return (d <= that.max_x && d >= that.min_x);
             });
-            x_data_ind = x_data.map(function (d,i) {
+            var x_data_ind = x_data.map(function (d,i) {
                 return {index: i, value: d};
             });
 
@@ -85,8 +86,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
         create_uniform_bins: function(min_val, max_val, num_bins) {
             var diff = max_val - min_val;
             var step_size = (diff) / num_bins;
-            var return_val = new Array();
-            for(i=0; i<num_bins; i++) {
+            var return_val = [];
+            for(var i=0; i<num_bins; i++) {
                 return_val[i] = min_val+ i * step_size;
             }
             return_val[num_bins] = max_val;

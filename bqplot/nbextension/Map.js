@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./worldmap"], function(WidgetManager, Widget, d3, topojson, FigureView, utils, mapdata) {
+    "use strict";
 
     var world = mapdata.world;
     var countries = mapdata.countries;
@@ -75,7 +76,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                         that.color_scale.compute_and_set_domain(z_data, 0);
                         that.color_scale.set_range();
                         that.color_scale.on("color_scale_range_changed", function() {
-                                that.color_change(that)
+                                that.color_change(that);
                         }, that);
 
                         //TODO: I am forcing the map to update colors by
@@ -132,7 +133,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 			var projection = d3.geo.mercator().center([0,60]).scale(190);
 			path = path.projection(projection);
 
-			this.svg = d3.select(this.el)
+			this.svg = d3.select(this.el);
 
             this.svg.attr("viewBox", "0 0 "+ this.width +' '+ this.height);
 
@@ -146,7 +147,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 this.svg_over.attr("height", "85%");
 
                 that.ax_g = this.svg.append("g")
-                                    .attr("class", "color_axis "+this.map_id)
+                                    .attr("class", "color_axis "+this.map_id);
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
                     that.axes_view = view;
@@ -176,7 +177,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 .classed("hidden", true);
             } else {
                 this.tooltip_div = d3.select(this.el.parentNode)
-                                     .select('#world_tooltip')
+                                     .select('#world_tooltip');
             }
 
             //Bind data and create one path per GeoJSON feature
@@ -204,23 +205,23 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
                     var select = that.model.get("selected").slice();
 
-                    if((that.model.get("hover_stroke")!="" &&
+                    if((that.model.get("hover_stroke")!=="" &&
                         that.model.get("hover_stroke")!=null) &&
                         select.indexOf(d.id)==-1) {
                         that.highlight_g.append(function() {
-                            return that2.cloneNode(true)
+                            return that2.cloneNode(true);
                         }).style("stroke", that.model.get("hover_stroke"))
                           .classed("hovered", true)
                           .style("stroke-width", that.model.get("hover_stroke_width"));
                     }
-                    if((that.model.get("hover_stroke")=="" ||
+                    if((that.model.get("hover_stroke")==="" ||
                         that.model.get("hover_stroke")==null) &&
-                        (that.model.get("hover_fill")!="" &&
-                        that.model.get("hover_fill")!=null) &&
-                        select.indexOf(d.id)==-1) {
+                        (that.model.get("hover_fill")!=="" &&
+                        that.model.get("hover_fill")!==null) &&
+                        select.indexOf(d.id)===-1) {
 
                         that.highlight_g.append(function() {
-                            return that2.cloneNode(true)
+                            return that2.cloneNode(true);
                         }).classed("hovered", true)
                           .style("fill-opacity", 1.0)
                           .style("fill", function() {
@@ -228,11 +229,11 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                           });
 
                     }
-                    if((that.model.get("hover_fill")!="" &&
+                    if((that.model.get("hover_fill")!=="" &&
                         that.model.get("hover_fill")!=null) &&
-                        (that.model.get("hover_stroke")!="" &&
+                        (that.model.get("hover_stroke")!=="" &&
                         that.model.get("hover_stroke")!=null) &&
-                        select.indexOf(d.id)==-1) {
+                        select.indexOf(d.id)===-1) {
 
                         that.highlight_g.selectAll(".hovered")
                                         .style("fill-opacity", 1.0)
@@ -240,7 +241,6 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                                             return that.model.get("hover_fill");
                                         });
                     }
-
                 })
 				.on("mousemove", function(d){
                     if(!that.model.get("enable_hover")) {
@@ -253,7 +253,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 						if(d.id == countries[i].id){
 							name = countries[i].Name;
 						}
-					};
+					}
 
                     var mouse_pos = d3.mouse(that.el);
 
@@ -264,7 +264,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                             d3.select(that.el.parentNode)
                               .select("#world_tooltip")
                               .style("background-color", "transparent")
-				              .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px", "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px", "width":"300px", "height":"200px"});
+				              .style({"left": (mouse_pos[0] + that.el.offsetLeft + 5) + "px",
+                                      "top": (mouse_pos[1] + that.el.offsetTop + 5) + "px",
+                                      "width": "300px",
+                                      "height": "200px"});
 
                     } else {
                             //Update the tooltip position and value
@@ -276,14 +279,16 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                                   .select("#world_tooltip")
                                   .style("background-color", that.model.get("tooltip_color"))
                                   .style("color", that.model.get("text_color"))
-                                  .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px", "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px"})
+                                  .style({"left": (mouse_pos[0] + that.el.offsetLeft + 5) + "px",
+                                          "top": (mouse_pos[1] + that.el.offsetTop + 5) + "px"})
 				                  .text(name + ": " + that.fmt(that.model.get("color_data")[d.id]));
                             } else {
                                 d3.select(that.el.parentNode)
                                   .select("#world_tooltip")
                                   .style("background-color", that.model.get("tooltip_color"))
                                   .style("color", that.model.get("text_color"))
-				                  .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px", "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px"})
+				                  .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px",
+                                          "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px"})
 				                  .text(name);
                                 }
                         } else {
@@ -291,7 +296,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                               .select("#world_tooltip")
                               .style("background-color", that.model.get("tooltip_color"))
                               .style("color", that.model.get("text_color"))
-				              .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px", "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px"})
+				              .style({"left":(mouse_pos[0] + that.el.offsetLeft + 5) + "px",
+                                      "top":(mouse_pos[1] + that.el.offsetTop + 5) + "px"});
 
                             if(that.model.get("text_data")[d.id]!==undefined &&
                                 that.model.get("text_data")[d.id]!==null) {
@@ -332,10 +338,10 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 				})
 				.on("click", function(d) {
                     return that.click_highlight(d, this);
-                })
+                });
 
             if(that.stroke_color!=null &&
-               that.stroke_color!=undefined && that.stroke_color!="") {
+               that.stroke_color!=undefined && that.stroke_color!=="") {
                 that.stroke_g.selectAll("path")
                              .style("stroke", that.stroke_color);
             }
@@ -415,7 +421,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             setTimeout(_.bind(this.update_layout2, this), 0);
         },
         update_layout2: function() {
-            rect = this.el.getBoundingClientRect();
+            var rect = this.el.getBoundingClientRect();
             this.width = rect.width > 0 ? rect.width : this.model.get("min_width");
             this.height = rect.height > 0 ? rect.height : this.model.get("min_height");
             setTimeout(_.bind(this.update_layout3, this), 0);
@@ -456,7 +462,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
         },
         change_selected_stroke: function(that) {
-            if (that.model.get("selected_stroke")=="" ||
+            if (that.model.get("selected_stroke")==="" ||
                 that.model.get("selected_stroke")==null) {
                 that.highlight_g.selectAll(".selected")
                                 .style("stroke-width", 0.0);
@@ -472,20 +478,20 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
             this.highlight_g.selectAll("path").remove();
             var that2=this;
-            var select = this.model.get("selected").slice()
-            var temp = this.stroke_g.selectAll("path").data()
+            var select = this.model.get("selected").slice();
+            var temp = this.stroke_g.selectAll("path").data();
             that.stroke_g.selectAll("path").style("stroke", function(d, i) {
                 return that.hoverfill(d, i, that);
             });
-            var nodes = this.stroke_g.selectAll("path")
-            for (i=0; i<temp.length; i++) {
+            var nodes = this.stroke_g.selectAll("path");
+            for (var i=0; i<temp.length; i++) {
                 if(select.indexOf(temp[i].id) > -1) {
                     that2.highlight_g.append(function() {
                                             return nodes[0][i].cloneNode(true);
                                     }).attr("id", temp[i].id)
                                     .style("fill-opacity", function() {
                                         if (that2.model.get("selected_fill")!=null &&
-                                            that2.model.get("selected_fill")!="") {
+                                            that2.model.get("selected_fill")!=="") {
                                                return 1.0;
                                             } else {
                                                return 0.0;
@@ -494,7 +500,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                                     .style("fill", that2.model.get("selected_fill"))
                                     .style("stroke-opacity", function() {
                                         if (that2.model.get("selected_stroke")!=null &&
-                                            that2.model.get("selected_stroke")!="") {
+                                            that2.model.get("selected_stroke")!=="") {
                                                 return 1.0;
                                         } else {
                                                 return 0.0;
@@ -507,7 +513,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             }
         },
         ocean_clicked: function(that){
-            e = window.event;
+            var e = window.event;
             if(!e.altKey) {
                 return;
             }
@@ -522,7 +528,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             that.fill_g.selectAll("path").classed("selected", false)
                                          .style("fill", function(d, i) {
                                              return that.fill_g_colorfill(d,i, that);
-                                         })
+                                         });
         },
         change_stroke_color: function(that){
             that.stroke_color = that.model.get("stroke_color");
@@ -537,7 +543,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             that.fill_g.selectAll("path").style("fill", that.map_color);
         },
         color_change: function(that) {
-            var scales = this.model.get("color_scale")
+            var scales = this.model.get("color_scale");
             this.color_data = this.model.get("color_data");
 
             var that2 = this;
@@ -547,7 +553,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
                     var z_data = Object.keys(that2.color_data).map( function (d) {
                         return that2.color_data[d];
-                    })
+                    });
                     if (that2.color_scale) {
                         that2.color_scale.compute_and_set_domain(z_data, 0);
                         that2.color_scale.set_range();
@@ -560,19 +566,17 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
 
                     that.fill_g.selectAll("path").style("fill", function(d, i) {
                         return that.fill_g_colorfill(d,i, that);
-                    })
-
+                    });
             }
-
         },
         click_highlight: function(d, that) {
-            e = window.event
+            var e = window.event;
 			var name;
 			for(var i = 0; i< countries.length; i++) {
-				if(d.id == countries[i].id) {
+				if(d.id === countries[i].id) {
 					name = countries[i].Name;
 				}
-			};
+			}
             if(e.ctrlKey) {
 	            this.send({event:'click', country:name, id:d.id});
                 return;
@@ -581,7 +585,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                     return;
                 }
                 var selected = this.model.get("selected").slice();
-                index = selected.indexOf(d.id)
+                var index = selected.indexOf(d.id);
                 var that2 = this;
                 if(index > -1) {
                     selected.splice(index, 1);
@@ -595,30 +599,30 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
                 else {
                     that2.highlight_g.selectAll(".hovered").remove();
                     that2.highlight_g.append(function() {
-                            return that.cloneNode(true)
+                            return that.cloneNode(true);
                          })
                          .attr("id", d.id)
                          .classed("selected", true);
 
-                    if (that2.model.get("selected_fill")!="" &&
+                    if (that2.model.get("selected_fill")!=="" &&
                         that2.model.get("selected_fill")!=null) {
                         that2.highlight_g.selectAll(".selected")
                                          .style("fill-opacity", 1.0)
                                         .style("fill", that2.model.get("selected_fill"));
                     }
 
-                    if ((that2.model.get("selected_stroke")!="" &&
+                    if ((that2.model.get("selected_stroke")!=="" &&
                          that2.model.get("selected_stroke")!=null) &&
-                         (that2.model.get("selected_fill")!="" &&
+                         (that2.model.get("selected_fill")!=="" &&
                          that2.model.get("selected_fill")!=null)) {
                         that2.highlight_g.selectAll(".selected")
                                          .style("stroke", that2.model.get("selected_stroke"))
                                          .style("stroke-width", that2.model.get("selected_stroke_width"));
                     }
 
-                    if((that2.model.get("selected_fill")=="" ||
+                    if((that2.model.get("selected_fill")==="" ||
                         that2.model.get("selected_fill")==null) &&
-                        (that2.model.get("selected_stroke")!="" &&
+                        (that2.model.get("selected_stroke")!=="" &&
                          that2.model.get("selected_stroke")!=null)) {
                         that2.highlight_g.selectAll(".selected")
                              .style("stroke", that2.model.get("selected_stroke"))
@@ -633,16 +637,17 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         },
         is_object_empty: function(object){
             var is_empty = true;
-            for(keys in object) {
+            for(var keys in object) {
                 is_empty = false;
-                break;             }
+                break;
+            }
 
             return is_empty;
         },
         hoverfill: function(d, j, that) {
             var select = this.model.get("selected").slice();
             if (select.indexOf(d.id)>-1 &&
-                that.model.get("selected_stroke")!="" &&
+                that.model.get("selected_stroke")!=="" &&
                     that.model.get("selected_stroke")!=null) {
                 return that.model.get("selected_stroke");
             } else {

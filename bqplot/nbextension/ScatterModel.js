@@ -14,7 +14,8 @@
  */
 
 define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
-    var MarkModel = MarkModel[1];
+    "use strict";
+    MarkModel = MarkModel[1];
     var ScatterModel = MarkModel.extend({
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw

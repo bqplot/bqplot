@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+    "use strict";
     var BaseModel = widget.WidgetModel.extend({
         get_typed_field: function(param) {
             // function that reads in an array of a field that is typed. It

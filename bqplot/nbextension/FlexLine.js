@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line) {
+    "use strict";
     var Line = line[0];
     var FlexLine = Line.extend({
         render: function() {
@@ -139,7 +140,8 @@ define(["widgets/js/manager", "d3", "./Lines"], function(WidgetManager, d3, line
               });
 
             // alter the display only if a few of the curves are visible
-            if(this.model.get("curves_subset").length > 0) {
+            var curves_subset = this.model.get("curves_subset");
+            if(curves_subset.length > 0) {
                 this.el.selectAll(".curve")
                   .select("path")
                   .attr("display", function(d, i) {

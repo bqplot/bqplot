@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, mark, utils) {
+    "use strict";
     var Mark = mark[0];
     var Hist = Mark.extend({
         render: function() {
@@ -105,8 +106,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                 y_scale = this.scales["counts"];
 			this.el.selectAll(".bar")
 			  .attr("transform", function(d) {
-                  return "translate(" + x_scale.scale(d.x)
-                                + "," + y_scale.scale(d.y) + ")";
+                  return "translate(" + x_scale.scale(d.x) +
+                                  "," + y_scale.scale(d.y) + ")";
               });
             var bar_width = this.calculate_bar_width();
             this.el.selectAll(".bar").select("rect")
@@ -138,8 +139,8 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
 		      .enter().append("g")
 			  .attr("class","bar")
 			  .attr("transform", function(d) {
-                  return "translate(" + x_scale.scale(d.x) + ","
-                                      + y_scale.scale(d.y) + ")";
+                  return "translate(" + x_scale.scale(d.x) + "," +
+                                        y_scale.scale(d.y) + ")";
               });
 
 		    bar.append("rect")
@@ -155,12 +156,12 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                   if(!(that.selector_model)) {
                      return;
                   }
-                  buffer_index = [];
+                  var buffer_index = [];
                   var elem_index = that.bar_index_sel.indexOf(i);
                   if( elem_index > -1 && d3.event.ctrlKey) {
                       that.bar_index_sel.splice(elem_index, 1);
                       d.forEach(function(elem) {
-                          remove_index = that.sel_indices.indexOf(elem.index);
+                          var remove_index = that.sel_indices.indexOf(elem.index);
                           if(remove_index !== -1) {
                               that.sel_indices.splice(remove_index, 1);
                           }
@@ -182,9 +183,9 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
                           that.sel_indices.forEach(function(elem) {
                               buffer_index.push(elem);
                           });
-                          min_index = (that.bar_index_sel.length !== 0) ?
+                          var min_index = (that.bar_index_sel.length !== 0) ?
                               d3.min(that.bar_index_sel) : -1;
-                          max_index = (that.bar_index_sel.length !== 0) ?
+                          var max_index = (that.bar_index_sel.length !== 0) ?
                               d3.max(that.bar_index_sel) : (that.mark_data).length;
                           if(i > max_index){
                               that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) {
@@ -284,7 +285,7 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             var colors = this.model.get("colors");
             var select_color = colors.length > 1 ? colors[1] : "red";
             var fill_color = colors[0];
-            bars_sel = this.el.selectAll(".bar");
+            var bars_sel = this.el.selectAll(".bar");
             var current_range = _.range(idx_start, idx_end);
             if(current_range.length == this.model.num_bins) {
                 current_range = [];

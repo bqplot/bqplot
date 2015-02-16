@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Scale", "./ColorUtils"], function(WidgetManager, d3, ScaleView, ColorUtils) {
+    "use strict";
     var BaseScaleView = ScaleView[0];
     var LinearColorScale = BaseScaleView.extend({
         render: function(){

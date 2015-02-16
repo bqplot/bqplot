@@ -14,6 +14,7 @@
  */
 
 define(["widgets/js/manager", "d3", "./Scale"], function(WidgetManager, d3, ScaleView) {
+    "use strict";
     var BaseScaleView = ScaleView[0];
      var OrdinalScale = BaseScaleView.extend({
          render: function(){

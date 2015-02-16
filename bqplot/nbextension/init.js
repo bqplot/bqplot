@@ -32,7 +32,7 @@ requirejs.config({
             "exports": "colorbrewer",
         },
     },
-})
+});
 
 define([
     "less!./bqplot",

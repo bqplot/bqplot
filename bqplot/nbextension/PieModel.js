@@ -14,7 +14,8 @@
  */
 
 define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
-    var MarkModel = MarkModel[1];
+    "use strict";
+    MarkModel = MarkModel[1];
     var PieModel = MarkModel.extend({
         initialize: function() {
             PieModel.__super__.initialize.apply(this);
@@ -48,7 +49,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 return {size: d,
                         color: color[i],
                         label: labels[i]};
-            })
+            });
             this.update_color();
             this.update_domains();
             this.trigger("data_updated");
