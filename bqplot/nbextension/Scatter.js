@@ -69,6 +69,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 size_scale = this.scales["size"],
                 color_scale = this.scales["color"],
                 opacity_scale = this.scales["opacity"];
+                eccentricity_scale = this.scales["eccentricity"];
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
@@ -94,6 +95,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(opacity_scale) {
                 opacity_scale.set_range([0.2, 1]);
             }
+            if(eccentricity_scale) {
+                eccentricity_scale.set_range([0, 1]);
+            }
         },
         set_positional_scales: function() {
             var x_scale = this.scales["x"],
@@ -111,6 +115,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var color_scale = this.scales["color"],
                 size_scale = this.scales["size"],
                 opacity_scale = this.scales["opacity"];
+                eccentricity_scale = this.scales["eccentricity"];
             // the following handlers are for changes in data that does not
             // impact the position of the elements
             if(color_scale) {
@@ -128,6 +133,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(opacity_scale) {
                 this.listenTo(opacity_scale, "domain_changed", function() {
                     this.update_default_opacity();
+                });
+            }
+            if(eccentricity_scale) {
+                this.listenTo(eccentricity_scale, "domain_changed", function() {
+                    this.update_default_eccentricity();
                 });
             }
         },
@@ -207,18 +217,18 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
 
         },
-        update_default_eccentricity: function(model) {
-            if(!model.dirty && d3.svg.symbolTypes.indexOf(model.get("marker")) == -1) {
+        update_default_eccentricity: function() {
+            if(!this.model.dirty && d3.svg.symbolTypes.indexOf(this.model.get("marker")) == -1) {
                 var that = this;
                 this.el.selectAll(".dot").attr("d", this.dot.eccentricity(function(data) {
                     return that.get_element_eccentricity(data);
                 }));
             }
         },
-        update_default_size: function(model) {
+        update_default_size: function() {
             this.compute_view_padding();
             // update size scale range?
-            if(!model.dirty) {
+            if(!this.model.dirty) {
                 var that = this;
                 this.el.selectAll(".dot").attr("d", this.dot.size(function(data) {
                     return that.get_element_size(data);
@@ -254,7 +264,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         get_element_eccentricity: function(data) {
             var eccentricity_scale = this.scales["eccentricity"];
             if(eccentricity_scale && data.eccentricity !== undefined) {
-                return eccentricity_scale.scale(data.opacity);
+                return eccentricity_scale.scale(data.eccentricity);
             }
             return this.model.get("default_eccentricity");
         },
@@ -422,10 +432,18 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               });
 
             var text_loc = Math.sqrt(this.model.get("default_size")) / 2.0;
-            elements.select("path")
-              .attr("d", this.dot.size(function(d) {
-                  return that.get_element_size(d);
-              }));
+            if (d3.svg.symbolTypes.indexOf(this.model.get("marker")) != -1){
+                elements.select("path")
+                  .attr("d", this.dot.size(function(d) {
+                      return that.get_element_size(d);
+                  }));
+            } else {
+                elements.select("path")
+                  .attr("d", this.dot
+                        .size(function(d) { return that.get_element_size(d); })
+                        .eccentricity(function(d) { return that.get_element_eccentricity(d); })
+                        );
+            }
 
             elements.call(this.drag_listener);
 

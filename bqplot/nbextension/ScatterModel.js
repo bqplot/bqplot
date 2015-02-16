@@ -20,7 +20,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
-            this.on_some_change(["x", "y", "color", "opacity", "size"], this.update_data, this);
+            this.on_some_change(["x", "y", "color", "opacity", "size", "eccentricity"], this.update_data, this);
             this.on_some_change(["names", "names_unique"], function() { this.update_unique_ids(); this.trigger("data_updated"); }, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
@@ -52,7 +52,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 var color = this.get_typed_field("color");
                 var size = this.get_typed_field("size");
                 var opacity = this.get_typed_field("opacity");
-                //var eccentricity = this.get_typed_field("eccentricity");
+                var eccentricity = this.get_typed_field("eccentricity");
 
                 if(color_scale) {
                     if(!this.get("preserve_domain")["color"]) {
@@ -68,7 +68,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             z: color[i],
                             size: size[i],
                             opacity: opacity[i],
-                            //eccentricity: eccentricity[i],
+                            eccentricity: eccentricity[i],
                             };
                 });
             }

@@ -346,6 +346,8 @@ class Scatter(Mark):
                       min_dim=1, max_dim=1)
     size = NdArray(sync=True, display_index=10, scaled=True, rtype='Number',
                    min_dim=1, max_dim=1)
+    eccentricity = NdArray(sync=True, display_index=11, scaled=True, rtype='Number',
+                      min_dim=1, max_dim=1)
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},

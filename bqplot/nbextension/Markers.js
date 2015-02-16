@@ -15,15 +15,16 @@
 
 define(["d3"], function(d3) {
 
-    var pi = Math.PI
-    var tan5 = Math.tan(5 * pi / 180);
-    var tan30 = Math.tan(30 * pi / 180);
-    var tan60 = Math.tan(60 * pi / 180);
+    var pi = Math.PI;
+        radian = pi / 180;
+        tan5 = Math.tan(5 * radian);
+        tan60 = Math.tan(60 * radian);
 
     var bqSymbolTypes = d3.map({
         "arrow": function(size, eccentricity) {
-            var ecc = tan60 + (tan5 - tan60) * eccentricity
-            var ry = Math.sqrt(size / ecc),
+            var angle = 60 + (5 - 60) * eccentricity;
+                ecc = Math.tan(angle * radian);
+                ry = Math.sqrt(size / ecc),
                 rx = ry * ecc / 2;
             return "M0," + -ry
                 + "L" + rx +"," + ry
@@ -32,8 +33,8 @@ define(["d3"], function(d3) {
         },
         "ellipse": function(size, eccentricity) {
             var ecc = Math.pow(10, eccentricity)
-            var rx = Math.sqrt(size / (pi * ecc));
-            var ry = rx * ecc;
+                rx = Math.sqrt(size / (pi * ecc));
+                ry = rx * ecc;
             return "M0," + ry
                 + "A" + rx + "," + ry + " 0 1,1 0," + (-ry)
                 + "A" + rx + "," + ry + " 0 1,1 0," + ry
@@ -41,8 +42,8 @@ define(["d3"], function(d3) {
         },
         "rectangle": function(size, eccentricity) {
             var ecc = Math.pow(10, eccentricity)
-            var rx = Math.sqrt(size / ecc) / 2;
-            var ry = rx * ecc;
+                rx = Math.sqrt(size / ecc) / 2;
+                ry = rx * ecc;
             return "M" + -rx + "," + -ry
                 + "L" + rx + "," + -ry
                 + " " + rx + "," + ry
