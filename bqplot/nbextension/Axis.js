@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager, widget, d3) {
+define(["widgets/js/widget", "d3"], function(Widget, d3) {
     "use strict";
+
      var units_array = ["em", "ex", "px"];
      var custom_time_format = d3.time.format.multi([
          [".%L", function(d) { return d.getMilliseconds(); }],
@@ -26,7 +27,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
          ["%b %Y", function(d) { return d.getMonth(); }],
          ["%Y", function() { return true; }]
      ]);
-     var Axis = widget.WidgetView.extend({
+     var Axis = Widget.WidgetView.extend({
          render: function() {
 
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
@@ -543,6 +544,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3"], function(WidgetManager
         },
 
      });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Axis", Axis);
-    return [Axis];
+    return {
+        Axis: Axis,
+    };
 });

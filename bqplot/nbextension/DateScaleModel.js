@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManager, d3, ScaleModel) {
+define(["d3", "./LinearScaleModel"], function(d3, LinearScaleModelModule) {
     "use strict";
-    var BaseScaleModel = ScaleModel[0];
-    var DateScaleModel = BaseScaleModel.extend({
+
+    var DateScaleModel = LinearScaleModelModule.LinearScaleModel.extend({
         initialize: function(range) {
             DateScaleModel.__super__.initialize.apply(this);
             this.type = "date";
@@ -32,6 +32,8 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
             this.update_domain();
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("DateScaleModel", DateScaleModel);
-    return [DateScaleModel];
+
+    return {
+        DateScaleModel: DateScaleModel,
+    };
 });

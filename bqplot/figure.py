@@ -89,8 +89,6 @@ class Figure(DOMWidget):
                        'bottom-left', 'bottom', 'bottom-right', 'right'}
         location of the legend relative to the center of the figure
     """
-    _view_name = Unicode('bqplot.Figure', sync=True)
-
     title = Unicode(sync=True,
                     exposed=True, display_index=1, display_name='Title')
     axes = List(Instance(Axis), allow_none=False, sync=True)
@@ -118,3 +116,6 @@ class Figure(DOMWidget):
 
     def _scale_y_default(self):
         return LinearScale(min=0, max=1)
+
+    _view_name = Unicode('Figure', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Figure', sync=True)

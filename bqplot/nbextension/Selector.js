@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Interaction" ], function(WidgetManager, d3, InteractionView) {
+define(["d3", "./Interaction" ], function(d3, InteractionViewModule) {
     "use strict";
-    var BaseSelector = InteractionView.extend({
+
+    var BaseSelector = InteractionViewModule.Interaction.extend({
         render: function() {
             this.parent = this.options.parent;
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"));
@@ -54,7 +55,6 @@ define(["widgets/js/manager", "d3", "./Interaction" ], function(WidgetManager, d
             });
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.BaseSelector", BaseSelector);
 
     var BaseXSelector = BaseSelector.extend({
         create_scales: function() {
@@ -76,7 +76,6 @@ define(["widgets/js/manager", "d3", "./Interaction" ], function(WidgetManager, d
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.BaseSelectorX", BaseXSelector);
 
     var BaseXYSelector = BaseSelector.extend({
         create_scales: function() {
@@ -116,8 +115,10 @@ define(["widgets/js/manager", "d3", "./Interaction" ], function(WidgetManager, d
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.BaseSelectorXY", BaseXYSelector);
 
-
-    return [BaseSelector, BaseXSelector, BaseXYSelector];
+    return {
+        BaseSelector: BaseSelector,
+        BaseXSelector: BaseXSelector,
+        BaseXYSelector: BaseXYSelector,
+    };
 });

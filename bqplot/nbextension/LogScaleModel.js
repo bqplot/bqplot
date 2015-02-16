@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManager, d3, ScaleModel) {
+define(["d3", "./LinearScaleModel"], function(d3, LinearScaleModelModule) {
     "use strict";
-    var BaseScaleModel = ScaleModel[0];
-    var LogScaleModel = BaseScaleModel.extend({
+
+    var LogScaleModel = LinearScaleModelModule.LinearScaleModel.extend({
         initialize: function(range) {
             LogScaleModel.__super__.initialize.apply(this);
             this.type = "log";
@@ -27,6 +27,8 @@ define(["widgets/js/manager", "d3", "./LinearScaleModel"], function(WidgetManage
             this.on("change:reverse", this.reverse_changed, this);
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("LogScaleModel", LogScaleModel);
-    return [LogScaleModel];
+
+    return {
+        LogScaleModel: LogScaleModel,
+    };
 });

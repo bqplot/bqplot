@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
+define(["d3", "./MarkModel"], function(d3, MarkModelModule) {
     "use strict";
-    MarkModel = MarkModel[1];
-    var PieModel = MarkModel.extend({
+
+    var PieModel = MarkModelModule.MarkModel.extend({
         initialize: function() {
             PieModel.__super__.initialize.apply(this);
             this.on("change:sizes", this.update_data, this);
@@ -104,6 +104,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("bqplot.PieModel", PieModel);
-    return [PieModel];
+
+    return {
+        PieModel: PieModel,
+    };
 });

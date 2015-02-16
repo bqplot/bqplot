@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./DateScaleModel"], function(WidgetManager, d3, DateScaleModel) {
+define(["d3", "./DateScaleModel"], function(d3, DateScaleModelModule) {
     "use strict";
-    var BaseScaleModel = DateScaleModel[0];
-    var DateColorScaleModel = BaseScaleModel.extend({
+
+    var DateColorScaleModel = DateScaleModelModule.DateScaleModel.extend({
         initialize: function(range) {
             DateColorScaleModel.__super__.initialize.apply(this);
             this.type = "date_color_linear";
@@ -39,7 +39,8 @@ define(["widgets/js/manager", "d3", "./DateScaleModel"], function(WidgetManager,
 
             var max = (!this.max_from_data) ? this.max : d3.max(
                 _.map(this.domains, function(d) {
-                    return d.length > max_index ? d[max_index] : d.length > 1 ? d[1] : that.global_min;
+                    return d.length > max_index ?
+                        d[max_index] : d.length > 1 ? d[1] : that.global_min;
                 })
             );
             var prev_domain = this.domain;
@@ -47,14 +48,18 @@ define(["widgets/js/manager", "d3", "./DateScaleModel"], function(WidgetManager,
                 if(this.divergent) {
                     var mean = new Date();
                     mean.setTime(min.getTime() + Math.abs(max - min) / 2);
-                    this.domain = (this.reverse) ? [max, mean, min] : [min, mean, max];
+                    this.domain = (this.reverse) ?
+                        [max, mean, min] : [min, mean, max];
                 } else {
-                    this.domain = (this.reverse) ? [max, min] : [min, max];
+                    this.domain = (this.reverse) ?
+                        [max, min] : [min, max];
                 }
                 this.trigger("domain_changed", this.domain);
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("DateColorScaleModel", DateColorScaleModel);
-    return [DateColorScaleModel];
+
+    return {
+        DateColorScaleModel: DateColorScaleModel,
+    };
 });

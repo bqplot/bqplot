@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./LinearColorScale", "./ColorUtils"], function(WidgetManager, d3, ScaleView, ColorUtils) {
+define(["d3", "./LinearColorScale", "./ColorUtils"], function(d3, LinearColorScaleViewModule, ColorUtils) {
     "use strict";
-    var LinearColorScaleView = ScaleView[0];
-    var DateColorScale = LinearColorScaleView.extend({
+
+    var DateColorScale = LinearColorScaleViewModule.LinearColorScale.extend({
         render: function(){
             this.scale = d3.time.scale();
             if(this.model.domain.length > 0) {
@@ -34,6 +34,8 @@ define(["widgets/js/manager", "d3", "./LinearColorScale", "./ColorUtils"], funct
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("DateColorScale", DateColorScale);
-    return [DateColorScale];
+
+    return {
+        DateColorScale: DateColorScale,
+    };
 });

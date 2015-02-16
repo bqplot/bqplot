@@ -105,8 +105,8 @@ class Axis(BaseAxis):
     label = Unicode(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
                       allow_none=False, sync=True)
-    tick_format = Unicode(allow_none=True, sync=True)   # TODO: should we set None as default value
-    scale = Instance(Scale, sync=True)                  # TODO: check for allow_none
+    tick_format = Unicode(allow_none=True, sync=True)  # TODO: Default value?
+    scale = Instance(Scale, sync=True)
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NdArray(sync=True)
     offset = Dict({}, allow_none=False, sync=True)
@@ -120,8 +120,10 @@ class Axis(BaseAxis):
     # the figure with resepect to the axis line.
 
     visible = Bool(True, sync=True)
-    _view_name = Unicode('bqplot.Axis', sync=True)
-    _model_name = Unicode('bqplot.AxisModel', sync=True)
+    _view_name = Unicode('Axis', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Axis', sync=True)
+    _model_name = Unicode('AxisModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/AxisModel', sync=True)
     _ipython_display_ = None  # We cannot display an axis outside of a figure.
 
     def _tick_format_default(self):
@@ -163,8 +165,10 @@ class ColorAxis(Axis):
     label = Unicode(sync=True)
     scale = Instance(ColorScale, sync=True)  # TODO: check for allow_none
     tick_format = Unicode(sync=True)
-    _view_name = Unicode('bqplot.ColorAxis', sync=True)
-    _model_name = Unicode('bqplot.AxisModel', sync=True)
+    _view_name = Unicode('ColorAxis', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/ColorAxis', sync=True)
+    _model_name = Unicode('AxisModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/AxisModel', sync=True)
 
     def _tick_format_default(self):
         if isinstance(self.scale, DateColorScale):

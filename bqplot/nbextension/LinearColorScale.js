@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Scale", "./ColorUtils"], function(WidgetManager, d3, ScaleView, ColorUtils) {
+define(["d3", "./Scale", "./ColorUtils"], function(d3, ScaleViewModule, ColorUtils) {
     "use strict";
-    var BaseScaleView = ScaleView[0];
-    var LinearColorScale = BaseScaleView.extend({
+
+    var LinearColorScale = ScaleViewModule.Scale.extend({
         render: function(){
             this.scale = d3.scale.linear();
             if(this.model.domain.length > 0) {
@@ -59,7 +59,9 @@ define(["widgets/js/manager", "d3", "./Scale", "./ColorUtils"], function(WidgetM
             this.set_range();
             this.trigger("color_scale_range_changed");
         },
-     });
-    WidgetManager.WidgetManager.register_widget_view("LinearColorScale", LinearColorScale);
-    return [LinearColorScale];
+    });
+
+    return {
+        LinearColorScale: LinearColorScale,
+    };
 });

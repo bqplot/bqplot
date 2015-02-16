@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+define(["d3", "./Mark"], function(d3, MarkViewModule) {
     "use strict";
-    var Mark = mark[0];
-    var Label = Mark.extend({
+
+    var Label = MarkViewModule.Mark.extend({
         render: function() {
             var base_render_promise = Label.__super__.render.apply(this);
             var self = this;
@@ -141,7 +141,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Label", Label);
-    return [Label];
+
+    return {
+        Label: Label,
+    };
 });
 

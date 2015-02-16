@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3, ScaleModel) {
+define(["d3", "./ScaleModel"], function(d3, ScaleModelModule) {
     "use strict";
-    var BaseScaleModel = ScaleModel[0];
-    var LinearScaleModel = BaseScaleModel.extend({
+
+    var LinearScaleModel = ScaleModelModule.ScaleModel.extend({
         initialize: function(range) {
             LinearScaleModel.__super__.initialize.apply(this);
             this.type = "linear";
@@ -42,12 +42,14 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
         },
         update_domain: function() {
             var that = this;
-            var min = (!this.min_from_data) ? this.min : d3.min(_.map(this.domains, function(d) {
-                return d.length > 0 ? d[0] : that.global_max;
-            }));
-            var max = (!this.max_from_data) ? this.max : d3.max(_.map(this.domains, function(d) {
-                return d.length > 1 ? d[1] : that.global_min;
-            }));
+            var min = (!this.min_from_data) ?
+                this.min : d3.min(_.map(this.domains, function(d) {
+                    return d.length > 0 ? d[0] : that.global_max;
+                }));
+            var max = (!this.max_from_data) ?
+                this.max : d3.max(_.map(this.domains, function(d) {
+                    return d.length > 1 ? d[1] : that.global_min;
+                }));
             var prev_domain = this.domain;
             var min_index = (this.reverse) ? 1 : 0;
             if(min !== prev_domain[min_index] || max !== prev_domain[1 - min_index]) {
@@ -63,12 +65,15 @@ define(["widgets/js/manager", "d3", "./ScaleModel"], function(WidgetManager, d3,
                this.set_domain([], id);
                return;
             }
-            var data = data_array[0] instanceof Array ? data_array : [data_array];
+            var data = data_array[0] instanceof Array ?
+                data_array : [data_array];
             var min = d3.min(data.map(function(d) { return d3.min(d); }));
             var max = d3.max(data.map(function(d) { return d3.max(d); }));
             this.set_domain([min, max], id);
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("LinearScaleModel", LinearScaleModel);
-    return [LinearScaleModel];
+
+    return {
+        LinearScaleModel: LinearScaleModel,
+    };
 });

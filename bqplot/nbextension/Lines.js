@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+define(["d3", "./Mark"], function(d3, MarkViewModule) {
     "use strict";
-    var Mark = mark[0];
-    var Lines = Mark.extend({
+
+    var Lines = MarkViewModule.Mark.extend({
         render: function() {
             var base_render_promise = Lines.__super__.render.apply(this);
             var that = this;
@@ -401,6 +401,7 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
         },
     });
 
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Lines", Lines);
-    return [Lines];
+    return {
+        Lines: Lines,
+    };
 });

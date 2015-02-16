@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager, d3, mark, utils) {
+define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
     "use strict";
-    var Mark = mark[0];
-    var Pie = Mark.extend({
+
+    var Pie = MarkViewModule.Mark.extend({
         render: function() {
             var base_creation_promise = Pie.__super__.render.apply(this);
             this.selected_indices = this.model.get("idx_selected");
@@ -278,7 +278,10 @@ define(["widgets/js/manager", "d3", "./Mark", "./utils"], function(WidgetManager
             this.set_default_style();
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.Pie", Pie);
+
+    return {
+        Pie: Pie,
+    };
 });
 
 

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./worldmap"], function(WidgetManager, Widget, d3, topojson, FigureView, utils, mapdata) {
+define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./worldmap"], function(d3, topojson, FigureViewModule, utils, mapdata) {
     "use strict";
 
     var world = mapdata.world;
@@ -27,9 +27,7 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
         return nodes;
     }
 
-    var baseFigure = FigureView[0];
-
-    var Map = baseFigure.extend({
+    var Map = FigureViewModule.Figure.extend({
 
         render: function() {
             this.map_id = utils.uuid();
@@ -682,6 +680,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "d3topojson", "./Figure
             }
         }
     });
-    WidgetManager.WidgetManager.register_widget_view("Map", Map);
-    return [Map];
+
+    return {
+        Map: Map,
+    };
 });

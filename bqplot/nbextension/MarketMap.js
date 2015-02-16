@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/utils"], function(WidgetManager, Widget, d3, FigureView, utils) {
+define(["widgets/js/widget", "d3", "./Figure", "base/js/utils"], function(Widget, d3, FigureViewModule, utils) {
     "use strict";
-    var baseFigure = FigureView[0];
-    var MarketMap = baseFigure.extend({
+
+    var MarketMap = FigureViewModule.Figure.extend({
         initialize: function() {
             MarketMap.__super__.initialize.apply(this, arguments);
         },
@@ -942,6 +942,8 @@ define(["widgets/js/manager", "widgets/js/widget", "d3", "./Figure", "base/js/ut
             return[{'x': curr_x * this.column_width, 'y': curr_y * this.row_height}];
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("MarketMap", MarketMap);
-    return [MarketMap];
+
+    return {
+        MarketMap: MarketMap,
+    };
 });

@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModel) {
+define(["d3", "./MarkModel"], function(d3, MarkModelModule) {
     "use strict";
-    var BaseModel = MarkModel[0];
-    var ScaleModel = BaseModel.extend({
+
+    var ScaleModel = MarkModelModule.MarkModel.extend({
         initialize: function(range) {
             this.type = "base";
             this.domains = {};
@@ -36,6 +36,8 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_model("ScaleModel", ScaleModel);
-    return [ScaleModel];
+
+    return {
+        ScaleModel: ScaleModel,
+    };
 });

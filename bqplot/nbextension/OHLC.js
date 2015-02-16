@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark) {
+define(["d3", "./Mark"], function(d3, MarkViewModule) {
     "use strict";
-    var Mark = mark[0];
-    var OHLC = Mark.extend({
+
+    var OHLC = MarkViewModule.Mark.extend({
         render: function() {
             var base_creation_promise = OHLC.__super__.render.apply(this);
             var that = this;
@@ -463,6 +463,9 @@ define(["widgets/js/manager", "d3", "./Mark"], function(WidgetManager, d3, mark)
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.OHLC", OHLC);
+
+    return {
+        OHLC: OHLC,
+    };
 });
 

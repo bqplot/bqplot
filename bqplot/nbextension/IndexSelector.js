@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Selector" ], function(WidgetManager, d3, BaseSelectors) {
+define(["d3", "./Selector" ], function(d3, BaseSelectors) {
     "use strict";
-    var BaseXSelector = BaseSelectors[1];
-    var IndexSelector = BaseXSelector.extend({
+
+    var IndexSelector = BaseSelectors.BaseXSelector.extend({
         render : function() {
             IndexSelector.__super__.render.apply(this);
             this.active = false;
@@ -113,6 +113,9 @@ define(["widgets/js/manager", "d3", "./Selector" ], function(WidgetManager, d3, 
             }
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.IndexSelector", IndexSelector);
+
+    return {
+        IndexSelector: IndexSelector,
+    };
 });
 

@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetManager, d3, BaseSelectors, utils) {
+define(["d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
     "use strict";
-    var BaseXSelector = BaseSelectors[1];
-    var BaseXYSelector = BaseSelectors[2];
-    var BrushSelector = BaseXYSelector.extend({
+
+    var BrushSelector = BaseSelectors.BaseXYSelector.extend({
         render : function() {
             BrushSelector.__super__.render.apply(this);
             var self = this;
@@ -91,7 +90,10 @@ define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetMan
             this.model.set("idx_selected", idx_selected);
             // TODO: The call to the function can be removed once _pack_models is
             // changed
-            this.model.set("selected", this.get_typed_selected([[extent_x[0], extent_y[0]], [extent_x[1], extent_y[1]]]));
+            this.model.set("selected", this.get_typed_selected([[extent_x[0],
+                                                                 extent_y[0]],
+                                                                [extent_x[1],
+                                                                 extent_y[1]]]));
             this.touch();
         },
         get_typed_selected: function(extent) {
@@ -122,9 +124,8 @@ define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetMan
             this.set_y_range([this.y_scale]);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.BrushSelector", BrushSelector);
 
-    var BrushIntervalSelector = BaseXSelector.extend({
+    var BrushIntervalSelector = BaseSelectors.BaseXSelector.extend({
         render : function() {
             BrushIntervalSelector.__super__.render.apply(this);
             var self = this;
@@ -206,7 +207,6 @@ define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetMan
             this.set_range([this.scale]);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.BrushIntervalSelector", BrushIntervalSelector);
 
     var add_remove_classes = function(selection, add_classes, remove_classes) {
         //adds the classes present in add_classes and removes the classes in
@@ -224,7 +224,7 @@ define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetMan
         }
     };
 
-    var MultiSelector = BaseXSelector.extend({
+    var MultiSelector = BaseSelectors.BaseXSelector.extend({
         render : function() {
             MultiSelector.__super__.render.apply(this);
 
@@ -377,7 +377,8 @@ define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetMan
         brush_end: function (item, brush_g) {
             var brush = d3.event.target;
             var self = this;
-            var extent = brush.empty() ? this.scale.scale.domain() : brush.extent();
+            var extent = brush.empty() ?
+                this.scale.scale.domain() : brush.extent();
             this.model.set("brushing", false);
             this.convert_and_save(extent, item);
         },
@@ -394,12 +395,14 @@ define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetMan
             var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
             var self = this;
             var item_idx_selected = this.mark_views.map(function(mark_view) {
-                return mark_view.invert_range(self.scale.scale(extent[0]), self.scale.scale(extent[1]));
+                return mark_view.invert_range(self.scale.scale(extent[0]),
+                                              self.scale.scale(extent[1]));
             });
             idx_selected[this.get_label(item)] = item_idx_selected;
             // TODO: remove the ternary operator once _pack_models is changed
             selected[this.get_label(item)] = extent.map(function(elem) {
-                return (self.is_date) ? self.scale.model.convert_to_json(elem) : elem;
+                return (self.is_date) ?
+                    self.scale.model.convert_to_json(elem) : elem;
             });
             this.model.set("_selected", selected);
             this.model.set("idx_selected", idx_selected);
@@ -430,6 +433,11 @@ define(["widgets/js/manager", "d3", "./Selector", "./utils"], function(WidgetMan
             MultiSelector.__super__.remove.apply(this);
         },
     });
-    WidgetManager.WidgetManager.register_widget_view("bqplot.MultiSelector", MultiSelector);
+
+    return {
+        BrushSelector: BrushSelector,
+        BrushIntervalSelector: BrushIntervalSelector,
+        MultiSelector: MultiSelector,
+    }
 });
 
