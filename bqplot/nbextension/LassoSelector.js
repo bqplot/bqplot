@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, utils, point_in_lasso) {
+define(["./d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, utils, point_in_lasso) {
     "use strict";
 
     var LassoSelector = Selectors.BaseXYSelector.extend({
@@ -64,6 +64,7 @@ define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, 
             var lasso = this.el.append("path")
                 .attr("id", "l" + (++this.lasso_counter))
                 .on("click", function() {
+                    console.log("foobar");
                     //toggle the opacity of lassos
                     var lasso = d3.select(this);
                     lasso.classed("selected", !lasso.classed("selected"));
