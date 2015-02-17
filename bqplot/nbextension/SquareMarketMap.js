@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "d3"], function(Widget, d3) {
+define(["widgets/js/widget", "./d3"], function(Widget, d3) {
     "use strict";
 
     var SquareMarketMap = Widget.DOMWidgetView.extend({

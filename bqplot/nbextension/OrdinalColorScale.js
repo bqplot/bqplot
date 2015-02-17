@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleViewModule, ColorUtils) {
+define(["./d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleViewModule, ColorUtils) {
     "use strict";
 
     var OrdinalColorScale = OrdinalScaleViewModule.OrdinalScale.extend({

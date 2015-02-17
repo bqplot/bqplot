@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./MarkModel"], function(d3, MarkModelModule) {
+define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
     "use strict";
 
     var PieModel = MarkModelModule.MarkModel.extend({

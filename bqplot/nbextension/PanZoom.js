@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["base/js/utils", "d3", "./utils", "./Interaction"], function(ipy_utils, d3, utils, InteractionViewModule) {
+define(["base/js/utils", "./d3", "./utils", "./Interaction"], function(ipy_utils, d3, utils, InteractionViewModule) {
     "use strict";
 
     // TODO avoid code duplication of 'x' and 'y'

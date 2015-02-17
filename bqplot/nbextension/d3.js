@@ -13,20 +13,10 @@
  * limitations under the License.
  */
 
-requirejs.config({
-    paths: {
-        "require-less": "/nbextensions/bqplot/require-less",
-        "d3": "/nbextensions/bqplot/d3/d3.min",
-        "colorbrewer": "/nbextensions/bqplot/d3/lib/colorbrewer/colorbrewer",
-    },
-    map: {
-        "*": {
-            "less": "require-less/less",
-        }
-    },
-    shim: {
-        "colorbrewer": {
-            "exports": "colorbrewer",
-        },
-    },
+// This is a wrapper requirejs module for d3.js
+define(["d3"], function(d3) {
+// TODO: use the declaration below when nothing else than bqplot requires
+// bqplot's d3:
+//define(["./d3/d3.min"], function(d3) {
+    return d3;
 });
