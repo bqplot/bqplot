@@ -20,7 +20,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
-            this.on_some_change(["x", "y", "color", "opacity", "size", "eccentricity"], this.update_data, this);
+            this.on_some_change(["x", "y", "color", "opacity", "size", "eccentricity", "rotation"], this.update_data, this);
             this.on_some_change(["names", "names_unique"], function() { this.update_unique_ids(); this.trigger("data_updated"); }, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
@@ -31,14 +31,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
         update_data: function() {
             this.dirty = true;
             var x_data = this.get_typed_field("x");
+            var y_data = this.get_typed_field("y");
             var scales = this.get("scales");
             var x_scale = scales["x"];
             var y_scale = scales["y"];
             var color_scale = scales["color"];
-            var opacity_scale = scales["opacity"];
-            var eccentricity_scale = scales["eccentricity"];
-            var size_scale = scales["size"];
-            var y_data = this.get_typed_field("y");
 
             if (x_data.length === 0 || y_data.length === 0) {
                 this.mark_data = [];
@@ -53,6 +50,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 var size = this.get_typed_field("size");
                 var opacity = this.get_typed_field("opacity");
                 var eccentricity = this.get_typed_field("eccentricity");
+                var rotation = this.get_typed_field("rotation");
 
                 if(color_scale) {
                     if(!this.get("preserve_domain")["color"]) {
@@ -69,6 +67,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             size: size[i],
                             opacity: opacity[i],
                             eccentricity: eccentricity[i],
+                            rotation: rotation[i],
                             };
                 });
             }
@@ -108,6 +107,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             var size_scale = scales["size"];
             var opacity_scale = scales["opacity"];
             var eccentricity_scale = scales["eccentricity"];
+            var rotation_scale = scales["rotation"];
 
             if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -150,6 +150,16 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     eccentricity_scale.del_domain([], this.id);
                 }
             }
+            if(rotation_scale) {
+                if(!this.get("preserve_domain")["rotation"]) {
+                    rotation_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                        return elem.rotation;
+                    }), this.id);
+                } else {
+                    rotation_scale.del_domain([], this.id);
+                }
+            }
+
         },
     });
 

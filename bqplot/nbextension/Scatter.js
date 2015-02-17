@@ -70,6 +70,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 color_scale = this.scales["color"],
                 opacity_scale = this.scales["opacity"];
                 eccentricity_scale = this.scales["eccentricity"];
+                rotation_scale = this.scales["rotation"];
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
@@ -98,6 +99,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(eccentricity_scale) {
                 eccentricity_scale.set_range([0, 1]);
             }
+            if(rotation_scale) {
+                rotation_scale.set_range([0, 180]);
+            }
         },
         set_positional_scales: function() {
             var x_scale = this.scales["x"],
@@ -116,6 +120,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 size_scale = this.scales["size"],
                 opacity_scale = this.scales["opacity"];
                 eccentricity_scale = this.scales["eccentricity"];
+                rotation_scale = this.scales["rotation"];
             // the following handlers are for changes in data that does not
             // impact the position of the elements
             if(color_scale) {
@@ -140,6 +145,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     this.update_default_eccentricity();
                 });
             }
+            if(rotation_scale) {
+                this.listenTo(rotation_scale, "domain_changed", function() {
+                    //this.update_default_rotation();
+                });
+            }
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
@@ -147,6 +157,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:stroke", this.update_stroke, this);
             this.model.on("change:default_opacity", this.update_default_opacity, this);
             this.model.on("change:default_eccentricity", this.update_default_eccentricity, this);
+            this.model.on("change:default_rotation", this.update_default_rotation, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:marker", this.update_marker, this);
             this.model.on("change:default_size", this.update_default_size, this);
@@ -214,8 +225,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         update_marker: function(model, marker) {
-
-
+            var that = this;
+            if (d3.svg.symbolTypes.indexOf(marker) == -1) {
+            } else {
+            }
         },
         update_default_eccentricity: function() {
             if(!this.model.dirty && d3.svg.symbolTypes.indexOf(this.model.get("marker")) == -1) {
@@ -424,11 +437,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var animate_dur = this.model.get("animate_dur");
             elements_added.append("path").attr("class", "dot");
             elements_added.append("text").attr("class", "dot_text");
-
+            var that = this;
             elements.transition().duration(animate_dur)
               .attr("transform", function(d) {
                   return "translate(" + (x_scale.scale(d.x) + x_scale.offset) + "," +
-                                        (y_scale.scale(d.y) + y_scale.offset) + ")";
+                                      + (y_scale.scale(d.y) + y_scale.offset) + ") "
+                         + that.get_element_rotation(d);
               });
 
             var text_loc = Math.sqrt(this.model.get("default_size")) / 2.0;
@@ -466,6 +480,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // removed is round-about and doesn't look very nice visually.
             elements.exit().remove();
             this.apply_styles();
+        },
+        get_element_rotation: function(d) {
+            var rotation_scale = this.scales["rotation"];
+            if (!rotation_scale || !d.rotation) { return ""; }
+            else { return "rotate(" + rotation_scale.scale(d.rotation) + ")"; }
         },
         color_scale_updated: function() {
             var that = this;
