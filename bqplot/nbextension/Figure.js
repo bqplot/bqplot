@@ -518,15 +518,17 @@ define(["widgets/js/widget", "d3", "base/js/utils"], function(Widget, d3, utils)
         set_interaction: function(model) {
             if (this.interaction_view) { this.interaction_view.remove(); }
             if (model) {
-                // Sets the child interaction
                 var self = this;
-                this.create_child_view(model).then(function(view) {
-                    self.interaction_view = view;
-                    self.interaction.node().appendChild(view.el.node());
-                    // Trigger the displayed event of the child view.
-                    self.after_displayed(function() {
-                        view.trigger("displayed");
-                    }, self);
+                model.state_change.then(function() {
+                    // Sets the child interaction
+                    self.create_child_view(model).then(function(view) {
+                        self.interaction_view = view;
+                        self.interaction.node().appendChild(view.el.node());
+                        // Trigger the displayed event of the child view.
+                        self.after_displayed(function() {
+                            view.trigger("displayed");
+                        }, self);
+                    });
                 });
             }
         },
