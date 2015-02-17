@@ -50,7 +50,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                     .attr("width", "100%")
                     .attr("height", "100%");
             if (this.model.get('theme')) {
-                this.svg.classed(this.model.get('theme'), true)
+                this.svg.classed(this.model.get('theme'), true);
             }
             this.fig = this.svg.append("g")
                     .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -210,7 +210,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
             this.group_data = this.model.get_typed_field("groups");
             this.groups = _.uniq(this.group_data, true);
             var display_text = this.model.get_typed_field("display_text");
-            display_text = (display_text == undefined || display_text.length == 0) ? this.data : display_text;
+            display_text = (display_text === undefined || display_text.length === 0) ? this.data : display_text;
 
             this.colors = this.model.get("colors");
             var num_colors = this.colors.length;
@@ -246,26 +246,26 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
             this.num_cols = this.model.get("cols");
             this.row_groups = this.model.get("row_groups");
 
-            if (this.num_cols !== undefined && this.num_cols !== null && this.num_cols != 0) {
+            if (this.num_cols !== undefined && this.num_cols !== null && this.num_cols !== 0) {
                 // When the number of row groups is greater than 1, the number
                 // of columns has to be an odd number. This is to
                 // ensure the continuity of the waffles when groups are spread
                 // across multiple row groups
-                if(this.row_groups > 1 && this.num_cols % 2 == 0)
+                if(this.row_groups > 1 && this.num_cols % 2 === 0)
                     this.num_cols++;
                 this.num_rows = Math.floor(num_items / this.num_cols);
-                this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
-            } else if(this.num_rows !== undefined && this.num_rows !== null && this.num_rows != 0) {
+                this.num_rows = (num_items % this.num_cols === 0) ? this.num_rows : (this.num_rows + 1);
+            } else if(this.num_rows !== undefined && this.num_rows !== null && this.num_rows !== 0) {
                 this.num_cols = Math.floor(num_items / this.num_rows);
-                this.num_cols = (num_items % this.num_rows == 0) ? this.num_cols : (this.num_cols + 1);
-                if(this.row_groups > 1 && this.num_cols % 2 == 0)
+                this.num_cols = (num_items % this.num_rows === 0) ? this.num_cols : (this.num_cols + 1);
+                if(this.row_groups > 1 && this.num_cols % 2 === 0)
                     this.num_cols++;
             } else {
                 this.num_cols = Math.floor(Math.sqrt(num_items));
-                if(this.row_groups > 1 && this.num_cols % 2 == 0)
+                if(this.row_groups > 1 && this.num_cols % 2 === 0)
                     this.num_cols++;
                 this.num_rows = Math.floor(num_items / this.num_cols);
-                this.num_rows = (num_items % this.num_cols == 0) ? this.num_rows : (this.num_rows + 1);
+                this.num_rows = (num_items % this.num_cols === 0) ? this.num_rows : (this.num_rows + 1);
             }
 
             // row_groups cannot be greater than the number of rows
@@ -276,7 +276,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
             // according to the num_rows.
             if(this.row_groups == 1) {
                 this.num_cols = Math.floor(num_items / this.num_rows);
-                this.num_cols = (num_items % this.num_rows == 0) ? this.num_cols : (this.num_cols + 1);
+                this.num_cols = (num_items % this.num_rows === 0) ? this.num_cols : (this.num_cols + 1);
             }
             // depending on the number of rows, we need to decide when to
             // switch direction. The below functions tells us where to swtich
@@ -293,7 +293,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
             var formats = this.model.get("tooltip_formats");
             this.tooltip_formats = this.tooltip_fields.map(function(field, index) {
                 var fmt = formats[index];
-                if(fmt == undefined || fmt == "") {return function(d) { return d; }; }
+                if(fmt === undefined || fmt === "") {return function(d) { return d; }; }
                 else return d3.format(fmt);
             });
         },
@@ -375,20 +375,22 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                     .on("mouseover", function(data, ind) { that.mouseover_handler(data, (element_count + ind), this);})
                     .on("mouseout", function(data, ind) { that.mouseout_handler(data, (element_count + ind), this);})
                     .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
-                    .attr("id", function(data) { return "market_map_element_" + data['name']});
+                    .attr("id", function(data) { return "market_map_element_" + data['name'];});
 
                 groups.selectAll(".market_map_rect")
                     .attr("width", that.column_width)
                     .attr("height", that.row_height)
                     .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
-                    .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) { return (color_scale && elem.color != undefined)
-                           ? color_scale.scale(elem["color"]) : that.colors_map(i);}});
+                    .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) {
+                        return (color_scale && elem.color !== undefined) ?
+                            color_scale.scale(elem["color"]) :
+                            that.colors_map(i);}});
 
                 groups.selectAll(".market_map_text")
                     .attr("x", that.column_width / 2.0)
                     .attr("y", that.row_height / 2.0)
                     .text(function(data, j) { return data['display']; })
-                    .style("opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
+                    .style("opacity", (that.model.get("show_groups") ? 0.2 : 1.0));
 
                 // Removing the old nodes
                 groups.exit().remove();
@@ -422,8 +424,6 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
             this.update_data();
             this.rect_groups = this.fig.selectAll(".element_group")
                 .data(this.groups);
-
-            var that = this;
             var color_scale = this.scales["color"];
 
             this.rect_groups[0].forEach(function(d, i) {
@@ -434,7 +434,9 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                     .data(data)
                     .select('rect')
                     .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j)
-                           { return (color_scale && elem.color != undefined) ? color_scale.scale(elem['color']) : that.colors_map(i);}});
+                           { return (color_scale && elem.color !== undefined) ?
+                               color_scale.scale(elem['color']) :
+                               that.colors_map(i);}});
             });
         },
         update_map_colors: function() {
@@ -448,8 +450,10 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                         .selectAll(".rect_element")
                         .data(data)
                         .select('rect')
-                        .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) { return (color_scale && elem.color != undefined)
-                            ? color_scale.scale(elem['color']) : that.colors_map(i);}});
+                        .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) {
+                            return (color_scale && elem.color !== undefined) ?
+                                color_scale.scale(elem['color']) :
+                                that.colors_map(i);}});
                 });
             }
         },
@@ -477,7 +481,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
         apply_selected: function() {
             var selected = this.model.get("selected");
             var self = this;
-            if(selected === undefined || selected === null || selected.length == 0)
+            if(selected === undefined || selected === null || selected.length === 0)
                 this.clear_selected();
             else{
                 selected.forEach(function(data) {
@@ -541,7 +545,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
             var tooltip_div = d3.select(this.el.parentNode)
                 .select("#map_tooltip");
             tooltip_div.transition()
-                .style("opacity", .9);
+                .style("opacity", 0.9);
 
             // the +5s are for breathing room for the tool tip
             tooltip_div.style("left", (mouse_pos[0] + this.el.offsetLeft + 5) + "px")
@@ -673,12 +677,12 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
             //between the current top and bottom rows
             var num_rows = bottom_row - top_row;
 
-            if(elem_remaining != 0){
+            if(elem_remaining !== 0){
                 // starting corener of the path
                 this.calc_end_point_source(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
                 var elem_filled = Math.min(rows_remaining, elem_remaining);
 
-                if(elem_filled == elem_remaining) {
+                if(elem_filled === elem_remaining) {
                     // There are enough elements only to fill one column
                     // partially. We add the three end points and exit
                     // The adjacent corner from the starting corner. This is
@@ -699,12 +703,12 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                     return end_points;
                 }
                 elem_remaining = elem_remaining - elem_filled;
-                if(cols_remaining == 0) {
+                if(cols_remaining === 0) {
                     // Since this is the last column, the adjacent corner from
                     // the starting corner is added here too
                     this.calc_end_point_source(start_col, start_row, init_x * (-1), init_y).forEach(function(d) { end_points.push(d); });
                 }
-                else if(rows_remaining != (bottom_row - top_row)) {
+                else if(rows_remaining !== (bottom_row - top_row)) {
                     // If the starting row is not the starting row of a group,
                     // the poirnt adjacent to the starting point needs to be
                     // added.
@@ -725,7 +729,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                 start_row = start_row + (init_y * (elem_filled - 1));
                 //first set of end points are added here
                 this.calc_end_point_dest(start_col, start_row, (-1) * init_x, init_y).forEach(function(d) { end_points.push(d); });
-                if(elem_remaining == 0) {
+                if(elem_remaining === 0) {
                     this.calc_end_point_dest(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
 
                     /*
@@ -736,7 +740,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
 
                     return end_points;
                 }
-                if(cols_remaining != 0 && elem_remaining > num_rows)
+                if(cols_remaining !== 0 && elem_remaining > num_rows)
                     start_col = start_col + init_x;
             }
 
@@ -751,8 +755,8 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                 }
 
                 if(no_cont_cols > cols_remaining){
-                    start_col = (init_x == 1) ? this.num_cols - 1 : 0;
-                    if(cols_remaining != 0) {
+                    start_col = (init_x === 1) ? this.num_cols - 1 : 0;
+                    if(cols_remaining !== 0) {
                         this.calc_end_point_dest(start_col, top_row, init_x, -1)
                             .forEach(function(d) { end_points.push(d); });
                     }
@@ -766,9 +770,9 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                     init_y = Math.pow(-1, no_cont_cols) * init_y * (-1);
                     this.calc_end_point_dest(start_col, bottom_row - 1, (-1) * init_x, 1)
                         .forEach(function(d) { end_points.push(d); });
-                } else if (no_cont_cols == cols_remaining) {
-                    start_col = (init_x == 1) ? this.num_cols - 1 : 0;
-                    if(cols_remaining != 0) {
+                } else if (no_cont_cols === cols_remaining) {
+                    start_col = (init_x === 1) ? this.num_cols - 1 : 0;
+                    if(cols_remaining !== 0) {
                         this.calc_end_point_dest(start_col, top_row, init_x, -1)
                             .forEach(function(d) { end_points.push(d); });
                     }
@@ -794,7 +798,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                     //As I am moving down this time, next time I will move up
                     //and I might not reach the top row, it might be an end
                     //point.
-                    start_row = (init_y == 1) ? top_row : bottom_row - 1;
+                    start_row = (init_y === 1) ? top_row : bottom_row - 1;
                     start_col = start_col + (init_x) * (no_cont_cols - 1);
                     this.calc_end_point_source(start_col, start_row, (-1) * init_x, init_y).forEach(function(d) { end_points.push(d); });
                 }
@@ -804,11 +808,11 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                 //this is an end point
             }
             //all elements are exhausted
-            if(elem_remaining == 0) {
+            if(elem_remaining === 0) {
                 // The column is exactly filled. In this case, the only end
                 // point I need to add is the outer edge w.r.t. the direction
                 // in which we are travelling
-                start_row = (init_y == 1) ? bottom_row - 1 : top_row;
+                start_row = (init_y === 1) ? bottom_row - 1 : top_row;
                 init_x = (across) ? ((-1) * init_x) : init_x;
                 this.calc_end_point_dest(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
             }
@@ -816,7 +820,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                 // The previous column was exactly filled and the last column
                 // is partially filled
                 init_y = -1 * init_y; // Since we are in the next column, the direction of y has to be reversed
-                start_row = (init_y == 1) ? top_row : bottom_row - 1;
+                start_row = (init_y === 1) ? top_row : bottom_row - 1;
                 start_col = (across) ? start_col : (start_col + (init_x));
 
                 // this is the outer edge of the start of the last column w.r.t
@@ -896,7 +900,7 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                             final_val = max_elem;
                         }
                     }
-                    var match_elem = editing_copy.filter(function(elem) { return elem[prop] == match && elem[other_prop] == final_val});
+                    var match_elem = editing_copy.filter(function(elem) { return elem[prop] == match && elem[other_prop] == final_val;});
                     match_elem.forEach(function(elem) { editing_copy.splice(editing_copy.indexOf(elem), 1);} );
                     var value = {};
                     value[prop] = match;
