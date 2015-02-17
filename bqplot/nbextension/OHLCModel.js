@@ -22,7 +22,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:format", this.update_format, this);
-            this.px = { open: -1, high: -1, low: -1, close: -1 };
+            this.px = { o: -1, h: -1, l: -1, c: -1 };
             this.mark_data = [];
         },
         update_format: function() {
@@ -33,8 +33,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
             var format = this.get("format");
-            this.px = { open: -1, high: -1, low: -1, close: -1 };
-            var charmap = { o: -1, h: -1, l: -1, c: -1 };
+            this.px = { o: -1, h: -1, l: -1, c: -1 };
 
             // Local private function to report errors in format
             function print_bad_format(format) {
@@ -43,7 +42,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
             }
 
-            this.charmap = format.toLowerCase().split("")
+            this.px = format.toLowerCase().split("")
                 .reduce(function(dict, key, val)
                 {
                     if(dict[key] !== -1) {
@@ -54,16 +53,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     dict[key] = val;
                     return dict;
                 },
-                charmap);
-            // Copy to human-readable dictionary
-            this.px.open = charmap.o;
-            this.px.high = charmap.h;
-            this.px.low = charmap.l;
-            this.px.close = charmap.c;
+                this.px);
 
             // We cannot have high without low and vice versa
-            if((this.px.high !== -1 && this.px.low === -1)
-            || (this.px.high === -1 && this.px.low !== -1)
+            if((this.px.h !== -1 && this.px.l === -1)
+            || (this.px.h === -1 && this.px.l !== -1)
             || format.length < 2 || format.length > 4) {
                 print_bad_format(format);
                 x_data = [];
@@ -71,10 +65,10 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             } else {
                 // Verify that OHLC data is valid
                 var that = this;
-                if((this.px.high !== -1
+                if((this.px.h !== -1
                 && !y_data.every(function(d) {
-                    return (d[that.px.high] === d3.max(d) &&
-                            d[that.px.low] === d3.min(d)); }))
+                    return (d[that.px.h] === d3.max(d) &&
+                            d[that.px.l] === d3.min(d)); }))
                 || !y_data.every(function(d) {
                     return d.length === format.length; }))
                 {
@@ -116,8 +110,8 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     dist = this.mark_data[i][0] - this.mark_data[i-1][0];
                     if(dist < min_x_dist) min_x_dist = dist;
                 }
-                height = this.mark_data[i][this.px.high] -
-                            this.mark_data[i][this.px.low];
+                height = this.mark_data[i][this.px.h] -
+                            this.mark_data[i][this.px.l];
                 if(height > max_y_height) max_y_height = height;
             }
             if(this.mark_data.length < 2) {
@@ -140,11 +134,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             if((!this.get("preserve_domain")["y"]) && this.mark_data.length !== 0) {
                 // Remember that elem contains OHLC data here so we cannot use
                 // compute_and_set_domain
-                var top = this.px.high;
-                var bottom = this.px.low;
+                var top = this.px.h;
+                var bottom = this.px.l;
                 if(top === -1 || bottom === -1) {
-                    top = this.px.open;
-                    bottom = this.px.close;
+                    top = this.px.o;
+                    bottom = this.px.c;
                 }
                 var min = d3.min(this.mark_data.map(function(d) {
                     return (d[1][bottom] < d[1][top]) ? d[1][bottom] : d[1][top];
