@@ -123,7 +123,7 @@ define(["d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, 
           }
        },
     });
-    
+
     return {
         LassoSelector: LassoSelector,
     };
