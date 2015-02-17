@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./Mark"], function(d3, MarkViewModule) {
+define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
     "use strict";
 
     var min_size = 10;
@@ -570,6 +570,43 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
                 clearing_style[key] = null;
             }
             elements.style(clearing_style);
+        },
+        update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
+                                               point_in_lasso_func)
+        {
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var idx = this.model.get("idx_selected");
+            var idx_selected = idx ? utils.deepCopy(idx) : [];
+            var data_in_lasso = false;
+            if(lasso_vertices !== null && lasso_vertices.length > 0) {
+                var indices = _.range(this.model.mark_data.length);
+                var that = this;
+                var idx_in_lasso = _.filter(indices, function(index) {
+                    var elem = that.model.mark_data[index];
+                    var point = [x_scale.scale(elem.x), y_scale.scale(elem.y)];
+                    return point_in_lasso_func(point, lasso_vertices);
+                });
+                data_in_lasso = idx_in_lasso.length > 0;
+                if (data_in_lasso) {
+                    this.update_idx_selected(idx_in_lasso);
+                    idx_selected.push({lasso_name: lasso_name, indices: idx_in_lasso});
+                    this.model.set("idx_selected", idx_selected);
+                    this.touch();
+                }
+            } else { //delete the lasso specific idx_selected
+                var to_be_deleted_lasso = _.filter(idx_selected, function(lasso_data) {
+                    return lasso_data.lasso_name === lasso_name;
+                });
+                this.update_idx_selected(to_be_deleted_lasso.indices);
+
+                this.model.set("idx_selected", _.filter(idx_selected, function(lasso_data) {
+                    return lasso_data.lasso_name !== lasso_name;
+                }));
+                this.touch();
+            }
+
+            //return true if there are any mark data inside lasso
+            return data_in_lasso;
         },
     });
 

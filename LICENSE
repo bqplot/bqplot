@@ -208,3 +208,10 @@ Color Schemes License
 
 The colorschemes.py file contains color schemes from the d3js library: http://d3js.org/,
 which is licensed under the "3-clause BSD" license.  See the colorschemes.py file for details.
+
+
+Lasso Point Testing License
+===========================
+
+The lasso_test.js file is derived from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+and is licensed under the "3-clause BSD" license.  See the lasso_test.js file for details.
