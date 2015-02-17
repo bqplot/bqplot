@@ -141,7 +141,7 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
                 .attr("class", "world_viewbox "+this.map_id)
                 .on("click", function(d) { that.ocean_clicked(that); });
 
-            if (this.model.get("axis")!=null){
+            if (this.model.get("axis")!==null){
                 this.svg_over.attr("height", "85%");
 
                 that.ax_g = this.svg.append("g")
@@ -204,7 +204,7 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
                     var select = that.model.get("selected").slice();
 
                     if((that.model.get("hover_stroke")!=="" &&
-                        that.model.get("hover_stroke")!=null) &&
+                        that.model.get("hover_stroke")!==null) &&
                         select.indexOf(d.id)==-1) {
                         that.highlight_g.append(function() {
                             return that2.cloneNode(true);
@@ -213,7 +213,7 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
                           .style("stroke-width", that.model.get("hover_stroke_width"));
                     }
                     if((that.model.get("hover_stroke")==="" ||
-                        that.model.get("hover_stroke")==null) &&
+                        that.model.get("hover_stroke")===null) &&
                         (that.model.get("hover_fill")!=="" &&
                         that.model.get("hover_fill")!==null) &&
                         select.indexOf(d.id)===-1) {
@@ -228,9 +228,9 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
 
                     }
                     if((that.model.get("hover_fill")!=="" &&
-                        that.model.get("hover_fill")!=null) &&
+                        that.model.get("hover_fill")!==null) &&
                         (that.model.get("hover_stroke")!=="" &&
-                        that.model.get("hover_stroke")!=null) &&
+                        that.model.get("hover_stroke")!==null) &&
                         select.indexOf(d.id)===-1) {
 
                         that.highlight_g.selectAll(".hovered")
@@ -338,8 +338,8 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
                     return that.click_highlight(d, this);
                 });
 
-            if(that.stroke_color!=null &&
-               that.stroke_color!=undefined && that.stroke_color!=="") {
+            if(that.stroke_color!==null &&
+               that.stroke_color!==undefined && that.stroke_color!=="") {
                 that.stroke_g.selectAll("path")
                              .style("stroke", that.stroke_color);
             }
@@ -461,7 +461,7 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
         },
         change_selected_stroke: function(that) {
             if (that.model.get("selected_stroke")==="" ||
-                that.model.get("selected_stroke")==null) {
+                that.model.get("selected_stroke")===null) {
                 that.highlight_g.selectAll(".selected")
                                 .style("stroke-width", 0.0);
             }
@@ -488,7 +488,7 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
                                             return nodes[0][i].cloneNode(true);
                                     }).attr("id", temp[i].id)
                                     .style("fill-opacity", function() {
-                                        if (that2.model.get("selected_fill")!=null &&
+                                        if (that2.model.get("selected_fill")!==null &&
                                             that2.model.get("selected_fill")!=="") {
                                                return 1.0;
                                             } else {
@@ -497,7 +497,7 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
                                     })
                                     .style("fill", that2.model.get("selected_fill"))
                                     .style("stroke-opacity", function() {
-                                        if (that2.model.get("selected_stroke")!=null &&
+                                        if (that2.model.get("selected_stroke")!==null &&
                                             that2.model.get("selected_stroke")!=="") {
                                                 return 1.0;
                                         } else {
@@ -603,25 +603,25 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
                          .classed("selected", true);
 
                     if (that2.model.get("selected_fill")!=="" &&
-                        that2.model.get("selected_fill")!=null) {
+                        that2.model.get("selected_fill")!==null) {
                         that2.highlight_g.selectAll(".selected")
                                          .style("fill-opacity", 1.0)
                                         .style("fill", that2.model.get("selected_fill"));
                     }
 
                     if ((that2.model.get("selected_stroke")!=="" &&
-                         that2.model.get("selected_stroke")!=null) &&
+                         that2.model.get("selected_stroke")!==null) &&
                          (that2.model.get("selected_fill")!=="" &&
-                         that2.model.get("selected_fill")!=null)) {
+                         that2.model.get("selected_fill")!==null)) {
                         that2.highlight_g.selectAll(".selected")
                                          .style("stroke", that2.model.get("selected_stroke"))
                                          .style("stroke-width", that2.model.get("selected_stroke_width"));
                     }
 
                     if((that2.model.get("selected_fill")==="" ||
-                        that2.model.get("selected_fill")==null) &&
+                        that2.model.get("selected_fill")===null) &&
                         (that2.model.get("selected_stroke")!=="" &&
-                         that2.model.get("selected_stroke")!=null)) {
+                         that2.model.get("selected_stroke")!==null)) {
                         that2.highlight_g.selectAll(".selected")
                              .style("stroke", that2.model.get("selected_stroke"))
                              .style("stroke-width", that2.model.get("selected_stroke_width"));
@@ -646,7 +646,7 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
             var select = this.model.get("selected").slice();
             if (select.indexOf(d.id)>-1 &&
                 that.model.get("selected_stroke")!=="" &&
-                    that.model.get("selected_stroke")!=null) {
+                    that.model.get("selected_stroke")!==null) {
                 return that.model.get("selected_stroke");
             } else {
                 return that.model.get("stroke_color");
@@ -655,11 +655,12 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
         fill_g_colorfill: function(d, j, that) {
             var select = this.model.get("selected").slice();
             if (this.is_object_empty(that.color_data) &&
-                that.map_color!=undefined && that.map_color!=null) {
+                that.map_color!==undefined && that.map_color!==null) {
                 return that.map_color;
-            } else if (that.color_data[d.id]==undefined ||
+            } else if (that.color_data[d.id]===undefined ||
+                       that.color_data[d.id]===null ||
                        that.color_data[d.id]=="nan" ||
-                       that.color_scale==undefined) {
+                       that.color_scale===undefined) {
                 return "Grey";
             } else {
                 return that.color_scale.scale(that.color_data[d.id]);
@@ -673,7 +674,9 @@ define(["d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./wo
                 return that.model.get("selected_fill");
             } else if (this.is_object_empty(that.color_data)) {
                 return that.map_color;
-            } else if (that.color_data[d.id]==undefined || that.color_data[d.id]=="nan") {
+            } else if (that.color_data[d.id]===undefined ||
+                       that.color_data[d.id]==="nan" ||
+                       that.color_data[d.id]===null) {
                 return "Grey";
             } else {
                 return that.color_scale.scale(that.color_data[d.id]);
