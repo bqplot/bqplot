@@ -577,7 +577,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //This function returns a dictionary with keys as the scales and
             //value as the pixel padding required for the rendering of the
             //mark.
-            var x_padding = Math.sqrt(this.model.get("default_size")) / 2 + 1;
+            var x_padding = Math.sqrt(this.model.get("default_size")) / 2 + 1.0;
             var y_padding = x_padding;
 
             if(x_padding !== this.x_padding || y_padding !== this.y_padding) {

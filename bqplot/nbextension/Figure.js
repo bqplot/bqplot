@@ -317,28 +317,29 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         },
         add_mark: function(model) {
             var that = this;
-
-            model.on("data_updated redraw_legend", this.update_legend, this);
-            var child_x_scale = model.get("scales")["x"];
-            var child_y_scale = model.get("scales")["y"];
-
-            if(child_x_scale == undefined) {
-                child_x_scale = this.scale_x.model;
-            }
-            if(child_y_scale == undefined) {
-                child_y_scale = this.scale_y.model;
-            }
+            model.state_change.then(function() {
+                model.on("data_updated redraw_legend", that.update_legend, that);
             });
+
             var dummy = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
                 return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
                     dummy.parentNode.replaceChild(view.el.node(), dummy);
-		            view.model.on("mark_padding_updated", function() {
+		            view.on("mark_padding_updated", function() {
 		                that.mark_padding_updated(view);
 		            }, that);
 		            view.on("mark_scales_updated", function() {
 		                that.mark_scales_updated(view);
 		            }, that);
                     // Trigger the displayed event of the child view.
+                    var child_x_scale = view.model.get("scales")["x"];
+                    var child_y_scale = view.model.get("scales")["y"];
+
+                    if(child_x_scale == undefined) {
+                        child_x_scale = that.scale_x.model;
+                    }
+                    if(child_y_scale == undefined) {
+                        child_y_scale = that.scale_y.model;
+                    }
                     that.update_padding_dict(that.x_pad_dict, view, child_x_scale, view.x_padding);
                     that.update_padding_dict(that.y_pad_dict, view, child_y_scale, view.y_padding);
                     // Trigger the displayed event of the child view.
