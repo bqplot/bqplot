@@ -265,6 +265,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var scaled_mark_widths = [];
 
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var offset_in_x_units;
 
             for(var i = 0; i < dat.length; i++) {
                 if(px.open === -1) {
