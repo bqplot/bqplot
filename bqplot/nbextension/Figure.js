@@ -336,8 +336,8 @@ define(["widgets/js/widget", "d3", "base/js/utils"], function(Widget, d3, utils)
 
                 that.update_padding_dict(that.x_pad_dict, model, child_x_scale, model.x_padding);
                 that.update_padding_dict(that.y_pad_dict, model, child_y_scale, model.y_padding);
-                var dummy = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
-
+            });
+            var dummy = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
                 return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
                     dummy.parentNode.replaceChild(view.el.node(), dummy);
                     // Trigger the displayed event of the child view.
@@ -345,7 +345,6 @@ define(["widgets/js/widget", "d3", "base/js/utils"], function(Widget, d3, utils)
                         view.trigger("displayed");
                     });
                     return view;
-                });
             });
         },
         update_paddings: function() {
