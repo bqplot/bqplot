@@ -14,9 +14,6 @@
  */
 
 // This is a wrapper requirejs module for d3.js
-define(["d3"], function(d3) {
-// TODO: use the declaration below when nothing else than bqplot requires
-// bqplot's d3:
-//define(["./d3/d3.min"], function(d3) {
+define(["./d3/d3.min"], function(d3) {
     return d3;
 });
