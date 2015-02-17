@@ -33,8 +33,3 @@ requirejs.config({
         },
     },
 });
-
-define([
-    "less!./bqplot",
-    "less!./worldmap",
-], function () { console.log('loaded bqplot'); });
