@@ -404,7 +404,7 @@ define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var idx = this.model.get("idx_selected");
-            idx_selected = idx ? utils.deepCopy(idx) : [];
+            var idx_selected = idx ? utils.deepCopy(idx) : [];
             var data_in_lasso = false;
             var that = this;
             if(lasso_vertices !== null && lasso_vertices.length > 0) {
@@ -428,10 +428,9 @@ define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                that.model.set("idx_selected", idx_selected);
                that.touch();
             } else { //delete the lasso specific idx_selected
-                filtered_idx_selected = _.filter(idx_selected, function(lasso) {
+                this.model.set("idx_selected", _.filter(idx_selected, function(lasso) {
                     return lasso.lasso_name !== lasso_name;
-                });
-                this.model.set("idx_selected", filtered_idx_selected);
+                }));
                 this.touch();
             }
 

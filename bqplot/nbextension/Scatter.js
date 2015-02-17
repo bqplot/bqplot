@@ -594,15 +594,14 @@ define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     this.touch();
                 }
             } else { //delete the lasso specific idx_selected
-                to_be_deleted_lasso = _.filter(idx_selected, function(lasso_data) {
+                var to_be_deleted_lasso = _.filter(idx_selected, function(lasso_data) {
                     return lasso_data.lasso_name === lasso_name;
                 });
                 this.update_idx_selected(to_be_deleted_lasso.indices);
 
-                filtered_idx_selected  = _.filter(idx_selected, function(lasso_data) {
+                this.model.set("idx_selected", _.filter(idx_selected, function(lasso_data) {
                     return lasso_data.lasso_name !== lasso_name;
-                });
-                this.model.set("idx_selected", filtered_idx_selected);
+                }));
                 this.touch();
             }
 
