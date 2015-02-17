@@ -314,37 +314,38 @@ define(["widgets/js/widget", "d3", "base/js/utils"], function(Widget, d3, utils)
             view.remove();
         },
         add_mark: function(model) {
-            var self = this;
+            var that  = this;
+            model.state_change.then(function() {
+                model.on("data_updated redraw_legend", that.update_legend, that);
+                model.on("scales_updated", function() {
+                    that.mark_scales_updated(model);
+                }, that);
+                model.on("mark_padding_updated", function() {
+                    that.mark_padding_updated(model);
+                }, that);
 
-            model.on("data_updated redraw_legend", this.update_legend, this);
-            model.on("scales_updated", function() {
-                self.mark_scales_updated(model);
-            }, this);
-            model.on("mark_padding_updated", function() {
-                self.mark_padding_updated(model);
-            }, this);
+                var child_x_scale = model.get("scales")["x"];
+                var child_y_scale = model.get("scales")["y"];
 
-            var child_x_scale = model.get("scales")["x"];
-            var child_y_scale = model.get("scales")["y"];
+                if(child_x_scale == undefined) {
+                    child_x_scale = that.scale_x.model;
+                }
+                if(child_y_scale == undefined) {
+                    child_y_scale = that.scale_y.model;
+                }
 
-            if(child_x_scale == undefined) {
-                child_x_scale = this.scale_x.model;
-            }
-            if(child_y_scale == undefined) {
-                child_y_scale = this.scale_y.model;
-            }
+                that.update_padding_dict(that.x_pad_dict, model, child_x_scale, model.x_padding);
+                that.update_padding_dict(that.y_pad_dict, model, child_y_scale, model.y_padding);
+                var dummy = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
 
-            this.update_padding_dict(this.x_pad_dict, model, child_x_scale, model.x_padding);
-            this.update_padding_dict(this.y_pad_dict, model, child_y_scale, model.y_padding);
-            var dummy = self.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
-
-            return this.create_child_view(model, {clip_id: this.clip_id}).then(function(view) {
-                dummy.parentNode.replaceChild(view.el.node(), dummy);
-                // Trigger the displayed event of the child view.
-                self.after_displayed(function() {
-                    view.trigger("displayed");
+                return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
+                    dummy.parentNode.replaceChild(view.el.node(), dummy);
+                    // Trigger the displayed event of the child view.
+                    that.after_displayed(function() {
+                        view.trigger("displayed");
+                    });
+                    return view;
                 });
-                return view;
             });
         },
         update_paddings: function() {
