@@ -13,13 +13,4 @@
  * limitations under the License.
  */
 
-requirejs.config({
-    paths: {
-        "require-less": "/nbextensions/bqplot/require-less",
-    },
-    map: {
-        "*": {
-            "less": "require-less/less",
-        }
-    },
-});
+

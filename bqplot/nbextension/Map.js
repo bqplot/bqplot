@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "less!./worldmap"], function(d3, topojson, FigureViewModule, utils, mapdata) {
+define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./require-less/less!./worldmap"], function(d3, topojson, FigureViewModule, utils, mapdata) {
     "use strict";
 
     var world = mapdata.world;
