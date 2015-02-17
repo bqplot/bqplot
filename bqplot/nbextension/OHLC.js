@@ -431,8 +431,8 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             }
             // Check if there are less than two data points
             if(min_distance === Number.POSITIVE_INFINITY) {
-                min_distance = (x_scale.model.domain[1] -
-                                x_scale.model.domain[0]) / 2;
+                min_distance = (x_scale.domain[1] -
+                                x_scale.domain[0]) / 2;
             }
             if(min_distance < 0) {
                 min_distance = -1 * min_distance;
