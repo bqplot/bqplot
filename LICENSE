@@ -210,6 +210,14 @@ The colorschemes.py file contains color schemes from the d3js library: http://d3
 which is licensed under the "3-clause BSD" license.  See the colorschemes.py file for details.
 
 
+ColorBrewer File License
+========================
+
+This product includes color specifications and designs developed by Cynthia Brewer
+(http://colorbrewer.org/).  These are in the colorbrewer.js file, which is licensed
+under the Apache 2.0 license.  See the colorbrewer.js file for details.
+
+
 Lasso Point Testing License
 ===========================
 

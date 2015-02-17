@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "d3", "./Figure", "base/js/utils"], function(Widget, d3, FigureViewModule, utils) {
+define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widget, d3, FigureViewModule, utils) {
     "use strict";
 
     var MarketMap = FigureViewModule.Figure.extend({

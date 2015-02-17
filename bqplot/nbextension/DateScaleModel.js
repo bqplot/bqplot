@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./LinearScaleModel"], function(d3, LinearScaleModelModule) {
+define(["./d3", "./LinearScaleModel"], function(d3, LinearScaleModelModule) {
     "use strict";
 
     var DateScaleModel = LinearScaleModelModule.LinearScaleModel.extend({

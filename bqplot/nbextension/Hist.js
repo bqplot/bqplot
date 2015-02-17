@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
+define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
     "use strict";
 
     var Hist = MarkViewModule.Mark.extend({

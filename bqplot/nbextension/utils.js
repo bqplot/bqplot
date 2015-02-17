@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3"], function(d3) {
+define(["./d3"], function(d3) {
     "use strict";
     return {
         getCustomRange: function(array) {

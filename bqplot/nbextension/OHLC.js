@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./Mark"], function(d3, MarkViewModule) {
+define(["./d3", "./Mark"], function(d3, MarkViewModule) {
     "use strict";
 
     var OHLC = MarkViewModule.Mark.extend({

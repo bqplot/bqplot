@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
+define(["./d3", "./colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
     "use strict";
     var color_schemes = ["Paired", "Set3", "Pastel1", "Set1", "Greys", "Greens", "Reds", "Purples", "Oranges", "YlOrRd", "YlOrBr", "YlGnBu", "YlGn", "RdPu",
                          "PuRd", "PuBuGn", "PuBu", "OrRd", "GnBu", "BuPu", "BuGn", "BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral"];
