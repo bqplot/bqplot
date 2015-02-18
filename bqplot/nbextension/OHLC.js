@@ -142,8 +142,12 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             if(mark_width instanceof Date) mark_width = mark_width.getTime();
             var that = this;
             var x_scale = this.scales["x"];
-            var min = x_scale.scale.invert(start_pxl);
-            var max = x_scale.scale.invert(end_pxl);
+            var min = 0;
+            var max = 0;
+            if(x_scale.model.type !== "ordinal") {
+                min = x_scale.scale.invert(start_pxl);
+                max = x_scale.scale.invert(end_pxl);
+            }
             if(min instanceof Date && min !== 0) min = min.getTime();
             if(max instanceof Date && max !== 0) max = max.getTime();
 
@@ -175,7 +179,10 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
         },
         invert_point: function(pixel) {
             var x_scale = this.scales["x"];
-            var point = x_scale.scale.invert(pixel);
+            var point = 0;
+            if(x_scale.model.type !== "ordinal") {
+                point = x_scale.scale.invert(pixel);
+            }
             var index = this.bisect(this.model.mark_data.map(function(d) {
                 return d[0];
             }), point);
@@ -223,13 +230,25 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                     return (d[px.o] > d[px.c]) ?
                         down_color : up_color;
                 })
-                .attr("stroke-width", this.model.get("stroke_width"))
-                .attr( "transform", function(d, i) {
-                    return "translate(" + (x_scale.scale(that.model.mark_data[i][0])
-                                        + x_scale.offset) + ","
-                                        + (y_scale.scale(d[y_index])
-                                        + y_scale.offset) + ")";
+                .attr("stroke-width", this.model.get("stroke_width"));
+            if(x_scale.model.type === "ordinal") {
+                // If we are out of range, we just set the mark in the final
+                // bucket's range band. FIXME?
+                var x_max = d3.max(this.parent.range("x"));
+                this.el.selectAll(".stick").attr( "transform", function(d, i) {
+                    return "translate(" + ((x_scale.scale(that.model.mark_data[i][0]) !== undefined ?
+                                            x_scale.scale(that.model.mark_data[i][0]) : x_max) +
+                                            x_scale.scale.rangeBand()/2) + ","
+                                        + (y_scale.scale(d[y_index]) + y_scale.offset) + ")";
                 });
+            } else {
+                this.el.selectAll(".stick").attr( "transform", function(d, i) {
+                     return "translate(" + (x_scale.scale(that.model.mark_data[i][0])
+                                         + x_scale.offset) + ","
+                                         + (y_scale.scale(d[y_index])
+                                         + y_scale.offset) + ")";
+                 });
+            }
 
             // Draw the mark paths
             this.draw_mark_paths(this.model.get("marker"), mark_width, this.el,
@@ -287,11 +306,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 // We can only compute these (and only need to compute these)
                 // when we have both the open and the close values
                 if(px.o !== -1 && px.c !== -1) {
-                    headline_top[i] = (y_scale.scale.invert(open[i]) >
-                                            y_scale.scale.invert(close[i])) ?
+                    headline_top[i] = (dat[i][px.o] > dat[i][px.c]) ?
                                             open[i] : close[i];
-                    headline_bottom[i] = (y_scale.scale.invert(open[i]) <
-                                            y_scale.scale.invert(close[i])) ?
+                    headline_bottom[i] = (dat[i][px.o] < dat[i][px.c]) ?
                                             open[i] : close[i];
                 }
 
@@ -318,6 +335,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 scaled_mark_widths[i] = (x_scale.scale(offset_in_x_units) -
                                          x_scale.scale(that.model.mark_data[i][0])) *
                                          0.75;
+                if(x_scale.model.type === "ordinal") {
+                    scaled_mark_widths[i] = x_scale.scale.rangeBand() * 0.75;
+                }
                 to_left_side[i] = -1*scaled_mark_widths[i]/2;
             }
 
