@@ -345,42 +345,37 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             }
 
 
-			var zoomed = function() {
-				var t = d3.event.translate;
-				var s = d3.event.scale;
-				var height = h/3;
-				var width = 2*w;
-
-				t[0] = Math.min(width / 2 * (s - 1), Math.max(width / 2 * (1 - s), t[0]));
-				t[1] = Math.min(height / 2 * (s - 1) + h * s, Math.max(height / 2 * (1 - s) - h * s, t[1]));
-
-				zoom.translate(t);
-				that.transformed_g.style("stroke-width", 1 / s)
-                                  .attr("transform", "translate(" + t + ")scale(" + s + ")");
-			};
-
-			this.svg.on("dblclick", function() {
-				var t = [0, 0];
-				var s = 1;
-				var height = h/3;
-				var width = w;
-
-				t[0] = Math.min(width / 2 * (s - 1), Math.max(width / 2 * (1 - s), t[0]));
-				t[1] = Math.min(height / 2 * (s - 1) + h * s, Math.max(height / 2 * (1 - s) - h * s, t[1]));
-
-				zoom.translate(t);
-				zoom.scale(s);
-				that.transformed_g.style("stroke-width", 1 / s)
-                                  .attr("transform", "translate(" + t + ")scale(" + s + ")");
-			});
-
-			var zoom = d3.behavior.zoom()
+			this.zoom = d3.behavior.zoom()
 						.scaleExtent([1, 8])
-						.on("zoom", zoomed);
-			this.svg.call(zoom);
+						.on("zoom", function() {
+                            that.zoomed(that, false);
+                        });
+			this.svg.call(this.zoom);
 			this.svg.on("dblclick.zoom", null);
 
+
+			this.svg.on("dblclick", function() {
+                that.zoomed(that, true);
+            });
+
+
         },
+		zoomed: function(that, reset) {
+			var t = reset ? [0, 0] : d3.event.translate;
+			var s = reset ? 1 : d3.event.scale;
+			var h = that.height/3;
+			var w = reset ? that.width : 2*that.width;
+
+			t[0] = Math.min(that.width / 2 * (s - 1), Math.max(w / 2 * (1 - s), t[0]));
+			t[1] = Math.min(that.height / 2 * (s - 1) + this.height * s, Math.max(h / 2 * (1 - s) - that.width * s, t[1]));
+
+			that.zoom.translate(t);
+            if (reset) {
+                that.zoom.scale(s);
+            }
+			that.transformed_g.style("stroke-width", 1 / s)
+                                  .attr("transform", "translate(" + t + ")scale(" + s + ")");
+		},
         create_listeners: function() {
             var that = this;
 
