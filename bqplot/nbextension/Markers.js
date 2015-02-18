@@ -48,7 +48,17 @@ define(["d3"], function(d3) {
                 + "L" + rx + "," + -ry
                 + " " + rx + "," + ry
                 + " " + -rx + "," + ry
-            + "Z";
+                + "Z";
+        }
+        "smile": function(size, eccentricity) {
+            var ecc = -1 + 2* eccentricity;
+                r = Math.sqrt(size / pi);
+                rs = r * eccentricity;
+            return "M" + r + ",0"
+                + "A" + r + "," + rs + " 0 1,1 " + (-r) + ",0"
+                + "A" + r + "," + r + " 0 1,1 " + r + ",0"
+                + "A" + r + "," + r + " 0 1,1 " + (-r) + ",0"
+                + "Z";
         }
     });
 

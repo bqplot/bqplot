@@ -293,7 +293,7 @@ class Scatter(Mark):
     name: string (class-level attribute)
         User-friendly name of the mark
     marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
-             'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+             'triangle-up', 'arrow', 'rectangle', 'ellipse', 'smile'}
         Marker shape
     default_color: Color (default: 'green')
         Default color of the marker
@@ -355,7 +355,7 @@ class Scatter(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
-                  'triangle-up', 'arrow', 'rectangle', 'ellipse'],
+                  'triangle-up', 'arrow', 'rectangle', 'ellipse', 'smile'],
                   default_value='circle', allow_none=False,
                   sync=True, exposed=True, display_index=3,
                   display_name='Marker')
