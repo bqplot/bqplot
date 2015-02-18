@@ -357,8 +357,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
 			this.svg.on("dblclick", function() {
                 that.zoomed(that, true);
             });
-
-
         },
 		zoomed: function(that, reset) {
 			var t = reset ? [0, 0] : d3.event.translate;
