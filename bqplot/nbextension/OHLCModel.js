@@ -21,36 +21,70 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             OHLCModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.px = { open: 0, high: 1, low: 2, close: 3 };
+            this.on("change:format", this.update_format, this);
+            this.px = { o: -1, h: -1, l: -1, c: -1 };
+            this.mark_data = [];
+        },
+        update_format: function() {
+            this.update_data();
+            this.trigger("format_updated");
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
+            var format = this.get("format");
 
+            // Local private function to report errors in format
+            function print_bad_format(format) {
+                if(console) {
+                    console.error("Invalid OHLC format: '" + format + "'");
+                }
+            }
+
+            // Generate positional map and check for duplicate characters
+            this.px = format.toLowerCase().split("")
+                .reduce(function(dict, key, val) {
+                    if(dict[key] !== -1) {
+                        print_bad_format(format);
+                        x_data = [];
+                        y_data = [];
+                    }
+                    dict[key] = val;
+                    return dict;
+                }, { o: -1, h: -1, l: -1, c: -1 });
+
+            // We cannot have high without low and vice versa
+            if((this.px.h !== -1 && this.px.l === -1)
+            || (this.px.h === -1 && this.px.l !== -1)
+            || format.length < 2 || format.length > 4) {
+                print_bad_format(format);
+                x_data = [];
+                y_data = [];
+            } else {
+                // Verify that OHLC data is valid
+                var that = this;
+                var px = this.px;
+                if((this.px.h !== -1
+                && !y_data.every(function(d) {
+                    return (d[px.h] === d3.max(d) &&
+                            d[px.l] === d3.min(d)); }))
+                || !y_data.every(function(d) {
+                    return d.length === format.length; }))
+                {
+                    x_data = [];
+                    y_data = [];
+                    if(console) console.error("Invalid OHLC data");
+                }
+            }
+
+            // Make x and y data the same length
             if(x_data.length > y_data.length) {
                 x_data = x_data.slice(0, y_data.length);
             } else if(x_data.length < y_data.length) {
                 y_data = y_data.slice(0, x_data.length);
             }
 
-            // Verify that our OHLC data is valid
-            for(var i = 0; i < y_data.length; i++) {
-                if(y_data[i].length !== 4
-                || y_data[i][this.px.high] < y_data[i][this.px.open]
-                || y_data[i][this.px.high] < y_data[i][this.px.close]
-                || y_data[i][this.px.low] > y_data[i][this.px.open]
-                || y_data[i][this.px.low] > y_data[i][this.px.close])
-                {
-                    // Truncate and notify console of error in data
-                    y_data = [];
-                    x_data = [];
-                    if(console) {
-                        console.error("Invalid OHLC data at index " + i);
-                    }
-                }
-            }
             this.mark_data = _.zip(x_data, y_data);
-
             this.update_domains();
             this.trigger("data_updated");
         },
@@ -75,15 +109,15 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     dist = this.mark_data[i][0] - this.mark_data[i-1][0];
                     if(dist < min_x_dist) min_x_dist = dist;
                 }
-                height = this.mark_data[i][this.px.high] -
-                            this.mark_data[i][this.px.low];
+                height = this.mark_data[i][this.px.h] -
+                            this.mark_data[i][this.px.l];
                 if(height > max_y_height) max_y_height = height;
             }
-            if(min_x_dist === Number.POSITIVE_INFINITY) {
+            if(this.mark_data.length < 2) {
                 min_x_dist = 0;
             }
 
-            if(!this.get("preserve_domain")["x"]) {
+            if((!this.get("preserve_domain")["x"]) && this.mark_data.length !== 0) {
                 var min = d3.min(this.mark_data.map(function(d) {
                     return d[0];
                 }));
@@ -96,14 +130,20 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 x_scale.del_domain([], this.id);
             }
 
-            if(!this.get("preserve_domain")["y"]) {
+            if((!this.get("preserve_domain")["y"]) && this.mark_data.length !== 0) {
                 // Remember that elem contains OHLC data here so we cannot use
                 // compute_and_set_domain
+                var top = this.px.h;
+                var bottom = this.px.l;
+                if(top === -1 || bottom === -1) {
+                    top = this.px.o;
+                    bottom = this.px.c;
+                }
                 var min = d3.min(this.mark_data.map(function(d) {
-                    return d[1][that.px.low];
+                    return (d[1][bottom] < d[1][top]) ? d[1][bottom] : d[1][top];
                 }));
                 var max = d3.max(this.mark_data.map(function(d) {
-                    return d[1][that.px.high];
+                    return (d[1][top] > d[1][bottom]) ? d[1][top] : d[1][bottom];
                 }));
                 if(max instanceof  Date) max = max.getTime();
                 y_scale.set_domain([min - max_y_height, max + max_y_height], this.id);

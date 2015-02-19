@@ -47,9 +47,11 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
         create_listeners: function() {
             OHLC.__super__.create_listeners.apply(this);
             this.model.on("change:stroke", this.update_stroke, this);
+            this.model.on("change:stroke_width", this.update_stroke_width, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("change:opacity", this.update_opacity, this);
             this.model.on("change:marker", this.update_marker, this);
+            this.model.on("format_updated", this.draw, this);
         },
         update_stroke: function() {
             var stroke = this.model.get("stroke");
@@ -60,6 +62,10 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 this.legend_el.selectAll("text").style("fill", stroke);
             }
         },
+        update_stroke_width: function() {
+            var stroke_width = this.model.get("stroke_width");
+            this.el.selectAll(".stick").attr("stroke-width", stroke_width);
+        },
         update_colors: function() {
             var that = this;
             var colors = this.model.get("colors");
@@ -68,7 +74,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
 
             // Fill candles based on the opening and closing values
             this.el.selectAll(".stick").style("fill", function(d) {
-                return (d[that.model.px.open] > d[that.model.px.close] ?
+                return (d[that.model.px.o] > d[that.model.px.c] ?
                     down_color : up_color);
             });
 
@@ -108,6 +114,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var colors = this.model.get("colors");
             var up_color = (colors[0] ? colors[0] : stroke);
             var down_color = (colors[1] ? colors[1] : stroke);
+            var px = this.model.px;
 
             _.range(0, this.model.mark_data.length)
              .forEach(function(d) {
@@ -118,8 +125,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             current_range.forEach(function(d) {
                 that.el.selectAll("#stick" + d)
                     .style("stroke", function(d) {
-                        return d[that.model.px.open] > d[that.model.px.close] ?
-                            down_color : up_color;
+                        return d[px.o] > d[px.c] ? down_color : up_color;
                     });
             });
         },
@@ -132,9 +138,23 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 return idx_selected;
             }
 
+            var mark_width = this.calculate_mark_width();
+            if(mark_width instanceof Date) mark_width = mark_width.getTime();
+            var that = this;
             var x_scale = this.scales["x"];
             var min = x_scale.scale.invert(start_pxl);
             var max = x_scale.scale.invert(end_pxl);
+            if(min instanceof Date && min !== 0) min = min.getTime();
+            if(max instanceof Date && max !== 0) max = max.getTime();
+
+            // Avoid accounting for width if there is no width to account for
+            if(this.model.px.o !== -1) max += mark_width * 0.75 * 0.5;
+            if(this.model.px.c !== -1) min -= mark_width * 0.75 * 0.5;
+            if(x_scale.model.type === 'date') {
+                min = new Date(min);
+                max = new Date(max);
+            }
+
             var idx_start = -1;
             var idx_end = -1;
             var indices = _.range(this.model.mark_data.length);
@@ -170,6 +190,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var up_color = (colors[0] ? colors[0] : "none");
             var down_color = (colors[1] ? colors[1] : "none");
             var mark_width = this.calculate_mark_width();
+            var px = this.model.px;
             var stick = this.el.selectAll(".stick")
                 .data(this.model.mark_data.map(function(d) {
                     return d[1];
@@ -190,17 +211,24 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             stick.exit().remove();
 
             var that = this;
+
+            // Determine offset to use for translation
+            var y_index  = px.h;
+            if(px.h === -1) {
+                y_index = px.o;
+            }
             // Update all of the marks
             this.el.selectAll(".stick")
                 .style("fill", function(d, i) {
-                    return (d[that.model.px.open] > d[that.model.px.close]) ?
+                    return (d[px.o] > d[px.c]) ?
                         down_color : up_color;
                 })
+                .attr("stroke-width", this.model.get("stroke_width"))
                 .attr( "transform", function(d, i) {
-                    return "translate(" + (x_scale.scale(that.model.mark_data[i][0]) +
-                                           x_scale.offset) + "," +
-                                          (y_scale.scale(d[that.model.px.high]) +
-                                           y_scale.offset) + ")";
+                    return "translate(" + (x_scale.scale(that.model.mark_data[i][0])
+                                        + x_scale.offset) + ","
+                                        + (y_scale.scale(d[y_index])
+                                        + y_scale.offset) + ")";
                 });
 
             // Draw the mark paths
@@ -231,6 +259,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
              *      | <----- low
              */
 
+            var px = this.model.px;
             var that = this;
             var open = [];
             var high = [];
@@ -242,19 +271,40 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var scaled_mark_widths = [];
 
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var offset_in_x_units;
 
             for(var i = 0; i < dat.length; i++) {
-                open[i] = y_scale.scale(dat[i][this.model.px.open]);
-                high[i] = y_scale.scale(dat[i][this.model.px.high]);
-                low[i] = y_scale.scale(dat[i][this.model.px.low]);
-                close[i] = y_scale.scale(dat[i][this.model.px.close]);
-                headline_top[i] = (y_scale.scale.invert(open[i]) >
-                                        y_scale.scale.invert(close[i])) ?
-                                        open[i] : close[i];
-                headline_bottom[i] = (y_scale.scale.invert(open[i]) <
-                                        y_scale.scale.invert(close[i])) ?
-                                        open[i] : close[i];
-                var offset_in_x_units;
+                if(px.o === -1) {
+                    open[i] = undefined;
+                } else {
+                    open[i] = y_scale.scale(dat[i][px.o]);
+                }
+                if(px.c === -1) {
+                    close[i] = undefined;
+                } else {
+                    close[i] = y_scale.scale(dat[i][px.c]);
+                }
+                // We can only compute these (and only need to compute these)
+                // when we have both the open and the close values
+                if(px.o !== -1 && px.c !== -1) {
+                    headline_top[i] = (y_scale.scale.invert(open[i]) >
+                                            y_scale.scale.invert(close[i])) ?
+                                            open[i] : close[i];
+                    headline_bottom[i] = (y_scale.scale.invert(open[i]) <
+                                            y_scale.scale.invert(close[i])) ?
+                                            open[i] : close[i];
+                }
+
+                // We never have high without low and vice versa, so we can
+                // check everything at once
+                if(px.h === -1 || px.l === -1) {
+                    high[i] = open[i];
+                    low[i] = close[i];
+                } else {
+                    high[i] = y_scale.scale(dat[i][px.h]);
+                    low[i] = y_scale.scale(dat[i][px.l]);
+                }
+
                 if(x_scale.model.type == "date") {
                     if( min_x_difference instanceof Date) {
                         min_x_difference = min_x_difference.getTime();
@@ -272,7 +322,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             }
 
             // Determine OHLC marker type
-            if(type == "candle") {
+            // Note: if we do not have open or close data then we have to draw
+            // a bar.
+            if(type == "candle" && px.o !== -1 && px.c !== -1) {
                 /*
                  *      | <-------- head
                  *  ---------
@@ -282,15 +334,20 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                  *  ---------
                  *      | <-------- tail
                  */
-                selector.selectAll(".stick_head").data(dat)
-                    .attr("d", function(d, i) {
-                        return that.head_path_candle(headline_top[i] - high[i]);
-                    });
-                selector.selectAll(".stick_tail").data(dat)
-                    .attr("d", function(d, i) {
-                        return that.tail_path_candle(headline_bottom[i] - high[i],
-                                                     low[i] - headline_bottom[i]);
-                    });
+                if(px.h !== -1 || px.l !== -1) {
+                    selector.selectAll(".stick_head").data(dat)
+                        .attr("d", function(d, i) {
+                            return that.head_path_candle(headline_top[i] - high[i]);
+                        });
+                    selector.selectAll(".stick_tail").data(dat)
+                        .attr("d", function(d, i) {
+                            return that.tail_path_candle(headline_bottom[i] - high[i],
+                                                         low[i] - headline_bottom[i]);
+                        });
+                } else {
+                    selector.selectAll(".stick_head").data(dat).attr("d", "");
+                    selector.selectAll(".stick_tail").data(dat).attr("d", "");
+                }
                 selector.selectAll(".stick_body").data(dat)
                     .attr("d", function(d, i) {
                         return that.body_path_candle(to_left_side[i],
@@ -309,17 +366,25 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                  *      |____ <---- tail (horizontal piece)
                  *      |
                  */
-                selector.selectAll(".stick_head").data(dat)
-                    .attr("d", function(d, i) {
-                        return that.head_path_bar(to_left_side[i],
-                                                  open[i] - high[i],
-                                                  to_left_side[i]*-1);
-                    });
-                selector.selectAll(".stick_tail").data(dat)
-                    .attr("d", function(d, i) {
-                        return that.tail_path_bar(close[i] - high[i],
-                                                  to_left_side[i]*-1);
-                    });
+                if(px.o !== -1) {
+                    selector.selectAll(".stick_head").data(dat)
+                        .attr("d", function(d, i) {
+                            return that.head_path_bar(to_left_side[i],
+                                                      open[i] - high[i],
+                                                      to_left_side[i]*-1);
+                        });
+                } else {
+                    selector.selectAll(".stick_head").data(dat).attr("d", "");
+                }
+                if(px.c !== -1) {
+                    selector.selectAll(".stick_tail").data(dat)
+                        .attr("d", function(d, i) {
+                            return that.tail_path_bar(close[i] - high[i],
+                                                      to_left_side[i]*-1);
+                        });
+                } else {
+                    selector.selectAll(".stick_tail").data(dat).attr("d", "");
+                }
                 selector.selectAll(".stick_body").data(dat)
                     .attr("d", function(d, i) {
                         return that.body_path_bar(low[i]-high[i]);
@@ -362,7 +427,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var min_distance = Number.POSITIVE_INFINITY;
             var sum = 0;
             var average_height = 0;
-            var x_scale = this.scales["x"];
+            var scales = this.model.get("scales");
+            var x_scale = scales["x"];
+
             for(var i = 1; i < that.model.mark_data.length; i++) {
                 var dist = that.model.mark_data[i][0] -
                            that.model.mark_data[i-1][0];
@@ -370,8 +437,8 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             }
             // Check if there are less than two data points
             if(min_distance === Number.POSITIVE_INFINITY) {
-                min_distance = (x_scale.model.domain[1] -
-                                x_scale.model.domain[0]) / 2;
+                min_distance = (x_scale.domain[1] -
+                                x_scale.domain[0]) / 2;
             }
             if(min_distance < 0) {
                 min_distance = -1 * min_distance;

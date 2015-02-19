@@ -602,6 +602,9 @@ class OHLC(Mark):
         fill colors for the markers (up/down)
     opacity: float
         opacity of the marker
+    format: string
+        description of y data being passed
+        supports all permutations of ohlc, ohl, hlc, oc, hl
 
     Data Attributes
     ---------------
@@ -611,7 +614,6 @@ class OHLC(Mark):
         abscissas of the data points (1d array)
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
-        If this does not contain OHLC data, the behaviour is undefined.
     """
 
     # Mark decoration
@@ -633,10 +635,14 @@ class OHLC(Mark):
                   exposed=True, display_index=3, display_name='Marker', sync=True)
     stroke = Color('white', sync=True, exposed=True, display_index=4,
                    display_name='Stroke color')
+    stroke_width = Int(1, sync=True, exposed=True, display_name='Stroke Width',
+                       display_index=5, allow_none=False)
     colors = ColorList(['limegreen', 'red'], allow_none_element=True, allow_none=False,
-                       display_index=5, sync=True, display_name='Colors')
+                       display_index=6, sync=True, display_name='Colors')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
-                           exposed=True, display_index=6, display_name='Opacity')
+                           exposed=True, display_index=7, display_name='Opacity')
+    format = Unicode(default_value='ohlc', allow_none=False, exposed=True,
+                     display_index=8, display_name='Format', sync=True)
     _view_name = Unicode('OHLC', sync=True)
     _view_module = Unicode('nbextensions/bqplot/OHLC', sync=True)
     _model_name = Unicode('OHLCModel', sync=True)
