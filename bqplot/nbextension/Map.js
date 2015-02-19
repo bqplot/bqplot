@@ -136,8 +136,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                         view.trigger("displayed");
                     });
                 });
-            }
-            else {
+            } else {
                 if (this.model.previous("axis")!==null) {
                     d3.selectAll('.color_axis_'+that.map_id).remove();
                 }
@@ -359,7 +358,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
 			this.svg.call(this.zoom);
 			this.svg.on("dblclick.zoom", null);
 
-
 			this.svg.on("dblclick", function() {
                 that.zoomed(that, true);
             });
@@ -470,7 +468,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                                 .style("stroke", that.model.get("selected_stroke"));
             }
         },
-        change_selected: function(that){
+        change_selected: function(that) {
             var e = window.event;
 
             this.highlight_g.selectAll("path").remove();
