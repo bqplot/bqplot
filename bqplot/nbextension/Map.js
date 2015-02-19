@@ -116,9 +116,9 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             }
         },
         remove_map: function(that) {
-            $('.world_map .'+that.map_id).remove();
-            $('.world_viewbox .'+that.map_id).remove();
-            $('.'+that.map_id).remove();
+            d3.selectAll('.world_map_'+that.map_id).remove();
+            d3.selectAll('.world_viewbox_'+that.map_id).remove();
+            d3.selectAll('.color_axis_'+that.map_id).remove();
         },
         draw_map: function() {
 
@@ -138,14 +138,14 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
                 .attr("width", "100%")
-                .attr("class", "world_viewbox "+this.map_id)
+                .attr("class", "world_viewbox_"+this.map_id)
                 .on("click", function(d) { that.ocean_clicked(that); });
 
-            if (this.model.get("axis")!==null){
+            if (this.model.get("axis")!==null) {
                 this.svg_over.attr("height", "85%");
 
                 that.ax_g = this.svg.append("g")
-                                    .attr("class", "color_axis "+this.map_id);
+                                    .attr("class", "color_axis_"+this.map_id);
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
                     that.axes_view = view;
@@ -161,7 +161,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             }
 
             this.transformed_g = this.svg_over.append("g")
-                                              .attr("class", "world_map "+this.map_id);
+                                              .attr("class", "world_map_"+this.map_id);
 
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
@@ -449,9 +449,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                                 .style("fill", that.model.get("selected_fill"));
             }
         },
-        update_plotarea_dimensions: function() {
-
-        },
         change_selected_stroke: function(that) {
             if (that.model.get("selected_stroke")==="" ||
                 that.model.get("selected_stroke")===null) {
@@ -511,8 +508,10 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             that.model.set("selected", []);
             that.touch();
             that.highlight_g.selectAll(".selected").remove();
-            $("path").removeClass("selected");
-            $("path").removeClass("hovered");
+            d3.select(that.el.parentNode).selectAll("path")
+                                         .classed("selected", false);
+            d3.select(that.el.parentNode).selectAll("path")
+                                         .classed("hovered", false);
             that.stroke_g.selectAll("path").style("stroke", function(d, i) {
                 return that.hoverfill(d, i, that);
             });
@@ -584,15 +583,15 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                     that2.model.save_changes();
                     d3.select(that).style("fill-opacity", 0.0).transition();
                     that2.highlight_g.selectAll(".hovered").remove();
-                    var choice = "#".concat(d.id.toString());
-                    $(choice).remove();
+                    var choice = "#c".concat(d.id.toString());
+                    d3.select(choice).remove();
                 }
                 else {
                     that2.highlight_g.selectAll(".hovered").remove();
                     that2.highlight_g.append(function() {
                             return that.cloneNode(true);
                          })
-                         .attr("id", d.id)
+                         .attr("id", 'c'+d.id)
                          .classed("selected", true);
 
                     if (that2.model.get("selected_fill")!=="" &&
