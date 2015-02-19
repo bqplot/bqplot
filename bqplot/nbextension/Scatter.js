@@ -13,19 +13,20 @@
  * limitations under the License.
  */
 
-define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
+define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, utils, markers) {
     "use strict";
-
     var min_size = 10;
-
+    var bqSymbol = markers.symbol;
     var Scatter = MarkViewModule.Mark.extend({
         render: function() {
             var base_creation_promise = Scatter.__super__.render.apply(this);
             this.stroke = this.model.get("stroke");
             this.default_opacity = this.model.get("default_opacity");
-            this.dot = d3.svg.symbol()
+
+            this.dot = bqSymbol()
               .type(this.model.get("marker"))
-              .size(this.model.get("default_size"));
+              .size(this.model.get("default_size"))
+              .skew(this.model.get("default_skew"));
 
             //container for mouse clicks
             this.el.append("rect")
@@ -61,7 +62,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 y_scale = this.scales["y"],
                 size_scale = this.scales["size"],
                 color_scale = this.scales["color"],
-                opacity_scale = this.scales["opacity"];
+                opacity_scale = this.scales["opacity"],
+                skew_scale = this.scales["skew"],
+                rotation_scale = this.scales["rotation"];
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
@@ -87,6 +90,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(opacity_scale) {
                 opacity_scale.set_range([0.2, 1]);
             }
+            if(skew_scale) {
+                skew_scale.set_range([0, 1]);
+            }
+            if(rotation_scale) {
+                rotation_scale.set_range([0, 180]);
+            }
         },
         set_positional_scales: function() {
             var x_scale = this.scales["x"],
@@ -103,7 +112,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // listeners for the additional scales
             var color_scale = this.scales["color"],
                 size_scale = this.scales["size"],
-                opacity_scale = this.scales["opacity"];
+                opacity_scale = this.scales["opacity"],
+                skew_scale = this.scales["skew"],
+                rotation_scale = this.scales["rotation"];
             // the following handlers are for changes in data that does not
             // impact the position of the elements
             if(color_scale) {
@@ -123,12 +134,24 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     this.update_default_opacity();
                 });
             }
+            if(skew_scale) {
+                this.listenTo(skew_scale, "domain_changed", function() {
+                    this.update_default_skew();
+                });
+            }
+            if(rotation_scale) {
+                this.listenTo(rotation_scale, "domain_changed", function() {
+                    //this.update_default_rotation();
+                });
+            }
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
             this.model.on("change:default_color", this.update_default_color, this);
             this.model.on("change:stroke", this.update_stroke, this);
             this.model.on("change:default_opacity", this.update_default_opacity, this);
+            this.model.on("change:default_skew", this.update_default_skew, this);
+            this.model.on("change:default_rotation", this.update_default_rotation, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:marker", this.update_marker, this);
             this.model.on("change:default_size", this.update_default_size, this);
@@ -196,13 +219,19 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         update_marker: function(model, marker) {
-            this.dot.type(this.model.get("marker"));
-            this.el.selectAll(".dot").attr("d", this.dot);
-            if (this.legend_el) {
-                this.legend_el.select("path").attr("d", this.dot.size(64));
+            if(!this.model.dirty) {
+                this.el.selectAll(".dot").attr("d", this.dot.type(marker));
             }
         },
-        update_default_size: function(model, new_size) {
+        update_default_skew: function() {
+            if(!this.model.dirty) {
+                var that = this;
+                this.el.selectAll(".dot").attr("d", this.dot.skew(function(data) {
+                    return that.get_element_skew(data);
+                }));
+            }
+        },
+        update_default_size: function() {
             this.compute_view_padding();
             // update size scale range?
             if(!this.model.dirty) {
@@ -238,6 +267,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
             return this.model.get("default_opacity");
         },
+        get_element_skew: function(data) {
+            var skew_scale = this.scales["skew"];
+            if(skew_scale && data.skew !== undefined) {
+                return skew_scale.scale(data.skew);
+            }
+            return this.model.get("default_skew");
+        },
         relayout: function() {
             this.set_ranges();
             this.el.select(".mouseeventrect")
@@ -245,11 +281,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("height", this.parent.plotarea_height);
 
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
-
+            var that = this;
             this.el.selectAll(".dot_grp").transition().duration(this.model.get("animate_dur"))
               .attr("transform", function(d) {
                     return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
-                                    "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
+                                    "," + (y_scale.scale(d.y) + y_scale.offset) + ")"
+                           + that.get_element_rotation(d);
               });
         },
         update_array: function(d, i) {
@@ -378,7 +415,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         draw: function() {
             this.set_ranges();
-            var that = this;
             var default_color = this.model.get("default_color");
             var labels = this.model.get("labels");
             var fill = this.model.get("fill");
@@ -394,19 +430,20 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var animate_dur = this.model.get("animate_dur");
             elements_added.append("path").attr("class", "dot");
             elements_added.append("text").attr("class", "dot_text");
-
+            var that = this;
             elements.transition().duration(animate_dur)
               .attr("transform", function(d) {
                   return "translate(" + (x_scale.scale(d.x) + x_scale.offset) + "," +
-                                        (y_scale.scale(d.y) + y_scale.offset) + ")";
+                                      + (y_scale.scale(d.y) + y_scale.offset) + ") "
+                         + that.get_element_rotation(d);
               });
 
             var text_loc = Math.sqrt(this.model.get("default_size")) / 2.0;
             elements.select("path")
-              .attr("d", this.dot.size(function(d) {
-                  return that.get_element_size(d);
-              }));
-
+                .attr("d", this.dot
+                    .size(function(d) { return that.get_element_size(d); })
+                    .skew(function(d) { return that.get_element_skew(d); })
+                    );
             elements.call(this.drag_listener);
 
             var names = this.model.get_typed_field("names");
@@ -428,6 +465,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // removed is round-about and doesn't look very nice visually.
             elements.exit().remove();
             this.apply_styles();
+        },
+        get_element_rotation: function(d) {
+            var rotation_scale = this.scales["rotation"];
+            return (!rotation_scale || !d.rotation) ? "" :
+                "rotate(" + rotation_scale.scale(d.rotation) + ")";
         },
         color_scale_updated: function() {
             var that = this;
