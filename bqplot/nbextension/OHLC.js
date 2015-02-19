@@ -114,6 +114,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var colors = this.model.get("colors");
             var up_color = (colors[0] ? colors[0] : stroke);
             var down_color = (colors[1] ? colors[1] : stroke);
+            var px = this.model.px;
 
             _.range(0, this.model.mark_data.length)
              .forEach(function(d) {
@@ -124,8 +125,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             current_range.forEach(function(d) {
                 that.el.selectAll("#stick" + d)
                     .style("stroke", function(d) {
-                        return d[that.model.px.o] > d[that.model.px.c] ?
-                            down_color : up_color;
+                        return d[px.o] > d[px.c] ? down_color : up_color;
                     });
             });
         },
