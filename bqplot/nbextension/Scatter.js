@@ -52,7 +52,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var self = this;
             return base_creation_promise.then(function() {
                 self.create_listeners();
-                self.get_view_padding();
+                self.compute_view_padding();
                 self.draw();
             });
         },
@@ -203,7 +203,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         update_default_size: function(model, new_size) {
-            this.get_view_padding();
+            this.compute_view_padding();
             // update size scale range?
             if(!this.model.dirty) {
                 var that = this;
@@ -573,20 +573,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
             elements.style(clearing_style);
         },
-        get_view_padding: function() {
-            //This function returns a dictionary with keys as the scales and
-            //value as the pixel padding required for the rendering of the
-            //mark.
+        compute_view_padding: function() {
+            //This function computes the padding along the x and y directions.
+            //The value is in pixels.
             var x_padding = Math.sqrt(this.model.get("default_size")) / 2 + 1.0;
-            var y_padding = x_padding;
 
-            if(x_padding !== this.x_padding || y_padding !== this.y_padding) {
+            if(x_padding !== this.x_padding || x_padding !== this.y_padding) {
                 this.x_padding = x_padding;
-                this.y_padding = y_padding;
+                this.y_padding = x_padding;
                 this.trigger("mark_padding_updated");
-                //dispatch the event
             }
-            return {'x': this.x_padding, 'y': this.y_padding};
 		},
         update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
                                                point_in_lasso_func)

@@ -40,7 +40,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             return base_creation_promise.then(function() {
                 self.create_listeners();
-                self.get_view_padding();
+                self.compute_view_padding();
                 self.draw();
             }, null);
         },
@@ -75,7 +75,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
             this.model.on_some_change(["inner_radius", "radius"], function() {
-                this.get_view_padding();
+                this.compute_view_padding();
                 this.update_radii();
             }, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
@@ -282,7 +282,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.clear_style(this.unselected_style);
             this.set_default_style();
         },
-        get_view_padding: function() {
+        compute_view_padding: function() {
             var scales = this.model.get("scales");
             var r = d3.max([this.model.get("radius"), this.model.get("inner_radius")]);
 

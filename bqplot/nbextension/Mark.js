@@ -179,11 +179,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         },
         set_style_on_elements: function(style, indices) {
         },
-        get_view_padding: function() {
-            //This function returns a dictionary with keys as the scales and
-            //value as the pixel padding required for the rendering of the
-            //mark. This is required if the mark has a view specific padding.
-            return {};
+        compute_view_padding: function() {
+            //This function sets the x and y view paddings for the mark using
+            //the variables x_padding and y_padding
         },
     });
 
