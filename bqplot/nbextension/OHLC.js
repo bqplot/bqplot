@@ -47,6 +47,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
         create_listeners: function() {
             OHLC.__super__.create_listeners.apply(this);
             this.model.on("change:stroke", this.update_stroke, this);
+            this.model.on("change:stroke_width", this.update_stroke_width, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("change:opacity", this.update_opacity, this);
             this.model.on("change:marker", this.update_marker, this);
@@ -60,6 +61,10 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 this.legend_el.selectAll("path").attr("stroke", stroke);
                 this.legend_el.selectAll("text").style("fill", stroke);
             }
+        },
+        update_stroke_width: function() {
+            var stroke_width = this.model.get("stroke_width");
+            this.el.selectAll(".stick").attr("stroke-width", stroke_width);
         },
         update_colors: function() {
             var that = this;
@@ -218,6 +223,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                     return (d[px.o] > d[px.c]) ?
                         down_color : up_color;
                 })
+                .attr("stroke-width", this.model.get("stroke_width"))
                 .attr( "transform", function(d, i) {
                     return "translate(" + (x_scale.scale(that.model.mark_data[i][0])
                                         + x_scale.offset) + ","
