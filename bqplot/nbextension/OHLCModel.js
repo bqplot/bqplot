@@ -33,7 +33,6 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
             var format = this.get("format");
-            this.px = { o: -1, h: -1, l: -1, c: -1 };
 
             // Local private function to report errors in format
             function print_bad_format(format) {
@@ -42,9 +41,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
             }
 
+            // Generate positional map and check for duplicate characters
             this.px = format.toLowerCase().split("")
-                .reduce(function(dict, key, val)
-                {
+                .reduce(function(dict, key, val) {
                     if(dict[key] !== -1) {
                         print_bad_format(format);
                         x_data = [];
@@ -52,8 +51,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     }
                     dict[key] = val;
                     return dict;
-                },
-                this.px);
+                }, { o: -1, h: -1, l: -1, c: -1 });
 
             // We cannot have high without low and vice versa
             if((this.px.h !== -1 && this.px.l === -1)
@@ -65,10 +63,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             } else {
                 // Verify that OHLC data is valid
                 var that = this;
+                var px = this.px;
                 if((this.px.h !== -1
                 && !y_data.every(function(d) {
-                    return (d[that.px.h] === d3.max(d) &&
-                            d[that.px.l] === d3.min(d)); }))
+                    return (d[px.h] === d3.max(d) &&
+                            d[px.l] === d3.min(d)); }))
                 || !y_data.every(function(d) {
                     return d.length === format.length; }))
                 {
