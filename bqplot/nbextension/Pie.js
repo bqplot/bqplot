@@ -37,6 +37,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     if (self.model.get("select_slices"))
                         { self.reset_selection(); }
                 });
+            this.el.append("g")
+              .attr("class", "pielayout");
 
             return base_creation_promise.then(function() {
                 self.create_listeners();
@@ -110,50 +112,53 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.model.get_date_elem("y") : this.model.get("y");
             var transform = "translate(" + x_scale.scale(x) +
                                     ", " + y_scale.scale(y) + ")";
-            this.el.select(".pielayout")
-                .attr("transform", transform);
+            this.el.select(".pielayout").transition()
+              .duration(this.model.get("animate_dur"))
+              .attr("transform", transform);
         },
         update_radii: function() {
 
             var arc = d3.svg.arc()
-                .outerRadius(this.model.get("radius"))
-                .innerRadius(this.model.get("inner_radius"));
+              .outerRadius(this.model.get("radius"))
+              .innerRadius(this.model.get("inner_radius"));
 
             var elements = this.el.select(".pielayout").selectAll(".slice");
+            var animate_dur = this.model.get("animate_dur")
 
             elements.select("path")
-                .transition().duration(this.model.get("animate_dur"))
-                .attr("d", arc);
+              .transition().duration(animate_dur)
+              .attr("d", arc);
 
             elements.select("text")
-                .attr("transform", function(d) {
+              .transition().duration(animate_dur)
+              .attr("transform", function(d) {
                         return "translate(" + arc.centroid(d) + ")"; });
         },
         draw: function() {
             this.set_ranges();
-            this.el.selectAll(".pielayout").remove();
-            var layout = this.el.append("g")
-                .attr("class", "pielayout");
             this.position_center();
 
             var pie = d3.layout.pie()
-                .startAngle(this.model.get("start_angle")*2*Math.PI/360)
-                .endAngle(this.model.get("end_angle")*2*Math.PI/360)
+              .startAngle(this.model.get("start_angle")*2*Math.PI/360)
+              .endAngle(this.model.get("end_angle")*2*Math.PI/360)
                 .value(function(d) { return d.size; });
             if (!this.model.get("sort")) { pie.sort(null); }
 
             var that = this;
-            var arcs = layout.selectAll(".slice")
-                .data(pie(this.model.mark_data))
-               .enter().append("g")
-                .attr("class", "slice")
-                .on("click", function(d, i) {return that.click_handler(d, i);});
+            var elements = this.el.select(".pielayout").selectAll(".slice")
+              .data(pie(this.model.mark_data));
 
-            arcs.append("path");
-            arcs.append("text")
-                .attr("dy", ".35em")
-                .attr("pointer-events", "none")
-                .style("text-anchor", "middle");
+            var elements_added = elements.enter().append("g")
+              .attr("class", "slice")
+              .on("click", function(d, i) {return that.click_handler(d, i);});
+
+            elements.append("path");
+            elements.append("text")
+              .attr("dy", ".35em")
+              .attr("pointer-events", "none")
+              .style("text-anchor", "middle");
+
+            elements.exit().remove();
 
             this.update_radii();
             this.update_labels();
@@ -163,8 +168,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             this.el.select(".pielayout").selectAll(".slice")
-                .style("stroke", (stroke === undefined || stroke === null) ? "none" : stroke)
-                .style("opacity", opacity);
+              .style("stroke", (stroke === undefined || stroke === null) ? "none" : stroke)
+              .style("opacity", opacity);
         },
         update_colors: function() {
             var that = this;
@@ -173,14 +178,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 color_scale.set_range();
             }
             this.el.select(".pielayout").selectAll(".slice")
-                .style("fill", function(d, i) {
-                    return (d.data.color !== undefined && color_scale !== undefined) ?
-                        color_scale.scale(d.data.color) : that.get_colors(i);
-                });
+              .style("fill", function(d, i) {
+                  return (d.data.color !== undefined && color_scale !== undefined) ?
+                      color_scale.scale(d.data.color) : that.get_colors(i);
+              });
         },
         update_labels: function() {
             this.el.select(".pielayout").selectAll(".slice").select("text")
-                .text(function(d) { return d.data.label; });
+              .text(function(d) { return d.data.label; });
         },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
