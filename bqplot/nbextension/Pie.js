@@ -118,12 +118,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .innerRadius(this.model.get("inner_radius"));
 
             var elements = this.el.select(".pielayout").selectAll(".slice");
+            var animate_dur = this.model.get("animate_dur")
 
             elements.select("path")
-              .transition().duration(this.model.get("animate_dur"))
+              .transition().duration(animate_dur)
               .attr("d", arc);
 
             elements.select("text")
+              .transition().duration(animate_dur)
               .attr("transform", function(d) {
                         return "translate(" + arc.centroid(d) + ")"; });
         },
@@ -150,6 +152,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("dy", ".35em")
               .attr("pointer-events", "none")
               .style("text-anchor", "middle");
+
+            elements.exit().remove();
 
             this.update_radii();
             this.update_labels();
