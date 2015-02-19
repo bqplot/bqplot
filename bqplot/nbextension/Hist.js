@@ -55,6 +55,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors",this.update_colors,this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+            this.model.on("change:idx_selected", this.update_idx_selected, this);
         },
         reset_selections: function() {
             if(!(this.selector_model)) {
@@ -63,7 +64,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var that = this;
             var colors = this.model.get("colors");
             this.bar_index_sel.forEach(function(d) {
-                that.el.selectAll("#rect" + d).attr("fill", colors[0]);
+                that.el.selectAll("#rect" + d).style("fill", colors[0]);
             });
             this.bar_index_sel = [];
             this.sel_indices = [];
@@ -72,10 +73,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         update_colors: function(model, colors) {
             this.el.selectAll(".bar").selectAll("rect")
-              .attr("fill", this.get_colors(0));
+              .style("fill", this.get_colors(0));
             if (model.get("labels") && colors.length > 1) {
                 this.el.selectAll(".bar").selectAll("text")
-                  .attr("fill", this.get_colors(1));
+                  .style("fill", this.get_colors(1));
             }
             if (this.legend_el) {
                 this.legend_el.selectAll("rect")
@@ -151,7 +152,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 		      .attr("height", function(d) {
                   return y_scale.scale(0) - y_scale.scale(d.y);
               })
-              .attr("fill", fill_color)
+              .style("fill", fill_color)
               .on("click", function(d, i) {
                   if(!(that.selector_model)) {
                      return;
@@ -166,7 +167,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                               that.sel_indices.splice(remove_index, 1);
                           }
                       });
-                      that.el.selectAll("#rect" + i).attr("fill", fill_color);
+                      that.el.selectAll("#rect" + i).style("fill", fill_color);
                   }
                   else {
                       if(that.sel_indices[0] === -1) {
@@ -208,7 +209,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                           }
                       } else {
                           that.bar_index_sel.forEach(function(index) {
-                              that.el.selectAll("#rect" + index).attr("fill", fill_color);
+                              that.el.selectAll("#rect" + index).style("fill", fill_color);
                           });
                           that.bar_index_sel = [];
                       }
@@ -278,7 +279,22 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         reset_colors: function(index, color) {
             var rects = this.el.selectAll("#rect"+index);
-            rects.attr("fill", color);
+            rects.style("fill", color);
+        },
+        update_idx_selected: function(model, value) {
+            if(value === undefined || value === null || value.length === 0) {
+                //reset the color of everything if idx_selected is blank
+                this.update_selected_colors(-1, -1);
+                return;
+            }
+            else {
+                var x_data = this.model.get_typed_field("sample");
+                var min_data = d3.min(value, function(ind) { return x_data[ind]; });
+                var max_data = d3.max(value, function(ind) { return x_data[ind]; });
+                var indexes = this.calculate_bar_indices(min_data, max_data);
+
+                this.update_selected_colors(indexes[0], indexes[indexes.length - 1]);
+            }
         },
         update_selected_colors: function(idx_start, idx_end) {
             // listen to changes of idx_selected and draw itself
@@ -291,11 +307,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 current_range = [];
             }
             var self = this;
-            _.range(0, this.model.num_bins).forEach(function(d) {
-                self.el.selectAll("#rect" + d).attr("fill", fill_color);
-            });
+            _.difference(_.range(0, this.model.num_bins), current_range)
+                    .forEach(function(d) {
+                        self.el.selectAll("#rect" + d).style("fill", fill_color);
+                    });
             current_range.forEach(function(d) {
-                self.el.selectAll("#rect" + d).attr("fill", select_color);
+                    self.el.selectAll("#rect" + d).style("fill", select_color);
             });
         },
         invert_range: function(start_pxl, end_pxl) {
@@ -310,13 +327,15 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var data = [start_pxl, end_pxl].map(function(elem) {
                 return x_scale.scale.invert(elem);
             });
-            var idx_start = d3.max([0, d3.bisectLeft(this.model.x_bins, data[0]) - 1]);
-            var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.model.x_bins, data[1])]);
+            var bar_indices = this.calculate_bar_indices(data[0], data[1]);
+            var idx_start = bar_indices[0],
+                idx_end = bar_indices[bar_indices.length - 1];
             this.update_selected_colors(idx_start, idx_end);
 
             var x_data = this.model.get_typed_field("sample");
+            var selected_data = [this.model.x_bins[idx_start], this.model.x_bins[bar_indices[idx_end]]];
+
             var indices = _.range(x_data.length);
-            var selected_data = [this.model.x_bins[idx_start], this.model.x_bins[idx_end]];
             var idx_selected = _.filter(indices, function(index) {
                 var elem = x_data[index];
                 return (elem <= selected_data[1] && elem >= selected_data[0]);
@@ -324,6 +343,18 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.set("idx_selected", idx_selected);
             this.touch();
             return idx_selected;
+        },
+        calculate_bar_indices: function(data_min, data_max, include) {
+            //function to calculate bar indices for a given range of data
+            //the attribute include if the data is to be included or
+            //excluded.
+            var idx_start = d3.max([0, d3.bisectLeft(this.model.x_bins, data_min) - 1]);
+            var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.model.x_bins, data_max)]);
+            if(include === undefined || !(include)) {
+                return _.range(idx_start, idx_end+1);
+            }
+            var all_indices = _.range(this.model.mark_data.length);
+            return _.difference(all_indices, _.range(idx_start, idx_end+1));
         },
     });
 
