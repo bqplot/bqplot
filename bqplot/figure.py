@@ -48,10 +48,8 @@ class Figure(DOMWidget):
     Besides, the Figure object has two reference scales, for positioning items
     in an absolute fashion in the figure canvas.
 
-    Data Attributes
-    ---------------
-    Data attributes are decorated with the following values:
-
+    Attributes
+    ----------
     title: string (default: "")
         title of the figure
     axes: List (default: [])
@@ -64,6 +62,15 @@ class Figure(DOMWidget):
         Scale representing the x values of the figure
     scale_y: Scale
         Scale representing the y values of the figure
+    padding_x: float (default: 0.0)
+        Padding to be applied in pixels in the horizontal direction of the
+        figure around the data points
+    padding_y: float (default: 0.025)
+        Padding to be applied in pixels in the vertical direction of the figure
+        around the data points
+    legend_location:  {'top-right', 'top', 'top-left', 'left',
+                       'bottom-left', 'bottom', 'bottom-right', 'right'}
+        location of the legend relative to the center of the figure
 
     Layout Attributes
     -----------------
@@ -74,20 +81,13 @@ class Figure(DOMWidget):
     preserve_aspect: bool (default: False)
         Determines whether the aspect ratio for the figure specified by
         min_width and min_height is preserved during resizing. This does not
-        guarantee that the data coordinates will have any specific aspect ratio.
+        guarantee that the data coordinates will have any specific aspect
+        ratio.
     fig_margin: dict (default: {top=60, bottom=60, left=60, right=60})
         Dictionary containing the top, bottom, left and right margins. The user
         is responsible for making sure that the width and height are greater
         than the sum of the margins.
-    padding_x: float (default: 0.0)
-        Padding to be applied in pixels in the horizontal direction of the
-        figure around the data points
-    padding_y: float (default: 0.025)
-        Padding to be applied in pixels in the vertical direction of the figure
-        around the data points
-    legend_location:  {'top-right', 'top', 'top-left', 'left',
-                       'bottom-left', 'bottom', 'bottom-right', 'right'}
-        location of the legend relative to the center of the figure
+
     """
     title = Unicode(sync=True,
                     exposed=True, display_index=1, display_name='Title')
