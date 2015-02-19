@@ -15,51 +15,98 @@
 
 define(["d3"], function(d3) {
 
-    var pi = Math.PI;
-        radian = pi / 180;
-        tan5 = Math.tan(5 * radian);
-        tan60 = Math.tan(60 * radian);
+    var pi = Math.PI,
+        radian = pi / 180,
+        sqrt3 = Math.sqrt(3),
+        tan30 = Math.tan(30);
 
+    var circleSymbol = function(size) {
+        var r = Math.sqrt(size / pi);
+        return "M0," + r
+            + "A" + r + "," + r + " 0 1,1 0," + (-r)
+            + "A" + r + "," + r + " 0 1,1 0," + r
+            + "Z";
+    }
     var bqSymbolTypes = d3.map({
-        "arrow": function(size, eccentricity) {
-            var angle = 60 + (5 - 60) * eccentricity;
-                ecc = Math.tan(angle * radian);
-                ry = Math.sqrt(size / ecc),
-                rx = ry * ecc / 2;
+        "circle": circleSymbol,
+        "cross": function(size,e) {
+            var r = Math.sqrt(size / 5) / 2;
+            return "M" + -3 * r + "," + -r
+                + "H" + -r
+                + "V" + -3 * r
+                + "H" + r
+                + "V" + -r
+                + "H" + 3 * r
+                + "V" + r
+                + "H" + r
+                + "V" + 3 * r
+                + "H" + -r
+                + "V" + r
+                + "H" + -3 * r
+                + "Z";
+        },
+        "diamond": function(size, s) {
+            var ry = Math.sqrt(size / (2 * tan30)),
+                rx = ry * tan30;
+            return "M0," + -ry
+                + "L" + rx + ",0"
+                + " 0," + ry
+                + " " + -rx + ",0"
+                + "Z";
+        },
+        "square": function(size, s) {
+            var r = Math.sqrt(size) / 2;
+            return "M" + -r + "," + -r
+                + "L" + r + "," + -r
+                + " " + r + "," + r
+                + " " + -r + "," + r
+                + "Z";
+        },
+        "triangle-down": function(size, s) {
+            var rx = Math.sqrt(size / sqrt3),
+                ry = rx * sqrt3 / 2;
+            return "M0," + ry
+                + "L" + rx +"," + -ry
+                + " " + -rx + "," + -ry
+                + "Z";
+        },
+        "triangle-up": function(size, s) {
+            var rx = Math.sqrt(size / sqrt3),
+                ry = rx * sqrt3 / 2;
             return "M0," + -ry
                 + "L" + rx +"," + ry
                 + " " + -rx + "," + ry
                 + "Z";
         },
-        "ellipse": function(size, eccentricity) {
-            var ecc = Math.pow(10, eccentricity)
-                rx = Math.sqrt(size / (pi * ecc));
-                ry = rx * ecc;
+        "arrow": function(size, skew) {
+            var angle = 60 + (5 - 60) * skew;
+                s = Math.tan(angle * radian);
+                ry = Math.sqrt(size / s),
+                rx = ry * s / 2;
+            return "M0," + -ry
+                + "L" + rx +"," + ry
+                + " " + -rx + "," + ry
+                + "Z";
+        },
+        "ellipse": function(size, skew) {
+            var s = Math.pow(10, skew)
+                rx = Math.sqrt(size / (pi * s));
+                ry = rx * s;
             return "M0," + ry
                 + "A" + rx + "," + ry + " 0 1,1 0," + (-ry)
                 + "A" + rx + "," + ry + " 0 1,1 0," + ry
                 + "Z";
         },
-        "rectangle": function(size, eccentricity) {
-            var ecc = Math.pow(10, eccentricity)
-                rx = Math.sqrt(size / ecc) / 2;
-                ry = rx * ecc;
+        "rectangle": function(size, skew) {
+            var s = Math.pow(10, skew)
+                rx = Math.sqrt(size / s) / 2;
+                ry = rx * s;
             return "M" + -rx + "," + -ry
                 + "L" + rx + "," + -ry
                 + " " + rx + "," + ry
                 + " " + -rx + "," + ry
                 + "Z";
-        }
-        "smile": function(size, eccentricity) {
-            var ecc = -1 + 2* eccentricity;
-                r = Math.sqrt(size / pi);
-                rs = r * eccentricity;
-            return "M" + r + ",0"
-                + "A" + r + "," + rs + " 0 1,1 " + (-r) + ",0"
-                + "A" + r + "," + r + " 0 1,1 " + r + ",0"
-                + "A" + r + "," + r + " 0 1,1 " + (-r) + ",0"
-                + "Z";
-        }
+        },
     });
 
     function symbolSize() {
@@ -67,10 +114,10 @@ define(["d3"], function(d3) {
     }
 
     function symbolType() {
-        return "arrow";
+        return "circle";
     }
 
-    function symbolEccentricity() {
+    function symbolSkew() {
         return 0.5;
     }
 
@@ -78,11 +125,11 @@ define(["d3"], function(d3) {
     var bqSymbol = function() {
         var type = symbolType,
             size = symbolSize;
-            eccentricity = symbolEccentricity;
+            skew = symbolSkew;
 
         function symbol(d,i) {
-            return bqSymbolTypes.get(type.call(this,d,i))
-                (size.call(this,d,i), eccentricity.call(this, d, i));
+            return (bqSymbolTypes.get(type.call(this,d,i)) || circleSymbol)
+                (size.call(this,d,i), skew.call(this, d, i));
         }
 
         symbol.type = function(x) {
@@ -98,10 +145,10 @@ define(["d3"], function(d3) {
             return symbol;
         };
 
-        // eccentricity of symbol, in [0, 1]
-        symbol.eccentricity = function(x) {
-            if (!arguments.length) return eccentricity;
-            eccentricity = d3.functor(x);
+        // skew of symbol, in [0, 1]
+        symbol.skew = function(x) {
+            if (!arguments.length) return skew;
+            skew = d3.functor(x);
             return symbol;
         };
 

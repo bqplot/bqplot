@@ -20,7 +20,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
-            this.on_some_change(["x", "y", "color", "opacity", "size", "eccentricity", "rotation"], this.update_data, this);
+            this.on_some_change(["x", "y", "color", "opacity", "size", "skew", "rotation"], this.update_data, this);
             this.on_some_change(["names", "names_unique"], function() { this.update_unique_ids(); this.trigger("data_updated"); }, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
@@ -30,12 +30,12 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
         },
         update_data: function() {
             this.dirty = true;
-            var x_data = this.get_typed_field("x");
-            var y_data = this.get_typed_field("y");
-            var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
-            var color_scale = scales["color"];
+            var x_data = this.get_typed_field("x"),
+                y_data = this.get_typed_field("y"),
+                scales = this.get("scales"),
+                x_scale = scales["x"],
+                y_scale = scales["y"],
+                color_scale = scales["color"];
 
             if (x_data.length === 0 || y_data.length === 0) {
                 this.mark_data = [];
@@ -46,11 +46,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 //length, throws an error on the JS side
                 var min_len = Math.min(x_data.length, y_data.length);
                 x_data = x_data.slice(0, min_len);
-                var color = this.get_typed_field("color");
-                var size = this.get_typed_field("size");
-                var opacity = this.get_typed_field("opacity");
-                var eccentricity = this.get_typed_field("eccentricity");
-                var rotation = this.get_typed_field("rotation");
+                var color = this.get_typed_field("color"),
+                    size = this.get_typed_field("size"),
+                    opacity = this.get_typed_field("opacity"),
+                    skew = this.get_typed_field("skew"),
+                    rotation = this.get_typed_field("rotation");
 
                 if(color_scale) {
                     if(!this.get("preserve_domain")["color"]) {
@@ -66,7 +66,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             z: color[i],
                             size: size[i],
                             opacity: opacity[i],
-                            eccentricity: eccentricity[i],
+                            skew: skew[i],
                             rotation: rotation[i],
                             };
                 });
@@ -101,13 +101,13 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // color scale needs an issue in DateScaleModel to be fixed. It
             // should be moved here as soon as that is fixed.
 
-            var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
-            var size_scale = scales["size"];
-            var opacity_scale = scales["opacity"];
-            var eccentricity_scale = scales["eccentricity"];
-            var rotation_scale = scales["rotation"];
+            var scales = this.get("scales"),
+                x_scale = scales["x"],
+                y_scale = scales["y"],
+                size_scale = scales["size"],
+                opacity_scale = scales["opacity"],
+                skew_scale = scales["skew"],
+                rotation_scale = scales["rotation"];
 
             if(!this.get("preserve_domain")["x"]) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -141,13 +141,13 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     opacity_scale.del_domain([], this.id);
                 }
             }
-            if(eccentricity_scale) {
-                if(!this.get("preserve_domain")["eccentricity"]) {
-                    eccentricity_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                        return elem.eccentricity;
+            if(skew_scale) {
+                if(!this.get("preserve_domain")["skew"]) {
+                    skew_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                        return elem.skew;
                     }), this.id);
                 } else {
-                    eccentricity_scale.del_domain([], this.id);
+                    skew_scale.del_domain([], this.id);
                 }
             }
             if(rotation_scale) {
