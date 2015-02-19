@@ -25,11 +25,6 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.on("change:stroke_width", this.update_bounding_box, this);
-        },
-        update_bounding_box: function(model, value) {
-            this.x_padding = this.y_padding = this.get("stroke_width") / 2;
-            this.trigger("mark_padding_updated");
         },
         update_data: function() {
             this.dirty = true;

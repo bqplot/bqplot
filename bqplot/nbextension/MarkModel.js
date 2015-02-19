@@ -100,8 +100,6 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
         // These two attributes are the pixel values which should be appended
         // to the area of the plot to make sure that the entire mark is visible
         initialize: function() {
-            this.x_padding = 0;
-            this.y_padding = 0;
             this.on("change:scales", this.update_scales, this);
             this.once("destroy", this.handle_destroy, this);
             // `this.dirty` is set to `true` before starting computations that
@@ -109,9 +107,6 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
             // certain functions of views on that model might check the value
             // of `this.dirty` before rendering
             this.dirty = false;
-        },
-        update_bounding_box: function(model, value) {
-            //base class function which does not do anything
         },
         update_data : function() {
             // Update_data is typically overloaded in each mark

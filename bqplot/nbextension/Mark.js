@@ -18,6 +18,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
 
     var Mark = Widget.WidgetView.extend({
         render: function() {
+            this.x_padding = 0;
+            this.y_padding = 0;
             this.parent = this.options.parent;
             this.uuid = utils.uuid();
             var scale_creation_promise = this.set_scale_views();
@@ -60,6 +62,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 that.initialize_additional_scales();
                 that.set_ranges();
                 that.draw();
+                that.trigger("mark_scales_updated");
             });
         },
         set_positional_scales: function() {
@@ -175,6 +178,10 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         set_default_style:function(indices) {
         },
         set_style_on_elements: function(style, indices) {
+        },
+        compute_view_padding: function() {
+            //This function sets the x and y view paddings for the mark using
+            //the variables x_padding and y_padding
         },
     });
 
