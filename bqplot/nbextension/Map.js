@@ -116,9 +116,9 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             }
         },
         remove_map: function(that) {
-            d3.selectAll('.world_map_'+that.map_id).remove();
-            d3.selectAll('.world_viewbox_'+that.map_id).remove();
-            d3.selectAll('.color_axis_'+that.map_id).remove();
+            d3.selectAll('.world_map.map'+that.map_id).remove();
+            d3.selectAll('.world_viewbox.map'+that.map_id).remove();
+            d3.selectAll('.color_axis.map'+that.map_id).remove();
         },
         create_axis: function() {
             var that = this;
@@ -126,7 +126,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 this.svg_over.attr("height", "85%");
 
                 that.ax_g = this.svg.append("g")
-                                    .attr("class", "color_axis_"+this.map_id);
+                                    .attr("class", "color_axis map"+this.map_id);
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
                     that.axes_view = view;
@@ -138,7 +138,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 });
             } else {
                 if (this.model.previous("axis")!==null) {
-                    d3.selectAll('.color_axis_'+that.map_id).remove();
+                    d3.selectAll('color_axis map'+that.map_id).remove();
                 }
                 this.svg_over.attr("height", "100%");
             }
@@ -161,13 +161,13 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
                 .attr("width", "100%")
-                .attr("class", "world_viewbox_"+this.map_id)
+                .attr("class", "world_viewbox map"+this.map_id)
                 .on("click", function(d) { that.ocean_clicked(that); });
 
             this.create_axis();
 
             this.transformed_g = this.svg_over.append("g")
-                                              .attr("class", "world_map_"+this.map_id);
+                                              .attr("class", "world_map map"+this.map_id);
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
             this.stroke_g = this.transformed_g.append("g");

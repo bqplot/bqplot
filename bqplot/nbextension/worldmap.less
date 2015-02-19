@@ -15,23 +15,23 @@
 
 .common() {
 
-    [class^='world_map'] path {
+    .world_map path {
         stroke: #FFF;
         stroke-width: 0.25px;
         fill: dodgerblue;
     }
 
-    [class^='world_map'] .country:hover{
+    .world_map .country:hover{
         stroke: #fff;
         stroke-width: 1.5px;
     }
 
-    [class^='world_map'] .text{
+    .world_map .text{
         font-size:10px;
         text-transform:capitalize;
     }
 
-    [class^='world_map'] #container {
+    .world_map #container {
         margin:10px 10%;
         border:2px solid #000;
         border-radius: 5px;
@@ -40,11 +40,11 @@
         background: #F0F8FF;
     }
 
-    [class^='world_map'] .hidden {
+    .world_map .hidden {
         display: none;
     }
 
-    [class^='world_map'] div.tooltip {
+    .world_map div.tooltip {
         color: #222;
         background: #fff;
         padding: .5em;
@@ -56,7 +56,7 @@
         z-index: 1010;
     }
 
-    [class^='world_map'] .graticule {
+    .world_map .graticule {
         fill: none;
         stroke: #bbb;
         stroke-width: .5px;
@@ -93,7 +93,7 @@
 .theme-dark {
     .common();
 
-    [class^='world_map'] path {
+    .world_map path {
         stroke: black;
         stroke-width: 0.25px;
         fill: seagreen;
