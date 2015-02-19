@@ -107,7 +107,6 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
             // certain functions of views on that model might check the value
             // of `this.dirty` before rendering
             this.dirty = false;
-            this.padding_from_view = false;
         },
         update_data : function() {
             // Update_data is typically overloaded in each mark
