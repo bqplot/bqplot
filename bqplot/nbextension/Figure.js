@@ -260,15 +260,17 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 that.after_displayed(function() {
                     view.trigger("displayed");
                 });
+                return view;
             });
         },
         remove_from_padding_dict: function(dict, mark_view, scale_model) {
             var scale_id = scale_model.id;
             if(dict[scale_id] !== undefined) {
                 delete dict[scale_id][mark_view.model.id+'_'+mark_view.cid];
-            }
-            if(Object.keys(dict[scale_id]).length == 0) {
-                delete dict[scale_id];
+
+                if(Object.keys(dict[scale_id]).length == 0) {
+                    delete dict[scale_id];
+                }
             }
         },
         update_padding_dict: function(dict, mark_view, scale_model, value) {
