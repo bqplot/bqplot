@@ -178,6 +178,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.create_labels();
         },
         invert_range: function(start_pxl, end_pxl) {
+            if(start_pxl === undefined || end_pxl === undefined) {
+                this.model.set("idx_selected", null);
+                this.touch();
+                return [];
+            }
+
             var self = this;
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var start = x_scale.scale.invert(start_pxl);

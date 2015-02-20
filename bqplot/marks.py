@@ -427,6 +427,8 @@ class Hist(Mark):
         number of bins in the histogram
     midpoints: list (default: [])
         midpoints of the bins of the histogram. It is a read-only attribute.
+    select_bars: bool (default: False)
+        make bars selectable or otherwise
 
     Data Attributes
     ---------------
@@ -460,6 +462,7 @@ class Hist(Mark):
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
+    select_bars = Bool(False, sync=True)
 
     _view_name = Unicode('Hist', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Hist', sync=True)
