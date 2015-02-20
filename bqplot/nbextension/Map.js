@@ -16,8 +16,6 @@
 define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./require-less/less!./worldmap"], function(d3, topojson, FigureViewModule, utils, mapdata) {
     "use strict";
 
-    var geodata = mapdata.world;
-    var subunits = mapdata.countries;
 
     function cloneAll(selector) {
         var nodes = d3.selectAll(selector);
@@ -30,6 +28,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
     var Map = FigureViewModule.Figure.extend({
 
         render: function() {
+            var data = utils.load_class.apply(this, this.model.get('mapdata'))
             this.map_id = utils.uuid();
             this.margin = this.model.get("fig_margin");
             this.enable_hover = this.model.get("enable_hover");
@@ -91,19 +90,24 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 });
             }
 
-            this.after_displayed(function() {
-                d3.select(this.el.parentNode).selectAll('#world_tooltip').remove();
-                this.draw_map();
-                this.update_layout();
-                this.create_listeners();
-                this.create_tooltip_widget(this);
+            data.then(function(mapdata) {
+                that.geodata = mapdata[0];
+                that.subunits = mapdata[1];
+
+                that.after_displayed(function() {
+                    d3.select(that.el.parentNode).selectAll('#world_tooltip').remove();
+                    that.draw_map();
+                    that.update_layout();
+                    that.create_listeners();
+                    that.create_tooltip_widget(that);
+                });
             });
 
         },
         get_subunit_name: function(id) {
-		    for(var i = 0; i< subunits.length; i++) {
-			    if(id == subunits[i].id){
-				    name = subunits[i].Name;
+		    for(var i = 0; i< this.subunits.length; i++) {
+			    if(id == this.subunits[i].id){
+				    name = this.subunits[i].Name;
 				}
 			}
             return name;
@@ -191,7 +195,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
 
             //Bind data and create one path per GeoJSON feature
             this.fill_g.selectAll("path")
-			    .data(topojson.feature(geodata, geodata.objects.subunits).features)
+			    .data(topojson.feature(this.geodata, this.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
 				.attr("d", path)
@@ -200,7 +204,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 });
 
             this.stroke_g.selectAll("path")
-			    .data(topojson.feature(geodata, geodata.objects.subunits).features)
+			    .data(topojson.feature(this.geodata, this.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
 				.attr("d", path)

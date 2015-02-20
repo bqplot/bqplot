@@ -25,7 +25,8 @@ Map
 
    Map
 """
-from IPython.utils.traitlets import Unicode, List, Dict, Float, Bool, Instance
+from IPython.utils.traitlets import (Unicode, List, Dict, Float, Bool,
+                                     Instance, Tuple)
 from IPython.html.widgets import DOMWidget, CallbackDispatcher, register
 
 from .scales import ColorScale
@@ -120,6 +121,7 @@ class Map(DOMWidget):
     text_color = Unicode('Black', sync=True)
     tooltip_format = Unicode('.2f', sync=True)
     tooltip_widget = Instance(DOMWidget, sync=True)
+    mapdata = Tuple(Unicode, Unicode, default_value=("worldmap", "nbextensions/bqplot/MapData"), sync=True)
 
     def __init__(self, **kwargs):
         """Constructor for WorldMapWidget"""
