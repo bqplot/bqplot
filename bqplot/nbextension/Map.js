@@ -16,8 +16,8 @@
 define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./require-less/less!./worldmap"], function(d3, topojson, FigureViewModule, utils, mapdata) {
     "use strict";
 
-    var world = mapdata.world;
-    var countries = mapdata.countries;
+    var geodata = mapdata.world;
+    var subunits = mapdata.countries;
 
     function cloneAll(selector) {
         var nodes = d3.selectAll(selector);
@@ -99,6 +99,14 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 this.create_tooltip_widget(this);
             });
 
+        },
+        get_subunit_name: function(id) {
+		    for(var i = 0; i< subunits.length; i++) {
+			    if(id == subunits[i].id){
+				    name = subunits[i].Name;
+				}
+			}
+            return name;
         },
         create_tooltip_widget: function(self) {
             this.tooltip_widget = this.model.get("tooltip_widget");
@@ -183,7 +191,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
 
             //Bind data and create one path per GeoJSON feature
             this.fill_g.selectAll("path")
-			    .data(topojson.feature(world, world.objects.countries).features)
+			    .data(topojson.feature(geodata, geodata.objects.subunits).features)
 				.enter()
 				.append("path")
 				.attr("d", path)
@@ -192,7 +200,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 });
 
             this.stroke_g.selectAll("path")
-			    .data(topojson.feature(world, world.objects.countries).features)
+			    .data(topojson.feature(geodata, geodata.objects.subunits).features)
 				.enter()
 				.append("path")
 				.attr("d", path)
@@ -248,13 +256,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                         return;
                     }
 
-					var name;
-
-					for(var i = 0; i< countries.length; i++) {
-						if(d.id == countries[i].id){
-							name = countries[i].Name;
-						}
-					}
+					var name = that.get_subunit_name(d.id);
 
                     var mouse_pos = d3.mouse(that.el);
 
@@ -566,12 +568,8 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
         },
         click_highlight: function(d, that) {
             var e = window.event;
-			var name;
-			for(var i = 0; i< countries.length; i++) {
-				if(d.id === countries[i].id) {
-					name = countries[i].Name;
-				}
-			}
+            var name = that.get_subunit_name(d.id);
+
             if(e.ctrlKey) {
 	            this.send({event:'click', country:name, id:d.id});
                 return;
