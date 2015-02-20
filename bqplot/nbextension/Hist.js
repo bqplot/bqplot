@@ -21,6 +21,17 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var base_creation_promise = Hist.__super__.render.apply(this);
             this.bars_selected = [];
 
+            this.el.append("rect")
+                .attr("class", "mouseeventrect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", this.parent.plotarea_width)
+                .attr("visibility", "hidden")
+                .attr("pointer-events", "all")
+                .attr("height", this.parent.plotarea_height)
+                .style("pointer-events", "all")
+                .on("click", _.bind(this.reset_selection, this));
+
             var self = this;
             return base_creation_promise.then(function() {
                 self.create_listeners();
@@ -56,17 +67,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.model.on("change:idx_selected", this.update_idx_selected, this);
         },
-        reset_selections: function() {
-            if(!(this.selector_model)) {
-                return;
-            }
-            var that = this;
-            var colors = this.model.get("colors");
-            this.bars_selected.forEach(function(d) {
-                that.el.selectAll("#rect" + d).style("fill", colors[0]);
-            });
-            this.bars_selected = [];
-        },
         update_colors: function(model, colors) {
             this.el.selectAll(".bar").selectAll("rect")
               .style("fill", this.get_colors(0));
@@ -98,6 +98,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         relayout: function() {
             this.set_ranges();
+
+            this.el.select(".mouseeventrect")
+              .attr("width", this.parent.plotarea_width)
+              .attr("height", this.parent.plotarea_height);
 
             var x_scale = this.scales["sample"],
                 y_scale = this.scales["counts"];
@@ -151,90 +155,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .style("fill", fill_color)
               .on("click", function(d, i) {
                   that.bar_click_handler(d, i);
-                  /*
-                  if(!(that.selector_model)) {
-                     return;
-                  }
-                  var buffer_index = [];
-                  var elem_index = that.bars_selected.indexOf(i);
-                  if( elem_index > -1 && d3.event.ctrlKey) {
-                      that.bars_selected.splice(elem_index, 1);
-                      d.forEach(function(elem) {
-                          var remove_index = that.sel_indices.indexOf(elem.index);
-                          if(remove_index !== -1) {
-                              that.sel_indices.splice(remove_index, 1);
-                          }
-                      });
-                      that.el.selectAll("#rect" + i).style("fill", fill_color);
-                  }
-                  else {
-                      if(that.sel_indices[0] === -1) {
-                          that.sel_indices.splice(0,1);
-                      }
-                      if(d3.event.ctrlKey) {
-                          that.sel_indices.forEach(function(elem) {
-                              buffer_index.push(elem);
-                          });
-                      } else if(d3.event.shiftKey) {
-                          if(elem_index > -1) {
-                              return;
-                          }
-                          that.sel_indices.forEach(function(elem) {
-                              buffer_index.push(elem);
-                          });
-                          var min_index = (that.bars_selected.length !== 0) ?
-                              d3.min(that.bars_selected) : -1;
-                          var max_index = (that.bars_selected.length !== 0) ?
-                              d3.max(that.bars_selected) : (that.mark_data).length;
-                          if(i > max_index){
-                              that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) {
-                                  data_elem.map(function(elem) {
-                                      buffer_index.push(elem.index);
-                                  });
-                              });
-                              indices.slice(max_index + 1, i).forEach(function(data_elem ) {
-                                  that.bars_selected.push(data_elem);
-                              });
-                          } else if(i < min_index){
-                              that.model.mark_data.slice(i + 1, min_index).forEach(function(data_elem) {
-                                  data_elem.map(function(elem) {
-                                      buffer_index.push(elem.index);
-                                  });
-                              });
-                              indices.slice(i+1, min_index).forEach(function(data_elem) {
-                                  that.bars_selected.push(data_elem);
-                              });
-                          }
-                      } else {
-                          that.bars_selected.forEach(function(index) {
-                              that.el.selectAll("#rect" + index).style("fill", fill_color);
-                          });
-                          that.bars_selected = [];
-                      }
-                      that.sel_indices = (d.map(function(elem) {
-                          return elem.index;
-                      }));
-                      that.bars_selected.push(i);
-                      that.bars_selected.forEach(function(data_elem) {
-                          _.bind(that.reset_colors(data_elem, select_color), that);
-                      });
-                  }
-                  buffer_index.forEach(function(data_elem) {
-                      that.sel_indices.push(data_elem);
-                  });
-                  that.selector_model.set("selected", utils.deepCopy(that.sel_indices));
-                  that.selector.touch();
-                  if (!d3.event) {
-                      d3.event = window.event;
-                  }
-                  var e = d3.event;
-                  if (e.cancelBubble !== undefined) { // IE
-                      e.cancelBubble = true;
-                  }
-                  if (e.stopPropagation) {
-                      e.stopPropagation();
-                  }
-                  e.preventDefault();*/
               });
             this.update_stroke_and_opacity();
         },
@@ -462,7 +382,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             bar_indices = _.uniq(bar_indices, true);
             return bar_indices;
         },
-    });
+        reset_selection: function() {
+            if(this.model.get("select_bars")) {
+                this.bars_selected = [];
+                this.model.set("idx_selected", null);
+                this.touch();
+            }
+        },
+        });
 
     return {
         Hist: Hist,
