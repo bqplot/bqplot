@@ -134,7 +134,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                     that.set_interaction(that.model.get("interaction"));
                 });
 
-                that.axis_views = new Widget.ViewList(that.add_axis, that.remove_axis, that);
+                that.axis_views = new Widget.ViewList(that.add_axis, null, that);
                 that.axis_views.update(that.model.get("axes"));
 
                 // TODO: move to the model
@@ -262,10 +262,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 });
                 return view;
             });
-        },
-        remove_axis: function(view) {
-            // Called when an axis is removed from the axes list.
-            view.remove();
         },
         remove_from_padding_dict: function(dict, mark_view, scale_model) {
             var scale_id = scale_model.id;
