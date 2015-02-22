@@ -97,7 +97,7 @@ class Map(DOMWidget):
         ColorAxis Instance if one needs to be displayed
     display_tooltip: bool (default: True)
         boolean to control whether tooltips are displayed or not
-    mapdata: tuple (default: ("worldmap", "nbextensions/bqplot/MapData")
+    map_data: tuple (default: ("worldmap", "nbextensions/bqplot/WorldMapData")
         tuple containing which map is to be displayed
     """
     fig_margin = Dict(dict(top=0, bottom=20, left=0, right=0), sync=True)   # Margin with respect to the parent. Width, height etc are determined by this
@@ -129,7 +129,8 @@ class Map(DOMWidget):
     tooltip_format = Unicode('.2f', sync=True)
     tooltip_widget = Instance(DOMWidget, sync=True)
 
-    mapdata = Tuple(Unicode, Unicode, default_value=("worldmap", "nbextensions/bqplot/MapData"), sync=True)
+    map_data = Tuple(Unicode, Unicode, default_value=("worldmap",
+                                                      "nbextensions/bqplot/WorldMapData"), sync=True)
 
     def __init__(self, **kwargs):
         """Constructor for WorldMapWidget"""
