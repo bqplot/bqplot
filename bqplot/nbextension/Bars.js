@@ -83,9 +83,21 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // to the start of the bin but linear scale gives the actual value.
             var x_scale = this.scales["x"];
             if(x_scale.model.type !== "ordinal") {
-                this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
+                if (this.model.get("align")==="center") {
+                    this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
+                } else if (this.model.get("align") === "left") {
+                    this.x_offset = -(this.x.rangeBand()).toFixed(2);
+                } else {
+                    this.x_offset = 0;
+                }
             } else {
-                this.x_offset = 0;
+                if (this.model.get("align")==="center") {
+                    this.x_offset = 0;
+                } else if (this.model.get("align")==="left") {
+                    this.x_offset = -(this.x.rangeBand() / 2);
+                } else {
+                    this.x_offset = (this.x.rangeBand() / 2);
+                }
             }
         },
         create_listeners: function() {

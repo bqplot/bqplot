@@ -374,7 +374,7 @@ class Scatter(Mark):
                                    exposed=True, display_index=7,
                                    display_name='Default opacity')
     default_skew = BoundedFloat(default_value=0.5, min=0, max=1,
-                                        sync=True)
+                                sync=True)
     default_size = Int(64, sync=True, exposed=True, display_index=9,
                        display_name='Default size')  # dot size in pixels
     names = NdArray(sync=True)
@@ -507,6 +507,8 @@ class Bars(Mark):
         opacity of the mark. Then number must be bewteen 0 and 1
     base: float (default: 0.0)
         reference value from which the bars are drawn. defaults to 0.0
+    align: {'center', 'left', 'right'}
+        alignment of bars with respect to the tick value
 
     Data Attributes
     ---------------
@@ -547,6 +549,8 @@ class Bars(Mark):
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
+    align = Enum(['center', 'left', 'right'], default_value='center',
+                 allow_none=False, sync=True, exposed=True)
 
     _view_name = Unicode('Bars', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Bars', sync=True)
