@@ -163,7 +163,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var that = this;
             if(this.model.get("select_bars")) {
                 var idx = this.bars_selected;
-                // var idx = this.model.get("idx_selected");
                 var idx_selected = idx ? utils.deepCopy(idx) : [];
                 var elem_index = idx_selected.indexOf(index);
                 // index of bar i. Checking if it is already present in the
@@ -187,21 +186,28 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                         var max_index = (idx_selected.length !== 0) ?
                             d3.max(idx_selected) : that.model.mark_data.length;
                         if(index > max_index){
-                            _.range(max_index+1, index).forEach(function(i) {
+                            _.range(max_index+1, index+1).forEach(function(i) {
                                 idx_selected.push(i);
                             });
                         } else if(index < min_index){
-                            _.range(index+1, min_index).forEach(function(i) {
+                            _.range(index, min_index).forEach(function(i) {
                                 idx_selected.push(i);
                             });
                         }
                     }
-                    else if(!(d3.event.ctrlKey)) {
-                        idx_selected = [];
+                    else if(d3.event.ctrlKey) {
+                        //If ctrl is pressed and the bar is not already selcted
+                        //add the bar to the list of selected bars.
+                        idx_selected.push(index);
                     }
                     // updating the array containing the bar indexes selected
                     // and updating the style
-                    idx_selected.push(index);
+                    else {
+                        //if ctrl is not pressed, then clear the selected ones
+                        //and set the current element to the selected
+                        idx_selected = [];
+                        idx_selected.push(index);
+                    }
                 }
                 this.bars_selected = idx_selected;
                 this.model.set("idx_selected", ((idx_selected.length === 0) ? null :
@@ -273,7 +279,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         update_selected_colors: function(indices) {
-            //
             // listen to changes of idx_selected and draw itself
             var colors = this.model.get("colors");
             var select_color = colors.length > 1 ? colors[1] : "red";
@@ -290,10 +295,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined ) {
-                idx_selected = [];
                 this.model.set("idx_selected", null);
                 this.touch();
-                return idx_selected;
+                return [];
             }
             var x_scale = this.scales["sample"];
             var data = [start_pxl, end_pxl].map(function(elem) {
@@ -347,7 +351,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     }
                 }
                 intervals.push([this.model.x_bins[start_index],
-                            this.model.x_bins[end_index+1]]);            }
+                            this.model.x_bins[end_index+1]]);
+            }
             return intervals;
         },
         calc_data_indices_from_data_range: function(data_min, data_max) {

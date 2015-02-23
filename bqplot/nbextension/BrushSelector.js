@@ -180,7 +180,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
                                 return mark_view.invert_range(extent); });
             } else {
                 var self = this;
-                var idx_selected = this.mark_views.map(function(mark_view) {
+                idx_selected = this.mark_views.map(function(mark_view) {
                     return mark_view.invert_range(self.scale.scale(extent[0]),
                                                 self.scale.scale(extent[1]));
                 });
