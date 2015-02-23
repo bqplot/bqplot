@@ -130,6 +130,9 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                                     .attr("class", "color_axis map"+this.map_id);
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
+                    if(that.axes_view) {
+                        that.axes_view.remove();
+                    }
                     that.axes_view = view;
                     that.ax_g.node().appendChild(view.el.node());
 
@@ -138,6 +141,9 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                     });
                 });
             } else {
+                if(this.axes_view) {
+                    this.axes_view.remove();
+                }
                 this.svg_over.attr("height", "100%");
             }
         },
