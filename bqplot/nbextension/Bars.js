@@ -380,21 +380,28 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                         var max_index = (idx_selected.length !== 0) ?
                             d3.max(idx_selected) : that.model.mark_data.length;
                         if(index > max_index){
-                            _.range(max_index+1, index).forEach(function(i) {
+                            _.range(max_index+1, index+1).forEach(function(i) {
                                 idx_selected.push(i);
                             });
                         } else if(index < min_index){
-                            _.range(index+1, min_index).forEach(function(i) {
+                            _.range(index, min_index).forEach(function(i) {
                                 idx_selected.push(i);
                             });
                         }
                     }
-                    else if(!(d3.event.ctrlKey)) {
-                        idx_selected = [];
+                    else if(d3.event.ctrlKey) {
+                        //If ctrl is pressed and the bar is not already selcted
+                        //add the bar to the list of selected bars.
+                        idx_selected.push(index);
                     }
                     // updating the array containing the bar indexes selected
                     // and updating the style
-                    idx_selected.push(index);
+                    else {
+                        //if ctrl is not pressed, then clear the selected ones
+                        //and set the current element to the selected
+                        idx_selected = [];
+                        idx_selected.push(index);
+                    }
                 }
                 this.model.set("idx_selected", ((idx_selected.length === 0) ? null : idx_selected), {updated_view: this});
                 this.touch();

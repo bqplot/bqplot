@@ -45,9 +45,9 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
                                 this.parent.margin.bottom);
         },
         remove: function() {
-            Interaction.__super__.remove.apply(this);
             _.each(this.mark_views, function(mark) { mark.invert_range(); });
             this.el.remove();
+            Interaction.__super__.remove.apply(this);
         }
     });
 

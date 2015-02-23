@@ -165,22 +165,26 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             this.touch();
         },
         brush_move: function () {
-            var extent = this.brush.empty() ?
-                this.scale.scale.domain() : this.brush.extent();
+            var extent = this.brush.empty() ? [] : this.brush.extent();
             this.convert_and_save(extent);
         },
         brush_end: function () {
-            var extent = this.brush.empty() ?
-                this.scale.scale.domain() : this.brush.extent();
+            var extent = this.brush.empty() ? [] : this.brush.extent();
             this.model.set("brushing", false);
             this.convert_and_save(extent);
         },
         convert_and_save: function(extent) {
-            var self = this;
-            var idx_selected = this.mark_views.map(function(mark_view) {
-                return mark_view.invert_range(self.scale.scale(extent[0]),
-                                              self.scale.scale(extent[1]));
-            });
+            var idx_selected;
+            if(extent.length === 0) {
+                idx_selected = this.mark_views.map(function(mark_view) {
+                                return mark_view.invert_range(extent); });
+            } else {
+                var self = this;
+                idx_selected = this.mark_views.map(function(mark_view) {
+                    return mark_view.invert_range(self.scale.scale(extent[0]),
+                                                self.scale.scale(extent[1]));
+                });
+            }
             this.model.set("idx_selected", idx_selected);
             this.model.set_typed_field("selected", extent);
             this.touch();

@@ -19,8 +19,18 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
     var Hist = MarkViewModule.Mark.extend({
         render: function() {
             var base_creation_promise = Hist.__super__.render.apply(this);
-            this.sel_indices = [-1];
-            this.bar_index_sel = [];
+            this.bars_selected = [];
+
+            this.el.append("rect")
+                .attr("class", "mouseeventrect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", this.parent.plotarea_width)
+                .attr("visibility", "hidden")
+                .attr("pointer-events", "all")
+                .attr("height", this.parent.plotarea_height)
+                .style("pointer-events", "all")
+                .on("click", _.bind(this.reset_selection, this));
 
             var self = this;
             return base_creation_promise.then(function() {
@@ -55,27 +65,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors",this.update_colors,this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
-        },
-        reset_selections: function() {
-            if(!(this.selector_model)) {
-                return;
-            }
-            var that = this;
-            var colors = this.model.get("colors");
-            this.bar_index_sel.forEach(function(d) {
-                that.el.selectAll("#rect" + d).attr("fill", colors[0]);
-            });
-            this.bar_index_sel = [];
-            this.sel_indices = [];
-            this.selector_model.set("selected", []);
-            this.selector.touch();
+            this.model.on("change:idx_selected", this.update_idx_selected, this);
         },
         update_colors: function(model, colors) {
             this.el.selectAll(".bar").selectAll("rect")
-              .attr("fill", this.get_colors(0));
+              .style("fill", this.get_colors(0));
             if (model.get("labels") && colors.length > 1) {
                 this.el.selectAll(".bar").selectAll("text")
-                  .attr("fill", this.get_colors(1));
+                  .style("fill", this.get_colors(1));
             }
             if (this.legend_el) {
                 this.legend_el.selectAll("rect")
@@ -102,6 +99,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         relayout: function() {
             this.set_ranges();
 
+            this.el.select(".mouseeventrect")
+              .attr("width", this.parent.plotarea_width)
+              .attr("height", this.parent.plotarea_height);
+
             var x_scale = this.scales["sample"],
                 y_scale = this.scales["counts"];
 			this.el.selectAll(".bar")
@@ -111,7 +112,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               });
             var bar_width = this.calculate_bar_width();
             this.el.selectAll(".bar").select("rect")
-              .transition().duration(300)
+              .transition().duration(this.model.get("animate_dur"))
 		      .attr("x", 2)
               .attr("width", bar_width)
 		      .attr("height", function(d) {
@@ -151,93 +152,79 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 		      .attr("height", function(d) {
                   return y_scale.scale(0) - y_scale.scale(d.y);
               })
-              .attr("fill", fill_color)
+              .style("fill", fill_color)
               .on("click", function(d, i) {
-                  if(!(that.selector_model)) {
-                     return;
-                  }
-                  var buffer_index = [];
-                  var elem_index = that.bar_index_sel.indexOf(i);
-                  if( elem_index > -1 && d3.event.ctrlKey) {
-                      that.bar_index_sel.splice(elem_index, 1);
-                      d.forEach(function(elem) {
-                          var remove_index = that.sel_indices.indexOf(elem.index);
-                          if(remove_index !== -1) {
-                              that.sel_indices.splice(remove_index, 1);
-                          }
-                      });
-                      that.el.selectAll("#rect" + i).attr("fill", fill_color);
-                  }
-                  else {
-                      if(that.sel_indices[0] === -1) {
-                          that.sel_indices.splice(0,1);
-                      }
-                      if(d3.event.ctrlKey) {
-                          that.sel_indices.forEach(function(elem) {
-                              buffer_index.push(elem);
-                          });
-                      } else if(d3.event.shiftKey) {
-                          if(elem_index > -1) {
-                              return;
-                          }
-                          that.sel_indices.forEach(function(elem) {
-                              buffer_index.push(elem);
-                          });
-                          var min_index = (that.bar_index_sel.length !== 0) ?
-                              d3.min(that.bar_index_sel) : -1;
-                          var max_index = (that.bar_index_sel.length !== 0) ?
-                              d3.max(that.bar_index_sel) : (that.mark_data).length;
-                          if(i > max_index){
-                              that.model.mark_data.slice(max_index + 1, i).forEach(function(data_elem ) {
-                                  data_elem.map(function(elem) {
-                                      buffer_index.push(elem.index);
-                                  });
-                              });
-                              indices.slice(max_index + 1, i).forEach(function(data_elem ) {
-                                  that.bar_index_sel.push(data_elem);
-                              });
-                          } else if(i < min_index){
-                              that.model.mark_data.slice(i + 1, min_index).forEach(function(data_elem) {
-                                  data_elem.map(function(elem) {
-                                      buffer_index.push(elem.index);
-                                  });
-                              });
-                              indices.slice(i+1, min_index).forEach(function(data_elem) {
-                                  that.bar_index_sel.push(data_elem);
-                              });
-                          }
-                      } else {
-                          that.bar_index_sel.forEach(function(index) {
-                              that.el.selectAll("#rect" + index).attr("fill", fill_color);
-                          });
-                          that.bar_index_sel = [];
-                      }
-                      that.sel_indices = (d.map(function(elem) {
-                          return elem.index;
-                      }));
-                      that.bar_index_sel.push(i);
-                      that.bar_index_sel.forEach(function(data_elem) {
-                          _.bind(that.reset_colors(data_elem, select_color), that);
-                      });
-                  }
-                  buffer_index.forEach(function(data_elem) {
-                      that.sel_indices.push(data_elem);
-                  });
-                  that.selector_model.set("selected", utils.deepCopy(that.sel_indices));
-                  that.selector.touch();
-                  if (!d3.event) {
-                      d3.event = window.event;
-                  }
-                  var e = d3.event;
-                  if (e.cancelBubble !== undefined) { // IE
-                      e.cancelBubble = true;
-                  }
-                  if (e.stopPropagation) {
-                      e.stopPropagation();
-                  }
-                  e.preventDefault();
+                  that.bar_click_handler(d, i);
               });
             this.update_stroke_and_opacity();
+        },
+        bar_click_handler: function (data, index) {
+            //code repeated from bars. We should unify the two.
+            var that = this;
+            if(this.model.get("select_bars")) {
+                var idx = this.bars_selected;
+                var idx_selected = idx ? utils.deepCopy(idx) : [];
+                var elem_index = idx_selected.indexOf(index);
+                // index of bar i. Checking if it is already present in the
+                // list
+                if(elem_index > -1 && d3.event.ctrlKey) {
+                    // if the index is already selected and if ctrl key is
+                    // pressed, remove the element from the list
+                    idx_selected.splice(elem_index, 1);
+                }
+                else {
+                    if(d3.event.shiftKey) {
+                        //If shift is pressed and the element is already
+                        //selected, do not do anything
+                        if(elem_index > -1) {
+                            return;
+                        }
+                        //Add elements before or after the index of the current
+                        //bar which has been clicked
+                        var min_index = (idx_selected.length !== 0) ?
+                            d3.min(idx_selected) : -1;
+                        var max_index = (idx_selected.length !== 0) ?
+                            d3.max(idx_selected) : that.model.mark_data.length;
+                        if(index > max_index){
+                            _.range(max_index+1, index+1).forEach(function(i) {
+                                idx_selected.push(i);
+                            });
+                        } else if(index < min_index){
+                            _.range(index, min_index).forEach(function(i) {
+                                idx_selected.push(i);
+                            });
+                        }
+                    }
+                    else if(d3.event.ctrlKey) {
+                        //If ctrl is pressed and the bar is not already selcted
+                        //add the bar to the list of selected bars.
+                        idx_selected.push(index);
+                    }
+                    // updating the array containing the bar indexes selected
+                    // and updating the style
+                    else {
+                        //if ctrl is not pressed, then clear the selected ones
+                        //and set the current element to the selected
+                        idx_selected = [];
+                        idx_selected.push(index);
+                    }
+                }
+                this.bars_selected = idx_selected;
+                this.model.set("idx_selected", ((idx_selected.length === 0) ? null :
+                                                this.calc_data_indices(idx_selected)), {updated_view: this});
+                this.touch();
+                if(!d3.event) {
+                    d3.event = window.event;
+                }
+                var e = d3.event;
+                if(e.cancelBubble !== undefined) { // IE
+                    e.cancelBubble = true;
+                }
+                if(e.stopPropagation) {
+                    e.stopPropagation();
+                }
+                e.preventDefault();
+            }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
@@ -278,54 +265,136 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         reset_colors: function(index, color) {
             var rects = this.el.selectAll("#rect"+index);
-            rects.attr("fill", color);
+            rects.style("fill", color);
         },
-        update_selected_colors: function(idx_start, idx_end) {
+        update_idx_selected: function(model, value) {
+            if(value === undefined || value === null || value.length === 0) {
+                //reset the color of everything if idx_selected is blank
+                this.update_selected_colors([]);
+                return;
+            }
+            else {
+                var indices = this.calc_bar_indices_from_data_idx(value);
+                this.update_selected_colors(indices);
+            }
+        },
+        update_selected_colors: function(indices) {
             // listen to changes of idx_selected and draw itself
             var colors = this.model.get("colors");
             var select_color = colors.length > 1 ? colors[1] : "red";
             var fill_color = colors[0];
             var bars_sel = this.el.selectAll(".bar");
-            var current_range = _.range(idx_start, idx_end);
-            if(current_range.length == this.model.num_bins) {
-                current_range = [];
-            }
             var self = this;
-            _.range(0, this.model.num_bins).forEach(function(d) {
-                self.el.selectAll("#rect" + d).attr("fill", fill_color);
-            });
-            current_range.forEach(function(d) {
-                self.el.selectAll("#rect" + d).attr("fill", select_color);
+            _.difference(_.range(0, this.model.num_bins), indices)
+                    .forEach(function(d) {
+                        self.el.selectAll("#rect" + d).style("fill", fill_color);
+                    });
+            indices.forEach(function(d) {
+                    self.el.selectAll("#rect" + d).style("fill", select_color);
             });
         },
         invert_range: function(start_pxl, end_pxl) {
-            if( start_pxl === undefined && end_pxl === undefined ) {
-                this.update_selected_colors(-1,-1);
-                idx_selected = [];
-                this.model.set("idx_selected", idx_selected);
+            if(start_pxl === undefined || end_pxl === undefined ) {
+                this.model.set("idx_selected", null);
                 this.touch();
-                return idx_selected;
+                return [];
             }
             var x_scale = this.scales["sample"];
             var data = [start_pxl, end_pxl].map(function(elem) {
                 return x_scale.scale.invert(elem);
             });
-            var idx_start = d3.max([0, d3.bisectLeft(this.model.x_bins, data[0]) - 1]);
-            var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.model.x_bins, data[1])]);
-            this.update_selected_colors(idx_start, idx_end);
 
-            var x_data = this.model.get_typed_field("sample");
-            var indices = _.range(x_data.length);
-            var selected_data = [this.model.x_bins[idx_start], this.model.x_bins[idx_end]];
-            var idx_selected = _.filter(indices, function(index) {
-                var elem = x_data[index];
-                return (elem <= selected_data[1] && elem >= selected_data[0]);
-            });
+            var idx_selected = this.calc_data_indices_from_data_range(d3.min(data), d3.max(data));
             this.model.set("idx_selected", idx_selected);
             this.touch();
             return idx_selected;
         },
-    });
+        calc_data_indices: function(indices) {
+            //input is a list of indices corresponding to the bars. Output is
+            //the list of indices in the data
+            var intervals = this.reduce_intervals(indices);
+            if(intervals.length === 0)
+                return [];
+
+            var x_data = this.model.get_typed_field("sample");
+            var num_intervals = intervals.length;
+            var idx_selected = _.filter(_.range(x_data.length), function(index) {
+                var elem = x_data[index];
+                var iter = 0;
+                for(iter=0; iter < num_intervals; iter++) {
+                    if(elem <= intervals[iter][1] && elem >= intervals[iter][0]) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            return idx_selected;
+        },
+        reduce_intervals: function(indices) {
+            //for a series of indices, reduces them to the minimum possible
+            //intervals on which the search can be performed.
+            //return value is an array of arrays containing the start and end
+            //points of the intervals represented by the indices.
+            var intervals = [];
+            if(indices.length != 0) {
+                indices.sort();
+                var start_index = indices[0],
+                    end_index = indices[0];
+                var iter = 1;
+                for(; iter < indices.length; iter++) {
+                    if(indices[iter] === (end_index + 1)) {
+                        end_index++;
+                    } else {
+                        intervals.push([this.model.x_bins[start_index],
+                            this.model.x_bins[end_index+1]]);
+                        start_index = end_index = indices[iter];
+                    }
+                }
+                intervals.push([this.model.x_bins[start_index],
+                            this.model.x_bins[end_index+1]]);
+            }
+            return intervals;
+        },
+        calc_data_indices_from_data_range: function(data_min, data_max) {
+            var idx_start = d3.max([0, d3.bisectLeft(this.model.x_bins, data_min) - 1]);
+            var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.model.x_bins, data_max)]);
+            var x_data = this.model.get_typed_field("sample");
+            var that = this;
+            return _.filter(_.range(x_data.length), function(iter) {
+                                                    return (x_data[iter] >= that.model.x_bins[idx_start] &&
+                                                            x_data[iter] <= that.model.x_bins[idx_end]);
+            });
+        },
+        calc_bar_indices_from_data_idx: function(idx_selected) {
+            //function to calculate bar indices for a given list of data
+            //indices
+            var x_data = this.model.get_typed_field("sample");
+            var data = idx_selected.map(function(idx) { return x_data[idx];});
+            var bar_indices = [];
+            for(var iter = 0; iter < data.length; iter++) {
+                //x_bins is of length num_bars+1. So if the max element is
+                //selected, we get a bar index which is equal to num_bars.
+                var index = Math.min(_.indexOf(this.model.x_bins, data[iter], true),
+                                     this.model.x_bins.length - 2);
+                //if the data point is not one of the bins, then find the index
+                //where it is to be inserted.
+                if(index === -1) {
+                    index = _.sortedIndex(this.model.x_bins, data[iter]) - 1;
+                }
+                bar_indices.push(index);
+            }
+            bar_indices.sort();
+            bar_indices = _.uniq(bar_indices, true);
+            return bar_indices;
+        },
+        reset_selection: function() {
+            if(this.model.get("select_bars")) {
+                this.bars_selected = [];
+                this.model.set("idx_selected", null);
+                this.touch();
+            }
+        },
+        });
 
     return {
         Hist: Hist,

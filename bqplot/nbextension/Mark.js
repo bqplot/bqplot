@@ -32,11 +32,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 this.el.attr("clip-path", "url(#" + this.options.clip_id + ")");
             }
 
-            this.help_text = this.model.get("help_text");
-            this.div = d3.select("body").append("div")
-              .attr("class", "tooltip")
-              .style("opacity", 0);
-
             this.bisect = d3.bisector(function(d) { return d; }).left;
             this.el.style("display", (this.model.get("visible") ? "inline" : "none"));
             return scale_creation_promise;
