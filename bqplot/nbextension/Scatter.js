@@ -301,7 +301,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         update_xy_position: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var that = this;
-            this.el.selectAll(".dot_grp").transition().duration(this.model.get("animate_dur"))
+            this.el.selectAll(".dot_grp").transition()
+              .duration(this.model.get("animate_dur"))
               .attr("transform", function(d) {
                     return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                                     "," + (y_scale.scale(d.y) + y_scale.offset) + ")"

@@ -48,10 +48,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         set_positional_scales: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             this.listenTo(x_scale, "domain_changed", function() {
-                if (!this.model.dirty) { this.draw(); }
+                if (!this.model.dirty) { this.update_line_xy(); }
             });
             this.listenTo(y_scale, "domain_changed", function() {
-                if (!this.model.dirty) { this.draw(); }
+                if (!this.model.dirty) { this.update_line_xy(); }
             });
         },
         initialize_additional_scales: function() {
@@ -127,9 +127,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         update_style: function() {
-            var that = this;
-            var colors = this.model.get("fill");
-            var opacity = this.model.get("opacity");
+            var that = this,
+                colors = this.model.get("fill"),
+                opacity = this.model.get("opacity");
             // update curve colors
             this.el.selectAll(".curve").select("path")
               .style("stroke", function(d, i) {
@@ -231,10 +231,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   return d.name;
               });
 
-            var that = this;
-            var rect_dim = inter_y_disp * 0.8;
-            var fill_color = this.model.get("fill");
-            var fill_opacity = this.model.get("opacity");
+            var that = this,
+                rect_dim = inter_y_disp * 0.8,
+                fill_color = this.model.get("fill"),
+                fill_opacity = this.model.get("opacity");
             this.legend_el.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
@@ -269,11 +269,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             return [this.model.mark_data.length, max_length];
         },
         create_labels: function() {
+            var x_scale = this.scales["x"], y_scale = this.scales["y"],
+                that = this;
             var curves_sel = this.el.selectAll(".curve");
-
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-
-            var that = this;
 
             curves_sel.selectAll(".curve_label").remove();
             curves_sel.append("text")
@@ -333,18 +331,27 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
             return this.get_colors(index);
         },
-        draw: function() {
-            this.set_ranges();
+        update_line_xy: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             this.line = d3.svg.line()
-                .interpolate(this.model.get("interpolation"))
-                .x(function(d) {
-                    return x_scale.scale(d.x) + x_scale.offset;
-                })
-                .y(function(d) {
-                    return y_scale.scale(d.y) + y_scale.offset;
-                })
-                .defined(function(d) { return d.y !== null; });
+              .interpolate(this.model.get("interpolation"))
+              .x(function(d) {
+                  return x_scale.scale(d.x) + x_scale.offset;
+              })
+              .y(function(d) {
+                  return y_scale.scale(d.y) + y_scale.offset;
+               })
+              .defined(function(d) { return d.y !== null; });
+
+            var that = this;
+            this.el.selectAll(".curve").select("path")
+              .transition().duration(this.model.get("animate_dur"))
+              .attr("d", function(d) {
+                  return that.line(d.values) + that.path_closure();
+              });
+        },
+        draw: function() {
+            this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
               .data(this.model.mark_data, function(d, i) { return d.name; });
 
@@ -366,15 +373,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .style("stroke-width", this.model.get("stroke_width"))
               .style("stroke-dasharray", _.bind(this.get_line_style, this));
 
-            curves_sel.select("path")
-              .transition().duration(this.model.get("animate_dur"))
-              .attr("d", function(d) {
-                  return that.line(d.values) + that.path_closure();
-              });
-
             curves_sel.exit()
               .transition().duration(this.model.get("animate_dur"))
               .remove();
+
+            this.update_line_xy();
 
             this.el.selectAll(".curve")
               .select(".curve_label")
