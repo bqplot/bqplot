@@ -122,6 +122,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
         },
         create_axis: function() {
             var that = this;
+            d3.selectAll('.color_axis.map'+that.map_id).remove();
             if (this.model.get("axis")!==null) {
                 this.svg_over.attr("height", "85%");
 
@@ -137,9 +138,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                     });
                 });
             } else {
-                if (this.model.previous("axis")!==null) {
-                    d3.selectAll('color_axis map'+that.map_id).remove();
-                }
                 this.svg_over.attr("height", "100%");
             }
         },
@@ -391,7 +389,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 that.change_map_color(that);
             });
             this.model.on("change:selected", function() {
-                that.change_selected(that);
+                that.change_selected();
             });
             this.model.on("change:hover_fill", function() {
                 that.hover_fill = that.model.get("hover_fill");
@@ -442,7 +440,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             this.svg.attr("width", this.width);
             this.remove_map(this);
             this.draw_map();
-            this.change_selected(this);
+            this.change_selected();
         },
         change_selected_fill: function(that) {
             if (that.model.get("selected_fill")==="" ||
@@ -468,15 +466,15 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                                 .style("stroke", that.model.get("selected_stroke"));
             }
         },
-        change_selected: function(that) {
+        change_selected: function() {
             var e = window.event;
 
             this.highlight_g.selectAll("path").remove();
             var self=this;
             var select = this.model.get("selected").slice();
             var temp = this.stroke_g.selectAll("path").data();
-            that.stroke_g.selectAll("path").style("stroke", function(d, i) {
-                return that.hoverfill(d, i, that);
+            this.stroke_g.selectAll("path").style("stroke", function(d, i) {
+                return self.hoverfill(d, i, self);
             });
             var nodes = this.stroke_g.selectAll("path");
             for (var i=0; i<temp.length; i++) {
