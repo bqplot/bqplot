@@ -62,7 +62,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             var scales = this.model.get("color_scale");
             this.color_data = this.model.get("color_data");
 
-            if (!this.is_object_empty(that.color_data)){
+            if (!this.is_object_empty(that.color_data)) {
 
                 that.create_child_view(scales).then(function(view) {
                     that.color_scale = view;
@@ -116,9 +116,30 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             }
         },
         remove_map: function(that) {
-            $('.world_map .'+that.map_id).remove();
-            $('.world_viewbox .'+that.map_id).remove();
-            $('.'+that.map_id).remove();
+            d3.selectAll('.world_map.map'+that.map_id).remove();
+            d3.selectAll('.world_viewbox.map'+that.map_id).remove();
+            d3.selectAll('.color_axis.map'+that.map_id).remove();
+        },
+        create_axis: function() {
+            var that = this;
+            d3.selectAll('.color_axis.map'+that.map_id).remove();
+            if (this.model.get("axis")!==null) {
+                this.svg_over.attr("height", "85%");
+
+                that.ax_g = this.svg.append("g")
+                                    .attr("class", "color_axis map"+this.map_id);
+
+                this.create_child_view(this.model.get("axis")).then(function(view) {
+                    that.axes_view = view;
+                    that.ax_g.node().appendChild(view.el.node());
+
+                that.after_displayed(function() {
+                        view.trigger("displayed");
+                    });
+                });
+            } else {
+                this.svg_over.attr("height", "100%");
+            }
         },
         draw_map: function() {
 
@@ -138,31 +159,13 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             this.svg_over = d3.select(this.el).append("svg")
                 .attr("viewBox", "0 0 1075 750")
                 .attr("width", "100%")
-                .attr("class", "world_viewbox "+this.map_id)
+                .attr("class", "world_viewbox map"+this.map_id)
                 .on("click", function(d) { that.ocean_clicked(that); });
 
-            if (this.model.get("axis")!==null){
-                this.svg_over.attr("height", "85%");
-
-                that.ax_g = this.svg.append("g")
-                                    .attr("class", "color_axis "+this.map_id);
-
-                this.create_child_view(this.model.get("axis")).then(function(view) {
-                    that.axes_view = view;
-                    that.ax_g.node().appendChild(view.el.node());
-
-                that.after_displayed(function() {
-                        view.trigger("displayed");
-                    });
-                });
-            }
-            else {
-                this.svg_over.attr("height", "100%");
-            }
+            this.create_axis();
 
             this.transformed_g = this.svg_over.append("g")
-                                              .attr("class", "world_map "+this.map_id);
-
+                                              .attr("class", "world_map map"+this.map_id);
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
             this.stroke_g = this.transformed_g.append("g");
@@ -199,7 +202,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                         return;
                     }
 
-                    var that2 = this;
+                    var self = this;
 
                     var select = that.model.get("selected").slice();
 
@@ -207,7 +210,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                         that.model.get("hover_stroke")!==null) &&
                         select.indexOf(d.id)==-1) {
                         that.highlight_g.append(function() {
-                            return that2.cloneNode(true);
+                            return self.cloneNode(true);
                         }).style("stroke", that.model.get("hover_stroke"))
                           .classed("hovered", true)
                           .style("stroke-width", that.model.get("hover_stroke_width"));
@@ -219,7 +222,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                         select.indexOf(d.id)===-1) {
 
                         that.highlight_g.append(function() {
-                            return that2.cloneNode(true);
+                            return self.cloneNode(true);
                         }).classed("hovered", true)
                           .style("fill-opacity", 1.0)
                           .style("fill", function() {
@@ -353,7 +356,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
 			this.svg.call(this.zoom);
 			this.svg.on("dblclick.zoom", null);
 
-
 			this.svg.on("dblclick", function() {
                 that.zoomed(that, true);
             });
@@ -387,7 +389,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 that.change_map_color(that);
             });
             this.model.on("change:selected", function() {
-                that.change_selected(that);
+                that.change_selected();
             });
             this.model.on("change:hover_fill", function() {
                 that.hover_fill = that.model.get("hover_fill");
@@ -400,6 +402,9 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             });
             this.model.on("change:tooltip_widget", function() {
                 that.create_tooltip_widget(that);
+            });
+            this.model.on("change:axis", function() {
+                that.create_axis();
             });
             $(this.options.cell).on("output_area_resize."+this.map_id, function() {
                 that.update_layout();
@@ -435,7 +440,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             this.svg.attr("width", this.width);
             this.remove_map(this);
             this.draw_map();
-            this.change_selected(this);
+            this.change_selected();
         },
         change_selected_fill: function(that) {
             if (that.model.get("selected_fill")==="" ||
@@ -449,9 +454,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                                 .style("fill", that.model.get("selected_fill"));
             }
         },
-        update_plotarea_dimensions: function() {
-
-        },
         change_selected_stroke: function(that) {
             if (that.model.get("selected_stroke")==="" ||
                 that.model.get("selected_stroke")===null) {
@@ -464,41 +466,41 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                                 .style("stroke", that.model.get("selected_stroke"));
             }
         },
-        change_selected: function(that){
+        change_selected: function() {
             var e = window.event;
 
             this.highlight_g.selectAll("path").remove();
-            var that2=this;
+            var self=this;
             var select = this.model.get("selected").slice();
             var temp = this.stroke_g.selectAll("path").data();
-            that.stroke_g.selectAll("path").style("stroke", function(d, i) {
-                return that.hoverfill(d, i, that);
+            this.stroke_g.selectAll("path").style("stroke", function(d, i) {
+                return self.hoverfill(d, i, self);
             });
             var nodes = this.stroke_g.selectAll("path");
             for (var i=0; i<temp.length; i++) {
                 if(select.indexOf(temp[i].id) > -1) {
-                    that2.highlight_g.append(function() {
+                    self.highlight_g.append(function() {
                                             return nodes[0][i].cloneNode(true);
                                     }).attr("id", temp[i].id)
                                     .style("fill-opacity", function() {
-                                        if (that2.model.get("selected_fill")!==null &&
-                                            that2.model.get("selected_fill")!=="") {
+                                        if (self.model.get("selected_fill")!==null &&
+                                            self.model.get("selected_fill")!=="") {
                                                return 1.0;
                                             } else {
                                                return 0.0;
                                             }
                                     })
-                                    .style("fill", that2.model.get("selected_fill"))
+                                    .style("fill", self.model.get("selected_fill"))
                                     .style("stroke-opacity", function() {
-                                        if (that2.model.get("selected_stroke")!==null &&
-                                            that2.model.get("selected_stroke")!=="") {
+                                        if (self.model.get("selected_stroke")!==null &&
+                                            self.model.get("selected_stroke")!=="") {
                                                 return 1.0;
                                         } else {
                                                 return 0.0;
                                         }
                                     })
-                                    .style("stroke", that2.model.get("selected_stroke"))
-                                    .style("stroke-width", that2.model.get("selected_stroke_width"))
+                                    .style("stroke", self.model.get("selected_stroke"))
+                                    .style("stroke-width", self.model.get("selected_stroke_width"))
                                     .classed("selected", true);
                 }
             }
@@ -511,8 +513,10 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             that.model.set("selected", []);
             that.touch();
             that.highlight_g.selectAll(".selected").remove();
-            $("path").removeClass("selected");
-            $("path").removeClass("hovered");
+            d3.select(that.el.parentNode).selectAll("path")
+                                         .classed("selected", false);
+            d3.select(that.el.parentNode).selectAll("path")
+                                         .classed("hovered", false);
             that.stroke_g.selectAll("path").style("stroke", function(d, i) {
                 return that.hoverfill(d, i, that);
             });
@@ -537,17 +541,17 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             var scales = this.model.get("color_scale");
             this.color_data = this.model.get("color_data");
 
-            var that2 = this;
+            var self = this;
 
             if (!this.is_object_empty(that.color_data)){
 
 
-                    var z_data = Object.keys(that2.color_data).map( function (d) {
-                        return that2.color_data[d];
+                    var z_data = Object.keys(self.color_data).map( function (d) {
+                        return self.color_data[d];
                     });
-                    if (that2.color_scale) {
-                        that2.color_scale.compute_and_set_domain(z_data, 0);
-                        that2.color_scale.set_range();
+                    if (self.color_scale) {
+                        self.color_scale.compute_and_set_domain(z_data, 0);
+                        self.color_scale.set_range();
 
                         //TODO: I am forcing the map to update colors by
                         //calling the function below after the color scale is
@@ -577,52 +581,52 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 }
                 var selected = this.model.get("selected").slice();
                 var index = selected.indexOf(d.id);
-                var that2 = this;
+                var self = this;
                 if(index > -1) {
                     selected.splice(index, 1);
-                    that2.model.set("selected", selected);
-                    that2.model.save_changes();
+                    self.model.set("selected", selected);
+                    self.model.save_changes();
                     d3.select(that).style("fill-opacity", 0.0).transition();
-                    that2.highlight_g.selectAll(".hovered").remove();
-                    var choice = "#".concat(d.id.toString());
-                    $(choice).remove();
+                    self.highlight_g.selectAll(".hovered").remove();
+                    var choice = "#c".concat(d.id.toString());
+                    d3.select(choice).remove();
                 }
                 else {
-                    that2.highlight_g.selectAll(".hovered").remove();
-                    that2.highlight_g.append(function() {
+                    self.highlight_g.selectAll(".hovered").remove();
+                    self.highlight_g.append(function() {
                             return that.cloneNode(true);
                          })
-                         .attr("id", d.id)
+                         .attr("id", 'c'+d.id)
                          .classed("selected", true);
 
-                    if (that2.model.get("selected_fill")!=="" &&
-                        that2.model.get("selected_fill")!==null) {
-                        that2.highlight_g.selectAll(".selected")
+                    if (self.model.get("selected_fill")!=="" &&
+                        self.model.get("selected_fill")!==null) {
+                        self.highlight_g.selectAll(".selected")
                                          .style("fill-opacity", 1.0)
-                                        .style("fill", that2.model.get("selected_fill"));
+                                        .style("fill", self.model.get("selected_fill"));
                     }
 
-                    if ((that2.model.get("selected_stroke")!=="" &&
-                         that2.model.get("selected_stroke")!==null) &&
-                         (that2.model.get("selected_fill")!=="" &&
-                         that2.model.get("selected_fill")!==null)) {
-                        that2.highlight_g.selectAll(".selected")
-                                         .style("stroke", that2.model.get("selected_stroke"))
-                                         .style("stroke-width", that2.model.get("selected_stroke_width"));
+                    if ((self.model.get("selected_stroke")!=="" &&
+                         self.model.get("selected_stroke")!==null) &&
+                         (self.model.get("selected_fill")!=="" &&
+                         self.model.get("selected_fill")!==null)) {
+                        self.highlight_g.selectAll(".selected")
+                                         .style("stroke", self.model.get("selected_stroke"))
+                                         .style("stroke-width", self.model.get("selected_stroke_width"));
                     }
 
-                    if((that2.model.get("selected_fill")==="" ||
-                        that2.model.get("selected_fill")===null) &&
-                        (that2.model.get("selected_stroke")!=="" &&
-                         that2.model.get("selected_stroke")!==null)) {
-                        that2.highlight_g.selectAll(".selected")
-                             .style("stroke", that2.model.get("selected_stroke"))
-                             .style("stroke-width", that2.model.get("selected_stroke_width"));
+                    if((self.model.get("selected_fill")==="" ||
+                        self.model.get("selected_fill")===null) &&
+                        (self.model.get("selected_stroke")!=="" &&
+                         self.model.get("selected_stroke")!==null)) {
+                        self.highlight_g.selectAll(".selected")
+                             .style("stroke", self.model.get("selected_stroke"))
+                             .style("stroke-width", self.model.get("selected_stroke_width"));
                     }
 
                     selected.push(d.id);
-                    that2.model.set("selected", selected);
-                    that2.model.save_changes();
+                    self.model.set("selected", selected);
+                    self.model.save_changes();
                 }
             }
         },
