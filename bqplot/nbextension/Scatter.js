@@ -48,17 +48,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.unselected_style = this.model.get("unselected_style");
             this.selected_indices = this.model.get("idx_selected");
 
-            this.tooltip_div = d3.select(document.createElement("div"))
-                .attr("id", "mark_tooltip")
-                .attr("class", "mark_tooltip")
-                .style("opacity", 0)
-                .style("position", "absolute")
-                .style("pointer-events", "none")
-                .style("z-index", 1001);
-
             var self = this;
             this.after_displayed(function() {
-                this.parent.el.parentNode.appendChild(this.tooltip_div.node());
+                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
                 this.create_tooltip();
             });
 
@@ -168,6 +160,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.model.on("change:default_size", this.update_default_size, this);
             this.model.on("change:fill", this.update_fill, this);
             this.model.on("change:display_names", this.update_display_names, this);
+            this.model.on("change:tooltip", this.create_tooltip, this);
             this.listenTo(this.model, "change:idx_selected", this.update_idx_selected);
         },
         update_default_color: function(model, new_color) {

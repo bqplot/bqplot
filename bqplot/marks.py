@@ -312,6 +312,13 @@ class Scatter(Mark):
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
+    tooltip: DOMWidget (default: None)
+        Widget to be displayed as tooltip when elements of the scatter are
+        hovered on
+    enable_hover: Bool (default: True)
+        Boolean attribute to control the hover interaction for the scatter. If
+        this is false, the on_hover custom mssg is not sent back to the python
+        side
     fill, drag_color, names_unique, enable_move, enable_add,
     enable_delete, restrict_x, restrict_y, update_on_move.
 

@@ -66,6 +66,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             // this.fig is the top <g> element to be impacted by a rescaling / change of margins
             this.fig = this.svg.append("g")
                 .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+            this.tooltip_div = d3.select(document.createElement("div"))
+                .attr("class", "tooltip_div");
 
             var gradient_id = "gd_id" + this.id;
 
@@ -98,6 +100,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
 
             /*
              * The following is the structure of the DOM element constructed
+             *
+            <g class="widget-subarea">
             <svg>
                 <g class="svg-figure" transform='margin translation'>
                     <g class="svg-axes"></g>
@@ -105,6 +109,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                     <g class="svg-interaction"></g>
                 </g>
             </svg>
+            <div class="tooltip_div>
+                <tooltip_elements>
+            </div>
             */
 
             this.clip_path = this.svg.select("defs")
@@ -171,6 +178,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 });
 
                 that.after_displayed(function() {
+                    that.el.parentNode.appendChild(that.tooltip_div.node());
                     that.update_layout();
                 });
             });
