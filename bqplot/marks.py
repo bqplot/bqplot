@@ -29,8 +29,8 @@ Marks
    Hist
    Bars
 """
-from IPython.html.widgets import Widget, CallbackDispatcher
-from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
+from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher
+from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float, Instance
 
 from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
@@ -383,10 +383,12 @@ class Scatter(Mark):
     fill = Bool(True, sync=True)
     drag_color = Color('DodgerBlue', sync=True)
     names_unique = Bool(True, sync=True)
+    tooltip = Instance(DOMWidget, sync=True)
 
     enable_move = Bool(False, sync=True)
     enable_add = Bool(False, sync=True)
     enable_delete = Bool(False, sync=True)
+    enable_hover = Bool(True, sync=True)
     restrict_x = Bool(False, sync=True)
     restrict_y = Bool(False, sync=True)
     update_on_move = Bool(False, sync=True)

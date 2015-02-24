@@ -49,11 +49,49 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.selected_indices = this.model.get("idx_selected");
 
             var self = this;
+            this.after_displayed(function() {
+                this.create_tooltip();
+            });
+
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.compute_view_padding();
                 self.draw();
             });
+        },
+        show_tooltip: function(event, data) {
+            //event is the d3 event for the data
+            var mouse_pos = d3.mouse(this.parent.el.parentNode);
+            var tooltip_div = d3.select(this.parent.el.parentNode)
+                .select("#map_tooltip");
+            tooltip_div.transition()
+                .style("opacity", 0.9);
+
+            tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
+                .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
+        },
+        hide_tooltip: function() {
+            var tooltip_div = d3.select(this.parent.el.parentNode)
+                .select("#map_tooltip");
+            tooltip_div.transition()
+                .style("opacity", 0);
+        },
+        create_tooltip: function() {
+            //create tooltip widget. To be called after mark has been displayed
+            //and whenever the tooltip object changes
+            var tooltip_model = this.model.get("tooltip");
+            var self = this;
+            if(tooltip_model) {
+                var tooltip_creation_promise = this.create_child_view(tooltip_model);
+                tooltip_creation_promise.then(function(view) {
+                    if(self.tooltip_view) {
+                        self.tooltip_view.remove();
+                    }
+                    //remove previous tooltip
+                    self.tooltip_view = view;
+                    self.parent.el.parentNode.appendChild(d3.select(view.el).node());
+                });
+            }
         },
         set_ranges: function() {
             var x_scale = this.scales["x"],
@@ -331,6 +369,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     );
             this.update_xy_position();
             elements.call(this.drag_listener);
+            elements.on("mouseover", function(d, i) { return that.mouse_over(d, i); })
+                .on("mouseout", function(d, i) { return that.mouse_out(d, i); });
 
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
@@ -657,7 +697,25 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             //draw which adds the new point because the data now has a new
             //point
         },
-    });
+        mouse_over: function(d, i) {
+            if(this.model.get("enable_hover")) {
+                //make tooltip visible
+                this.trigger("update_tooltip", d);
+                this.show_tooltip(d3.event, d);
+                this.send({event: "hover",
+                           point: {"x": d.x, "y": d.y},
+                           index: i});
+            }
+        },
+        mouse_out: function(d, i) {
+            if(this.model.get("enable_hover")) {
+                // make tooltip invisible
+                this.hide_tooltip();
+                this.send({event: "hover",
+                           point: {"x": d.x, "y": d.y},
+                           index: i});
+            }
+        },    });
 
     return {
         Scatter: Scatter,
