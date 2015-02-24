@@ -59,40 +59,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 self.draw();
             });
         },
-        show_tooltip: function(event, data) {
-            //event is the d3 event for the data
-            var mouse_pos = d3.mouse(this.parent.el.parentNode);
-            var tooltip_div = d3.select(this.parent.el.parentNode)
-                .select("#map_tooltip");
-            tooltip_div.transition()
-                .style("opacity", 0.9);
-
-            tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
-                .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
-        },
-        hide_tooltip: function() {
-            var tooltip_div = d3.select(this.parent.el.parentNode)
-                .select("#map_tooltip");
-            tooltip_div.transition()
-                .style("opacity", 0);
-        },
-        create_tooltip: function() {
-            //create tooltip widget. To be called after mark has been displayed
-            //and whenever the tooltip object changes
-            var tooltip_model = this.model.get("tooltip");
-            var self = this;
-            if(tooltip_model) {
-                var tooltip_creation_promise = this.create_child_view(tooltip_model);
-                tooltip_creation_promise.then(function(view) {
-                    if(self.tooltip_view) {
-                        self.tooltip_view.remove();
-                    }
-                    //remove previous tooltip
-                    self.tooltip_view = view;
-                    self.parent.el.parentNode.appendChild(d3.select(view.el).node());
-                });
-            }
-        },
         set_ranges: function() {
             var x_scale = this.scales["x"],
                 y_scale = this.scales["y"],

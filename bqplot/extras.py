@@ -12,11 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+r"""
+
+=====
+Extras
+=====
+
+.. currentmodule:: bqplot.extras
+
+.. autosummary::
+   :toctree: generate/
+
+   Tooltip
+"""
 from IPython.html.widgets import DOMWidget
 from IPython.utils.traitlets import Unicode, List, Bool
 
 
 class Tooltip(DOMWidget):
+
+    """Default tooltip widget for any mark.
+
+    Attributes
+    ----------
+    fields: list (default: [])
+        list of names of fields to be displayed in the tooltip
+        All the attributes  of the mark are accesible in the tooltip
+    formats: list (default: [])
+        list of formats to be applied to each of the fields.
+        if no format is specified for a field, the value is displayed as it is
+    show_names: bool (default: True)
+        Boolean attribute to enable and disable display of the field name along
+        with the value
+
+    """
+
     fields = List(sync=True)
     formats = List(sync=True)
     show_names = Bool(True, sync=True)
