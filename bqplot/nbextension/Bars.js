@@ -109,6 +109,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:align", this.relayout, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
         },
+        realign: function() {
+            //TODO: Relayout is an expensive call on realigning. Need to change
+            //this.
+            this.relayout();
+        },
         relayout: function() {
             var y_scale = this.scales["y"];
             this.set_ranges();
@@ -451,8 +456,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var x_scale = this.scales["x"];
             var x_padding = 0;
             if(x_scale) {
-                if(x_scale.model.type !== "ordinal" && (this.x !== null && this.x !== undefined && this.x.domain().length != 0)) {
-                    x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1);
+                if (this.x !== null && this.x !== undefined &&
+                    this.x.domain().length !== 0) {
+                    if(x_scale.model.type === "linear") {
+                        if (this.model.get("align")==="center") {
+                            x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1);
+                        } else if (this.model.get("align")==="left" ||
+                                   this.model.get("align") === "right") {
+                            x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1.5);
+                        }
+                    }
                 }
             }
             if(x_padding !== this.x_padding) {
