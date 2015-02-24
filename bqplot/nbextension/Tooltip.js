@@ -27,6 +27,16 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 .style("pointer-events", "none")
                 .style("z-index", 1001);
             this.parent = this.options.parent;
+            this.update_formats();
+            this.create_listeners();
+            this.create_table();
+        },
+        create_listeners: function() {
+            this.listenTo(this.parent, "update_tooltip", this.update_tooltip);
+            this.model.on_some_change(["fields", "show_names"], this.create_table, this);
+            this.listenTo(this.model, "change:formats", this.update_formats);
+        },
+        update_formats: function() {
             var fields = this.model.get("fields");
             var formats = this.model.get("formats");
             this.tooltip_formats = fields.map(function(field, index) {
@@ -34,17 +44,18 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 if(fmt === undefined || fmt === "") {return function(d) { return d; }; }
                 else return d3.format(fmt);
             });
-
-            this.create_listeners();
-        },
-        create_listeners: function() {
-            this.listenTo(this.parent, "update_tooltip", this.update_tooltip);
         },
         update_tooltip: function(data) {
             //data is a dictionary passed by the parent along with the update_
             //tooltip event. Responsibility of the mark to pass the data
+            var self = this;
+            this.d3_el.select("table")
+                .selectAll("tr")
+                .select(".datavalue")
+                .text(function(datum, index) { return self.tooltip_formats[index](data[datum]);});
+        },
+        create_table: function() {
             var fields = this.model.get("fields");
-            var show_names = this.model.get("show_fields");
             var self = this;
 
             this.d3_el.select("table").remove();
@@ -52,15 +63,21 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 .selectAll("tr").data(fields);
 
             tooltip_table.exit().remove();
-            var table_rows = tooltip_table.enter().append("tr");
-
+            var table_rows = tooltip_table.enter().append("tr")
+                                .attr("class", "datarow");
+            if(this.model.get("show_names")) {
+                table_rows.append("td")
+                    .text(function(datum) { return datum;})
+                    .attr("class", "tooltiptext datafield");
+            }
             table_rows.append("td")
-                .attr("class", "tooltiptext")
-                .text(function(datum) { return datum;});
-
-            table_rows.append("td")
-                .attr("class", "tooltiptext")
-                .text(function(datum, index) { return self.tooltip_formats[index](data[datum]);});
+                .attr("class", "tooltiptext datavalue");
+            this.update_formats();
+        },
+        remove: function() {
+            this.model.off(null, null, this);
+            this.d3_el.remove();
+            Tooltip.__super__.remove.apply(this);
         },
     });
     return {
