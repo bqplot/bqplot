@@ -4,3 +4,6 @@
 [submodule "bqplot/nbextension/d3"]
 	path = bqplot/nbextension/d3
 	url = https://github.com/mbostock/d3.git
+[submodule "bqplot/nbextension/topojson"]
+	path = bqplot/nbextension/topojson
+	url = https://github.com/mbostock/topojson.git
