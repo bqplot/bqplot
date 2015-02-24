@@ -323,9 +323,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     .skew(function(d) { return that.get_element_skew(d); })
                     );
             this.update_xy_position();
-            elements.call(this.drag_listener);
-            elements.on("mouseover", function(d, i) { return that.mouse_over(d, i); })
-                .on("mouseout", function(d, i) { return that.mouse_out(d, i); });
+            elements.call(this.drag_listener)
+              .on("mouseover", function(d, i) { return that.mouse_over(d, i); })
+              .on("mouseout", function(d, i) { return that.mouse_out(d, i); });
 
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
