@@ -106,7 +106,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
             this.model.on("change:type", this.draw, this);
-            this.model.on("change:align", this.relayout, this);
+            this.model.on("change:align", this.realign, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
         },
         realign: function() {
@@ -463,7 +463,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                             x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1);
                         } else if (this.model.get("align")==="left" ||
                                    this.model.get("align") === "right") {
-                            x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1.5);
+                            x_padding = (this.parent.plotarea_width / (this.x.domain().length) + 1);
+                        }
+                    } else {
+                        if (this.model.get("align")==="left" ||
+                            this.model.get("align")==="right") {
+                            x_padding = ( this.x.rangeBand() / 2 ).toFixed(2);
                         }
                     }
                 }
