@@ -220,9 +220,11 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         update_default_skew: function() {
             if(!this.model.dirty) {
                 var that = this;
-                this.el.selectAll(".dot").attr("d", this.dot.skew(function(data) {
+                this.el.selectAll(".dot").transition()
+                  .duration(this.model.get("animate_dur"))
+                  .attr("d", this.dot.skew(function(data) {
                     return that.get_element_skew(data);
-                }));
+                  }));
             }
         },
         update_default_size: function() {
@@ -230,9 +232,11 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             // update size scale range?
             if(!this.model.dirty) {
                 var that = this;
-                this.el.selectAll(".dot").attr("d", this.dot.size(function(data) {
+                this.el.selectAll(".dot").transition()
+                  .duration(this.model.get("animate_dur"))
+                  .attr("d", this.dot.size(function(data) {
                     return that.get_element_size(data);
-                }));
+                  }));
             }
         },
         // The following three functions are convenience functions to get
@@ -288,10 +292,10 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                      });
         },
         relayout: function() {
-            this.set_ranges();
             this.update_xy_position();
         },
         update_xy_position: function() {
+            this.set_ranges();
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var that = this;
             this.el.selectAll(".dot_grp").transition()
@@ -303,7 +307,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
               });
         },
         draw: function() {
-            this.set_ranges();
             var that = this,
                 default_color = this.model.get("default_color"),
                 fill = this.model.get("fill");
@@ -317,8 +320,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             elements_added.append("path").attr("class", "dot");
             elements_added.append("text").attr("class", "dot_text");
-            elements.select("path")
-                .attr("d", this.dot
+            elements.select("path").transition()
+              .duration(this.model.get("animate_dur"))
+              .attr("d", this.dot
                     .size(function(d) { return that.get_element_size(d); })
                     .skew(function(d) { return that.get_element_skew(d); })
                     );
