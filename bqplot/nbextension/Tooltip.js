@@ -21,11 +21,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             // var base_creation_promise = Tooltip.__super__.render.apply(this);
             this.setElement(document.createElement("div"));
             this.d3_el = d3.select(this.el);
-            this.d3_el.attr("id", "map_tooltip")
-                .style("opacity", 0)
-                .style("position", "absolute")
-                .style("pointer-events", "none")
-                .style("z-index", 1001);
             this.parent = this.options.parent;
             this.update_formats();
             this.create_listeners();

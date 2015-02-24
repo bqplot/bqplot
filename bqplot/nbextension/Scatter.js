@@ -48,8 +48,17 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.unselected_style = this.model.get("unselected_style");
             this.selected_indices = this.model.get("idx_selected");
 
+            this.tooltip_div = d3.select(document.createElement("div"))
+                .attr("id", "mark_tooltip")
+                .attr("class", "mark_tooltip")
+                .style("opacity", 0)
+                .style("position", "absolute")
+                .style("pointer-events", "none")
+                .style("z-index", 1001);
+
             var self = this;
             this.after_displayed(function() {
+                this.parent.el.parentNode.appendChild(this.tooltip_div.node());
                 this.create_tooltip();
             });
 

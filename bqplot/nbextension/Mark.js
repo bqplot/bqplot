@@ -208,7 +208,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                     }
                     //remove previous tooltip
                     self.tooltip_view = view;
-                    self.parent.el.parentNode.appendChild(d3.select(view.el).node());
+                    self.tooltip_div.node().appendChild(d3.select(view.el).node());
                 });
             } else {
                 if(self.tooltip_view) {
