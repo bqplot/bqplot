@@ -20,8 +20,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
     var Scatter = MarkViewModule.Mark.extend({
         render: function() {
             var base_creation_promise = Scatter.__super__.render.apply(this);
-            this.stroke = this.model.get("stroke");
-            this.default_opacity = this.model.get("default_opacity");
 
             this.dot = bqSymbol()
               .type(this.model.get("marker"))
@@ -101,10 +99,10 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             var x_scale = this.scales["x"],
                 y_scale = this.scales["y"];
             this.listenTo(x_scale, "domain_changed", function() {
-                if (!this.model.dirty) { this.draw(); }
+                if (!this.model.dirty) { this.update_xy_position(); }
             });
             this.listenTo(y_scale, "domain_changed", function() {
-                if (!this.model.dirty) { this.draw(); }
+                if (!this.model.dirty) { this.update_xy_position(); }
             });
         },
         initialize_additional_scales: function() {
@@ -141,7 +139,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             }
             if(rotation_scale) {
                 this.listenTo(rotation_scale, "domain_changed", function() {
-                    //this.update_default_rotation();
+                    this.update_xy_position();
                 });
             }
         },
@@ -161,27 +159,27 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         },
         update_default_color: function(model, new_color) {
             if(!this.model.dirty) {
-                var that = this;
+                var that = this,
+                    stroke = this.model.get("stroke");
                 this.el.selectAll(".dot")
                 .style("fill", this.model.get("fill") ?
                         function(d) { return that.get_element_color(d); } : "none")
-                .style("stroke", this.stroke ?
-                        this.stroke : function(d) {
+                .style("stroke", stroke ? stroke : function(d) {
                     return that.get_element_color(d);
                 });
 
                 if (this.legend_el) {
                     this.legend_el.select("path")
                     .style("fill", new_color)
-                    .style("stroke", this.stroke ? this.stroke : new_color);
+                    .style("stroke", stroke ? stroke : new_color);
                     this.legend_el.select("text")
                     .style("fill", this.model.get("fill") ? new_color : "none");
                 }
             }
         },
         update_fill: function(model, fill) {
-            var default_color = this.model.get("default_color");
-            var that = this;
+            var that = this,
+                default_color = this.model.get("default_color");
             this.el.selectAll(".dot").style("fill", fill  ? function(d) {
                 return that.get_element_color(d);
             } : "none");
@@ -191,20 +189,20 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             }
         },
         update_stroke: function(model, fill) {
-            this.stroke = this.model.get("stroke");
-            var that = this;
+            var that = this,
+                stroke = this.model.get("stroke");
             this.el.selectAll(".dot")
-              .style("stroke", this.stroke ? this.stroke : function(d) {
+              .style("stroke", stroke ? stroke : function(d) {
                   return that.get_element_color(d);
               });
             if (this.legend_el) {
                 this.legend_el.selectAll("path")
-                  .style("stroke", this.stroke);
+                  .style("stroke", stroke);
             }
         },
         update_default_opacity: function() {
             if(!this.model.dirty) {
-                this.default_opacity = this.model.get("default_opacity");
+                var default_opacity = this.model.get("default_opacity");
                 // update opacity scale range?
                 var that = this;
                 this.el.selectAll(".dot")
@@ -213,7 +211,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 });
                 if (this.legend_el) {
                     this.legend_el.select("path")
-                    .style("opacity", this.default_opacity)
+                    .style("opacity", default_opacity)
                     .style("fill", this.model.get("default_color"));
                 }
             }
@@ -274,20 +272,266 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             }
             return this.model.get("default_skew");
         },
+        get_element_rotation: function(d) {
+            var rotation_scale = this.scales["rotation"];
+            return (!rotation_scale || !d.rotation) ? "" :
+                "rotate(" + rotation_scale.scale(d.rotation) + ")";
+        },
+        color_scale_updated: function() {
+            var that = this,
+                default_color = this.model.get("default_color"),
+                fill = this.model.get("fill"),
+                stroke = this.model.get("stroke");
+
+            this.el.selectAll(".dot_grp")
+              .select("path")
+              .style("fill", fill ?
+                     function(d) { return that.get_element_color(d); } : "none")
+              .style("stroke", stroke ? stroke : function(d) {
+                         return that.get_element_color(d);
+                     });
+        },
         relayout: function() {
             this.set_ranges();
             this.el.select(".mouseeventrect")
               .attr("width", this.parent.plotarea_width)
               .attr("height", this.parent.plotarea_height);
-
+            this.update_xy_position();
+        },
+        update_xy_position: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var that = this;
-            this.el.selectAll(".dot_grp").transition().duration(this.model.get("animate_dur"))
+            this.el.selectAll(".dot_grp").transition()
+              .duration(this.model.get("animate_dur"))
               .attr("transform", function(d) {
                     return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                                     "," + (y_scale.scale(d.y) + y_scale.offset) + ")"
                            + that.get_element_rotation(d);
               });
+        },
+        draw: function() {
+            this.set_ranges();
+            var that = this,
+                default_color = this.model.get("default_color"),
+                fill = this.model.get("fill");
+
+            var elements = this.el.selectAll(".dot_grp")
+              .data(this.model.mark_data, function(d) {
+                  return d.unique_id;
+              });
+            var elements_added = elements.enter().append("g")
+              .attr("class", "dot_grp");
+
+            elements_added.append("path").attr("class", "dot");
+            elements_added.append("text").attr("class", "dot_text");
+            elements.select("path")
+                .attr("d", this.dot
+                    .size(function(d) { return that.get_element_size(d); })
+                    .skew(function(d) { return that.get_element_skew(d); })
+                    );
+            this.update_xy_position();
+            elements.call(this.drag_listener);
+
+            var names = this.model.get_typed_field("names"),
+                text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
+                show_names = (this.model.get("display_names") && names.length !== 0);
+
+            elements.select("text")
+              .text(function(d) {
+                  return d.name;
+              }).attr("transform", function(d) {
+                  return "translate(" + (text_loc) + "," + (-text_loc) + ")";
+              }).attr("display", function(d) {
+                  return (show_names) ? "inline": "none";
+              });
+
+            // Removed the transition on exit as it was causing issues.
+            // Elements are not removed until the transition is complete and
+            // hence the setting styles function doesn't behave as intended.
+            // The only way to call the function after all of the elements are
+            // removed is round-about and doesn't look very nice visually.
+            elements.exit().remove();
+            this.apply_styles();
+        },
+        draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+            this.legend_el = elem.selectAll(".legend" + this.uuid)
+              .data([this.model.mark_data]);
+            var default_color = this.model.get("default_color"),
+                stroke = this.model.get("stroke");
+
+            var that = this;
+            var rect_dim = inter_y_disp * 0.8;
+            this.legend_el.enter()
+              .append("g")
+              .attr("class", "legend" + this.uuid)
+              .attr("transform", function(d, i) {
+                  return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
+              }).on("mouseover", _.bind(this.highlight_axes, this))
+              .on("mouseout", _.bind(this.unhighlight_axes, this))
+              .append("path")
+              .attr("transform", function(d, i) {
+                  return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
+              })
+              .attr("d", this.dot.size(64))
+              .style("fill", this.model.get("fill")  ? default_color : "none")
+              .style("stroke", stroke ? stroke : default_color);
+
+            this.legend_el.append("text")
+              .attr("class","legendtext")
+              .attr("x", rect_dim * 1.2)
+              .attr("y", rect_dim / 2)
+              .attr("dy", "0.35em")
+              .text(function(d, i) { return that.model.get("labels")[i]; })
+              .style("fill", default_color);
+
+            var max_length = d3.max(this.model.get("labels"), function(d) {
+                return d.length;
+            });
+
+            this.legend_el.exit().remove();
+            return [1, max_length];
+        },
+        update_display_names: function(model, value) {
+            var names = this.model.get_typed_field("names"),
+                show_names = (value && names.length !== 0);
+            this.el.selectAll(".dot_grp").select("text")
+                .attr("display", function(d) {
+                    return (show_names) ? "inline": "none";
+                });
+        },
+        invert_2d_range: function(x_start, x_end, y_start, y_end) {
+            if(!x_end) {
+                this.model.set("idx_selected", null);
+                this.touch();
+                return _.range(this.model.mark_data.length);
+            }
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+
+            var xmin = x_scale.scale.invert(x_start),
+                xmax = x_scale.scale.invert(x_end),
+                ymin = y_scale.scale.invert(y_start),
+                ymax = y_scale.scale.invert(y_end);
+
+            var indices = _.range(this.model.mark_data.length);
+            var that = this;
+            var idx_selected = _.filter(indices, function(index) {
+                var elem = that.model.mark_data[index];
+                return (elem.x >= xmin && elem.x <= xmax &&
+                        elem.y >= ymin && elem.y <= ymax);
+            });
+            this.model.set("idx_selected", idx_selected);
+            this.touch();
+            return idx_selected;
+        },
+        update_idx_selected: function(model, value) {
+            this.selected_indices = value;
+            this.apply_styles();
+        },
+        set_style_on_elements: function(style, indices) {
+            // If the index array is undefined or of length=0, exit the
+            // function without doing anything
+            if(!indices || indices.length === 0) {
+                return;
+            }
+            // Also, return if the style object itself is blank
+            if(Object.keys(style).length === 0) {
+                return;
+            }
+            var elements = this.el.selectAll(".dot");
+            elements = elements.filter(function(data, index) {
+                return indices.indexOf(index) !== -1;
+            });
+            elements.style(style);
+        },
+        set_default_style: function(indices) {
+            // For all the elements with index in the list indices, the default
+            // style is applied.
+            if(!indices || indices.length === 0) {
+                return;
+            }
+            var elements = this.el.selectAll(".dot").filter(function(data, index) {
+                return indices.indexOf(index) !== -1;
+            });
+            var fill = this.model.get("fill"),
+                stroke = this.model.get("stroke"),
+                that = this;
+            elements
+              .style("fill", fill ? function(d) {
+                 return that.get_element_color(d);
+              } : "none")
+              .style("stroke", stroke ? stroke : function(d) {
+                  return that.get_element_color(d);
+              }).style("opacity", function(d) {
+                  return that.get_element_opacity(d);
+              });
+        },
+        clear_style: function(style_dict, indices) {
+            // Function to clear the style of a dict on some or all the elements of the
+            // chart.If indices is null, clears the style on all elements. If
+            // not, clears on only the elements whose indices are mathcing.
+            //
+            // This function is not used right now. But it can be used if we
+            // decide to accomodate more properties than those set by default.
+            // Because those have to cleared specifically.
+            var elements = this.el.selectAll(".dot");
+            if(indices) {
+                elements = elements.filter(function(d, index) {
+                    return indices.indexOf(index) !== -1;
+                });
+            }
+            var clearing_style = {};
+            for(var key in style_dict) {
+                clearing_style[key] = null;
+            }
+            elements.style(clearing_style);
+        },
+        compute_view_padding: function() {
+            //This function computes the padding along the x and y directions.
+            //The value is in pixels.
+            var x_padding = Math.sqrt(this.model.get("default_size")) / 2 + 1.0;
+
+            if(x_padding !== this.x_padding || x_padding !== this.y_padding) {
+                this.x_padding = x_padding;
+                this.y_padding = x_padding;
+                this.trigger("mark_padding_updated");
+            }
+		},
+        update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
+                                               point_in_lasso_func)
+        {
+            var x_scale = this.scales["x"], y_scale = this.scales["y"],
+                idx = this.model.get("idx_selected"),
+                idx_selected = idx ? utils.deepCopy(idx) : [],
+                data_in_lasso = false;
+            if(lasso_vertices !== null && lasso_vertices.length > 0) {
+                var indices = _.range(this.model.mark_data.length);
+                var that = this;
+                var idx_in_lasso = _.filter(indices, function(index) {
+                    var elem = that.model.mark_data[index];
+                    var point = [x_scale.scale(elem.x), y_scale.scale(elem.y)];
+                    return point_in_lasso_func(point, lasso_vertices);
+                });
+                data_in_lasso = idx_in_lasso.length > 0;
+                if (data_in_lasso) {
+                    this.update_idx_selected(idx_in_lasso);
+                    idx_selected.push({lasso_name: lasso_name, indices: idx_in_lasso});
+                    this.model.set("idx_selected", idx_selected);
+                    this.touch();
+                }
+            } else { //delete the lasso specific idx_selected
+                var to_be_deleted_lasso = _.filter(idx_selected, function(lasso_data) {
+                    return lasso_data.lasso_name === lasso_name;
+                });
+                this.update_idx_selected(to_be_deleted_lasso.indices);
+
+                this.model.set("idx_selected", _.filter(idx_selected, function(lasso_data) {
+                    return lasso_data.lasso_name !== lasso_name;
+                }));
+                this.touch();
+            }
+
+            //return true if there are any mark data inside lasso
+            return data_in_lasso;
         },
         update_array: function(d, i) {
             var x_scale = this.scales["x"],
@@ -412,256 +656,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             //adding the point and saving the model automatically triggers a
             //draw which adds the new point because the data now has a new
             //point
-        },
-        draw: function() {
-            this.set_ranges();
-            var default_color = this.model.get("default_color");
-            var labels = this.model.get("labels");
-            var fill = this.model.get("fill");
-
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var elements = this.el.selectAll(".dot_grp")
-              .data(this.model.mark_data, function(d) {
-                  return d.unique_id;
-              });
-            var elements_added = elements.enter().append("g")
-              .attr("class", "dot_grp");
-
-            var animate_dur = this.model.get("animate_dur");
-            elements_added.append("path").attr("class", "dot");
-            elements_added.append("text").attr("class", "dot_text");
-            var that = this;
-            elements.transition().duration(animate_dur)
-              .attr("transform", function(d) {
-                  return "translate(" + (x_scale.scale(d.x) + x_scale.offset) + "," +
-                                      + (y_scale.scale(d.y) + y_scale.offset) + ") "
-                         + that.get_element_rotation(d);
-              });
-
-            var text_loc = Math.sqrt(this.model.get("default_size")) / 2.0;
-            elements.select("path")
-                .attr("d", this.dot
-                    .size(function(d) { return that.get_element_size(d); })
-                    .skew(function(d) { return that.get_element_skew(d); })
-                    );
-            elements.call(this.drag_listener);
-
-            var names = this.model.get_typed_field("names");
-            var show_names = (this.model.get("display_names") && names.length !== 0);
-
-            elements.select("text")
-              .text(function(d) {
-                  return d.name;
-              }).attr("transform", function(d) {
-                  return "translate(" + (text_loc) + "," + (-text_loc) + ")";
-              }).attr("display", function(d) {
-                  return (show_names) ? "inline": "none";
-              });
-
-            // Removed the transition on exit as it was causing issues.
-            // Elements are not removed until the transition is complete and
-            // hence the setting styles function doesn't behave as intended.
-            // The only way to call the function after all of the elements are
-            // removed is round-about and doesn't look very nice visually.
-            elements.exit().remove();
-            this.apply_styles();
-        },
-        get_element_rotation: function(d) {
-            var rotation_scale = this.scales["rotation"];
-            return (!rotation_scale || !d.rotation) ? "" :
-                "rotate(" + rotation_scale.scale(d.rotation) + ")";
-        },
-        color_scale_updated: function() {
-            var that = this;
-            var default_color = this.model.get("default_color");
-            var fill = this.model.get("fill");
-
-            this.el.selectAll(".dot_grp")
-              .select("path")
-              .style("fill", fill ?
-                     function(d) { return that.get_element_color(d); } : "none")
-              .style("stroke", this.stroke ?
-                     this.stroke : function(d) {
-                         return that.get_element_color(d);
-                     });
-        },
-        draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            this.legend_el = elem.selectAll(".legend" + this.uuid)
-              .data([this.model.mark_data]);
-            var default_color = this.model.get("default_color");
-
-            var that = this;
-            var rect_dim = inter_y_disp * 0.8;
-            this.legend_el.enter()
-              .append("g")
-              .attr("class", "legend" + this.uuid)
-              .attr("transform", function(d, i) {
-                  return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
-              }).on("mouseover", _.bind(this.highlight_axes, this))
-              .on("mouseout", _.bind(this.unhighlight_axes, this))
-              .append("path")
-              .attr("transform", function(d, i) {
-                  return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
-              })
-              .attr("d", this.dot.size(64))
-              .style("fill", this.model.get("fill")  ? default_color : "none")
-              .style("stroke", this.stroke ? this.stroke : default_color);
-
-            this.legend_el.append("text")
-              .attr("class","legendtext")
-              .attr("x", rect_dim * 1.2)
-              .attr("y", rect_dim / 2)
-              .attr("dy", "0.35em")
-              .text(function(d, i) { return that.model.get("labels")[i]; })
-              .style("fill", default_color);
-
-            var max_length = d3.max(this.model.get("labels"), function(d) {
-                return d.length;
-            });
-
-            this.legend_el.exit().remove();
-            return [1, max_length];
-        },
-        update_display_names: function(model, value) {
-            var names = this.model.get_typed_field("names");
-            var show_names = (value && names.length !== 0);
-            this.el.selectAll(".dot_grp").select("text")
-                .attr("display", function(d) {
-                    return (show_names) ? "inline": "none";
-                });
-        },
-        invert_2d_range: function(x_start, x_end, y_start, y_end) {
-            if(!x_end) {
-                this.model.set("idx_selected", null);
-                this.touch();
-                return _.range(this.model.mark_data.length);
-            }
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-
-            var xmin = x_scale.scale.invert(x_start),
-                xmax = x_scale.scale.invert(x_end),
-                ymin = y_scale.scale.invert(y_start),
-                ymax = y_scale.scale.invert(y_end);
-
-            var indices = _.range(this.model.mark_data.length);
-            var that = this;
-            var idx_selected = _.filter(indices, function(index) {
-                var elem = that.model.mark_data[index];
-                return (elem.x >= xmin && elem.x <= xmax &&
-                        elem.y >= ymin && elem.y <= ymax);
-            });
-            this.model.set("idx_selected", idx_selected);
-            this.touch();
-            return idx_selected;
-        },
-        update_idx_selected: function(model, value) {
-            this.selected_indices = value;
-            this.apply_styles();
-        },
-        set_style_on_elements: function(style, indices) {
-            // If the index array is undefined or of length=0, exit the
-            // function without doing anything
-            if(!indices || indices.length === 0) {
-                return;
-            }
-            // Also, return if the style object itself is blank
-            if(Object.keys(style).length === 0) {
-                return;
-            }
-            var elements = this.el.selectAll(".dot");
-            elements = elements.filter(function(data, index) {
-                return indices.indexOf(index) !== -1;
-            });
-            elements.style(style);
-        },
-        set_default_style: function(indices) {
-            // For all the elements with index in the list indices, the default
-            // style is applied.
-            if(!indices || indices.length === 0) {
-                return;
-            }
-            var elements = this.el.selectAll(".dot").filter(function(data, index) {
-                return indices.indexOf(index) !== -1;
-            });
-            var fill = this.model.get("fill");
-            var that = this;
-            elements
-              .style("fill", fill ? function(d) {
-                 return that.get_element_color(d);
-              } : "none")
-              .style("stroke", this.stroke ? this.stroke : function(d) {
-                  return that.get_element_color(d);
-              }).style("opacity", function(d) {
-                  return that.get_element_opacity(d);
-              });
-        },
-        clear_style: function(style_dict, indices) {
-            // Function to clear the style of a dict on some or all the elements of the
-            // chart.If indices is null, clears the style on all elements. If
-            // not, clears on only the elements whose indices are mathcing.
-            //
-            // This function is not used right now. But it can be used if we
-            // decide to accomodate more properties than those set by default.
-            // Because those have to cleared specifically.
-            var elements = this.el.selectAll(".dot");
-            if(indices) {
-                elements = elements.filter(function(d, index) {
-                    return indices.indexOf(index) !== -1;
-                });
-            }
-            var clearing_style = {};
-            for(var key in style_dict) {
-                clearing_style[key] = null;
-            }
-            elements.style(clearing_style);
-        },
-        compute_view_padding: function() {
-            //This function computes the padding along the x and y directions.
-            //The value is in pixels.
-            var x_padding = Math.sqrt(this.model.get("default_size")) / 2 + 1.0;
-
-            if(x_padding !== this.x_padding || x_padding !== this.y_padding) {
-                this.x_padding = x_padding;
-                this.y_padding = x_padding;
-                this.trigger("mark_padding_updated");
-            }
-		},
-        update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
-                                               point_in_lasso_func)
-        {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var idx = this.model.get("idx_selected");
-            var idx_selected = idx ? utils.deepCopy(idx) : [];
-            var data_in_lasso = false;
-            if(lasso_vertices !== null && lasso_vertices.length > 0) {
-                var indices = _.range(this.model.mark_data.length);
-                var that = this;
-                var idx_in_lasso = _.filter(indices, function(index) {
-                    var elem = that.model.mark_data[index];
-                    var point = [x_scale.scale(elem.x), y_scale.scale(elem.y)];
-                    return point_in_lasso_func(point, lasso_vertices);
-                });
-                data_in_lasso = idx_in_lasso.length > 0;
-                if (data_in_lasso) {
-                    this.update_idx_selected(idx_in_lasso);
-                    idx_selected.push({lasso_name: lasso_name, indices: idx_in_lasso});
-                    this.model.set("idx_selected", idx_selected);
-                    this.touch();
-                }
-            } else { //delete the lasso specific idx_selected
-                var to_be_deleted_lasso = _.filter(idx_selected, function(lasso_data) {
-                    return lasso_data.lasso_name === lasso_name;
-                });
-                this.update_idx_selected(to_be_deleted_lasso.indices);
-
-                this.model.set("idx_selected", _.filter(idx_selected, function(lasso_data) {
-                    return lasso_data.lasso_name !== lasso_name;
-                }));
-                this.touch();
-            }
-
-            //return true if there are any mark data inside lasso
-            return data_in_lasso;
         },
     });
 
