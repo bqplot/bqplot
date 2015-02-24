@@ -380,8 +380,7 @@ class Scatter(Mark):
     default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
                                    exposed=True, display_index=7,
                                    display_name='Default opacity')
-    default_skew = BoundedFloat(default_value=0.5, min=0, max=1,
-                                sync=True)
+    default_skew = BoundedFloat(default_value=0.5, min=0, max=1, sync=True)
     default_size = Int(64, sync=True, exposed=True, display_index=9,
                        display_name='Default size')  # dot size in pixels
     names = NdArray(sync=True)

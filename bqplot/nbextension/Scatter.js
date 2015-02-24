@@ -52,7 +52,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             var x_scale = this.scales["x"],
                 y_scale = this.scales["y"],
                 size_scale = this.scales["size"],
-                color_scale = this.scales["color"],
                 opacity_scale = this.scales["opacity"],
                 skew_scale = this.scales["skew"],
                 rotation_scale = this.scales["rotation"];
@@ -74,9 +73,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 var ratio = d3.min(size_domain) / d3.max(size_domain);
                 size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]),
                                      this.model.get("default_size")]);
-            }
-            if(color_scale) {
-                color_scale.set_range();
             }
             if(opacity_scale) {
                 opacity_scale.set_range([0.2, 1]);

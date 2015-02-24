@@ -39,10 +39,6 @@ define(["./d3", "./Lines"], function(d3, LinesViewModule) {
         },
         set_ranges: function() {
             FlexLine.__super__.set_ranges.apply(this);
-            var color_scale = this.scales["color"];
-            if(color_scale) {
-                color_scale.set_range();
-            }
             var width_scale = this.scales["width"];
             if(width_scale) {
                 width_scale.set_range([0.5, this.model.get("stroke_width")]);
