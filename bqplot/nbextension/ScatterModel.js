@@ -68,6 +68,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             opacity: opacity[i],
                             skew: skew[i],
                             rotation: rotation[i],
+                            index: i
                             };
                 });
             }

@@ -135,6 +135,10 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
+            var self = this;
+            this.el.on("mouseover", _.bind(this.mouse_over, this))
+                .on("mouseout", _.bind(this.mouse_out, this));
+
             this.model.on("change:default_color", this.update_default_color, this);
             this.model.on("change:stroke", this.update_stroke, this);
             this.model.on("change:default_opacity", this.update_default_opacity, this);
@@ -325,9 +329,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     .skew(function(d) { return that.get_element_skew(d); })
                     );
             this.update_xy_position();
-            elements.call(this.drag_listener)
-              .on("mouseover", function(d, i) { return that.mouse_over(d, i); })
-              .on("mouseout", function(d, i) { return that.mouse_out(d, i); });
+            elements.call(this.drag_listener);
 
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
@@ -654,23 +656,23 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             //draw which adds the new point because the data now has a new
             //point
         },
-        mouse_over: function(d, i) {
+        mouse_over: function() {
             if(this.model.get("enable_hover")) {
+                var data = d3.select(d3.event.target).data()[0];
                 //make tooltip visible
-                this.trigger("update_tooltip", d);
-                this.show_tooltip(d3.event, d);
+                this.trigger("update_tooltip", data);
+                this.show_tooltip(d3.event, data);
                 this.send({event: "hover",
-                           point: {"x": d.x, "y": d.y},
-                           index: i});
+                           point: data});
             }
         },
-        mouse_out: function(d, i) {
+        mouse_out: function() {
             if(this.model.get("enable_hover")) {
+                var data = d3.select(d3.event.target).data()[0];
                 // make tooltip invisible
                 this.hide_tooltip();
                 this.send({event: "hover",
-                           point: {"x": d.x, "y": d.y},
-                           index: i});
+                           point: data});
             }
         },
     });
