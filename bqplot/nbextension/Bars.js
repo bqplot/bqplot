@@ -83,9 +83,21 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // to the start of the bin but linear scale gives the actual value.
             var x_scale = this.scales["x"];
             if(x_scale.model.type !== "ordinal") {
-                this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
+                if (this.model.get("align")==="center") {
+                    this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
+                } else if (this.model.get("align") === "left") {
+                    this.x_offset = -(this.x.rangeBand()).toFixed(2);
+                } else {
+                    this.x_offset = 0;
+                }
             } else {
-                this.x_offset = 0;
+                if (this.model.get("align")==="center") {
+                    this.x_offset = 0;
+                } else if (this.model.get("align")==="left") {
+                    this.x_offset = -(this.x.rangeBand() / 2);
+                } else {
+                    this.x_offset = (this.x.rangeBand() / 2);
+                }
             }
         },
         create_listeners: function() {
@@ -94,7 +106,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
             this.model.on("change:type", this.draw, this);
+            this.model.on("change:align", this.realign, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+        },
+        realign: function() {
+            //TODO: Relayout is an expensive call on realigning. Need to change
+            //this.
+            this.relayout();
         },
         relayout: function() {
             var y_scale = this.scales["y"];
@@ -438,8 +456,21 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var x_scale = this.scales["x"];
             var x_padding = 0;
             if(x_scale) {
-                if(x_scale.model.type !== "ordinal" && (this.x !== null && this.x !== undefined && this.x.domain().length != 0)) {
-                    x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1);
+                if (this.x !== null && this.x !== undefined &&
+                    this.x.domain().length !== 0) {
+                    if(x_scale.model.type === "linear") {
+                        if (this.model.get("align")==="center") {
+                            x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1);
+                        } else if (this.model.get("align")==="left" ||
+                                   this.model.get("align") === "right") {
+                            x_padding = (this.parent.plotarea_width / (this.x.domain().length) + 1);
+                        }
+                    } else {
+                        if (this.model.get("align")==="left" ||
+                            this.model.get("align")==="right") {
+                            x_padding = ( this.x.rangeBand() / 2 ).toFixed(2);
+                        }
+                    }
                 }
             }
             if(x_padding !== this.x_padding) {
