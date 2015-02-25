@@ -166,7 +166,7 @@ class Lines(Mark):
     close_path: bool (default: False)
         Whether to close the paths or not.
     fill: list of colors (default: [])
-        Fill color for the patches. Defaults to no-fill when no color provided.
+        Fill colors for the patches. Defaults to no-fill when no color provided.
     opacity: list of floats (default: [])
         Opacity for the patches. Defaults to 1 when list is too short, or set
         to None.
@@ -229,7 +229,7 @@ class Lines(Mark):
     close_path = Bool(sync=True, exposed=True, display_index=8,
                       display_name='Close path')
     fill = ColorList([], sync=True, exposed=True, display_index=9,
-                     display_name='Fill Color')
+                     display_name='Fill Colors')
     opacity = List([], sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
