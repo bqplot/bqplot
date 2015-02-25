@@ -26,18 +26,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
               .size(this.model.get("default_size"))
               .skew(this.model.get("default_skew"));
 
-            //container for mouse clicks
-            this.el.append("rect")
-              .attr("class", "mouseeventrect")
-              .attr("x", 0)
-              .attr("y", 0)
-              .attr("width", this.parent.plotarea_width)
-              .attr("visibility", "hidden")
-              .attr("pointer-events", "all")
-              .attr("height", this.parent.plotarea_height)
-              .style("pointer-events", "all")
-              .on("click", _.bind(this.click, this));
-
             var that = this;
             this.drag_listener = d3.behavior.drag()
               .on("dragstart", function(d) { return that.drag_start(d, this); })
@@ -163,6 +151,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on("change:enable_hover", function() { this.hide_tooltip(); }, this);
             this.listenTo(this.model, "change:idx_selected", this.update_idx_selected);
+            this.listenTo(this.parent, "bg_clicked", this.click);
         },
         update_default_color: function(model, new_color) {
             if(!this.model.dirty) {
@@ -300,9 +289,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         },
         relayout: function() {
             this.set_ranges();
-            this.el.select(".mouseeventrect")
-              .attr("width", this.parent.plotarea_width)
-              .attr("height", this.parent.plotarea_height);
             this.update_xy_position();
         },
         update_xy_position: function() {
@@ -684,7 +670,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                            point: {"x": d.x, "y": d.y},
                            index: i});
             }
-        },    });
+        },
+    });
 
     return {
         Scatter: Scatter,

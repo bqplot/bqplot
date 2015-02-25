@@ -92,7 +92,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
               .attr("x", 0).attr("y", 0)
               .attr("width", this.plotarea_width)
               .attr("height", this.plotarea_height)
-              .attr("fill", "url(#" + gradient_id + ")");
+              .attr("fill", "url(#" + gradient_id + ")")
+              .on("click", function() { that.trigger("bg_clicked"); })
+              .style("pointer-events", "all");
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
