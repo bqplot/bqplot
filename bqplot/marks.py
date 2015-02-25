@@ -228,7 +228,7 @@ class Lines(Mark):
                          display_name='Interpolation')
     close_path = Bool(sync=True, exposed=True, display_index=8,
                       display_name='Close path')
-    fill = ColorList([], sync=True, exposed=True, display_index=9,
+    fill = ColorList([], allow_none=False, sync=True, exposed=True, display_index=9,
                      display_name='Fill Colors')
     opacity = List([], sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
