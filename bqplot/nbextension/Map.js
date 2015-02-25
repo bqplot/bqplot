@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 
-define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./require-less/less!./worldmap"], function(d3, topojson, FigureViewModule, utils, mapdata) {
+define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!./worldmap"], function(d3, topojson, FigureViewModule, utils) {
     "use strict";
 
-    var world = mapdata.world;
-    var countries = mapdata.countries;
 
     function cloneAll(selector) {
         var nodes = d3.selectAll(selector);
@@ -30,6 +28,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
     var Map = FigureViewModule.Figure.extend({
 
         render: function() {
+            var data = utils.load_class.apply(this, this.model.get('map_data'));
             this.map_id = utils.uuid();
             this.margin = this.model.get("fig_margin");
             this.enable_hover = this.model.get("enable_hover");
@@ -91,14 +90,27 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 });
             }
 
-            this.after_displayed(function() {
-                d3.select(this.el.parentNode).selectAll('#world_tooltip').remove();
-                this.draw_map();
-                this.update_layout();
-                this.create_listeners();
-                this.create_tooltip_widget(this);
+            data.then(function(mapdata) {
+                that.geodata = mapdata[0];
+                that.subunits = mapdata[1];
+
+                that.after_displayed(function() {
+                    d3.select(that.el.parentNode).selectAll('#world_tooltip').remove();
+                    that.draw_map();
+                    that.update_layout();
+                    that.create_listeners();
+                    that.create_tooltip_widget(that);
+                });
             });
 
+        },
+        get_subunit_name: function(id) {
+		    for(var i = 0; i< this.subunits.length; i++) {
+			    if(id == this.subunits[i].id){
+				    name = this.subunits[i].Name;
+				}
+			}
+            return name;
         },
         create_tooltip_widget: function(self) {
             this.tooltip_widget = this.model.get("tooltip_widget");
@@ -126,7 +138,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             if (this.model.get("axis")!==null) {
                 this.svg_over.attr("height", "85%");
 
-                that.ax_g = this.svg.append("g")
+                this.ax_g = this.svg.append("g")
                                     .attr("class", "color_axis map"+this.map_id);
 
                 this.create_child_view(this.model.get("axis")).then(function(view) {
@@ -141,6 +153,17 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                 this.svg_over.attr("height", "100%");
             }
         },
+        create_projection: function() {
+            this.path = d3.geo.path();
+
+            if(this.model.get("map_data")[0] === "worldmap") {
+                this.projection = d3.geo.mercator().center([0, 60]).scale(190);
+            } else if (this.model.get("map_data")[0] === "usstates") {
+                this.projection = d3.geo.albersUsa().scale(1200);
+            }
+
+            this.path = this.path.projection(this.projection);
+        },
         draw_map: function() {
 
             var that = this;
@@ -148,9 +171,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
             var h = this.height;
 
             //Define default path generator
-			var path = d3.geo.path();
-			var projection = d3.geo.mercator().center([0,60]).scale(190);
-			path = path.projection(projection);
+            this.create_projection();
 
 			this.svg = d3.select(this.el);
 
@@ -183,19 +204,19 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
 
             //Bind data and create one path per GeoJSON feature
             this.fill_g.selectAll("path")
-			    .data(topojson.feature(world, world.objects.countries).features)
+			    .data(topojson.feature(this.geodata, this.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
-				.attr("d", path)
+				.attr("d", that.path)
 				.style("fill", function(d, i) {
                     return that.fill_g_colorfill(d, i, that);
                 });
 
             this.stroke_g.selectAll("path")
-			    .data(topojson.feature(world, world.objects.countries).features)
+			    .data(topojson.feature(this.geodata, this.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
-				.attr("d", path)
+				.attr("d", that.path)
                 .style("fill-opacity", 0.0)
 				.on("mouseover", function(d){
                     if(!that.model.get("enable_hover")){
@@ -248,13 +269,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
                         return;
                     }
 
-					var name;
-
-					for(var i = 0; i< countries.length; i++) {
-						if(d.id == countries[i].id){
-							name = countries[i].Name;
-						}
-					}
+					var name = that.get_subunit_name(d.id);
 
                     var mouse_pos = d3.mouse(that.el);
 
@@ -566,12 +581,8 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./MapData", "./requi
         },
         click_highlight: function(d, that) {
             var e = window.event;
-			var name;
-			for(var i = 0; i< countries.length; i++) {
-				if(d.id === countries[i].id) {
-					name = countries[i].Name;
-				}
-			}
+            var name = this.get_subunit_name(d.id);
+
             if(e.ctrlKey) {
 	            this.send({event:'click', country:name, id:d.id});
                 return;
