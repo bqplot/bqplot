@@ -161,6 +161,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.model.on("change:fill", this.update_fill, this);
             this.model.on("change:display_names", this.update_display_names, this);
             this.model.on("change:tooltip", this.create_tooltip, this);
+            this.model.on("change:enable_hover", function() { this.hide_tooltip(); }, this);
             this.listenTo(this.model, "change:idx_selected", this.update_idx_selected);
         },
         update_default_color: function(model, new_color) {
