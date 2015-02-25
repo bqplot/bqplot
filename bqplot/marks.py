@@ -131,8 +131,8 @@ class Mark(Widget):
     animate_dur = Int(0, sync=True,
                       exposed=True, display_index=2,
                       display_name='Animation duration')
-    labels = UnicodeList(sync=True, exposed=True, display_index=3,
-                         display_name='Labels')
+    labels = UnicodeList(allow_none=False, sync=True, exposed=True,
+                         display_index=3, display_name='Labels')
     apply_clip = Bool(True, sync=True)
     visible = Bool(True, sync=True)
     selected_style = Dict({}, sync=True)
@@ -211,8 +211,8 @@ class Lines(Mark):
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
-    colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=3,
-                       display_name='Colors')
+    colors = ColorList(CATEGORY10, allow_none=False, sync=True, exposed=True,
+                       display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4,
                          display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none',
@@ -453,11 +453,11 @@ class Hist(Mark):
                             'counts': {'orientation': 'vertical'}}, sync=True)
     bins = Int(10, sync=True, exposed=True, display_index=2,
                display_name='Number of bins')
-    midpoints = List(sync=True, allow_none=False, read_only=True, display_index=3,
-                     display_name='Mid points')
+    midpoints = List(sync=True, allow_none=False, read_only=True,
+                     display_index=3, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
-    colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=5,
-                       display_name='Colors')
+    colors = ColorList(CATEGORY10, allow_none=False, sync=True, exposed=True,
+                       display_index=5, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
@@ -540,8 +540,8 @@ class Bars(Mark):
     type = Enum(['stacked', 'grouped'], default_value='stacked',
                 allow_none=False, sync=True, exposed=True, display_index=3,
                 display_name='Type')
-    colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4,
-                       display_name='Colors')
+    colors = ColorList(CATEGORY10, allow_none=False, sync=True, exposed=True,
+                       display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
     select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
