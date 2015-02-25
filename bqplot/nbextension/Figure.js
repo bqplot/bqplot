@@ -95,8 +95,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
               .on("click", function() { that.trigger("bg_clicked"); })
               .style("pointer-events", "all");
 
-            if(this.model.get("background_color")!==null) {
-                this.bg.style("fill", this.model.get("background_color"));
+            if(this.model.get("fig_color")!==null) {
+                this.bg.style("fill", this.model.get("fig_color"));
             } else {
                 this.bg.style("fill", "url(#" + gradient_id + ")");
             }
@@ -192,11 +192,11 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             });
         },
         create_listeners: function() {
-            this.model.on("change:background_color", this.change_color, this);
+            this.model.on("change:fig_color", this.change_color, this);
         },
         change_color: function() {
-            if (this.model.get("background_color") !== null) {
-                this.bg.style("fill", this.model.get("background_color"));
+            if (this.model.get("fig_color") !== null) {
+                this.bg.style("fill", this.model.get("fig_color"));
             } else {
                 this.bg.style("fill", "url(#gd_id" + this.id + ")" );
             }
