@@ -92,9 +92,14 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
               .attr("x", 0).attr("y", 0)
               .attr("width", this.plotarea_width)
               .attr("height", this.plotarea_height)
-              .attr("fill", "url(#" + gradient_id + ")")
               .on("click", function() { that.trigger("bg_clicked"); })
               .style("pointer-events", "all");
+
+            if(this.model.get("background_color")!==null) {
+                this.bg.style("fill", this.model.get("background_color"));
+            } else {
+                this.bg.style("fill", "url(#" + gradient_id + ")");
+            }
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
@@ -181,9 +186,20 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
 
                 that.after_displayed(function() {
                     that.el.parentNode.appendChild(that.tooltip_div.node());
+                    that.create_listeners();
                     that.update_layout();
                 });
             });
+        },
+        create_listeners: function() {
+            this.model.on("change:background_color", this.change_color, this);
+        },
+        change_color: function() {
+            if (this.model.get("background_color") !== null) {
+                this.bg.style("fill", this.model.get("background_color"));
+            } else {
+                this.bg.style("fill", "url(#gd_id" + this.id + ")" );
+            }
         },
         remove: function() {
             this.model.off(null, null, this);
