@@ -49,6 +49,11 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.selected_indices = this.model.get("idx_selected");
 
             var self = this;
+            this.after_displayed(function() {
+                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+                this.create_tooltip();
+            });
+
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.compute_view_padding();
@@ -155,6 +160,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.model.on("change:default_size", this.update_default_size, this);
             this.model.on("change:fill", this.update_fill, this);
             this.model.on("change:display_names", this.update_display_names, this);
+            this.model.on("change:tooltip", this.create_tooltip, this);
+            this.model.on("change:enable_hover", function() { this.hide_tooltip(); }, this);
             this.listenTo(this.model, "change:idx_selected", this.update_idx_selected);
         },
         update_default_color: function(model, new_color) {
@@ -331,6 +338,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     );
             this.update_xy_position();
             elements.call(this.drag_listener);
+            elements.on("mouseover", function(d, i) { return that.mouse_over(d, i); })
+                .on("mouseout", function(d, i) { return that.mouse_out(d, i); });
 
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
@@ -657,7 +666,25 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             //draw which adds the new point because the data now has a new
             //point
         },
-    });
+        mouse_over: function(d, i) {
+            if(this.model.get("enable_hover")) {
+                //make tooltip visible
+                this.trigger("update_tooltip", d);
+                this.show_tooltip(d3.event, d);
+                this.send({event: "hover",
+                           point: {"x": d.x, "y": d.y},
+                           index: i});
+            }
+        },
+        mouse_out: function(d, i) {
+            if(this.model.get("enable_hover")) {
+                // make tooltip invisible
+                this.hide_tooltip();
+                this.send({event: "hover",
+                           point: {"x": d.x, "y": d.y},
+                           index: i});
+            }
+        },    });
 
     return {
         Scatter: Scatter,

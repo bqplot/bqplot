@@ -70,6 +70,18 @@
            }
         }
     }
+    .mark_tooltip {
+        position: absolute;
+        pointer-events: none;
+        z-index: 1001;
+    }
+    .mark_tooltip table {
+        border-radius: 5px;
+    }
+    .mark_tooltip .tooltiptext {
+        text-align: center;
+        padding: 0.5em;
+    }
 }
 
 .theme-dark {
@@ -89,8 +101,27 @@
             fill: orange;
         }
     }
+    .mark_tooltip {
+        border: 2px solid whitesmoke;
+        border-radius : 5px;
+        box-shadow: 1px 1px 2px rgba(245, 245, 245, 0.8);
+    }
+    .mark_tooltip td{
+        border: thin solid whitesmoke;
+    }
 }
 
 .theme-light {
     .common();
+    .mark_tooltip {
+        border: 2px solid black;
+        border-radius : 5px;
+        box-shadow: 1px 1px 2px rgba(10, 10, 10, 0.8);
+    }
+    .mark_tooltip td{
+        border: thin solid black;
+    }
+    .mark_tooltip table {
+        background: #ececec;
+    }
 }

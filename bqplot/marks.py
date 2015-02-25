@@ -29,8 +29,8 @@ Marks
    Hist
    Bars
 """
-from IPython.html.widgets import Widget, CallbackDispatcher
-from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float
+from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher
+from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float, Instance
 
 from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
@@ -312,6 +312,13 @@ class Scatter(Mark):
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
+    tooltip: DOMWidget (default: None)
+        Widget to be displayed as tooltip when elements of the scatter are
+        hovered on
+    enable_hover: Bool (default: True)
+        Boolean attribute to control the hover interaction for the scatter. If
+        this is false, the on_hover custom mssg is not sent back to the python
+        side
     fill, drag_color, names_unique, enable_move, enable_add,
     enable_delete, restrict_x, restrict_y, update_on_move.
 
@@ -383,10 +390,12 @@ class Scatter(Mark):
     fill = Bool(True, sync=True)
     drag_color = Color('DodgerBlue', sync=True)
     names_unique = Bool(True, sync=True)
+    tooltip = Instance(DOMWidget, sync=True)
 
     enable_move = Bool(False, sync=True)
     enable_add = Bool(False, sync=True)
     enable_delete = Bool(False, sync=True)
+    enable_hover = Bool(True, sync=True)
     restrict_x = Bool(False, sync=True)
     restrict_y = Bool(False, sync=True)
     update_on_move = Bool(False, sync=True)
@@ -394,14 +403,20 @@ class Scatter(Mark):
     def __init__(self, **kwargs):
         super(Scatter, self).__init__(**kwargs)
         self._drag_end_handlers = CallbackDispatcher()
+        self._hover_handlers = CallbackDispatcher()
         self.on_msg(self._handle_custom_msgs)
 
     def on_drag_end(self, callback, remove=False):
         self._drag_end_handlers.register_callback(callback, remove=remove)
 
+    def on_hover(self, callback, remove=False):
+        self._hover_handlers.register_callback(callback, remove=remove)
+
     def _handle_custom_msgs(self, _, content):
         if content.get('event', '') == 'drag_end':
             self._drag_end_handlers(self, content)
+        elif content.get('event', '') == 'hover':
+            self._hover_handlers(self, content)
 
     _view_name = Unicode('Scatter', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Scatter', sync=True)

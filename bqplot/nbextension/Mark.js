@@ -31,6 +31,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             if(this.options.clip_id && this.model.get("apply_clip")) {
                 this.el.attr("clip-path", "url(#" + this.options.clip_id + ")");
             }
+            this.tooltip_div = d3.select(document.createElement("div"))
+                .attr("class", "mark_tooltip")
+                .style("opacity", 0);
 
             this.bisect = d3.bisector(function(d) { return d; }).left;
             this.el.style("display", (this.model.get("visible") ? "inline" : "none"));
@@ -88,6 +91,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         remove: function() {
             this.model.off(null, null, this);
             this.el.remove();
+            this.tooltip_div.remove();
             Mark.__super__.remove.apply(this);
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
@@ -177,6 +181,40 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         compute_view_padding: function() {
             //This function sets the x and y view paddings for the mark using
             //the variables x_padding and y_padding
+        },
+        show_tooltip: function(event, data) {
+            //event is the d3 event for the data
+            var mouse_pos = d3.mouse(this.parent.el.parentNode);
+            this.tooltip_div.transition()
+                .style("opacity", 0.9);
+
+            this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
+                .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
+        },
+        hide_tooltip: function() {
+            this.tooltip_div.transition()
+                .style("opacity", 0);
+        },
+        create_tooltip: function() {
+            //create tooltip widget. To be called after mark has been displayed
+            //and whenever the tooltip object changes
+            var tooltip_model = this.model.get("tooltip");
+            var self = this;
+            if(tooltip_model) {
+                var tooltip_creation_promise = this.create_child_view(tooltip_model);
+                tooltip_creation_promise.then(function(view) {
+                    if(self.tooltip_view) {
+                        self.tooltip_view.remove();
+                    }
+                    //remove previous tooltip
+                    self.tooltip_view = view;
+                    self.tooltip_div.node().appendChild(d3.select(view.el).node());
+                });
+            } else {
+                if(self.tooltip_view) {
+                    self.tooltip_view.remove();
+                }
+            }
         },
     });
 
