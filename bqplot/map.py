@@ -31,6 +31,7 @@ from IPython.html.widgets import DOMWidget, CallbackDispatcher, register
 
 from .scales import ColorScale
 from .axes import Axis
+from .traits import Color
 
 
 @register('bqplot.Map')
@@ -101,31 +102,29 @@ class Map(DOMWidget):
         tuple containing which map is to be displayed
     """
     fig_margin = Dict(dict(top=0, bottom=20, left=0, right=0), sync=True)   # Margin with respect to the parent. Width, height etc are determined by this
-    min_width = Float(800, sync=True)
-    min_height = Float(600, sync=True)
+    min_width = Float(800.0, sync=True)
+    min_height = Float(600.0, sync=True)
 
     enable_hover = Bool(True, sync=True)
-    hover_fill = Unicode('Orange', sync=True, allow_none=True)
-    hover_stroke = Unicode(sync=True, allow_none=True)
-    hover_stroke_width = Float(5.0, sync=True)
+    hovered_styles = Dict({'hovered_fill': 'Orange', 'hovered_stroke': None,
+                           'hovered_stroke_width': 5.0}, allow_none=True, sync=True)
 
-    stroke_color = Unicode(sync=True, allow_none=True)
-    default_color = Unicode(sync=True, allow_none=True)
+    stroke_color = Color(sync=True, allow_none=True)
+    default_color = Color(sync=True, allow_none=True)
     color = Dict(sync=True)
     color_scale = Instance(ColorScale, sync=True)
 
     enable_select = Bool(True, sync=True)
     selected = List([], sync=True)
-    selected_fill = Unicode("Red", sync=True, allow_none=True)
-    selected_stroke = Unicode(sync=True, allow_none=True)
-    selected_stroke_width = Float(5.0, sync=True)
+    selected_styles = Dict({'selected_fill': 'Red', 'selected_stroke': None,
+                            'selected_stroke_width': 5.0}, allow_none=True, sync=True)
 
     axis = Instance(Axis, sync=True)
 
-    tooltip_color = Unicode('White', sync=True)
+    tooltip_color = Color('White', sync=True)
     display_tooltip = Bool(True, sync=True)
     text_data = Dict(sync=True)
-    text_color = Unicode('Black', sync=True)
+    text_color = Color('Black', sync=True)
     tooltip_format = Unicode('.2f', sync=True)
     tooltip_widget = Instance(DOMWidget, sync=True)
 
