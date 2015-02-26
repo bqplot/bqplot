@@ -121,6 +121,13 @@ class Mark(Widget):
         when a selection exists.
     selected: list (default: [])
         Indices of the selected items in the mark.
+    tooltip: DOMWidget (default: None)
+        Widget to be displayed as tooltip when elements of the scatter are
+        hovered on
+    enable_hover: Bool (default: True)
+        Boolean attribute to control the hover interaction for the scatter. If
+        this is false, the on_hover custom mssg is not sent back to the python
+        side
     """
     mark_types = {}
     scales = Dict(sync=True)  # TODO: check for allow_none
@@ -139,12 +146,27 @@ class Mark(Widget):
     unselected_style = Dict({}, sync=True)
     selected = List(sync=True, allow_none=True)
 
+    enable_hover = Bool(True, sync=True)
+    tooltip = Instance(DOMWidget, sync=True)
+
     _model_name = Unicode('MarkModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
     _ipython_display_ = None
 
     def _selected_default(self):
         return None
+
+    def __init__(self, **kwargs):
+        super(Mark, self).__init__(**kwargs)
+        self._hover_handlers = CallbackDispatcher()
+        self.on_msg(self._handle_custom_msgs)
+
+    def on_hover(self, callback, remove=False):
+        self._hover_handlers.register_callback(callback, remove=remove)
+
+    def _handle_custom_msgs(self, _, content):
+        if content.get('event', '') == 'hover':
+            self._hover_handlers(self, content)
 
 
 @register_mark('bqplot.Lines')
@@ -314,13 +336,6 @@ class Scatter(Mark):
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
-    tooltip: DOMWidget (default: None)
-        Widget to be displayed as tooltip when elements of the scatter are
-        hovered on
-    enable_hover: Bool (default: True)
-        Boolean attribute to control the hover interaction for the scatter. If
-        this is false, the on_hover custom mssg is not sent back to the python
-        side
     fill, drag_color, names_unique, enable_move, enable_add,
     enable_delete, restrict_x, restrict_y, update_on_move.
 
@@ -393,12 +408,10 @@ class Scatter(Mark):
     fill = Bool(True, sync=True)
     drag_color = Color('DodgerBlue', sync=True)
     names_unique = Bool(True, sync=True)
-    tooltip = Instance(DOMWidget, sync=True)
 
     enable_move = Bool(False, sync=True)
     enable_add = Bool(False, sync=True)
     enable_delete = Bool(False, sync=True)
-    enable_hover = Bool(True, sync=True)
     restrict_x = Bool(False, sync=True)
     restrict_y = Bool(False, sync=True)
     update_on_move = Bool(False, sync=True)
@@ -406,14 +419,10 @@ class Scatter(Mark):
     def __init__(self, **kwargs):
         super(Scatter, self).__init__(**kwargs)
         self._drag_end_handlers = CallbackDispatcher()
-        self._hover_handlers = CallbackDispatcher()
         self.on_msg(self._handle_custom_msgs)
 
     def on_drag_end(self, callback, remove=False):
         self._drag_end_handlers.register_callback(callback, remove=remove)
-
-    def on_hover(self, callback, remove=False):
-        self._hover_handlers.register_callback(callback, remove=remove)
 
     def _handle_custom_msgs(self, _, content):
         if content.get('event', '') == 'drag_end':
@@ -573,20 +582,6 @@ class Bars(Mark):
                            display_name='Opacity')
     align = Enum(['center', 'left', 'right'], default_value='center',
                  allow_none=False, sync=True, exposed=True)
-    enable_hover = Bool(True, sync=True)
-    tooltip = Instance(DOMWidget, sync=True)
-
-    def __init__(self, **kwargs):
-        super(Bars, self).__init__(**kwargs)
-        self._hover_handlers = CallbackDispatcher()
-        self.on_msg(self._handle_custom_msgs)
-
-    def on_hover(self, callback, remove=False):
-        self._hover_handlers.register_callback(callback, remove=remove)
-
-    def _handle_custom_msgs(self, _, content):
-        if content.get('event', '') == 'hover':
-            self._hover_handlers(self, content)
 
     _view_name = Unicode('Bars', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Bars', sync=True)
