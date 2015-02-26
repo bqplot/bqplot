@@ -571,6 +571,20 @@ class Bars(Mark):
                            display_name='Opacity')
     align = Enum(['center', 'left', 'right'], default_value='center',
                  allow_none=False, sync=True, exposed=True)
+    enable_hover = Bool(True, sync=True)
+    tooltip = Instance(DOMWidget, sync=True)
+
+    def __init__(self, **kwargs):
+        super(Bars, self).__init__(**kwargs)
+        self._hover_handlers = CallbackDispatcher()
+        self.on_msg(self._handle_custom_msgs)
+
+    def on_hover(self, callback, remove=False):
+        self._hover_handlers.register_callback(callback, remove=remove)
+
+    def _handle_custom_msgs(self, _, content):
+        if content.get('event', '') == 'hover':
+            self._hover_handlers(self, content)
 
     _view_name = Unicode('Bars', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Bars', sync=True)
