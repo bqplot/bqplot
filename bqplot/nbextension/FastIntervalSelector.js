@@ -91,21 +91,21 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
                 int_len : Math.round(vert_factor * this.width);
 
             var start;
-            if (mouse_pos[0] - interval_size / 2 < 0)
+            if (mouse_pos[0] - interval_size / 2 < 0) {
                 start = 0;
-            else if ((mouse_pos[0] + interval_size / 2) > this.width)
+            } else if ((mouse_pos[0] + interval_size / 2) > this.width) {
                 start = this.width - interval_size;
-            else
+            } else {
                 start = mouse_pos[0] - interval_size / 2;
+            }
 
             //update the interval location and size
             this.rect.attr("x", start);
             this.rect.attr("width", interval_size);
             this.model.set_typed_field("selected", this.invert_range(start, start + interval_size));
-            var idx_selected = this.mark_views.map(function(mark_view) {
-                return mark_view.invert_range(start, start + interval_size);
+            _.each(this.mark_views, function(mark_view) {
+                mark_view.invert_range(start, start + interval_size);
             });
-            this.model.set("idx_selected", idx_selected);
             this.touch();
         },
         invert_range: function(start, end) {

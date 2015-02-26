@@ -135,8 +135,8 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                (this.model.mark_data.length === 0))
             {
                 this.update_selected_colors(-1,-1);
-                idx_selected = [];
-                return idx_selected;
+                selected = [];
+                return selected;
             }
 
             var mark_width = this.calculate_mark_width();
@@ -164,19 +164,19 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var idx_end = -1;
             var indices = _.range(this.model.mark_data.length);
             var that = this;
-            var idx_selected = _.filter(indices, function(index) {
+            var selected = _.filter(indices, function(index) {
                 var elem = that.model.mark_data[index];
                 return (elem[0] >= min && elem[0] <= max);
             });
-            if(idx_selected.length > 0 &&
+            if(selected.length > 0 &&
                 (start_pxl !== x_scale.scale.range()[0] ||
                     end_pxl !== x_scale.scale.range()[1]))
             {
-                idx_start = idx_selected[0];
-                idx_end = idx_selected[idx_selected.length - 1];
+                idx_start = selected[0];
+                idx_end = selected[selected.length - 1];
             }
             this.update_selected_colors(idx_start, idx_end);
-            return idx_selected;
+            return selected;
         },
         invert_point: function(pixel) {
             var x_scale = this.scales["x"];
@@ -187,7 +187,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var index = this.bisect(this.model.mark_data.map(function(d) {
                 return d[0];
             }), point);
-            this.model.set("idx_selected", [index]);
+            this.model.set("selected", [index]);
             this.touch();
             return index;
         },
