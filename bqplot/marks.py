@@ -482,6 +482,8 @@ class Hist(Mark):
                            exposed=True, display_index=7,
                            display_name='Opacity')
     select_bars = Bool(False, sync=True)
+    enable_hover = Bool(True, sync=True)
+    tooltip = Instance(DOMWidget, sync=True)
 
     _view_name = Unicode('Hist', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Hist', sync=True)

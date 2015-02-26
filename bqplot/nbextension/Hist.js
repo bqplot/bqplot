@@ -22,6 +22,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.bars_selected = [];
 
             var self = this;
+            this.after_displayed(function() {
+                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+                this.create_tooltip();
+            });
+
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.draw();
@@ -51,6 +56,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             Hist.__super__.create_listeners.apply(this);
+            this.el.on("mouseover", _.bind(this.mouse_over, this))
+                .on("mousemove", _.bind(this.mouse_move, this))
+                .on("mouseout", _.bind(this.mouse_out, this));
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors",this.update_colors,this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
@@ -380,7 +388,32 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.touch();
             }
         },
-        });
+        mouse_over: function() {
+            if(this.model.get("enable_hover")) {
+                var data = d3.select(d3.event.target).data()[0];
+                //make tooltip visible
+                this.trigger("update_tooltip", data);
+                this.show_tooltip(d3.event, data);
+                this.send({event: "hover",
+                           point: data});
+            }
+        },
+        mouse_out: function() {
+            if(this.model.get("enable_hover")) {
+                var data = d3.select(d3.event.target).data()[0];
+                // make tooltip invisible
+                this.hide_tooltip();
+                this.send({event: "hover",
+                           point: data});
+            }
+        },
+        mouse_move: function() {
+            if(this.model.get("enable_hover")) {
+                var data = d3.select(d3.event.target).data()[0];
+                this.show_tooltip(d3.event, data);
+            }
+        },
+    });
 
     return {
         Hist: Hist,
