@@ -117,19 +117,27 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 min_x_dist = 0;
             }
 
+            // X Scale
             if((!this.get("preserve_domain")["x"]) && this.mark_data.length !== 0) {
-                var min = d3.min(this.mark_data.map(function(d) {
-                    return d[0];
-                }));
-                var max = d3.max(this.mark_data.map(function(d) {
-                    return d[0];
-                }));
-                if(max instanceof Date) max = max.getTime();
-                x_scale.set_domain([min - min_x_dist/2, max + min_x_dist/2], this.id);
+                if(x_scale.type === "ordinal") {
+                    x_scale.compute_and_set_domain(
+                        this.mark_data.map(function(d) { return d[0]; })
+                    );
+                } else {
+                    var min = d3.min(this.mark_data.map(function(d) {
+                        return d[0];
+                    }));
+                    var max = d3.max(this.mark_data.map(function(d) {
+                        return d[0];
+                    }));
+                    if(max instanceof Date) max = max.getTime();
+                    x_scale.set_domain([min - min_x_dist/2, max + min_x_dist/2], this.id);
+                }
             } else {
                 x_scale.del_domain([], this.id);
             }
 
+            // Y Scale
             if((!this.get("preserve_domain")["y"]) && this.mark_data.length !== 0) {
                 // Remember that elem contains OHLC data here so we cannot use
                 // compute_and_set_domain

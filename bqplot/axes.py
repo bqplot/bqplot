@@ -30,7 +30,7 @@ Axes
 from IPython.html.widgets import Widget
 from IPython.utils.traitlets import Int, Unicode, Instance, Enum, Dict, Bool
 
-from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale
+from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale, OrdinalScale
 from .traits import NdArray, Color
 
 
@@ -130,6 +130,8 @@ class Axis(BaseAxis):
         if isinstance(self.scale, DateScale):
             # TODO: We should probably have a DateAxis subclass instead of this
             # check at runtime.
+            return None
+        elif isinstance(self.scale, OrdinalScale):
             return None
         elif isinstance(self.scale, LogScale):
             return '.3g'

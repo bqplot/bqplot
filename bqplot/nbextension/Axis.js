@@ -182,6 +182,9 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
                     return custom_time_format;
                 }
             } else if (this.axis_scale.model.type === "ordinal") {
+                if(this.model.get("tick_format")) {
+                    return d3.time.format(this.model.get("tick_format"));
+                }
                 return function(d) { return d; };
             }
             return d3.format(this.model.get("tick_format"));
