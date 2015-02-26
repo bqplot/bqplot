@@ -50,7 +50,7 @@ class Map(DOMWidget):
 
     Display Attributes
     ------------------
-    color: Color or None (default: None)
+    default_color: Color or None (default: None)
         default color for items of the map when no color data is passed
     tooltip_color: color (default: None)
         color for the background of the tooltip
@@ -73,7 +73,7 @@ class Map(DOMWidget):
 
     Data Attributes
     ---------------
-    color_data: Dict or None (default: None)
+    color: Dict or None (default: None)
         dictionary containing the data associated with every country for the
         color scale
 
@@ -110,8 +110,8 @@ class Map(DOMWidget):
     hover_stroke_width = Float(5.0, sync=True)
 
     stroke_color = Unicode(sync=True, allow_none=True)
-    color = Unicode(sync=True, allow_none=True)
-    color_data = Dict(sync=True)
+    default_color = Unicode(sync=True, allow_none=True)
+    color = Dict(sync=True)
     color_scale = Instance(ColorScale, sync=True)
 
     enable_select = Bool(True, sync=True)
