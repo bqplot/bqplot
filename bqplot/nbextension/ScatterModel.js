@@ -63,7 +63,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 this.mark_data = x_data.map(function(d, i) {
                     return {x: d,
                             y: y_data[i],
-                            z: color[i],
+                            color: color[i],
                             size: size[i],
                             opacity: opacity[i],
                             skew: skew[i],

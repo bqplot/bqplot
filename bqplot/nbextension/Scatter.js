@@ -247,8 +247,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         // keep consistent across different places where we use it.
         get_element_color: function(data) {
             var color_scale = this.scales["color"];
-            if(color_scale && data.z !== undefined && data.z !== null) {
-                return color_scale.scale(data.z);
+            if(color_scale && data.color !== undefined && data.color !== null) {
+                return color_scale.scale(data.color);
             }
             return this.model.get("default_color");
         },
