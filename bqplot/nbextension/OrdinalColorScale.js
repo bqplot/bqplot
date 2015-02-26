@@ -22,6 +22,7 @@ define(["./d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleView
             this.model.on("domain_changed", this.model_domain_changed, this);
             this.model.on("set_ticks", this.model_ticks_changed, this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
+            this.set_range();
         },
         set_range: function() {
             if (this.model.get("colors").length > 0) {

@@ -29,6 +29,7 @@ define(["./d3", "./LinearColorScale", "./ColorUtils"], function(d3, LinearColorS
                 this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
             }
             this.format_date = this.model.format_date;
+            this.set_range();
 
             this.model.on("domain_changed", this.model_domain_changed, this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
