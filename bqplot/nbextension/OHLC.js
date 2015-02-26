@@ -52,6 +52,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             this.model.on("change:opacity", this.update_opacity, this);
             this.model.on("change:marker", this.update_marker, this);
             this.model.on("format_updated", this.draw, this);
+            this.model.on("data_updated", this.draw);
         },
         update_stroke: function() {
             var stroke = this.model.get("stroke");
