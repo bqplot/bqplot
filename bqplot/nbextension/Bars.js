@@ -26,17 +26,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
 
-            this.el.append("rect")
-                .attr("class", "mouseeventrect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", this.parent.plotarea_width)
-                .attr("visibility", "hidden")
-                .attr("pointer-events", "all")
-                .attr("height", this.parent.plotarea_height)
-                .style("pointer-events", "all")
-                .on("click", _.bind(this.reset_selection, this));
-
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.compute_view_padding();
@@ -108,6 +97,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:type", this.draw, this);
             this.model.on("change:align", this.realign, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+            this.listenTo(this.parent, "bg_clicked", this.reset_selection);
         },
         realign: function() {
             //TODO: Relayout is an expensive call on realigning. Need to change
@@ -118,10 +108,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var y_scale = this.scales["y"];
             this.set_ranges();
             this.compute_view_padding();
-
-            this.el.select(".mouseeventrect")
-              .attr("width", this.parent.plotarea_width)
-              .attr("height", this.parent.plotarea_height);
 
             this.el.select(".zeroLine")
               .attr("x1",  0)

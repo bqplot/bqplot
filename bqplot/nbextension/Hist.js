@@ -21,17 +21,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var base_creation_promise = Hist.__super__.render.apply(this);
             this.bars_selected = [];
 
-            this.el.append("rect")
-                .attr("class", "mouseeventrect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", this.parent.plotarea_width)
-                .attr("visibility", "hidden")
-                .attr("pointer-events", "all")
-                .attr("height", this.parent.plotarea_height)
-                .style("pointer-events", "all")
-                .on("click", _.bind(this.reset_selection, this));
-
             var self = this;
             return base_creation_promise.then(function() {
                 self.create_listeners();
@@ -66,6 +55,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:colors",this.update_colors,this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.model.on("change:idx_selected", this.update_idx_selected, this);
+            this.listenTo(this.parent, "bg_clicked", this.reset_selection);
         },
         update_colors: function(model, colors) {
             this.el.selectAll(".bar").selectAll("rect")
@@ -98,10 +88,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         relayout: function() {
             this.set_ranges();
-
-            this.el.select(".mouseeventrect")
-              .attr("width", this.parent.plotarea_width)
-              .attr("height", this.parent.plotarea_height);
 
             var x_scale = this.scales["sample"],
                 y_scale = this.scales["counts"];

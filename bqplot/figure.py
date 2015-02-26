@@ -34,6 +34,7 @@ from .scales import Scale, LinearScale
 from .interacts import Interaction
 from .marks import Mark
 from .axes import Axis
+from .traits import Color
 
 
 @register('bqplot.Figure')
@@ -96,6 +97,7 @@ class Figure(DOMWidget):
     interaction = Instance(Interaction, allow_none=True, sync=True)
     scale_x = Instance(Scale, sync=True)
     scale_y = Instance(Scale, sync=True)
+    fig_color = Color(None, allow_none=True, sync=True)
 
     min_width = CFloat(800.0, sync=True)
     min_height = CFloat(600.0, sync=True)
