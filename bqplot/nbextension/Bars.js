@@ -100,6 +100,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("colors_updated", this.update_colors, this);
             this.model.on("change:type", this.draw, this);
             this.model.on("change:align", this.realign, this);
+            this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.listenTo(this.parent, "bg_clicked", this.reset_selection);
         },

@@ -59,6 +59,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.el.on("mouseover", _.bind(this.mouse_over, this))
                 .on("mousemove", _.bind(this.mouse_move, this))
                 .on("mouseout", _.bind(this.mouse_out, this));
+            this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors",this.update_colors,this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);

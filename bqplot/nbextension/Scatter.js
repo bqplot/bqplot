@@ -137,6 +137,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             Scatter.__super__.create_listeners.apply(this);
             var self = this;
             this.el.on("mouseover", _.bind(this.mouse_over, this))
+                .on("mousemove", _.bind(this.mouse_move, this))
                 .on("mouseout", _.bind(this.mouse_out, this));
 
             this.model.on("change:default_color", this.update_default_color, this);
@@ -673,6 +674,12 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 this.hide_tooltip();
                 this.send({event: "hover",
                            point: data});
+            }
+        },
+        mouse_move: function() {
+            if(this.model.get("enable_hover")) {
+                var data = d3.select(d3.event.target).data()[0];
+                this.show_tooltip(d3.event, data);
             }
         },
     });
