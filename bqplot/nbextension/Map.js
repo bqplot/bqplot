@@ -13,6 +13,15 @@
  * limitations under the License.
  */
 
+requirejs.config({
+    paths: {
+            "d3topojson": "/nbextensions/bqplot/topojson/topojson",
+           },
+    shim: {
+           "d3topojson": {exports: "topojson"},
+          }
+});
+
 define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!./worldmap"], function(d3, topojson, FigureViewModule, utils) {
     "use strict";
 
