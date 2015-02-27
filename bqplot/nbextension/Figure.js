@@ -583,8 +583,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                             var elems = node.querySelectorAll(rule.selectorText);
                             if (elems.length > 0) {
                                 selector = rule.selectorText;
-                                selector = replaceAll("svg.*", "", selector);
-                                selector = replaceAll("svg", "", selector);
+                                selector = replaceAll("\.theme-dark", "", selector);
                                 used += selector + " { " + rule.style.cssText + " }\n";
                             }
                         }
@@ -605,14 +604,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                svg.setAttribute("version", "1.1");
                svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
                svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-               // TODO this depends on the theming, which is bad
-               // we should rather remove look at the classes of all parent
-               // elements to the current svg and remove it for the selector.
-               if (document.body.classList.contains("theme-dark")) {
-                   svg.classList.add("theme-dark");
-               } else {
-                   svg.classList.add("theme-light");
-               }
                svg.style.background = window.getComputedStyle(document.body).background;
                var outer = document.createElement("div");
                outer.appendChild(styles(node, svg));
