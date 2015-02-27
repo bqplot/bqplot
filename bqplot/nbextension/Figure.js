@@ -568,6 +568,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             this.title.text(this.model.get("title"));
         },
         save_png: function() {
+            var  replaceAll = function (find, replace, str) {
+                return str.replace(new RegExp(find, 'g'), replace);
+            };
             var styles = function(node, target) {
                 var used = "";
                 var sheets = document.styleSheets;
@@ -580,8 +583,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                             var elems = node.querySelectorAll(rule.selectorText);
                             if (elems.length > 0) {
                                 selector = rule.selectorText;
-                                selector = selector.replace(".theme-dark", "");
-                                selector = selector.replace(".theme-light", "");
+                                selector = replaceAll("svg.*", "", selector);
+                                selector = replaceAll("svg", "", selector);
                                 used += selector + " { " + rule.style.cssText + " }\n";
                             }
                         }
@@ -589,25 +592,33 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 }
                 var s = document.createElement("style");
                 s.setAttribute("type", "text/css");
-                // used = "line { stroke-width: 17px; }";
                 s.innerHTML = "<![CDATA[\n" + used + "\n]]>";
                 var defs = document.createElement("defs");
                 defs.appendChild(s);
                 target.insertBefore(defs, target.firstChild);
                 return target;
-            };
-            var svg2svg = function(node) {
-                // Creates a standalone SVG string from an inline SVG element
-                // containing all the computed style attributes.
-                var svg = node.cloneNode(true);
-                svg.setAttribute("version", "1.1");
-                svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-                svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-                var outer = document.createElement("div");
-                outer.appendChild(styles(node, svg));
-                return outer.innerHTML;
-            };
-            var svg2png = function(xml) {
+           };
+           var svg2svg = function(node) {
+               // Creates a standalone SVG string from an inline SVG element
+               // containing all the computed style attributes.
+               var svg = node.cloneNode(true);
+               svg.setAttribute("version", "1.1");
+               svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+               svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+               // TODO this depends on the theming, which is bad
+               // we should rather remove look at the classes of all parent
+               // elements to the current svg and remove it for the selector.
+               if (document.body.classList.contains("theme-dark")) {
+                   svg.classList.add("theme-dark");
+               } else {
+                   svg.classList.add("theme-light");
+               }
+               svg.style.background = window.getComputedStyle(document.body).background;
+               var outer = document.createElement("div");
+               outer.appendChild(styles(node, svg));
+               return outer.innerHTML;
+           };
+           var svg2png = function(xml) {
                 // Render an SVG string into PNG and download the PNG.
                 var image = new Image();
                 image.onload = function() {
