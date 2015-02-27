@@ -661,25 +661,26 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             if(this.model.get("enable_hover")) {
                 var data = d3.select(d3.event.target).data()[0];
                 //make tooltip visible
-                this.trigger("update_tooltip", this.model.get_data_dict(data.index));
-                this.show_tooltip(d3.event, data);
+                var tooltip_data = this.model.get_data_dict(data, data.index);
+                this.trigger("update_tooltip", tooltip_data);
+                this.show_tooltip(d3.event);
                 this.send({event: "hover",
-                           point: data});
+                           point: tooltip_data});
             }
         },
         mouse_out: function() {
             if(this.model.get("enable_hover")) {
                 var data = d3.select(d3.event.target).data()[0];
+                var tooltip_data = this.model.get_data_dict(data, data.index);
                 // make tooltip invisible
                 this.hide_tooltip();
                 this.send({event: "hover",
-                           point: data});
+                           point: tooltip_data});
             }
         },
         mouse_move: function() {
             if(this.model.get("enable_hover")) {
-                var data = d3.select(d3.event.target).data()[0];
-                this.show_tooltip(d3.event, data);
+                this.show_tooltip(d3.event);
             }
         },
     });

@@ -71,7 +71,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.save_changes();
             this.trigger("data_updated");
         },
-        get_data_dict: function(index) {
+        get_data_dict: function(data, index) {
             var return_dict = {};
             return_dict['midpoint'] = this.x_mid[index];
             return_dict['bin_start'] = this.x_bins[index];

@@ -96,10 +96,8 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                                        data["unique_id"] = unique_ids[index];
             });
         },
-        get_data_dict: function(index) {
-            return _.reduce(this.fields, function(res, key) {
-                                            res[key] = this.mark_data[index][key];
-                                            return res}, {}, this);
+        get_data_dict: function(data, index) {
+            return data;
         },
         update_domains: function() {
             if (!this.mark_data) {

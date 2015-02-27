@@ -86,10 +86,8 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.update_domains();
             this.trigger("data_updated");
         },
-        get_data_dict: function(index) {
-            return _.reduce(this.fields, function(res, key) {
-                                            res[key] = this.mark_data[index][key];
-                                            return res}, {}, this);
+        get_data_dict: function(data, index, sub_index) {
+            return data;
         },
         update_color: function() {
             //Function to update the color attribute for the data. In scatter,
