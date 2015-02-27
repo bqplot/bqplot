@@ -27,6 +27,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.fields = ["x", "y", "color", "size", "opacity", "names", "skew", "rotation", "index"];
         },
         update_data: function() {
             this.dirty = true;
@@ -94,6 +95,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                                        data["name"] = names[index];
                                        data["unique_id"] = unique_ids[index];
             });
+        },
+        get_data_dict: function(index) {
+            return _.reduce(this.fields, function(res, key) {
+                                            res[key] = this.mark_data[index][key];
+                                            return res}, {}, this);
         },
         update_domains: function() {
             if (!this.mark_data) {

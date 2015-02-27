@@ -661,7 +661,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             if(this.model.get("enable_hover")) {
                 var data = d3.select(d3.event.target).data()[0];
                 //make tooltip visible
-                this.trigger("update_tooltip", data);
+                this.trigger("update_tooltip", this.model.get_data_dict(data.index));
                 this.show_tooltip(d3.event, data);
                 this.send({event: "hover",
                            point: data});

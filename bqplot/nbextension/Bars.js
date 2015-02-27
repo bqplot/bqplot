@@ -206,16 +206,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     .attr("y", function(d) {
                         return y_scale.scale(d.y1);
                     }).attr("height", function(d) {
-                        return Math.abs(y_scale.scale(d.y1 + d.val) - y_scale.scale(d.y1));
+                        return Math.abs(y_scale.scale(d.y1 + d.y) - y_scale.scale(d.y1));
                     });
             } else {
                 bars_sel.attr("x", function(datum, index) {
                         return that.x1(index);
                   }).attr("width", this.x1.rangeBand().toFixed(2))
                   .attr("y", function(d) {
-                      return d3.min([y_scale.scale(d.val), y_scale.scale(that.model.base_value)]);
+                      return d3.min([y_scale.scale(d.y), y_scale.scale(that.model.base_value)]);
                   }).attr("height", function(d) {
-                      return Math.abs(y_scale.scale(that.model.base_value) - (y_scale.scale(d.val)));
+                      return Math.abs(y_scale.scale(that.model.base_value) - (y_scale.scale(d.y)));
                   });
             }
         },

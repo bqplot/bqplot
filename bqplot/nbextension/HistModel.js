@@ -25,6 +25,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"
             // function, and not merely "update_domains".
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
+            this.fields = ["bin_start", "bin_end", "midpoint", "count", "index"];
         },
         update_data: function() {
 	        var x_data = this.get_typed_field("sample");
@@ -59,6 +60,8 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d){
                 return d["value"];
             })(x_data_ind);
+            //adding index attribute to mark_data of the model
+            this.mark_data.forEach(function(data, index) { data['index'] = index; });
 
             this.counts = this.mark_data.map(function(d) { return d.length; });
             this.set("midpoints", this.x_mid);
@@ -67,6 +70,15 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.update_domains();
             this.save_changes();
             this.trigger("data_updated");
+        },
+        get_data_dict: function(index) {
+            var return_dict = {};
+            return_dict['midpoint'] = this.x_mid[index];
+            return_dict['bin_start'] = this.x_bins[index];
+            return_dict['bin_end'] = this.x_bins[index+1];
+            return_dict['index'] = index;
+            return_dict['count'] = this.counts[index];
+            return return_dict;
         },
         update_domains: function() {
             if(!this.mark_data) {

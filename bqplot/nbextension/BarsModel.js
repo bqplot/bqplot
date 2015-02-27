@@ -30,6 +30,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.fields = ["x", "y", "index", "sub_index", "color"];
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");
@@ -71,8 +72,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                                 y0_neg += value;
                                 return (y0_neg - value);
                             }()),
-                            val: value,
-                            y: value
+                            y: value,
                             // analogous to the height of the bar
                         };
                     });
@@ -85,6 +85,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
             this.update_domains();
             this.trigger("data_updated");
+        },
+        get_data_dict: function(index) {
+            return _.reduce(this.fields, function(res, key) {
+                                            res[key] = this.mark_data[index][key];
+                                            return res}, {}, this);
         },
         update_color: function() {
             //Function to update the color attribute for the data. In scatter,
