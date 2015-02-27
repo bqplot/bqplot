@@ -579,52 +579,38 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
                 }
                 var selected = this.model.get("selected").slice();
                 var index = selected.indexOf(d.id);
-                var self = this;
                 if(index > -1) {
                     selected.splice(index, 1);
-                    self.model.set("selected", selected);
-                    self.model.save_changes();
+                    this.model.set("selected", selected);
+                    this.touch();
                     d3.select(that).style("fill-opacity", 0.0).transition();
-                    self.highlight_g.selectAll(".hovered").remove();
+                    this.highlight_g.selectAll(".hovered").remove();
                     var choice = "#c".concat(d.id.toString());
                     d3.select(choice).remove();
                 }
                 else {
-                    self.highlight_g.selectAll(".hovered").remove();
-                    self.highlight_g.append(function() {
+                    this.highlight_g.selectAll(".hovered").remove();
+                    this.highlight_g.append(function() {
                             return that.cloneNode(true);
                          })
                          .attr("id", 'c'+d.id)
                          .classed("selected", true);
 
-                    if (self.model.get("selected_styles")["selected_fill"]!=="" &&
-                        self.model.get("selected_styles")["selected_fill"]!==null) {
-                        self.highlight_g.selectAll(".selected")
-                                         .style("fill-opacity", 1.0)
-                                        .style("fill", self.model.get("selected_styles")["selected_fill"]);
+                    if (this.validate_color(this.model.get("selected_styles")["selected_fill"])) {
+                        this.highlight_g.selectAll(".selected")
+                            .style("fill-opacity", 1.0)
+                            .style("fill", this.model.get("selected_styles")["selected_fill"]);
                     }
 
-                    if ((self.model.get("selected_styles")["selected_stroke"]!=="" &&
-                         self.model.get("selected_styles")["selected_stroke"]!==null) &&
-                         (self.model.get("selected_styles")["selected_fill"]!=="" &&
-                         self.model.get("selected_styles")["selected_fill"]!==null)) {
-                        self.highlight_g.selectAll(".selected")
-                                         .style("stroke", self.model.get("selected_styles")["selected_stroke"])
-                                         .style("stroke-width", self.model.get("selected_styles")["selected_stroke_width"]);
-                    }
-
-                    if((self.model.get("selected_styles")["selected_fill"]==="" ||
-                        self.model.get("selected_styles")["selected_fill"]===null) &&
-                        (self.model.get("selected_styles")["selected_stroke"]!=="" &&
-                         self.model.get("selected_styles")["selected_stroke"]!==null)) {
-                        self.highlight_g.selectAll(".selected")
-                             .style("stroke", self.model.get("selected_styles")["selected_stroke"])
-                             .style("stroke-width", self.model.get("selected_styles")["selected_stroke_width"]);
+                    if (this.validate_color(this.model.get("selected_styles")["selected_stroke"])) {
+                        this.highlight_g.selectAll(".selected")
+                                         .style("stroke", this.model.get("selected_styles")["selected_stroke"])
+                                         .style("stroke-width", this.model.get("selected_styles")["selected_stroke_width"]);
                     }
 
                     selected.push(d.id);
-                    self.model.set("selected", selected);
-                    self.model.save_changes();
+                    this.model.set("selected", selected);
+                    this.touch();
                 }
             }
         },
@@ -661,23 +647,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
                 return this.color_scale.scale(color_data[d.id]);
             }
         },
-        colorfill: function(d, j, that) {
-            var select = this.model.get("selected").slice();
-            var color_data = this.model.get("color");
-            if (select.indexOf(d.id)>-1 &&
-                that.model.get("selected_styles")["selected_fill"] !== "" &&
-                that.model.get("selected_styles")["selected_fill"] !== null) {
-                return that.model.get("selected_styles")["selected_fill"];
-            } else if (this.is_object_empty(color_data)) {
-                return that.model.get("default_color");
-            } else if (color_data[d.id]===undefined ||
-                       color_data[d.id]==="nan" ||
-                       color_data[d.id]===null) {
-                return "Grey";
-            } else {
-                return that.color_scale.scale(color_data[d.id]);
-            }
-        }
     });
 
     return {
