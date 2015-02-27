@@ -25,7 +25,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             var scale_creation_promise = this.set_scale_views();
             var self = this;
             this.model.on("scales_updated", function() {
-                this.set_scale_views().then( self.draw );
+                this.set_scale_views().then( function() { self.draw(); });
             }, this);
 
             this.colors = this.model.get("colors");

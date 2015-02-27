@@ -35,6 +35,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 this.update_domain();
             }
         },
+        update_domain: function() {
+            // overloaded in each scale
+        },
     });
 
     return {
