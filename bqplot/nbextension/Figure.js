@@ -110,7 +110,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
              *
             <g class="widget-subarea">
             <svg>
-                <g class="svg-figure" transform='margin translation'>
+                <g class="svg-figure" transform="margin translation">
                     <g class="svg-axes"></g>
                     <g class="svg-marks"></g>
                     <g class="svg-interaction"></g>
@@ -188,6 +188,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                     that.el.parentNode.appendChild(that.tooltip_div.node());
                     that.create_listeners();
                     that.update_layout();
+                    that.model.on("change:debug", that.save_png, that);
                 });
             });
         },
@@ -292,7 +293,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         remove_from_padding_dict: function(dict, mark_view, scale_model) {
             var scale_id = scale_model.id;
             if(dict[scale_id] !== undefined) {
-                delete dict[scale_id][mark_view.model.id+'_'+mark_view.cid];
+                delete dict[scale_id][mark_view.model.id + "_" + mark_view.cid];
 
                 if(Object.keys(dict[scale_id]).length == 0) {
                     delete dict[scale_id];
@@ -304,7 +305,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             if(!(dict[scale_id])) {
                 dict[scale_id]= {};
             }
-            dict[scale_id][mark_view.model.id+'_'+mark_view.cid] = value;
+            dict[scale_id][mark_view.model.id + "_" + mark_view.cid] = value;
         },
         mark_scales_updated: function(view) {
             var model = view.model;
@@ -566,7 +567,64 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         update_title: function(model, title) {
             this.title.text(this.model.get("title"));
         },
-
+        save_png: function() {
+            var styles = function(node) {
+                var used = "";
+                var sheets = document.styleSheets;
+                for (var i = 0; i < sheets.length; i++) {
+                    var rules = sheets[i].cssRules;
+                    for (var j = 0; j < rules.length; j++) {
+                        var rule = rules[j];
+                        if (typeof(rule.style) != "undefined") {
+                            var elems = node.querySelectorAll(rule.selectorText);
+                            if (elems.length > 0) {
+                                used += rule.selectorText + " { " + rule.style.cssText + " }\n";
+                            }
+                        }
+                    }
+                }
+                var s = document.createElement("style");
+                s.setAttribute("type", "text/css");
+                used = "line { stroke-width: 17px; }";
+                s.innerHTML = "<![CDATA[\n" + used + "\n]]>";
+                var defs = document.createElement("defs");
+                defs.appendChild(s);
+                node.insertBefore(defs, node.firstChild);
+                return node;
+            };
+            var svg2svg = function(node) {
+                // Creates a standalone SVG string from an inline SVG element
+                // containing all the computed style attributes.
+                var svg = node.cloneNode(true);
+                svg.setAttribute("version", "1.1");
+                svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+                svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+                var outer = document.createElement("div");
+                outer.appendChild(styles(svg));
+                return outer.innerHTML;
+            };
+            var svg2png = function(xml) {
+                // Render an SVG string into PNG and download the PNG.
+                var image = new Image();
+                image.onload = function() {
+                    var canvas = document.createElement("canvas");
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+                    var context = canvas.getContext("2d");
+                    context.drawImage(image, 0, 0);
+                    var a = document.createElement("a");
+                    a.download = "image.png";
+                    a.href = canvas.toDataURL("image/png");
+                    document.body.appendChild(a);
+                    a.click();
+                }
+                image.src = "data:image/svg+xml;base64," + btoa(xml);
+            };
+            // Create standalone SVG string
+            var svg = svg2svg(this.svg.node());
+            // Save to PNG
+            svg2png(svg);
+        },
     });
 
     return {

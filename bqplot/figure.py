@@ -28,7 +28,7 @@ Figure
 
 from IPython.html.widgets import DOMWidget, register
 from IPython.utils.traitlets import (Unicode, Instance, List, Dict,
-                                     CFloat, Bool, Enum, Float)
+                                     CFloat, Bool, Enum, Float, Int)
 
 from .scales import Scale, LinearScale
 from .interacts import Interaction
@@ -90,6 +90,7 @@ class Figure(DOMWidget):
         than the sum of the margins.
 
     """
+    debug = Int(sync=True)
     title = Unicode(sync=True,
                     exposed=True, display_index=1, display_name='Title')
     axes = List(Instance(Axis), allow_none=False, sync=True)
