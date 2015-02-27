@@ -568,9 +568,10 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             this.title.text(this.model.get("title"));
         },
         save_png: function() {
-            var styles = function(node) {
+            var styles = function(node, target) {
                 var used = "";
                 var sheets = document.styleSheets;
+                var selector;
                 for (var i = 0; i < sheets.length; i++) {
                     var rules = sheets[i].cssRules;
                     for (var j = 0; j < rules.length; j++) {
@@ -578,19 +579,22 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                         if (typeof(rule.style) != "undefined") {
                             var elems = node.querySelectorAll(rule.selectorText);
                             if (elems.length > 0) {
-                                used += rule.selectorText + " { " + rule.style.cssText + " }\n";
+                                selector = rule.selectorText;
+                                selector = selector.replace(".theme-dark", "");
+                                selector = selector.replace(".theme-light", "");
+                                used += selector + " { " + rule.style.cssText + " }\n";
                             }
                         }
                     }
                 }
                 var s = document.createElement("style");
                 s.setAttribute("type", "text/css");
-                used = "line { stroke-width: 17px; }";
+                // used = "line { stroke-width: 17px; }";
                 s.innerHTML = "<![CDATA[\n" + used + "\n]]>";
                 var defs = document.createElement("defs");
                 defs.appendChild(s);
-                node.insertBefore(defs, node.firstChild);
-                return node;
+                target.insertBefore(defs, target.firstChild);
+                return target;
             };
             var svg2svg = function(node) {
                 // Creates a standalone SVG string from an inline SVG element
@@ -600,7 +604,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
                 svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
                 var outer = document.createElement("div");
-                outer.appendChild(styles(svg));
+                outer.appendChild(styles(node, svg));
                 return outer.innerHTML;
             };
             var svg2png = function(xml) {
