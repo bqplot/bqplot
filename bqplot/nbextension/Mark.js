@@ -65,12 +65,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 that.trigger("mark_scales_updated");
             });
         },
-        set_ranges: function() {
-            this.set_positional_ranges();
-            this.set_additional_ranges();
-        },
-        set_positional_ranges: function() {},
-        set_additional_ranges: function() {},
         set_positional_scales: function() {
             // Positional scales are special in that they trigger a full redraw
             // when their domain is changed.

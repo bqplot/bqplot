@@ -334,7 +334,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             return this.get_colors(index);
         },
         update_line_xy: function() {
-            this.set_ranges();
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             this.line = d3.svg.line()
               .interpolate(this.model.get("interpolation"))
@@ -354,6 +353,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               });
         },
         draw: function() {
+            this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
               .data(this.model.mark_data, function(d, i) { return d.name; });
 

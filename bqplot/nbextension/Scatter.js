@@ -45,26 +45,23 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.compute_view_padding();
-                self.set_additional_ranges();
                 self.draw();
             });
         },
-        set_positional_ranges: function() {
+        set_ranges: function() {
             var x_scale = this.scales["x"],
-                y_scale = this.scales["y"];
+                y_scale = this.scales["y"],
+                size_scale = this.scales["size"],
+                color_scale = this.scales["color"],
+                opacity_scale = this.scales["opacity"],
+                skew_scale = this.scales["skew"],
+                rotation_scale = this.scales["rotation"];
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
-        },
-        set_additional_ranges: function() {
-            var size_scale = this.scales["size"],
-                color_scale = this.scales["color"],
-                opacity_scale = this.scales["opacity"],
-                skew_scale = this.scales["skew"],
-                rotation_scale = this.scales["rotation"];
             if(size_scale) {
                 // I don't know how to set the lower bound on the range of the
                 // values that the size scale takes. I guess a reasonable
@@ -292,7 +289,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                      });
         },
         relayout: function() {
-            this.set_positional_ranges();
+            this.set_ranges();
             this.update_xy_position();
         },
         update_xy_position: function() {
@@ -307,11 +304,10 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
               });
         },
         draw: function() {
+            this.set_ranges();
             var that = this,
                 default_color = this.model.get("default_color"),
                 fill = this.model.get("fill");
-
-            this.set_positional_ranges();
 
             var elements = this.el.selectAll(".dot_grp")
               .data(this.model.mark_data, function(d) {

@@ -34,7 +34,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         set_ranges: function() {
             var x_scale = this.scales["x"],
-                y_scale = this.scales["y"],
+                y_scale = this.scales["y"];
             if(x_scale.model.type !== "ordinal") {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             } else {
