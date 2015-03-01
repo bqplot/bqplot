@@ -31,6 +31,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.fields = ["x", "y", "index", "sub_index", "color"];
+            this.display_el_classes = ["bar"];
         },
         update_data: function() {
             var x_data = this.get_typed_field("x");

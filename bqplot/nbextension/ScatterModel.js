@@ -28,6 +28,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.fields = ["x", "y", "color", "size", "opacity", "names", "skew", "rotation", "index"];
+            this.display_el_classes = ["dot"];
         },
         update_data: function() {
             this.dirty = true;

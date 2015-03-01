@@ -108,6 +108,7 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
             // of `this.dirty` before rendering
             this.dirty = false;
             this.fields = [];
+            this.display_el_classes = ["mark"];
         },
         update_data : function() {
             // Update_data is typically overloaded in each mark

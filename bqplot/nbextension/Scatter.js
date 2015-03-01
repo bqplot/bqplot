@@ -657,32 +657,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             //draw which adds the new point because the data now has a new
             //point
         },
-        mouse_over: function() {
-            if(this.model.get("enable_hover")) {
-                var data = d3.select(d3.event.target).data()[0];
-                //make tooltip visible
-                var tooltip_data = this.model.get_data_dict(data, data.index);
-                this.trigger("update_tooltip", tooltip_data);
-                this.show_tooltip(d3.event);
-                this.send({event: "hover",
-                           point: tooltip_data});
-            }
-        },
-        mouse_out: function() {
-            if(this.model.get("enable_hover")) {
-                var data = d3.select(d3.event.target).data()[0];
-                var tooltip_data = this.model.get_data_dict(data, data.index);
-                // make tooltip invisible
-                this.hide_tooltip();
-                this.send({event: "hover",
-                           point: tooltip_data});
-            }
-        },
-        mouse_move: function() {
-            if(this.model.get("enable_hover")) {
-                this.show_tooltip(d3.event);
-            }
-        },
     });
 
     return {

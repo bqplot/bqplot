@@ -220,6 +220,45 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 }
             }
         },
+        mouse_over: function() {
+            if(this.model.get("enable_hover")) {
+                var el = d3.select(d3.event.target);
+                if(this.is_hover_element(el)) {
+                    var data = el.data()[0];
+                    //make tooltip visible
+                    var tooltip_data = this.model.get_data_dict(data, data.index);
+                    this.trigger("update_tooltip", tooltip_data);
+                    this.show_tooltip(d3.event);
+                    this.send({event: "hover",
+                            point: tooltip_data});
+                }
+            }
+        },
+        mouse_out: function() {
+            if(this.model.get("enable_hover")) {
+                var el = d3.select(d3.event.target);
+                if(this.is_hover_element(el)) {
+                    var data = el.data()[0];
+                    var tooltip_data = this.model.get_data_dict(data, data.index);
+                    // make tooltip invisible
+                    this.hide_tooltip();
+                    this.send({event: "hover",
+                            point: tooltip_data});
+                }
+            }
+        },
+        mouse_move: function() {
+            if(this.model.get("enable_hover") &&
+               this.is_hover_element(d3.select(d3.event.target))) {
+                this.show_tooltip(d3.event);
+            }
+        },
+        is_hover_element: function(elem) {
+            var hit_check = this.model.display_el_classes.map(function(class_name) {
+                                       return elem.classed(class_name); });
+            return (_.compact(hit_check).length > 0);
+
+        },
     });
 
     return {

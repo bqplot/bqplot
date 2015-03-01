@@ -26,6 +26,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // function, and not merely "update_domains".
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
             this.fields = ["bin_start", "bin_end", "midpoint", "count", "index"];
+            this.display_el_classes = ["rect"];
         },
         update_data: function() {
 	        var x_data = this.get_typed_field("sample");
