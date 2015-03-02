@@ -66,7 +66,7 @@ def _default_toolbar(figure):
     pz = panzoom(figure.marks)
     normal_btn = FaToggleButton('fa-circle-o', tooltip='Normal', value=True)
     pz_btn = FaToggleButton('fa-arrows', tooltip='Pan and Zoom', value=False)
-    snapshot_btn = FaButton('fa-camera', tooltip='Snapshot View')
+    snapshot_btn = FaButton('fa-thumb-tack', tooltip='Snapshot View')
     reset_btn = FaButton('fa-refresh', tooltip='Reset View')
 
     def tog(btn, *args):
