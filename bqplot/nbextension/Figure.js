@@ -188,9 +188,14 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                     that.el.parentNode.appendChild(that.tooltip_div.node());
                     that.create_listeners();
                     that.update_layout();
-                    that.model.on("change:debug", that.save_png, that);
+                    that.model.on("msg:custom", that.dispatch_custom_messages, that);
                 });
             });
+        },
+        dispatch_custom_messages: function(msg) {
+            if (msg.type === "save") {
+                this.save_png();
+            }
         },
         create_listeners: function() {
             this.model.on("change:fig_color", this.change_color, this);
@@ -569,7 +574,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         },
         save_png: function() {
             var  replaceAll = function (find, replace, str) {
-                return str.replace(new RegExp(find, 'g'), replace);
+                return str.replace(new RegExp(find, "g"), replace);
             };
             var styles = function(node, target) {
                 var used = "";
