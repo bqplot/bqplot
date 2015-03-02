@@ -585,15 +585,28 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                     for (var j = 0; j < rules.length; j++) {
                         var rule = rules[j];
                         if (typeof(rule.style) != "undefined") {
-                            var elems = node.querySelectorAll(rule.selectorText);
-                            if (elems.length > 0) {
-                                selector = rule.selectorText;
-                                selector = replaceAll("\.theme-dark", "", selector);
-                                used += selector + " { " + rule.style.cssText + " }\n";
+                            var match = null;
+                            try {
+                                match = node.querySelectorAll(rule.selectorText);
+                            } catch (err) {
+                                console.warn('Invalid CSS selector "' +
+                                             rule.selectorText + '"', err);
+                            }
+                            if (match) {
+                                var elems = node.querySelectorAll(rule.selectorText);
+                                if (elems.length > 0) {
+                                    selector = rule.selectorText;
+                                    selector = replaceAll("\.theme-dark", "", selector);
+                                    used += selector + " { " + rule.style.cssText + " }\n";
+                                }
+                            } else if (rule.cssText.match(/^@font-face/)) {
+                                css += rule.cssText + "\n";
                             }
                         }
                     }
                 }
+                // TODO: this is terrible.
+                used += "svg { font-size: 10px; }\n";
                 var s = document.createElement("style");
                 s.setAttribute("type", "text/css");
                 s.innerHTML = "<![CDATA[\n" + used + "\n]]>";
