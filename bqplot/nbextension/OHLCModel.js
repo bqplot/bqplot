@@ -24,6 +24,8 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.on("change:format", this.update_format, this);
             this.px = { o: -1, h: -1, l: -1, c: -1 };
             this.mark_data = [];
+            this.fields = ["x", "o", "h", "l", "c", "index"] ;
+            this.display_el_classes = ["stick_body"] ;
         },
         update_format: function() {
             this.update_data();
@@ -85,6 +87,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
 
             this.mark_data = _.zip(x_data, y_data);
+            this.mark_data.forEach(function(elem, i) { elem['index'] = i;});
             this.update_domains();
             this.trigger("data_updated");
         },
@@ -158,6 +161,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             } else {
                 y_scale.del_domain([], this.id);
             }
+        },
+        get_data_dict: function(data, index) {
+            return data;
         },
     });
 
