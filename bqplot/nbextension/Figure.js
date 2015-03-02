@@ -589,14 +589,15 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                             try {
                                 match = node.querySelectorAll(rule.selectorText);
                             } catch (err) {
-                                console.warn('Invalid CSS selector "' +
-                                             rule.selectorText + '"', err);
+                                console.warn("Invalid CSS selector '" +
+                                             rule.selectorText + "'", err);
                             }
                             if (match) {
                                 var elems = node.querySelectorAll(rule.selectorText);
                                 if (elems.length > 0) {
                                     selector = rule.selectorText;
                                     selector = replaceAll("\.theme-dark", "", selector);
+                                    selector = replaceAll("\.theme-light", "", selector);
                                     used += selector + " { " + rule.style.cssText + " }\n";
                                 }
                             } else if (rule.cssText.match(/^@font-face/)) {
@@ -605,7 +606,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                         }
                     }
                 }
-                // TODO: this is terrible.
+                // TODO: this is terrible. The previous loop over style sheets
+                // does not catch document's top-level properties.
                 used += "svg { font-size: 10px; }\n";
                 var s = document.createElement("style");
                 s.setAttribute("type", "text/css");
