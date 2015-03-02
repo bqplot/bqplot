@@ -15,6 +15,10 @@
 
 define(["./d3"], function(d3) {
     "use strict";
+     //the following is a regex to match all valid time formats that can be
+     //generated with d3 as of 2nd March 2015. If new formats are added to d3
+     //those new formats need to be added to the regex
+    var time_format_regex = new RegExp("^(((((\\*)|(/*)|(-*))(\\s*)%([aAbBdeHIjmMLpSUwWyYZ]{1}))+)|((\\s*)%([cxX]{1})))$");
     return {
         getCustomRange: function(array) {
             var first = array[0];
@@ -33,6 +37,9 @@ define(["./d3"], function(d3) {
             // Backbone model attributes must be JSON parsable. Hence there is
             // no need for a fancier logic, and it is surprisingly efficient.
             return JSON.parse(JSON.stringify(obj));
+        },
+        is_valid_time_format: function(format) {
+            return time_format_regex.test(format);
         },
     };
 });

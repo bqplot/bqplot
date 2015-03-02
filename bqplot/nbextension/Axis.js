@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "./d3"], function(Widget, d3) {
+define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
     "use strict";
 
      var units_array = ["em", "ex", "px"];
@@ -27,6 +27,7 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
          ["%b %Y", function(d) { return d.getMonth(); }],
          ["%Y", function() { return true; }]
      ]);
+
      var Axis = Widget.WidgetView.extend({
          render: function() {
 
@@ -182,8 +183,17 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
                     return custom_time_format;
                 }
             } else if (this.axis_scale.model.type === "ordinal") {
-                if(this.model.get("tick_format")) {
-                    return d3.time.format(this.model.get("tick_format"));
+                var tick_format = this.model.get("tick_format");
+                if(tick_format) {
+                    //TODO: This may not be the best way to do this. We can
+                    //check the instance of the elements in the domain and
+                    //apply the format depending on that.
+                    if(bqutils.is_valid_time_format(tick_format)) {
+                        return d3.time.format(tick_format);
+                    }
+                    else {
+                        return d3.format(tick_format);
+                    }
                 }
                 return function(d) { return d; };
             }
