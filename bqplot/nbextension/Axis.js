@@ -27,6 +27,10 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
          ["%b %Y", function(d) { return d.getMonth(); }],
          ["%Y", function() { return true; }]
      ]);
+     //the following is a regex to match all valid time formats that can be
+     //generated with d3 as of 2nd March 2015. If new formats are added to d3
+     //those new formats need to be added to the regex
+     var time_format_regex = new RegExp("^(((((\\*)|(/*)|(-*))(\\s*)%([aAbBdeHIjmMLpSUwWyYZ]{1}))+)|((\\s*)%([cxX]{1})))$");
      var Axis = Widget.WidgetView.extend({
          render: function() {
 
@@ -182,8 +186,14 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
                     return custom_time_format;
                 }
             } else if (this.axis_scale.model.type === "ordinal") {
-                if(this.model.get("tick_format")) {
-                    return d3.time.format(this.model.get("tick_format"));
+                var tick_format = this.model.get("tick_format");
+                if(tick_format) {
+                    if(time_format_regex.test(tick_format)) {
+                        return d3.time.format(tick_format);
+                    }
+                    else {
+                        return d3.format(tick_format);
+                    }
                 }
                 return function(d) { return d; };
             }
