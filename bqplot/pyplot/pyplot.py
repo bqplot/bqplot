@@ -44,14 +44,13 @@ Pyplot
 """
 
 from IPython.display import display
-from IPython.html.widgets import VBox, HBox
+from IPython.html.widgets import VBox, HBox, Button, ToggleButton
 import numpy as np
 from ..figure import Figure
 from ..scales import Scale, LinearScale
 from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie
 from ..interacts import panzoom
-from IPython.html.widgets import Button as FaButton, ToggleButton as FaToggleButton
 
 _context = {
     'figure': None,
@@ -64,10 +63,10 @@ _context = {
 
 def _default_toolbar(figure):
     pz = panzoom(figure.marks)
-    normal_btn = FaToggleButton('fa-circle-o', tooltip='Normal', value=True)
-    pz_btn = FaToggleButton('fa-arrows', tooltip='Pan and Zoom', value=False)
-    snapshot_btn = FaButton('fa-thumb-tack', tooltip='Snapshot View')
-    reset_btn = FaButton('fa-refresh', tooltip='Reset View')
+    normal_btn = ToggleButton(icon='fa-circle-o', tooltip='Normal', value=True)
+    pz_btn = ToggleButton(icon='fa-arrows', tooltip='Pan and Zoom', value=False)
+    snapshot_btn = Button(icon='fa-thumb-tack', tooltip='Snapshot View')
+    reset_btn = Button(icon='fa-refresh', tooltip='Reset View')
 
     def tog(btn, *args):
         # Traitlets closure
