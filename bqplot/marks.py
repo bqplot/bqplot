@@ -589,7 +589,7 @@ class Boxplot(Mark):
     x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
 
     # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
-    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=2, max_dim=2)
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
     # FIXME Need to do something about this... keep getting future warning because of it.
     _y_default = None
 
