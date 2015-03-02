@@ -24,19 +24,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.unselected_style = this.model.get("unselected_style");
 
             var self = this;
-            this.el.append("rect")
-                .attr("class", "mouseeventrect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", this.parent.plotarea_width)
-                .attr("visibility", "hidden")
-                .attr("pointer-events", "all")
-                .attr("height", this.parent.plotarea_height)
-                .style("pointer-events", "all")
-                .on("click", function() {
-                    if (self.model.get("select_slices"))
-                        { self.reset_selection(); }
-                });
             this.el.append("g")
               .attr("class", "pielayout");
 
@@ -93,13 +80,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.selected_indices = this.model.get("selected");
                 this.apply_styles();
             }, this);
+            this.listenTo(this.parent, "bg_clicked", function() {
+                if (this.model.get("select_slices"))
+                        { this.reset_selection(); }
+            });
         },
         relayout: function() {
             this.set_ranges();
-            this.el.select(".mouseeventrect")
-              .attr("width", this.parent.plotarea_width)
-              .attr("height", this.parent.plotarea_height);
-
             this.position_center();
             this.update_radii();
         },
@@ -152,8 +139,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("class", "slice")
               .on("click", function(d, i) {return that.click_handler(d, i);});
 
-            elements.append("path");
+            elements.append("path")
+              .attr("class", "pie_slice");
             elements.append("text")
+              .attr("class", "pie_text")
               .attr("dy", ".35em")
               .attr("pointer-events", "none")
               .style("text-anchor", "middle");
