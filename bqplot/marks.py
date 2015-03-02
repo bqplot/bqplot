@@ -205,8 +205,9 @@ class Lines(Mark):
                 display_index=1, scaled=True, rtype='Number')
     y = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=2,
                 display_index=2, scaled=True, rtype='Number')
-    color = NdArray(sync=True, display_index=6, scaled=True, rtype='Color',
-                    atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+    color = NdArray(None, sync=True, allow_none=True, display_index=6, 
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis', 
+                    min_dim=1, max_dim=1)
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
@@ -265,9 +266,10 @@ class FlexLine(Lines):
     name = 'Flexible lines'
 
     # Scaled attributes
-    color = NdArray(sync=True, display_index=5, scaled=True, rtype='Number',
-                    atype='bqplot.ColorAxis')
-    width = NdArray(sync=True, display_index=6, scaled=True, rtype='Number')
+    color = NdArray(None, allow_none=True, sync=True, display_index=5, 
+                    scaled=True, rtype='Number', atype='bqplot.ColorAxis')
+    width = NdArray(None, allow_none=True, sync=True, display_index=6, 
+                    scaled=True, rtype='Number')
 
     # Other attributes
     colors = ColorList(CATEGORY10, sync=True)
@@ -354,16 +356,18 @@ class Scatter(Mark):
                 display_index=1, scaled=True, rtype='Number')
     y = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=1,
                 display_index=2, scaled=True, rtype='Number')
-    color = NdArray(sync=True, display_index=6, scaled=True, rtype='Color',
-                    atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
-    opacity = NdArray(sync=True, display_index=8, scaled=True, rtype='Number',
-                      min_dim=1, max_dim=1)
-    size = NdArray(sync=True, display_index=10, scaled=True, rtype='Number',
+    color = NdArray(None, allow_none=True, sync=True, display_index=6,
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis',
+                    min_dim=1, max_dim=1)
+    opacity = NdArray(None, allow_none=True, sync=True, display_index=8,
+                      scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    size = NdArray(None, allow_none=True, sync=True, display_index=10,
+                   scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    skew = NdArray(None, allow_none=True, sync=True,
+                   display_index=11, scaled=True, rtype='Number',
                    min_dim=1, max_dim=1)
-    skew = NdArray(sync=True, display_index=11, scaled=True, rtype='Number',
-                   min_dim=1, max_dim=1)
-    rotation = NdArray(sync=True, display_index=12, scaled=True, rtype='Number',
-                       min_dim=1, max_dim=1)
+    rotation = NdArray(None, allow_none=True, sync=True, display_index=12,
+                       scaled=True, rtype='Number', min_dim=1, max_dim=1)
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
@@ -461,6 +465,7 @@ class Hist(Mark):
                      display_name='Sample', scaled=True, rtype='Number')
     counts = NdArray(sync=True, display_index=4, display_name='Count',
                      scaled=True, rtype='Number', read_only=True)
+    # FIXME: Should we allow none for counts?
     # counts is a read-only attribute that is set when the mark is drawn
 
     # Other attributes
@@ -540,12 +545,13 @@ class Bars(Mark):
     name = 'Bar chart'
 
     # Scaled attributes
-    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number',
-                min_dim=1, max_dim=1)
-    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number',
-                min_dim=1, max_dim=2)
-    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color',
-                    atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+    x = NdArray(sync=True, allow_none=False, display_index=1, scaled=True,
+                rtype='Number', min_dim=1, max_dim=1)
+    y = NdArray(sync=True, allow_none=False, display_index=2, scaled=True,
+                rtype='Number', min_dim=1, max_dim=2)
+    color = NdArray(None, allow_none=True,  sync=True, display_index=8,
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis',
+                    min_dim=1, max_dim=1)
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
@@ -660,10 +666,10 @@ class OHLC(Mark):
     name = 'OHLC chart'
 
     # Scaled attributes
-    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number',
-                min_dim=1, max_dim=1)
-    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number',
-                min_dim=2, max_dim=2)
+    x = NdArray(sync=True, allow_none=False, display_index=1, scaled=True,
+                rtype='Number', min_dim=1, max_dim=1)
+    y = NdArray(sync=True, allow_none=False, display_index=2, scaled=True,
+                rtype='Number', min_dim=2, max_dim=2)
     # FIXME Future warnings
     _y_default = None
 
@@ -734,10 +740,11 @@ class Pie(Mark):
     name = 'Pie chart'
 
     # Scaled attributes
-    sizes = NdArray(sync=True, display_index=1, rtype='Number',
+    sizes = NdArray(sync=True, allow_none=False, display_index=1, rtype='Number',
                     min_dim=1, max_dim=1)
-    color = NdArray(sync=True, display_index=8, scaled=True, rtype='Color',
+    color = NdArray(sync=True, allow_none=False, display_index=8, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+
     x = Float(default_value=0.5, sync=True) | Date(sync=True)
     y = Float(default_value=0.5, sync=True)
 
