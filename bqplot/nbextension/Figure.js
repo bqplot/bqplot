@@ -626,9 +626,10 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                defs.appendChild(s);
                svg.insertBefore(defs, svg.firstChild);
                // Getting the outer HTML
-               var outer = document.createElement("div");
-               outer.appendChild(svg);
-               return outer.innerHTML;
+               return svg.outerHTML;
+               //var outer = document.createElement("div");
+               //outer.appendChild(svg);
+               //return outer.innerHTML;
            };
            var svg2png = function(xml) {
                 // Render an SVG string into PNG and download the PNG.
