@@ -576,7 +576,12 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             var  replaceAll = function (find, replace, str) {
                 return str.replace(new RegExp(find, "g"), replace);
             };
-            var get_css = function(node) {
+            var get_css = function(node, regs) {
+                /**
+                 * Gathers all the css rules applied to elements of the svg
+                 * node. Removes the parent element selectors specified in
+                 * argument `regs`.
+                 */
                 var css = "";
                 var sheets = document.styleSheets;
                 var selector;
@@ -584,7 +589,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                     var rules = sheets[i].cssRules;
                     for (var j = 0; j < rules.length; j++) {
                         var rule = rules[j];
-                        if (typeof(rule.style) != "undefined") {
+                        if (typeof(rule.style) !== "undefined") {
                             var match = null;
                             try {
                                 match = node.querySelectorAll(rule.selectorText);
@@ -596,8 +601,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                                 var elems = node.querySelectorAll(rule.selectorText);
                                 if (elems.length > 0) {
                                     selector = rule.selectorText;
-                                    selector = replaceAll("\.theme-dark", "", selector);
-                                    selector = replaceAll("\.theme-light", "", selector);
+                                    for (var r = 0; r < regs.length; r++) {
+                                        selector = replaceAll(regs[r], "", selector);
+                                    }
                                     css += selector + " { " + rule.style.cssText + " }\n";
                                 }
                             } else if (rule.cssText.match(/^@font-face/)) {
@@ -621,18 +627,16 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                svg.style.background = window.getComputedStyle(document.body).background;
                var s = document.createElement("style");
                s.setAttribute("type", "text/css");
-               s.innerHTML = "<![CDATA[\n" + get_css(node) + "\n]]>";
+               s.innerHTML = "<![CDATA[\n" +
+                   get_css(node, ["\.theme-dark", "\.theme-light"]) + "\n]]>";
                var defs = document.createElement("defs");
                defs.appendChild(s);
                svg.insertBefore(defs, svg.firstChild);
                // Getting the outer HTML
                return svg.outerHTML;
-               //var outer = document.createElement("div");
-               //outer.appendChild(svg);
-               //return outer.innerHTML;
            };
            var svg2png = function(xml) {
-                // Render an SVG string into PNG and download the PNG.
+                // Render a SVG data into a canvas and download as PNG.
                 var image = new Image();
                 image.onload = function() {
                     var canvas = document.createElement("canvas");
