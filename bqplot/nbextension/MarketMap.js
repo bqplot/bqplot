@@ -434,7 +434,8 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                     .data(data)
                     .select('rect')
                     .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j)
-                           { return (color_scale && elem.color !== undefined) ?
+                           { return (color_scale && elem.color !== undefined
+                                    && elem.color !== null) ?
                                color_scale.scale(elem['color']) :
                                that.colors_map(i);}});
             });
@@ -451,7 +452,8 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
                         .data(data)
                         .select('rect')
                         .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) {
-                            return (color_scale && elem.color !== undefined) ?
+                            return (color_scale && elem.color !== undefined &&
+                                   elem.color !== null) ?
                                 color_scale.scale(elem['color']) :
                                 that.colors_map(i);}});
                 });
