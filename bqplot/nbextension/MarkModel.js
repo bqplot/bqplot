@@ -125,9 +125,11 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
         },
         unregister_all_scales: function(scales) {
             // disassociates the mark with the scale
+            this.dirty = true;
             for (var key in scales) {
                 scales[key].del_domain([], this.id);
             }
+            this.dirty = false;
             //TODO: Check if the views are being removed
         },
         handle_destroy: function() {

@@ -72,6 +72,8 @@ class Figure(DOMWidget):
     legend_location:  {'top-right', 'top', 'top-left', 'left',
                        'bottom-left', 'bottom', 'bottom-right', 'right'}
         location of the legend relative to the center of the figure
+    fig_color: Color (default: None)
+        background color of the figure
 
     Layout Attributes
     -----------------

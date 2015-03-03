@@ -40,10 +40,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
-            var color_scale = this.scales["color"];
-            if(color_scale) {
-                color_scale.set_range();
-            }
         },
         set_positional_scales: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];

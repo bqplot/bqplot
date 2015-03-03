@@ -174,9 +174,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         update_colors: function() {
             var that = this;
             var color_scale = this.scales["color"];
-            if(color_scale) {
-                color_scale.set_range();
-            }
             this.el.select(".pielayout").selectAll(".slice")
               .style("fill", function(d, i) {
                   return (d.data.color !== undefined && color_scale !== undefined) ?

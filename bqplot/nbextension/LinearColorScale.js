@@ -29,6 +29,7 @@ define(["./d3", "./Scale", "./ColorUtils"], function(d3, ScaleViewModule, ColorU
                 this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
             }
             this.create_event_listeners();
+            this.set_range();
         },
         create_event_listeners: function() {
             LinearColorScale.__super__.create_event_listeners.apply(this);

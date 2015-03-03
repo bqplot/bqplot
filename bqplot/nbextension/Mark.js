@@ -23,7 +23,10 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             this.parent = this.options.parent;
             this.uuid = utils.uuid();
             var scale_creation_promise = this.set_scale_views();
-            this.model.on("scales_updated", this.set_scale_views, this);
+            var self = this;
+            this.model.on("scales_updated", function() {
+                this.set_scale_views().then( function() { self.draw(); });
+            }, this);
 
             this.colors = this.model.get("colors");
 
@@ -59,7 +62,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 that.set_positional_scales();
                 that.initialize_additional_scales();
                 that.set_ranges();
-                that.draw();
                 that.trigger("mark_scales_updated");
             });
         },

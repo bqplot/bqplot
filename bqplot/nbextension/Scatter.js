@@ -75,9 +75,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]),
                                      this.model.get("default_size")]);
             }
-            if(color_scale) {
-                color_scale.set_range();
-            }
             if(opacity_scale) {
                 opacity_scale.set_range([0.2, 1]);
             }
@@ -220,9 +217,11 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         update_default_skew: function() {
             if(!this.model.dirty) {
                 var that = this;
-                this.el.selectAll(".dot").attr("d", this.dot.skew(function(data) {
+                this.el.selectAll(".dot").transition()
+                  .duration(this.model.get("animate_dur"))
+                  .attr("d", this.dot.skew(function(data) {
                     return that.get_element_skew(data);
-                }));
+                  }));
             }
         },
         update_default_size: function() {
@@ -230,9 +229,11 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             // update size scale range?
             if(!this.model.dirty) {
                 var that = this;
-                this.el.selectAll(".dot").attr("d", this.dot.size(function(data) {
+                this.el.selectAll(".dot").transition()
+                  .duration(this.model.get("animate_dur"))
+                  .attr("d", this.dot.size(function(data) {
                     return that.get_element_size(data);
-                }));
+                  }));
             }
         },
         // The following three functions are convenience functions to get
@@ -317,15 +318,16 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             elements_added.append("path").attr("class", "dot");
             elements_added.append("text").attr("class", "dot_text");
-            elements.select("path")
-                .attr("d", this.dot
+            elements.select("path").transition()
+              .duration(this.model.get("animate_dur"))
+              .attr("d", this.dot
                     .size(function(d) { return that.get_element_size(d); })
                     .skew(function(d) { return that.get_element_skew(d); })
                     );
             this.update_xy_position();
-            elements.call(this.drag_listener);
-            elements.on("mouseover", function(d, i) { return that.mouse_over(d, i); })
-                .on("mouseout", function(d, i) { return that.mouse_out(d, i); });
+            elements.call(this.drag_listener)
+              .on("mouseover", function(d, i) { return that.mouse_over(d, i); })
+              .on("mouseout", function(d, i) { return that.mouse_out(d, i); });
 
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,

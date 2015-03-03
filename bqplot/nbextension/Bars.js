@@ -34,8 +34,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         set_ranges: function() {
             var x_scale = this.scales["x"],
-                y_scale = this.scales["y"],
-                color_scale = this.scales["color"];
+                y_scale = this.scales["y"];
             if(x_scale.model.type !== "ordinal") {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             } else {
@@ -47,9 +46,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // Changes based on the data.
             this.x_offset = 0;
             this.y_offset = y_scale.offset;
-            if(color_scale) {
-                color_scale.set_range();
-            }
         },
         set_positional_scales: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
@@ -229,9 +225,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //the same color.
             var that = this;
             var color_scale = this.scales["color"];
-            if(color_scale) {
-                color_scale.set_range();
-            }
             if(this.model.mark_data.length > 0) {
                 if(!(this.model.is_y_2d)) {
                     this.el.selectAll(".bar").style("fill", function(d, i) {
