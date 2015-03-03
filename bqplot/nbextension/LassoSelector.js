@@ -85,11 +85,11 @@ define(["./d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors
 
             var mark_data_in_lasso = false;
             var self = this;
-            //update idx_selected for each mark
-            this.mark_views.map(function(mark_view) {
-                var data_in_lasso = mark_view.update_idx_selected_in_lasso("l" + self.lasso_counter,
-                                                                           self.lasso_vertices,
-                                                                           point_in_lasso);
+            // update selected for each mark
+            _.each(this.mark_views, function(mark_view) {
+                var data_in_lasso = mark_view.update_selected_in_lasso("l" + self.lasso_counter,
+                                                                             self.lasso_vertices,
+                                                                             point_in_lasso);
                 if (data_in_lasso) {
                     mark_data_in_lasso = true;
                 }
@@ -114,9 +114,9 @@ define(["./d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors
                var self = this;
                lassos_to_delete.each(function() {
                    var lasso_name = d3.select(this).attr("id");
-                   //delete idx_selected for each mark
-                   self.mark_views.map(function(mark_view) {
-                       mark_view.update_idx_selected_in_lasso(lasso_name, null, null);
+                   // delete selected for each mark
+                   _.each(self.mark_views, function(mark_view) {
+                       mark_view.update_selected_in_lasso(lasso_name, null, null);
                    });
                });
                lassos_to_delete.remove();

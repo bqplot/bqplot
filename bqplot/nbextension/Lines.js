@@ -175,7 +175,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined) {
-                this.model.set("idx_selected", null);
+                this.model.set("selected", null);
                 this.touch();
                 return [];
             }
@@ -191,9 +191,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 				return Math.min(self.bisect(data, elem),
 								Math.max((data.length - 1), 0));
 			});
-            this.model.set("idx_selected", indices);
+            this.model.set("selected", indices);
             this.touch();
-            return indices;
         },
         invert_point: function(pixel) {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
@@ -203,9 +202,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             var index = Math.min(this.bisect(data, data_point),
 								 Math.max((data.length - 1), 0));
-            this.model.set("idx_selected", [index]);
+            this.model.set("selected", [index]);
             this.touch();
-            return index;
         },
         update_multi_range: function(brush_extent) {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
@@ -223,7 +221,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             x_end = (x_scale.model.type === "date") ?
                 x_scale.format_date(x_end) : x_end;
 
-            this.selector_model.set("idx_selected", [idx_start, idx_end]);
+            this.selector_model.set("selected", [idx_start, idx_end]);
             this.selector.touch();
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
@@ -417,16 +415,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.trigger("mark_padding_updated");
             }
 		},
-        update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
-                                               point_in_lasso_func)
+        update_selected_in_lasso: function(lasso_name, lasso_vertices,
+                                           point_in_lasso_func)
         {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var idx = this.model.get("idx_selected");
-            var idx_selected = idx ? utils.deepCopy(idx) : [];
+            var idx = this.model.get("selected");
+            var selected = idx ? utils.deepCopy(idx) : [];
             var data_in_lasso = false;
             var that = this;
             if(lasso_vertices !== null && lasso_vertices.length > 0) {
-                //go thru each line and check if its data is in lasso
+                // go through each line and check if its data is in lasso
                 _.each(this.model.mark_data, function(line_data) {
                    var line_name = line_data.name;
                    var data = line_data.values;
@@ -438,15 +436,18 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                    });
                    if (idx_in_lasso.length > 0) {
                        data_in_lasso = true;
-                       idx_selected.push({line_name: line_name,
-                                         lasso_name: lasso_name,
-                                         indices: idx_in_lasso});
+                       selected.push({
+                           line_name: line_name,
+                           lasso_name: lasso_name,
+                           indices: idx_in_lasso,
+                       });
                    }
                });
-               that.model.set("idx_selected", idx_selected);
+               that.model.set("selected", selected);
                that.touch();
-            } else { //delete the lasso specific idx_selected
-                this.model.set("idx_selected", _.filter(idx_selected, function(lasso) {
+            } else {
+                // delete the lasso specific selected
+                this.model.set("selected", _.filter(selected, function(lasso) {
                     return lasso.lasso_name !== lasso_name;
                 }));
                 this.touch();

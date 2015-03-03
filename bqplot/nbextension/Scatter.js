@@ -34,7 +34,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
-            this.selected_indices = this.model.get("idx_selected");
+            this.selected_indices = this.model.get("selected");
 
             var self = this;
             this.after_displayed(function() {
@@ -147,7 +147,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.model.on("change:display_names", this.update_display_names, this);
             this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on("change:enable_hover", function() { this.hide_tooltip(); }, this);
-            this.listenTo(this.model, "change:idx_selected", this.update_idx_selected);
+            this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.parent, "bg_clicked", this.click);
         },
         update_default_color: function(model, new_color) {
@@ -398,7 +398,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         },
         invert_2d_range: function(x_start, x_end, y_start, y_end) {
             if(!x_end) {
-                this.model.set("idx_selected", null);
+                this.model.set("selected", null);
                 this.touch();
                 return _.range(this.model.mark_data.length);
             }
@@ -411,16 +411,16 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             var indices = _.range(this.model.mark_data.length);
             var that = this;
-            var idx_selected = _.filter(indices, function(index) {
+            var selected = _.filter(indices, function(index) {
                 var elem = that.model.mark_data[index];
                 return (elem.x >= xmin && elem.x <= xmax &&
                         elem.y >= ymin && elem.y <= ymax);
             });
-            this.model.set("idx_selected", idx_selected);
+            this.model.set("selected", selected);
             this.touch();
-            return idx_selected;
+            return selected;
         },
-        update_idx_selected: function(model, value) {
+        update_selected: function(model, value) {
             this.selected_indices = value;
             this.apply_styles();
         },
@@ -493,12 +493,12 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 this.trigger("mark_padding_updated");
             }
 		},
-        update_idx_selected_in_lasso: function(lasso_name, lasso_vertices,
+        update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                                point_in_lasso_func)
         {
             var x_scale = this.scales["x"], y_scale = this.scales["y"],
-                idx = this.model.get("idx_selected"),
-                idx_selected = idx ? utils.deepCopy(idx) : [],
+                idx = this.model.get("selected"),
+                selected = idx ? utils.deepCopy(idx) : [],
                 data_in_lasso = false;
             if(lasso_vertices !== null && lasso_vertices.length > 0) {
                 var indices = _.range(this.model.mark_data.length);
@@ -510,18 +510,18 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 });
                 data_in_lasso = idx_in_lasso.length > 0;
                 if (data_in_lasso) {
-                    this.update_idx_selected(idx_in_lasso);
-                    idx_selected.push({lasso_name: lasso_name, indices: idx_in_lasso});
-                    this.model.set("idx_selected", idx_selected);
+                    this.update_selected(idx_in_lasso);
+                    selected.push({lasso_name: lasso_name, indices: idx_in_lasso});
+                    this.model.set("selected", selected);
                     this.touch();
                 }
-            } else { //delete the lasso specific idx_selected
-                var to_be_deleted_lasso = _.filter(idx_selected, function(lasso_data) {
+            } else { //delete the lasso specific selected
+                var to_be_deleted_lasso = _.filter(selected, function(lasso_data) {
                     return lasso_data.lasso_name === lasso_name;
                 });
-                this.update_idx_selected(to_be_deleted_lasso.indices);
+                this.update_selected(to_be_deleted_lasso.indices);
 
-                this.model.set("idx_selected", _.filter(idx_selected, function(lasso_data) {
+                this.model.set("selected", _.filter(selected, function(lasso_data) {
                     return lasso_data.lasso_name !== lasso_name;
                 }));
                 this.touch();

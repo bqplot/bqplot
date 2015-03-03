@@ -119,7 +119,7 @@ class Mark(Widget):
     unselected_style: dict (default: {})
         CSS style to be applied to items that are not selected in the mark,
         when a selection exists.
-    idx_selected: list (default: [])
+    selected: list (default: [])
         Indices of the selected items in the mark.
     """
     mark_types = {}
@@ -137,13 +137,13 @@ class Mark(Widget):
     visible = Bool(True, sync=True)
     selected_style = Dict({}, sync=True)
     unselected_style = Dict({}, sync=True)
-    idx_selected = List(sync=True, allow_none=True)
+    selected = List(sync=True, allow_none=True)
 
     _model_name = Unicode('MarkModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
     _ipython_display_ = None
 
-    def _idx_selected_default(self):
+    def _selected_default(self):
         return None
 
 

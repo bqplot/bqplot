@@ -186,8 +186,8 @@ class Selector(Interaction):
     Attributes
     ----------
     marks: list (default: [])
-        list of marks for which the idx_selected is updated based on the data
-        selected by the selector.
+        list of marks for which the `selected` attribute is updated based on
+        the data selected by the selector.
     """
     marks = List([], allow_none=False, sync=True)
 
@@ -263,16 +263,10 @@ class FastIntervalSelector(OneDSelector):
     selected: numpy.ndarray
         Two-element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
-    idx_selected: list (default: [])
-        A list of lists containing one two-element array for each mark passed
-        in the marks attribute. The two-element array contains the minimum and
-        maximum index of the data of the mark for which the 'x' attribute is in
-        the region selected.
     color: Color or None (default: None)
         color of the rectangle representing the interval selector
     """
     selected = NdArray(sync=True)
-    idx_selected = List([], allow_none=False, sync=True)
     color = Color(None, sync=True, allow_none=True)
 
     _view_name = Unicode('FastIntervalSelector', sync=True)
@@ -299,18 +293,12 @@ class IndexSelector(OneDSelector):
         A single element array containing the point corresponding the
         x-position of the mouse. This attribute is updated as you move the
         mouse along the x-direction on the figure.
-    idx_selected: list (default: [])
-        A list of lists containing a single element array for each mark passed
-        in the marks attribute. The element corresponds to the maximum index of
-        the data for which the 'x' attribute is less than or equal to the value
-        selected.
     color: Color or None (default: None)
         color of the line representing the index selector
     line_width: nonnegative integer (default: 0)
         width of the line represetning the index selector
     """
     selected = NdArray(sync=True)
-    idx_selected = List([], allow_none=False, sync=True)
     line_width = Int(2, sync=True)
     color = Color(None, sync=True, allow_none=True)
 
@@ -341,11 +329,6 @@ class BrushIntervalSelector(OneDSelector):
         in terms of the scale of the selector. This is a read-only attribute.
         This attribute changes while the selection is being made with the
         BrushIntervalSelectorinteraction
-    idx_selected: list
-        A list of lists containing one two element list for each mark in the
-        marks attribute.
-        The two element array contains the minimum index and maximum index of
-        the data for which the the 'x' attribute lies in the region selected.
     brushing: bool
         boolean attribute to indicate if the selector is being dragged right
         now.
@@ -358,7 +341,6 @@ class BrushIntervalSelector(OneDSelector):
     """
     brushing = Bool(False, sync=True)
     selected = NdArray(sync=True)
-    idx_selected = List([], sync=True)
     color = Color(None, sync=True, allow_none=True)
 
     _view_name = Unicode('BrushIntervalSelector', sync=True)
@@ -388,10 +370,6 @@ class BrushSelector(TwoDSelector):
         in terms of the scales of the selector. This is a read-only attribute.
         This attribute changes while the selection is being made with the
         BrushIntervalSelectorinteraction
-    idx_selected: list
-        A list of lists containing a list for each mark in the marks attribute.
-        The list contains the indices of the data for the points which lie in
-        the interval selcted with the selector.
     brushing: bool (default: False)
         boolean attribute to indicate if the selector is being dragged right
         now.
@@ -404,7 +382,6 @@ class BrushSelector(TwoDSelector):
     """
     clear = Bool(False, sync=True)
     brushing = Bool(False, sync=True)
-    idx_selected = List([], sync=True)
     selected = List([], sync=True)
     color = Color(None, sync=True, allow_none=True)
 
@@ -476,15 +453,6 @@ class MultiSelector(OneDSelector):
         This is a read-only attribute.
         This attribute changes while the selection is being made with the
         MultiSelectorinteraction.
-    idx_selected: dict
-        A dictionary with keys being the names of the intervals and values
-        being the a list of lists containing one two element list for each mark
-        in the marks attribute.The two element array contains the minimum index
-        and maximum index of the data for which the the 'x' attribute lies in
-        the region selected.
-        This is a read-only attribute.
-        This attribute changes while the selection is being made with the
-        MultiSelectorinteraction.
     brushing: bool (default: False)
         A boolean attribute to indicate if the selector is being dragged right
         now.
@@ -506,7 +474,6 @@ class MultiSelector(OneDSelector):
     # around the even more ugly hack to have a trait which converts dates,
     # if present, into strings and send it across. It means writing a trait
     # which does that on top of a dictionary. I don't like that
-    idx_selected = Dict({}, sync=True)
     show_names = Bool(True, sync=True)  # TODO: Not a trait. The value has to
                                         # be set at declaration time.
 
@@ -541,7 +508,7 @@ class LassoSelector(TwoDSelector):
     This 2-D selector enables the user to select multiple sets of data points
     by drawing lassos on the figure. Lasso Selector is currently supported only
     for Lines and Scatter marks. A mouse-down starts drawing the lasso and
-    after the mouse-up the lasso is closed and idx_selected property of each
+    after the mouse-up the lasso is closed and the `selected` attribute of each
     mark gets updated with the data in the lasso. A lasso which doesn't
     encompass any mark data will be automatically deleted
 

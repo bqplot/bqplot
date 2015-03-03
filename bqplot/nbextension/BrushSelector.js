@@ -71,23 +71,21 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
         convert_and_save: function(extent) {
             if(extent.length === 0) {
                 this.model.set("selected", extent);
-                var idx_selected = this.mark_views.map(function(mark_view) {
-                    return mark_view.invert_2d_range(extent);
+                _.each(this.mark_views, function(mark_view) {
+                    mark_view.invert_2d_range(extent);
                 });
-                this.model.set("idx_selected", idx_selected);
                 this.touch();
                 return;
             }
             var extent_x = [extent[0][0], extent[1][0]];
             var extent_y = [extent[0][1], extent[1][1]];
             var self = this;
-            var idx_selected = this.mark_views.map(function(mark_view) {
-                return mark_view.invert_2d_range(self.x_scale.scale(extent_x[0]),
-                                                 self.x_scale.scale(extent_x[1]),
-                                                 self.y_scale.scale(extent_y[0]),
-                                                 self.y_scale.scale(extent_y[1]));
+            _.each(this.mark_views, function(mark_view) {
+                mark_view.invert_2d_range(self.x_scale.scale(extent_x[0]),
+                                          self.x_scale.scale(extent_x[1]),
+                                          self.y_scale.scale(extent_y[0]),
+                                          self.y_scale.scale(extent_y[1]));
             });
-            this.model.set("idx_selected", idx_selected);
             // TODO: The call to the function can be removed once _pack_models is
             // changed
             this.model.set("selected", this.get_typed_selected([[extent_x[0],
@@ -174,18 +172,17 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             this.convert_and_save(extent);
         },
         convert_and_save: function(extent) {
-            var idx_selected;
             if(extent.length === 0) {
-                idx_selected = this.mark_views.map(function(mark_view) {
-                                return mark_view.invert_range(extent); });
+                _.each(this.mark_views, function(mark_view) {
+                    return mark_view.invert_range(extent);
+                });
             } else {
                 var self = this;
-                idx_selected = this.mark_views.map(function(mark_view) {
-                    return mark_view.invert_range(self.scale.scale(extent[0]),
-                                                self.scale.scale(extent[1]));
+                _.each(this.mark_views, function(mark_view) {
+                    mark_view.invert_range(self.scale.scale(extent[0]),
+                                           self.scale.scale(extent[1]));
                 });
             }
-            this.model.set("idx_selected", idx_selected);
             this.model.set_typed_field("selected", extent);
             this.touch();
         },
@@ -265,22 +262,17 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             var data = _.range(this.curr_index + 1);
             var self = this;
             var selected = utils.deepCopy(this.model.get("selected"));
-            var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
             //TODO: Use do diff?
             data.forEach(function(elem) {
                 var label = self.get_label(elem);
                 var prev_label = self.get_label(elem, prev_names);
                 if(prev_label !== label) {
-                    self.el.select(".brush_text_" + elem)
-                        .text(label);
+                    self.el.select(".brush_text_" + elem).text(label);
                     selected[label] = selected[prev_label];
-                    idx_selected[label] = idx_selected[prev_label];
                     delete selected[prev_label];
-                    delete idx_selected[prev_label];
                 }
             });
             this.model.set("_selected", selected);
-            this.model.set("idx_selected", idx_selected);
             this.touch();
         },
         create_brush: function(event) {
@@ -390,26 +382,22 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             this.el.selectAll(".selector")
                 .remove();
             this.model.set("_selected", {});
-            this.model.set("idx_selected", {});
             this.curr_index = 0;
             this.touch();
         },
         convert_and_save: function(extent, item) {
             var selected = utils.deepCopy(this.model.get("_selected"));
-            var idx_selected = utils.deepCopy(this.model.get("idx_selected"));
             var self = this;
-            var item_idx_selected = this.mark_views.map(function(mark_view) {
-                return mark_view.invert_range(self.scale.scale(extent[0]),
-                                              self.scale.scale(extent[1]));
+            _.each(this.mark_views, function(mark_view) {
+                mark_view.invert_range(self.scale.scale(extent[0]),
+                                       self.scale.scale(extent[1]));
             });
-            idx_selected[this.get_label(item)] = item_idx_selected;
             // TODO: remove the ternary operator once _pack_models is changed
             selected[this.get_label(item)] = extent.map(function(elem) {
                 return (self.is_date) ?
                     self.scale.model.convert_to_json(elem) : elem;
             });
             this.model.set("_selected", selected);
-            this.model.set("idx_selected", idx_selected);
             this.touch();
         },
         reset: function() {
