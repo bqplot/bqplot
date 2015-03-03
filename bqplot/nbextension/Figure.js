@@ -576,8 +576,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             var  replaceAll = function (find, replace, str) {
                 return str.replace(new RegExp(find, "g"), replace);
             };
-            var styles = function(node, target) {
-                var used = "";
+            var get_css = function(node) {
+                var css = "";
                 var sheets = document.styleSheets;
                 var selector;
                 for (var i = 0; i < sheets.length; i++) {
@@ -598,7 +598,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                                     selector = rule.selectorText;
                                     selector = replaceAll("\.theme-dark", "", selector);
                                     selector = replaceAll("\.theme-light", "", selector);
-                                    used += selector + " { " + rule.style.cssText + " }\n";
+                                    css += selector + " { " + rule.style.cssText + " }\n";
                                 }
                             } else if (rule.cssText.match(/^@font-face/)) {
                                 css += rule.cssText + "\n";
@@ -608,15 +608,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 }
                 // TODO: this is terrible. The previous loop over style sheets
                 // does not catch document's top-level properties.
-                used += "svg { font-size: 10px; }\n";
-                var s = document.createElement("style");
-                s.setAttribute("type", "text/css");
-                s.innerHTML = "<![CDATA[\n" + used + "\n]]>";
-                var defs = document.createElement("defs");
-                defs.appendChild(s);
-                target.insertBefore(defs, target.firstChild);
-                return target;
-           };
+                css += "svg { font-size: 10px; }\n";
+                return css;
+            };
            var svg2svg = function(node) {
                // Creates a standalone SVG string from an inline SVG element
                // containing all the computed style attributes.
@@ -625,8 +619,15 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
                svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
                svg.style.background = window.getComputedStyle(document.body).background;
+               var s = document.createElement("style");
+               s.setAttribute("type", "text/css");
+               s.innerHTML = "<![CDATA[\n" + get_css(node) + "\n]]>";
+               var defs = document.createElement("defs");
+               defs.appendChild(s);
+               svg.insertBefore(defs, svg.firstChild);
+               // Getting the outer HTML
                var outer = document.createElement("div");
-               outer.appendChild(styles(node, svg));
+               outer.appendChild(svg);
                return outer.innerHTML;
            };
            var svg2png = function(xml) {
