@@ -227,16 +227,23 @@ class NdArray(CInstance):
     @staticmethod
     def _to_json(a):
         if a is not None:
-            if a.dtype in (float, int):
+            if a.dtype in (float, int, np.int64):
+                prevType = a.dtype
                 # replace nan with None
                 a = np.where(np.isnan(a), None, a)
                 dtype = a.dtype
+                if (prevType == np.int64):
+                    listArray = map(str, a.tolist())
+                else:
+                    listArray = a.tolist()
             elif np.issubdtype(a.dtype, np.datetime64):
                 a = a.astype('string')
                 dtype = 'date'
+                listArray = a.tolist()
             else:
                 dtype = a.dtype
-            return {'values': a.tolist(), 'type': dtype}
+                listArray = a.tolist()
+            return {'values': listArray, 'type': dtype}
         else:
             return {'values': a, 'type': None}
 
