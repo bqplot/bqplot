@@ -163,7 +163,14 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
         },
         get_data_dict: function(data, index) {
-            return data;
+            var that = this;
+            var return_val ={};
+            return_val['index'] = index;
+            return_val['x'] = this.mark_data[index][0];
+            ["open", "low", "high", "close"].forEach(function(str) {
+                return_val[str] = data['y'][that.px[str.substr(0, 1)]];
+            });
+            return return_val;
         },
     });
 
