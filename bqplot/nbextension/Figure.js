@@ -496,9 +496,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                       .attr("height", (count * (legend_height + 2)))
                       .style({"fill": "none"});
                 }
-                max_label_len = (legend_location === "top" ||
-                                 legend_location === "top-right" ||
-                                 legend_location === "right") ? -(max_label_len + 2) : 1;
+                max_label_len = (legend_location === "top-right" ||
+                                 legend_location === "right" ||
+                                 legend_location === "bottom-right") ? -(max_label_len + 2) : 1;
                 legend_g.style({"transform": "translate(" + (coords[0]) + "px, " +
                                                             (coords[1]) + "px) " +
                                            " translateX(" + (max_label_len) + "em)"});
