@@ -288,9 +288,9 @@ class FlexLine(Lines):
     name = 'Flexible lines'
 
     # Scaled attributes
-    color = NdArray(None, allow_none=True, sync=True, display_index=5, 
+    color = NdArray(None, allow_none=True, sync=True, display_index=5,
                     scaled=True, rtype='Number', atype='bqplot.ColorAxis')
-    width = NdArray(None, allow_none=True, sync=True, display_index=6, 
+    width = NdArray(None, allow_none=True, sync=True, display_index=6,
                     scaled=True, rtype='Number')
 
     # Other attributes
@@ -361,6 +361,12 @@ class Scatter(Mark):
         orientation of the markers representing the data points.
         The rotation scale's range is [0, 180]
         Defaults to 0 when not provided or when a value is NaN.
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        All the data attributes
+        index: index of the marker being hovered on
     """
     # Mark decoration
     icon = 'fa-cloud'
@@ -463,6 +469,15 @@ class Hist(Mark):
         sample of which the histogram must be computed.
     counts: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        midpoint: mid-point of the bin related to the rectangle hovered on
+        count: number of elements in the bin hovered on
+        bin_start: start point of the bin
+        bin-end: end point of the bin
+        index: index of the bin
     """
     # Mark decoration
     icon = 'fa-signal'
@@ -547,6 +562,13 @@ class Bars(Mark):
     color: numpy.ndarray
         color of the data points (1d array). Defaults to default_color when not
         provided or when a value is NaN
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        All the data attributes
+        index: index of the bar being hovered on
+        sub_index: if data is two dimensional, this is the minor index
     """
     # Mark decoration
     icon = 'fa-bar-chart'
@@ -667,6 +689,16 @@ class OHLC(Mark):
         abscissas of the data points (1d array)
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        x: the x value associated with the bar/candle
+        open: open value for the bar/candle
+        high: high value for the bar/candle
+        low: low value for the bar/candle
+        close: close value for the bar/candle
+        index: index of the bar/candle being hovered on
     """
 
     # Mark decoration
@@ -742,6 +774,16 @@ class Pie(Mark):
     color: numpy.ndarray
         color of the data points (1d array). Defaults to colors when not
         provided
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        : the x value associated with the bar/candle
+        open: open value for the bar/candle
+        high: high value for the bar/candle
+        low: low value for the bar/candle
+        close: close value for the bar/candle
+        index: index of the bar/candle being hovered on
     """
     # Mark decoration
     icon = 'fa-pie-chart'

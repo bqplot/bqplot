@@ -30,7 +30,6 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.fields = ["x", "y", "index", "sub_index", "color"];
             this.display_el_classes = ["bar"];
         },
         update_data: function() {

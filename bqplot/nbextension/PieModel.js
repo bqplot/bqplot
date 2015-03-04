@@ -27,7 +27,6 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
 
             this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:labels", this.update_labels, this);
-            this.fields = ["size", "color", "label", "index"];
             this.display_el_classes = ["pie_slice", "pie_text"];
         },
         update_data: function() {

@@ -24,7 +24,6 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.on("change:format", this.update_format, this);
             this.px = { o: -1, h: -1, l: -1, c: -1 };
             this.mark_data = [];
-            this.fields = ["x", "o", "h", "l", "c", "index"] ;
             this.display_el_classes = ["stick_body"] ;
         },
         update_format: function() {
