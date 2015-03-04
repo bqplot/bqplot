@@ -39,12 +39,10 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var x_scale = this.scales["x"];
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
-                this.x_offset = x_scale.offset;
             }
             var y_scale = this.scales["y"];
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
-                this.y_offset = y_scale.offset;
             }
         },
         set_positional_scales: function() {
@@ -117,8 +115,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 this.model.get_date_elem("x") : this.model.get("x");
             var y = (this.y_scale.model.type === "date") ?
                 this.model.get_date_elem("y") : this.model.get("y");
-            var net_transform = "translate(" + this.x_scale.scale(x) +
-                                        ", " + this.y_scale.scale(y) + ")";
+            var net_transform = "translate(" + (this.x_scale.scale(x) + this.x_scale.offset)
+                                             +  ", " + (this.y_scale.scale(y) + this.y_scale.offset)
+                                             + ")";
             net_transform += this.get_extra_transform();
             this.el.selectAll(".label")
                 .attr("transform", net_transform);
