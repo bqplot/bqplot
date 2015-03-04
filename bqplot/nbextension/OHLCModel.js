@@ -166,7 +166,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             var that = this;
             var return_val ={};
             return_val['index'] = index;
-            return_val['x'] = this.mark_data[index][0];
+            return_val['x'] = data['x'];
             ["open", "low", "high", "close"].forEach(function(str) {
                 return_val[str] = data['y'][that.px[str.substr(0, 1)]];
             });
