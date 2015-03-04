@@ -67,6 +67,7 @@ def _default_toolbar(figure):
     pz_btn = ToggleButton(icon='fa-arrows', tooltip='Pan and Zoom', value=False)
     snapshot_btn = Button(icon='fa-thumb-tack', tooltip='Snapshot View')
     reset_btn = Button(icon='fa-refresh', tooltip='Reset View')
+    save_btn = Button(icon='fa-save', tooltip='Save as .png Image')
 
     def tog(btn, *args):
         # Traitlets closure
@@ -88,6 +89,9 @@ def _default_toolbar(figure):
     def reset(_):
         pz.reset()
 
+    def save(_):
+        figure.save()
+
     pz_btn.on_trait_change(tog(pz_btn, normal_btn))
     pz_btn.on_trait_change(overl(pz_btn, pz))
 
@@ -96,9 +100,10 @@ def _default_toolbar(figure):
 
     snapshot_btn.on_click(snapshot)
     reset_btn.on_click(reset)
+    save_btn.on_click(save)
     figure.interaction = None
 
-    button_group = HBox([normal_btn, pz_btn, snapshot_btn, reset_btn])
+    button_group = HBox([normal_btn, pz_btn, snapshot_btn, reset_btn, save_btn])
     button_group._dom_classes = list(button_group._dom_classes) + ['btn-group']
     return button_group
 

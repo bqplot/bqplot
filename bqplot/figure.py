@@ -115,6 +115,9 @@ class Figure(DOMWidget):
                            sync=True, exposed=True, display_index=2,
                            display_name='Legend position')
 
+    def save(self):
+        self.send({"type": "save"})
+
     def _scale_x_default(self):
         return LinearScale(min=0, max=1)
 
