@@ -578,7 +578,7 @@ class Boxplot(Mark):
     x: numpy.ndarray
         abscissas of the data points (1d array)
     y: numpy.ndarray
-        Open/High/Low/Close ordinates of the data points (2d array)
+        Sample data points (2d array)
     """
 
     # Mark decoration
@@ -590,8 +590,6 @@ class Boxplot(Mark):
 
     # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
-    # FIXME Need to do something about this... keep getting future warning because of it.
-    _y_default = None
 
     # Other attributes
     # marker = Enum([boxplottype], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')

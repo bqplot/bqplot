@@ -54,9 +54,11 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
         create_listeners: function() {
             boxplotView.__super__.create_listeners.apply(this);
             this.model.on("change:stroke", this.update_stroke, this);
-            this.model.on("change:colors", this.update_colors, this);
             this.model.on("change:opacity", this.update_opacity, this);
             this.model.on("change:marker", this.update_marker, this);
+            this.model.on("change:outlier_fill_color", this.update_outlier_fill_color, this);
+            this.model.on("change:box_fill_color", this.update_box_fill_color, this);
+            this.model.on("data_updated", this.draw, this);
         },
         update_stroke: function() {
             var stroke = this.model.get("stroke");
@@ -67,21 +69,13 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
                 this.legend_el.selectAll("text").style("fill", stroke);
             }
         },
-        update_colors: function() {
-            var that        = this;
-            var colors      = this.model.get("colors");
-            var up_color    = (colors[0] ? colors[0] : "none");
-            var down_color  = (colors[1] ? colors[1] : "none");
-
-            // Fill candles based on the opening and closing values
-            this.el.selectAll(".boxplot").style("fill", function(d) {
-                return (d[that.model.px.open] > d[that.model.px.close] ?
-                    down_color : up_color);
-            });
-
-            if(this.legend_el) {
-                this.legend_el.selectAll("path").attr("fill", up_color);
-            }
+        update_outlier_fill_color: function() {
+            this.el.selectAll(".outlier")
+                   .style("fill", this.model.get("outlier_fill_color"));
+        },
+        update_box_fill_color: function() {
+            this.el.selectAll(".box")
+                    .style("fill", this.model.get("box_fill_color"));
         },
         update_opacity: function() {
             var opacity = this.model.get("opacity");
@@ -369,7 +363,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             new_boxplots.append("path").attr("class", "median_line");
             new_boxplots.append("g").attr("class", "outliers");
 
-            this.el.selectAll(".boxplot").data(plotData)
+            selector.selectAll(".boxplot")
                 .style("stroke", this.model.get("stroke"))
                 .style("opacity", color)
                 .attr ("transform", function (d, i) {
@@ -378,7 +372,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
 
            //Box
             var width = 30;
-            selector.selectAll(".box").data(plotData)
+            selector.selectAll(".box")
                 .style("fill", fillcolor)
                 .attr("x", -width /2)
                 .attr("width", width)
@@ -390,7 +384,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
                 });
 
             //Median line
-            selector.selectAll(".median_line").data(plotData)
+            selector.selectAll(".median_line")
                 .style("stroke-width", 2)
                 .attr("d", function(d, i) {
 
@@ -403,7 +397,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
 
               //Max and Min Whiskers
               //Max to top of the Box
-              selector.selectAll(".whisker_max").data(plotData)
+              selector.selectAll(".whisker_max")
                   .attr("d", function(d, i) {
 
                   var x = 0;
@@ -416,7 +410,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
                   return  "5,5";
                });
 
-              selector.selectAll(".whisker_max_end").data(plotData)
+              selector.selectAll(".whisker_max_end")
                   .attr("d", function(d, i) {
 
                   var x = 0;
@@ -428,7 +422,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
 
               //Min to the bottom of the box
               //Max to top of the Box
-              selector.selectAll(".whisker_min").data(plotData)
+              selector.selectAll(".whisker_min")
                   .attr("d", function(d, i) {
 
                   var x = 0;
@@ -441,7 +435,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
                   return  "5,5";
               });
 
-              selector.selectAll(".whisker_min_end").data(plotData)
+              selector.selectAll(".whisker_min_end")
                   .attr("d", function(d, i) {
 
                   var x = 0;
@@ -452,7 +446,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
               });
 
               // Add the outliers group
-              var outliers = selector.selectAll(".outliers").data(plotData).selectAll("circle")
+              var outliers = selector.selectAll(".outliers").selectAll("circle")
                                       .data(function(d) { return d.outliers;});
 
               //Individual outlier drawing spec

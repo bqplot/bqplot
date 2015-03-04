@@ -21,7 +21,6 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
             model.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.px = { op: 0, hi: 1, lo: 2, cl: 3 };
 	    },
         update_bounding_box: function(model, value) {
             // TODO: Actually add some padding.
@@ -41,7 +40,7 @@ define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, 
                 y_data = y_data.slice(0, x_data.length);
             }
 
-            this.mark_data = _.zip(x_data, y_data.sort(function(a, b){return a-b}));
+            this.mark_data = _.zip(x_data, y_data);
 
             this.update_domains();
             this.trigger("data_updated");
