@@ -21,29 +21,27 @@ BQPlot Package
 .. currentmodule:: bqplot
 
 
-Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` objects (horizontal and vertical) and a number of `Mark` objects.  Each `Axis` and `Mark` has a `Scale` object.  The `Scale` objects transform data into a visual property (typically a location in pixel space, but could be a color, etc.).  An `Axis` draws an axis associated with the scale. ::
+Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` objects (horizontal and vertical) and a number of `Mark` objects. Each `Mark` object is a visual representation of the data. Each `Axis` and `Mark` has a `Scale` object.  The `Scale` objects transform data into a visual property (typically a location in pixel space, but could be a color, etc.).  An `Axis` draws an axis associated with the scale. ::
 
-    from bqplot import *
-    x_data = np.arange(100)
-    y_data = np.cumsum(np.random.randn(100))
-    y_data_2 = np.cumsum(np.random.randn(100) * 100)
-    y_data_3 = np.cumsum(np.random.randn(100))
-    y_data_4 = np.cumsum(np.random.randn(100)  * 100)
+from bqplot import *
+from IPython.display import display
+x_data = range(10)
+y_data = [i ** 2 for i in x_data]
 
-    x_sc = LinearScale()
-    y_sc = LinearScale()
+x_sc = LinearScale()
+y_sc = LinearScale()
 
-    ax_x = Axis(label='Test X', scale=x_sc, tick_format='0.0f')
-    ax_y = Axis(label='Test Y', scale=y_sc, orientation='vertical', tick_format='0.2f', side='right')
+ax_x = Axis(label='Test X', scale=x_sc, tick_format='0.0f')
+ax_y = Axis(label='Test Y', scale=y_sc, orientation='vertical', tick_format='0.2f')
 
-    line = Lines(x=x_data,
-                 y=y_data_2,
-                 scales={'x':x_sc, 'y':y_sc},
-                 colors=['hotpink', 'yellow'])
+line = Lines(x=x_data,
+             y=y_data,
+             scales={'x':x_sc, 'y':y_sc},
+             colors=['red', 'yellow'])
 
-    m_fig = dict(left=100, top=50, bottom=50, right=100)
-    intsel.on_trait_change(update_index, name='selected')
-    fig = Figure(width=800, height=600, axes=[ax_x, ax_y], marks=[line], margin=m_fig)
+fig = Figure(axes=[ax_x, ax_y], marks=[line])
+
+display(fig)
 
 .. automodule:: bqplot.figure
 .. automodule:: bqplot.scales
@@ -52,6 +50,7 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 .. automodule:: bqplot.market_map
 .. automodule:: bqplot.interacts
 .. automodule:: bqplot.traits
+.. automodule:: bqplot.map
 
 .. automodule:: bqplot.pyplot
 
