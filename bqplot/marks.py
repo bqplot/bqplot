@@ -152,6 +152,7 @@ class Mark(Widget):
 
     enable_hover = Bool(True, sync=True)
     tooltip = Instance(DOMWidget, sync=True)
+    interactions = Dict({}, sync=True)
 
     _model_name = Unicode('MarkModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
