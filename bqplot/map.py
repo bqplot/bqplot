@@ -63,12 +63,6 @@ class Map(DOMWidget):
         Dictionary containing the styles for selected subunits
     hovered_styles: Dict (default: {'hovered_fill': 'Orange', 'hovered_stroke': None, 'hovered_stroke_width': 5.0})
         Dictionary containing the styles for hovered subunits
-    hover_fill: color (default: 'Orange')
-        fill for the country being hovered on
-    hover_stroke: color (default: None)
-        stroke for the country being hovered on
-    hover_stroke_width: float (default: 5.0)
-        stroke width for the countru being hovered on
 
     Data Attributes
     ---------------
