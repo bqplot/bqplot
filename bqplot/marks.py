@@ -25,9 +25,13 @@ Marks
 
    Mark
    Lines
+   FlexLine
    Scatter
    Hist
    Bars
+   Label
+   OHLC
+   Pie
 """
 from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float, Instance
@@ -266,9 +270,9 @@ class FlexLine(Lines):
     name = 'Flexible lines'
 
     # Scaled attributes
-    color = NdArray(None, allow_none=True, sync=True, display_index=5, 
+    color = NdArray(None, allow_none=True, sync=True, display_index=5,
                     scaled=True, rtype='Number', atype='bqplot.ColorAxis')
-    width = NdArray(None, allow_none=True, sync=True, display_index=6, 
+    width = NdArray(None, allow_none=True, sync=True, display_index=6,
                     scaled=True, rtype='Number')
 
     # Other attributes
@@ -634,19 +638,21 @@ class OHLC(Mark):
 
     Attributes
     ----------
-    icon: string
+    icon: string (class-level attribute)
         font-awesome icon for that mark
-    name: string
+    name: string (class-level attribute)
         user-friendly name of the mark
     marker: {'candle', 'bar'}
         marker type
-    stroke: color
+    stroke: color (default: white)
         stroke color of the marker
-    colors: ColorList
+    stroke_width: float (default: 1.0)
+        stroke width of the marker
+    colors: ColorList (default: ['limegreen', 'red'])
         fill colors for the markers (up/down)
-    opacity: float
+    opacity: float (default: 1.0)
         opacity of the marker
-    format: string
+    format: string (default: 'ohlc')
         description of y data being passed
         supports all permutations of the strings 'ohlc', 'oc', and 'hl'
 
@@ -680,8 +686,8 @@ class OHLC(Mark):
                   sync=True)
     stroke = Color('white', sync=True, exposed=True, display_index=4,
                    display_name='Stroke color')
-    stroke_width = Int(1, sync=True, exposed=True, display_name='Stroke Width',
-                       display_index=5, allow_none=False)
+    stroke_width = Float(1.0, sync=True, exposed=True, display_name='Stroke Width',
+                         display_index=5, allow_none=False)
     colors = ColorList(['limegreen', 'red'], allow_none_element=True,
                        allow_none=False, display_index=6, sync=True,
                        display_name='Colors')
@@ -702,15 +708,16 @@ class Pie(Mark):
 
     """Piechart mark.
 
-    colors: list of colors
+    colors: list of colors (default: CATEGORY10)
         list of colors for the slices.
-    select_slices: bool
-    stroke: color
+    select_slices: bool (default: False)
+        enable selection of slices
+    stroke: color (default: 'white')
+        stroke color for the marker
     opacity: float
         opacity of the mark. Then number must be between 0 and 1
     sort: bool (default: False)
         sort the pie slices by descending sizes
-
     x: Float (default: 0.5) or Date
         horizontal position of the pie center, in data coordinates or in figure
         coordinates

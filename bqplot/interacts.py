@@ -27,7 +27,7 @@ Interacts
    BrushSelector
    HandDraw
    IndexSelector
-   IntervalSelector
+   FastIntervalSelector
    MultiSelector
    OneDSelector
    Interaction

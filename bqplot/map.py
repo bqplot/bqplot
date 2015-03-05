@@ -59,12 +59,10 @@ class Map(DOMWidget):
         color for the text inside a tooltip
     text_format: string (default: '.2f')
         format for the text inside a tooltip
-    selected_fill: color (default: 'Red')
-        fill for the selected countries
-    selected_stroke: color (default: None)
-        stroke for the selected countries
-    selected_stroke_width: float (default: 5.0)
-        stroke width for the selected countries
+    selected_styles: Dict (default: {'selected_fill': 'Red', 'selected_stroke': None, 'selected_stroke_width': 5.0})
+        Dictionary containing the styles for selected subunits
+    hovered_styles: Dict (default: {'hovered_fill': 'Orange', 'hovered_stroke': None, 'hovered_stroke_width': 5.0})
+        Dictionary containing the styles for hovered subunits
     hover_fill: color (default: 'Orange')
         fill for the country being hovered on
     hover_stroke: color (default: None)
