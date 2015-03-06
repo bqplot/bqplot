@@ -135,6 +135,11 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
+            var self = this;
+            this.el.on("mouseover", _.bind(this.mouse_over, this))
+                .on("mousemove", _.bind(this.mouse_move, this))
+                .on("mouseout", _.bind(this.mouse_out, this));
+
             this.model.on("change:default_color", this.update_default_color, this);
             this.model.on("change:stroke", this.update_stroke, this);
             this.model.on("change:default_opacity", this.update_default_opacity, this);
@@ -243,8 +248,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         // keep consistent across different places where we use it.
         get_element_color: function(data) {
             var color_scale = this.scales["color"];
-            if(color_scale && data.z !== undefined && data.z !== null) {
-                return color_scale.scale(data.z);
+            if(color_scale && data.color !== undefined && data.color !== null) {
+                return color_scale.scale(data.color);
             }
             return this.model.get("default_color");
         },
@@ -325,9 +330,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     .skew(function(d) { return that.get_element_skew(d); })
                     );
             this.update_xy_position();
-            elements.call(this.drag_listener)
-              .on("mouseover", function(d, i) { return that.mouse_over(d, i); })
-              .on("mouseout", function(d, i) { return that.mouse_out(d, i); });
+            elements.call(this.drag_listener);
 
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
@@ -653,25 +656,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             //adding the point and saving the model automatically triggers a
             //draw which adds the new point because the data now has a new
             //point
-        },
-        mouse_over: function(d, i) {
-            if(this.model.get("enable_hover")) {
-                //make tooltip visible
-                this.trigger("update_tooltip", d);
-                this.show_tooltip(d3.event, d);
-                this.send({event: "hover",
-                           point: {"x": d.x, "y": d.y},
-                           index: i});
-            }
-        },
-        mouse_out: function(d, i) {
-            if(this.model.get("enable_hover")) {
-                // make tooltip invisible
-                this.hide_tooltip();
-                this.send({event: "hover",
-                           point: {"x": d.x, "y": d.y},
-                           index: i});
-            }
         },
     });
 

@@ -27,6 +27,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
 
             this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:labels", this.update_labels, this);
+            this.display_el_classes = ["pie_slice", "pie_text"];
         },
         update_data: function() {
             var sizes = this.get_typed_field("sizes");
@@ -35,7 +36,8 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.mark_data = sizes.map(function(d, i) {
                 return {size: d,
                         color: color[i],
-                        label: labels[i]};
+                        label: labels[i],
+                        index: i};
             });
             this.update_color();
             this.update_domains();
@@ -89,6 +91,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     y_scale.del_domain([], this.id);
                 }
             }
+        },
+        get_data_dict: function(data, index) {
+            return data['data'];
         },
     });
 

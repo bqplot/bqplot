@@ -27,6 +27,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.display_el_classes = ["dot"];
         },
         update_data: function() {
             this.dirty = true;
@@ -63,11 +64,12 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 this.mark_data = x_data.map(function(d, i) {
                     return {x: d,
                             y: y_data[i],
-                            z: color[i],
+                            color: color[i],
                             size: size[i],
                             opacity: opacity[i],
                             skew: skew[i],
                             rotation: rotation[i],
+                            index: i
                             };
                 });
             }
@@ -93,6 +95,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                                        data["name"] = names[index];
                                        data["unique_id"] = unique_ids[index];
             });
+        },
+        get_data_dict: function(data, index) {
+            return data;
         },
         update_domains: function() {
             if (!this.mark_data) {

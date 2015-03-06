@@ -22,6 +22,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.bars_selected = [];
 
             var self = this;
+            this.after_displayed(function() {
+                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+                this.create_tooltip();
+            });
+
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.draw();
@@ -51,6 +56,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             Hist.__super__.create_listeners.apply(this);
+            this.el.on("mouseover", _.bind(this.mouse_over, this))
+                .on("mousemove", _.bind(this.mouse_move, this))
+                .on("mouseout", _.bind(this.mouse_out, this));
+            this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors",this.update_colors,this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
@@ -380,7 +389,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.touch();
             }
         },
-        });
+    });
 
     return {
         Hist: Hist,

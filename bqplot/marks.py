@@ -125,6 +125,13 @@ class Mark(Widget):
         when a selection exists.
     selected: list (default: [])
         Indices of the selected items in the mark.
+    tooltip: DOMWidget (default: None)
+        Widget to be displayed as tooltip when elements of the scatter are
+        hovered on
+    enable_hover: Bool (default: True)
+        Boolean attribute to control the hover interaction for the scatter. If
+        this is false, the on_hover custom mssg is not sent back to the python
+        side
     """
     mark_types = {}
     scales = Dict(sync=True)  # TODO: check for allow_none
@@ -143,12 +150,27 @@ class Mark(Widget):
     unselected_style = Dict({}, sync=True)
     selected = List(sync=True, allow_none=True)
 
+    enable_hover = Bool(True, sync=True)
+    tooltip = Instance(DOMWidget, sync=True)
+
     _model_name = Unicode('MarkModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
     _ipython_display_ = None
 
     def _selected_default(self):
         return None
+
+    def __init__(self, **kwargs):
+        super(Mark, self).__init__(**kwargs)
+        self._hover_handlers = CallbackDispatcher()
+        self.on_msg(self._handle_custom_msgs)
+
+    def on_hover(self, callback, remove=False):
+        self._hover_handlers.register_callback(callback, remove=remove)
+
+    def _handle_custom_msgs(self, _, content):
+        if content.get('event', '') == 'hover':
+            self._hover_handlers(self, content)
 
 
 @register_mark('bqplot.Lines')
@@ -318,13 +340,6 @@ class Scatter(Mark):
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
-    tooltip: DOMWidget (default: None)
-        Widget to be displayed as tooltip when elements of the scatter are
-        hovered on
-    enable_hover: Bool (default: True)
-        Boolean attribute to control the hover interaction for the scatter. If
-        this is false, the on_hover custom mssg is not sent back to the python
-        side
     fill, drag_color, names_unique, enable_move, enable_add,
     enable_delete, restrict_x, restrict_y, update_on_move.
 
@@ -350,6 +365,12 @@ class Scatter(Mark):
         orientation of the markers representing the data points.
         The rotation scale's range is [0, 180]
         Defaults to 0 when not provided or when a value is NaN.
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        All the data attributes
+        index: index of the marker being hovered on
     """
     # Mark decoration
     icon = 'fa-cloud'
@@ -397,12 +418,10 @@ class Scatter(Mark):
     fill = Bool(True, sync=True)
     drag_color = Color('DodgerBlue', sync=True)
     names_unique = Bool(True, sync=True)
-    tooltip = Instance(DOMWidget, sync=True)
 
     enable_move = Bool(False, sync=True)
     enable_add = Bool(False, sync=True)
     enable_delete = Bool(False, sync=True)
-    enable_hover = Bool(True, sync=True)
     restrict_x = Bool(False, sync=True)
     restrict_y = Bool(False, sync=True)
     update_on_move = Bool(False, sync=True)
@@ -410,14 +429,10 @@ class Scatter(Mark):
     def __init__(self, **kwargs):
         super(Scatter, self).__init__(**kwargs)
         self._drag_end_handlers = CallbackDispatcher()
-        self._hover_handlers = CallbackDispatcher()
         self.on_msg(self._handle_custom_msgs)
 
     def on_drag_end(self, callback, remove=False):
         self._drag_end_handlers.register_callback(callback, remove=remove)
-
-    def on_hover(self, callback, remove=False):
-        self._hover_handlers.register_callback(callback, remove=remove)
 
     def _handle_custom_msgs(self, _, content):
         if content.get('event', '') == 'drag_end':
@@ -458,6 +473,15 @@ class Hist(Mark):
         sample of which the histogram must be computed.
     counts: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        midpoint: mid-point of the bin related to the rectangle hovered on
+        count: number of elements in the bin hovered on
+        bin_start: start point of the bin
+        bin-end: end point of the bin
+        index: index of the bin
     """
     # Mark decoration
     icon = 'fa-signal'
@@ -542,6 +566,13 @@ class Bars(Mark):
     color: numpy.ndarray
         color of the data points (1d array). Defaults to default_color when not
         provided or when a value is NaN
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        All the data attributes
+        index: index of the bar being hovered on
+        sub_index: if data is two dimensional, this is the minor index
     """
     # Mark decoration
     icon = 'fa-bar-chart'
@@ -664,6 +695,16 @@ class OHLC(Mark):
         abscissas of the data points (1d array)
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        x: the x value associated with the bar/candle
+        open: open value for the bar/candle
+        high: high value for the bar/candle
+        low: low value for the bar/candle
+        close: close value for the bar/candle
+        index: index of the bar/candle being hovered on
     """
 
     # Mark decoration
@@ -740,6 +781,16 @@ class Pie(Mark):
     color: numpy.ndarray
         color of the data points (1d array). Defaults to colors when not
         provided
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        : the x value associated with the bar/candle
+        open: open value for the bar/candle
+        high: high value for the bar/candle
+        low: low value for the bar/candle
+        close: close value for the bar/candle
+        index: index of the bar/candle being hovered on
     """
     # Mark decoration
     icon = 'fa-pie-chart'

@@ -28,7 +28,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         },
         create_listeners: function() {
             this.listenTo(this.parent, "update_tooltip", this.update_tooltip);
-            this.model.on_some_change(["fields", "show_names"], this.create_table, this);
+            this.model.on_some_change(["fields", "show_labels", "labels"], this.create_table, this);
             this.listenTo(this.model, "change:formats", this.update_formats);
         },
         update_formats: function() {
@@ -51,6 +51,11 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         },
         create_table: function() {
             var fields = this.model.get("fields");
+            var labels = this.model.get("labels");
+            var ind = labels.length;
+            for (; ind < fields.length; ind++) {
+                labels[ind] = fields[ind];
+            }
             var self = this;
 
             this.d3_el.select("table").remove();
@@ -60,9 +65,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             tooltip_table.exit().remove();
             var table_rows = tooltip_table.enter().append("tr")
                                 .attr("class", "datarow");
-            if(this.model.get("show_names")) {
+            if(this.model.get("show_labels")) {
                 table_rows.append("td")
-                    .text(function(datum) { return datum;})
+                    .text(function(datum, index) { return labels[index];})
                     .attr("class", "tooltiptext datafield");
             }
             table_rows.append("td")

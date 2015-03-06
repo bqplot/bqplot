@@ -41,15 +41,20 @@ class Tooltip(DOMWidget):
     formats: list (default: [])
         list of formats to be applied to each of the fields.
         if no format is specified for a field, the value is displayed as it is
-    show_names: bool (default: True)
-        Boolean attribute to enable and disable display of the field name along
-        with the value
+    labels: list(default: [])
+        list of labels to be displayed in the table instead of the fields. If
+        the length of labels is less than the length of fields, then the field
+        names are displayed for those fields for which label is missing.
+    show_labels: bool (default: True)
+        Boolean attribute to enable and disable display of the label /field name
+        as the first column along with the value
 
     """
 
     fields = List(sync=True)
     formats = List(sync=True)
-    show_names = Bool(True, sync=True)
+    show_labels = Bool(True, sync=True)
+    labels = List(sync=True)
 
     _view_name = Unicode('Tooltip', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Tooltip', sync=True)

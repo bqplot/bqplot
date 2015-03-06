@@ -26,6 +26,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
 
+            this.after_displayed(function() {
+                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+                this.create_tooltip();
+            });
+
             return base_creation_promise.then(function() {
                 self.create_listeners();
                 self.compute_view_padding();
@@ -87,11 +92,15 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             Bars.__super__.create_listeners.apply(this);
+            this.el.on("mouseover", _.bind(this.mouse_over, this))
+                .on("mousemove", _.bind(this.mouse_move, this))
+                .on("mouseout", _.bind(this.mouse_out, this));
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
             this.model.on("change:type", this.draw, this);
             this.model.on("change:align", this.realign, this);
+            this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.listenTo(this.parent, "bg_clicked", this.reset_selection);
         },
@@ -197,16 +206,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     .attr("y", function(d) {
                         return y_scale.scale(d.y1);
                     }).attr("height", function(d) {
-                        return Math.abs(y_scale.scale(d.y1 + d.val) - y_scale.scale(d.y1));
+                        return Math.abs(y_scale.scale(d.y1 + d.y) - y_scale.scale(d.y1));
                     });
             } else {
                 bars_sel.attr("x", function(datum, index) {
                         return that.x1(index);
                   }).attr("width", this.x1.rangeBand().toFixed(2))
                   .attr("y", function(d) {
-                      return d3.min([y_scale.scale(d.val), y_scale.scale(that.model.base_value)]);
+                      return d3.min([y_scale.scale(d.y), y_scale.scale(that.model.base_value)]);
                   }).attr("height", function(d) {
-                      return Math.abs(y_scale.scale(that.model.base_value) - (y_scale.scale(d.val)));
+                      return Math.abs(y_scale.scale(that.model.base_value) - (y_scale.scale(d.y)));
                   });
             }
         },
