@@ -145,7 +145,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   });
                 this.legend_el.select("text")
                   .style("fill", function(d, i) {
-                      return that.get_element_color(d, i);
+                      return that.get_element_color(d, i) || colors[i];
                   })
                   .style("opacity", function(d, i) {
                       return opacity[i];
@@ -234,7 +234,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var that = this,
                 rect_dim = inter_y_disp * 0.8,
                 fill_color = this.model.get("fill"),
-                fill_opacity = this.model.get("opacity");
+                opacity = this.model.get("opacity");
             this.legend_el.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
@@ -247,7 +247,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     return that.get_element_color(d, i);
                 })
                 .style("fill", function(d, i) { return fill_color[i]; })
-                .style("fill_opacity", function(d, i) { return fill_opacity[i]; })
+                .style("opacity", function(d, i) { return opacity[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", _.bind(this.get_line_style, this))
                 .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
