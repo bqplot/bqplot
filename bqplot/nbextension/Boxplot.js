@@ -32,23 +32,22 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             var x_scale = this.scales["x"];
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
-                this.x_offset = x_scale.offset;
             }
             var y_scale = this.scales["y"];
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
-                this.y_offset = y_scale.offset;
             }
         },
         set_positional_scales: function() {
-            this.x_scale = this.scales["x"];
-            this.y_scale = this.scales["y"];
-            var that = this;
-            this.listenTo(that.x_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+
+            var x_scale = this.scales["x"];
+            this.listenTo(x_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
             });
-            this.listenTo(that.y_scale, "domain_changed", function() {
-                if (!that.model.dirty) { that.draw(); }
+
+            var y_scale = this.scales["y"];
+            this.listenTo(y_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
             });
         },
         create_listeners: function() {
@@ -199,6 +198,9 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             });
         },
         invert_range: function(start_pxl, end_pxl) {
+            var x_scale = this.scales["x"];
+            var y_scale = this.scales["y"];
+
             if((start_pxl === undefined && end_pxl === undefined) ||
                (this.model.mark_data.length === 0))
             {
@@ -208,7 +210,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             }
             var that = this;
             var data = [start_pxl, end_pxl].map(function(elem) {
-                return that.x_scale.scale.invert(elem);
+                return x_scale.scale.invert(elem);
             });
             var idx_start = d3.max([0,
                 d3.bisectLeft(this.model.mark_data.map(function(d){
@@ -237,7 +239,10 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
         },
         invert_point: function(pixel) {
             perf("invert_point").start();
-            var point = this.x_scale.scale.invert(pixel);
+
+            var x_scale = this.scales["x"];
+
+            var point = x_scale.scale.invert(pixel);
             var index = this.bisect(this.model.mark_data.map(function(d) {
                 return d[0];
             }), point);
@@ -246,20 +251,22 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             return index;
         },
         prepareBoxPlots: function () {
-            var that = this;
+
+            var x_scale = this.scales["x"];
+            var y_scale = this.scales["y"];
 
            // convert the domain data to the boxes to be drawn on the screen
            // find the quantiles, min/max and outliers for the box plot
-            that.plotData = [];
+            this.plotData = [];
             for(var i = 0; i<this.model.mark_data.length; ++i) {
                 var values = this.model.mark_data[i];
 
                 var displayValue = {};
 
-                displayValue.x         = that.x_scale.scale(values[0]);
-                displayValue.boxUpper  = that.y_scale.scale(d3.quantile(values[1], 0.75));
-                displayValue.boxLower  = that.y_scale.scale(d3.quantile(values[1], 0.25));
-                displayValue.boxMedian = that.y_scale.scale(d3.quantile(values[1], 0.5));
+                displayValue.x         = x_scale.scale(values[0]);
+                displayValue.boxUpper  = y_scale.scale(d3.quantile(values[1], 0.75));
+                displayValue.boxLower  = y_scale.scale(d3.quantile(values[1], 0.25));
+                displayValue.boxMedian = y_scale.scale(d3.quantile(values[1], 0.5));
 
                 // The domain Y to screen Y is an inverse scale, so be aware of that
                 // The max from the domain Y becomes min on the screen (display) scale
@@ -273,7 +280,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
 
                 for (var j=0; j<values[1].length; ++j)  {
 
-                   var plotY = that.y_scale.scale(values[1][j]);
+                   var plotY = y_scale.scale(values[1][j]);
 
                    // Find the outlier
                    if ( plotY > lowerBound || plotY  < upperBound) {
@@ -292,7 +299,7 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
                    }
                 }
 
-                that.plotData.push(displayValue);
+                this.plotData.push(displayValue);
             }
 
         },
@@ -474,17 +481,18 @@ define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             var that = this;
             var min_distance = Infinity;
 
+            var x_scale = this.scales["x"];
             for(var i = 1; i < that.model.mark_data.length; i++) {
-                var dist = that.x_scale.scale(that.model.mark_data[i][0]) -
-                            that.x_scale.scale(that.model.mark_data[i-1][0]);
+                var dist = x_scale.scale(that.model.mark_data[i][0]) -
+                            x_scale.scale(that.model.mark_data[i-1][0]);
                 dist = (dist < 0) ? (-1*dist) : dist;
                 if(dist < min_distance) min_distance = dist;
             }
 
             var mark_width = 0;
             if(min_distance == Infinity) {
-                mark_width = (that.x_scale.scale(this.model.max_x) -
-                              that.x_scale.scale(this.model.min_x)) / 2;
+                mark_width = (x_scale.scale(this.model.max_x) -
+                              x_scale.scale(this.model.min_x)) / 2;
             } else {
                 mark_width = min_distance;
             }
