@@ -56,8 +56,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.listenTo(color_scale, "domain_changed", function() {
                     this.update_style();
                 });
-                color_scale.on("color_scale_range_changed",
-                                this.update_style, this);
+                color_scale.on("color_scale_range_changed", this.update_style, this);
             }
         },
         create_listeners: function() {
@@ -109,7 +108,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.el.selectAll(".curve").selectAll("path")
               .style("stroke-dasharray", _.bind(this.get_line_style, this));
             if (this.legend_el) {
-                this.legend_el.select("line")
+                this.legend_el.select("path")
                   .style("stroke-dasharray", _.bind(this.get_line_style, this));
             }
         },
@@ -118,13 +117,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.el.selectAll(".curve").selectAll("path")
               .style("stroke-width", stroke_width);
             if (this.legend_el) {
-                this.legend_el.select("line")
+                this.legend_el.select("path")
                   .style("stroke-width", stroke_width);
             }
         },
         update_style: function() {
             var that = this,
-                colors = this.model.get("fill"),
+                fill_color = this.model.get("fill"),
                 opacity = this.model.get("opacity");
             // update curve colors
             this.el.selectAll(".curve").select("path")
@@ -132,20 +131,26 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   return that.get_element_color(d, i);
               })
               .style("fill", function(d, i) {
-                  return colors[i];
+                  return fill_color[i];
               })
               .style("opacity", function(d, i) {
                   return opacity[i];
               });
-            // update legend colors
+            // update legend style
             if (this.legend_el){
-                this.legend_el.select("line")
+                this.legend_el.select("path")
                   .style("stroke", function(d, i) {
                       return that.get_element_color(d, i);
+                  })
+                 .style("fill", function(d, i) {
+                      return fill_color[i];
+                  })
+                  .style("opacity", function(d, i) {
+                      return opacity[i];
                   });
                 this.legend_el.select("text")
                   .style("fill", function(d, i) {
-                      return that.get_element_color(d, i);
+                      return that.get_element_color(d, i) || fill_color[i];
                   })
                   .style("opacity", function(d, i) {
                       return opacity[i];
@@ -156,12 +161,18 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             return this.model.get("close_path") ? "Z" : "";
         },
         update_path_style: function() {
+            var interpolation = this.model.get("interpolation");
+            this.line.interpolate(interpolation);
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
               .attr("d", function(d) {
-                  that.line.interpolate(that.model.get("interpolation"));
                   return that.line(d.values) + that.path_closure();
               });
+            if (this.legend_el) {
+                this.legend_line.interpolate(interpolation);
+                this.legend_el.selectAll("path")
+                  .attr("d", this.legend_line(this.legend_path_data) + this.path_closure());
+            }
         },
         relayout: function() {
             this.set_ranges();
@@ -234,7 +245,17 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var that = this,
                 rect_dim = inter_y_disp * 0.8,
                 fill_color = this.model.get("fill"),
-                fill_opacity = this.model.get("opacity");
+                opacity = this.model.get("opacity");
+
+            this.legend_line = d3.svg.line()
+                .interpolate(this.model.get("interpolation"))
+                .x(function(d) { return d[0]; })
+                .y(function(d) { return d[1]; });
+
+            this.legend_path_data = [[0, rect_dim],
+                                     [rect_dim / 2, 0],
+                                     [rect_dim, rect_dim / 2]]
+
             this.legend_el.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
@@ -242,15 +263,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
                 }).on("mouseover", _.bind(this.highlight_axes, this))
                 .on("mouseout", _.bind(this.unhighlight_axes, this))
-              .append("line")
+              .append("path")
+                .attr("fill", "none")
+                .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
                 .style("stroke", function(d,i) {
                     return that.get_element_color(d, i);
                 })
                 .style("fill", function(d, i) { return fill_color[i]; })
-                .style("fill_opacity", function(d, i) { return fill_opacity[i]; })
+                .style("opacity", function(d, i) { return opacity[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
-                .style("stroke-dasharray", _.bind(this.get_line_style, this))
-                .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
+                .style("stroke-dasharray", _.bind(this.get_line_style, this));
 
             this.legend_el.append("text")
               .attr("class", "legendtext")
@@ -340,7 +362,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               })
               .y(function(d) {
                   return y_scale.scale(d.y) + y_scale.offset;
-               })
+              })
               .defined(function(d) { return d.y !== null; });
 
             var that = this;
