@@ -222,6 +222,13 @@ class Lines(Mark):
         colors from the colors attribute are used. Each line has a single color
         and if the size of colors is less than the number of lines, the
         remaining lines are given the default colors.
+
+    Tooltip
+    -------
+    The fields which can be passed to the default tooltip are:
+        name: label of the line
+        index: index of the line being hovered on
+        color: data attribute for the color of the line
     """
     # Mark decoration
     icon = 'fa-line-chart'

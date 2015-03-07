@@ -25,6 +25,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // because some of the functions depend on child scales being
             // created. Make sure none of the event handler functions make that
             // assumption.
+            this.after_displayed(function() {
+                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+                this.create_tooltip();
+            });
+
             return base_render_promise.then(function() {
                 that.create_listeners();
 				that.compute_view_padding();
@@ -61,6 +66,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
+            this.el.on("mouseover", _.bind(this.mouse_over, this))
+                .on("mousemove", _.bind(this.mouse_move, this))
+                .on("mouseout", _.bind(this.mouse_out, this));
+            this.model.on("change:tooltip", this.create_tooltip, this);
+
             // FIXME: multiple calls to update_path_style. Use on_some_change.
             this.model.on("change:interpolation", this.update_path_style, this);
             this.model.on("change:close_path", this.update_path_style, this);
