@@ -31,6 +31,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             });
 
             return base_render_promise.then(function() {
+                that.event_listeners = {};
+                that.process_interactions();
                 that.create_listeners();
 				that.compute_view_padding();
                 that.draw();
@@ -66,9 +68,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
-            this.el.on("mouseover", _.bind(this.mouse_over, this))
-                .on("mousemove", _.bind(this.mouse_move, this))
-                .on("mouseout", _.bind(this.mouse_out, this));
+            this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
+                .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
+                .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
+
             this.model.on("change:tooltip", this.create_tooltip, this);
 
             // FIXME: multiple calls to update_path_style. Use on_some_change.
@@ -82,6 +85,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:stroke_width", this.update_stroke_width, this);
             this.model.on("change:labels_visibility", this.update_legend_labels, this);
             this.model.on("change:line_style", this.update_line_style, this);
+            this.listenTo(this.model, "change:interactions", this.process_interactions);
+            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
+        },
+        event_dispatcher: function(event_name) {
+            if(this.event_listeners[event_name] !== undefined) {
+                _.bind(this.event_listeners[event_name], this)();
+            }
         },
         update_legend_labels: function() {
             if(this.model.get("labels_visibility") === "none") {
@@ -403,7 +413,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               })
               .style("fill", function(d, i) { return fill_color[i]; })
               .style("stroke-width", this.model.get("stroke_width"))
-              .style("stroke-dasharray", _.bind(this.get_line_style, this));
+              .style("stroke-dasharray", _.bind(this.get_line_style, this))
+              .on("click", _.bind(function() { this.event_dispatcher("element_clicked");}, this));
 
             curves_sel.exit()
               .transition().duration(this.model.get("animate_dur"))
@@ -487,6 +498,56 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             //return true if there are any mark data inside lasso
             return data_in_lasso;
+        },
+        reset_interactions: function() {
+            this.reset_click();
+            this.reset_hover();
+        },
+        reset_click: function() {
+            this.event_listeners["element_clicked"] = function() {};
+            this.event_listeners["parent_clicked"] = function() {};
+        },
+        reset_hover: function() {
+            this.event_listeners["mouse_over"] = function(){};
+            this.event_listeners["mouse_move"] = function() {};
+            this.event_listeners["mouse_out"] = function() {};
+        },
+        refresh_tooltip: function(event, data, tooltip_interactions) {
+            var el = d3.select(d3.event.target);
+            if(this.is_hover_element(el)) {
+                var data = el.data()[0];
+                var clicked_data = this.model.get_data_dict(data, data.index);
+                this.trigger("update_tooltip", data);
+                this.show_tooltip(d3.event, true);
+            }
+        },
+        process_interactions: function() {
+            var interactions = this.model.get("interactions");
+            if(_.isEmpty(interactions)) {
+                //set all the event listeners to blank functions
+                this.reset_interactions();
+            }
+            else {
+                if(interactions["click"] !== undefined &&
+                  interactions["click"] !== null) {
+                    if(interactions["click"] === "tooltip") {
+                        this.event_listeners["element_clicked"] = this.refresh_tooltip;
+                        this.event_listeners["parent_clicked"] = function() { return this.hide_tooltip(true) };
+                    }
+                } else {
+                    this.reset_click();
+                }
+                if(interactions["hover"] !== undefined &&
+                  interactions["hover"] !== null) {
+                    if(interactions["hover"] === "tooltip") {
+                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
+                        this.event_listeners["mouse_move"] = this.show_tooltip;
+                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.reset_hover();
+                }
+            }
         },
     });
 
