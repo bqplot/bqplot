@@ -134,6 +134,11 @@ class Mark(Widget):
         Boolean attribute to control the hover interaction for the scatter. If
         this is false, the on_hover custom mssg is not sent back to the python
         side
+    interactions: Dictionary (default: {"hover": "tooltip"})
+        Dictionary listing the different interactions for each mark. The key is
+        the event which triggers the interaction and the value is the kind of
+        interactions. Keys and values can only take strings from separate enums
+        for each mark.
     """
     mark_types = {}
     scales = Dict(sync=True)  # TODO: check for allow_none
@@ -155,7 +160,7 @@ class Mark(Widget):
     enable_hover = Bool(True, sync=True)
     tooltip = Instance(DOMWidget, sync=True)
     tooltip_style = Dict({'opacity': 0.9}, sync=True)
-    interactions = Dict({}, sync=True)
+    interactions = Dict({"hover": "tooltip"}, sync=True)
 
     _model_name = Unicode('MarkModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
@@ -232,6 +237,11 @@ class Lines(Mark):
         name: label of the line
         index: index of the line being hovered on
         color: data attribute for the color of the line
+    The following are the events which can trigger interactions:
+        click: left click of the mouse
+        hover: mouse-over an element
+    The following are the interactions which can be linked to the above events:
+        tooltip: display tooltip
     """
     # Mark decoration
     icon = 'fa-line-chart'
@@ -382,6 +392,12 @@ class Scatter(Mark):
     The fields which can be passed to the default tooltip are:
         All the data attributes
         index: index of the marker being hovered on
+    The following are the events which can trigger interactions:
+        click: left click of the mouse
+        hover: mouse-over an element
+    The following are the interactions which can be linked to the above events:
+        tooltip: display tooltip
+        add: add new points to the scatter (can only linked to click)
     """
     # Mark decoration
     icon = 'fa-cloud'
