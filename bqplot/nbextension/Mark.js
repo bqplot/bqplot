@@ -199,7 +199,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                     }
                 }
                 this.tooltip_div.transition()
-                    .style("opacity", 0.9);
+                    .style(this.model.get("tooltip_style"));
 
                 this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
                     .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");

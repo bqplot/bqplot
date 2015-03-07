@@ -128,6 +128,8 @@ class Mark(Widget):
     tooltip: DOMWidget (default: None)
         Widget to be displayed as tooltip when elements of the scatter are
         hovered on
+    tooltip_style: Dictionary (default: {'opacity': 0.9})
+        Styles to be applied to the tooltip widget
     enable_hover: Bool (default: True)
         Boolean attribute to control the hover interaction for the scatter. If
         this is false, the on_hover custom mssg is not sent back to the python
@@ -152,6 +154,7 @@ class Mark(Widget):
 
     enable_hover = Bool(True, sync=True)
     tooltip = Instance(DOMWidget, sync=True)
+    tooltip_style = Dict({'opacity': 0.9}, sync=True)
     interactions = Dict({}, sync=True)
 
     _model_name = Unicode('MarkModel', sync=True)
