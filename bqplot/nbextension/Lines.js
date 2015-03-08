@@ -512,15 +512,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.event_listeners["mouse_move"] = function() {};
             this.event_listeners["mouse_out"] = function() {};
         },
-        refresh_tooltip: function(event, data, tooltip_interactions) {
-            var el = d3.select(d3.event.target);
-            if(this.is_hover_element(el)) {
-                var data = el.data()[0];
-                var clicked_data = this.model.get_data_dict(data, data.index);
-                this.trigger("update_tooltip", data);
-                this.show_tooltip(d3.event, true);
-            }
-        },
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {

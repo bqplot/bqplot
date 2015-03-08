@@ -215,6 +215,15 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             this.tooltip_div.transition()
                 .style("opacity", 0);
         },
+        refresh_tooltip: function(event, data, tooltip_interactions) {
+            var el = d3.select(d3.event.target);
+            if(this.is_hover_element(el)) {
+                var data = el.data()[0];
+                var clicked_data = this.model.get_data_dict(data, data.index);
+                this.trigger("update_tooltip", data);
+                this.show_tooltip(d3.event, true);
+            }
+        },
         create_tooltip: function() {
             //create tooltip widget. To be called after mark has been displayed
             //and whenever the tooltip object changes
