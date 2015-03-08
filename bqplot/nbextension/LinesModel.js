@@ -25,6 +25,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.display_el_classes = ["line"];
         },
         update_data: function() {
             this.dirty = true;
@@ -56,6 +57,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             }),
                             opacity: 1,
                             color: that.color_data[i],
+                            index: i,
                         };
                     });
                 } else {
@@ -68,6 +70,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             }),
                             opacity: 1,
                             color: that.color_data[i],
+                            index: i,
                         };
                     });
                 }
@@ -125,6 +128,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     color_scale.del_domain([], this.id);
                 }
             }
+        },
+        get_data_dict: function(data, index) {
+            return data;
         },
     });
 

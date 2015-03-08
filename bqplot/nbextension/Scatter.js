@@ -43,6 +43,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             });
 
             return base_creation_promise.then(function() {
+                self.event_listeners = {};
+                self.process_interactions();
                 self.create_listeners();
                 self.compute_view_padding();
                 self.draw();
@@ -136,9 +138,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
             var self = this;
-            this.el.on("mouseover", _.bind(this.mouse_over, this))
-                .on("mousemove", _.bind(this.mouse_move, this))
-                .on("mouseout", _.bind(this.mouse_out, this));
+            this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
+                .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
+                .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
 
             this.model.on("change:default_color", this.update_default_color, this);
             this.model.on("change:stroke", this.update_stroke, this);
@@ -152,8 +154,14 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.model.on("change:display_names", this.update_display_names, this);
             this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on("change:enable_hover", function() { this.hide_tooltip(); }, this);
+            this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.model, "change:selected", this.update_selected);
-            this.listenTo(this.parent, "bg_clicked", this.click);
+            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
+        },
+        event_dispatcher: function(event_name) {
+            if(this.event_listeners[event_name] !== undefined) {
+                _.bind(this.event_listeners[event_name], this)();
+            }
         },
         update_default_color: function(model, new_color) {
             if(!this.model.dirty) {
@@ -331,6 +339,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     );
             this.update_xy_position();
             elements.call(this.drag_listener);
+            elements.on("click", _.bind(function() { this.event_dispatcher("element_clicked");}, this));
 
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
@@ -352,6 +361,51 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             // removed is round-about and doesn't look very nice visually.
             elements.exit().remove();
             this.apply_styles();
+        },
+        reset_interactions: function() {
+            this.reset_click();
+            this.reset_hover();
+        },
+        reset_click: function() {
+            this.event_listeners["element_clicked"] = function() {};
+            this.event_listeners["parent_clicked"] = function() {};
+        },
+        reset_hover: function() {
+            this.event_listeners["mouse_over"] = function(){};
+            this.event_listeners["mouse_move"] = function() {};
+            this.event_listeners["mouse_out"] = function() {};
+        },
+        process_interactions: function() {
+            var interactions = this.model.get("interactions");
+            if(_.isEmpty(interactions)) {
+                //set all the event listeners to blank functions
+                this.reset_interactions();
+            }
+            else {
+                if(interactions["click"] !== undefined &&
+                  interactions["click"] !== null) {
+                    if(interactions["click"] === "tooltip") {
+                        this.event_listeners["element_clicked"] = this.refresh_tooltip;
+                        this.event_listeners["parent_clicked"] = function() { return this.hide_tooltip(true) };
+                    } else if (interactions["click"] === "add") {
+                        this.event_listeners["parent_clicked"] = this.add_element;
+                        this.event_listeners["element_clicked"] = function() {};
+                    }
+
+                } else {
+                    this.reset_click();
+                }
+                if(interactions["hover"] !== undefined &&
+                  interactions["hover"] !== null) {
+                    if(interactions["hover"] === "tooltip") {
+                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
+                        this.event_listeners["mouse_move"] = this.show_tooltip;
+                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.reset_hover();
+                }
+            }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
@@ -631,10 +685,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             d3.event.stopPropagation();
             return;
         },
-        click: function() {
-            if (!this.model.get("enable_add")) {
-                return;
-            }
+        add_element: function() {
             var mouse_pos = d3.mouse(this.el.node());
             var curr_pos = [mouse_pos[0], mouse_pos[1]];
 
