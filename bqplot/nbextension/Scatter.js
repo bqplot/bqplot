@@ -385,8 +385,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 if(interactions["click"] !== undefined &&
                   interactions["click"] !== null) {
                     if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = this.refresh_tooltip;
-                        this.event_listeners["parent_clicked"] = function() { return this.hide_tooltip(true) };
+                        this.event_listeners["element_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     } else if (interactions["click"] === "add") {
                         this.event_listeners["parent_clicked"] = this.add_element;
                         this.event_listeners["element_clicked"] = function() {};

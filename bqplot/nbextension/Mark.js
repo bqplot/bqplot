@@ -191,12 +191,11 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             //If this property has never been set, it will default to false.
             if(this.tooltip_view) {
                 var mouse_pos = d3.mouse(this.parent.el.parentNode);
-                if(mouse_events !== undefined && mouse_events !== null) {
-                    if(mouse_events) {
-                        this.tooltip_div.style("pointer-events", "all");
-                    } else {
+                if(mouse_events === undefined || mouse_events === null ||
+                   (!(mouse_events))) {
                         this.tooltip_div.style("pointer-events", "none");
-                    }
+                } else {
+                    this.tooltip_div.style("pointer-events", "all");
                 }
                 this.tooltip_div.transition()
                     .style(this.model.get("tooltip_style"));
@@ -205,23 +204,23 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                     .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
             }
         },
-        hide_tooltip: function(disable_mouse_events) {
-            //first argument if true, disables mouse events on the tooltip.
+        hide_tooltip: function() {
             //this function hides the tooltip. But the location of the tooltip
             //is the last location set by a call to show_tooltip.
-            if(disable_mouse_events) {
-                this.tooltip_div.style("pointer-events", "none");
-            }
+            this.tooltip_div.style("pointer-events", "none");
             this.tooltip_div.transition()
                 .style("opacity", 0);
         },
-        refresh_tooltip: function(event, data, tooltip_interactions) {
+        refresh_tooltip: function(tooltip_interactions) {
+            //the argument controls pointer interactions with the tooltip. a
+            //true value enables pointer interactions while a false value
+            //disables them
             var el = d3.select(d3.event.target);
             if(this.is_hover_element(el)) {
                 var data = el.data()[0];
                 var clicked_data = this.model.get_data_dict(data, data.index);
                 this.trigger("update_tooltip", data);
-                this.show_tooltip(d3.event, true);
+                this.show_tooltip(d3.event, tooltip_interactions);
             }
         },
         create_tooltip: function() {
