@@ -134,11 +134,17 @@ class Mark(Widget):
         Boolean attribute to control the hover interaction for the scatter. If
         this is false, the on_hover custom mssg is not sent back to the python
         side
-    interactions: Dictionary (default: {"hover": "tooltip"})
+    interactions: Dictionary (default: {'hover': 'tooltip'})
         Dictionary listing the different interactions for each mark. The key is
         the event which triggers the interaction and the value is the kind of
         interactions. Keys and values can only take strings from separate enums
         for each mark.
+    tooltip_location : {'mouse', 'center'} (default: 'mouse')
+        Enum specifying the location of the tooltip. 'mouse' places the tooltip
+        at the location of the mouse when the tooltip is activated and 'center'
+        places the tooltip at the center of the figure. If tooltip is linked to
+        a click event, 'mouse' places the tooltip at the location of the click
+        that triggered the tooltip to be visible.
     """
     mark_types = {}
     scales = Dict(sync=True)  # TODO: check for allow_none
@@ -160,7 +166,8 @@ class Mark(Widget):
     enable_hover = Bool(True, sync=True)
     tooltip = Instance(DOMWidget, sync=True)
     tooltip_style = Dict({'opacity': 0.9}, sync=True)
-    interactions = Dict({"hover": "tooltip"}, sync=True)
+    interactions = Dict({'hover': 'tooltip'}, sync=True)
+    tooltip_location = Enum(['mouse', 'center'], default_value='mouse', sync=True)
 
     _model_name = Unicode('MarkModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)

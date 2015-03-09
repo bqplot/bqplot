@@ -200,8 +200,20 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 this.tooltip_div.transition()
                     .style(this.model.get("tooltip_style"));
 
-                this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
-                    .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
+                if(this.model.get("tooltip_location") === "center") {
+                    //Assumption that parent.el is not a selection and is a div
+                    //node
+                    var parent_rect = this.parent.el.getBoundingClientRect();
+                    var tooltip_div_rect = this.tooltip_div.node().getBoundingClientRect();
+                    this.tooltip_div.style("left", (this.parent.el.offsetLeft + 5 + parent_rect["width"] * 0.5
+                                                    - tooltip_div_rect["width"] * 0.5) + "px")
+                        .style("top", (this.parent.el.offsetTop + 5 + parent_rect["height"] * 0.5
+                                                    - tooltip_div_rect["height"] * 0.5) + "px");
+                }
+                else {
+                    this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
+                        .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
+                }
             }
         },
         hide_tooltip: function() {
