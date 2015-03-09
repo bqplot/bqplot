@@ -184,7 +184,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             //This function sets the x and y view paddings for the mark using
             //the variables x_padding and y_padding
         },
-        show_tooltip: function(event, mouse_events) {
+        show_tooltip: function(mouse_events) {
             //this function displays the tooltip at the location of the mouse
             //event is the d3 event for the data.
             //mouse_events is a boolean to enable mouse_events or not.
@@ -232,7 +232,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 var data = el.data()[0];
                 var clicked_data = this.model.get_data_dict(data, data.index);
                 this.trigger("update_tooltip", data);
-                this.show_tooltip(d3.event, tooltip_interactions);
+                this.show_tooltip(tooltip_interactions);
             }
         },
         create_tooltip: function() {
@@ -265,7 +265,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                     //make tooltip visible
                     var hovered_data = this.model.get_data_dict(data, data.index);
                     this.trigger("update_tooltip", hovered_data);
-                    this.show_tooltip(d3.event);
+                    this.show_tooltip();
                     this.send({event: "hover",
                             point: hovered_data});
                 }
@@ -287,7 +287,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         mouse_move: function() {
             if(this.model.get("enable_hover") &&
                 this.is_hover_element(d3.select(d3.event.target))) {
-                this.show_tooltip(d3.event);
+                this.show_tooltip();
             }
         },
         is_hover_element: function(elem) {
