@@ -373,6 +373,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         reset_interactions: function() {
             this.reset_click();
             this.reset_hover();
+            this.event_listeners["legend_clicked"] = function() {};
         },
         reset_click: function() {
             this.event_listeners["element_clicked"] = function() {};
@@ -413,6 +414,16 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 } else {
                     this.reset_hover();
                 }
+                if(interactions["hover"] !== undefined &&
+                  interactions["hover"] !== null) {
+                    if(interactions["hover"] === "tooltip") {
+                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
+                        this.event_listeners["mouse_move"] = this.show_tooltip;
+                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.reset_hover();
+                }
             }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
@@ -423,20 +434,31 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
-            this.legend_el.enter()
+            var el_added = this.legend_el.enter()
               .append("g")
               .attr("class", "legend" + this.uuid)
               .attr("transform", function(d, i) {
                   return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
               }).on("mouseover", _.bind(this.highlight_axes, this))
               .on("mouseout", _.bind(this.unhighlight_axes, this))
-              .append("path")
+              .on("click", _.bind(function() {return this.event_dispatcher("legend_clicked")();}, this));
+
+              /* el_added.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", "50px")
+                .attr("height", "50px")
+                .attr("fill", "white");
+               */
+
+              el_added.append("path")
               .attr("transform", function(d, i) {
                   return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
               })
               .attr("d", this.dot.size(64))
               .style("fill", this.model.get("fill")  ? default_color : "none")
               .style("stroke", stroke ? stroke : default_color);
+
 
             this.legend_el.append("text")
               .attr("class","legendtext")
