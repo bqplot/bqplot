@@ -27,7 +27,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.display_el_classes = ["dot"];
+            this.display_el_classes = ["dot", "legendtext"];
         },
         update_data: function() {
             this.dirty = true;

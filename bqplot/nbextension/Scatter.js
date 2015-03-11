@@ -225,6 +225,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         update_marker: function(model, marker) {
             if(!this.model.dirty) {
                 this.el.selectAll(".dot").attr("d", this.dot.type(marker));
+                this.legend_el.select("path")
+                    .attr("d", this.dot.type(marker));
             }
         },
         update_default_skew: function() {
@@ -424,6 +426,15 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 } else {
                     this.reset_hover();
                 }
+                if(interactions["legend_click"] !== undefined &&
+                  interactions["legend_click"] !== null) {
+                    if(interactions["legend_click"] === "tooltip") {
+                        this.event_listeners["legend_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.event_listeners["legend_clicked"] = function() {};
+                }
             }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
@@ -441,7 +452,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                   return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
               }).on("mouseover", _.bind(this.highlight_axes, this))
               .on("mouseout", _.bind(this.unhighlight_axes, this))
-              .on("click", _.bind(function() {return this.event_dispatcher("legend_clicked")();}, this));
+              .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this));
 
               /* el_added.append("rect")
                 .attr("x", 0)
