@@ -454,14 +454,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
               .on("mouseout", _.bind(this.unhighlight_axes, this))
               .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this));
 
-              /* el_added.append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", "50px")
-                .attr("height", "50px")
-                .attr("fill", "white");
-               */
-
               el_added.append("path")
               .attr("transform", function(d, i) {
                   return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
