@@ -40,11 +40,10 @@ define(["./d3", "./Scale"], function(d3, ScaleViewModule) {
             // that the starting point of each of the bins match. once that
             // happens, the labels are placed at the center of the bins
 
-            var axis_length = Math.abs(old_range[1] - old_range[0]);
             var unpadded_scale = this.scale.copy();
             unpadded_scale.rangeBands(old_range);
             var outer_padding = (unpadded_scale.range().length > 0) ?
-                (unpadded_scale.range()[0] / unpadded_scale.rangeBand()) : 0;
+                Math.abs((new_range[1] - old_range[1]) / unpadded_scale.rangeBand()) : 0;
             this.scale.rangeBands(new_range, 0.0, outer_padding);
         },
     });

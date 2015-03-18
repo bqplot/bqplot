@@ -105,8 +105,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.model.get_date_elem("x") : this.model.get("x");
             var y = (y_scale.model.type === "date") ?
                 this.model.get_date_elem("y") : this.model.get("y");
-            var transform = "translate(" + x_scale.scale(x) +
-                                    ", " + y_scale.scale(y) + ")";
+            var transform = "translate(" + (x_scale.scale(x) + x_scale.offset) +
+                                    ", " + (y_scale.scale(y) + y_scale.offset) + ")";
             this.el.select(".pielayout").transition()
               .duration(this.model.get("animate_dur"))
               .attr("transform", transform);
