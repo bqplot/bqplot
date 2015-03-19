@@ -210,8 +210,8 @@ class Lines(Mark):
     fill: list of colors (default: [])
         Fill colors for the patches. Defaults to no-fill when no color provided.
     opacity: list of floats (default: [])
-        Opacity for the patches. Defaults to 1 when list is too short, or set
-        to None.
+        Opacity for the  lines and patches. Defaults to 1 when list is too
+        short, or set to None.
     stroke_width: float (default: 1.5)
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
