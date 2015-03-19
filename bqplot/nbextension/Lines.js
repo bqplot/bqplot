@@ -404,7 +404,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("fill", "none");
 
             var fill_color = this.model.get("fill");
-
+            var opacity = this.model.get("opacity");
             var that = this;
             curves_sel.select("path")
               .attr("id", function(d, i) { return "curve" + (i+1); })
@@ -414,6 +414,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .style("fill", function(d, i) { return fill_color[i]; })
               .style("stroke-width", this.model.get("stroke_width"))
               .style("stroke-dasharray", _.bind(this.get_line_style, this))
+              .style("opacity", function(d, i) {
+                  return opacity[i];
+              })
               .on("click", _.bind(function() { this.event_dispatcher("element_clicked");}, this));
 
             curves_sel.exit()

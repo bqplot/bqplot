@@ -417,6 +417,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             this.el.select("g." + "grid_lines").remove();
             var grid_lines = this.el.append("g")
                                    .attr("class", "grid_lines");
+            var that = this;
 
             grid_lines.selectAll("line.grid-line").remove();
             var grid_type = this.model.get("grid_lines");
@@ -428,10 +429,10 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                     .data(this.axis.tickValues())
                     .enter().append("line")
                     .attr("class", "grid-line")
-                    .attr("x1", is_x ? this.axis_scale.scale : 0)
-                    .attr("x2", is_x ? this.axis_scale.scale : this.width)
-                    .attr("y1", is_x ? 0 : this.axis_scale.scale)
-                    .attr("y2", is_x ? this.height : this.axis_scale.scale)
+                    .attr("x1", is_x ? function(d) { return (that.axis_scale.scale(d) + that.axis_scale.offset);} : 0)
+                    .attr("x2", is_x ? function(d) { return (that.axis_scale.scale(d) + that.axis_scale.offset);} : this.width)
+                    .attr("y1", is_x ? 0 : function(d) { return (that.axis_scale.scale(d) + that.axis_scale.offset);})
+                    .attr("y2", is_x ? this.height : function(d) { return (that.axis_scale.scale(d) + that.axis_scale.offset);})
                     .attr("stroke", "grey")
                     .attr("stroke-opacity", 0.4)
                     .attr("stroke-dasharray", grid_type === "solid" ?

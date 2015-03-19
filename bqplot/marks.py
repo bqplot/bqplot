@@ -210,8 +210,8 @@ class Lines(Mark):
     fill: list of colors (default: [])
         Fill colors for the patches. Defaults to no-fill when no color provided.
     opacity: list of floats (default: [])
-        Opacity for the patches. Defaults to 1 when list is too short, or set
-        to None.
+        Opacity for the  lines and patches. Defaults to 1 when list is too
+        short, or set to None.
     stroke_width: float (default: 1.5)
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
@@ -677,8 +677,8 @@ class Label(Mark):
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     """
-    x = Date(sync=True) | Float(sync=True)  # TODO: check validation order, and default value
-    y = Float(allow_none=True, default_value=None, sync=True)
+    x = Date(sync=True) | Float(sync=True) | Unicode(sync=True)# TODO: check validation order, and default value
+    y = Date(sync=True) | Float(sync=True) | Unicode(sync=True)
     x_offset = Int(sync=True)
     y_offset = Int(sync=True)
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
@@ -836,8 +836,8 @@ class Pie(Mark):
     color = NdArray(sync=True, allow_none=False, display_index=8, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
-    x = Float(default_value=0.5, sync=True) | Date(sync=True)
-    y = Float(default_value=0.5, sync=True)
+    x = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
+    y = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},

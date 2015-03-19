@@ -190,7 +190,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             //mouse_events is a boolean to enable mouse_events or not.
             //If this property has never been set, it will default to false.
             if(this.tooltip_view) {
-                var mouse_pos = d3.mouse(this.parent.el.parentNode);
+                var mouse_pos = d3.mouse(this.parent.el);
                 if(mouse_events === undefined || mouse_events === null ||
                    (!(mouse_events))) {
                         this.tooltip_div.style("pointer-events", "none");
