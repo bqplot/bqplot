@@ -46,33 +46,34 @@ define(["./d3", "./utils", "./ColorUtils", "./Axis"], function(d3, utils, Col_Pi
             });
         },
         create_listeners: function() {
-            this.axis_scale.on("domain_changed", this.redraw_axisline, this);
-            this.axis_scale.on("color_scale_range_changed", this.redraw_axis, this);
-            this.axis_scale.on("highlight_axis", this.highlight, this);
-            this.axis_scale.on("unhighlight_axis", this.unhighlight, this);
-
-            this.parent.on("margin_updated", this.parent_margin_updated, this);
-            this.model.on("change:tick_format", this.tickformat_changed, this);
-            this.model.on("change:visible", this.update_visibility, this);
-            this.model.on("change:label", this.update_label, this);
-            this.model.on_some_change(["side", "orientation"], function() {
-                this.vertical = this.model.get("orientation") === "vertical";
-                this.side = this.model.get("side");
-                this.rescale_axis();
-                this.el.select("#colorBarG" + this.cid)
-                    .attr("transform", this.get_colorbar_transform());
-                this.el.select("#colorBarG" + this.cid)
-                    .select(".g-rect")
-                    .attr("transform", this.vertical ? "rotate(-90)" : "");
-
-                this.redraw_axisline();
-            }, this);
             this.model.on("change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
                 // TODO: rescale_axis does too many things. Decompose
                 this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
                 this.rescale_axis();
             }, this);
+
+            this.model.on("change:tick_format", this.tickformat_changed, this);
+            this.axis_scale.on("domain_changed", this.redraw_axisline, this);
+            this.axis_scale.on("color_scale_range_changed", this.redraw_axis, this);
+            this.axis_scale.on("highlight_axis", this.highlight, this);
+            this.axis_scale.on("unhighlight_axis", this.unhighlight, this);
+
+            this.parent.on("margin_updated", this.parent_margin_updated, this);
+            this.model.on("change:visible", this.update_visibility, this);
+            this.model.on("change:label", this.update_label, this);
+            this.model.on_some_change(["side", "orientation"], this.update_display, this);
+        },
+        update_display: function() {
+            this.side = this.model.get("side");
+            this.vertical = this.model.get("orientation") === "vertical";
+            this.rescale_axis();
+            this.el.select("#colorBarG" + this.cid)
+                .attr("transform", this.get_colorbar_transform());
+            this.el.select("#colorBarG" + this.cid)
+                .select(".g-rect")
+                .attr("transform", this.vertical ? "rotate(-90)" : "");
+            this.redraw_axisline();
         },
         set_scale: function(model) {
             // Sets the child scale
@@ -159,8 +160,7 @@ define(["./d3", "./utils", "./ColorUtils", "./Axis"], function(d3, utils, Col_Pi
                         return i * bar_width;
                     });
                 }
-            }
-            else {
+            } else {
                 colorBar.append("g")
                     .attr("class", "g-defs")
                     .append("defs")

@@ -59,7 +59,6 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             });
         },
         create_listeners: function() {
-            var that = this;
             this.model.on("change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
                 // TODO: rescale_axis does too many things. Decompose
@@ -82,6 +81,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             this.model.on_some_change(["side", "orientation"], this.update_display, this);
             this.model.on("change:offset", function() {
                 var offset_creation_promise = this.get_offset();
+                var that = this;
                 offset_creation_promise.then(function() {
                     that.set_scales_range();
                     that.update_offset_scale_domain();
@@ -92,7 +92,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
         },
         update_display: function() {
             this.side = this.model.get("side");
-            this.vertical = this.model.get("orientation") === "vertical" ? true : false;
+            this.vertical = this.model.get("orientation") === "vertical";
             if(this.vertical) {
                 this.axis.orient(this.side === "right" ? "right" : "left");
             } else {
@@ -190,8 +190,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                     //apply the format depending on that.
                     if(bqutils.is_valid_time_format(tick_format)) {
                         return d3.time.format(tick_format);
-                    }
-                    else {
+                    } else {
                         return d3.format(tick_format);
                     }
                 }
@@ -210,10 +209,10 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
         create_axis_line: function() {
             if(this.vertical) {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                .orient(this.side === "right" ? "right" : "left");
+                  .orient(this.side === "right" ? "right" : "left");
             } else {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                .orient(this.side === "top" ? "top" : "bottom");
+                  .orient(this.side === "top" ? "top" : "bottom");
             }
         },
         append_axis: function() {
@@ -238,6 +237,10 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             this.update_label();
         },
         get_offset: function() {
+            /*
+             * The offset may require the creation of a Scale, which is async
+             * Hence, get_offset returns a promise.
+             */
             var that = this;
             var return_promise = Promise.resolve();
             var offset = this.model.get("offset");
@@ -271,11 +274,17 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             return return_promise;
         },
         highlight: function() {
+            /*
+             * Highlights the axis
+             */
             if(this.enable_highlight){
                 this.g_axisline.classed("axisbold", true);
             }
         },
         unhighlight: function() {
+            /*
+             * Unhighlight the axis
+             */
             if(this.enable_highlight){
                 this.g_axisline.classed("axisbold", false);
             }
@@ -316,16 +325,20 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                      label_x = -(this.height) / 2;
                  }
                  if(this.side === "right") {
-                    return {transform: "rotate(-90)",
-                            x: label_x,
-                            y: this.label_offset,
-                            dy: "1ex",
-                            dx: "0em"};
+                    return {
+                        transform: "rotate(-90)",
+                        x: label_x,
+                        y: this.label_offset,
+                        dy: "1ex",
+                        dx: "0em"
+                    };
                  } else {
-                    return {transform: "rotate(-90)",
-                            x: label_x,
-                            y: this.label_offset,
-                            dy: "0em", dx: "0em"};
+                     return {
+                         transform: "rotate(-90)",
+                         x: label_x,
+                         y: this.label_offset,
+                         dy: "0em", dx: "0em"
+                     };
                  }
             } else {
                 if(this.label_loc === "middle") {
@@ -334,15 +347,19 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                     label_x = this.width;
                 }
                 if(this.side === "top") {
-                    return {x: label_x,
-                            y: this.label_offset ,
-                            dy: "0.75ex",
-                            dx: "0em", transform: ""};
+                    return {
+                        x: label_x,
+                        y: this.label_offset ,
+                        dy: "0.75ex",
+                        dx: "0em", transform: ""
+                    };
                 } else {
-                    return {x: label_x,
-                            y: this.label_offset,
-                            dy: "0.25ex",
-                            dx: "0em", transform: ""};
+                    return {
+                        x: label_x,
+                        y: this.label_offset,
+                        dy: "0.25ex",
+                        dx: "0em", transform: ""
+                    };
                 }
             }
         },
