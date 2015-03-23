@@ -36,7 +36,7 @@ Marks
 from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float, Instance
 
-from .traits import ColorList, UnicodeList, NdArray, BoundedFloat, Date
+from .traits import NdArray, BoundedFloat, Date
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
@@ -155,8 +155,8 @@ class Mark(Widget):
     animate_dur = Int(0, sync=True,
                       exposed=True, display_index=2,
                       display_name='Animation duration')
-    labels = UnicodeList(allow_none=False, sync=True, exposed=True,
-                         display_index=3, display_name='Labels')
+    labels = List(trait=Unicode(), allow_none=False, sync=True, exposed=True,
+                  display_index=3, display_name='Labels')
     apply_clip = Bool(True, sync=True)
     visible = Bool(True, sync=True)
     selected_style = Dict({}, sync=True)
@@ -266,8 +266,8 @@ class Lines(Mark):
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
-    colors = ColorList(CATEGORY10, allow_none=False, sync=True, exposed=True,
-                       display_index=3, display_name='Colors')
+    colors = List(trait=Color(), default_value=CATEGORY10, allow_none=False,
+                  sync=True, exposed=True, display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4,
                          display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none',
@@ -283,8 +283,8 @@ class Lines(Mark):
                          display_name='Interpolation')
     close_path = Bool(sync=True, exposed=True, display_index=8,
                       display_name='Close path')
-    fill = ColorList([], allow_none=False, sync=True, exposed=True, display_index=9,
-                     display_name='Fill Colors')
+    fill = List(trait=Color(), default_value=[], allow_none=False, sync=True,
+                exposed=True, display_index=9, display_name='Fill Colors')
     opacity = List([], sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
@@ -326,7 +326,7 @@ class FlexLine(Lines):
                     scaled=True, rtype='Number')
 
     # Other attributes
-    colors = ColorList(CATEGORY10, sync=True)
+    colors = List(trait=Color(), default_value=CATEGORY10, sync=True)
     _view_name = Unicode('FlexLine', sync=True)
     _view_module = Unicode('nbextensions/bqplot/FlexLine', sync=True)
     _model_name = Unicode('FlexLineModel', sync=True)
@@ -537,8 +537,8 @@ class Hist(Mark):
     midpoints = List(sync=True, allow_none=False, read_only=True,
                      display_index=3, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
-    colors = ColorList(CATEGORY10, allow_none=False, sync=True, exposed=True,
-                       display_index=5, display_name='Colors')
+    colors = List(trait=Color, default_value=CATEGORY10, allow_none=False,
+                  sync=True, exposed=True, display_index=5, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
@@ -682,8 +682,8 @@ class Bars(Mark):
     type = Enum(['stacked', 'grouped'], default_value='stacked',
                 allow_none=False, sync=True, exposed=True, display_index=3,
                 display_name='Type')
-    colors = ColorList(CATEGORY10, allow_none=False, sync=True, exposed=True,
-                       display_index=4, display_name='Colors')
+    colors = List(trait=Color(), default_value=CATEGORY10, allow_none=False,
+                  sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
     select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
@@ -766,7 +766,7 @@ class OHLC(Mark):
         stroke color of the marker
     stroke_width: float (default: 1.0)
         stroke width of the marker
-    colors: ColorList (default: ['limegreen', 'red'])
+    colors: List of colors (default: ['limegreen', 'red'])
         fill colors for the markers (up/down)
     opacity: float (default: 1.0)
         opacity of the marker
@@ -816,9 +816,9 @@ class OHLC(Mark):
                    display_name='Stroke color')
     stroke_width = Float(1.0, sync=True, exposed=True, display_name='Stroke Width',
                          display_index=5, allow_none=False)
-    colors = ColorList(['limegreen', 'red'], allow_none_element=True,
-                       allow_none=False, display_index=6, sync=True,
-                       display_name='Colors')
+    colors = List(trait=Color(), default_value=['limegreen', 'red'],
+                  allow_none_element=True, allow_none=False, display_index=6,
+                  sync=True, display_name='Colors')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
@@ -896,8 +896,8 @@ class Pie(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
     sort = Bool(False, sync=True)
-    colors = ColorList(CATEGORY10, sync=True, exposed=True, display_index=4,
-                       display_name='Colors')
+    colors = List(trait=Color(), default_value=CATEGORY10, sync=True,
+                  exposed=True, display_index=4, display_name='Colors')
     select_slices = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,

@@ -34,11 +34,11 @@ Scales
 
 """
 
-from IPython.html.widgets import Widget
+from IPython.html.widgets import Widget, Color
 from IPython.utils.traitlets import Unicode, List, Enum, Float, Bool, Type
 
 import numpy as np
-from .traits import Date, ColorList
+from .traits import Date
 
 
 def register_scale(key=None):
@@ -238,7 +238,7 @@ class ColorScale(Scale):
     dtype = np.number
     scale_type = Enum(['linear'], default_value='linear', allow_none=False,
                       sync=True)
-    colors = ColorList(allow_none=False, sync=True)
+    colors = List(allow_none=False, trait=Color(), sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
     mid = Float(default_value=None, sync=True, allow_none=True)
