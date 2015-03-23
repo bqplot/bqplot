@@ -36,7 +36,7 @@ Marks
 from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
 from IPython.utils.traitlets import (Int, Unicode, List, Enum, Dict, Bool,
                                      Float, TraitError, Instance)
-
+from .scales import Scale
 from .traits import NdArray, BoundedFloat, Date
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
@@ -148,7 +148,7 @@ class Mark(Widget):
         that triggered the tooltip to be visible.
     """
     mark_types = {}
-    scales = Dict(sync=True)
+    scales = Dict(trait=Instance(Scale), sync=True)
     scales_metadata = Dict(sync=True)
     preserve_domain = Dict(allow_none=False, sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1,
