@@ -888,7 +888,7 @@ class Pie(Mark):
     ---------------
     sizes: numpy.ndarray
         proportions of the pie slices
-    color: numpy.ndarray
+    color: numpy.ndarray or None
         color of the data points (1d array). Defaults to colors when not
         provided
 
@@ -909,7 +909,7 @@ class Pie(Mark):
     # Scaled attributes
     sizes = NdArray(sync=True, allow_none=False, display_index=1, rtype='Number',
                     min_dim=1, max_dim=1)
-    color = NdArray(sync=True, allow_none=False, display_index=8, scaled=True, rtype='Color',
+    color = NdArray(sync=True, allow_none=True, display_index=8, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     x = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
