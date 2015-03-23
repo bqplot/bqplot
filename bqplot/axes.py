@@ -27,11 +27,11 @@ Axes
    Axis
    ColorAxis
 """
-from IPython.html.widgets import Widget
+from IPython.html.widgets import Widget, Color
 from IPython.utils.traitlets import Int, Unicode, Instance, Enum, Dict, Bool
 
 from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale, OrdinalScale
-from .traits import NdArray, Color
+from .traits import NdArray
 
 
 def register_axis(key=None):

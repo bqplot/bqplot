@@ -26,7 +26,6 @@ Custom Traits
    BoundedFloat
    BoundedInt
    CInstance
-   Color
    ColorList
    Date
    NdArray
@@ -38,8 +37,9 @@ Custom Traits
    safe_dlink
 """
 
-from IPython.utils.traitlets import (Instance, Unicode, List, Int, Float,
-                                     TraitError, TraitType)
+from IPython.utils.traitlets import (Instance, List, Int, Float, TraitError,
+                                     TraitType)
+
 import numpy as np
 import pandas as pd
 import re
@@ -178,7 +178,7 @@ class BoundedFloat(Float):
         self.error(obj, value)
 
 
-# A few dummy traitlets (Color, ColorList, UnicodeList)
+# A few dummy traitlets (ColorList, UnicodeList)
 
 class ColorList(List):
 
@@ -191,14 +191,6 @@ class ColorList(List):
 
 class UnicodeList(List):
     pass
-
-
-class Color(Unicode):
-
-    def validate(self, obj, value):
-        if isrgbcolor(value):
-            return value
-        self.error(obj, value)
 
 
 # Numpy and Pandas Traitlets
