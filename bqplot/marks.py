@@ -33,10 +33,10 @@ Marks
    OHLC
    Pie
 """
-from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher
+from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
 from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float, Instance
 
-from .traits import Color, ColorList, UnicodeList, NdArray, BoundedFloat, Date
+from .traits import ColorList, UnicodeList, NdArray, BoundedFloat, Date
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
@@ -259,8 +259,8 @@ class Lines(Mark):
                 display_index=1, scaled=True, rtype='Number')
     y = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=2,
                 display_index=2, scaled=True, rtype='Number')
-    color = NdArray(None, sync=True, allow_none=True, display_index=6, 
-                    scaled=True, rtype='Color', atype='bqplot.ColorAxis', 
+    color = NdArray(None, sync=True, allow_none=True, display_index=6,
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=1)
 
     # Other attributes
@@ -730,7 +730,7 @@ class Label(Mark):
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     """
-    x = Date(sync=True) | Float(sync=True) | Unicode(sync=True)# TODO: check validation order, and default value
+    x = Date(sync=True) | Float(sync=True) | Unicode(sync=True)  # TODO: check validation order, and default value
     y = Date(sync=True) | Float(sync=True) | Unicode(sync=True)
     x_offset = Int(sync=True)
     y_offset = Int(sync=True)

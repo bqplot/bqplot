@@ -26,7 +26,7 @@ Figure
    Figure
 """
 
-from IPython.html.widgets import DOMWidget, register
+from IPython.html.widgets import DOMWidget, register, Color
 from IPython.utils.traitlets import (Unicode, Instance, List, Dict,
                                      CFloat, Bool, Enum, Float)
 
@@ -34,7 +34,6 @@ from .scales import Scale, LinearScale
 from .interacts import Interaction
 from .marks import Mark
 from .axes import Axis
-from .traits import Color
 
 
 @register('bqplot.Figure')

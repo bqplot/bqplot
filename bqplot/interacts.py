@@ -39,10 +39,10 @@ Interacts
 
 from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance,
                                      List, TraitError)
-from IPython.html.widgets import Widget
+from IPython.html.widgets import Widget, Color
 
 from .scales import Scale, DateScale
-from .traits import Color, Date, NdArray
+from .traits import Date, NdArray
 from .marks import Lines, Scatter
 
 

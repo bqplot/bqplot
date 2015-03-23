@@ -27,11 +27,10 @@ Map
 """
 from IPython.utils.traitlets import (Unicode, List, Dict, Float, Bool,
                                      Instance, Tuple)
-from IPython.html.widgets import DOMWidget, CallbackDispatcher, register
+from IPython.html.widgets import DOMWidget, CallbackDispatcher, register, Color
 
 from .scales import ColorScale
 from .axes import Axis
-from .traits import Color
 
 
 @register('bqplot.Map')
