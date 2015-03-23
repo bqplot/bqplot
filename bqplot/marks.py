@@ -551,6 +551,59 @@ class Hist(Mark):
     _model_module = Unicode('nbextensions/bqplot/HistModel', sync=True)
 
 
+@register_mark('bqplot.Boxplot')
+class Boxplot(Mark):
+
+    """Boxplot marks.
+
+    Attributes
+    ----------
+    icon: string
+        font-awesome icon for that mark
+    name: string
+        user-friendly name of the mark
+    stroke: color
+        stroke color of the marker
+    color: color
+        fill color of the box
+    opacity: float
+        opacity of the marker
+    outlier-color: color
+        color for the outlier
+
+    Data Attributes
+    ---------------
+    _y_default: numpy.ndarray
+        default 2 dimensional value for y
+    x: numpy.ndarray
+        abscissas of the data points (1d array)
+    y: numpy.ndarray
+        Sample data points (2d array)
+    """
+
+    # Mark decoration
+    icon = 'fa-birthday-cake'
+    name = 'Boxplot chart'
+
+    # Scaled attributestop
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+
+    # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
+
+    # Other attributes
+    # marker = Enum([boxplottype], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
+    stroke = Color('white',            sync=True, exposed=True, display_index=3, display_name='Stroke color')
+    box_fill_color = Color('dodgerblue', sync=True, exposed=True, display_index=4, display_name='Fill color for the box')
+    outlier_fill_color = Color('gray',   sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
+    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
+
+    _view_name = Unicode('Boxplot', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Boxplot', sync=True)
+    _model_name = Unicode('BoxplotModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/BoxplotModel', sync=True)
+
+
 @register_mark('bqplot.Bars')
 class Bars(Mark):
 
