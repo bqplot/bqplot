@@ -186,7 +186,7 @@ class SquareMarketMap(MarketMap):
     margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
     data = Dict(sync=True)
     mode = Enum(['squarify', 'slice', 'dice', 'slice-dice'],
-                default_value='squarify', allow_none=False, sync=True)
+                default_value='squarify', sync=True)
 
     _view_name = Unicode('SquareMarketMap', sync=True)
     _view_module = Unicode('nbextensions/bqplot/SquareMarketMap', sync=True)

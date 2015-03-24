@@ -73,7 +73,7 @@ class Scale(Widget):
         or not
     """
     scale_types = {}
-    domain_class = Type(Float, allow_none=False, sync=False)
+    domain_class = Type(Float, sync=False)
     reverse = Bool(False, sync=True)
     allow_padding = Bool(True, sync=True)
 
@@ -169,7 +169,7 @@ class DateScale(Scale):
     """
     rtype = 'Number'
     dtype = np.datetime64
-    domain_class = Type(Date, allow_none=False, sync=False)
+    domain_class = Type(Date, sync=False)
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
     date_format = Unicode('', sync=True)  # TODO: allow and default to None?
@@ -199,7 +199,7 @@ class OrdinalScale(Scale):
     """
     rtype = 'Number'
     dtype = np.str
-    domain = List(allow_none=False, sync=True)
+    domain = List(sync=True)
 
     _view_name = Unicode('OrdinalScale', sync=True)
     _view_module = Unicode('nbextensions/bqplot/OrdinalScale', sync=True)
@@ -236,9 +236,9 @@ class ColorScale(Scale):
     """
     rtype = 'Color'
     dtype = np.number
-    scale_type = Enum(['linear'], default_value='linear', allow_none=False,
+    scale_type = Enum(['linear'], default_value='linear',
                       sync=True)
-    colors = List(allow_none=False, trait=Color(), sync=True)
+    colors = List(trait=Color(), sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
     mid = Float(default_value=None, sync=True, allow_none=True)
@@ -305,7 +305,7 @@ class OrdinalColorScale(ColorScale):
     """
     rtype = 'Color'
     dtype = np.str
-    domain = List(allow_none=False, sync=True)
+    domain = List(sync=True)
 
     _view_name = Unicode('OrdinalColorScale', sync=True)
     _view_module = Unicode('nbextensions/bqplot/OrdinalColorScale', sync=True)

@@ -150,7 +150,7 @@ class Mark(Widget):
     mark_types = {}
     scales = Dict(trait=Instance(Scale), sync=True)
     scales_metadata = Dict(sync=True)
-    preserve_domain = Dict(allow_none=False, sync=True)
+    preserve_domain = Dict(sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1,
                           display_name='Display legend')
     animate_dur = Int(0, sync=True,
@@ -277,9 +277,9 @@ class Lines(Mark):
     name = 'Lines'
 
     # Scaled attributes
-    x = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=2,
+    x = NdArray(sync=True, min_dim=1, max_dim=2,
                 display_index=1, scaled=True, rtype='Number')
-    y = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=2,
+    y = NdArray(sync=True, min_dim=1, max_dim=2,
                 display_index=2, scaled=True, rtype='Number')
     color = NdArray(None, sync=True, allow_none=True, display_index=6,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
@@ -288,24 +288,24 @@ class Lines(Mark):
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
-    colors = List(trait=Color(), default_value=CATEGORY10, allow_none=False,
+    colors = List(trait=Color(), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4,
                          display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none',
-                             allow_none=False, sync=True, exposed=True,
+                             sync=True, exposed=True,
                              display_index=5, display_name='Labels visibility')
     curves_subset = List([], sync=True)
     line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid',
-                      allow_none=False, sync=True, exposed=True,
+                      sync=True, exposed=True,
                       display_index=6, display_name='Line style')
     interpolation = Enum(['linear', 'basis', 'cardinal', 'monotone'],
-                         default_value='linear', allow_none=False, sync=True,
+                         default_value='linear', sync=True,
                          exposed=True, display_index=7,
                          display_name='Interpolation')
     close_path = Bool(sync=True, exposed=True, display_index=8,
                       display_name='Close path')
-    fill = List(trait=Color(), default_value=[], allow_none=False, sync=True,
+    fill = List(trait=Color(), default_value=[], sync=True,
                 exposed=True, display_index=9, display_name='Fill Colors')
     opacity = List([], sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
@@ -433,9 +433,9 @@ class Scatter(Mark):
     name = 'Scatter'
 
     # Scaled attribtes
-    x = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=1,
+    x = NdArray(sync=True, min_dim=1, max_dim=1,
                 display_index=1, scaled=True, rtype='Number')
-    y = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=1,
+    y = NdArray(sync=True, min_dim=1, max_dim=1,
                 display_index=2, scaled=True, rtype='Number')
     color = NdArray(None, allow_none=True, sync=True, display_index=6,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
@@ -455,7 +455,7 @@ class Scatter(Mark):
                             'y': {'orientation': 'vertical'}}, sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
-                  default_value='circle', allow_none=False,
+                  default_value='circle',
                   sync=True, exposed=True, display_index=3,
                   display_name='Marker')
     default_color = Color('green', sync=True, exposed=True, display_index=4,
@@ -544,9 +544,9 @@ class Hist(Mark):
     name = 'Histogram'
 
     # Scaled attributes
-    sample = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=1,
+    sample = NdArray(sync=True, min_dim=1, max_dim=1,
                      display_name='Sample', scaled=True, rtype='Number')
-    counts = NdArray(sync=True, allow_none=False, display_index=4,
+    counts = NdArray(sync=True, display_index=4,
                      display_name='Count', scaled=True, rtype='Number',
                      read_only=True)
     # FIXME: Should we allow none for counts?
@@ -557,10 +557,10 @@ class Hist(Mark):
                             'counts': {'orientation': 'vertical'}}, sync=True)
     bins = Int(10, sync=True, exposed=True, display_index=2,
                display_name='Number of bins')
-    midpoints = List(sync=True, allow_none=False, read_only=True,
+    midpoints = List(sync=True, read_only=True,
                      display_index=3, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
-    colors = List(trait=Color, default_value=CATEGORY10, allow_none=False,
+    colors = List(trait=Color, default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=5, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
@@ -615,7 +615,7 @@ class Boxplot(Mark):
     y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
 
     # Other attributes
-    # marker = Enum([boxplottype], allow_none=False, sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
+    # marker = Enum([boxplottype], sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
     stroke = Color('white',            sync=True, exposed=True, display_index=3, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, exposed=True, display_index=4, display_name='Fill color for the box')
     outlier_fill_color = Color('gray',   sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
@@ -689,9 +689,9 @@ class Bars(Mark):
     name = 'Bar chart'
 
     # Scaled attributes
-    x = NdArray(sync=True, allow_none=False, display_index=1, scaled=True,
+    x = NdArray(sync=True, display_index=1, scaled=True,
                 rtype='Number', min_dim=1, max_dim=1)
-    y = NdArray(sync=True, allow_none=False, display_index=2, scaled=True,
+    y = NdArray(sync=True, display_index=2, scaled=True,
                 rtype='Number', min_dim=1, max_dim=2)
     color = NdArray(None, allow_none=True,  sync=True, display_index=8,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
@@ -701,11 +701,11 @@ class Bars(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto',
-                      allow_none=False, sync=True)
+                      sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked',
-                allow_none=False, sync=True, exposed=True, display_index=3,
+                sync=True, exposed=True, display_index=3,
                 display_name='Type')
-    colors = List(trait=Color(), default_value=CATEGORY10, allow_none=False,
+    colors = List(trait=Color(), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
     select_bars = Bool(False, sync=True)
@@ -715,7 +715,7 @@ class Bars(Mark):
                            exposed=True, display_index=7,
                            display_name='Opacity')
     align = Enum(['center', 'left', 'right'], default_value='center',
-                 allow_none=False, sync=True, exposed=True)
+                 sync=True, exposed=True)
 
     _view_name = Unicode('Bars', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Bars', sync=True)
@@ -764,9 +764,9 @@ class Label(Mark):
     text = Unicode(sync=True)
     font_size = Unicode(default_value='14px', sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold',
-                       allow_none=False, sync=True)
+                       sync=True)
     align = Enum(['start', 'middle', 'end'], default_value='start',
-                 allow_none=False, sync=True)
+                 sync=True)
 
     _view_name = Unicode('Label', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Label', sync=True)
@@ -822,9 +822,9 @@ class OHLC(Mark):
     name = 'OHLC chart'
 
     # Scaled attributes
-    x = NdArray(sync=True, allow_none=False, display_index=1, scaled=True,
+    x = NdArray(sync=True, display_index=1, scaled=True,
                 rtype='Number', min_dim=1, max_dim=1)
-    y = NdArray(sync=True, allow_none=False, display_index=2, scaled=True,
+    y = NdArray(sync=True, display_index=2, scaled=True,
                 rtype='Number', min_dim=2, max_dim=2)
     # FIXME Future warnings
     _y_default = None
@@ -832,20 +832,20 @@ class OHLC(Mark):
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal'},
                             'y': {'orientation': 'vertical'}}, sync=True)
-    marker = Enum(['candle', 'bar'], allow_none=False, default_value='candle',
+    marker = Enum(['candle', 'bar'], default_value='candle',
                   exposed=True, display_index=3, display_name='Marker',
                   sync=True)
     stroke = Color('white', sync=True, exposed=True, display_index=4,
                    display_name='Stroke color')
     stroke_width = Float(1.0, sync=True, exposed=True, display_name='Stroke Width',
-                         display_index=5, allow_none=False)
+                         display_index=5)
     colors = List(trait=Color(allow_none=True), default_value=['limegreen', 'red'],
-                  allow_none=False, display_index=6,
+                  display_index=6,
                   sync=True, display_name='Colors')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
-    format = Unicode(default_value='ohlc', allow_none=False, exposed=True,
+    format = Unicode(default_value='ohlc', exposed=True,
                      display_index=8, display_name='Format', sync=True)
 
     _view_name = Unicode('OHLC', sync=True)
@@ -907,7 +907,7 @@ class Pie(Mark):
     name = 'Pie chart'
 
     # Scaled attributes
-    sizes = NdArray(sync=True, allow_none=False, display_index=1, rtype='Number',
+    sizes = NdArray(sync=True, display_index=1, rtype='Number',
                     min_dim=1, max_dim=1)
     color = NdArray(sync=True, allow_none=True, display_index=8, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
