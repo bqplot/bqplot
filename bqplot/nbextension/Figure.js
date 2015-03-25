@@ -552,13 +552,15 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             return [x_start, y_start];
         },
         set_interaction: function(model) {
-            if (this.interaction_view) { this.interaction_view.remove(); }
             if (model) {
                 // Sets the child interaction
                 var self = this;
                 model.state_change.then(function() {
                     // Sets the child interaction
                     self.create_child_view(model).then(function(view) {
+                        if (self.interaction_view) {
+                            self.interaction_view.remove();
+                        }
                         self.interaction_view = view;
                         self.interaction.node().appendChild(view.el.node());
                         // Trigger the displayed event of the child view.
@@ -567,6 +569,11 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                         }, self);
                     });
                 });
+            }
+            else {
+                if (this.interaction_view) {
+                    this.interaction_view.remove();
+                }
             }
         },
         update_title: function(model, title) {
