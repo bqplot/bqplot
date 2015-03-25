@@ -100,8 +100,8 @@ class Map(DOMWidget):
     hovered_styles = Dict({'hovered_fill': 'Orange', 'hovered_stroke': None,
                            'hovered_stroke_width': 5.0}, allow_none=True, sync=True)
 
-    stroke_color = Color(None, sync=True, allow_none=True)
-    default_color = Color(None, sync=True, allow_none=True)
+    stroke_color = Color(default_value=None, sync=True, allow_none=True)
+    default_color = Color(default_value=None, sync=True, allow_none=True)
     color = Dict(sync=True)
     color_scale = Instance(ColorScale, sync=True)
 
