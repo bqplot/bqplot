@@ -641,8 +641,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
         fill_g_colorfill: function(d, j) {
             var select = this.model.get("selected").slice();
             var color_data = this.model.get("color");
-            if (this.is_object_empty(color_data) &&
-                this.model.get("default_color")!==null) {
+            if (this.is_object_empty(color_data)) {
                 return this.model.get("default_color");
             } else if (color_data[d.id]===undefined ||
                        color_data[d.id]===null ||

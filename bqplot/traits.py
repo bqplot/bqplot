@@ -26,30 +26,20 @@ Custom Traits
    BoundedFloat
    BoundedInt
    CInstance
-   ColorList
    Date
    NdArray
    PandasDataFrame
    PandasSeries
-   UnicodeList
    isrgbcolor
    safe_directional_link
    safe_dlink
 """
 
-from IPython.utils.traitlets import (Instance, List, Int, Float, TraitError,
-                                     TraitType)
+from IPython.utils.traitlets import Instance, Int, Float, TraitError, TraitType
 
 import numpy as np
 import pandas as pd
-import re
 import contextlib
-
-_html_names = [
-    '', 'aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure', 'beige', 'bisque', 'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown', 'burlywood', 'cadetblue', 'chartreuse', 'chocolate', 'coral', 'cornflowerblue', 'cornsilk', 'crimson', 'cyan', 'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgrey', 'darkgreen', 'darkkhaki', 'darkmagenta', 'darkolivegreen', 'darkorange', 'darkorchid', 'darkred', 'darksalmon', 'darkseagreen', 'darkslateblue', 'darkslategray', 'darkslategrey', 'darkturquoise', 'darkviolet', 'deeppink', 'deepskyblue', 'dimgray', 'dimgrey', 'dodgerblue', 'firebrick', 'floralwhite', 'forestgreen', 'fuchsia', 'gainsboro', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'grey', 'green', 'greenyellow', 'honeydew', 'hotpink', 'indianred', 'indigo', 'ivory', 'khaki', 'lavender', 'lavenderblush', 'lawngreen', 'lemonchiffon', 'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', 'lightgray', 'lightgrey',
-    'lightgreen', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue', 'lightslategray', 'lightslategrey', 'lightsteelblue', 'lightyellow', 'lime', 'limegreen', 'linen', 'magenta', 'maroon', 'mediumaquamarine', 'mediumblue', 'mediumorchid', 'mediumpurple', 'mediumseagreen', 'mediumslateblue', 'mediumspringgreen', 'mediumturquoise', 'mediumvioletred', 'midnightblue', 'mintcream', 'mistyrose', 'moccasin', 'navajowhite', 'navy', 'oldlace', 'olive', 'olivedrab', 'orange', 'orangered', 'orchid', 'palegoldenrod', 'palegreen', 'paleturquoise', 'palevioletred', 'papayawhip', 'peachpuff', 'peru', 'pink', 'plum', 'powderblue', 'purple', 'red', 'rosybrown', 'royalblue', 'saddlebrown', 'salmon', 'sandybrown', 'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue', 'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen']
-
-_rgbregexp = re.compile(r'#[a-fA-F0-9]{3}(?:[a-fA-F0-9]{3})?$')
 
 
 class safe_directional_link(object):
@@ -131,10 +121,6 @@ def safe_dlink(source, *targets, **kwargs):
     return safe_directional_link(source, *targets, **kwargs)
 
 
-def isrgbcolor(val):
-    return (val.lower() in _html_names or bool(_rgbregexp.match(val)))
-
-
 class BoundedInt(Int):
 
     """
@@ -176,21 +162,6 @@ class BoundedFloat(Float):
             else:
                 return float(value)
         self.error(obj, value)
-
-
-# A few dummy traitlets (ColorList, UnicodeList)
-
-class ColorList(List):
-
-    def validate(self, obj, value):
-        if all(col is None and self._metadata.get('allow_none_element')
-                or isrgbcolor(col) for col in value):
-            return value
-        self.error(obj, value)
-
-
-class UnicodeList(List):
-    pass
 
 
 # Numpy and Pandas Traitlets
