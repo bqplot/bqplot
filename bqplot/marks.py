@@ -160,8 +160,8 @@ class Mark(Widget):
                   display_index=3, display_name='Labels')
     apply_clip = Bool(True, sync=True)
     visible = Bool(True, sync=True)
-    selected_style = Dict({}, sync=True)
-    unselected_style = Dict({}, sync=True)
+    selected_style = Dict(sync=True)
+    unselected_style = Dict(sync=True)
     selected = List(sync=True, allow_none=True)
 
     enable_hover = Bool(True, sync=True)
