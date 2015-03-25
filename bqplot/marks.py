@@ -816,8 +816,8 @@ class OHLC(Mark):
                    display_name='Stroke color')
     stroke_width = Float(1.0, sync=True, exposed=True, display_name='Stroke Width',
                          display_index=5, allow_none=False)
-    colors = List(trait=Color(), default_value=['limegreen', 'red'],
-                  allow_none_element=True, allow_none=False, display_index=6,
+    colors = List(trait=Color(allow_none=True), default_value=['limegreen', 'red'],
+                  allow_none=False, display_index=6,
                   sync=True, display_name='Colors')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
                            exposed=True, display_index=7,
