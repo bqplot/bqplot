@@ -34,8 +34,9 @@ Marks
    Pie
 """
 from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
-from IPython.utils.traitlets import Int, Unicode, List, Enum, Dict, Bool, Float, Instance
-
+from IPython.utils.traitlets import (Int, Unicode, List, Enum, Dict, Bool,
+                                     Float, TraitError, Instance)
+from .scales import Scale
 from .traits import NdArray, BoundedFloat, Date
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
@@ -147,7 +148,7 @@ class Mark(Widget):
         that triggered the tooltip to be visible.
     """
     mark_types = {}
-    scales = Dict(sync=True)  # TODO: check for allow_none
+    scales = Dict(trait=Instance(Scale), sync=True)
     scales_metadata = Dict(sync=True)
     preserve_domain = Dict(allow_none=False, sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1,
@@ -172,6 +173,27 @@ class Mark(Widget):
     _model_name = Unicode('MarkModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
     _ipython_display_ = None
+
+    def _scales_validate(self, scales, scales_trait):
+        """validates the dictionary of scales based on the mark's scaled
+        attributes metadata. First checks for missing scale and then for
+        'rtype' compatibility """
+        # Validate scales' 'rtype' versus data attribute 'rtype' decoration
+        # At this stage it is already validated that all values in self.scales
+        # are instances of Scale.
+        for name in self.trait_names(scaled=True):
+            trait = self.traits()[name]
+            if name not in scales:
+                # Check for missing scale
+                if not trait.allow_none:
+                    raise TraitError("Missing scale for data attribute %s." %
+                                     name)
+            else:
+                # Check scale range type compatibility
+                if scales[name].rtype != trait.get_metadata('rtype'):
+                    raise TraitError("Range type mismatch for scale %s." %
+                                     name)
+        return scales
 
     def _selected_default(self):
         return None
@@ -524,8 +546,9 @@ class Hist(Mark):
     # Scaled attributes
     sample = NdArray(sync=True, allow_none=False, min_dim=1, max_dim=1,
                      display_name='Sample', scaled=True, rtype='Number')
-    counts = NdArray(sync=True, display_index=4, display_name='Count',
-                     scaled=True, rtype='Number', read_only=True)
+    counts = NdArray(sync=True, allow_none=False, display_index=4,
+                     display_name='Count', scaled=True, rtype='Number',
+                     read_only=True)
     # FIXME: Should we allow none for counts?
     # counts is a read-only attribute that is set when the mark is drawn
 
@@ -865,7 +888,7 @@ class Pie(Mark):
     ---------------
     sizes: numpy.ndarray
         proportions of the pie slices
-    color: numpy.ndarray
+    color: numpy.ndarray or None
         color of the data points (1d array). Defaults to colors when not
         provided
 
@@ -886,7 +909,7 @@ class Pie(Mark):
     # Scaled attributes
     sizes = NdArray(sync=True, allow_none=False, display_index=1, rtype='Number',
                     min_dim=1, max_dim=1)
-    color = NdArray(sync=True, allow_none=False, display_index=8, scaled=True, rtype='Color',
+    color = NdArray(sync=True, allow_none=True, display_index=8, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     x = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
