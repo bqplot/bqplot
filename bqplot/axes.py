@@ -99,19 +99,19 @@ class Axis(BaseAxis):
     """
     icon = 'fa-arrows'
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
-                       allow_none=False, sync=True)
+                       sync=True)
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
-                allow_none=False, sync=True)
+                sync=True)
     label = Unicode(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
-                      allow_none=False, sync=True)
+                      sync=True)
     tick_format = Unicode(allow_none=True, sync=True)  # TODO: Default value?
     scale = Instance(Scale, sync=True)
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NdArray(sync=True)
-    offset = Dict({}, allow_none=False, sync=True)
+    offset = Dict(sync=True)
     label_location = Enum(['middle', 'start', 'end'], default_value='middle',
-                          allow_none=False, sync=True)
+                          sync=True)
     label_color = Color(None, sync=True, allow_none=True)
     grid_color = Color(None, sync=True, allow_none=True)
     color = Color(None, sync=True, allow_none=True)
@@ -161,9 +161,9 @@ class ColorAxis(Axis):
         The axis tick format
     """
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
-                       allow_none=False, sync=True)
+                       sync=True)
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
-                allow_none=False, sync=True)
+                sync=True)
     label = Unicode(sync=True)
     scale = Instance(ColorScale, sync=True)  # TODO: check for allow_none
     tick_format = Unicode(sync=True)

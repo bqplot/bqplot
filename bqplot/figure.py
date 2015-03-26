@@ -93,8 +93,8 @@ class Figure(DOMWidget):
     """
     title = Unicode(sync=True,
                     exposed=True, display_index=1, display_name='Title')
-    axes = List(Instance(Axis), allow_none=False, sync=True)
-    marks = List(Instance(Mark), allow_none=False, sync=True)
+    axes = List(Instance(Axis), sync=True)
+    marks = List(Instance(Mark), sync=True)
     interaction = Instance(Interaction, allow_none=True, sync=True)
     scale_x = Instance(Scale, sync=True)
     scale_y = Instance(Scale, sync=True)
@@ -110,7 +110,7 @@ class Figure(DOMWidget):
     padding_y = Float(0.025, sync=True)
     legend_location = Enum(['top-right', 'top', 'top-left', 'left',
                            'bottom-left', 'bottom', 'bottom-right', 'right'],
-                           default_value='top-right', allow_none=False,
+                           default_value='top-right',
                            sync=True, exposed=True, display_index=2,
                            display_name='Legend position')
 

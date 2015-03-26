@@ -145,7 +145,7 @@ class PanZoom(Interaction):
     """
     allow_pan = Bool(True, sync=True)
     allow_zoom = Bool(True, sync=True)
-    scales = Dict({}, allow_none=False, sync=True)
+    scales = Dict(sync=True)
 
     def __init__(self, **kwargs):
         super(PanZoom, self).__init__(**kwargs)
@@ -189,7 +189,7 @@ class Selector(Interaction):
         list of marks for which the `selected` attribute is updated based on
         the data selected by the selector.
     """
-    marks = List([], allow_none=False, sync=True)
+    marks = List([], sync=True)
 
     _view_name = Unicode('Selector', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Selector', sync=True)
