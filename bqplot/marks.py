@@ -201,14 +201,20 @@ class Mark(Widget):
     def __init__(self, **kwargs):
         super(Mark, self).__init__(**kwargs)
         self._hover_handlers = CallbackDispatcher()
+        self._legend_click_handlers = CallbackDispatcher()
         self.on_msg(self._handle_custom_msgs)
 
     def on_hover(self, callback, remove=False):
         self._hover_handlers.register_callback(callback, remove=remove)
 
+    def on_legend_click(self, callback, remove=False):
+        self._legend_click_handlers.register_callback(callback, remove=remove)
+
     def _handle_custom_msgs(self, _, content):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
+        elif content.get('event', '') == 'legend_click':
+            self._legend_click_handlers(self, content)
 
 
 @register_mark('bqplot.Lines')
@@ -491,10 +497,9 @@ class Scatter(Mark):
         self._drag_end_handlers.register_callback(callback, remove=remove)
 
     def _handle_custom_msgs(self, _, content):
+        super(Scatter, self)._handle_custom_msgs(self, content)
         if content.get('event', '') == 'drag_end':
             self._drag_end_handlers(self, content)
-        elif content.get('event', '') == 'hover':
-            self._hover_handlers(self, content)
 
     _view_name = Unicode('Scatter', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Scatter', sync=True)
