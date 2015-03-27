@@ -160,16 +160,23 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             bar_groups.enter()
               .append("g")
               .attr("class", "bargroup")
-              .on("click", function(d, i) {
+
+            bar_groups.on("click", function(d, i) {
                   return that.bar_click_handler(d, i);
               });
             bar_groups.exit().remove();
 
             var bars_sel = bar_groups.selectAll(".bar")
               .data(function(d) { return d.values; });
+
+            // default values for width and height are to ensure smooth
+            // transitions
             bars_sel.enter()
               .append("rect")
-              .attr("class", "bar");
+              .attr("class", "bar")
+              .attr("width", 0)
+              .attr("height", 0);
+
             this.draw_bars();
 
             this.apply_styles();
@@ -201,7 +208,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 });
             }
             if(this.model.get("type") === "stacked") {
-                bars_sel.attr("x", 0)
+                bars_sel.transition().duration(this.model.get("animate_dur"))
+                    .attr("x", 0)
                     .attr("width", this.x.rangeBand().toFixed(2))
                     .attr("y", function(d) {
                         return y_scale.scale(d.y1);
@@ -209,7 +217,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                         return Math.abs(y_scale.scale(d.y1 + d.y) - y_scale.scale(d.y1));
                     });
             } else {
-                bars_sel.attr("x", function(datum, index) {
+                bars_sel.transition().duration(this.model.get("animate_dur"))
+                  .attr("x", function(datum, index) {
                         return that.x1(index);
                   }).attr("width", this.x1.rangeBand().toFixed(2))
                   .attr("y", function(d) {
