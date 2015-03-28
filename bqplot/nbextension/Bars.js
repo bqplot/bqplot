@@ -159,7 +159,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
             bar_groups.enter()
               .append("g")
-              .attr("class", "bargroup")
+              .attr("class", "bargroup");
+            // The below function sorts the DOM elements so that the order of
+            // the DOM elements matches the order of the data they are bound
+            // to. This is required to maintain integrity with selection.
+            bar_groups.order();
 
             bar_groups.on("click", function(d, i) {
                   return that.bar_click_handler(d, i);
