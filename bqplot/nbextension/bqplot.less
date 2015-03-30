@@ -28,8 +28,15 @@
                 font: 14px sans-serif;
             }
         }
-        .axis.axisbold line {stroke-width: 3px;}
-        .axis.axisbold text {font-weight: bolder;}
+        .axis.axisbold line {
+            stroke-width: 3px;
+        }
+
+        .axis.axisbold text,
+        .axis.axisbold text.axislabel {
+            font-weight: bolder;
+        }
+
         text.mainheading {
             text-anchor: middle;
             font: 16px sans-serif;
@@ -114,6 +121,21 @@
 
 .theme-light {
     .common();
+    svg.bqplot {
+        fill: black;
+        .axis {
+            rect, path, line {stroke: black;}
+        }
+        .zeroLine {
+            stroke: black;
+            fill: black;
+        }
+        .brushintsel, .intsel {fill: #000000;}
+        .grid-line { stroke: grey; }
+        text.axislabel, tspan.axislabel, text.mainheading {
+            fill: black;
+        }
+    }
     .mark_tooltip {
         border: 2px solid black;
         border-radius : 5px;
