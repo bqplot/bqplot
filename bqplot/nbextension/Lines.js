@@ -419,14 +419,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               })
               .on("click", _.bind(function() { this.event_dispatcher("element_clicked");}, this));
 
-            curves_sel.exit()
-              .transition().duration(this.model.get("animate_dur"))
-              .remove();
-
+            // Having a transition on exit is complicated. Please refer to
+            // Scatter.js for detailed explanation.
+            curves_sel.exit().remove();
             this.update_line_xy();
 
-            this.el.selectAll(".curve")
-              .select(".curve_label")
+            curves_sel.select(".curve_label")
               .attr("display", function(d) {
                   return that.model.get("labels_visibility") === "label" ?
                       "inline" : "none";
@@ -435,14 +433,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // alter the display only if a few of the curves are visible
             var curves_subset = this.model.get("curves_subset");
             if(curves_subset.length > 0) {
-                this.el.selectAll(".curve")
-                  .select("path")
+                curves_sel.select("path")
                   .attr("display", function(d, i) {
                       return curves_subset.indexOf(i) !== -1 ?
                           "inline" : "none";
                   });
-                this.el.selectAll(".curve")
-                  .select(".curve_label")
+                curves_sel.select(".curve_label")
                   .attr("display", function(d, i) {
                       return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
                           "inline" : "none";

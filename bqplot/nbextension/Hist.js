@@ -128,29 +128,40 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var x_scale = this.scales["sample"],
                 y_scale = this.scales["counts"];
             var that = this;
-            this.el.selectAll(".bar").remove();
             var bar_width = this.calculate_bar_width();
-	        var bar = this.el.selectAll(".bar")
-			  .data(this.model.mark_data)
-		      .enter().append("g")
-			  .attr("class","bar")
-			  .attr("transform", function(d) {
+            var bar_groups = this.el.selectAll(".bar")
+                .data(this.model.mark_data);
+
+	        var bars_added = bar_groups.enter()
+              .append("g")
+			  .attr("class","bar");
+
+            // initial values for width and height are set for animation
+            bars_added.append("rect")
+              .attr("class", "rect")
+              .attr("x", 2)
+              .attr("width", 0)
+              .attr("height", 0);
+
+			bar_groups.attr("transform", function(d) {
                   return "translate(" + x_scale.scale(d.x) + "," +
                                         y_scale.scale(d.y) + ")";
               });
 
-		    bar.append("rect")
-              .attr("class", "rect")
-              .attr("id", function(d, i) { return "rect"+i; })
-		      .attr("x", 2)
-              .attr("width", bar_width)
-		      .attr("height", function(d) {
-                  return y_scale.scale(0) - y_scale.scale(d.y);
-              })
+		    bar_groups.select(".rect")
               .style("fill", fill_color)
               .on("click", function(d, i) {
                   that.bar_click_handler(d, i);
+              })
+              .attr("id", function(d, i) { return "rect"+i; })
+              .transition()
+              .duration(this.model.get("animate_dur"))
+              .attr("width", bar_width)
+		      .attr("height", function(d) {
+                  return y_scale.scale(0) - y_scale.scale(d.y);
               });
+
+            bar_groups.exit().remove();
             this.update_stroke_and_opacity();
         },
         bar_click_handler: function (data, index) {

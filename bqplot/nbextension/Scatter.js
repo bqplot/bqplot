@@ -318,6 +318,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         },
         draw: function() {
             this.set_ranges();
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var that = this,
                 default_color = this.model.get("default_color"),
                 fill = this.model.get("fill");
@@ -326,8 +327,15 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
               .data(this.model.mark_data, function(d) {
                   return d.unique_id;
               });
+            // Transform is here to prevent the transition of newly added
+            // points from the top left corner of the Figure.
             var elements_added = elements.enter().append("g")
-              .attr("class", "dot_grp");
+              .attr("class", "dot_grp")
+              .attr("transform", function(d) {
+                    return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
+                                    "," + (y_scale.scale(d.y) + y_scale.offset) + ")"
+                           + that.get_element_rotation(d);
+              });
 
             elements_added.append("path").attr("class", "dot");
             elements_added.append("text").attr("class", "dot_text");
