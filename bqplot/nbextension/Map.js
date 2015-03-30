@@ -68,6 +68,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             var scales = this.model.get("scales")['color'];
             var color_data = this.model.get("color");
 
+
             if (scales) {
                 that.create_child_view(scales).then(function(view) {
                     that.color_scale = view;
@@ -539,8 +540,8 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             if (!this.is_object_empty(this.model.get("color"))){
                 return;
             }
-            that.fill_g.selectAll("path")
-                .style("fill", that.model.get("default_color"));
+            this.fill_g.selectAll("path")
+                .style("fill", this.model.get("default_color"));
         },
         color_change: function() {
             var scales = this.model.get("color_scale");
