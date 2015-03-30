@@ -69,8 +69,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             var data = utils.load_class.apply(this, this.model.get('map_data'));
             var color_data = this.model.get("color");
 
-            if (!this.is_object_empty(color_data)) {
-
+            if (scales) {
                 that.create_child_view(scales).then(function(view) {
                     that.color_scale = view;
                     var z_data = Object.keys(color_data).map(function (d) {
