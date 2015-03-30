@@ -37,10 +37,10 @@
         .zeroLine {
             shape-rendering: crispEdges;
         }
-        .brushintsel, .intsel, .intselmouse {pointer-events: none;}
+        .brushintsel, .intsel {pointer-events: none;}
         .indsel {stroke: red;}
         .brushintsel, .intsel {fill-opacity: 0.2;}
-        .intselmouse {visibility: hidden;}
+        .intselmouse {visibility: hidden; pointer-events: all;/*none?*/}
         text.legendtext {
             text-anchor: start;
             font: 14px sans-serif;
@@ -87,7 +87,6 @@
 .theme-dark {
     .common();
     svg.bqplot {
-        fill: white;
         .axis {
             rect, path, line {stroke: white;}
         }
@@ -96,7 +95,7 @@
             fill: white;
         }
         .brushintsel, .intsel {fill: #ffffff;}
-        .grid-line {stroke: grey;}
+        .grid_lines .grid-line {stroke: grey;}
         text.axislabel, tspan.axislabel, text.mainheading {
             fill: orange;
         }
@@ -127,5 +126,10 @@
     }
     .mark_tooltip table {
         background: #ececec;
+    }
+    svg.bqplot {
+        .axis {
+            rect, path, line {stroke: black;}
+        }
     }
 }
