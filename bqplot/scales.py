@@ -31,6 +31,7 @@ Scales
    ColorScale
    DateColorScale
    OrdinalColorScale
+   ProjectionScale
 
 """
 
@@ -82,6 +83,25 @@ class Scale(Widget):
     _model_name = Unicode('ScaleModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/ScaleModel', sync=True)
     _ipython_display_ = None  # We cannot display a scale outside of a figure
+
+
+class ProjectionScale(Widget):
+
+    """The base projection scale class for the Map Widget.
+
+    The Projection Scale represents a mapping between topographic data and a
+    visual representation of this data as a projection.
+
+    Attributes
+    ----------
+    map_type: unicode (default: 'worldmap')
+        The type of map being used determines the projection.
+    """
+    map_type = Unicode('worldmap', sync=True)
+
+    _view_name = Unicode('ProjectionScale', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/ProjectionScale', sync=True)
+    _ipython_display_ = None  # We cannot display a scale outside of a Map
 
 
 @register_scale('bqplot.LinearScale')

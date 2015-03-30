@@ -65,8 +65,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
         },
         create_promises: function() {
             var that = this;
-            var scales = this.model.get("color_scale");
-            var data = utils.load_class.apply(this, this.model.get('map_data'));
+            var scales = this.model.get("scales")['color'];
             var color_data = this.model.get("color");
 
             if (scales) {
@@ -90,12 +89,15 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
                         that.color_change();
                     }
                     // Trigger the displayed event of the child view.
-                    that.after_displayed(function() {
-                        view.trigger("displayed");
-                    });
-
                 });
             }
+
+            that.create_projection();
+
+        },
+        create_data: function() {
+            var that = this;
+            var data = utils.load_class.apply(this, this.model.get('map_data'));
 
             data.then(function(mapdata) {
                 that.geodata = mapdata[0];
@@ -179,15 +181,13 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             }
         },
         create_projection: function() {
-            this.path = d3.geo.path();
+            var projection = this.model.get("scales")['projection'];
+            var that = this;
+            that.create_child_view(projection).then(function(view) {
+                that.scale = view.scale;
 
-            if(this.model.get("map_data")[0] === "worldmap") {
-                this.projection = d3.geo.mercator().center([0, 60]).scale(190);
-            } else if (this.model.get("map_data")[0] === "usstates") {
-                this.projection = d3.geo.albersUsa().scale(1200);
-            }
-
-            this.path = this.path.projection(this.projection);
+                that.create_data();
+            });
         },
         draw_map: function() {
 
@@ -196,8 +196,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             var h = this.height;
 
             //Define default path generator
-            this.create_projection();
-
 			this.svg = d3.select(this.el);
 
             this.svg.attr("viewBox", "0 0 "+ this.width +' '+ this.height);
@@ -223,7 +221,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
 			    .data(topojson.feature(this.geodata, this.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
-				.attr("d", that.path)
+				.attr("d", that.scale)
 				.style("fill", function(d, i) {
                     return that.fill_g_colorfill(d, i);
                 });
@@ -232,7 +230,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
 			    .data(topojson.feature(this.geodata, this.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
-				.attr("d", that.path)
+				.attr("d", that.scale)
                 .style("fill-opacity", 0.0)
 				.on("mouseover", function(d){
                     that.mouseover_handler(d, this);
