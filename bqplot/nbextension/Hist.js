@@ -153,13 +153,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .on("click", function(d, i) {
                   that.bar_click_handler(d, i);
               })
+              .attr("id", function(d, i) { return "rect"+i; })
               .transition()
               .duration(this.model.get("animate_dur"))
               .attr("width", bar_width)
 		      .attr("height", function(d) {
                   return y_scale.scale(0) - y_scale.scale(d.y);
-              })
-              .attr("id", function(d, i) { return "rect"+i; });
+              });
 
             bar_groups.exit().remove();
             this.update_stroke_and_opacity();
