@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
+define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
     "use strict";
 
     var perf = p;

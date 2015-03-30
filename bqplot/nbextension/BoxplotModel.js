@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/manager", "d3", "./MarkModel"], function(WidgetManager, d3, MarkModelModule) {
+define(["widgets/js/manager", "./d3", "./MarkModel"], function(WidgetManager, d3, MarkModelModule) {
         "use strict";
 
         var model = MarkModelModule.MarkModel.extend({
