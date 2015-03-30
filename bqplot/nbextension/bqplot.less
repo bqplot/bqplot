@@ -114,6 +114,21 @@
 
 .theme-light {
     .common();
+    svg.bqplot {
+        fill: black;
+        .axis {
+            rect, path, line {stroke: black;}
+        }
+        .zeroLine {
+            stroke: black;
+            fill: black;
+        }
+        .brushintsel, .intsel {fill: #000000;}
+        .grid-line { stroke: grey; }
+        text.axislabel, tspan.axislabel, text.mainheading {
+            fill: black;
+        }
+    }
     .mark_tooltip {
         border: 2px solid black;
         border-radius : 5px;
