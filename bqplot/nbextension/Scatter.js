@@ -158,9 +158,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
         },
-        event_dispatcher: function(event_name) {
+        event_dispatcher: function(event_name, data) {
             if(this.event_listeners[event_name] !== undefined) {
-                _.bind(this.event_listeners[event_name], this)();
+                _.bind(this.event_listeners[event_name], this, data)();
             }
         },
         update_default_color: function(model, new_color) {
@@ -326,7 +326,13 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 fill = this.model.get("fill");
 
             var elements = this.el.selectAll(".dot_grp")
-              .data(this.model.mark_data, function(d) {
+              .data(this.model.mark_data, function(d) {var el = d3.select(d3.event.target);
+                            if(this.is_hover_element(el)) {
+                                var data = el.data()[0];
+                                //custom message with data for hover
+                                this.send({event: "hover", data: data});
+                                return this.refresh_tooltip(data);
+                            }
                   return d.unique_id;
               });
             // Transform is here to prevent the transition of newly added
@@ -382,7 +388,15 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.event_listeners["parent_clicked"] = function() {};
         },
         reset_hover: function() {
-            this.event_listeners["mouse_over"] = function(){};
+            this.event_listeners["mouse_over"] = function(){
+                                                    var el = d3.select(d3.event.target);
+                                                    if(this.is_hover_element(el)) {
+                                                        var data = el.data()[0];
+                                                        //custom message with data for hover
+                                                        this.send({event: "hover", data: data});
+                                                        return this.refresh_tooltip(data);
+                                                    }
+                                                };
             this.event_listeners["mouse_move"] = function() {};
             this.event_listeners["mouse_out"] = function() {};
         },
@@ -457,13 +471,20 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     }
                 } else {
-                    this.event_listeners["legend_clicked"] = function() {};
+                    this.event_listeners["legend_clicked"] = function() {
+                        var el = d3.select(d3.event.target);
+                        if(this.is_hover_element(el)) {
+                            var data = el.data()[0];
+                            //custom message with data for hover
+                            this.send({event: "legend_click", data: data});
+                        }
+                    };
                 }
             }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-              .data([this.model.mark_data]);
+              .data([this.model.mark_data[0]]);
             var default_color = this.model.get("default_color"),
                 stroke = this.model.get("stroke");
 
