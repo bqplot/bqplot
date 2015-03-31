@@ -89,8 +89,28 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
         },
         event_dispatcher: function(event_name) {
+            //sends a custom mssg to the python side if required
+            this.custom_msg_sender(event_name);
             if(this.event_listeners[event_name] !== undefined) {
                 _.bind(this.event_listeners[event_name], this)();
+            }
+        },
+        custom_msg_sender: function(event_name) {
+            var event_data = this.model.event_metadata[event_name];
+            if(event_data !== undefined) {
+                var data = null;
+                if(event_data["hit_test"]) {
+                    //do a hit test to check valid element
+                    var el = d3.select(d3.event.target);
+                    if(this.is_hover_element(el)) {
+                        data = el.data()[0];
+                    }
+                    else {
+                        //do not send mssg if hit test fails
+                        return;
+                    }
+                }
+                this.send({event: event_data["msg_name"], data: data});
             }
         },
         update_legend_labels: function() {
@@ -257,8 +277,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var curve_labels = this.model.update_labels();
+            var legend_data = this.model.mark_data.map(function(d) { return {"index": d["index"], "name": d["name"]}});
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-              .data(this.model.mark_data, function(d, i) {
+              .data(legend_data, function(d, i) {
                   return d.name;
               });
 
@@ -283,6 +304,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
                 }).on("mouseover", _.bind(this.highlight_axes, this))
                 .on("mouseout", _.bind(this.unhighlight_axes, this))
+                .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this))
               .append("path")
                 .attr("fill", "none")
                 .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
