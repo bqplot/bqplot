@@ -673,8 +673,6 @@ class Bars(Mark):
     padding: float (default: 0.05)
         attribute to control the spacing between the bars
         value is specified as a percentage of the width of the bar
-    select_bars: bool (default: False)
-        make bars selectable or otherwise
     stroke: color (default: 'white')
         stroke color for the bars
     opacity: float (default: 1.0)
@@ -725,7 +723,6 @@ class Bars(Mark):
     colors = List(trait=Color(), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
-    select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,

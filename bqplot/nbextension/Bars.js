@@ -384,6 +384,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
               }).on("mouseover", _.bind(this.highlight_axes, this))
               .on("mouseout", _.bind(this.unhighlight_axes, this))
+              .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this))
               .append("rect")
               .classed("legendrect", true)
               .style("fill", function(d,i) {
@@ -411,7 +412,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
-            // chart.If indices is null, clears the style on all elements. If
+            // chart. If indices is null, clears the style on all elements. If
             // not, clears on only the elements whose indices are mathcing.
             //
             // This function is not used right now. But it can be used if we
@@ -461,86 +462,81 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         bar_click_handler: function (args) {
-            var data = args['data'];
-            var index = args['index'];
+            var data = args["data"];
+            var index = args["index"];
             var that = this;
-            // if(this.model.get("select_bars")) {
-                var idx = this.model.get("selected");
-                var selected = idx ? utils.deepCopy(idx) : [];
-                var elem_index = selected.indexOf(index);
-                // index of bar i. Checking if it is already present in the
-                // list
-                if(elem_index > -1 && d3.event.ctrlKey) {
-                    // if the index is already selected and if ctrl key is
-                    // pressed, remove the element from the list
-                    selected.splice(elem_index, 1);
+            var idx = this.model.get("selected");
+            var selected = idx ? utils.deepCopy(idx) : [];
+            var elem_index = selected.indexOf(index);
+            // index of bar i. Checking if it is already present in the
+            // list
+            if(elem_index > -1 && d3.event.ctrlKey) {
+                // if the index is already selected and if ctrl key is
+                // pressed, remove the element from the list
+                selected.splice(elem_index, 1);
+            }
+            else {
+                if(d3.event.shiftKey) {
+                    //If shift is pressed and the element is already
+                    //selected, do not do anything
+                    if(elem_index > -1) {
+                        return;
+                    }
+                    //Add elements before or after the index of the current
+                    //bar which has been clicked
+                    var min_index = (selected.length !== 0) ?
+                        d3.min(selected) : -1;
+                    var max_index = (selected.length !== 0) ?
+                        d3.max(selected) : that.model.mark_data.length;
+                    if(index > max_index){
+                        _.range(max_index+1, index+1).forEach(function(i) {
+                            selected.push(i);
+                        });
+                    } else if(index < min_index){
+                        _.range(index, min_index).forEach(function(i) {
+                            selected.push(i);
+                        });
+                    }
                 }
+                else if(d3.event.ctrlKey) {
+                    //If ctrl is pressed and the bar is not already selcted
+                    //add the bar to the list of selected bars.
+                    selected.push(index);
+                }
+                // updating the array containing the bar indexes selected
+                // and updating the style
                 else {
-                    if(d3.event.shiftKey) {
-                        //If shift is pressed and the element is already
-                        //selected, do not do anything
-                        if(elem_index > -1) {
-                            return;
-                        }
-                        //Add elements before or after the index of the current
-                        //bar which has been clicked
-                        var min_index = (selected.length !== 0) ?
-                            d3.min(selected) : -1;
-                        var max_index = (selected.length !== 0) ?
-                            d3.max(selected) : that.model.mark_data.length;
-                        if(index > max_index){
-                            _.range(max_index+1, index+1).forEach(function(i) {
-                                selected.push(i);
-                            });
-                        } else if(index < min_index){
-                            _.range(index, min_index).forEach(function(i) {
-                                selected.push(i);
-                            });
-                        }
-                    }
-                    else if(d3.event.ctrlKey) {
-                        //If ctrl is pressed and the bar is not already selcted
-                        //add the bar to the list of selected bars.
-                        selected.push(index);
-                    }
-                    // updating the array containing the bar indexes selected
-                    // and updating the style
-                    else {
-                        //if ctrl is not pressed, then clear the selected ones
-                        //and set the current element to the selected
-                        selected = [];
-                        selected.push(index);
-                    }
+                    //if ctrl is not pressed, then clear the selected ones
+                    //and set the current element to the selected
+                    selected = [];
+                    selected.push(index);
                 }
-                this.model.set("selected",
-                               ((selected.length === 0) ? null : selected),
-                               {updated_view: this});
-                this.touch();
-                if(!d3.event) {
-                    d3.event = window.event;
-                }
-                var e = d3.event;
-                if(e.cancelBubble !== undefined) { // IE
-                    e.cancelBubble = true;
-                }
-                if(e.stopPropagation) {
-                    e.stopPropagation();
-                }
-                e.preventDefault();
-                this.selected_indices = selected;
-                this.apply_styles();
-            // }
+            }
+            this.model.set("selected",
+                            ((selected.length === 0) ? null : selected),
+                            {updated_view: this});
+            this.touch();
+            if(!d3.event) {
+                d3.event = window.event;
+            }
+            var e = d3.event;
+            if(e.cancelBubble !== undefined) { // IE
+                e.cancelBubble = true;
+            }
+            if(e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+            this.selected_indices = selected;
+            this.apply_styles();
         },
         reset_selection: function() {
-            // if(this.model.get("select_bars")) {
-                this.model.set("selected", null);
-                this.touch();
-                this.selected_indices = null;
-                this.clear_style(this.selected_style);
-                this.clear_style(this.unselected_style);
-                this.set_default_style();
-            // }
-
+            this.model.set("selected", null);
+            this.touch();
+            this.selected_indices = null;
+            this.clear_style(this.selected_style);
+            this.clear_style(this.unselected_style);
+            this.set_default_style();
         },
         compute_view_padding: function() {
             //This function returns a dictionary with keys as the scales and

@@ -25,7 +25,16 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"
             // function, and not merely "update_domains".
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
-            this.display_el_classes = ["rect"];
+            this.display_el_classes = ["rect", "legendtext"];
+            this.event_metadata = {"mouse_over":      {"msg_name": "hover",
+                                                       "hit_test": true },
+                                   "legend_clicked":  {"msg_name": "legend_click",
+                                                       "hit_test": true },
+                                   "element_clicked": {"msg_name": "element_click",
+                                                       "hit_test": true},
+                                   "parent_clicked":  {"msg_name": "background_click",
+                                                       "hit_test": false}
+                                  };
         },
         update_data: function() {
 	        var x_data = this.get_typed_field("sample");
