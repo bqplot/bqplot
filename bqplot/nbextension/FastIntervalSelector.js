@@ -65,7 +65,7 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             this.model.on("change:color", this.color_change, this);
         },
         color_change: function() {
-            if(this.model.get("color")!=null){
+            if(this.model.get("color")!=null) {
                 this.rect.style("fill", this.model.get("color"));
             }
         },
@@ -102,7 +102,9 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             //update the interval location and size
             this.rect.attr("x", start);
             this.rect.attr("width", interval_size);
-            this.model.set_typed_field("selected", this.invert_range(start, start + interval_size));
+            this.model.set_typed_field("selected",
+                                       this.invert_range(start, 
+                                                         start + interval_size));
             _.each(this.mark_views, function(mark_view) {
                 mark_view.invert_range(start, start + interval_size);
             });
