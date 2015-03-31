@@ -268,6 +268,7 @@ class FastIntervalSelector(OneDSelector):
     """
     selected = NdArray(sync=True)
     color = Color(None, sync=True, allow_none=True)
+    size = Float(None, allow_none=True, sync=True)
 
     _view_name = Unicode('FastIntervalSelector', sync=True)
     _view_module = Unicode('nbextensions/bqplot/FastIntervalSelector', sync=True)
