@@ -170,11 +170,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
         },
-        event_dispatcher: function(event_name, data) {
-            if(this.event_listeners[event_name] !== undefined) {
-                _.bind(this.event_listeners[event_name], this, data)();
-            }
-        },
         update_default_color: function(model, new_color) {
             if(!this.model.dirty) {
                 var that = this,

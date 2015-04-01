@@ -69,6 +69,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             Pie.__super__.create_listeners.apply(this);
             this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
+                .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
 
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
