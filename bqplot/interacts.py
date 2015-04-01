@@ -265,6 +265,8 @@ class FastIntervalSelector(OneDSelector):
         in terms of the scale of the selector. This is a read-only attribute.
     color: Color or None (default: None)
         color of the rectangle representing the interval selector
+    size: Float or None (default: None)
+        if not None, this is the fixed pixel-width of the interval selector
     """
     selected = NdArray(sync=True)
     color = Color(None, sync=True, allow_none=True)
