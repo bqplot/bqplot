@@ -69,7 +69,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             Pie.__super__.create_listeners.apply(this);
             this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
-                .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
 
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
@@ -113,10 +112,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     if(interactions["hover"] === "tooltip") {
                         this.event_listeners["mouse_over"] = this.refresh_tooltip;
                         this.event_listeners["mouse_move"] = this.show_tooltip;
-                        this.event_listeners["mouse_out"] = function() {
-                            this.send({event: "mouse_out"});
-                            return this.hide_tooltip();
-                        }
+                        this.event_listeners["mouse_out"] = this.hide_tooltip;
                     }
                 } else {
                     this.reset_hover();

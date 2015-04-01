@@ -95,10 +95,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     if(interactions["hover"] === "tooltip") {
                         this.event_listeners["mouse_over"] = this.refresh_tooltip;
                         this.event_listeners["mouse_move"] = this.show_tooltip;
-                        this.event_listeners["mouse_out"] = function() {
-                            this.send({event: "mouse_out"});
-                            return this.hide_tooltip();
-                        }
+                        this.event_listeners["mouse_out"] = this.hide_tooltip;
                     }
                 } else {
                     this.reset_hover();
