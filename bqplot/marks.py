@@ -126,7 +126,7 @@ class Mark(Widget):
         when a selection exists.
     selected: list (default: [])
         Indices of the selected items in the mark.
-    tooltip: DOMWidget (default: None)
+    tooltip: DOMWidget or None (default: None)
         Widget to be displayed as tooltip when elements of the scatter are
         hovered on
     tooltip_style: Dictionary (default: {'opacity': 0.9})
@@ -165,7 +165,7 @@ class Mark(Widget):
     selected = List(sync=True, allow_none=True)
 
     enable_hover = Bool(True, sync=True)
-    tooltip = Instance(DOMWidget, sync=True)
+    tooltip = Instance(DOMWidget, allow_none=True, sync=True)
     tooltip_style = Dict({'opacity': 0.9}, sync=True)
     interactions = Dict({'hover': 'tooltip'}, sync=True)
     tooltip_location = Enum(['mouse', 'center'], default_value='mouse', sync=True)
