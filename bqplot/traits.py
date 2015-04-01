@@ -227,7 +227,7 @@ class NdArray(CInstance):
     @staticmethod
     def _to_json(a):
         if a is not None:
-            if a.dtype is float:
+            if np.issubdtype(a.dtype, np.float):
                 # replace nan with None
                 a = np.where(np.isnan(a), None, a)
                 dtype = a.dtype
