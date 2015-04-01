@@ -108,45 +108,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
         },
-        custom_msg_sender: function(event_name) {
-            var event_data = this.model.event_metadata[event_name];
-            if(event_data !== undefined) {
-                var data = null;
-                if(event_data["hit_test"]) {
-                    //do a hit test to check valid element
-                    var el = d3.select(d3.event.target);
-                    if(this.is_hover_element(el)) {
-                        data = el.data()[0];
-                    }
-                    else {
-                        //do not send mssg if hit test fails
-                        return;
-                    }
-                }
-                this.send({event: event_data["msg_name"], data: data});
-            }
-        },
-        event_dispatcher: function(event_name, data) {
-            //sends a custom mssg to the python side if required
-            this.custom_msg_sender(event_name);
-            if(this.event_listeners[event_name] !== undefined) {
-                _.bind(this.event_listeners[event_name], this, data)();
-            }
-        },
-        reset_interactions: function() {
-            this.reset_click();
-            this.reset_hover();
-            this.event_listeners["legend_clicked"] = function() {};
-        },
-        reset_click: function() {
-            this.event_listeners["element_clicked"] = function() {};
-            this.event_listeners["parent_clicked"] = function() {};
-        },
-        reset_hover: function() {
-            this.event_listeners["mouse_over"] = function() {};
-            this.event_listeners["mouse_move"] = function() {};
-            this.event_listeners["mouse_out"] = function() {};
-        },
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {

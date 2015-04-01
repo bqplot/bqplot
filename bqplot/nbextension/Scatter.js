@@ -326,17 +326,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 fill = this.model.get("fill");
 
             var elements = this.el.selectAll(".dot_grp")
-              .data(this.model.mark_data, function(d) {var el = d3.select(d3.event.target);
-                            if(this.is_hover_element(el)) {
-                                var data = el.data()[0];
-                                //custom message with data for hover
-                                this.send({event: "hover", data: data});
-                                return this.refresh_tooltip(data);
-                            }
-                  return d.unique_id;
-              });
-            // Transform is here to prevent the transition of newly added
-            // points from the top left corner of the Figure.
+              .data(this.model.mark_data, function(d) { return d.unique_id; });
             var elements_added = elements.enter().append("g")
               .attr("class", "dot_grp")
               .attr("transform", function(d) {
@@ -378,35 +368,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             elements.exit().remove();
             this.apply_styles();
         },
-        reset_interactions: function() {
-            this.reset_click();
-            this.reset_hover();
-            this.event_listeners["legend_clicked"] = function() {};
-        },
-        reset_click: function() {
-            this.event_listeners["element_clicked"] = function() {};
-            this.event_listeners["parent_clicked"] = function() {};
-        },
-        reset_hover: function() {
-            this.event_listeners["mouse_over"] = function(){
-                                                    var el = d3.select(d3.event.target);
-                                                    if(this.is_hover_element(el)) {
-                                                        var data = el.data()[0];
-                                                        //custom message with data for hover
-                                                        this.send({event: "hover", data: data});
-                                                        return this.refresh_tooltip(data);
-                                                    }
-                                                };
-            this.event_listeners["mouse_move"] = function() {};
-            this.event_listeners["mouse_out"] = function() {};
-        },
-        refresh_tooltip: function(data, tooltip_interactions) {
-            //the argument controls pointer interactions with the tooltip. a
-            //true value enables pointer interactions while a false value
-            //disables them
-            this.trigger("update_tooltip", data);
-            this.show_tooltip(tooltip_interactions);
-        },
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {
@@ -417,15 +378,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 if(interactions["click"] !== undefined &&
                   interactions["click"] !== null) {
                     if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() {
-                            var el = d3.select(d3.event.target);
-                            if(this.is_hover_element(el)) {
-                                var data = el.data()[0];
-                                //custom message with data for hover
-                                this.send({event: "element_click", data: data});
-                                return this.refresh_tooltip(data, true);
-                            }
-                        };
+                        this.event_listeners["element_clicked"] = function() { return this.refresh_tooltip(true); };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     } else if (interactions["click"] === "add") {
                         this.event_listeners["parent_clicked"] = this.add_element;
@@ -438,15 +391,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 if(interactions["hover"] !== undefined &&
                   interactions["hover"] !== null) {
                     if(interactions["hover"] === "tooltip") {
-                        this.event_listeners["mouse_over"] = function() {
-                            var el = d3.select(d3.event.target);
-                            if(this.is_hover_element(el)) {
-                                var data = el.data()[0];
-                                //custom message with data for hover
-                                this.send({event: "hover", data: data});
-                                return this.refresh_tooltip(data);
-                            }
-                        };
+                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
                         this.event_listeners["mouse_move"] = this.show_tooltip;
                         this.event_listeners["mouse_out"] = function() {
                             this.send({event: "mouse_out"});
@@ -459,26 +404,11 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 if(interactions["legend_click"] !== undefined &&
                   interactions["legend_click"] !== null) {
                     if(interactions["legend_click"] === "tooltip") {
-                        this.event_listeners["legend_clicked"] = function() {
-                            var el = d3.select(d3.event.target);
-                            if(this.is_hover_element(el)) {
-                                var data = el.data()[0];
-                                //custom message with data for hover
-                                this.send({event: "legend_click", data: data});
-                                return this.refresh_tooltip(data, true);
-                            }
-                        };
+                        this.event_listeners["legend_clicked"] = function() { return this.refresh_tooltip(true); };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     }
                 } else {
-                    this.event_listeners["legend_clicked"] = function() {
-                        var el = d3.select(d3.event.target);
-                        if(this.is_hover_element(el)) {
-                            var data = el.data()[0];
-                            //custom message with data for hover
-                            this.send({event: "legend_click", data: data});
-                        }
-                    };
+                    this.event_listeners["legend_clicked"] = function() {};
                 }
             }
         },
