@@ -30,6 +30,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.create_tooltip();
             });
 
+            this.display_el_classes = ["line", "legendtext"];
             return base_render_promise.then(function() {
                 that.event_listeners = {};
                 that.process_interactions();

@@ -40,6 +40,19 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
 
             this.bisect = d3.bisector(function(d) { return d; }).left;
             this.el.style("display", (this.model.get("visible") ? "inline" : "none"));
+            this.display_el_classes = [];
+            this.event_metadata = {"mouse_over":      {"msg_name": "hover",
+                                                       "lookup_data": true,
+                                                       "hit_test": true },
+                                   "legend_clicked":  {"msg_name": "legend_click",
+                                                       "hit_test": true },
+                                   "element_clicked": {"msg_name": "element_click",
+                                                       "lookup_data": true,
+                                                       "hit_test": true},
+                                   "parent_clicked":  {"msg_name": "background_click",
+                                                       "hit_test": false}
+                                  };
+
             return scale_creation_promise;
         },
         set_scale_views: function() {
@@ -265,7 +278,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             }
         },
         custom_msg_sender: function(event_name) {
-            var event_data = this.model.event_metadata[event_name];
+            var event_data = this.event_metadata[event_name];
             if(event_data !== undefined) {
                 var data = null;
                 if(event_data["hit_test"]) {
@@ -334,7 +347,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         },
         //TODO: Rename function
         is_hover_element: function(elem) {
-            var hit_check = this.model.display_el_classes.map(function(class_name) {
+            var hit_check = this.display_el_classes.map(function(class_name) {
                                        return elem.classed(class_name); });
             return (_.compact(hit_check).length > 0);
 

@@ -36,6 +36,18 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.unselected_style = this.model.get("unselected_style");
             this.selected_indices = this.model.get("selected");
 
+            this.display_el_classes = ["dot", "legendtext"];
+            this.event_metadata = {"mouse_over":      {"msg_name": "hover",
+                                                       "lookup_data": false,
+                                                       "hit_test": true },
+                                   "legend_clicked":  {"msg_name": "legend_click",
+                                                       "hit_test": true },
+                                   "element_clicked": {"msg_name": "element_click",
+                                                       "lookup_data": false,
+                                                       "hit_test": true},
+                                   "parent_clicked":  {"msg_name": "background_click",
+                                                       "hit_test": false}
+                                  };
             var self = this;
             this.after_displayed(function() {
                 this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());

@@ -23,6 +23,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
 
+            this.display_el_classes = ["pie_slice", "pie_text"];
             var self = this;
             this.el.append("g")
               .attr("class", "pielayout");

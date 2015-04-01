@@ -21,6 +21,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var base_creation_promise = Hist.__super__.render.apply(this);
             this.bars_selected = [];
 
+            this.display_el_classes = ["rect", "legendtext"];
             var self = this;
             this.after_displayed(function() {
                 this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
