@@ -21,7 +21,10 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y", "color", "opacity", "size", "skew", "rotation"], this.update_data, this);
-            this.on_some_change(["names", "names_unique"], function() { this.update_unique_ids(); this.trigger("data_updated"); }, this);
+            this.on_some_change(["names", "names_unique"], function() {
+                this.update_unique_ids();
+                this.trigger("data_updated");
+            }, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
@@ -40,8 +43,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
 
             if (x_data.length === 0 || y_data.length === 0) {
                 this.mark_data = [];
-            }
-            else {
+            } else {
                 //FIXME:Temporary fix to avoid misleading NaN error due to X and Y
                 //being of different lengths. In particular, if Y is of a smaller
                 //length, throws an error on the JS side
@@ -62,15 +64,16 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
 
                 this.mark_data = x_data.map(function(d, i) {
-                    return {x: d,
-                            y: y_data[i],
-                            color: color[i],
-                            size: size[i],
-                            opacity: opacity[i],
-                            skew: skew[i],
-                            rotation: rotation[i],
-                            index: i
-                            };
+                    return {
+                        x: d,
+                        y: y_data[i],
+                        color: color[i],
+                        size: size[i],
+                        opacity: opacity[i],
+                        skew: skew[i],
+                        rotation: rotation[i],
+                        index: i
+                    };
                 });
             }
             this.update_unique_ids();
