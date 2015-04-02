@@ -54,7 +54,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             var x_scale = this.scales["x"],
                 y_scale = this.scales["y"],
                 size_scale = this.scales["size"],
-                color_scale = this.scales["color"],
                 opacity_scale = this.scales["opacity"],
                 skew_scale = this.scales["skew"],
                 rotation_scale = this.scales["rotation"];
@@ -346,6 +345,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     .skew(function(d) { return that.get_element_skew(d); })
                     );
             this.update_xy_position();
+
             elements.call(this.drag_listener);
             elements.on("click", _.bind(function() { this.event_dispatcher("element_clicked");}, this));
 
