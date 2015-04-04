@@ -81,7 +81,7 @@ class Interaction(Widget):
     _view_name = Unicode('Interaction', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Interaction', sync=True)
     _model_name = Unicode('BaseModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/BaseModel', sync=True)
     _ipython_display_ = None  # We cannot display an interaction outside of a
                               # figure
 

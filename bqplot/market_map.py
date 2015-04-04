@@ -179,7 +179,7 @@ class MarketMap(DOMWidget):
     _view_name = Unicode('MarketMap', sync=True)
     _view_module = Unicode('nbextensions/bqplot/MarketMap', sync=True)
     _model_name = Unicode('BaseModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/BaseModel', sync=True)
 
 
 class SquareMarketMap(MarketMap):
