@@ -26,10 +26,15 @@ Market Map
    MarketMap
    SquareMarketMap
 """
-# from .figure import Figure
+
 from IPython.utils.traitlets import (Int, Unicode, List, Dict, Enum, Bool,
                                      Instance)
 from IPython.html.widgets import DOMWidget, CallbackDispatcher
+
+try:
+    from IPython.html.widget import widget_serialization  # IPython 4.0
+except ImportError:
+    widget_serialization = {}  # IPython 3.*
 
 from .traits import NdArray, PandasDataFrame
 from .marks import CATEGORY10
@@ -41,7 +46,7 @@ class MarketMap(DOMWidget):
 
     Attributes
     ----------
-    names: numpy.ndarray of strings or objects convertable to strings (default: [])
+    names: numpy.ndarray of strings or objects convertible to strings (default: [])
         primary key for the data of the map. One rectangle is created for each
         unique entry in this array
     groups: numpy.ndarray (default: [])
@@ -57,7 +62,7 @@ class MarketMap(DOMWidget):
         Data to represent the color for each of the cells. If the value of the
         data is NaN for a cell, then the color of the cell is the color of the
         group it belongs to in absence of data for color
-    scales: Dictionary of scales holding a scale for each data attribute
+    scales: Dictionary of , **widget_serializationscales holding a scale for each data attribute
         - If the map has data being passed as color, then a corresponding color
         scale is required
     axes: List of axes
@@ -147,8 +152,8 @@ class MarketMap(DOMWidget):
 
     row_groups = Int(1, sync=True)
     colors = List(CATEGORY10, sync=True)
-    scales = Dict(sync=True)
-    axes = List(sync=True)
+    scales = Dict(sync=True, **widget_serialization)
+    axes = List(sync=True, **widget_serialization)
     color = NdArray(sync=True)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
     preserve_aspect = Bool(False, sync=True,
@@ -159,10 +164,10 @@ class MarketMap(DOMWidget):
     selected_stroke = Unicode('dodgerblue', sync=True)
     hovered_stroke = Unicode('orangered', sync=True)
 
-    selected = List([], sync=True)
+    selected = List(sync=True)
     enable_hover = Bool(True, sync=True)
     enable_select = Bool(True, sync=True)
-    tooltip_widget = Instance(DOMWidget, sync=True)
+    tooltip_widget = Instance(DOMWidget, sync=True, **widget_serialization)
 
     def __init__(self, **kwargs):
         super(MarketMap, self).__init__(**kwargs)

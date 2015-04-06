@@ -23,12 +23,17 @@ Axes
 .. autosummary::
    :toctree: generate/
 
-
    Axis
    ColorAxis
 """
-from IPython.html.widgets import Widget, Color
+
 from IPython.utils.traitlets import Int, Unicode, Instance, Enum, Dict, Bool
+from IPython.html.widgets import Widget, Color
+
+try:
+    from IPython.html.widget import widget_serialization  # IPython 4.0
+except ImportError:
+    widget_serialization = {}  # IPython 3.*
 
 from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale, OrdinalScale
 from .traits import NdArray
@@ -93,7 +98,8 @@ class Axis(BaseAxis):
             The color of the line
         label_offset: string or None (default: None)
             Label displacement from the axis line. Units allowed are 'em', 'px'
-            and 'ex'.
+            and 'ex'. Positive values are away from the figure and negative
+            values are towards the figure with resepect to the axis line.
         visible: bool (default: True)
             A visibility toggle for the axis
     """
@@ -106,7 +112,7 @@ class Axis(BaseAxis):
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
                       sync=True)
     tick_format = Unicode(allow_none=True, sync=True)  # TODO: Default value?
-    scale = Instance(Scale, sync=True)
+    scale = Instance(Scale, sync=True, **widget_serialization)
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NdArray(sync=True)
     offset = Dict(sync=True)
@@ -116,10 +122,9 @@ class Axis(BaseAxis):
     grid_color = Color(None, sync=True, allow_none=True)
     color = Color(None, sync=True, allow_none=True)
     label_offset = Unicode(default_value=None, sync=True, allow_none=True)
-    # Positive values are away from the figure and negative values are towards
-    # the figure with resepect to the axis line.
 
     visible = Bool(True, sync=True)
+
     _view_name = Unicode('Axis', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Axis', sync=True)
     _model_name = Unicode('AxisModel', sync=True)
@@ -165,7 +170,7 @@ class ColorAxis(Axis):
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
                 sync=True)
     label = Unicode(sync=True)
-    scale = Instance(ColorScale, sync=True)  # TODO: check for allow_none
+    scale = Instance(ColorScale, sync=True, **widget_serialization)
     tick_format = Unicode(sync=True)
     _view_name = Unicode('ColorAxis', sync=True)
     _view_module = Unicode('nbextensions/bqplot/ColorAxis', sync=True)

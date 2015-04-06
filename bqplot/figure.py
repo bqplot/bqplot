@@ -26,9 +26,15 @@ Figure
    Figure
 """
 
-from IPython.html.widgets import DOMWidget, register, Color
 from IPython.utils.traitlets import (Unicode, Instance, List, Dict,
                                      CFloat, Bool, Enum)
+from IPython.html.widgets import DOMWidget, register, Color
+
+try:
+    from IPython.html.widget import widget_serialization  # IPython 4.0
+except ImportError:
+    widget_serialization = {}  # IPython 3.*
+
 from .traits import BoundedFloat
 from .scales import Scale, LinearScale
 from .interacts import Interaction
@@ -93,11 +99,12 @@ class Figure(DOMWidget):
     """
     title = Unicode(sync=True,
                     exposed=True, display_index=1, display_name='Title')
-    axes = List(Instance(Axis), sync=True)
-    marks = List(Instance(Mark), sync=True)
-    interaction = Instance(Interaction, allow_none=True, sync=True)
-    scale_x = Instance(Scale, sync=True)
-    scale_y = Instance(Scale, sync=True)
+    axes = List(Instance(Axis), sync=True, **widget_serialization)
+    marks = List(Instance(Mark), sync=True, **widget_serialization)
+    interaction = Instance(Interaction, allow_none=True, sync=True,
+                           **widget_serialization)
+    scale_x = Instance(Scale, sync=True, **widget_serialization)
+    scale_y = Instance(Scale, sync=True, **widget_serialization)
     fig_color = Color(None, allow_none=True, sync=True)
 
     min_width = CFloat(800.0, sync=True)

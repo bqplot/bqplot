@@ -36,6 +36,11 @@ Marks
 from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
 from IPython.utils.traitlets import (Int, Unicode, List, Enum, Dict, Bool,
                                      Float, TraitError, Instance)
+try:
+    from IPython.html.widget import widget_serialization  # IPython 4.0
+except ImportError:
+    widget_serialization = {}  # IPython 3.*
+
 from .scales import Scale
 from .traits import NdArray, BoundedFloat, Date
 
@@ -148,16 +153,15 @@ class Mark(Widget):
         that triggered the tooltip to be visible.
     """
     mark_types = {}
-    scales = Dict(trait=Instance(Scale), sync=True)
+    scales = Dict(trait=Instance(Scale), sync=True, **widget_serialization)
     scales_metadata = Dict(sync=True)
     preserve_domain = Dict(sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1,
                           display_name='Display legend')
-    animate_dur = Int(0, sync=True,
-                      exposed=True, display_index=2,
+    animate_dur = Int(0, sync=True, exposed=True, display_index=2,
                       display_name='Animation duration')
-    labels = List(trait=Unicode(), allow_none=False, sync=True, exposed=True,
-                  display_index=3, display_name='Labels')
+    labels = List(trait=Unicode(), sync=True, exposed=True, display_index=3,
+                  display_name='Labels')
     apply_clip = Bool(True, sync=True)
     visible = Bool(True, sync=True)
     selected_style = Dict(sync=True)
@@ -165,7 +169,7 @@ class Mark(Widget):
     selected = List(sync=True, allow_none=True)
 
     enable_hover = Bool(True, sync=True)
-    tooltip = Instance(DOMWidget, allow_none=True, sync=True)
+    tooltip = Instance(DOMWidget, allow_none=True, sync=True, **widget_serialization)
     tooltip_style = Dict({'opacity': 0.9}, sync=True)
     interactions = Dict({'hover': 'tooltip'}, sync=True)
     tooltip_location = Enum(['mouse', 'center'], default_value='mouse', sync=True)
@@ -313,7 +317,7 @@ class Lines(Mark):
     labels_visibility = Enum(['none', 'label'], default_value='none',
                              sync=True, exposed=True,
                              display_index=5, display_name='Labels visibility')
-    curves_subset = List([], sync=True)
+    curves_subset = List(sync=True)
     line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid',
                       sync=True, exposed=True,
                       display_index=6, display_name='Line style')
@@ -323,9 +327,9 @@ class Lines(Mark):
                          display_name='Interpolation')
     close_path = Bool(sync=True, exposed=True, display_index=8,
                       display_name='Close path')
-    fill = List(trait=Color(), default_value=[], sync=True,
-                exposed=True, display_index=9, display_name='Fill Colors')
-    opacity = List([], sync=True, display_index=10, display_name='Opacity')
+    fill = List(trait=Color(), sync=True, exposed=True, display_index=9,
+                display_name='Fill Colors')
+    opacity = List(sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
     _model_name = Unicode('LinesModel', sync=True)

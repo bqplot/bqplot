@@ -29,8 +29,13 @@ from IPython.utils.traitlets import (Unicode, List, Dict, Float, Bool,
                                      Instance, Tuple)
 from IPython.html.widgets import DOMWidget, CallbackDispatcher, register, Color
 
+try:
+    from IPython.html.widget import widget_serialization  # IPython 4.0
+except ImportError:
+    widget_serialization = {}  # IPython 3.*
+
 from .scales import ColorScale
-from .axes import Axis
+from .axes import ColorAxis
 
 
 @register('bqplot.Map')
@@ -92,7 +97,7 @@ class Map(DOMWidget):
     map_data: tuple (default: ("worldmap", "nbextensions/bqplot/WorldMapData")
         tuple containing which map is to be displayed
     """
-    fig_margin = Dict(dict(top=0, bottom=20, left=0, right=0), sync=True)   # Margin with respect to the parent. Width, height etc are determined by this
+    fig_margin = Dict(dict(top=0, bottom=20, left=0, right=0), sync=True)  # Margin with respect to the parent. Width, height etc are determined by this
     min_width = Float(800.0, sync=True)
     min_height = Float(600.0, sync=True)
 
@@ -103,24 +108,25 @@ class Map(DOMWidget):
     stroke_color = Color(default_value=None, sync=True, allow_none=True)
     default_color = Color(default_value=None, sync=True, allow_none=True)
     color = Dict(sync=True)
-    color_scale = Instance(ColorScale, sync=True)
+    color_scale = Instance(ColorScale, sync=True, **widget_serialization)
 
     enable_select = Bool(True, sync=True)
-    selected = List([], sync=True)
+    selected = List(sync=True)
     selected_styles = Dict({'selected_fill': 'Red', 'selected_stroke': None,
                             'selected_stroke_width': 5.0}, allow_none=True, sync=True)
 
-    axis = Instance(Axis, sync=True)
+    axis = Instance(ColorAxis, sync=True, **widget_serialization)
 
     tooltip_color = Color('White', sync=True)
     display_tooltip = Bool(True, sync=True)
     text_data = Dict(sync=True)
     text_color = Color('Black', sync=True)
     tooltip_format = Unicode('.2f', sync=True)
-    tooltip_widget = Instance(DOMWidget, sync=True)
+    tooltip_widget = Instance(DOMWidget, sync=True, **widget_serialization)
 
-    map_data = Tuple(Unicode, Unicode, default_value=("worldmap",
-                                                      "nbextensions/bqplot/WorldMapData"), sync=True)
+    map_data = Tuple(Unicode, Unicode,
+                     default_value=("worldmap",
+                                    "nbextensions/bqplot/WorldMapData"), sync=True)
 
     def __init__(self, **kwargs):
         """Constructor for WorldMapWidget"""

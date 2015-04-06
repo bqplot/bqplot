@@ -41,6 +41,11 @@ from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance,
                                      List, TraitError)
 from IPython.html.widgets import Widget, Color
 
+try:
+    from IPython.html.widget import widget_serialization  # IPython 4.0
+except ImportError:
+    widget_serialization = {}  # IPython 3.*
+
 from .scales import Scale, DateScale
 from .traits import Date, NdArray
 from .marks import Lines, Scatter
@@ -114,7 +119,7 @@ class HandDraw(Interaction):
     max_x: float or Date or None (default: None)
         The maximum value of 'x' which should be edited via the handdraw.
     """
-    lines = Instance(Lines, sync=True)
+    lines = Instance(Lines, sync=True, **widget_serialization)
     line_index = Int(0, sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
     # TODO: Once the new Union is merged in IPython, the sync on the whole
@@ -209,7 +214,7 @@ class OneDSelector(Selector):
         co-ordinates. This scale is used for setting the selected attribute for
         the selector.
     """
-    scale = Instance(Scale, sync=True)
+    scale = Instance(Scale, sync=True, **widget_serialization)
 
 
 class TwoDSelector(Selector):
@@ -230,8 +235,8 @@ class TwoDSelector(Selector):
         co-ordinates in the y-direction. This scale is used for setting the
         selected attribute for the selector along with x_scale.
     """
-    x_scale = Instance(Scale, sync=True)
-    y_scale = Instance(Scale, sync=True)
+    x_scale = Instance(Scale, sync=True, **widget_serialization)
+    y_scale = Instance(Scale, sync=True, **widget_serialization)
 
 
 @register_interaction('bqplot.FastIntervalSelector')
@@ -526,7 +531,7 @@ class LassoSelector(TwoDSelector):
         Color of the lasso
 
     """
-    marks = List(Instance(Lines) | Instance(Scatter), sync=True)
+    marks = List(Instance(Lines) | Instance(Scatter), sync=True, **widget_serialization)
     color = Color(None, sync=True, allow_none=True)
 
     def __init__(self, marks=None, **kwargs):
