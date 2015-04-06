@@ -785,7 +785,7 @@ class OHLC(Mark):
         user-friendly name of the mark
     marker: {'candle', 'bar'}
         marker type
-    stroke: color (default: white)
+    stroke: color (default: CSS styling)
         stroke color of the marker
     stroke_width: float (default: 1.0)
         stroke width of the marker
@@ -835,8 +835,8 @@ class OHLC(Mark):
     marker = Enum(['candle', 'bar'], default_value='candle',
                   exposed=True, display_index=3, display_name='Marker',
                   sync=True)
-    stroke = Color('white', sync=True, exposed=True, display_index=4,
-                   display_name='Stroke color')
+    stroke = Color(None, sync=True, exposed=True, display_index=4,
+                   display_name='Stroke color', allow_none=True)
     stroke_width = Float(1.0, sync=True, exposed=True, display_name='Stroke Width',
                          display_index=5)
     colors = List(trait=Color(allow_none=True), default_value=['limegreen', 'red'],
