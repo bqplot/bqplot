@@ -34,7 +34,7 @@ Interacts
    PanZoom
    Selector
    TwoDSelector
-   panzoom
+   PanZoom
 """
 
 from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance,
@@ -131,6 +131,8 @@ class HandDraw(Interaction):
 
     _view_name = Unicode('HandDraw', sync=True)
     _view_module = Unicode('nbextensions/bqplot/HandDraw', sync=True)
+    _model_name = Unicode('HandDrawModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/HandDrawModel', sync=True)
 
 
 @register_interaction('bqplot.PanZoom')
@@ -144,13 +146,13 @@ class PanZoom(Interaction):
             attribute to set the ability to pan the figure or not
         allow_zoom: bool (default: True)
             attribute to set the ability to zoom the figure or not
-        scales: dictionary (default: {})
+        scales: Dictionnary of lists of Scales (default: {})
             Dictionary with keys as 'x' and 'y' and values being the scales in
             the corresponding direction which should be panned or zoomed.
     """
     allow_pan = Bool(True, sync=True)
     allow_zoom = Bool(True, sync=True)
-    scales = Dict(sync=True)
+    scales = Dict(sync=True, **widget_serialization)
 
     def __init__(self, **kwargs):
         super(PanZoom, self).__init__(**kwargs)
@@ -169,6 +171,8 @@ class PanZoom(Interaction):
 
     _view_name = Unicode('PanZoom', sync=True)
     _view_module = Unicode('nbextensions/bqplot/PanZoom', sync=True)
+    _model_name = Unicode('PanZoomModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/PanZoomModel', sync=True)
 
 
 def panzoom(marks):
@@ -194,7 +198,7 @@ class Selector(Interaction):
         list of marks for which the `selected` attribute is updated based on
         the data selected by the selector.
     """
-    marks = List([], sync=True)
+    marks = List(sync=True, **widget_serialization)
 
     _view_name = Unicode('Selector', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Selector', sync=True)
@@ -214,7 +218,10 @@ class OneDSelector(Selector):
         co-ordinates. This scale is used for setting the selected attribute for
         the selector.
     """
-    scale = Instance(Scale, sync=True, **widget_serialization)
+    scale = Instance(Scale, allow_none=True, sync=True,
+                     **widget_serialization)
+    _model_name = Unicode('OneDSelectorModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/OneDSelectorModel', sync=True)
 
 
 class TwoDSelector(Selector):
@@ -235,8 +242,13 @@ class TwoDSelector(Selector):
         co-ordinates in the y-direction. This scale is used for setting the
         selected attribute for the selector along with x_scale.
     """
-    x_scale = Instance(Scale, sync=True, **widget_serialization)
-    y_scale = Instance(Scale, sync=True, **widget_serialization)
+    x_scale = Instance(Scale, allow_none=True, sync=True,
+                       **widget_serialization)
+    y_scale = Instance(Scale, allow_none=True, sync=True,
+                       **widget_serialization)
+
+    _model_name = Unicode('TwoDSelectorModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/TwoDSelectorModel', sync=True)
 
 
 @register_interaction('bqplot.FastIntervalSelector')
@@ -390,7 +402,7 @@ class BrushSelector(TwoDSelector):
     """
     clear = Bool(False, sync=True)
     brushing = Bool(False, sync=True)
-    selected = List([], sync=True)
+    selected = List(sync=True)
     color = Color(None, sync=True, allow_none=True)
 
     def __init__(self, **kwargs):
@@ -475,10 +487,10 @@ class MultiSelector(OneDSelector):
         Attribute to indicate if the names of the intervals are to be displayed
         along with the interval.
     """
-    names = List([], sync=True)
+    names = List(sync=True)
     brushing = Bool(False, sync=True)
-    selected = Dict({}, sync=True)
-    _selected = Dict({}, sync=True)  # TODO: UglyHack. Hidden variable to get
+    selected = Dict(sync=True)
+    _selected = Dict(sync=True)  # TODO: UglyHack. Hidden variable to get
     # around the even more ugly hack to have a trait which converts dates,
     # if present, into strings and send it across. It means writing a trait
     # which does that on top of a dictionary. I don't like that
@@ -525,13 +537,14 @@ class LassoSelector(TwoDSelector):
 
     Attributes
     ----------
-    marks: list of marks which are instances of {Lines, Scatter} (dafault: [])
+    marks: List of marks which are instances of {Lines, Scatter} (default: [])
         List of marks on which lasso selector will be applied.
     color: Color (default: None)
         Color of the lasso
 
     """
-    marks = List(Instance(Lines) | Instance(Scatter), sync=True, **widget_serialization)
+    marks = List(Instance(Lines) | Instance(Scatter), sync=True,
+                 **widget_serialization)
     color = Color(None, sync=True, allow_none=True)
 
     def __init__(self, marks=None, **kwargs):
