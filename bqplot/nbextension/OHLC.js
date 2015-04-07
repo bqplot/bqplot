@@ -84,12 +84,12 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
 
             // Fill candles based on the opening and closing values
             this.el.selectAll(".stick").style("fill", function(d) {
-                return (d[that.model.px.o] > d[that.model.px.c] ?
+                return (d["y"][that.model.px.o] > d["y"][that.model.px.c] ?
                     down_color : up_color);
             });
 
             if(this.legend_el) {
-                this.legend_el.selectAll("path").attr("fill", up_color);
+                this.legend_el.selectAll("path").style("fill", up_color);
             }
         },
         update_opacity: function() {
