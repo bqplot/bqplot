@@ -31,8 +31,9 @@ from IPython.utils.traitlets import Int, Unicode, Instance, Enum, Dict, Bool
 from IPython.html.widgets import Widget, Color
 
 try:
-    from IPython.html.widget import widget_serialization  # IPython 4.0
+    from IPython.html.widgets import widget_serialization  # IPython 4.0
 except ImportError:
+    print 'coin'
     widget_serialization = {}  # IPython 3.*
 
 from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale, OrdinalScale

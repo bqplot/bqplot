@@ -42,7 +42,7 @@ from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance,
 from IPython.html.widgets import Widget, Color
 
 try:
-    from IPython.html.widget import widget_serialization  # IPython 4.0
+    from IPython.html.widgets import widget_serialization  # IPython 4.0
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 

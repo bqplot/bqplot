@@ -17,6 +17,7 @@ define(["widgets/js/widget", "./d3", "./BaseModel"], function(Widget, d3, BaseMo
     "use strict";
 
     var MarkModel = BaseModel.BaseModel.extend({
+
         // These two attributes are the pixel values which should be appended
         // to the area of the plot to make sure that the entire mark is visible
         initialize: function() {
@@ -57,6 +58,12 @@ define(["widgets/js/widget", "./d3", "./BaseModel"], function(Widget, d3, BaseMo
         handle_destroy: function() {
             this.unregister_all_scales(this.get("scales"));
         },
+    },
+    {
+        serializers: _.extend({
+            scales: {deserialize: Widget.unpack_models},
+            tooltip:  {deserialize: Widget.unpack_models},
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

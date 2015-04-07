@@ -37,7 +37,7 @@ from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
 from IPython.utils.traitlets import (Int, Unicode, List, Enum, Dict, Bool,
                                      Float, TraitError, Instance)
 try:
-    from IPython.html.widget import widget_serialization  # IPython 4.0
+    from IPython.html.widgets import widget_serialization  # IPython 4.0
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 
@@ -96,7 +96,7 @@ class Mark(Widget):
     ----------
     mark_types: dict (class-level attribute)
         A registry of existing mark types.
-    scales: Dict (default: {})
+    scales: Dict of scales (default: {})
         A dictionary of scales holding scales for each data attribute.
         - If a mark holds a scaled attribute named 'x', the scales dictionary
         must have a corresponding scale for the key 'x'.
@@ -222,7 +222,7 @@ class Mark(Widget):
     def on_background_click(self, callback, remove=False):
         self._bg_click_handlers.register_callback(callback, remove=remove)
 
-    def _handle_custom_msgs(self, _, content):
+    def _handle_custom_msgs(self, _, content, buffers=None):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
         elif content.get('event', '') == 'legend_click':
@@ -512,7 +512,7 @@ class Scatter(Mark):
     def on_drag_end(self, callback, remove=False):
         self._drag_end_handlers.register_callback(callback, remove=remove)
 
-    def _handle_custom_msgs(self, _, content):
+    def _handle_custom_msgs(self, _, content, buffers=None):
         super(Scatter, self)._handle_custom_msgs(self, content)
         if content.get('event', '') == 'drag_end':
             self._drag_end_handlers(self, content)
@@ -677,6 +677,8 @@ class Bars(Mark):
     padding: float (default: 0.05)
         attribute to control the spacing between the bars
         value is specified as a percentage of the width of the bar
+    select_bars: bool (default: False)
+        make bars selectable or otherwise
     stroke: color (default: 'white')
         stroke color for the bars
     opacity: float (default: 1.0)
@@ -727,6 +729,7 @@ class Bars(Mark):
     colors = List(trait=Color(), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
+    select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,

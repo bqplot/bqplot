@@ -102,4 +102,4 @@ define(["widgets/js/widget"], function(Widget) {
         BaseModel: BaseModel,
     };
 
-};
+});

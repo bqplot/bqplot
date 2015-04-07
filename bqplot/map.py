@@ -30,7 +30,7 @@ from IPython.utils.traitlets import (Unicode, List, Dict, Float, Bool,
 from IPython.html.widgets import DOMWidget, CallbackDispatcher, register, Color
 
 try:
-    from IPython.html.widget import widget_serialization  # IPython 4.0
+    from IPython.html.widgets import widget_serialization  # IPython 4.0
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 
