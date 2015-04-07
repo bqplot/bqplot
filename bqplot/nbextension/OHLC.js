@@ -68,7 +68,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             this.el.selectAll(".stick").style("stroke", stroke);
 
             if(this.legend_el) {
-                this.legend_el.selectAll("path").attr("stroke", stroke);
+                this.legend_el.selectAll("path").style("stroke", stroke);
                 this.legend_el.selectAll("text").style("fill", stroke);
             }
         },

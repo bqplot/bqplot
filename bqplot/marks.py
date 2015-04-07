@@ -785,7 +785,7 @@ class OHLC(Mark):
         user-friendly name of the mark
     marker: {'candle', 'bar'}
         marker type
-    stroke: color (default: CSS styling)
+    stroke: color (default: None)
         stroke color of the marker
     stroke_width: float (default: 1.0)
         stroke width of the marker
