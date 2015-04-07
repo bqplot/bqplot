@@ -365,7 +365,7 @@ class FlexLine(Lines):
 
     # Scaled attributes
     color = NdArray(None, allow_none=True, sync=True, display_index=5,
-                    scaled=True, rtype='Number', atype='bqplot.ColorAxis')
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis')
     width = NdArray(None, allow_none=True, sync=True, display_index=6,
                     scaled=True, rtype='Number')
 
