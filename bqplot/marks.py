@@ -201,14 +201,32 @@ class Mark(Widget):
     def __init__(self, **kwargs):
         super(Mark, self).__init__(**kwargs)
         self._hover_handlers = CallbackDispatcher()
+        self._legend_click_handlers = CallbackDispatcher()
+        self._element_click_handlers = CallbackDispatcher()
+        self._bg_click_handlers = CallbackDispatcher()
         self.on_msg(self._handle_custom_msgs)
 
     def on_hover(self, callback, remove=False):
         self._hover_handlers.register_callback(callback, remove=remove)
 
+    def on_legend_click(self, callback, remove=False):
+        self._legend_click_handlers.register_callback(callback, remove=remove)
+
+    def on_element_click(self, callback, remove=False):
+        self._element_click_handlers.register_callback(callback, remove=remove)
+
+    def on_background_click(self, callback, remove=False):
+        self._bg_click_handlers.register_callback(callback, remove=remove)
+
     def _handle_custom_msgs(self, _, content):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
+        elif content.get('event', '') == 'legend_click':
+            self._legend_click_handlers(self, content)
+        elif content.get('event', '') == 'element_click':
+            self._element_click_handlers(self, content)
+        elif content.get('event', '') == 'background_click':
+            self._bg_click_handlers(self, content)
 
 
 @register_mark('bqplot.Lines')
@@ -491,10 +509,9 @@ class Scatter(Mark):
         self._drag_end_handlers.register_callback(callback, remove=remove)
 
     def _handle_custom_msgs(self, _, content):
+        super(Scatter, self)._handle_custom_msgs(self, content)
         if content.get('event', '') == 'drag_end':
             self._drag_end_handlers(self, content)
-        elif content.get('event', '') == 'hover':
-            self._hover_handlers(self, content)
 
     _view_name = Unicode('Scatter', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Scatter', sync=True)
@@ -656,8 +673,6 @@ class Bars(Mark):
     padding: float (default: 0.05)
         attribute to control the spacing between the bars
         value is specified as a percentage of the width of the bar
-    select_bars: bool (default: False)
-        make bars selectable or otherwise
     stroke: color (default: 'white')
         stroke color for the bars
     opacity: float (default: 1.0)
@@ -708,7 +723,6 @@ class Bars(Mark):
     colors = List(trait=Color(), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
-    select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,

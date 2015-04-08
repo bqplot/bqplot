@@ -30,6 +30,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.create_tooltip();
             });
 
+            this.display_el_classes = ["line", "legendtext"];
             return base_render_promise.then(function() {
                 that.event_listeners = {};
                 that.process_interactions();
@@ -87,11 +88,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:line_style", this.update_line_style, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
-        },
-        event_dispatcher: function(event_name) {
-            if(this.event_listeners[event_name] !== undefined) {
-                _.bind(this.event_listeners[event_name], this)();
-            }
         },
         update_legend_labels: function() {
             if(this.model.get("labels_visibility") === "none") {
@@ -257,8 +253,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var curve_labels = this.model.update_labels();
+            var legend_data = this.model.mark_data.map(function(d) { return {"index": d["index"], "name": d["name"]}});
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-              .data(this.model.mark_data, function(d, i) {
+              .data(legend_data, function(d, i) {
                   return d.name;
               });
 
@@ -283,6 +280,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
                 }).on("mouseover", _.bind(this.highlight_axes, this))
                 .on("mouseout", _.bind(this.unhighlight_axes, this))
+                .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this))
               .append("path")
                 .attr("fill", "none")
                 .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
@@ -497,19 +495,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             //return true if there are any mark data inside lasso
             return data_in_lasso;
-        },
-        reset_interactions: function() {
-            this.reset_click();
-            this.reset_hover();
-        },
-        reset_click: function() {
-            this.event_listeners["element_clicked"] = function() {};
-            this.event_listeners["parent_clicked"] = function() {};
-        },
-        reset_hover: function() {
-            this.event_listeners["mouse_over"] = function(){};
-            this.event_listeners["mouse_move"] = function() {};
-            this.event_listeners["mouse_out"] = function() {};
         },
         process_interactions: function() {
             var interactions = this.model.get("interactions");

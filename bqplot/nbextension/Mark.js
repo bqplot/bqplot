@@ -40,6 +40,19 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
 
             this.bisect = d3.bisector(function(d) { return d; }).left;
             this.el.style("display", (this.model.get("visible") ? "inline" : "none"));
+            this.display_el_classes = [];
+            this.event_metadata = {"mouse_over":      {"msg_name": "hover",
+                                                       "lookup_data": true,
+                                                       "hit_test": true },
+                                   "legend_clicked":  {"msg_name": "legend_click",
+                                                       "hit_test": true },
+                                   "element_clicked": {"msg_name": "element_click",
+                                                       "lookup_data": true,
+                                                       "hit_test": true},
+                                   "parent_clicked":  {"msg_name": "background_click",
+                                                       "hit_test": false}
+                                  };
+
             return scale_creation_promise;
         },
         set_scale_views: function() {
@@ -184,7 +197,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             //This function sets the x and y view paddings for the mark using
             //the variables x_padding and y_padding
         },
-        show_tooltip: function(event, mouse_events) {
+        show_tooltip: function(mouse_events) {
             //this function displays the tooltip at the location of the mouse
             //event is the d3 event for the data.
             //mouse_events is a boolean to enable mouse_events or not.
@@ -231,8 +244,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             if(this.is_hover_element(el)) {
                 var data = el.data()[0];
                 var clicked_data = this.model.get_data_dict(data, data.index);
-                this.trigger("update_tooltip", data);
-                this.show_tooltip(d3.event, tooltip_interactions);
+                this.trigger("update_tooltip", clicked_data);
+                this.show_tooltip(tooltip_interactions);
             }
         },
         create_tooltip: function() {
@@ -257,6 +270,48 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 }
             }
         },
+        event_dispatcher: function(event_name, data) {
+            //sends a custom mssg to the python side if required
+            this.custom_msg_sender(event_name);
+            if(this.event_listeners[event_name] !== undefined) {
+                _.bind(this.event_listeners[event_name], this, data)();
+            }
+        },
+        custom_msg_sender: function(event_name) {
+            var event_data = this.event_metadata[event_name];
+            if(event_data !== undefined) {
+                var data = null;
+                if(event_data["hit_test"]) {
+                    //do a hit test to check valid element
+                    var el = d3.select(d3.event.target);
+                    if(this.is_hover_element(el)) {
+                        data = el.data()[0];
+                        if(event_data["lookup_data"]) {
+                            data = this.model.get_data_dict(data, data.index);
+                        }
+                    }
+                    else {
+                        //do not send mssg if hit test fails
+                        return;
+                    }
+                }
+                this.send({event: event_data["msg_name"], data: data});
+            }
+        },
+        reset_interactions: function() {
+            this.reset_click();
+            this.reset_hover();
+            this.event_listeners["legend_clicked"] = function() {};
+        },
+        reset_click: function() {
+            this.event_listeners["element_clicked"] = function() {};
+            this.event_listeners["parent_clicked"] = function() {};
+        },
+        reset_hover: function() {
+            this.event_listeners["mouse_over"] = function() {};
+            this.event_listeners["mouse_move"] = function() {};
+            this.event_listeners["mouse_out"] = function() {};
+        },
         mouse_over: function() {
             if(this.model.get("enable_hover")) {
                 var el = d3.select(d3.event.target);
@@ -265,7 +320,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                     //make tooltip visible
                     var hovered_data = this.model.get_data_dict(data, data.index);
                     this.trigger("update_tooltip", hovered_data);
-                    this.show_tooltip(d3.event);
+                    this.show_tooltip();
                     this.send({event: "hover",
                             point: hovered_data});
                 }
@@ -287,11 +342,12 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         mouse_move: function() {
             if(this.model.get("enable_hover") &&
                 this.is_hover_element(d3.select(d3.event.target))) {
-                this.show_tooltip(d3.event);
+                this.show_tooltip();
             }
         },
+        //TODO: Rename function
         is_hover_element: function(elem) {
-            var hit_check = this.model.display_el_classes.map(function(class_name) {
+            var hit_check = this.display_el_classes.map(function(class_name) {
                                        return elem.classed(class_name); });
             return (_.compact(hit_check).length > 0);
 

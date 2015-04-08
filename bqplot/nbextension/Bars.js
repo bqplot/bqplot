@@ -26,12 +26,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
 
+            this.display_el_classes = ["bar", "legendtext"];
+
             this.after_displayed(function() {
                 this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
                 this.create_tooltip();
             });
 
             return base_creation_promise.then(function() {
+                self.event_listeners = {};
+                self.process_interactions();
                 self.create_listeners();
                 self.compute_view_padding();
                 self.draw();
@@ -92,9 +96,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             Bars.__super__.create_listeners.apply(this);
-            this.el.on("mouseover", _.bind(this.mouse_over, this))
-                .on("mousemove", _.bind(this.mouse_move, this))
-                .on("mouseout", _.bind(this.mouse_out, this));
+            this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
+                .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
+                .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
+
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
             this.model.on("colors_updated", this.update_colors, this);
@@ -102,7 +107,48 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:align", this.realign, this);
             this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
-            this.listenTo(this.parent, "bg_clicked", this.reset_selection);
+            this.listenTo(this.model, "change:interactions", this.process_interactions);
+            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
+        },
+        process_interactions: function() {
+            var interactions = this.model.get("interactions");
+            if(_.isEmpty(interactions)) {
+                //set all the event listeners to blank functions
+                this.reset_interactions();
+            }
+            else {
+                if(interactions["click"] !== undefined &&
+                  interactions["click"] !== null) {
+                    if(interactions["click"] === "tooltip") {
+                        this.event_listeners["element_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                    } else if (interactions["click"] === "select") {
+                        this.event_listeners["parent_clicked"] = this.reset_selection;
+                        this.event_listeners["element_clicked"] = this.bar_click_handler;
+                    }
+                } else {
+                    this.reset_click();
+                }
+                if(interactions["hover"] !== undefined &&
+                  interactions["hover"] !== null) {
+                    if(interactions["hover"] === "tooltip") {
+                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
+                        this.event_listeners["mouse_move"] = this.show_tooltip;
+                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.reset_hover();
+                }
+                if(interactions["legend_click"] !== undefined &&
+                  interactions["legend_click"] !== null) {
+                    if(interactions["legend_click"] === "tooltip") {
+                        this.event_listeners["legend_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.event_listeners["legend_clicked"] = function() {};
+                }
+            }
         },
         realign: function() {
             //TODO: Relayout is an expensive call on realigning. Need to change
@@ -166,7 +212,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             bar_groups.order();
 
             bar_groups.on("click", function(d, i) {
-                  return that.bar_click_handler(d, i);
+                  return that.event_dispatcher("element_clicked", {"data": d, "index": i});
               });
             bar_groups.exit().remove();
 
@@ -283,9 +329,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 return [0, 0];
             }
 
+            var legend_data = this.model.mark_data[0].values.map(function(data) { return { 'index':data['sub_index'], 'color': data['color'],
+                                                                                           'color_index': data['color_index'] }; });
             var color_scale = this.scales["color"];
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-                .data(this.model.mark_data[0].values);
+                .data(legend_data);
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
@@ -296,6 +344,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
               }).on("mouseover", _.bind(this.highlight_axes, this))
               .on("mouseout", _.bind(this.unhighlight_axes, this))
+              .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this))
               .append("rect")
               .classed("legendrect", true)
               .style("fill", function(d,i) {
@@ -323,7 +372,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
-            // chart.If indices is null, clears the style on all elements. If
+            // chart. If indices is null, clears the style on all elements. If
             // not, clears on only the elements whose indices are mathcing.
             //
             // This function is not used right now. But it can be used if we
@@ -372,85 +421,82 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                         x_scale.scale(d3.max(this.x.domain()))];
             }
         },
-        bar_click_handler: function (data, index) {
+        bar_click_handler: function (args) {
+            var data = args["data"];
+            var index = args["index"];
             var that = this;
-            if(this.model.get("select_bars")) {
-                var idx = this.model.get("selected");
-                var selected = idx ? utils.deepCopy(idx) : [];
-                var elem_index = selected.indexOf(index);
-                // index of bar i. Checking if it is already present in the
-                // list
-                if(elem_index > -1 && d3.event.ctrlKey) {
-                    // if the index is already selected and if ctrl key is
-                    // pressed, remove the element from the list
-                    selected.splice(elem_index, 1);
-                }
-                else {
-                    if(d3.event.shiftKey) {
-                        //If shift is pressed and the element is already
-                        //selected, do not do anything
-                        if(elem_index > -1) {
-                            return;
-                        }
-                        //Add elements before or after the index of the current
-                        //bar which has been clicked
-                        var min_index = (selected.length !== 0) ?
-                            d3.min(selected) : -1;
-                        var max_index = (selected.length !== 0) ?
-                            d3.max(selected) : that.model.mark_data.length;
-                        if(index > max_index){
-                            _.range(max_index+1, index+1).forEach(function(i) {
-                                selected.push(i);
-                            });
-                        } else if(index < min_index){
-                            _.range(index, min_index).forEach(function(i) {
-                                selected.push(i);
-                            });
-                        }
-                    }
-                    else if(d3.event.ctrlKey) {
-                        //If ctrl is pressed and the bar is not already selcted
-                        //add the bar to the list of selected bars.
-                        selected.push(index);
-                    }
-                    // updating the array containing the bar indexes selected
-                    // and updating the style
-                    else {
-                        //if ctrl is not pressed, then clear the selected ones
-                        //and set the current element to the selected
-                        selected = [];
-                        selected.push(index);
-                    }
-                }
-                this.model.set("selected",
-                               ((selected.length === 0) ? null : selected),
-                               {updated_view: this});
-                this.touch();
-                if(!d3.event) {
-                    d3.event = window.event;
-                }
-                var e = d3.event;
-                if(e.cancelBubble !== undefined) { // IE
-                    e.cancelBubble = true;
-                }
-                if(e.stopPropagation) {
-                    e.stopPropagation();
-                }
-                e.preventDefault();
-                this.selected_indices = selected;
-                this.apply_styles();
+            var idx = this.model.get("selected");
+            var selected = idx ? utils.deepCopy(idx) : [];
+            var elem_index = selected.indexOf(index);
+            // index of bar i. Checking if it is already present in the
+            // list
+            if(elem_index > -1 && d3.event.ctrlKey) {
+                // if the index is already selected and if ctrl key is
+                // pressed, remove the element from the list
+                selected.splice(elem_index, 1);
             }
+            else {
+                if(d3.event.shiftKey) {
+                    //If shift is pressed and the element is already
+                    //selected, do not do anything
+                    if(elem_index > -1) {
+                        return;
+                    }
+                    //Add elements before or after the index of the current
+                    //bar which has been clicked
+                    var min_index = (selected.length !== 0) ?
+                        d3.min(selected) : -1;
+                    var max_index = (selected.length !== 0) ?
+                        d3.max(selected) : that.model.mark_data.length;
+                    if(index > max_index){
+                        _.range(max_index+1, index+1).forEach(function(i) {
+                            selected.push(i);
+                        });
+                    } else if(index < min_index){
+                        _.range(index, min_index).forEach(function(i) {
+                            selected.push(i);
+                        });
+                    }
+                }
+                else if(d3.event.ctrlKey) {
+                    //If ctrl is pressed and the bar is not already selcted
+                    //add the bar to the list of selected bars.
+                    selected.push(index);
+                }
+                // updating the array containing the bar indexes selected
+                // and updating the style
+                else {
+                    //if ctrl is not pressed, then clear the selected ones
+                    //and set the current element to the selected
+                    selected = [];
+                    selected.push(index);
+                }
+            }
+            this.model.set("selected",
+                            ((selected.length === 0) ? null : selected),
+                            {updated_view: this});
+            this.touch();
+            if(!d3.event) {
+                d3.event = window.event;
+            }
+            var e = d3.event;
+            if(e.cancelBubble !== undefined) { // IE
+                e.cancelBubble = true;
+            }
+            if(e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+            this.selected_indices = selected;
+            this.apply_styles();
         },
         reset_selection: function() {
-            if(this.model.get("select_bars")) {
-                this.model.set("selected", null);
-                this.touch();
-                this.selected_indices = null;
-                this.clear_style(this.selected_style);
-                this.clear_style(this.unselected_style);
-                this.set_default_style();
-            }
-
+            this.model.set("selected", null);
+            this.touch();
+            this.selected_indices = null;
+            this.clear_style(this.selected_style);
+            this.clear_style(this.unselected_style);
+            this.set_default_style();
         },
         compute_view_padding: function() {
             //This function returns a dictionary with keys as the scales and

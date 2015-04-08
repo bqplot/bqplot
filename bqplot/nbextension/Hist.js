@@ -21,6 +21,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var base_creation_promise = Hist.__super__.render.apply(this);
             this.bars_selected = [];
 
+            this.display_el_classes = ["rect", "legendtext"];
             var self = this;
             this.after_displayed(function() {
                 this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
@@ -28,6 +29,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             });
 
             return base_creation_promise.then(function() {
+                self.event_listeners = {};
+                self.process_interactions();
                 self.create_listeners();
                 self.draw();
             });
@@ -56,15 +59,57 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             Hist.__super__.create_listeners.apply(this);
-            this.el.on("mouseover", _.bind(this.mouse_over, this))
-                .on("mousemove", _.bind(this.mouse_move, this))
-                .on("mouseout", _.bind(this.mouse_out, this));
+            this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
+                .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
+                .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
+
             this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors",this.update_colors,this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.model.on("change:selected", this.update_selected, this);
-            this.listenTo(this.parent, "bg_clicked", this.reset_selection);
+            this.listenTo(this.model, "change:interactions", this.process_interactions);
+            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
+        },
+        process_interactions: function() {
+            var interactions = this.model.get("interactions");
+            if(_.isEmpty(interactions)) {
+                //set all the event listeners to blank functions
+                this.reset_interactions();
+            }
+            else {
+                if(interactions["click"] !== undefined &&
+                  interactions["click"] !== null) {
+                    if(interactions["click"] === "tooltip") {
+                        this.event_listeners["element_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                    } else if (interactions["click"] === "select") {
+                        this.event_listeners["parent_clicked"] = this.reset_selection;
+                        this.event_listeners["element_clicked"] = this.bar_click_handler;
+                    }
+                } else {
+                    this.reset_click();
+                }
+                if(interactions["hover"] !== undefined &&
+                  interactions["hover"] !== null) {
+                    if(interactions["hover"] === "tooltip") {
+                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
+                        this.event_listeners["mouse_move"] = this.show_tooltip;
+                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.reset_hover();
+                }
+                if(interactions["legend_click"] !== undefined &&
+                  interactions["legend_click"] !== null) {
+                    if(interactions["legend_click"] === "tooltip") {
+                        this.event_listeners["legend_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.event_listeners["legend_clicked"] = function() {};
+                }
+            }
         },
         update_colors: function(model, colors) {
             this.el.selectAll(".bar").selectAll("rect")
@@ -151,7 +196,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 		    bar_groups.select(".rect")
               .style("fill", fill_color)
               .on("click", function(d, i) {
-                  that.bar_click_handler(d, i);
+                  return that.event_dispatcher("element_clicked", {"data": d, "index": i});
               })
               .attr("id", function(d, i) { return "rect"+i; })
               .transition()
@@ -159,12 +204,15 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("width", bar_width)
 		      .attr("height", function(d) {
                   return y_scale.scale(0) - y_scale.scale(d.y);
+    
               });
 
             bar_groups.exit().remove();
             this.update_stroke_and_opacity();
         },
-        bar_click_handler: function (data, index) {
+        bar_click_handler: function (args) {
+            var data = args["data"];
+            var index = args["index"];
             //code repeated from bars. We should unify the two.
             var that = this;
             if(this.model.get("select_bars")) {
@@ -246,6 +294,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               })
               .on("mouseover", _.bind(this.highlight_axes, this))
               .on("mouseout", _.bind(this.unhighlight_axes, this))
+              .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this))
               .append("rect")
               .style("fill", function(d,i) { return that.get_colors(i); })
               .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});

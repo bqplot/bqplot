@@ -36,6 +36,18 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.unselected_style = this.model.get("unselected_style");
             this.selected_indices = this.model.get("selected");
 
+            this.display_el_classes = ["dot", "legendtext"];
+            this.event_metadata = {"mouse_over":      {"msg_name": "hover",
+                                                       "lookup_data": false,
+                                                       "hit_test": true },
+                                   "legend_clicked":  {"msg_name": "legend_click",
+                                                       "hit_test": true },
+                                   "element_clicked": {"msg_name": "element_click",
+                                                       "lookup_data": false,
+                                                       "hit_test": true},
+                                   "parent_clicked":  {"msg_name": "background_click",
+                                                       "hit_test": false}
+                                  };
             var self = this;
             this.after_displayed(function() {
                 this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
@@ -157,11 +169,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
         },
-        event_dispatcher: function(event_name) {
-            if(this.event_listeners[event_name] !== undefined) {
-                _.bind(this.event_listeners[event_name], this)();
-            }
-        },
         update_default_color: function(model, new_color) {
             if(!this.model.dirty) {
                 var that = this,
@@ -224,6 +231,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
         update_marker: function(model, marker) {
             if(!this.model.dirty) {
                 this.el.selectAll(".dot").attr("d", this.dot.type(marker));
+                this.legend_el.select("path")
+                    .attr("d", this.dot.type(marker));
             }
         },
         update_default_skew: function() {
@@ -323,11 +332,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 fill = this.model.get("fill");
 
             var elements = this.el.selectAll(".dot_grp")
-              .data(this.model.mark_data, function(d) {
-                  return d.unique_id;
-              });
-            // Transform is here to prevent the transition of newly added
-            // points from the top left corner of the Figure.
+              .data(this.model.mark_data, function(d) { return d.unique_id; });
             var elements_added = elements.enter().append("g")
               .attr("class", "dot_grp")
               .attr("transform", function(d) {
@@ -370,19 +375,6 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             elements.exit().remove();
             this.apply_styles();
         },
-        reset_interactions: function() {
-            this.reset_click();
-            this.reset_hover();
-        },
-        reset_click: function() {
-            this.event_listeners["element_clicked"] = function() {};
-            this.event_listeners["parent_clicked"] = function() {};
-        },
-        reset_hover: function() {
-            this.event_listeners["mouse_over"] = function(){};
-            this.event_listeners["mouse_move"] = function() {};
-            this.event_listeners["mouse_out"] = function() {};
-        },
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {
@@ -413,30 +405,42 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 } else {
                     this.reset_hover();
                 }
+                if(interactions["legend_click"] !== undefined &&
+                  interactions["legend_click"] !== null) {
+                    if(interactions["legend_click"] === "tooltip") {
+                        this.event_listeners["legend_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                    }
+                } else {
+                    this.event_listeners["legend_clicked"] = function() {};
+                }
             }
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-              .data([this.model.mark_data]);
+              .data([this.model.mark_data[0]]);
             var default_color = this.model.get("default_color"),
                 stroke = this.model.get("stroke");
 
             var that = this;
             var rect_dim = inter_y_disp * 0.8;
-            this.legend_el.enter()
+            var el_added = this.legend_el.enter()
               .append("g")
               .attr("class", "legend" + this.uuid)
               .attr("transform", function(d, i) {
                   return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
               }).on("mouseover", _.bind(this.highlight_axes, this))
               .on("mouseout", _.bind(this.unhighlight_axes, this))
-              .append("path")
+              .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this));
+
+              el_added.append("path")
               .attr("transform", function(d, i) {
                   return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
               })
               .attr("d", this.dot.size(64))
               .style("fill", this.model.get("fill")  ? default_color : "none")
               .style("stroke", stroke ? stroke : default_color);
+
 
             this.legend_el.append("text")
               .attr("class","legendtext")
