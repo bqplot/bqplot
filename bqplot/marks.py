@@ -35,7 +35,7 @@ Marks
 """
 from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
 from IPython.utils.traitlets import (Int, Unicode, List, Enum, Dict, Bool,
-                                     Float, TraitError, Instance)
+                                     Float, TraitError, Instance, Tuple)
 try:
     from IPython.html.widgets import widget_serialization  # IPython 4.0
 except ImportError:
@@ -958,3 +958,100 @@ class Pie(Mark):
     _view_module = Unicode('nbextensions/bqplot/Pie', sync=True)
     _model_name = Unicode('PieModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/PieModel', sync=True)
+
+
+@register_mark('bqplot.Map')
+class Map(Mark):
+
+    """Map mark.
+
+    Display Attributes
+    ------------------
+    default_color: Color or None (default: None)
+        default color for items of the map when no color data is passed
+    tooltip_color: color (default: None)
+        color for the background of the tooltip
+    text_color: color (default: None)
+        color for the text inside a tooltip
+    text_format: string (default: '.2f')
+        format for the text inside a tooltip
+    selected_styles: Dict (default: {'selected_fill': 'Red', 'selected_stroke': None, 'selected_stroke_width': 5.0})
+        Dictionary containing the styles for selected subunits
+    hovered_styles: Dict (default: {'hovered_fill': 'Orange', 'hovered_stroke': None, 'hovered_stroke_width': 5.0})
+        Dictionary containing the styles for hovered subunits
+
+    Data Attributes
+    ---------------
+    color: Dict or None (default: None)
+        dictionary containing the data associated with every country for the
+        color scale
+
+    Other Attributes
+    ----------------
+    selected: List (default: [])
+        list containing the selected countries in the map
+    enable_select: bool (default: True)
+        boolean to control the ability to select the countries of the map by
+        clicking
+    enable_hover: bool (default: True)
+        boolean to control if the map should be aware of which country is being
+        hovered on. If it is set to False, tooltip will not be displayed
+    text_data: Dict or None (default: None)
+        dictionary containing the text data associated with every country for
+        the tooltip
+    display_tooltip: bool (default: True)
+        boolean to control whether tooltips are displayed or not
+    map_data: tuple (default: ("worldmap", "nbextensions/bqplot/WorldMapData")
+        tuple containing which map is to be displayed
+    """
+    enable_hover = Bool(True, sync=True)
+    hovered_styles = Dict({'hovered_fill': 'Orange', 'hovered_stroke': None,
+                           'hovered_stroke_width': 5.0}, allow_none=True, sync=True)
+
+    stroke_color = Color(default_value=None, sync=True, allow_none=True)
+    default_color = Color(default_value=None, sync=True, allow_none=True)
+    color = Dict(sync=True)
+
+    enable_select = Bool(True, sync=True)
+    selected = List(sync=True)
+    selected_styles = Dict({'selected_fill': 'Red',
+                            'selected_stroke': None,
+                            'selected_stroke_width': 5.0},
+                            allow_none=True, sync=True)
+
+    tooltip_color = Color('White', sync=True)
+    display_tooltip = Bool(True, sync=True)
+    text_data = Dict(sync=True)
+    text_color = Color('Black', sync=True)
+    tooltip_format = Unicode('.2f', sync=True)
+    tooltip_widget = Instance(DOMWidget, sync=True)
+    scales = Dict(sync=True)
+
+    map_data = Tuple(Unicode, Unicode,
+                     default_value=("worldmap",
+                                    "nbextensions/bqplot/WorldMapData"),
+                     sync=True)
+
+    def __init__(self, **kwargs):
+        """Constructor for WorldMapWidget"""
+        super(Map, self).__init__(**kwargs)
+        self._ctrl_click_handlers = CallbackDispatcher()
+        self._hover_handlers = CallbackDispatcher()
+        self.on_msg(self._handle_button_msg)
+
+    def on_ctrl_click(self, callback, remove=False):
+        self._ctrl_click_handlers.register_callback(callback, remove=remove)
+
+    def on_hover(self, callback, remove=False):
+        self._hover_handlers.register_callback(callback, remove=remove)
+
+    def _handle_button_msg(self, _, content, buffers=None):
+        if content.get('event', '') == 'click':
+            self._ctrl_click_handlers(self, content)
+        if content.get('event', '') == 'hover':
+            self._hover_handlers(self, content)
+
+    _view_name = Unicode('Map', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/MapMark', sync=True)
+    _model_name = Unicode('MapModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/MapMarkModel', sync=True)

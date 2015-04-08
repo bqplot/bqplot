@@ -34,7 +34,7 @@ try:
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 
-from .scales import ColorScale, ProjectionScale
+from .scales import ColorScale
 from .axes import ColorAxis
 
 
@@ -87,10 +87,9 @@ class Map(DOMWidget):
     text_data: Dict or None (default: None)
         dictionary containing the text data associated with every country for
         the tooltip
-    scales: Dict or None (default: {})
-        Dictionary containing scales associated with the Map. The key for the
-        Projection Scale is 'projection' and the key for the Color Scale is
-        'color.'
+    color_scale: ColorScale or None (default: None)
+        ColorScale Instance for the color of each country in the map. Required
+        when color data is passed
     axis: ColorAxis or None (default: None)
         ColorAxis Instance if one needs to be displayed
     display_tooltip: bool (default: True)
@@ -109,6 +108,8 @@ class Map(DOMWidget):
     stroke_color = Color(default_value=None, sync=True, allow_none=True)
     default_color = Color(default_value=None, sync=True, allow_none=True)
     color = Dict(sync=True)
+    color_scale = Instance(ColorScale, allow_none=True, sync=True,
+                           **widget_serialization)
 
     enable_select = Bool(True, sync=True)
     selected = List(sync=True)
@@ -124,7 +125,6 @@ class Map(DOMWidget):
     tooltip_format = Unicode('.2f', sync=True)
     tooltip_widget = Instance(DOMWidget, allow_none=True, sync=True,
                               **widget_serialization)
-    scales = Instance(ProjectionScale, sync=True)
 
     map_data = Tuple(Unicode, Unicode,
                      default_value=("worldmap",
