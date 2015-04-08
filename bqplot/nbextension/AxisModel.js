@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
+define(["widgets/js/widget", "./d3", "./BaseModel"], function(Widget, d3, BaseModel) {
     "use strict";
 
-    var AxisModel = MarkModelModule.MarkModel.extend({
+    var AxisModel = BaseModel.BaseModel.extend({
         initialize: function() {
             this.on("change:side", this.validate_orientation, this);
             this.on("change:orientation", this.validate_side, this);
@@ -45,6 +45,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
             this.save_changes();
         }
+    },
+    {
+        serializers: _.extend({
+             scale: {deserialize: Widget.unpack_models}
+        }, Widget.WidgetModel.serializers),
     });
 
     return {

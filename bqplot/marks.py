@@ -36,6 +36,11 @@ Marks
 from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
 from IPython.utils.traitlets import (Int, Unicode, List, Enum, Dict, Bool,
                                      Float, TraitError, Instance)
+try:
+    from IPython.html.widgets import widget_serialization  # IPython 4.0
+except ImportError:
+    widget_serialization = {}  # IPython 3.*
+
 from .scales import Scale
 from .traits import NdArray, BoundedFloat, Date
 
@@ -91,7 +96,7 @@ class Mark(Widget):
     ----------
     mark_types: dict (class-level attribute)
         A registry of existing mark types.
-    scales: Dict (default: {})
+    scales: Dict of scales (default: {})
         A dictionary of scales holding scales for each data attribute.
         - If a mark holds a scaled attribute named 'x', the scales dictionary
         must have a corresponding scale for the key 'x'.
@@ -148,16 +153,15 @@ class Mark(Widget):
         that triggered the tooltip to be visible.
     """
     mark_types = {}
-    scales = Dict(trait=Instance(Scale), sync=True)
+    scales = Dict(trait=Instance(Scale), sync=True, **widget_serialization)
     scales_metadata = Dict(sync=True)
     preserve_domain = Dict(sync=True)
     display_legend = Bool(False, sync=True, exposed=True, display_index=1,
                           display_name='Display legend')
-    animate_dur = Int(0, sync=True,
-                      exposed=True, display_index=2,
+    animate_dur = Int(0, sync=True, exposed=True, display_index=2,
                       display_name='Animation duration')
-    labels = List(trait=Unicode(), allow_none=False, sync=True, exposed=True,
-                  display_index=3, display_name='Labels')
+    labels = List(trait=Unicode(), sync=True, exposed=True, display_index=3,
+                  display_name='Labels')
     apply_clip = Bool(True, sync=True)
     visible = Bool(True, sync=True)
     selected_style = Dict(sync=True)
@@ -165,7 +169,7 @@ class Mark(Widget):
     selected = List(sync=True, allow_none=True)
 
     enable_hover = Bool(True, sync=True)
-    tooltip = Instance(DOMWidget, allow_none=True, sync=True)
+    tooltip = Instance(DOMWidget, allow_none=True, sync=True, **widget_serialization)
     tooltip_style = Dict({'opacity': 0.9}, sync=True)
     interactions = Dict({'hover': 'tooltip'}, sync=True)
     tooltip_location = Enum(['mouse', 'center'], default_value='mouse', sync=True)
@@ -218,7 +222,7 @@ class Mark(Widget):
     def on_background_click(self, callback, remove=False):
         self._bg_click_handlers.register_callback(callback, remove=remove)
 
-    def _handle_custom_msgs(self, _, content):
+    def _handle_custom_msgs(self, _, content, buffers=None):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
         elif content.get('event', '') == 'legend_click':
@@ -313,7 +317,7 @@ class Lines(Mark):
     labels_visibility = Enum(['none', 'label'], default_value='none',
                              sync=True, exposed=True,
                              display_index=5, display_name='Labels visibility')
-    curves_subset = List([], sync=True)
+    curves_subset = List(sync=True)
     line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid',
                       sync=True, exposed=True,
                       display_index=6, display_name='Line style')
@@ -323,9 +327,9 @@ class Lines(Mark):
                          display_name='Interpolation')
     close_path = Bool(sync=True, exposed=True, display_index=8,
                       display_name='Close path')
-    fill = List(trait=Color(), default_value=[], sync=True,
-                exposed=True, display_index=9, display_name='Fill Colors')
-    opacity = List([], sync=True, display_index=10, display_name='Opacity')
+    fill = List(trait=Color(), sync=True, exposed=True, display_index=9,
+                display_name='Fill Colors')
+    opacity = List(sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
     _model_name = Unicode('LinesModel', sync=True)
@@ -361,7 +365,7 @@ class FlexLine(Lines):
 
     # Scaled attributes
     color = NdArray(None, allow_none=True, sync=True, display_index=5,
-                    scaled=True, rtype='Number', atype='bqplot.ColorAxis')
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis')
     width = NdArray(None, allow_none=True, sync=True, display_index=6,
                     scaled=True, rtype='Number')
 
@@ -508,7 +512,7 @@ class Scatter(Mark):
     def on_drag_end(self, callback, remove=False):
         self._drag_end_handlers.register_callback(callback, remove=remove)
 
-    def _handle_custom_msgs(self, _, content):
+    def _handle_custom_msgs(self, _, content, buffers=None):
         super(Scatter, self)._handle_custom_msgs(self, content)
         if content.get('event', '') == 'drag_end':
             self._drag_end_handlers(self, content)
@@ -673,6 +677,8 @@ class Bars(Mark):
     padding: float (default: 0.05)
         attribute to control the spacing between the bars
         value is specified as a percentage of the width of the bar
+    select_bars: bool (default: False)
+        make bars selectable or otherwise
     stroke: color (default: 'white')
         stroke color for the bars
     opacity: float (default: 1.0)
@@ -723,6 +729,7 @@ class Bars(Mark):
     colors = List(trait=Color(), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
+    select_bars = Bool(False, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,

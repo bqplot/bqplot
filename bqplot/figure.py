@@ -26,9 +26,15 @@ Figure
    Figure
 """
 
-from IPython.html.widgets import DOMWidget, register, Color
 from IPython.utils.traitlets import (Unicode, Instance, List, Dict,
                                      CFloat, Bool, Enum)
+from IPython.html.widgets import DOMWidget, register, Color
+
+try:
+    from IPython.html.widgets import widget_serialization  # IPython 4.0
+except ImportError:
+    widget_serialization = {}  # IPython 3.*
+
 from .traits import BoundedFloat
 from .scales import Scale, LinearScale
 from .interacts import Interaction
@@ -52,11 +58,11 @@ class Figure(DOMWidget):
     ----------
     title: string (default: "")
         title of the figure
-    axes: List (default: [])
+    axes: List of Axes (default: [])
         list containing the instances of the axes for the figure
-    marks: List (default: [])
+    marks: List of Marks (default: [])
         list containing the marks which are to be appended to the figure
-    interaction: any (default: )
+    interaction: Interaction or None (default: )
         optional interaction layer for the figure
     scale_x: Scale
         Scale representing the x values of the figure
@@ -91,13 +97,14 @@ class Figure(DOMWidget):
         than the sum of the margins.
 
     """
-    title = Unicode(sync=True,
-                    exposed=True, display_index=1, display_name='Title')
-    axes = List(Instance(Axis), sync=True)
-    marks = List(Instance(Mark), sync=True)
-    interaction = Instance(Interaction, allow_none=True, sync=True)
-    scale_x = Instance(Scale, sync=True)
-    scale_y = Instance(Scale, sync=True)
+    title = Unicode(sync=True, exposed=True, display_index=1,
+                    display_name='Title')
+    axes = List(Instance(Axis), sync=True, **widget_serialization)
+    marks = List(Instance(Mark), sync=True, **widget_serialization)
+    interaction = Instance(Interaction, allow_none=True, sync=True,
+                           **widget_serialization)
+    scale_x = Instance(Scale, sync=True, **widget_serialization)
+    scale_y = Instance(Scale, sync=True, **widget_serialization)
     fig_color = Color(None, allow_none=True, sync=True)
 
     min_width = CFloat(800.0, sync=True)
@@ -109,10 +116,9 @@ class Figure(DOMWidget):
     padding_x = BoundedFloat(0.0, min=0.0, max=1.0, sync=True)
     padding_y = BoundedFloat(0.025, min=0.0, max=1.0, sync=True)
     legend_location = Enum(['top-right', 'top', 'top-left', 'left',
-                           'bottom-left', 'bottom', 'bottom-right', 'right'],
-                           default_value='top-right',
-                           sync=True, exposed=True, display_index=2,
-                           display_name='Legend position')
+                            'bottom-left', 'bottom', 'bottom-right', 'right'],
+                           default_value='top-right', sync=True, exposed=True,
+                           display_index=2, display_name='Legend position')
 
     def save(self):
         self.send({"type": "save"})
@@ -125,3 +131,5 @@ class Figure(DOMWidget):
 
     _view_name = Unicode('Figure', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Figure', sync=True)
+    _model_name = Unicode('FigureModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/FigureModel', sync=True)
