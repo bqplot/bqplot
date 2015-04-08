@@ -152,8 +152,10 @@ class MarketMap(DOMWidget):
 
     row_groups = Int(1, sync=True)
     colors = List(CATEGORY10, sync=True)
-    scales = Dict(sync=True, **widget_serialization)
-    axes = List(sync=True, **widget_serialization)
+    scales = Dict(sync=True, allow_none=True,
+                  **widget_serialization)
+    axes = List(sync=True, allow_none=True,
+                **widget_serialization)
     color = NdArray(sync=True)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
     preserve_aspect = Bool(False, sync=True,
@@ -167,7 +169,8 @@ class MarketMap(DOMWidget):
     selected = List(sync=True)
     enable_hover = Bool(True, sync=True)
     enable_select = Bool(True, sync=True)
-    tooltip_widget = Instance(DOMWidget, sync=True, **widget_serialization)
+    tooltip_widget = Instance(DOMWidget, allow_none=True, sync=True,
+                              **widget_serialization)
 
     def __init__(self, **kwargs):
         super(MarketMap, self).__init__(**kwargs)
@@ -177,14 +180,14 @@ class MarketMap(DOMWidget):
     def on_hover(self, callback, remove=False):
         self._hover_handlers.register_callback(callback, remove=remove)
 
-    def _handle_custom_msgs(self, _, content):
+    def _handle_custom_msgs(self, _, content, buffers=None):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
 
     _view_name = Unicode('MarketMap', sync=True)
     _view_module = Unicode('nbextensions/bqplot/MarketMap', sync=True)
-    _model_name = Unicode('BaseModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/BaseModel', sync=True)
+    _model_name = Unicode('MarketMapModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/MarketMapModel', sync=True)
 
 
 class SquareMarketMap(MarketMap):
