@@ -108,21 +108,23 @@ class Map(DOMWidget):
     stroke_color = Color(default_value=None, sync=True, allow_none=True)
     default_color = Color(default_value=None, sync=True, allow_none=True)
     color = Dict(sync=True)
-    color_scale = Instance(ColorScale, sync=True, **widget_serialization)
+    color_scale = Instance(ColorScale, allow_none=True, sync=True,
+                           **widget_serialization)
 
     enable_select = Bool(True, sync=True)
     selected = List(sync=True)
     selected_styles = Dict({'selected_fill': 'Red', 'selected_stroke': None,
                             'selected_stroke_width': 5.0}, allow_none=True, sync=True)
 
-    axis = Instance(ColorAxis, sync=True, **widget_serialization)
+    axis = Instance(ColorAxis, allow_none=True, sync=True, **widget_serialization)
 
     tooltip_color = Color('White', sync=True)
     display_tooltip = Bool(True, sync=True)
     text_data = Dict(sync=True)
     text_color = Color('Black', sync=True)
     tooltip_format = Unicode('.2f', sync=True)
-    tooltip_widget = Instance(DOMWidget, sync=True, **widget_serialization)
+    tooltip_widget = Instance(DOMWidget, allow_none=True, sync=True,
+                              **widget_serialization)
 
     map_data = Tuple(Unicode, Unicode,
                      default_value=("worldmap",
@@ -141,7 +143,7 @@ class Map(DOMWidget):
     def on_hover(self, callback, remove=False):
         self._hover_handlers.register_callback(callback, remove=remove)
 
-    def _handle_button_msg(self, _, content):
+    def _handle_button_msg(self, _, content, buffers=None):
         if content.get('event', '') == 'click':
             self._ctrl_click_handlers(self, content)
         if content.get('event', '') == 'hover':
@@ -149,3 +151,5 @@ class Map(DOMWidget):
 
     _view_name = Unicode('Map', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Map', sync=True)
+    _model_name = Unicode('MapModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/MapModel')
