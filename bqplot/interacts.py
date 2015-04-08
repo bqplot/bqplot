@@ -146,7 +146,7 @@ class PanZoom(Interaction):
             attribute to set the ability to pan the figure or not
         allow_zoom: bool (default: True)
             attribute to set the ability to zoom the figure or not
-        scales: Dictionnary of lists of Scales (default: {})
+        scales: Dictionary of lists of Scales (default: {})
             Dictionary with keys as 'x' and 'y' and values being the scales in
             the corresponding direction which should be panned or zoomed.
     """

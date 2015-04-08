@@ -62,7 +62,7 @@ class MarketMap(DOMWidget):
         Data to represent the color for each of the cells. If the value of the
         data is NaN for a cell, then the color of the cell is the color of the
         group it belongs to in absence of data for color
-    scales: Dictionary of , **widget_serializationscales holding a scale for each data attribute
+    scales: Dictionary of , scales holding a scale for each data attribute
         - If the map has data being passed as color, then a corresponding color
         scale is required
     axes: List of axes
