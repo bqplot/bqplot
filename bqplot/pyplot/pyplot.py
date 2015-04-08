@@ -325,6 +325,8 @@ def axes(mark=None, options={}, **kwargs):
         mark.pyplot_axes = {}
     axes = mark.pyplot_axes.get(fig.model_id, {})
     fig_axes = [axis for axis in fig.axes]
+    ## scale corresponding to the axes
+    axes_scales = [axis.scale for axis in fig_axes]
     for name in scales:
         if name not in mark.class_trait_names(scaled=True):
             # The scale is not needed.
@@ -335,6 +337,8 @@ def axes(mark=None, options={}, **kwargs):
             # There is already an axis for this scaled attribute.
             for arg in axis_args:
                 setattr(axes[name], arg, axis_args[arg])
+            continue
+        if scales[name] in axes_scales:
             continue
         # An axis must be created. We fetch the type from the registry
         # the key being provided in the scaled attribute decoration
