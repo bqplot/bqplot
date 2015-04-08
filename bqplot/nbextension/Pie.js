@@ -180,10 +180,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .data(pie(this.model.mark_data));
 
             var elements_added = elements.enter().append("g")
-              .attr("class", "slice")
-              .on("click", function(d, i) {
-                  return that.event_dispatcher("element_clicked", {"data": d, "index": i});
-              });
+              .attr("class", "slice");
 
             elements.append("path")
               .attr("class", "pie_slice");
@@ -193,6 +190,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("pointer-events", "none")
               .style("text-anchor", "middle");
 
+            elements.sort(function(dat1, dat2) { return dat2['startAngle'] - dat1['startAngle'];});
+            elements.on("click", function(d, i) {
+                  return that.event_dispatcher("element_clicked", {"data": d, "index": i});
+              });
             elements.exit().remove();
 
             this.update_radii();
