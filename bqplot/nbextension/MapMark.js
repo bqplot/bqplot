@@ -41,7 +41,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             this.width = this.parent.plotarea_width;
             this.height = this.parent.plotarea_height;
             this.map_id = utils.uuid();
-
             this.enable_hover = this.model.get("enable_hover");
             this.fmt = d3.format(this.model.get("tooltip_format"));
             var that = this;
@@ -170,7 +169,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             if (!this.model.get("enable_hover")) {
                 return;
             }
-
             var that = this;
             d3.select(this.el.parentNode)
               .select("#world_tooltip").classed("hidden", true);
@@ -185,6 +183,9 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
         },
         validate_text: function(text) {
             return text !== undefined && text !== null;
+        },
+        validate_color: function(color) {
+            return color !== "" && color !== null;
         },
         mousemove_handler: function(d) {
             if(!this.model.get("enable_hover")) {
@@ -227,9 +228,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             }
             this.send({event:'hover', country:name, id:d.id});
         },
-        validate_color: function(color) {
-            return color !== "" && color !== null;
-        },
         mouseover_handler: function(d, self) {
             if(!this.model.get("enable_hover")) {
                 return;
@@ -268,7 +266,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                 that.zoom.scale(s);
             }
 			that.transformed_g.style("stroke-width", 1 / s)
-                                  .attr("transform", "translate(" + t + ")scale(" + s + ")");
+                .attr("transform", "translate(" + t + ")scale(" + s + ")");
 		},
         create_listeners: function() {
             var that = this;
@@ -427,8 +425,8 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
 
                     if (this.validate_color(this.model.get("selected_styles")["selected_stroke"])) {
                         this.highlight_g.selectAll(".selected")
-                                         .style("stroke", this.model.get("selected_styles")["selected_stroke"])
-                                         .style("stroke-width", this.model.get("selected_styles")["selected_stroke_width"]);
+                            .style("stroke", this.model.get("selected_styles")["selected_stroke"])
+                            .style("stroke-width", this.model.get("selected_styles")["selected_stroke_width"]);
                     }
                     selected.push(d.id);
                     this.model.set("selected", selected);

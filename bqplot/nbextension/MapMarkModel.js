@@ -19,12 +19,13 @@ define(["widgets/js/widget", "./BaseModel", "base/js/utils"], function(Widget, B
     var MapModel = BaseModel.BaseModel.extend({
         initialize: function() {
             MapModel.__super__.initialize.apply(this);
-            this.on("change:color", this.update_data, this);
+            this.once("change", this.update_data, this);
+            this.on("change:color", this.update_domains, this);
         },
         update_data: function() {
             this.dirty = true;
             var that = this;
-            var data = utils.load_class.apply(this, this.get('map_data'));
+            var data = utils.load_class.apply(this, this.get("map_data"));
             data.then(function(mapdata) {
                 that.geodata = mapdata[0];
                 that.subunits = mapdata[1];
