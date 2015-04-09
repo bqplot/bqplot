@@ -44,7 +44,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             this.height = this.parent.plotarea_height;
             this.map_id = utils.uuid();
             this.enable_hover = this.model.get("enable_hover");
-            this.fmt = d3.format(this.model.get("tooltip_format"));
             var that = this;
             return base_render_promise.then(function() {
                 that.event_listeners = {};
@@ -55,7 +54,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
         set_ranges: function() {
         },
         set_positional_scales: function() {
-            var geo_scale = this.scales['projection'];
+            var geo_scale = this.scales["projection"];
             this.listenTo(geo_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.draw(); }
             });
@@ -78,40 +77,12 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
 			}
             return name;
         },
-        create_tooltip_widget: function() {
-            this.tooltip_widget = this.model.get("tooltip_widget");
-            var self = this;
-
-            if (this.tooltip_view) {
-                this.tooltip_view.remove();
-            }
-            if(this.tooltip_widget) {
-                var tooltip_widget_creation_promise = this.create_child_view(this.tooltip_widget);
-                tooltip_widget_creation_promise.then(function(view) {
-                    self.tooltip_view = view;
-                    self.tooltip_div.node().appendChild(d3.select(view.el).node());
-                });
-            }
-        },
         remove_map: function() {
-            d3.selectAll('.world_map.map' + this.map_id).remove();
-        },
-        create_tooltip_div: function() {
-            if (!this.tooltip_div) {
-                this.tooltip_div = d3.select(this.el.parentNode).append("div")
-                .attr("id", "world_tooltip")
-                .style("pointer-events", "none")
-                .style("z-index", 1001)
-                .classed("hidden", true);
-            } else {
-                this.tooltip_div = d3.select(this.parent.el.parentNode)
-                                     .select('#world_tooltip');
-            }
+            d3.selectAll(".world_map.map" + this.map_id).remove();
         },
         draw: function() {
             this.set_ranges();
             var that = this;
-            d3.select(that.el.parentNode).selectAll('#world_tooltip').remove();
             this.parent.bg
                 .on("click", function(d) {
                     that.ocean_clicked();
@@ -121,8 +92,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
             this.stroke_g = this.transformed_g.append("g");
-            this.create_tooltip_div();
-            var projection = this.scales['projection'];
+            var projection = this.scales["projection"];
             //Bind data and create one path per GeoJSON feature
             this.fill_g.selectAll("path")
 			    .data(topojson.feature(this.model.geodata, this.model.geodata.objects.subunits).features)
@@ -172,15 +142,13 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                 return;
             }
             var that = this;
-            d3.select(this.el.parentNode)
-              .select("#world_tooltip").classed("hidden", true);
 			d3.select(self).transition().style("fill", function(d, i) {
                 return that.fill_g_colorfill(d, i);
             });
             d3.select(self).transition()
-              .style("stroke", function(d, i) {
+                .style("stroke", function(d, i) {
                     return that.hoverfill(d, i);
-              });
+                });
             that.highlight_g.selectAll(".hovered").remove();
         },
         validate_text: function(text) {
@@ -194,41 +162,12 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                 return;
             }
 			var name = this.get_subunit_name(d.id);
-            var mouse_pos = d3.mouse(this.parent.fig);
             var color_data = this.model.get("color");
-            var tooltip = d3.select(this.el.parentNode).select('#world_tooltip');
-			tooltip.classed("hidden", false);
-            if (this.model.get("display_tooltip")) {
-                if (this.tooltip_widget) {
-                      tooltip.style("background-color", "transparent")
-				             .style({"left": (mouse_pos[0] + this.el.offsetLeft + 5) + "px",
-                                     "top": (mouse_pos[1] + this.el.offsetTop + 5) + "px",
-                                     "width": "300px",
-                                     "height": "200px"});
-
-                } else {
-                    //Update the tooltip position and value
-                    tooltip.style("background-color", this.model.get("tooltip_color"))
-                           .style("color", this.model.get("text_color"))
-				           .style({"left":(mouse_pos[0] + this.el.offsetLeft + 5) + "px",
-                                   "top":(mouse_pos[1] + this.el.offsetTop + 5) + "px"});
-
-                    if (this.is_object_empty(this.model.get("text_data"))) {
-                        if (this.validate_text(color_data[d.id])) {
-                            tooltip.text(name + ": " + this.fmt(color_data[d.id]));
-                        } else {
-				            tooltip.text(name);
-                        }
-                    } else {
-                        if(this.validate_text(this.model.get("text_data")[d.id])) {
-				            tooltip.text(name + ": " + this.fmt(this.model.get("text_data")[d.id]));
-                        } else {
-                            tooltip.text(name);
-                        }
-                    }
-                }
-            }
-            this.send({event:'hover', country:name, id:d.id});
+            this.send({
+                event: "hover",
+                country: name,
+                id: d.id,
+            });
         },
         mouseover_handler: function(d, self) {
             if(!this.model.get("enable_hover")) {
@@ -241,13 +180,12 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             });
             node.classed("hovered", true);
             if(this.validate_color(this.model.get("hovered_styles")["hovered_stroke"]) &&
-                select.indexOf(d.id)===-1) {
+                select.indexOf(d.id) === -1) {
                 node.style("stroke", this.model.get("hovered_styles")["hovered_stroke"])
                     .style("stroke-width", this.model.get("hovered_styles")["hovered_stroke_width"]);
             }
             if(this.validate_color(this.model.get("hovered_styles")["hovered_fill"]) &&
-                select.indexOf(d.id)===-1) {
-
+                select.indexOf(d.id) === -1) {
                 node.style("fill-opacity", 1.0)
                     .style("fill", function() {
                         return that.model.get("hovered_styles")["hovered_fill"];
@@ -274,7 +212,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             var that = this;
 
             this.model.on("data_updated", this.draw, this);
-            this.model.on('change:color', this.update_style, this);
+            this.model.on("change:color", this.update_style, this);
             this.model.on("change:stroke_color", this.change_stroke_color, this);
             this.model.on("change:default_color", this.change_map_color, this);
             this.model.on("change:selected", this.change_selected, this);
@@ -282,7 +220,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                 that.change_selected_fill();
                 that.change_selected_stroke();
             });
-            this.model.on("change:tooltip_widget", this.create_tooltip_widget, this);
             $(this.options.cell).on("output_area_resize." + this.map_id, function() {
                 that.update_layout();
             });
@@ -353,7 +290,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             if(!e.altKey) {
                 return;
             }
-
             var that = this;
             this.model.set("selected", []);
             this.touch();
@@ -393,9 +329,8 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
         click_highlight: function(d, that) {
             var e = window.event;
             var name = this.get_subunit_name(d.id);
-
             if(e.ctrlKey) {
-	            this.send({event:'click', country:name, id:d.id});
+	            this.send({event: "click", country: name, id: d.id});
                 return;
             } else {
                 if (!this.model.get("enable_select")) {
@@ -416,7 +351,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                     this.highlight_g.append(function() {
                             return that.cloneNode(true);
                     })
-                    .attr("id", 'c'+d.id)
+                    .attr("id", "c" + d.id)
                     .classed("selected", true);
 
                     if (this.validate_color(this.model.get("selected_styles")["selected_fill"])) {
@@ -446,7 +381,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
         },
         hoverfill: function(d, j) {
             var select = this.model.get("selected").slice();
-            if (select.indexOf(d.id)>-1 &&
+            if (select.indexOf(d.id) > -1 &&
                 this.validate_color(this.model.get("selected_styles")["selected_stroke"])) {
                 return this.model.get("selected_styles")["selected_stroke"];
             } else {
@@ -459,10 +394,10 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             var color_data = this.model.get("color");
             if (this.is_object_empty(color_data)) {
                 return this.model.get("default_color");
-            } else if (color_data[d.id]===undefined ||
-                       color_data[d.id]===null ||
-                       color_data[d.id]==="nan" ||
-                       color_scale===undefined) {
+            } else if (color_data[d.id] === undefined ||
+                       color_data[d.id] === null ||
+                       color_data[d.id] === "nan" ||
+                       color_scale === undefined) {
                 return "Grey";
             } else {
                 return color_scale.scale(color_data[d.id]);
