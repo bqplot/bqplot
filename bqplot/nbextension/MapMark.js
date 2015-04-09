@@ -38,6 +38,8 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
 
         render: function() {
             var base_render_promise = Map.__super__.render.apply(this);
+            this.map = this.el.append("svg")
+                .attr("viewBox", "0 0 1200 980");
             this.width = this.parent.plotarea_width;
             this.height = this.parent.plotarea_height;
             this.map_id = utils.uuid();
@@ -114,7 +116,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                 .on("click", function(d) {
                     that.ocean_clicked();
                 });
-            this.transformed_g = this.el.append("g")
+            this.transformed_g = this.map.append("g")
                 .attr("class", "world_map map" + this.map_id);
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
@@ -159,8 +161,8 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                    that.zoomed(that, false);
                 });
 			this.parent.bg.call(this.zoom);
-			this.parent.bg.on("dblclick.zoom", null);
 
+            this.parent.bg.on("dblclick.zoom", null);
 			this.parent.bg.on("dblclick", function() {
                 that.zoomed(that, true);
             });
