@@ -308,8 +308,10 @@ class Lines(Mark):
                     min_dim=1, max_dim=1)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
-                            'y': {'orientation': 'vertical'}}, sync=True)
+    # Other attributes
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+                            'color': {'dimension': 'color'}}, sync=True)
     colors = List(trait=Color(), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4,
@@ -370,6 +372,9 @@ class FlexLine(Lines):
                     scaled=True, rtype='Number')
 
     # Other attributes
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+                            'color': {'dimension': 'color'}}, sync=True)
     colors = List(trait=Color(), default_value=CATEGORY10, sync=True)
     _view_name = Unicode('FlexLine', sync=True)
     _view_module = Unicode('nbextensions/bqplot/FlexLine', sync=True)
@@ -473,8 +478,9 @@ class Scatter(Mark):
                        scaled=True, rtype='Number', min_dim=1, max_dim=1)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
-                            'y': {'orientation': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+                            'color': {'dimension': 'color'}}, sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value='circle',
@@ -498,7 +504,6 @@ class Scatter(Mark):
     names_unique = Bool(True, sync=True)
 
     enable_move = Bool(False, sync=True)
-    enable_add = Bool(False, sync=True)
     enable_delete = Bool(False, sync=True)
     restrict_x = Bool(False, sync=True)
     restrict_y = Bool(False, sync=True)
@@ -574,8 +579,8 @@ class Hist(Mark):
     # counts is a read-only attribute that is set when the mark is drawn
 
     # Other attributes
-    scales_metadata = Dict({'sample': {'orientation': 'horizontal'},
-                            'counts': {'orientation': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'sample': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'counts': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
     bins = Int(10, sync=True, exposed=True, display_index=2,
                display_name='Number of bins')
     midpoints = List(sync=True, read_only=True,
@@ -637,6 +642,9 @@ class Boxplot(Mark):
 
     # Other attributes
     # marker = Enum([boxplottype], sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'y': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
+
     stroke = Color('white',            sync=True, exposed=True, display_index=3, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, exposed=True, display_index=4, display_name='Fill color for the box')
     outlier_fill_color = Color('gray',   sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
@@ -719,8 +727,9 @@ class Bars(Mark):
                     min_dim=1, max_dim=1)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
-                            'y': {'orientation': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+                            'color': {'dimension': 'color'}}, sync=True)
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto',
                       sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked',
@@ -778,8 +787,9 @@ class Label(Mark):
     y = Date(sync=True) | Float(sync=True) | Unicode(sync=True)
     x_offset = Int(sync=True)
     y_offset = Int(sync=True)
-    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
-                            'y': {'orientation': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+                            'color': {'dimension': 'color'}}, sync=True)
     color = Color(None, allow_none=True, sync=True)
     rotate_angle = Float(sync=True)
     text = Unicode(sync=True)
@@ -851,8 +861,8 @@ class OHLC(Mark):
     _y_default = None
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
-                            'y': {'orientation': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'y': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
     marker = Enum(['candle', 'bar'], default_value='candle',
                   exposed=True, display_index=3, display_name='Marker',
                   sync=True)
@@ -939,8 +949,9 @@ class Pie(Mark):
     y = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal'},
-                            'y': {'orientation': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+                            'color': {'dimension': 'color'}}, sync=True)
     sort = Bool(False, sync=True)
     colors = List(trait=Color(), default_value=CATEGORY10, sync=True,
                   exposed=True, display_index=4, display_name='Colors')

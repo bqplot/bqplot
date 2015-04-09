@@ -331,7 +331,8 @@ def axes(mark=None, options={}, **kwargs):
         if name not in mark.class_trait_names(scaled=True):
             # The scale is not needed.
             continue
-        axis_args = dict(mark.scales_metadata.get(name, {}),
+        scale_metadata = mark.scales_metadata.get(name, {})
+        axis_args = dict(scale_metadata,
                          **(options.get(name, {})))
         if name in axes:
             # There is already an axis for this scaled attribute.
