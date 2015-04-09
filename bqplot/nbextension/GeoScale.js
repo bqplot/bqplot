@@ -36,8 +36,34 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
         },
     });
 
+    var Gnomonic = GeoScale.extend({
+        render: function() {
+            var projection = d3.geo.gnomonic()
+                .clipAngle(90 - 1e-3)
+                .scale(150)
+                //.translate([width / 2, height / 2])
+                .precision(.1);
+            this.set_projection(projection);
+        },
+    });
+
+    var Stereographic = GeoScale.extend({
+        render: function() {
+            var projection = d3.geo.stereographic()
+                .scale(245)
+                //.translate([width / 2, height / 2])
+                .rotate([-20, 0])
+                .clipAngle(180 - 1e-4)
+                //.clipExtent([[0, 0], [width, height]])
+                .precision(.1);
+            this.set_projection(projection);
+        },
+    });
+
     return {
         Mercator: Mercator,
         AlbersUSA: AlbersUSA,
+        Gnomonic: Gnomonic,
+        Stereographic: Stereographic,
     };
 });

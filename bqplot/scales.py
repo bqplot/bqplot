@@ -112,6 +112,18 @@ class AlbersUSA(GeoScale):
     _view_name = Unicode('AlbersUSA', sync=True)
 
 
+@register_scale('bqplot.Gnomonic')
+class Gnomonic(GeoScale):
+
+    _view_name = Unicode('Gnomonic', sync=True)
+
+
+@register_scale('bqplot.Stereographic')
+class Stereographic(GeoScale):
+
+    _view_name = Unicode('Stereographic', sync=True)
+
+
 @register_scale('bqplot.LinearScale')
 class LinearScale(Scale):
 
