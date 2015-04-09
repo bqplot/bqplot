@@ -581,7 +581,7 @@ def get_context():
 
 
 def _fetch_axis(fig, dimension, scale):
-    ## Internal utitlity function.
+    ## Internal utility function.
     ## Given a figure instance `fig`, the dimension of the scaled attribute and
     ## the instance of a scale, returns the axis if an axis is present for that
     ## combination. Else returns `None`
@@ -596,7 +596,7 @@ def _fetch_axis(fig, dimension, scale):
 
 
 def _update_fig_axis_registry(fig, dimension, scale, axis):
-    axis_registry = getattr(fig, 'axis_registry', {})
+    axis_registry = fig.axis_registry
     dimension_scales = axis_registry.get(dimension, [])
     dimension_scales.append({'scale': scale, 'axis': axis})
     axis_registry[dimension] = dimension_scales
