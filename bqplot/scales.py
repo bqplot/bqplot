@@ -106,24 +106,32 @@ class GeoScale(Scale):
 @register_scale('bqplot.Mercator')
 class Mercator(GeoScale):
 
+    rtype = '(Number, Number)'
+    dtype = np.number
     _view_name = Unicode('Mercator', sync=True)
 
 
 @register_scale('bqplot.AlbersUSA')
 class AlbersUSA(GeoScale):
 
+    rtype = '(Number, Number)'
+    dtype = np.number
     _view_name = Unicode('AlbersUSA', sync=True)
 
 
 @register_scale('bqplot.Gnomonic')
 class Gnomonic(GeoScale):
 
+    rtype = '(Number, Number)'
+    dtype = np.number
     _view_name = Unicode('Gnomonic', sync=True)
 
 
 @register_scale('bqplot.Stereographic')
 class Stereographic(GeoScale):
 
+    rtype = '(Number, Number)'
+    dtype = np.number
     _view_name = Unicode('Stereographic', sync=True)
 
 
