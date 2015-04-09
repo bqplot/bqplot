@@ -85,7 +85,7 @@ class Scale(Widget):
     _ipython_display_ = None  # We cannot display a scale outside of a figure
 
 
-class ProjectionScale(Scale):
+class GeoScale(Scale):
 
     """The base projection scale class for the Map Widget.
 
@@ -97,11 +97,19 @@ class ProjectionScale(Scale):
     map_type: unicode (default: 'worldmap')
         The type of map being used determines the projection.
     """
-    map_type = Unicode('worldmap', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/GeoScale', sync=True)
 
-    _view_name = Unicode('ProjectionScale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/ProjectionScale', sync=True)
-    _ipython_display_ = None  # We cannot display a scale outside of a Map
+
+@register_scale('bqplot.Mercator')
+class Mercator(GeoScale):
+
+    _view_name = Unicode('Mercator', sync=True)
+
+
+@register_scale('bqplot.AlbersUSA')
+class AlbersUSA(GeoScale):
+
+    _view_name = Unicode('AlbersUSA', sync=True)
 
 
 @register_scale('bqplot.LinearScale')

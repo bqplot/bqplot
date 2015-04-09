@@ -16,20 +16,28 @@
 define(["widgets/js/widget", "./d3"], function(Widget, d3) {
      "use strict";
 
-    var ProjectionScale = Widget.WidgetView.extend({
-        render: function(){
+    var GeoScale = Widget.WidgetView.extend({
+        set_projection: function(projection) {
+            this.scale = d3.geo.path().projection(projection);
+        }
+    });
 
-            if(this.model.get("map_type") === "worldmap") {
-                this.projection = d3.geo.mercator().center([0, 60]).scale(190);
-            } else if (this.model.get("map_type") === "usstates") {
-                this.projection = d3.geo.albersUsa().scale(1200);
-            }
+    var Mercator = GeoScale.extend({
+        render: function() {
+            var projection = d3.geo.mercator().center([0, 60]).scale(190);
+            this.set_projection(projection);
+        },
+    });
 
-            this.scale = d3.geo.path().projection(this.projection);
+    var AlbersUSA = GeoScale.extend({
+        render: function() {
+            var projection = d3.geo.albersUsa().scale(1200);
+            this.set_projection(projection);
         },
     });
 
     return {
-        ProjectionScale: ProjectionScale,
+        Mercator: Mercator,
+        AlbersUSA: AlbersUSA,
     };
 });
