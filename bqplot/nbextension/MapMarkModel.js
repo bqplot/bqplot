@@ -19,11 +19,7 @@ define(["widgets/js/widget", "./BaseModel", "base/js/utils"], function(Widget, B
     var MapModel = BaseModel.BaseModel.extend({
         initialize: function() {
             MapModel.__super__.initialize.apply(this);
-            this.on_some_change(["color"], this.update_data, this);
-            // FIXME: replace this with on("change:preserve_domain"). It is not done here because
-            // on_some_change depends on the GLOBAL backbone on("change") handler which
-            // is called AFTER the specific handlers on("change:foobar") and we make that
-            // assumption.
+            this.on("change:color", this.update_data, this);
         },
         update_data: function() {
             this.dirty = true;
@@ -38,16 +34,15 @@ define(["widgets/js/widget", "./BaseModel", "base/js/utils"], function(Widget, B
             });
         },
         update_domains: function() {
-            if(!this.mark_data) {
-                return;
-            }
             var scales = this.get("scales");
             var color_scale = scales["color"];
+            var color_data = this.get("color");
             if(color_scale !== null && color_scale !== undefined) {
                 if(!this.get("preserve_domain")["color"]) {
-                    color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                        return elem.color;
-                    }), this.id);
+                    color_scale.compute_and_set_domain(
+                        Object.keys(color_data).map(function (d) {
+                            return color_data[d];
+                        }), this.id);
                 } else {
                     color_scale.del_domain([], this.id);
                 }
