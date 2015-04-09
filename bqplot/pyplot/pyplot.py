@@ -196,6 +196,12 @@ def figure(key=None, fig=None, **kwargs):
             for arg in kwargs:
                 setattr(_context['figure'], arg, kwargs[arg])
     scales(key, scales=scales_arg)
+    ## Set the axis reference dictionary. This dictionary contains the mapping
+    ## from the possible dimensions in the figure to the list of scales with
+    ## respect to which axes have been drawn for this figure.
+    ## Used to automatically generate axis.
+    if(getattr(_context['figure'], 'axis_registry', None) is None):
+        setattr(_context['figure'], 'axis_registry', {})
 
 
 def close(key):
@@ -302,7 +308,7 @@ def set_lim(min, max, name):
 
 def axes(mark=None, options={}, **kwargs):
     """Draws axes corresponding to the scales of a given mark and returns a
-    dictionary of drawn axes. If not mark is provided, the last drawn mark
+    dictionary of drawn axes. If mark is not provided, the last drawn mark
     is used.
 
     Parameters
@@ -321,12 +327,8 @@ def axes(mark=None, options={}, **kwargs):
         return {}
     fig = kwargs.get('figure', current_figure())
     scales = mark.scales
-    if not hasattr(mark, 'pyplot_axes'):
-        mark.pyplot_axes = {}
-    axes = mark.pyplot_axes.get(fig.model_id, {})
     fig_axes = [axis for axis in fig.axes]
-    ## scale corresponding to the axes
-    axes_scales = [axis.scale for axis in fig_axes]
+    axes = {}
     for name in scales:
         if name not in mark.class_trait_names(scaled=True):
             # The scale is not needed.
@@ -334,21 +336,23 @@ def axes(mark=None, options={}, **kwargs):
         scale_metadata = mark.scales_metadata.get(name, {})
         axis_args = dict(scale_metadata,
                          **(options.get(name, {})))
-        if name in axes:
-            # There is already an axis for this scaled attribute.
-            for arg in axis_args:
-                setattr(axes[name], arg, axis_args[arg])
+
+        axis = _fetch_axis(fig, scale_metadata['dimension'], scales[name])
+        if axis is not None:
+        ## for this figure, an axis exists for the scale in the given
+        ## dimension
+            axes[name] = axis
             continue
-        if scales[name] in axes_scales:
-            continue
+
         # An axis must be created. We fetch the type from the registry
         # the key being provided in the scaled attribute decoration
         key = mark.class_traits()[name].get_metadata('atype', 'bqplot.Axis')
         axis_type = Axis.axis_types[key]
         axis = axis_type(scale=scales[name], **axis_args)
-        fig_axes.append(axis)
         axes[name] = axis
-    mark.pyplot_axes[fig.model_id] = axes
+        fig_axes.append(axis)
+        ## update the axis registry of the figure once the axis is added
+        _update_fig_axis_registry(fig, scale_metadata['dimension'], scales[name], axis)
     fig.axes = fig_axes
     return axes
 
@@ -574,3 +578,26 @@ def current_figure():
 def get_context():
     """Used for debug only. Return the current global context dictionary"""
     return _context
+
+
+def _fetch_axis(fig, dimension, scale):
+    ## Internal utitlity function.
+    ## Given a figure instance `fig`, the dimension of the scaled attribute and
+    ## the instance of a scale, returns the axis if an axis is present for that
+    ## combination. Else returns `None`
+    axis_registry = getattr(fig, 'axis_registry', {})
+    dimension_data = axis_registry.get(dimension, [])
+    dimension_scales = [dim['scale'] for dim in dimension_data]
+    dimension_axes = [dim['axis'] for dim in dimension_data]
+    try:
+        return dimension_axes[dimension_scales.index(scale)]
+    except (ValueError, IndexError):
+        return None
+
+
+def _update_fig_axis_registry(fig, dimension, scale, axis):
+    axis_registry = getattr(fig, 'axis_registry', {})
+    dimension_scales = axis_registry.get(dimension, [])
+    dimension_scales.append({'scale': scale, 'axis': axis})
+    axis_registry[dimension] = dimension_scales
+    setattr(fig, 'axis_registry', axis_registry)
