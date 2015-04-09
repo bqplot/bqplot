@@ -151,9 +151,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                 });
             that.highlight_g.selectAll(".hovered").remove();
         },
-        validate_text: function(text) {
-            return text !== undefined && text !== null;
-        },
         validate_color: function(color) {
             return color !== "" && color !== null;
         },

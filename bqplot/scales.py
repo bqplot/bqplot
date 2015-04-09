@@ -31,8 +31,11 @@ Scales
    ColorScale
    DateColorScale
    OrdinalColorScale
-   ProjectionScale
-
+   GeoScale
+   Mercator
+   AlbersUSA
+   Gnomonic
+   Stereographic
 """
 
 from IPython.html.widgets import Widget, Color
@@ -87,10 +90,10 @@ class Scale(Widget):
 
 class GeoScale(Scale):
 
-    """The base projection scale class for the Map Widget.
+    """The base projection scale class for Map marks.
 
-    The Projection Scale represents a mapping between topographic data and a
-    visual representation of this data as a projection.
+    The GeoScale represents a mapping between topographic data and a
+    2d visual representation.
 
     Attributes
     ----------
