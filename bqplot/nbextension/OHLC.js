@@ -68,7 +68,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             this.el.selectAll(".stick").style("stroke", stroke);
 
             if(this.legend_el) {
-                this.legend_el.selectAll("path").attr("stroke", stroke);
+                this.legend_el.selectAll("path").style("stroke", stroke);
                 this.legend_el.selectAll("text").style("fill", stroke);
             }
         },
@@ -84,12 +84,12 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
 
             // Fill candles based on the opening and closing values
             this.el.selectAll(".stick").style("fill", function(d) {
-                return (d[that.model.px.o] > d[that.model.px.c] ?
+                return (d["y"][that.model.px.o] > d["y"][that.model.px.c] ?
                     down_color : up_color);
             });
 
             if(this.legend_el) {
-                this.legend_el.selectAll("path").attr("fill", up_color);
+                this.legend_el.selectAll("path").style("fill", up_color);
             }
         },
         update_opacity: function() {
@@ -494,32 +494,33 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             this.rect_dim = inter_y_disp * 0.8;
             var that = this;
 
-            this.legend_el  = elem.selectAll(".legend" + this.uuid)
+            this.legend_el  = elem.selectAll("#legend" + this.uuid)
                                   .data([this.model.mark_data]);
 
             var leg = this.legend_el.enter().append("g")
                 .attr("transform", function(d, i) {
                     return "translate(0, " + (i * inter_y_disp + y_disp) + ")";
                 })
-                .attr("class", "legend" + this.uuid)
-                .attr("fill", up_color)
+                .attr("class", "legend")
+                .attr("id", "legend" + this.uuid)
+                .style("fill", up_color)
                 .on("mouseover", _.bind(this.highlight_axes, this))
                 .on("mouseout", _.bind(this.unhighlight_axes, this));
 
-            leg.append("path").attr("class", "stick_head");
-            leg.append("path").attr("class", "stick_tail");
-            leg.append("path").attr("class", "stick_body")
-                              .attr("fill", up_color);
+            leg.append("path").attr("class", "stick_head stick");
+            leg.append("path").attr("class", "stick_tail stick");
+            leg.append("path").attr("class", "stick_body stick")
+                              .style("fill", up_color);
 
             // Add stroke color and set position
             leg.selectAll("path")
-                .attr("stroke", stroke)
+                .style("stroke", stroke)
                 .attr("transform", "translate(" + (that.rect_dim/2) + ",0)");
 
             // Draw icon and text
             this.draw_legend_icon(that.rect_dim, leg);
             this.legend_el.append("text")
-                .attr("class", "legendtext")
+                .attr("class", "legendtext sticktext")
                 .attr("x", that.rect_dim * 1.2)
                 .attr("y", that.rect_dim / 2)
                 .attr("dy", "0.35em")
