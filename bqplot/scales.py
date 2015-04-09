@@ -31,7 +31,11 @@ Scales
    ColorScale
    DateColorScale
    OrdinalColorScale
-
+   GeoScale
+   Mercator
+   AlbersUSA
+   Gnomonic
+   Stereographic
 """
 
 from IPython.html.widgets import Widget, Color
@@ -82,6 +86,45 @@ class Scale(Widget):
     _model_name = Unicode('ScaleModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/ScaleModel', sync=True)
     _ipython_display_ = None  # We cannot display a scale outside of a figure
+
+
+class GeoScale(Scale):
+
+    """The base projection scale class for Map marks.
+
+    The GeoScale represents a mapping between topographic data and a
+    2d visual representation.
+
+    Attributes
+    ----------
+    map_type: unicode (default: 'worldmap')
+        The type of map being used determines the projection.
+    """
+    _view_module = Unicode('nbextensions/bqplot/GeoScale', sync=True)
+
+
+@register_scale('bqplot.Mercator')
+class Mercator(GeoScale):
+
+    _view_name = Unicode('Mercator', sync=True)
+
+
+@register_scale('bqplot.AlbersUSA')
+class AlbersUSA(GeoScale):
+
+    _view_name = Unicode('AlbersUSA', sync=True)
+
+
+@register_scale('bqplot.Gnomonic')
+class Gnomonic(GeoScale):
+
+    _view_name = Unicode('Gnomonic', sync=True)
+
+
+@register_scale('bqplot.Stereographic')
+class Stereographic(GeoScale):
+
+    _view_name = Unicode('Stereographic', sync=True)
 
 
 @register_scale('bqplot.LinearScale')
