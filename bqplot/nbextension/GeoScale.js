@@ -42,7 +42,7 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
                 .clipAngle(90 - 1e-3)
                 .scale(150)
                 //.translate([width / 2, height / 2])
-                .precision(.1);
+                .precision(0.1);
             this.set_projection(projection);
         },
     });
@@ -55,7 +55,7 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
                 .rotate([-20, 0])
                 .clipAngle(180 - 1e-4)
                 //.clipExtent([[0, 0], [width, height]])
-                .precision(.1);
+                .precision(0.1);
             this.set_projection(projection);
         },
     });

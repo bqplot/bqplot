@@ -87,7 +87,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.apply_styles();
             }, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
-            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
+            this.listenTo(this.parent, "bg_clicked", function() {
+                this.event_dispatcher("parent_clicked");
+            });
         },
         process_interactions: function() {
             var interactions = this.model.get("interactions");
@@ -154,7 +156,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .innerRadius(this.model.get("inner_radius"));
 
             var elements = this.el.select(".pielayout").selectAll(".slice");
-            var animate_dur = this.model.get("animate_dur")
+            var animate_dur = this.model.get("animate_dur");
 
             elements.select("path")
               .transition().duration(animate_dur)

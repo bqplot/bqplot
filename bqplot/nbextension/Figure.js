@@ -300,7 +300,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             if(dict[scale_id] !== undefined) {
                 delete dict[scale_id][mark_view.model.id + "_" + mark_view.cid];
 
-                if(Object.keys(dict[scale_id]).length == 0) {
+                if(Object.keys(dict[scale_id]).length === 0) {
                     delete dict[scale_id];
                 }
             }
@@ -318,7 +318,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             this.remove_from_padding_dict(this.x_pad_dict, view, prev_scale_models["x"]);
             this.remove_from_padding_dict(this.y_pad_dict, view, prev_scale_models["y"]);
 
-            var scale_models = model.get("scales")
+            var scale_models = model.get("scales");
             this.update_padding_dict(this.x_pad_dict, view, scale_models["x"], view.x_padding);
             this.update_padding_dict(this.y_pad_dict, view, scale_models["y"], view.y_padding);
 
@@ -656,7 +656,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                     a.href = canvas.toDataURL("image/png");
                     document.body.appendChild(a);
                     a.click();
-                }
+                };
                 image.src = "data:image/svg+xml;base64," + btoa(xml);
             };
             // Create standalone SVG string

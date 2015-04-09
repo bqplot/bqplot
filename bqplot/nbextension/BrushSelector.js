@@ -430,6 +430,6 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
         BrushSelector: BrushSelector,
         BrushIntervalSelector: BrushIntervalSelector,
         MultiSelector: MultiSelector,
-    }
+    };
 });
 
