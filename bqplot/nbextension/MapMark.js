@@ -22,9 +22,8 @@ requirejs.config({
           }
 });
 
-define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!./worldmap"], function(d3, topojson, FigureViewModule, utils) {
+define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-less/less!./worldmap"], function(d3, topojson, FigureViewModule, utils, Mark) {
     "use strict";
-
 
     function cloneAll(selector) {
         var nodes = d3.selectAll(selector);
@@ -34,105 +33,73 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
         return nodes;
     }
 
-    var Map = FigureViewModule.Figure.extend({
+    var Map = Mark.Mark.extend({
 
         render: function() {
+            var base_render_promise = Map.__super__.render.apply(this);
+            this.width = this.parent.width;
+            this.height = this.parent.height;
             this.map_id = utils.uuid();
-            this.margin = this.model.get("fig_margin");
+
             this.enable_hover = this.model.get("enable_hover");
-            this.x_offset = (this.options.x) ? this.options.x : 0;
-            this.y_offset = (this.options.y) ? this.options.y : 0;
-
-            this.margin.left += this.x_offset;
-            this.margin.top += this.y_offset;
-
-            this.def_wt = this.options.width;
-            this.def_ht = this.options.height;
-
-            this.title = this.model.get("title");
-            this.width = this.model.get("min_width") - this.margin.left - this.margin.right;
-            this.height = this.model.get("min_height") - this.margin.top - this.margin.bottom;
-
-            this.$el.css({"flex-grow": "1",
-                          "flex-shrink": "1",
-                          "align-self": "stretch",
-                          "min-width": this.width,
-                          "min-height": this.height});
-
             this.fmt = d3.format(this.model.get("tooltip_format"));
-
-            this.create_promises();
-        },
-        // first have your own set_scale_views, (found in Mark.js) calling
-        // set_positional_scales and set_additional_scales and set_ranges
-        create_projection: function() {
-            //// Map this to be like set_positional_scales
-            var projection = this.model.get("scales")['projection'];
             var that = this;
-            that.create_child_view(projection).then(function(view) {
-                that.scale = view.scale;
-
-                that.create_data();
+            return base_render_promise.then(function() {
+                that.event_listeners = {};
+                that.create_listeners();
+                that.draw();
             });
         },
-        create_promises: function() {
-            // This is the set_additional_scale
+        set_ranges: function() {
+        },
+        set_positional_scales: function() {
+            var geo_scale = this.scales['projection'];
+            this.listenTo(geo_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
+            });
+        },
+        initialize_additional_scales: function() {
+            var color_scale = this.scales["color"];
+            if(color_scale) {
+                this.listenTo(color_scale, "domain_changed", function() {
+                    this.update_style();
+                });
+                color_scale.on("color_scale_range_changed",
+                               this.update_style, this);
+            }
             var that = this;
             var scales = this.model.get("scales")['color'];
             var color_data = this.model.get("color");
-
-
             if (scales) {
                 that.create_child_view(scales).then(function(view) {
                     that.color_scale = view;
                     var z_data = Object.keys(color_data).map(function (d) {
                         return color_data[d];
                     });
-
                     if (that.color_scale) {
                         that.color_scale.compute_and_set_domain(z_data, 0);
                         that.color_scale.set_range();
-
                         // move this to set_ranges
                         that.color_scale.on("color_scale_range_changed", function() {
                                 that.color_change();
                         }, that);
-
                         //TODO: I am forcing the map to update colors by
                         //calling the function below after the color scale is
                         //created. Bad way to do this. See if the draw can be
                         //called in the resolve handler.
                         that.color_change();
                     }
-                    // Trigger the displayed event of the child view.
                 });
             }
-
-            that.create_projection();
-
         },
-        create_data: function() {
-            // Move to map model
-            var that = this;
-            var data = utils.load_class.apply(this, this.model.get('map_data'));
-
-            data.then(function(mapdata) {
-                that.geodata = mapdata[0];
-                that.subunits = mapdata[1];
-
-                that.after_displayed(function() {
-                    d3.select(that.el.parentNode).selectAll('#world_tooltip').remove();
-                    that.draw_map();
-                    that.update_layout();
-                    that.create_listeners();
-                    that.create_tooltip_widget();
-                });
-            });
+        update_style: function() {
+            this.color_change();
         },
+
         get_subunit_name: function(id) {
-		    for(var i = 0; i< this.subunits.length; i++) {
-			    if(id == this.subunits[i].id){
-				    name = this.subunits[i].Name;
+		    for(var i = 0; i< this.model.subunits.length; i++) {
+			    if(id == this.model.subunits[i].id){
+				    name = this.model.subunits[i].Name;
 				}
 			}
             return name;
@@ -144,7 +111,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             if (this.tooltip_view) {
                 this.tooltip_view.remove();
             }
-
             if(this.tooltip_widget) {
                 var tooltip_widget_creation_promise = this.create_child_view(this.tooltip_widget);
                 tooltip_widget_creation_promise.then(function(view) {
@@ -156,35 +122,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
         remove_map: function() {
             d3.selectAll('.world_map.map'+this.map_id).remove();
             d3.selectAll('.world_viewbox.map'+this.map_id).remove();
-            d3.selectAll('.color_axis.map'+this.map_id).remove();
-        },
-        // you don't need that and co
-        create_axis: function() {
-            var that = this;
-            d3.selectAll('.color_axis.map'+this.map_id).remove();
-            if (this.model.get("axis")!==null) {
-                this.svg_over.attr("height", "85%");
-
-                this.ax_g = this.svg.append("g")
-                                    .attr("class", "color_axis map"+this.map_id);
-
-                this.create_child_view(this.model.get("axis")).then(function(view) {
-                    if(that.axes_view) {
-                        that.axes_view.remove();
-                    }
-                    that.axes_view = view;
-                    that.ax_g.node().appendChild(view.el.node());
-
-                that.after_displayed(function() {
-                        view.trigger("displayed");
-                    });
-                });
-            } else {
-                if(this.axes_view) {
-                    this.axes_view.remove();
-                }
-                this.svg_over.attr("height", "100%");
-            }
         },
         create_tooltip_div: function() {
             if (!this.tooltip_div) {
@@ -194,52 +131,46 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
                 .style("z-index", 1001)
                 .classed("hidden", true);
             } else {
-                this.tooltip_div = d3.select(this.el.parentNode)
+                this.tooltip_div = d3.select(this.parent.el.parentNode)
                                      .select('#world_tooltip');
             }
         },
-        draw_map: function() {
+        draw: function() {
+            this.set_ranges();
 
             var that = this;
-            var w = this.width;
-            var h = this.height;
 
-            //Define default path generator
-			this.svg = d3.select(this.el);
+            d3.select(that.el.parentNode).selectAll('#world_tooltip').remove();
+            //this.svg_over = d3.select(this.el).append("svg")
+            //    .attr("viewBox", "0 0 1075 750")
+            //    .attr("width", "100%")
+            //    .attr("class", "world_viewbox map"+this.map_id)
+            //    .on("click", function(d) { that.ocean_clicked(); });
 
-            this.svg.attr("viewBox", "0 0 "+ this.width +' '+ this.height);
-
-            this.svg_over = d3.select(this.el).append("svg")
-                .attr("viewBox", "0 0 1075 750")
-                .attr("width", "100%")
-                .attr("class", "world_viewbox map"+this.map_id)
-                .on("click", function(d) { that.ocean_clicked(); });
-
-            this.create_axis();
-
-            this.transformed_g = this.svg_over.append("g")
-                                     .attr("class", "world_map map"+this.map_id);
+            this.transformed_g = this.el.append("g")
+                                     .attr("class", "world_map map" +
+                                           this.map_id);
             this.fill_g = this.transformed_g.append("g");
             this.highlight_g = this.transformed_g.append("g");
             this.stroke_g = this.transformed_g.append("g");
 
             this.create_tooltip_div();
-
+            var projection = this.scales['projection'];
             //Bind data and create one path per GeoJSON feature
             this.fill_g.selectAll("path")
-			    .data(topojson.feature(this.geodata, this.geodata.objects.subunits).features)
+			    .data(topojson.feature(this.model.geodata, this.model.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
-				.attr("d", that.scale)
+				.attr("d", projection.scale)
 				.style("fill", function(d, i) {
                     return that.fill_g_colorfill(d, i);
                 });
 
             this.stroke_g.selectAll("path")
-			    .data(topojson.feature(this.geodata, this.geodata.objects.subunits).features)
+			    .data(topojson.feature(this.model.geodata, this.model.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
-				.attr("d", that.scale)
+				.attr("d", projection.scale)
                 .style("fill-opacity", 0.0)
 				.on("mouseover", function(d){
                     that.mouseover_handler(d, this);
@@ -265,12 +196,12 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
 						.on("zoom", function() {
                             that.zoomed(that, false);
                         });
-			this.svg.call(this.zoom);
-			this.svg.on("dblclick.zoom", null);
+			//this.svg.call(this.zoom);
+			//this.svg.on("dblclick.zoom", null);
 
-			this.svg.on("dblclick", function() {
-                that.zoomed(that, true);
-            });
+			//this.svg.on("dblclick", function() {
+            //    that.zoomed(that, true);
+            //});
         },
         mouseout_handler: function(d, self) {
             if (!this.model.get("enable_hover")) {
@@ -322,7 +253,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
                                      "height": "200px"});
 
                 } else {
-                            //Update the tooltip position and value
+                    //Update the tooltip position and value
                     tooltip.style("background-color", this.model.get("tooltip_color"))
                            .style("color", this.model.get("text_color"))
 				           .style({"left":(mouse_pos[0] + this.el.offsetLeft + 5) + "px",
@@ -358,22 +289,17 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             if(!this.model.get("enable_hover")) {
                 return;
             }
-
             var that = this;
             var select = this.model.get("selected").slice();
-
             var node = this.highlight_g.append(function() {
-                            return self.cloneNode(true);
-                        });
-
+                return self.cloneNode(true);
+            });
             node.classed("hovered", true);
-
             if(this.validate_color(this.model.get("hovered_styles")["hovered_stroke"]) &&
                 select.indexOf(d.id)===-1) {
                 node.style("stroke", this.model.get("hovered_styles")["hovered_stroke"])
                     .style("stroke-width", this.model.get("hovered_styles")["hovered_stroke_width"]);
             }
-
             if(this.validate_color(this.model.get("hovered_styles")["hovered_fill"]) &&
                 select.indexOf(d.id)===-1) {
 
@@ -386,7 +312,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
 		zoomed: function(that, reset) {
 			var t = reset ? [0, 0] : d3.event.translate;
 			var s = reset ? 1 : d3.event.scale;
-			var h = that.height/3;
+			var h = that.height / 3;
 			var w = reset ? that.width : 2*that.width;
 
 			t[0] = Math.min(that.width / 2 * (s - 1), Math.max(w / 2 * (1 - s), t[0]));
@@ -402,12 +328,9 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
         create_listeners: function() {
             var that = this;
 
-            this.model.on('change:color', function() {
-                that.color_change();
-            });
-            this.model.on("change:stroke_color", function() {
-                that.change_stroke_color();
-            });
+            this.model.on("data_updated", this.draw, this);
+            this.model.on('change:color', this.color_change, this);
+            this.model.on("change:stroke_color", this.change_stroke_color, this);
             this.model.on("change:default_color", function() {
                 that.change_map_color();
             });
@@ -421,10 +344,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             this.model.on("change:tooltip_widget", function() {
                 that.create_tooltip_widget();
             });
-            this.model.on("change:axis", function() {
-                that.create_axis();
-            });
-            $(this.options.cell).on("output_area_resize."+this.map_id, function() {
+            $(this.options.cell).on("output_area_resize." + this.map_id, function() {
                 that.update_layout();
             });
         },
@@ -444,7 +364,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             var preserve_aspect = true;
             if (preserve_aspect === true) {
                 var aspect_ratio = this.model.get("min_width")/this.model.get("min_height");
-                if (this.width/this.height > aspect_ratio) {
+                if (this.width / this.height > aspect_ratio) {
                     this.width = this.height*aspect_ratio;
                 } else {
                     this.height = this.width/aspect_ratio;
@@ -457,7 +377,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
             this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
             this.svg.attr("width", this.width);
             this.remove_map();
-            this.draw_map();
+            this.draw();
             this.change_selected();
         },
         change_selected_fill: function() {
@@ -599,14 +519,13 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
                     this.highlight_g.selectAll(".hovered").remove();
                     var choice = "#c".concat(d.id.toString());
                     d3.select(choice).remove();
-                }
-                else {
+                } else {
                     this.highlight_g.selectAll(".hovered").remove();
                     this.highlight_g.append(function() {
                             return that.cloneNode(true);
-                         })
-                         .attr("id", 'c'+d.id)
-                         .classed("selected", true);
+                    })
+                    .attr("id", 'c'+d.id)
+                    .classed("selected", true);
 
                     if (this.validate_color(this.model.get("selected_styles")["selected_fill"])) {
                         this.highlight_g.selectAll(".selected")
@@ -619,7 +538,6 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
                                          .style("stroke", this.model.get("selected_styles")["selected_stroke"])
                                          .style("stroke-width", this.model.get("selected_styles")["selected_stroke_width"]);
                     }
-
                     selected.push(d.id);
                     this.model.set("selected", selected);
                     this.touch();

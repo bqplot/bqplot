@@ -961,7 +961,7 @@ class Pie(Mark):
 
 
 @register_mark('bqplot.Map')
-class Map(Mark):
+class MapMark(Mark):
 
     """Map mark.
 
@@ -1024,8 +1024,8 @@ class Map(Mark):
     text_data = Dict(sync=True)
     text_color = Color('Black', sync=True)
     tooltip_format = Unicode('.2f', sync=True)
-    tooltip_widget = Instance(DOMWidget, sync=True)
-    scales = Dict(sync=True)
+    tooltip_widget = Instance(DOMWidget, allow_none=True,
+                              sync=True, **widget_serialization)
 
     map_data = Tuple(Unicode, Unicode,
                      default_value=("worldmap",
@@ -1034,7 +1034,7 @@ class Map(Mark):
 
     def __init__(self, **kwargs):
         """Constructor for WorldMapWidget"""
-        super(Map, self).__init__(**kwargs)
+        super(MapMark, self).__init__(**kwargs)
         self._ctrl_click_handlers = CallbackDispatcher()
         self._hover_handlers = CallbackDispatcher()
         self.on_msg(self._handle_button_msg)

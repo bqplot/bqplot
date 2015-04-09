@@ -85,7 +85,7 @@ class Scale(Widget):
     _ipython_display_ = None  # We cannot display a scale outside of a figure
 
 
-class ProjectionScale(Widget):
+class ProjectionScale(Scale):
 
     """The base projection scale class for the Map Widget.
 
