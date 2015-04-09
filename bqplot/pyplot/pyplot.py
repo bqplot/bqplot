@@ -334,10 +334,11 @@ def axes(mark=None, options={}, **kwargs):
             # The scale is not needed.
             continue
         scale_metadata = mark.scales_metadata.get(name, {})
+        dimension = scale_metadata.get('dimension', scales[name])
         axis_args = dict(scale_metadata,
                          **(options.get(name, {})))
 
-        axis = _fetch_axis(fig, scale_metadata['dimension'], scales[name])
+        axis = _fetch_axis(fig, dimension, scales[name])
         if axis is not None:
         ## for this figure, an axis exists for the scale in the given
         ## dimension
@@ -352,7 +353,7 @@ def axes(mark=None, options={}, **kwargs):
         axes[name] = axis
         fig_axes.append(axis)
         ## update the axis registry of the figure once the axis is added
-        _update_fig_axis_registry(fig, scale_metadata['dimension'], scales[name], axis)
+        _update_fig_axis_registry(fig, dimension, scales[name], axis)
     fig.axes = fig_axes
     return axes
 
