@@ -333,7 +333,7 @@ define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             var new_boxplots = boxplot.enter()
                 .append("g")
                 .attr ("class", "boxplot")
-                .attr ("id", function(d, i) { return "boxplot"+i; })
+                .attr ("id", function(d, i) { return "boxplot"+i; });
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //
@@ -375,7 +375,7 @@ define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
                 .style("opacity", color)
                 .attr ("transform", function (d, i) {
                                    return "translate(" + d.x + ", 0)";
-                });;
+                });
 
            //Box
             var width = 30;

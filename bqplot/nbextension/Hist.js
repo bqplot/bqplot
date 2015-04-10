@@ -69,7 +69,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.model.on("change:selected", this.update_selected, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
-            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
+            this.listenTo(this.parent, "bg_clicked", function() {
+                this.event_dispatcher("parent_clicked");
+            });
         },
         process_interactions: function() {
             var interactions = this.model.get("interactions");
@@ -391,7 +393,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //return value is an array of arrays containing the start and end
             //points of the intervals represented by the indices.
             var intervals = [];
-            if(indices.length != 0) {
+            if(indices.length !== 0) {
                 indices.sort();
                 var start_index = indices[0],
                     end_index = indices[0];

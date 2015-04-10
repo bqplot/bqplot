@@ -87,7 +87,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:labels_visibility", this.update_legend_labels, this);
             this.model.on("change:line_style", this.update_line_style, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
-            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
+            this.listenTo(this.parent, "bg_clicked", function() {
+                this.event_dispatcher("parent_clicked");
+            });
         },
         update_legend_labels: function() {
             if(this.model.get("labels_visibility") === "none") {
@@ -253,7 +255,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var curve_labels = this.model.update_labels();
-            var legend_data = this.model.mark_data.map(function(d) { return {"index": d["index"], "name": d["name"]}});
+            var legend_data = this.model.mark_data.map(function(d) {
+                return {"index": d["index"], "name": d["name"]};
+            });
             this.legend_el = elem.selectAll(".legend" + this.uuid)
               .data(legend_data, function(d, i) {
                   return d.name;
@@ -271,7 +275,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             this.legend_path_data = [[0, rect_dim],
                                      [rect_dim / 2, 0],
-                                     [rect_dim, rect_dim / 2]]
+                                     [rect_dim, rect_dim / 2]];
 
             this.legend_el.enter()
               .append("g")

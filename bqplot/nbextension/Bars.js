@@ -108,7 +108,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on("change:tooltip", this.create_tooltip, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
-            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked")});
+            this.listenTo(this.parent, "bg_clicked", function() { this.event_dispatcher("parent_clicked"); });
         },
         process_interactions: function() {
             var interactions = this.model.get("interactions");

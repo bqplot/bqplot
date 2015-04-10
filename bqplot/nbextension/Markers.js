@@ -26,7 +26,7 @@ define(["./d3"], function(d3) {
             + "A" + r + "," + r + " 0 1,1 0," + (-r)
             + "A" + r + "," + r + " 0 1,1 0," + r
             + "Z";
-    }
+    };
     var bqSymbolTypes = d3.map({
         "circle": circleSymbol,
         "cross": function(size,e) {
@@ -79,8 +79,8 @@ define(["./d3"], function(d3) {
                 + "Z";
         },
         "arrow": function(size, skew) {
-            var angle = 60 + (5 - 60) * skew;
-                s = Math.tan(angle * radian);
+            var angle = 60 + (5 - 60) * skew,
+                s = Math.tan(angle * radian),
                 ry = Math.sqrt(size / s),
                 rx = ry * s / 2;
             return "M0," + -ry
@@ -89,8 +89,8 @@ define(["./d3"], function(d3) {
                 + "Z";
         },
         "ellipse": function(size, skew) {
-            var s = Math.pow(10, skew)
-                rx = Math.sqrt(size / (pi * s));
+            var s = Math.pow(10, skew),
+                rx = Math.sqrt(size / (pi * s)),
                 ry = rx * s;
             return "M0," + ry
                 + "A" + rx + "," + ry + " 0 1,1 0," + (-ry)
@@ -98,8 +98,8 @@ define(["./d3"], function(d3) {
                 + "Z";
         },
         "rectangle": function(size, skew) {
-            var s = Math.pow(10, skew)
-                rx = Math.sqrt(size / s) / 2;
+            var s = Math.pow(10, skew),
+                rx = Math.sqrt(size / s) / 2,
                 ry = rx * s;
             return "M" + -rx + "," + -ry
                 + "L" + rx + "," + -ry
@@ -155,5 +155,5 @@ define(["./d3"], function(d3) {
         return symbol;
     };
 
-    return {symbol: bqSymbol, types: bqSymbolTypes.keys()}
+    return {symbol: bqSymbol, types: bqSymbolTypes.keys()};
 });
