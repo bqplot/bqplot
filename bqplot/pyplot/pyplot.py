@@ -47,9 +47,9 @@ from IPython.display import display
 from IPython.html.widgets import VBox, HBox, Button, ToggleButton
 import numpy as np
 from ..figure import Figure
-from ..scales import Scale, LinearScale
+from ..scales import Scale, LinearScale, Mercator
 from ..axes import Axis
-from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie
+from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, MapMark, Label
 from ..interacts import panzoom
 
 _context = {
@@ -556,6 +556,48 @@ def pie(sizes, **kwargs):
     """
     kwargs['sizes'] = sizes
     return _draw_mark(Pie, **kwargs)
+
+
+def label(text, **kwargs):
+    """Draws a Label in the current context figure.
+
+    Parameters
+    ----------
+    text: string
+        The label to be displayed.
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
+    kwargs['text'] = text
+    return _draw_mark(Label, **kwargs)
+
+
+def geo(**kwargs):
+    """Draws a Map in the current context figure.
+
+    Parameters
+    ----------
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
+    scales = kwargs.pop('scales', _context['scales'])
+    options = kwargs.get('options', {})
+    if 'projection' not in scales:
+        scales['projection'] = Mercator(**options.get('projection', {}))
+    kwargs['scales'] = scales
+    return _draw_mark(MapMark, **kwargs)
 
 
 def clear():

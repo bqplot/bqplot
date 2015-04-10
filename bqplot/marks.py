@@ -998,6 +998,11 @@ class MapMark(Mark):
         dictionary containing the data associated with every country for the
         color scale
     """
+
+    # Mark decoration
+    icon = 'fa-globe'
+    name = 'Map'
+
     enable_hover = Bool(True, sync=True)
     hovered_styles = Dict({'hovered_fill': 'Orange', 'hovered_stroke': None,
                            'hovered_stroke_width': 5.0}, allow_none=True,
@@ -1005,7 +1010,7 @@ class MapMark(Mark):
 
     stroke_color = Color(default_value=None, sync=True, allow_none=True)
     default_color = Color(default_value=None, sync=True, allow_none=True)
-    color = Dict(sync=True, scaled=True, rtype='Color',
+    color = Dict(sync=True, allow_none=True, scaled=True, rtype='Color',
                  atype='bqplot.ColorAxis')
 
     enable_select = Bool(True, sync=True)
