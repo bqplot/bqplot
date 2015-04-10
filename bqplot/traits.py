@@ -40,6 +40,7 @@ from IPython.utils.traitlets import Instance, Int, Float, TraitError, TraitType
 import numpy as np
 import pandas as pd
 import contextlib
+import warnings
 
 
 class safe_directional_link(object):
@@ -246,33 +247,10 @@ class NdArray(CInstance):
     def _set_value(self, value):
         if value is None or len(value) == 0:
             return np.asarray(value)
-        return_value = []
-        if (isinstance(value, list) or
-           (isinstance(value, np.ndarray) and value.dtype == 'object')):
-            # Pandas to_datetime handles all the cases where the passed in
-            # data could be any of the combinations of
-            #            [list, nparray] X [python_datetime, np.datetime]
-            # Because of the coerce=True flag, any non-compatible datetime type
-            # will be converted to pd.NaT. By this comparision, we can figure
-            # out if it is date castable or not.
-            if(len(np.shape(value)) == 2):
-                for elem in value:
-                    temp_val = pd.to_datetime(elem, coerce=True, box=False,
-                                              infer_datetime_format=True)
-                    temp_val = elem if (temp_val[0] == np.datetime64('NaT')) else temp_val
-                    return_value.append(temp_val)
-            elif(isinstance(value, list)):
-                temp_val = pd.to_datetime(value, coerce=True, box=False,
-                                          infer_datetime_format=True)
-                return_value = value if (temp_val[0] == np.datetime64('NaT')) else temp_val
-            else:
-                temp_val = pd.to_datetime(value, coerce=True, box=False,
-                                          infer_datetime_format=True)
-                temp_val = value if (temp_val[0] == np.datetime64('NaT')) else temp_val
-                return_value = temp_val
+        if(isinstance(value, np.ndarray) and np.issubdtype(value.dtype, np.datetime64)):
+            return value
         else:
-            return_value = value
-        return np.asarray(return_value)
+            return np.asarray(value)
 
     def validate(self, obj, value):
         ## If it is an object, I have to check if it can be cast into a date
@@ -299,6 +277,40 @@ class NdArray(CInstance):
         super(NdArray, self).__init__(*args, **kwargs)
 
     _cast = _set_value
+
+
+def convert_to_date(array, fmt='%m-%d-%Y'):
+    ## If array is a np.ndarray with type == np.datetime64, the array can be
+    ## returned as such. If it is an np.ndarray of dtype 'object' then conversion
+    ## to string is tried according to the fmt parameter.
+
+    if(isinstance(array, np.ndarray) and np.issubdtype(array.dtype, np.datetime64)):
+        ## no need to perform any conversion in this case
+        return array
+    elif(isinstance(array, list) or (isinstance(array, np.ndarray) and array.dtype == 'object')):
+        return_value = []
+            # Pandas to_datetime handles all the cases where the passed in
+            # data could be any of the combinations of
+            #            [list, nparray] X [python_datetime, np.datetime]
+            # Because of the coerce=True flag, any non-compatible datetime type
+            # will be converted to pd.NaT. By this comparision, we can figure
+            # out if it is date castable or not.
+        if(len(np.shape(array)) == 2):
+            for elem in array:
+                temp_val = pd.to_datetime(elem, coerce=True, box=False, infer_datetime_format=True)
+                temp_val = elem if (temp_val[0] == np.datetime64('NaT')) else temp_val
+                return_value.append(temp_val)
+        elif(isinstance(array, list)):
+            temp_val = pd.to_datetime(array, coerce=True, box=False, infer_datetime_format=True)
+            return_value = array if (temp_val[0] == np.datetime64('NaT')) else temp_val
+        else:
+            temp_val = pd.to_datetime(array, coerce=True, box=False, infer_datetime_format=True)
+            temp_val = array if (temp_val[0] == np.datetime64('NaT')) else temp_val
+            return_value = temp_val
+        return return_value
+    elif(isinstance(array, np.ndarray)):
+        warnings.warn("Array could not be converted into a date")
+        return array
 
 
 class PandasDataFrame(Instance):
