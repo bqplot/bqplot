@@ -643,14 +643,20 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             }
             this.drag_started = true;
             var dot = this.dot;
+            var drag_color = this.model.get("drag_color");
             dot.size(5 * this.model.get("default_size"));
 
             d3.select(dragged_node)
               .select("path")
+              .classed("drag_scatter", true)
               .transition()
-              .attr("d", dot)
-              .style("fill", this.model.get("drag_color"))
-              .style("stroke", this.model.get("drag_color"));
+              .attr("d", dot);
+
+            if (drag_color) {
+                d3.select(dragged_node)
+                  .style("fill", this.model.get("drag_color"))
+                  .style("stroke", this.model.get("drag_color"));
+            }
         },
         on_drag: function(d, i, dragged_node) {
             if(!this.drag_started){
@@ -699,10 +705,15 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             d3.select(dragged_node)
               .select("path")
+              .classed("drag_scatter", false)
               .transition()
-              .attr("d", dot)
-              .style("fill",  this.model.get("default_color"))
-              .style("stroke", this.model.get("default_color"));
+              .attr("d", dot);
+
+            if (this.model.get("drag_color")) {
+                d3.select(dragged_node)
+                  .style("fill",  this.model.get("default_color"))
+                  .style("stroke", this.model.get("default_color"));
+            }
 
             this.update_array(d, i);
             this.send({event: "drag_end",

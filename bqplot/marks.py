@@ -505,7 +505,7 @@ class Scatter(Mark):
     display_names = Bool(True, sync=True, exposed=True, display_index=11,
                          display_name='Display names')
     fill = Bool(True, sync=True)
-    drag_color = Color('DodgerBlue', sync=True)
+    drag_color = Color(None, allow_none=True, exposed=True, sync=True)
     names_unique = Bool(True, sync=True)
 
     enable_move = Bool(False, sync=True)
