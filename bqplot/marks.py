@@ -404,6 +404,8 @@ class Scatter(Mark):
         Default color of the marker
     stroke: Color or None (default: None)
         Stroke color of the marker
+    stroke_width: Float (default: 1.5)
+        Stroke width of the marker
     default_opacity: float (default: 1.0)
         This number is validated to be between 0 and 1.
     default_skew: float (default: 0.5)
@@ -464,17 +466,17 @@ class Scatter(Mark):
                 display_index=1, scaled=True, rtype='Number')
     y = NdArray(sync=True, min_dim=1, max_dim=1,
                 display_index=2, scaled=True, rtype='Number')
-    color = NdArray(None, allow_none=True, sync=True, display_index=6,
+    color = NdArray(None, allow_none=True, sync=True, display_index=7,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=1)
-    opacity = NdArray(None, allow_none=True, sync=True, display_index=8,
+    opacity = NdArray(None, allow_none=True, sync=True, display_index=9,
                       scaled=True, rtype='Number', min_dim=1, max_dim=1)
-    size = NdArray(None, allow_none=True, sync=True, display_index=10,
+    size = NdArray(None, allow_none=True, sync=True, display_index=12,
                    scaled=True, rtype='Number', min_dim=1, max_dim=1)
     skew = NdArray(None, allow_none=True, sync=True,
-                   display_index=11, scaled=True, rtype='Number',
+                   display_index=13, scaled=True, rtype='Number',
                    min_dim=1, max_dim=1)
-    rotation = NdArray(None, allow_none=True, sync=True, display_index=12,
+    rotation = NdArray(None, allow_none=True, sync=True, display_index=14,
                        scaled=True, rtype='Number', min_dim=1, max_dim=1)
 
     # Other attributes
@@ -493,10 +495,11 @@ class Scatter(Mark):
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=6,
                          display_name='Stroke width')
     default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
-                                   exposed=True, display_index=7,
+                                   exposed=True, display_index=8,
                                    display_name='Default opacity')
-    default_skew = BoundedFloat(default_value=0.5, min=0, max=1, sync=True)
-    default_size = Int(64, sync=True, exposed=True, display_index=9,
+    default_skew = BoundedFloat(default_value=0.5, min=0, max=1,
+                                display_index=11, sync=True)
+    default_size = Int(64, sync=True, exposed=True, display_index=10,
                        display_name='Default size')  # dot size in pixels
     names = NdArray(sync=True)
     display_names = Bool(True, sync=True, exposed=True, display_index=11,
