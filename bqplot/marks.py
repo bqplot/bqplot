@@ -490,6 +490,8 @@ class Scatter(Mark):
                           display_name='Default color')
     stroke = Color(None, allow_none=True, sync=True, exposed=True,
                    display_index=5, display_name='Stroke color')
+    stroke_width = Float(1.5, sync=True, exposed=True, display_index=6,
+                         display_name='Stroke width')
     default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
                                    exposed=True, display_index=7,
                                    display_name='Default opacity')

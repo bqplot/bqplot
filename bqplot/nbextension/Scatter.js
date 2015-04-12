@@ -155,6 +155,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             this.model.on("change:default_color", this.update_default_color, this);
             this.model.on("change:stroke", this.update_stroke, this);
+            this.model.on("change:stroke_width", this.update_stroke_width, this);
             this.model.on("change:default_opacity", this.update_default_opacity, this);
             this.model.on("change:default_skew", this.update_default_skew, this);
             this.model.on("change:default_rotation", this.update_default_rotation, this);
@@ -200,6 +201,17 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                   .style("fill", fill  ? default_color : "none");
             }
         },
+        update_stroke_width: function() {
+            var stroke_width = this.model.get("stroke_width");
+
+            this.el.selectAll(".dot")
+              .style("stroke-width", stroke_width);
+
+            if (this.legend_el) {
+                this.legend_el.selectAll("path")
+                  .style("stroke-width", stroke_width);
+            }
+        },
         update_stroke: function(model, fill) {
             var that = this,
                 stroke = this.model.get("stroke");
@@ -207,6 +219,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
               .style("stroke", stroke ? stroke : function(d) {
                   return that.get_element_color(d);
               });
+
             if (this.legend_el) {
                 this.legend_el.selectAll("path")
                   .style("stroke", stroke);
@@ -352,7 +365,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.update_xy_position();
 
             elements.call(this.drag_listener);
-            elements.on("click", _.bind(function() { this.event_dispatcher("element_clicked");}, this));
+            elements.on("click", _.bind(function() {
+                this.event_dispatcher("element_clicked");
+            }, this));
 
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
@@ -520,6 +535,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             });
             var fill = this.model.get("fill"),
                 stroke = this.model.get("stroke"),
+                stroke_width = this.model.get("stroke_width"),
                 that = this;
             elements
               .style("fill", fill ? function(d) {
@@ -529,7 +545,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                   return that.get_element_color(d);
               }).style("opacity", function(d) {
                   return that.get_element_opacity(d);
-              });
+              }).style("stroke-width", stroke_width);
         },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
