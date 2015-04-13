@@ -654,8 +654,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             if (drag_color) {
                 d3.select(dragged_node)
-                  .style("fill", this.model.get("drag_color"))
-                  .style("stroke", this.model.get("drag_color"));
+                  .select("path")
+                  .style("fill", drag_color)
+                  .style("stroke", drag_color);
             }
         },
         on_drag: function(d, i, dragged_node) {
@@ -700,7 +701,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             if(!this.drag_started) {
                 return;
             }
-            var dot = this.dot;
+            var dot = this.dot,
+                default_color = this.model.get("default_color");
             dot.size(this.model.get("default_size"));
 
             d3.select(dragged_node)
@@ -711,8 +713,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             if (this.model.get("drag_color")) {
                 d3.select(dragged_node)
-                  .style("fill",  this.model.get("default_color"))
-                  .style("stroke", this.model.get("default_color"));
+                  .select("path")
+                  .style("fill",  default_color)
+                  .style("stroke", default_color);
             }
 
             if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {
