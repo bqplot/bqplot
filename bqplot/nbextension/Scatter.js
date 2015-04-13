@@ -643,14 +643,21 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             }
             this.drag_started = true;
             var dot = this.dot;
+            var drag_color = this.model.get("drag_color");
             dot.size(5 * this.model.get("default_size"));
 
             d3.select(dragged_node)
               .select("path")
+              .classed("drag_scatter", true)
               .transition()
-              .attr("d", dot)
-              .style("fill", this.model.get("drag_color"))
-              .style("stroke", this.model.get("drag_color"));
+              .attr("d", dot);
+
+            if (drag_color) {
+                d3.select(dragged_node)
+                  .select("path")
+                  .style("fill", drag_color)
+                  .style("stroke", drag_color);
+            }
         },
         on_drag: function(d, i, dragged_node) {
             if(!this.drag_started){
@@ -694,15 +701,38 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             if(!this.drag_started) {
                 return;
             }
-            var dot = this.dot;
+            var dot = this.dot,
+                default_color = this.model.get("default_color");
             dot.size(this.model.get("default_size"));
 
             d3.select(dragged_node)
               .select("path")
+              .classed("drag_scatter", false)
               .transition()
-              .attr("d", dot)
-              .style("fill",  this.model.get("default_color"))
-              .style("stroke", this.model.get("default_color"));
+              .attr("d", dot);
+
+            if (this.model.get("drag_color")) {
+                d3.select(dragged_node)
+                  .select("path")
+                  .style("fill",  default_color)
+                  .style("stroke", default_color);
+            }
+
+            if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {
+                d[0] = d3.mouse(this.el.node())[0];
+                d[1] = (y_scale.scale(d.y) + y_scale.offset);
+            }
+            else if (!(this.model.get("restrict_x")) && this.model.get("restrict_y")) {
+                d[0] = (x_scale.scale(d.x) + x_scale.offset);
+                d[1] = d3.mouse(this.el.node())[1];
+            }
+            else if (this.model.get("restrict_x") && this.model.get("restrict_y")) {
+                return;
+            }
+            else  {
+                d[0] = d3.mouse(this.el.node())[0];
+                d[1] = d3.mouse(this.el.node())[1];
+            }
 
             this.update_array(d, i);
             this.send({event: "drag_end",
