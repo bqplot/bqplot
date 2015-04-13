@@ -715,6 +715,22 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                   .style("stroke", this.model.get("default_color"));
             }
 
+            if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {
+                d[0] = d3.mouse(this.el.node())[0];
+                d[1] = (y_scale.scale(d.y) + y_scale.offset);
+            }
+            else if (!(this.model.get("restrict_x")) && this.model.get("restrict_y")) {
+                d[0] = (x_scale.scale(d.x) + x_scale.offset);
+                d[1] = d3.mouse(this.el.node())[1];
+            }
+            else if (this.model.get("restrict_x") && this.model.get("restrict_y")) {
+                return;
+            }
+            else  {
+                d[0] = d3.mouse(this.el.node())[0];
+                d[1] = d3.mouse(this.el.node())[1];
+            }
+
             this.update_array(d, i);
             this.send({event: "drag_end",
                        point: {"x": d.x, "y": d.y},
