@@ -240,7 +240,7 @@ class NdArray(CInstance):
                 dtype = 'date'
             else:
                 dtype = a.dtype
-            return {'values': a.tolist(), 'type': dtype}
+            return {'values': a.tolist(), 'type': repr(dtype)}
         else:
             return {'values': a, 'type': None}
 
