@@ -143,6 +143,11 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                     this.axis.tickValues(this.axis_scale.scale.ticks());
                 }
             }
+            if(this.model.get("tick_format") == null || this.model.get("tick_format") == undefined) {
+                if(this.axis_scale.type == "ordinal") {
+                    this.tick_format = d3.format(this.guess_tick_format());
+                }
+            }
             this.axis.tickFormat(this.tick_format);
             if(this.g_axisline) {
                 this.g_axisline.call(this.axis);
@@ -196,7 +201,12 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                 }
                 return function(d) { return d; };
             }
-            return d3.format(this.model.get("tick_format"));
+            else {
+                if(this.model.get("tick_format")) {
+                    return d3.format(this.model.get("tick_format"));
+                }
+                return d3.format(this.guess_tick_format());
+            }
         },
         set_scales_range: function() {
             this.axis_scale.set_range((this.vertical) ?
@@ -573,7 +583,40 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             this.axis_scale.off();
             this.set_scale(value);
         },
-
+        guess_tick_format: function() {
+            var prob_ticks = this.axis_scale.scale.ticks();
+            if (prob_ticks.length == 0) {
+                return ".3g"
+            }
+            var diffs = _.range(prob_ticks.length - 1).map(function(ind) { return prob_ticks[ind + 1] - prob_ticks[ind] });
+            var num_digits = diffs.map(function(d) { return Math.floor(Math.log10(Math.abs(d))); });
+            var mean = _.reduce(num_digits, function(memo, num) { return memo + num; }, 0) / num_digits.length;
+            var abs_dev = num_digits.map(function(d) { return Math.abs(d - mean); });
+            var mad =_.reduce(abs_dev, function(memo, num) { return memo + num; }, 0) / abs_dev.length;
+            return (_.max(num_digits), mad);
+        },
+        get_tick_format: function(sig_digits, diff_mad) {
+            if(diff_mad > 2 && sig_digits > 0) {
+                // there is variation and the numbers are high
+                return "n";
+            }
+            if(sig_digits > 6) {
+                // have a total of 4 significant digits
+                return ".3n";
+            }
+            if(sig_digits < 0 && diff_mad <= 1) {
+                var digits = Math.abs(sig_digits);
+                if(digits < 3){
+                    return "." + digits + "g";
+                }
+                else {
+                    return ".4g";
+                }
+            }
+            else {
+                return ".4g";
+            }
+        },
      });
     return {
         Axis: Axis,

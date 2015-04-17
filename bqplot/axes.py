@@ -111,7 +111,7 @@ class Axis(BaseAxis):
     label = Unicode(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
                       sync=True)
-    tick_format = Unicode(allow_none=True, sync=True)  # TODO: Default value?
+    tick_format = Unicode(allow_none=True, sync=True)
     scale = Instance(Scale, sync=True, **widget_serialization)
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NdArray(sync=True)
@@ -141,7 +141,7 @@ class Axis(BaseAxis):
         elif isinstance(self.scale, LogScale):
             return '.3g'
         else:
-            return '.0f'
+            return None
 
 
 @register_axis('bqplot.ColorAxis')
@@ -171,7 +171,6 @@ class ColorAxis(Axis):
                 sync=True)
     label = Unicode(sync=True)
     scale = Instance(ColorScale, sync=True, **widget_serialization)
-    tick_format = Unicode(sync=True)
     _view_name = Unicode('ColorAxis', sync=True)
     _view_module = Unicode('nbextensions/bqplot/ColorAxis', sync=True)
     _model_name = Unicode('AxisModel', sync=True)
@@ -181,4 +180,4 @@ class ColorAxis(Axis):
         if isinstance(self.scale, DateColorScale):
             return '%b-%y'
         else:
-            return '.0f'
+            return None
