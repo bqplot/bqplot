@@ -588,33 +588,65 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             if (prob_ticks.length == 0) {
                 return ".3g"
             }
+            var tick_digits = prob_ticks.map(function(d) { return Math.floor(Math.log10(Math.abs(d))); });
             var diffs = _.range(prob_ticks.length - 1).map(function(ind) { return prob_ticks[ind + 1] - prob_ticks[ind] });
-            var num_digits = diffs.map(function(d) { return Math.floor(Math.log10(Math.abs(d))); });
-            var mean = _.reduce(num_digits, function(memo, num) { return memo + num; }, 0) / num_digits.length;
-            var abs_dev = num_digits.map(function(d) { return Math.abs(d - mean); });
+            var diff_digits = diffs.map(function(d) { return Math.floor(Math.log10(Math.abs(d))); });
+            var mean = _.reduce(diff_digits, function(memo, num) { return memo + num; }, 0) / diff_digits.length;
+            var abs_dev = diff_digits.map(function(d) { return Math.abs(d - mean); });
             var mad =_.reduce(abs_dev, function(memo, num) { return memo + num; }, 0) / abs_dev.length;
-            return (_.max(num_digits), mad);
+
+            var tick_format = this.get_tick_format(tick_digits, diff_digits, mad);
+            console.log(this.model.get("orientation") + tick_format);
+            return tick_format;
         },
-        get_tick_format: function(sig_digits, diff_mad) {
-            if(diff_mad > 2 && sig_digits > 0) {
-                // there is variation and the numbers are high
+        get_tick_format: function(tick_digits, diff_digits, diff_mad) {
+
+            var min_digits = _.min(diff_digits);
+            var max_digits = _.max(diff_digits);
+
+            var tick_min = _.min(tick_digits);
+            var tick_max = _.max(tick_digits);
+
+            var sig_digits = 0;
+            if(max_digits > 0 && min_digits > 0) {
+                sig_digits = max_digits;
+            } else if (max_digits <= 0 && min_digits <= 0) {
+                sig_digits = min_digits;
+            } else {
+                // not sure about this part of the logic
+                sig_digits = (Math.abs(min_digits) > max_digits) ? min_digits : max_digits;
+            }
+
+            if(diff_mad > 2 && sig_digits >= 0) {
+                // there is variation and the numbers are large. display
+                // everything
+                return "n";
+            } else if (sig_digits >= 0 && sig_digits <= 6) {
+                // All the diffs are integers greater than 1 and less than 1e6
                 return "n";
             }
             if(sig_digits > 6) {
                 // have a total of 4 significant digits
                 return ".3n";
             }
+            //sig_digits < 0 for sure by this time.
             if(sig_digits < 0 && diff_mad <= 1) {
                 var digits = Math.abs(sig_digits);
+                var max_tick = Math.max(0, tick_max);
                 if(digits < 3){
-                    return "." + digits + "g";
+                    // do not display more than the number of digits required
+                    var max_precision = Math.min((max_tick +  1 + digits), 6) + 1;
+                    return "." + max_precision + "g";
+                } else {
+                    // imposed choice to have 4 significant digits and exp
+                    // notation for the other digits
+                    var max_precision = Math.min((max_tick + 4), 6) + 1;
+                    return "." + max_precision + "g";
                 }
-                else {
-                    return ".4g";
-                }
-            }
-            else {
-                return ".4g";
+            } else {
+                // this means there is significant variation and all of the
+                // differences are less than 1.
+                return "g";
             }
         },
      });
