@@ -195,7 +195,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             elements.sort(function(dat1, dat2) { return dat2['startAngle'] - dat1['startAngle'];});
             elements.on("click", function(d, i) {
                   return that.event_dispatcher("element_clicked", {"data": d, "index": i});
-              });
+            });
             elements.exit().remove();
 
             this.update_radii();
