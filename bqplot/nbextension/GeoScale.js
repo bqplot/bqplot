@@ -17,23 +17,76 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
      "use strict";
 
     var GeoScale = Widget.WidgetView.extend({
-        set_projection: function(projection) {
-            this.scale = d3.geo.path().projection(projection);
+        render: function() {
+            this.set_projection();
+            this.listenTo(this.model, "attribute_changed", this.scale_changed);
+        },
+        set_projection: function() {
+            this.scale = d3.geo.path().projection(this.model.projection);
         }
     });
 
     var Mercator = GeoScale.extend({
+        scale_changed: function() {
+            this.set_projection();
+            this.trigger("domain_changed", null);
+        }
+    });
+
+    /*var Albers = GeoScale.extend({
         render: function() {
-            var projection = d3.geo.mercator().center([0, 60]).scale(190);
-            this.set_projection(projection);
+            this.create_projection();
+            this.set_projection();
+            this.model.on_some_change(['rotate', 'center', 'parallels', 'scale', 'precision'], this.scale_changed, this);
         },
+        create_projection: function() {
+            this.projection = d3.geo.albers()
+                .rotate(this.model.get("rotate"))
+                .center(this.model.get("center"))
+                .parallels(this.model.get("parallels"))
+                .scale(this.model.get("scale"))
+                .precision(this.model.get("precision"));
+        },
+        scale_changed: function() {
+            this.create_projection();
+            this.set_projection();
+            this.trigger("domain_changed", null);
+        }
     });
 
     var AlbersUSA = GeoScale.extend({
         render: function() {
-            var projection = d3.geo.albersUsa().scale(1200);
-            this.set_projection(projection);
+            this.create_projection();
+            this.set_projection();
+            this.model.on_some_change(['scale'], this.scale_changed, this);
         },
+        create_projection: function() {
+            this.projection = d3.geo.albersUsa()
+                .scale(this.model.get("scale"));
+        },
+        scale_changed: function() {
+            this.create_projection();
+            this.set_projection();
+            this.trigger("domain_changed", null);
+        }
+    });
+
+    var EquiRectangular = GeoScale.extend({
+        render: function() {
+            this.create_projection();
+            this.set_projection();
+            this.model.on_some_change(['scale', 'center'], this.scale_changed, this);
+        },
+        create_projection: function() {
+            this.projection = d3.geo.equirectangular()
+                .scale(this.model.get("scale"))
+                .center(this.model.get("center"));
+        },
+        scale_changed: function() {
+            this.create_projection();
+            this.set_projection();
+            this.trigger("domain_changed", null);
+        }
     });
 
     var Gnomonic = GeoScale.extend({
@@ -58,12 +111,14 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
                 .precision(0.1);
             this.set_projection(projection);
         },
-    });
+    });*/
 
     return {
         Mercator: Mercator,
+        /*Albers: Albers,
         AlbersUSA: AlbersUSA,
+        EquiRectangular: EquiRectangular,
         Gnomonic: Gnomonic,
-        Stereographic: Stereographic,
+        Stereographic: Stereographic,*/
     };
 });

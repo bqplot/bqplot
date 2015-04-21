@@ -39,7 +39,8 @@ Scales
 """
 
 from IPython.html.widgets import Widget, Color
-from IPython.utils.traitlets import Unicode, List, Enum, Float, Bool, Type
+from IPython.utils.traitlets import (Unicode, List, Enum, Float, Bool, Type,
+                                     Tuple)
 
 import numpy as np
 from .traits import Date
@@ -94,29 +95,116 @@ class GeoScale(Scale):
 
     The GeoScale represents a mapping between topographic data and a
     2d visual representation.
-
-    Attributes
-    ----------
-    map_type: unicode (default: 'worldmap')
-        The type of map being used determines the projection.
     """
     _view_module = Unicode('nbextensions/bqplot/GeoScale', sync=True)
+    _model_name = Unicode('GeoScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/GeoScaleModel', sync=True)
 
 
 @register_scale('bqplot.Mercator')
 class Mercator(GeoScale):
 
+    """A Geo Scale usually used for World Maps.
+
+    The Mercator projection is a cylindrical map projection which ensures that
+    any course of constant bearing is a straight line.
+
+    Attributes
+    ----------
+    scale: float (default: 190)
+        Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    rtype: (Number, Number) (class-level attribute)
+        This attribute should not be modifed. The range type of a geo
+        scale is a tuple.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
+    """
+
+    scale = Float(190., sync=True)
+    center = Tuple((0, 60), sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Mercator', sync=True)
+    _model_name = Unicode('MercatorModel', sync=True)
+
+
+@register_scale('bqplot.Albers')
+class Albers(GeoScale):
+
+    """A Geo Scale which is an alias for a conic equal area projection.
+
+    The Albers projection is a conic equal area map. It does not preserve scale
+    or shape, though it is recommended for chloropleths since it preserves the
+    relative areas of geographic features. Default values are US-centric.
+
+    Attributes
+    ----------
+    scale: float (default: 1070)
+        Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    rtype: (Number, Number) (class-level attribute)
+        This attribute should not be modifed. The range type of a geo
+        scale is a tuple.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
+    """
+
+    rotate = Tuple((96, 0), sync=True)
+    center = Tuple((-.6, 38.7), sync=True)
+    parallels = Tuple((29.5, 45.5), sync=True)
+    scale = Float(1070., sync=True)
+    precision = Float(0.1, sync=True)
+    rtype = '(Number, Number)'
+    dtype = np.number
+    _view_name = Unicode('AlbersUSA', sync=True)
 
 
 @register_scale('bqplot.AlbersUSA')
 class AlbersUSA(GeoScale):
 
+    """A composite projection of four Albers projections meant specifically for
+    the United States.
+
+    Attributes
+    ----------
+    scale: float (default: 1200)
+        Specifies the scale value for the projection
+    rtype: (Number, Number) (class-level attribute)
+        This attribute should not be modifed. The range type of a geo
+        scale is a tuple.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
+    """
+
+    scale = Float(1200., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('AlbersUSA', sync=True)
+
+
+@register_scale('bqplot.EquiRectangular')
+class EquiRectangular(GeoScale):
+
+    """An elementary projection that uses the identity function.
+
+    The projection is neither equal-area nor conformal.
+
+    Attributes
+    ----------
+    scale: float (default: 145)
+       Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    """
+
+    scale = Float(145., sync=True)
+    center = Tuple((0, 60), sync=True)
+    rtype = '(Number, Number)'
+    dtype = np.number
+    _view_name = Unicode('EquiRectangular', sync=True)
 
 
 @register_scale('bqplot.Gnomonic')

@@ -73,6 +73,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
         draw: function() {
             this.set_ranges();
             var that = this;
+            this.remove_map();
             this.transformed_g = this.map.append("g")
                 .attr("class", "world_map map" + this.map_id);
             this.fill_g = this.transformed_g.append("g");
@@ -115,9 +116,12 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             });
         },
         validate_color: function(color) {
-            return color !== "" && color !== null;
+            return color !== "";
         },
         mouseover_handler: function() {
+            if (!this.model.get("enable_hover")) {
+                return
+            }
             var el = d3.select(d3.event.target);
             if(this.is_hover_element(el)) {
                 var data = el.data()[0];
@@ -144,6 +148,9 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             }
         },
         mouseout_handler: function() {
+            if (!this.model.get("enable_hover")) {
+                return
+            }
             var el = d3.select(d3.event.target);
             if(this.is_hover_element(el)) {
                 var that = this;
