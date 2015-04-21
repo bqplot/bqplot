@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "./BaseModel", "base/js/utils"], function(Widget, BaseModel, utils) {
+define(["widgets/js/widget", "./MarkModel", "base/js/utils"], function(Widget, MarkModel, utils) {
     "use strict";
 
-    var MapModel = BaseModel.BaseModel.extend({
+    var MapModel = MarkModel.MarkModel.extend({
         initialize: function() {
             MapModel.__super__.initialize.apply(this);
             this.once("change", this.update_data, this);
@@ -49,11 +49,20 @@ define(["widgets/js/widget", "./BaseModel", "base/js/utils"], function(Widget, B
                 }
             }
         },
-    }, {
-        serializers: _.extend({
-            scales:  {deserialize: Widget.unpack_models},
-            tooltip_widget:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.serializers),
+        get_subunit_name: function(id) {
+		    for(var i = 0; i< this.subunits.length; i++) {
+			    if(id == this.subunits[i].id){
+				    name = this.subunits[i].Name;
+				}
+			}
+            return name;
+        },
+        get_data_dict: function(data, index) {
+            return {
+                'id': data.id,
+                'name': this.get_subunit_name(data.id),
+            };
+        },
     });
 
     return {

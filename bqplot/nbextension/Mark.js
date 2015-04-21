@@ -41,17 +41,22 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             this.bisect = d3.bisector(function(d) { return d; }).left;
             this.el.style("display", (this.model.get("visible") ? "inline" : "none"));
             this.display_el_classes = [];
-            this.event_metadata = {"mouse_over":      {"msg_name": "hover",
-                                                       "lookup_data": true,
-                                                       "hit_test": true },
-                                   "legend_clicked":  {"msg_name": "legend_click",
-                                                       "hit_test": true },
-                                   "element_clicked": {"msg_name": "element_click",
-                                                       "lookup_data": true,
-                                                       "hit_test": true},
-                                   "parent_clicked":  {"msg_name": "background_click",
-                                                       "hit_test": false}
-                                  };
+            this.event_metadata = {
+                "mouse_over":      {
+                    "msg_name": "hover",
+                    "lookup_data": true,
+                    "hit_test": true },
+                "legend_clicked":  {
+                    "msg_name": "legend_click",
+                    "hit_test": true },
+                "element_clicked": {
+                    "msg_name": "element_click",
+                    "lookup_data": true,
+                    "hit_test": true},
+                "parent_clicked":  {
+                    "msg_name": "background_click",
+                    "hit_test": false}
+            };
 
             return scale_creation_promise;
         },
