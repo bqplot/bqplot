@@ -1024,10 +1024,7 @@ class MapMark(Mark):
                             'selected_stroke_width': 5.0},
                            allow_none=True, sync=True)
 
-    map_data = Tuple(Unicode, Unicode,
-                     default_value=('worldmap',
-                                    'nbextensions/bqplot/WorldMapData'),
-                     sync=True)
+    map_data = Tuple(sync=True)
 
     def __init__(self, **kwargs):
         super(MapMark, self).__init__(**kwargs)

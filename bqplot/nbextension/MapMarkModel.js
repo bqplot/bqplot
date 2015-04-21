@@ -19,20 +19,17 @@ define(["widgets/js/widget", "./MarkModel", "base/js/utils"], function(Widget, M
     var MapModel = MarkModel.MarkModel.extend({
         initialize: function() {
             MapModel.__super__.initialize.apply(this);
-            this.once("change", this.update_data, this);
+            this.on("change:map_data", this.update_data, this);
             this.on("change:color", this.update_domains, this);
         },
         update_data: function() {
             this.dirty = true;
-            var that = this;
-            var data = utils.load_class.apply(this, this.get("map_data"));
-            data.then(function(mapdata) {
-                that.geodata = mapdata[0];
-                that.subunits = mapdata[1];
-                that.update_domains();
-                that.dirty = false;
-                that.trigger("data_updated");
-            });
+            var mapdata = this.get("map_data");
+            this.geodata = mapdata[0];
+            this.subunits = mapdata[1];
+            this.update_domains();
+            this.dirty = false;
+            this.trigger("data_updated");
         },
         update_domains: function() {
             var scales = this.get("scales");
