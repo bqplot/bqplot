@@ -579,7 +579,7 @@ def label(text, **kwargs):
     return _draw_mark(Label, **kwargs)
 
 
-def geo(**kwargs):
+def geo(map_data, **kwargs):
     """Draws a Map in the current context figure.
 
     Parameters
@@ -598,6 +598,7 @@ def geo(**kwargs):
     if 'projection' not in scales:
         scales['projection'] = Mercator(**options.get('projection', {}))
     kwargs['scales'] = scales
+    kwargs['map_data'] = map_data
     return _draw_mark(MapMark, **kwargs)
 
 
