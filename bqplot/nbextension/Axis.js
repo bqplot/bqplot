@@ -144,7 +144,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                 }
             }
             if(this.model.get("tick_format") == null || this.model.get("tick_format") == undefined) {
-                if(this.axis_scale.type == "ordinal") {
+                if(this.axis_scale.type !== "ordinal") {
                     this.tick_format = this.guess_tick_format();
                 }
             }
@@ -185,7 +185,8 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                 if(this.model.get("tick_format")) {
                     return d3.time.format(this.model.get("tick_format"));
                 } else {
-                    return custom_time_format;
+                    // return custom_time_format;
+                    return this.guess_tick_format();
                 }
             } else if (this.axis_scale.model.type === "ordinal") {
                 var tick_format = this.model.get("tick_format");
@@ -200,8 +201,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                     }
                 }
                 return function(d) { return d; };
-            }
-            else {
+            } else {
                 if(this.model.get("tick_format")) {
                     return d3.format(this.model.get("tick_format"));
                 }
@@ -637,8 +637,43 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             return this.get_format_func(this._linear_scale_precision(ticks));
         },
         date_sc_format: function() {
+            // assumes that scale is a linear date scale
             var ticks = this.axis_scale.scale.ticks();
-             
+            // diff is the difference between ticks in milliseconds
+            var diff = Math.abs(ticks[1] - ticks[0]);
+            var div = 1000;
+
+            if(Math.floor(diff / div) == 0) {
+                //diff is less than a second
+                return [[".%L", function(d) { return d.getMilliseconds(); }],
+                [":%S", function(d) { return d.getSeconds(); }],
+                ["%I:%M", function(d) { return true; }]];
+            } else if (Math.floor(diff / (div *= 60)) == 0) {
+                //diff is less than a minute
+                 return [[":%S", function(d) { return d.getSeconds(); }],
+                 ["%I:%M", function(d) { return true; }]];
+            } else if (Math.floor(diff / (div *= 60)) == 0) {
+                // diff is less than an hour
+                return [["%I:%M", function(d) { return d.getMinutes(); }],
+                ["%I %p", function(d) { return true; }]];
+            } else if (Math.floor(diff / (div *= 24)) == 0) {
+                //diff is less than a day
+                 return [["%I %p", function(d) { return d.getHours(); }],
+                 ["%a %d", function(d) { return d.getDay() && d.getDate() !== 1; }]];
+            } else if (Math.floor(diff / (div *= 27)) == 0) {
+                //diff is less than a month
+                return [["%b %d", function(d) { return d.getDate() !== 1; }],
+                        ["%b %Y", function(d) { return true; }]];
+            } else if (Math.floor(diff / (div *= 12)) == 0) {
+                //diff is less than a year
+                return [["%b %d", function(d) { return d.getDate() !== 1; }],
+                        ["%b %Y", function() { return true;}]];
+            } else {
+                //diff is more than a year
+                return  [["%b %d", function(d) { return d.getDate() !== 1; }],
+                         ["%b %Y", function() { return d.getMonth();}],
+                         ["%Y", function() { return true; }]];
+            }
         },
         log_sc_format: function() {
 
@@ -646,6 +681,9 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
         guess_tick_format: function(ticks) {
             if(this.axis_scale.model.type == "linear") {
                 return this.linear_sc_format(ticks);
+            } else if (this.axis_scale.model.type == "date" ||
+                       this.axis_scale.model.type == "date_color_linear") {
+                return d3.time.format.multi(this.date_sc_format());
             }
         },
      });
