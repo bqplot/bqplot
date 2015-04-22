@@ -579,7 +579,12 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             return (number == 0) ? 1 : (Math.floor(Math.log10(Math.abs(number))) + 1);
         },
         get_format_func: function(prec) {
-            var fmt_string = (prec == 0) ? "" : ("." + (prec));
+            if(prec === 0) {
+            // format this as an integer
+                return function(number) { return d3.format("d")(Math.round(number)); }
+            }
+            //if it is -1, then it is a generic format
+            var fmt_string = (prec == -1) ? "" : ("." + (prec));
             return function(number) {
                 var str = d3.format(fmt_string + "g")(number);
                 var reg_str = str.replace(/-|\.|e/gi, "");
@@ -630,7 +635,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             // represented
             if(max_digits >= 0 && diff_digits > 0) {
                 if(max_digits <= 6) {
-                // display the number as it is. return 0
+                // format the number as an integer
                     return 0;
                 } else  {
                 // precision plus 1 is returned here as they are the number of
@@ -694,7 +699,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
 
             if(ratio >= 0.3010) {
                 //format them as they are with the max_length of 6
-                return 0;
+                return -1;
             } else {
                 //return a default of 3 digits of precision
                 return 3;
