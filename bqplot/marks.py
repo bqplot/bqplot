@@ -300,9 +300,9 @@ class Lines(Mark):
 
     # Scaled attributes
     x = NdArray(sync=True, min_dim=1, max_dim=2,
-                display_index=1, scaled=True, rtype='Number')
+                display_index=1, scaled=True, rtype='Number', atype='bqplot.Axis')
     y = NdArray(sync=True, min_dim=1, max_dim=2,
-                display_index=2, scaled=True, rtype='Number')
+                display_index=2, scaled=True, rtype='Number', atype='bqplot.Axis')
     color = NdArray(None, sync=True, allow_none=True, display_index=6,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=1)
@@ -463,9 +463,9 @@ class Scatter(Mark):
 
     # Scaled attribtes
     x = NdArray(sync=True, min_dim=1, max_dim=1,
-                display_index=1, scaled=True, rtype='Number')
+                display_index=1, scaled=True, rtype='Number', atype='bqplot.Axis')
     y = NdArray(sync=True, min_dim=1, max_dim=1,
-                display_index=2, scaled=True, rtype='Number')
+                display_index=2, scaled=True, rtype='Number', atype='bqplot.Axis')
     color = NdArray(None, allow_none=True, sync=True, display_index=7,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=1)
@@ -482,7 +482,8 @@ class Scatter(Mark):
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
                             'y': {'orientation': 'vertical', 'dimension': 'vertical'},
-                            'color': {'dimension': 'color'}}, sync=True)
+                            'color': {'dimension': 'color'}, 'size': {'dimension': 'size'},
+                            'opacity': {'dimension': 'opacity'}}, sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value='circle',
@@ -574,10 +575,10 @@ class Hist(Mark):
 
     # Scaled attributes
     sample = NdArray(sync=True, min_dim=1, max_dim=1,
-                     display_name='Sample', scaled=True, rtype='Number')
+                     display_name='Sample', scaled=True, rtype='Number', atype='bqplot.Axis')
     counts = NdArray(sync=True, display_index=4,
                      display_name='Count', scaled=True, rtype='Number',
-                     read_only=True)
+                     read_only=True, atype='bqplot.Axis')
     # FIXME: Should we allow none for counts?
     # counts is a read-only attribute that is set when the mark is drawn
 
@@ -637,10 +638,10 @@ class Boxplot(Mark):
     name = 'Boxplot chart'
 
     # Scaled attributestop
-    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1)
+    x = NdArray(sync=True, display_index=1, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
 
     # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
-    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2)
+    y = NdArray(sync=True, display_index=2, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
 
     # Other attributes
     # marker = Enum([boxplottype], sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
@@ -719,9 +720,9 @@ class Bars(Mark):
 
     # Scaled attributes
     x = NdArray(sync=True, display_index=1, scaled=True,
-                rtype='Number', min_dim=1, max_dim=1)
+                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
     y = NdArray(sync=True, display_index=2, scaled=True,
-                rtype='Number', min_dim=1, max_dim=2)
+                rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
     color = NdArray(None, allow_none=True,  sync=True, display_index=8,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=1)
@@ -853,9 +854,9 @@ class OHLC(Mark):
 
     # Scaled attributes
     x = NdArray(sync=True, display_index=1, scaled=True,
-                rtype='Number', min_dim=1, max_dim=1)
+                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
     y = NdArray(sync=True, display_index=2, scaled=True,
-                rtype='Number', min_dim=2, max_dim=2)
+                rtype='Number', min_dim=2, max_dim=2, atype='bqplot.Axis')
     # FIXME Future warnings
     _y_default = None
 

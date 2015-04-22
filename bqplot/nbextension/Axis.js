@@ -145,7 +145,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             }
             if(this.model.get("tick_format") == null || this.model.get("tick_format") == undefined) {
                 if(this.axis_scale.type == "ordinal") {
-                    this.tick_format = d3.format(this.guess_tick_format());
+                    this.tick_format = this.guess_tick_format();
                 }
             }
             this.axis.tickFormat(this.tick_format);
@@ -205,7 +205,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                 if(this.model.get("tick_format")) {
                     return d3.format(this.model.get("tick_format"));
                 }
-                return d3.format(this.guess_tick_format());
+                return this.guess_tick_format();
             }
         },
         set_scales_range: function() {
@@ -583,70 +583,69 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             this.axis_scale.off();
             this.set_scale(value);
         },
-        guess_tick_format: function() {
-            var prob_ticks = this.axis_scale.scale.ticks();
-            if (prob_ticks.length == 0) {
-                return ".3g"
-            }
-            var tick_digits = prob_ticks.map(function(d) { return Math.floor(Math.log10(Math.abs(d))); });
-            var diffs = _.range(prob_ticks.length - 1).map(function(ind) { return prob_ticks[ind + 1] - prob_ticks[ind] });
-            var diff_digits = diffs.map(function(d) { return Math.floor(Math.log10(Math.abs(d))); });
-            var mean = _.reduce(diff_digits, function(memo, num) { return memo + num; }, 0) / diff_digits.length;
-            var abs_dev = diff_digits.map(function(d) { return Math.abs(d - mean); });
-            var mad =_.reduce(abs_dev, function(memo, num) { return memo + num; }, 0) / abs_dev.length;
-
-            var tick_format = this.get_tick_format(tick_digits, diff_digits, mad);
-            console.log(this.model.get("orientation") + tick_format);
-            return tick_format;
+        _get_digits: function(number) {
+            return (number == 0) ? 1 : (Math.floor(Math.log10(Math.abs(number))) + 1);
         },
-        get_tick_format: function(tick_digits, diff_digits, diff_mad) {
-
-            var min_digits = _.min(diff_digits);
-            var max_digits = _.max(diff_digits);
-
-            var tick_min = _.min(tick_digits);
-            var tick_max = _.max(tick_digits);
-
-            var sig_digits = 0;
-            if(max_digits > 0 && min_digits > 0) {
-                sig_digits = max_digits;
-            } else if (max_digits <= 0 && min_digits <= 0) {
-                sig_digits = min_digits;
-            } else {
-                // not sure about this part of the logic
-                sig_digits = (Math.abs(min_digits) > max_digits) ? min_digits : max_digits;
-            }
-
-            if(diff_mad > 2 && sig_digits >= 0) {
-                // there is variation and the numbers are large. display
-                // everything
-                return "n";
-            } else if (sig_digits >= 0 && sig_digits <= 6) {
-                // All the diffs are integers greater than 1 and less than 1e6
-                return "n";
-            }
-            if(sig_digits > 6) {
-                // have a total of 4 significant digits
-                return ".3n";
-            }
-            //sig_digits < 0 for sure by this time.
-            if(sig_digits < 0 && diff_mad <= 1) {
-                var digits = Math.abs(sig_digits);
-                var max_tick = Math.max(0, tick_max);
-                if(digits < 3){
-                    // do not display more than the number of digits required
-                    var max_precision = Math.min((max_tick +  1 + digits), 6) + 1;
-                    return "." + max_precision + "g";
+        get_format_func: function(prec) {
+            var fmt_string = (prec == 0) ? "" : ("." + (prec));
+            return function(number) {
+                var str = d3.format(fmt_string + "g")(number);
+                var reg_str = str.replace(/-|\.|e/gi, "");
+                if(reg_str.length < 7) {
+                    //regex to replace the trailing
+                    //zeros after the decimal point
+                    //TODO: Should be done in a single regex
+                    return str.replace(/(\.[0-9]*?)0+$/gi, "$1").replace(/\.$/, "");
                 } else {
-                    // imposed choice to have 4 significant digits and exp
-                    // notation for the other digits
-                    var max_precision = Math.min((max_tick + 4), 6) + 1;
-                    return "." + max_precision + "g";
+                    //if length is more than 7, format it exponentially
+                    return d3.format(fmt_string + "e")(number);
                 }
-            } else {
-                // this means there is significant variation and all of the
-                // differences are less than 1.
-                return "g";
+            };
+        },
+        _linear_scale_precision: function(ticks) {
+            var prob_ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
+            var diff = Math.abs(prob_ticks[1] - prob_ticks[0]);
+            var max = Math.max(Math.abs(prob_ticks[0]), Math.abs(prob_ticks[prob_ticks.length - 1]));
+
+            var max_digits = this._get_digits(max);
+            // number of digits in the max
+            var diff_digits = this._get_digits(diff);
+            // number of digits in the min
+
+            var precision = Math.abs(max_digits - diff_digits);
+            // difference in the number of digits. The number of digits we have
+            // to display is the diff above + 1.
+            var limit = 6;
+            // limit is a choice of the max number of digits that are
+            // represented
+            if(max_digits >= 0 && diff_digits > 0) {
+                if(max_digits <= 6) {
+                // display the number as it is. return 0
+                    return 0;
+                } else  {
+                // precision plus 1 is returned here as they are the number of
+                // digits to be displayed. Capped at 6
+                    return Math.min(precision, 6) + 1;
+                }
+            }
+            else if(diff_digits <= 0) {
+                // return math.abs(diff_digits) + max_digits + 1. Capped at 6.
+                return Math.min((Math.abs(diff_digits) + max_digits), 6) + 1;
+            }
+        },
+        linear_sc_format: function(ticks) {
+            return this.get_format_func(this._linear_scale_precision(ticks));
+        },
+        date_sc_format: function() {
+            var ticks = this.axis_scale.scale.ticks();
+             
+        },
+        log_sc_format: function() {
+
+        },
+        guess_tick_format: function(ticks) {
+            if(this.axis_scale.model.type == "linear") {
+                return this.linear_sc_format(ticks);
             }
         },
      });
