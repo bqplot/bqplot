@@ -17,17 +17,6 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
     "use strict";
 
      var units_array = ["em", "ex", "px"];
-     var custom_time_format = d3.time.format.multi([
-         [".%L", function(d) { return d.getMilliseconds(); }],
-         [":%S", function(d) { return d.getSeconds(); }],
-         ["%I:%M", function(d) { return d.getMinutes(); }],
-         ["%I %p", function(d) { return d.getHours(); }],
-         ["%a %d", function(d) { return d.getDay() && d.getDate() !== 1; }],
-         ["%b %d", function(d) { return d.getDate() !== 1; }],
-         ["%b %Y", function(d) { return d.getMonth(); }],
-         ["%Y", function() { return true; }]
-     ]);
-
      var Axis = Widget.WidgetView.extend({
          render: function() {
 
