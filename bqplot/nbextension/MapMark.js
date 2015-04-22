@@ -405,9 +405,11 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
         },
         fill_g_colorfill: function(d, j) {
             var color_scale = this.scales["color"];
-            var select = this.model.get("selected").slice();
+            var selection = this.model.get("selected");
             var color_data = this.model.get("color");
-            if (this.is_object_empty(color_data)) {
+            if (selection.indexOf(d.id) > -1) {
+                return this.model.get("selected_styles")["selected_fill"];
+            } else if (this.is_object_empty(color_data)) {
                 return this.model.get("default_color");
             } else if (color_data[d.id] === undefined ||
                        color_data[d.id] === null ||
