@@ -35,7 +35,7 @@ try:
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 
-from .scales import Scale, ColorScale, DateScale, DateColorScale, LogScale, OrdinalScale
+from .scales import Scale, ColorScale
 from .traits import NdArray
 
 
@@ -111,7 +111,7 @@ class Axis(BaseAxis):
     label = Unicode(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
                       sync=True)
-    tick_format = Unicode(allow_none=True, sync=True)
+    tick_format = Unicode(None, allow_none=True, sync=True)
     scale = Instance(Scale, sync=True, **widget_serialization)
     num_ticks = Int(default_value=None, sync=True, allow_none=True)
     tick_values = NdArray(sync=True)
@@ -130,18 +130,6 @@ class Axis(BaseAxis):
     _model_name = Unicode('AxisModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/AxisModel', sync=True)
     _ipython_display_ = None  # We cannot display an axis outside of a figure.
-
-    def _tick_format_default(self):
-        if isinstance(self.scale, DateScale):
-            # TODO: We should probably have a DateAxis subclass instead of this
-            # check at runtime.
-            return None
-        elif isinstance(self.scale, OrdinalScale):
-            return None
-        elif isinstance(self.scale, LogScale):
-            return '.3g'
-        else:
-            return None
 
 
 @register_axis('bqplot.ColorAxis')
@@ -175,9 +163,3 @@ class ColorAxis(Axis):
     _view_module = Unicode('nbextensions/bqplot/ColorAxis', sync=True)
     _model_name = Unicode('AxisModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/AxisModel', sync=True)
-
-    def _tick_format_default(self):
-        if isinstance(self.scale, DateColorScale):
-            return '%b-%y'
-        else:
-            return None

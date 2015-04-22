@@ -594,14 +594,32 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             return function(number) {
                 var str = d3.format(fmt_string + "g")(number);
                 var reg_str = str.replace(/-|\.|e/gi, "");
-                if(reg_str.length < 7) {
+                if(reg_str.length < 6) {
                     //regex to replace the trailing
                     //zeros after the decimal point
                     //TODO: Should be done in a single regex
                     return str.replace(/(\.[0-9]*?)0+$/gi, "$1").replace(/\.$/, "");
                 } else {
-                    //if length is more than 7, format it exponentially
-                    return d3.format(fmt_string + "e")(number);
+                    //if length is more than 6, format it exponentially
+                    if(fmt_string === "") {
+                        //if fmt_string is "", then the number o/p can be
+                        //arbitrarily large
+                        var new_str = d3.format(fmt_string + "e")(number);
+                        if(new_str.length < 7) {
+                            //this case can arise only if there is a float
+                            //round off error
+                            return new_str;
+                        }
+                        else {
+                            //in the case of a round off error, setting the max
+                            //limit to be 6
+                            return d3.format(".6e")(number);
+                        }
+                    }
+                    else {
+                        //Format with the precision required
+                        return d3.format(fmt_string + "e")(number);
+                    }
                 }
             };
         },
@@ -678,8 +696,20 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
                          ["%Y", function() { return true; }]];
             }
         },
-        log_sc_format: function() {
+        log_sc_format: function(ticks) {
+            return this.get_format_func(this._log_sc_precision(ticks));
+        },
+        _log_sc_precision: function(ticks) {
+            ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
+            var ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
 
+            if(ratio >= 0.3010) {
+                //format them as they are with the max_length of 6
+                return 0;
+            } else {
+                //return a default of 3 digits of precision
+                return 3;
+            }
         },
         guess_tick_format: function(ticks) {
             if(this.axis_scale.model.type == "linear") {
@@ -687,6 +717,8 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             } else if (this.axis_scale.model.type == "date" ||
                        this.axis_scale.model.type == "date_color_linear") {
                 return d3.time.format.multi(this.date_sc_format(ticks));
+            } else if (this.axis_scale.model.type == "log") {
+                return this.log_sc_format(ticks);
             }
         },
      });
