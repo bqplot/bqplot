@@ -58,3 +58,14 @@ class Tooltip(DOMWidget):
 
     _view_name = Unicode('Tooltip', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Tooltip', sync=True)
+
+
+import os
+import json
+
+
+def topo_load(name):
+    with open(os.path.join(os.path.split(os.path.realpath(__file__))[0],
+              name)) as data_file:
+        data = json.load(data_file)
+    return data
