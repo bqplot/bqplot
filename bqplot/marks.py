@@ -989,10 +989,7 @@ class MapMark(Mark):
         Dictionary containing the styles for hovered subunits
     selected: List (default: [])
         list containing the selected countries in the map
-    enable_select: bool (default: True)
-        boolean to control the ability to select the countries of the map by
-        clicking
-    enable_hover: bool (default: True)
+    hover_highlight: bool (default: True)
         boolean to control if the map should be aware of which country is being
         hovered on. If it is set to False, tooltip will not be displayed
     map_data: tuple (default: ("worldmap", "nbextensions/bqplot/WorldMapData")
@@ -1009,7 +1006,7 @@ class MapMark(Mark):
     icon = 'fa-globe'
     name = 'Map'
 
-    enable_hover = Bool(True, sync=True)
+    hover_highlight = Bool(True, sync=True)
     hovered_styles = Dict({'hovered_fill': 'Orange', 'hovered_stroke': None,
                            'hovered_stroke_width': 5.0}, allow_none=True,
                           sync=True)
@@ -1019,7 +1016,6 @@ class MapMark(Mark):
     color = Dict(sync=True, allow_none=True, scaled=True, rtype='Color',
                  atype='bqplot.ColorAxis')
 
-    enable_select = Bool(True, sync=True)
     selected = List(sync=True)
     selected_styles = Dict({'selected_fill': 'Red', 'selected_stroke': None,
                             'selected_stroke_width': 5.0},

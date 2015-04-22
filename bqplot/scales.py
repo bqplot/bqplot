@@ -141,7 +141,11 @@ class Albers(GeoScale):
 
     Attributes
     ----------
-    scale: float (default: 1070)
+    rotate: tuple (default: (96, 0))
+        Degree of rotation in each axis.
+    parallels: tuple (default: (29.5, 45.5))
+        
+    scale: float (default: 250)
         Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
@@ -153,13 +157,14 @@ class Albers(GeoScale):
     """
 
     rotate = Tuple((96, 0), sync=True)
-    center = Tuple((-.6, 38.7), sync=True)
+    center = Tuple((0, 60), sync=True)
     parallels = Tuple((29.5, 45.5), sync=True)
-    scale = Float(1070., sync=True)
+    scale = Float(250., sync=True)
     precision = Float(0.1, sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
-    _view_name = Unicode('AlbersUSA', sync=True)
+    _view_name = Unicode('Albers', sync=True)
+    _model_name = Unicode('AlbersModel', sync=True)
 
 
 @register_scale('bqplot.AlbersUSA')
@@ -183,6 +188,7 @@ class AlbersUSA(GeoScale):
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('AlbersUSA', sync=True)
+    _model_name = Unicode('AlbersUSAModel', sync=True)
 
 
 @register_scale('bqplot.EquiRectangular')
@@ -205,22 +211,80 @@ class EquiRectangular(GeoScale):
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('EquiRectangular', sync=True)
+    _model_name = Unicode('EquiRectangularModel', sync=True)
 
 
-@register_scale('bqplot.Gnomonic')
+@register_scale('bqplot.Orthographic')
+class Orthographic(GeoScale):
+
+    """An elementary projection that uses the identity function.
+
+    The projection is neither equal-area nor conformal.
+
+    Attributes
+    ----------
+    scale: float (default: 145)
+       Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    """
+
+    scale = Float(145., sync=True)
+    center = Tuple((0, 60), sync=True)
+    precision = Float(0.1, sync=True)
+    rtype = '(Number, Number)'
+    dtype = np.number
+    _view_name = Unicode('Orthographic', sync=True)
+    _model_name = Unicode('OrthographicModel', sync=True)
+
+
+@register_scale('bqplot.Orthographic')
 class Gnomonic(GeoScale):
 
+    """An elementary projection that uses the identity function.
+
+    The projection is neither equal-area nor conformal.
+
+    Attributes
+    ----------
+    scale: float (default: 145)
+       Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    """
+
+    scale = Float(145., sync=True)
+    center = Tuple((0, 60), sync=True)
+    precision = Float(0.1, sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Gnomonic', sync=True)
+    _model_name = Unicode('GnomonicModel', sync=True)
 
 
 @register_scale('bqplot.Stereographic')
 class Stereographic(GeoScale):
 
+    """An elementary projection that uses the identity function.
+
+    The projection is neither equal-area nor conformal.
+
+    Attributes
+    ----------
+    scale: float (default: 145)
+       Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    """
+
+    scale = Float(145., sync=True)
+    center = Tuple((0, 60), sync=True)
+    precision = Float(0.1, sync=True)
+    rotate = Tuple((96, 0), sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Stereographic', sync=True)
+    _model_name = Unicode('StereographicModel', sync=True)
 
 
 @register_scale('bqplot.LinearScale')

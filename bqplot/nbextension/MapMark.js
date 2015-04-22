@@ -119,7 +119,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             return color !== "";
         },
         mouseover_handler: function() {
-            if (!this.model.get("enable_hover")) {
+            if (!this.model.get("hover_highlight")) {
                 return
             }
             var el = d3.select(d3.event.target);
@@ -148,7 +148,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
             }
         },
         mouseout_handler: function() {
-            if (!this.model.get("enable_hover")) {
+            if (!this.model.get("hover_highlight")) {
                 return
             }
             var el = d3.select(d3.event.target);
