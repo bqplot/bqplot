@@ -51,7 +51,7 @@ from ..figure import Figure
 from ..scales import Scale, LinearScale, Mercator
 from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, MapMark, Label
-from ..interacts import panzoom, BrushIntervalSelector, FastIntervalSelector, BrushSelector, IndexSelector
+from ..interacts import panzoom, BrushIntervalSelector, FastIntervalSelector, BrushSelector, IndexSelector, MultiSelector, LassoSelector
 
 _context = {
     'figure': None,
@@ -605,21 +605,45 @@ def geo(map_data, **kwargs):
 
 
 def _add_interaction(int_type, **kwargs):
+    """ Adds the interaction for the specified type.
+    If a figure is passed using the key-word argument `figure` it is used. Else
+    the context figure is used
+    If a list of marks are passed using the key-word argument `marks` it is used.
+    Else the latest mark that is passed is used as the only mark associated with
+    the selector.
+
+    Parameters
+    ----------
+    int_type: type
+        The type of interaction to be added
+    """
+
     fig = kwargs.pop('figure', current_figure())
     marks = kwargs.pop('marks', [_context['last_mark']])
 
     for name, traitlet in int_type.class_traits().iteritems():
         dimension = traitlet.get_metadata('dimension')
         if dimension is not None:
-            ## only scales have this attribute ininteractions
+            ## only scales have this attribute in interactions
             kwargs[name] = _get_context_scale(dimension)
     kwargs['marks'] = marks
     interaction = int_type(**kwargs)
+    if fig.interaction is not None:
+        fig.interaction.close()
     fig.interaction = interaction
     return interaction
 
 
 def _get_context_scale(dimension):
+    """ This function returns the scale instance in the current context for a
+    given dimension
+
+    Parameters
+    ----------
+    dimension: string
+        The dimension along which the current context scale is to be fetched
+
+    """
     if dimension == 'horizontal':
         return _context['scales']['x']
     elif dimension == 'vertical':
@@ -628,20 +652,121 @@ def _get_context_scale(dimension):
         return _context['scales'][dimension]
 
 
-def brush_int_selector(**kwargs):
-    return _add_interaction(BrushIntervalSelector, **kwargs)
+def _create_selector(int_type, func, trait, **kwargs):
+    """Creates a selector of the specified type. Also attaches the function
+    `func` as an event listener for the trait `trait`.
+
+    Parameters
+    ----------
+    int_type: type
+        The type of selector to be added
+    func: function
+        The call back function. It should take atleast two arguments. The name
+        of the trait and the value of the trait are passed as arguments.
+    trait: string
+        The name of the trait to trigger the call back
+
+    """
+    interaction = _add_interaction(int_type, **kwargs)
+    if func is not None:
+        interaction.on_trait_change(func, trait)
+    return interaction
 
 
-def int_selector(**kwargs):
-    return _add_interaction(FastIntervalSelector, **kwargs)
+def brush_int_selector(func=None, trait='selected', **kwargs):
+    """Creates a `BrushIntervalSelector` interaction for the `figure`.
+    Also attaches the function `func` as an event listener for the trait `trait`.
+
+    Parameters
+    ----------
+    func: function
+        The call back function. It should take atleast two arguments. The name
+        of the trait and the value of the trait are passed as arguments.
+    trait: string
+        The name of the trait to trigger the call back
+
+    """
+    return _create_selector(BrushIntervalSelector, func, trait, **kwargs)
 
 
-def index_selector(**kwargs):
-    return _add_interaction(IndexSelector, **kwargs)
+def int_selector(func=None, trait='selected', **kwargs):
+    """Creates a `FastIntervalSelector` interaction for the `figure`.
+    Also attaches the function `func` as an event listener for the trait `trait`.
+
+    Parameters
+    ----------
+    func: function
+        The call back function. It should take atleast two arguments. The name
+        of the trait and the value of the trait are passed as arguments.
+    trait: string
+        The name of the trait to trigger the call back
+
+    """
+    return _create_selector(FastIntervalSelector, func, trait, **kwargs)
 
 
-def brush_selector(**kwargs):
-    return _add_interaction(BrushSelector, **kwargs)
+def index_selector(func=None, trait='selected', **kwargs):
+    """Creates an `IndexSelector` interaction for the `figure`.
+    Also attaches the function `func` as an event listener for the trait `trait`.
+
+    Parameters
+    ----------
+    func: function
+        The call back function. It should take atleast two arguments. The name
+        of the trait and the value of the trait are passed as arguments.
+    trait: string
+        The name of the trait to trigger the call back
+
+    """
+    return _create_selector(IndexSelector, func, trait, **kwargs)
+
+
+def brush_selector(func=None, trait='selected', **kwargs):
+    """Creates a `BrushSelector` interaction for the `figure`.
+    Also attaches the function `func` as an event listener for the trait `trait`.
+
+    Parameters
+    ----------
+    func: function
+        The call back function. It should take atleast two arguments. The name
+        of the trait and the value of the trait are passed as arguments.
+    trait: string
+        The name of the trait to trigger the call back
+
+    """
+    return _create_selector(BrushSelector, func, trait, **kwargs)
+
+
+def multi_selector(func=None, trait='selected', **kwargs):
+    """Creates a `MultiSelector` interaction for the `figure`.
+    Also attaches the function `func` as an event listener for the trait `trait`.
+
+    Parameters
+    ----------
+    func: function
+        The call back function. It should take atleast two arguments. The name
+        of the trait and the value of the trait are passed as arguments.
+    trait: string
+        The name of the trait to trigger the call back
+
+    """
+    return _create_selector(MultiSelector, func, trait, **kwargs)
+
+
+def lasso_selector(func=None, trait='selected', **kwargs):
+    """Creates a `LassoSelector` interaction for the `figure`.
+    Also attaches the function `func` as an event listener for the trait `trait`.
+
+    Parameters
+    ----------
+    func: function
+        The call back function. It should take atleast two arguments. The name
+        of the trait and the value of the trait are passed as arguments.
+    trait: string
+        The name of the trait to trigger the call back
+
+    """
+    return _create_selector(LassoSelector, func, trait, **kwargs)
 
 
 def clear():
