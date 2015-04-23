@@ -51,7 +51,7 @@ from ..figure import Figure
 from ..scales import Scale, LinearScale, Mercator
 from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, MapMark, Label
-from ..interacts import panzoom
+from ..interacts import panzoom, BrushIntervalSelector, FastIntervalSelector, BrushSelector, IndexSelector
 
 _context = {
     'figure': None,
@@ -602,6 +602,46 @@ def geo(map_data, **kwargs):
     kwargs['scales'] = scales
     kwargs['map_data'] = map_data
     return _draw_mark(MapMark, **kwargs)
+
+
+def _add_interaction(int_type, **kwargs):
+    fig = kwargs.pop('figure', current_figure())
+    marks = kwargs.pop('marks', [_context['last_mark']])
+
+    for name, traitlet in int_type.class_traits().iteritems():
+        dimension = traitlet.get_metadata('dimension')
+        if dimension is not None:
+            ## only scales have this attribute ininteractions
+            kwargs[name] = _get_context_scale(dimension)
+    kwargs['marks'] = marks
+    interaction = int_type(**kwargs)
+    fig.interaction = interaction
+    return interaction
+
+
+def _get_context_scale(dimension):
+    if dimension == 'horizontal':
+        return _context['scales']['x']
+    elif dimension == 'vertical':
+        return _context['scales']['y']
+    else:
+        return _context['scales'][dimension]
+
+
+def brush_int_selector(**kwargs):
+    return _add_interaction(BrushIntervalSelector, **kwargs)
+
+
+def int_selector(**kwargs):
+    return _add_interaction(FastIntervalSelector, **kwargs)
+
+
+def index_selector(**kwargs):
+    return _add_interaction(IndexSelector, **kwargs)
+
+
+def brush_selector(**kwargs):
+    return _add_interaction(BrushSelector, **kwargs)
 
 
 def clear():
