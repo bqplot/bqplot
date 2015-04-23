@@ -578,6 +578,19 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
         _get_digits: function(number) {
             return (number == 0) ? 1 : (Math.floor(Math.log10(Math.abs(number))) + 1);
         },
+        _replace_trailing_zeros: function(str) {
+            //regex to replace the trailing
+            //zeros after the decimal point.
+            //Handles the case of exponentially formatted string
+            //TODO: Should be done in a single regex
+            var e_index = str.search("e");
+            if(e_index != -1) {
+                return str.substring(0, e_index).replace(/(\.[0-9]*?)0+$/gi, "$1").replace(/\.$/, "") +
+                       str.substring(e_index);
+            } else {
+                return str.replace(/(\.[0-9]*?)0+$/gi, "$1").replace(/\.$/, "");
+            }
+        },
         get_format_func: function(prec) {
             if(prec === 0) {
             // format this as an integer
@@ -585,34 +598,27 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             }
             //if it is -1, then it is a generic format
             var fmt_string = (prec == -1) ? "" : ("." + (prec));
+            var self = this;
             return function(number) {
                 var str = d3.format(fmt_string + "g")(number);
                 var reg_str = str.replace(/-|\.|e/gi, "");
                 if(reg_str.length < 6) {
-                    //regex to replace the trailing
-                    //zeros after the decimal point
-                    //TODO: Should be done in a single regex
-                    return str.replace(/(\.[0-9]*?)0+$/gi, "$1").replace(/\.$/, "");
+                    return self._replace_trailing_zeros(str);
                 } else {
                     //if length is more than 6, format it exponentially
                     if(fmt_string === "") {
                         //if fmt_string is "", then the number o/p can be
                         //arbitrarily large
                         var new_str = d3.format(fmt_string + "e")(number);
-                        if(new_str.length < 7) {
-                            //this case can arise only if there is a float
-                            //round off error
-                            return new_str;
-                        }
-                        else {
+                        if(new_str.length >= 7) {
                             //in the case of a round off error, setting the max
                             //limit to be 6
-                            return d3.format(".6e")(number);
+                             new_str = d3.format(".6e")(number);
                         }
-                    }
-                    else {
+                        return self._replace_trailing_zeros(new_str);
+                    } else {
                         //Format with the precision required
-                        return d3.format(fmt_string + "e")(number);
+                        return self._replace_trailing_zeros(d3.format(fmt_string + "e")(number));
                     }
                 }
             };
