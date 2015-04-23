@@ -261,7 +261,7 @@ class NdArray(CInstance):
         shape = np.shape(value)
         dim = 0 if value is None else len(shape)
         if (dim > 1) and (1 in shape):
-            value = np.squeeze(value)
+            value = np.squeeze(value) if (self.squeeze) else value
             dim = len(np.shape(value))
         if dim > max_dim or dim < min_dim:
             raise TraitError("Dimension mismatch")
@@ -278,6 +278,7 @@ class NdArray(CInstance):
         kwargs.setdefault('from_json', NdArray._asarray)
         kwargs.setdefault('to_json', NdArray._to_json)
         kwargs.setdefault('args', (0,))
+        self.squeeze = kwargs.pop('squeeze', True)
         super(NdArray, self).__init__(*args, **kwargs)
 
     _cast = _set_value

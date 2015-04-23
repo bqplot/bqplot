@@ -664,7 +664,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             var diff = Math.abs(ticks[1] - ticks[0]);
             var div = 1000;
 
-            if(Math.floor(diff / div) == 0) {
+            if(Math.floor(diff / div) === 0) {
                 //diff is less than a second
                 return [[".%L", function(d) { return d.getMilliseconds(); }],
                 [":%S", function(d) { return d.getSeconds(); }],
