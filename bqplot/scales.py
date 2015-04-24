@@ -115,6 +115,8 @@ class Mercator(GeoScale):
         Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
+    rotate: tuple (default: (0, 0))
+        Degree of rotation in each axis.
     rtype: (Number, Number) (class-level attribute)
         This attribute should not be modifed. The range type of a geo
         scale is a tuple.
@@ -124,6 +126,7 @@ class Mercator(GeoScale):
 
     scale = Float(190., sync=True)
     center = Tuple((0, 60), sync=True)
+    rotate = Tuple((0, 0), sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Mercator', sync=True)
@@ -144,11 +147,14 @@ class Albers(GeoScale):
     rotate: tuple (default: (96, 0))
         Degree of rotation in each axis.
     parallels: tuple (default: (29.5, 45.5))
-        
+        Sets the two parallels for the conic projection.
     scale: float (default: 250)
         Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
+    precision: float (default: 0.1)
+        Specifies the threshold for the projections adaptive resampling to the
+        specified value in pixels.
     rtype: (Number, Number) (class-level attribute)
         This attribute should not be modifed. The range type of a geo
         scale is a tuple.
@@ -217,7 +223,8 @@ class EquiRectangular(GeoScale):
 @register_scale('bqplot.Orthographic')
 class Orthographic(GeoScale):
 
-    """An elementary projection that uses the identity function.
+    """A perspective projection that depicts a hemisphere as it appears from
+    outer space.
 
     The projection is neither equal-area nor conformal.
 
@@ -227,6 +234,10 @@ class Orthographic(GeoScale):
        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
+    precision: float (default: 0.1)
+        Specifies the threshold for the projections adaptive resampling to the
+        specified value in pixels.
+
     """
 
     scale = Float(145., sync=True)
@@ -238,10 +249,10 @@ class Orthographic(GeoScale):
     _model_name = Unicode('OrthographicModel', sync=True)
 
 
-@register_scale('bqplot.Orthographic')
+@register_scale('bqplot.Gnomonic')
 class Gnomonic(GeoScale):
 
-    """An elementary projection that uses the identity function.
+    """A perspective projection which displays great circles as straight lines.
 
     The projection is neither equal-area nor conformal.
 
@@ -251,6 +262,9 @@ class Gnomonic(GeoScale):
        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
+    precision: float (default: 0.1)
+        Specifies the threshold for the projections adaptive resampling to the
+        specified value in pixels.
     """
 
     scale = Float(145., sync=True)
@@ -265,16 +279,22 @@ class Gnomonic(GeoScale):
 @register_scale('bqplot.Stereographic')
 class Stereographic(GeoScale):
 
-    """An elementary projection that uses the identity function.
+    """A perspective projection that uses a bijective and smooth map at every
+    point except the projection point.
 
-    The projection is neither equal-area nor conformal.
+    The projection is not an equal-area projection but it is conformal.
 
     Attributes
     ----------
-    scale: float (default: 145)
-       Specifies the scale value for the projection
+    rotate: tuple (default: (96, 0))
+        Degree of rotation in each axis.
+    scale: float (default: 250)
+        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
+    precision: float (default: 0.1)
+        Specifies the threshold for the projections adaptive resampling to the
+        specified value in pixels.
     """
 
     scale = Float(145., sync=True)

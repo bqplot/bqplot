@@ -26,7 +26,8 @@ define(["./d3", "widgets/js/widget"], function(d3, Widget) {
         create_projection: function() {
             this.projection = d3.geo.mercator()
                 .center(this.get("center"))
-                .scale(this.get("scale"));
+                .scale(this.get("scale"))
+                .rotate(this.get("rotate"));
             this.scale_changed();
         },
         scale_changed: function() {
