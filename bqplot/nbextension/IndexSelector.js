@@ -91,6 +91,11 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
                 .attr("x2", 0)
                 .attr("visibility", "hidden");
             this.background.on("click", _.bind(this.initial_click, this));
+            this.model.set_typed_field("selected", []);
+
+            _.each(this.mark_views, function(mark_view) {
+                mark_view.invert_point();
+            });
             this.scale = this.parent.x_scale;
         },
         remove: function() {

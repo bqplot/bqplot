@@ -27,6 +27,8 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
         },
         create_listeners: function() {
             this.parent.on("margin_updated", this.relayout, this);
+            this.listenTo(this.model, "change:selected", this.selected_changed);
+            this.listenTo(this.model, "msg:custom", this.handle_custom_messages);
         },
         relayout: function() {
             this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
@@ -53,6 +55,14 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
                     return views[elem]; // return the views, based on the assumption that fig.mark_views is an ordered list
                 });
             });
+        },
+        handle_custom_messages: function(msg) {
+            if (msg.type === "reset") {
+                this.reset();
+            }
+        },
+        reset: function() {
+            //inherited classes should implement this function
         },
     });
 
