@@ -43,7 +43,7 @@ from IPython.utils.traitlets import (Unicode, List, Enum, Float, Bool, Type,
                                      Tuple)
 
 import numpy as np
-from .traits import Date
+from .traits import Date, BoundedFloat
 
 
 def register_scale(key=None):
@@ -162,10 +162,10 @@ class Albers(GeoScale):
         the associated data type / domain type
     """
 
+    scale = Float(250., sync=True)
     rotate = Tuple((96, 0), sync=True)
     center = Tuple((0, 60), sync=True)
     parallels = Tuple((29.5, 45.5), sync=True)
-    scale = Float(250., sync=True)
     precision = Float(0.1, sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
@@ -234,6 +234,10 @@ class Orthographic(GeoScale):
        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
+    rotate: tuple (default: (96, 0))
+        Degree of rotation in each axis.
+    clip_angle: float (default: 90.)
+        Specifies the clipping circle radius to the specified angle in degrees.
     precision: float (default: 0.1)
         Specifies the threshold for the projections adaptive resampling to the
         specified value in pixels.
@@ -242,6 +246,8 @@ class Orthographic(GeoScale):
 
     scale = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
+    rotate = Tuple((0, 0), sync=True)
+    clip_angle = BoundedFloat(90., min=0., max=360., sync=True)
     precision = Float(0.1, sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
@@ -265,11 +271,14 @@ class Gnomonic(GeoScale):
     precision: float (default: 0.1)
         Specifies the threshold for the projections adaptive resampling to the
         specified value in pixels.
+    clip_angle: float (default: 89.999)
+        Specifies the clipping circle radius to the specified angle in degrees.
     """
 
     scale = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
     precision = Float(0.1, sync=True)
+    clip_angle = BoundedFloat(89.999, min=0., max=360., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Gnomonic', sync=True)
@@ -295,12 +304,15 @@ class Stereographic(GeoScale):
     precision: float (default: 0.1)
         Specifies the threshold for the projections adaptive resampling to the
         specified value in pixels.
+    clip_angle: float (default: 90.)
+        Specifies the clipping circle radius to the specified angle in degrees.
     """
 
     scale = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
     precision = Float(0.1, sync=True)
     rotate = Tuple((96, 0), sync=True)
+    clip_angle = BoundedFloat(179.9999, min=0., max=360., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Stereographic', sync=True)

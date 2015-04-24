@@ -21,7 +21,7 @@ define(["./d3", "widgets/js/widget"], function(d3, Widget) {
 
     var MercatorModel = GeoScaleModel.extend({
         initialize: function(range) {
-            this.on_some_change(['scale', 'center'], this.create_projection, this);
+            this.on_some_change(['scale', 'center', 'rotate'], this.create_projection, this);
         },
         create_projection: function() {
             this.projection = d3.geo.mercator()
@@ -84,12 +84,14 @@ define(["./d3", "widgets/js/widget"], function(d3, Widget) {
 
     var OrthographicModel = GeoScaleModel.extend({
         initialize: function(range) {
-            this.on_some_change(['scale', 'center'], this.create_projection, this);
+            this.on_some_change(['scale', 'center', 'clip_angle', 'rotate', 'precision'], this.create_projection, this);
         },
         create_projection: function() {
             this.projection = d3.geo.orthographic()
                 .center(this.get("center"))
                 .scale(this.get("scale"))
+                .clipAngle(this.get("clip_angle"))
+                .rotate(this.get("rotate"))
                 .precision(this.get("precision"));
             this.scale_changed();
         },
@@ -100,11 +102,11 @@ define(["./d3", "widgets/js/widget"], function(d3, Widget) {
 
     var GnomonicModel = GeoScaleModel.extend({
         initialize: function(range) {
-            this.on_some_change(['scale', 'precision'], this.create_projection, this);
+            this.on_some_change(['scale', 'precision', 'clip_angle'], this.create_projection, this);
         },
         create_projection: function() {
             this.projection = d3.geo.gnomonic()
-                .clipAngle(90 - 1e-3)
+                .clipAngle(this.get("clip_angle"))
                 .scale(this.get("scale"))
                 .precision(this.get("precision"));
             this.scale_changed();
@@ -116,13 +118,13 @@ define(["./d3", "widgets/js/widget"], function(d3, Widget) {
 
     var StereographicModel = GeoScaleModel.extend({
         initialize: function(range) {
-            this.on_some_change(['rotate', 'scale', 'center', 'precision'], this.create_projection, this);
+            this.on_some_change(['rotate', 'scale', 'center', 'precision', 'clip_angle'], this.create_projection, this);
         },
         create_projection: function() {
             this.projection = d3.geo.stereographic()
                 .scale(this.get("scale"))
                 .rotate(this.get("rotate"))
-                .clipAngle(180 - 1e-4)
+                .clipAngle(this.get("clip_angle"))
                 .center(this.get("center"))
                 .precision(this.get("precision"));
             this.scale_changed();

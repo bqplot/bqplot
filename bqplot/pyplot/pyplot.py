@@ -32,6 +32,7 @@ Pyplot
    hist
    bar
    ohlc
+   geo
 
    clear
    close
