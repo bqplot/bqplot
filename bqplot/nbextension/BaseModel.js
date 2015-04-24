@@ -46,7 +46,7 @@ define(["widgets/js/widget"], function(Widget) {
             }
             return return_value;
         },
-        set_typed_field: function(param, value) {
+        set_typed_field: function(param, value, options) {
             // function takes a value which has to be set for a typed field and
             // performs the conversion needed before sending it across to
             // Python. This **only** sets the attribute. The caller is
@@ -73,7 +73,7 @@ define(["widgets/js/widget"], function(Widget) {
             }
             return_object["type"] = (is_date) ? "date" : "float";
             return_object["values"] = saved_value;
-            this.set(param, return_object);
+            this.set(param, return_object, options);
         },
         get_date_elem: function(param) {
             return this.convert_to_date(this.get(param));

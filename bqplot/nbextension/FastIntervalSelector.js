@@ -63,6 +63,13 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
         create_listeners: function() {
             FastIntervalSelector.__super__.create_listeners.apply(this);
             this.model.on("change:color", this.color_change, this);
+            this.listenTo(this.model, "change:selected", this.selected_changed);
+            this.listenTo(this.model, "msg:custom", this.handle_custom_messages);
+        },
+        handle_custom_messages: function(msg) {
+            if (msg.type === "reset") {
+                this.reset();
+            }
         },
         color_change: function() {
             if(this.model.get("color")!=null) {
@@ -103,8 +110,8 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             this.rect.attr("x", start);
             this.rect.attr("width", interval_size);
             this.model.set_typed_field("selected",
-                                       this.invert_range(start, 
-                                                         start + interval_size));
+                                       this.invert_range(start,
+                                                         start + interval_size), { js_ignore : true});
             _.each(this.mark_views, function(mark_view) {
                 mark_view.invert_range(start, start + interval_size);
             });
@@ -135,6 +142,42 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
                 .attr("height", this.height);
             this.rect.attr("height", this.height);
             this.set_range([this.scale]);
+        },
+        reset: function() {
+            this.rect.attr("x", 0)
+                .attr("width", 0);
+            this.model.set_typed_field("selected", [], {js_ignore : true});
+            _.each(this.mark_views, function(mark_view) {
+                mark_view.invert_range([]);
+            });
+            this.touch();
+        },
+        selected_changed: function(model, value, options) {
+            //TODO: should the size get overridden if it was set previously and
+            //then selected was changed from the python side?
+            if(options && options.js_ignore) {
+                //this change was most probably triggered from the js side and
+                //should be ignored.
+                return;
+            }
+            //reposition the interval selector and set the selected attribute.
+            var selected = this.model.get_typed_field("selected");
+            if(selected.length == 0) {
+                this.reset();
+            } else if (selected.length != 2) {
+                // invalid value for selected. Ignoring the value
+                return;
+            } else {
+                var self = this;
+                var pixels = selected.map(function(d) { return self.scale.scale(d); });
+                pixels = pixels.sort(function(a, b) { return a - b; });
+
+                this.rect.attr("x", pixels[0])
+                    .attr("width", (pixels[1] - pixels[0]));
+                _.each(this.mark_views, function(mark_view) {
+                    mark_view.invert_range(pixels[0], pixels[1]);
+                });
+            }
         },
     });
 
