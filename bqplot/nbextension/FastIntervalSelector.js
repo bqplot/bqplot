@@ -115,13 +115,8 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             var x_end = this.scale.scale.invert(end);
             return [x_start, x_end];
         },
-        reset: function() {
-            this.rect.attr("x", 0)
-                .attr("y", 0)
-                .attr("width", this.size)
-                .attr("height", this.height);
-            this.background.attr("width", this.width)
-                .attr("height", this.height);
+        scale_changed: function() {
+            this.reset();
             this.create_scale();
         },
         remove: function() {
@@ -165,8 +160,10 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
                 var pixels = selected.map(function(d) { return self.scale.scale(d); });
                 pixels = pixels.sort(function(a, b) { return a - b; });
 
-                this.rect.attr("x", pixels[0])
-                    .attr("width", (pixels[1] - pixels[0]));
+                this.rect.attr({ x: pixels[0],
+                                 width: (pixels[1] - pixels[0])})
+                    .style("display", "inline");
+                this.active = true;
                 _.each(this.mark_views, function(mark_view) {
                     mark_view.invert_range(pixels[0], pixels[1]);
                 });

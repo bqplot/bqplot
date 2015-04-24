@@ -71,7 +71,8 @@ define(["widgets/js/widget"], function(Widget) {
                         return self.convert_to_json(elem);
                     });
             }
-            return_object["type"] = (is_date) ? "date" : "float";
+            //TODO: this is not good. Need to think of something better
+            return_object["type"] = (is_date) ? "date" : "object";
             return_object["values"] = saved_value;
             this.set(param, return_object, options);
         },
