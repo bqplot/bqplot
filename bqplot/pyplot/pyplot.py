@@ -347,13 +347,14 @@ def axes(mark=None, options={}, **kwargs):
 
         # An axis must be created. We fetch the type from the registry
         # the key being provided in the scaled attribute decoration
-        key = mark.class_traits()[name].get_metadata('atype', 'bqplot.Axis')
-        axis_type = Axis.axis_types[key]
-        axis = axis_type(scale=scales[name], **axis_args)
-        axes[name] = axis
-        fig_axes.append(axis)
-        ## update the axis registry of the figure once the axis is added
-        _update_fig_axis_registry(fig, dimension, scales[name], axis)
+        key = mark.class_traits()[name].get_metadata('atype')
+        if(key is not None):
+            axis_type = Axis.axis_types[key]
+            axis = axis_type(scale=scales[name], **axis_args)
+            axes[name] = axis
+            fig_axes.append(axis)
+            ## update the axis registry of the figure once the axis is added
+            _update_fig_axis_registry(fig, dimension, scales[name], axis)
     fig.axes = fig_axes
     return axes
 
