@@ -39,10 +39,11 @@ Scales
 """
 
 from IPython.html.widgets import Widget, Color
-from IPython.utils.traitlets import Unicode, List, Enum, Float, Bool, Type
+from IPython.utils.traitlets import (Unicode, List, Enum, Float, Bool, Type,
+                                     Tuple)
 
 import numpy as np
-from .traits import Date
+from .traits import Date, BoundedFloat
 
 
 def register_scale(key=None):
@@ -94,45 +95,227 @@ class GeoScale(Scale):
 
     The GeoScale represents a mapping between topographic data and a
     2d visual representation.
-
-    Attributes
-    ----------
-    map_type: unicode (default: 'worldmap')
-        The type of map being used determines the projection.
     """
     _view_module = Unicode('nbextensions/bqplot/GeoScale', sync=True)
+    _model_name = Unicode('GeoScaleModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/GeoScaleModel', sync=True)
 
 
 @register_scale('bqplot.Mercator')
 class Mercator(GeoScale):
 
+    """A Geo Scale usually used for World Maps.
+
+    The Mercator projection is a cylindrical map projection which ensures that
+    any course of constant bearing is a straight line.
+
+    Attributes
+    ----------
+    scale_factor: float (default: 190)
+        Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    rotate: tuple (default: (0, 0))
+        Degree of rotation in each axis.
+    rtype: (Number, Number) (class-level attribute)
+        This attribute should not be modifed. The range type of a geo
+        scale is a tuple.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
+    """
+
+    scale_factor = Float(190., sync=True)
+    center = Tuple((0, 60), sync=True)
+    rotate = Tuple((0, 0), sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Mercator', sync=True)
+    _model_name = Unicode('MercatorModel', sync=True)
+
+
+@register_scale('bqplot.Albers')
+class Albers(GeoScale):
+
+    """A Geo Scale which is an alias for a conic equal area projection.
+
+    The Albers projection is a conic equal area map. It does not preserve scale
+    or shape, though it is recommended for chloropleths since it preserves the
+    relative areas of geographic features. Default values are US-centric.
+
+    Attributes
+    ----------
+    scale_factor: float (default: 250)
+        Specifies the scale value for the projection
+    rotate: tuple (default: (96, 0))
+        Degree of rotation in each axis.
+    parallels: tuple (default: (29.5, 45.5))
+        Sets the two parallels for the conic projection.
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    precision: float (default: 0.1)
+        Specifies the threshold for the projections adaptive resampling to the
+        specified value in pixels.
+    rtype: (Number, Number) (class-level attribute)
+        This attribute should not be modifed. The range type of a geo
+        scale is a tuple.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
+    """
+
+    scale_factor = Float(250., sync=True)
+    rotate = Tuple((96, 0), sync=True)
+    center = Tuple((0, 60), sync=True)
+    parallels = Tuple((29.5, 45.5), sync=True)
+    precision = Float(0.1, sync=True)
+    rtype = '(Number, Number)'
+    dtype = np.number
+    _view_name = Unicode('Albers', sync=True)
+    _model_name = Unicode('AlbersModel', sync=True)
 
 
 @register_scale('bqplot.AlbersUSA')
 class AlbersUSA(GeoScale):
 
+    """A composite projection of four Albers projections meant specifically for
+    the United States.
+
+    Attributes
+    ----------
+    scale_factor: float (default: 1200)
+        Specifies the scale value for the projection
+    rtype: (Number, Number) (class-level attribute)
+        This attribute should not be modifed. The range type of a geo
+        scale is a tuple.
+    dtype: type (class-level attribute)
+        the associated data type / domain type
+    """
+
+    scale_factor = Float(1200., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('AlbersUSA', sync=True)
+    _model_name = Unicode('AlbersUSAModel', sync=True)
+
+
+@register_scale('bqplot.EquiRectangular')
+class EquiRectangular(GeoScale):
+
+    """An elementary projection that uses the identity function.
+
+    The projection is neither equal-area nor conformal.
+
+    Attributes
+    ----------
+    scale_factor: float (default: 145)
+       Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    """
+
+    scale_factor = Float(145., sync=True)
+    center = Tuple((0, 60), sync=True)
+    rtype = '(Number, Number)'
+    dtype = np.number
+    _view_name = Unicode('EquiRectangular', sync=True)
+    _model_name = Unicode('EquiRectangularModel', sync=True)
+
+
+@register_scale('bqplot.Orthographic')
+class Orthographic(GeoScale):
+
+    """A perspective projection that depicts a hemisphere as it appears from
+    outer space.
+
+    The projection is neither equal-area nor conformal.
+
+    Attributes
+    ----------
+    scale_factor: float (default: 145)
+       Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    rotate: tuple (default: (96, 0))
+        Degree of rotation in each axis.
+    clip_angle: float (default: 90.)
+        Specifies the clipping circle radius to the specified angle in degrees.
+    precision: float (default: 0.1)
+        Specifies the threshold for the projections adaptive resampling to the
+        specified value in pixels.
+    """
+
+    scale_factor = Float(145., sync=True)
+    center = Tuple((0, 60), sync=True)
+    rotate = Tuple((0, 0), sync=True)
+    clip_angle = BoundedFloat(90., min=0., max=360., sync=True)
+    precision = Float(0.1, sync=True)
+    rtype = '(Number, Number)'
+    dtype = np.number
+    _view_name = Unicode('Orthographic', sync=True)
+    _model_name = Unicode('OrthographicModel', sync=True)
 
 
 @register_scale('bqplot.Gnomonic')
 class Gnomonic(GeoScale):
 
+    """A perspective projection which displays great circles as straight lines.
+
+    The projection is neither equal-area nor conformal.
+
+    Attributes
+    ----------
+    scale_factor: float (default: 145)
+       Specifies the scale value for the projection
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    precision: float (default: 0.1)
+        Specifies the threshold for the projections adaptive resampling to the
+        specified value in pixels.
+    clip_angle: float (default: 89.999)
+        Specifies the clipping circle radius to the specified angle in degrees.
+    """
+
+    scale_factor = Float(145., sync=True)
+    center = Tuple((0, 60), sync=True)
+    precision = Float(0.1, sync=True)
+    clip_angle = BoundedFloat(89.999, min=0., max=360., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Gnomonic', sync=True)
+    _model_name = Unicode('GnomonicModel', sync=True)
 
 
 @register_scale('bqplot.Stereographic')
 class Stereographic(GeoScale):
 
+    """A perspective projection that uses a bijective and smooth map at every
+    point except the projection point.
+
+    The projection is not an equal-area projection but it is conformal.
+
+    Attributes
+    ----------
+    scale_factor: float (default: 250)
+        Specifies the scale value for the projection
+    rotate: tuple (default: (96, 0))
+        Degree of rotation in each axis.
+    center: list (default: (0, 60))
+        Specifies the longitude and latitude where the map is centered.
+    precision: float (default: 0.1)
+        Specifies the threshold for the projections adaptive resampling to the
+        specified value in pixels.
+    clip_angle: float (default: 90.)
+        Specifies the clipping circle radius to the specified angle in degrees.
+    """
+
+    scale_factor = Float(145., sync=True)
+    center = Tuple((0, 60), sync=True)
+    precision = Float(0.1, sync=True)
+    rotate = Tuple((96, 0), sync=True)
+    clip_angle = BoundedFloat(179.9999, min=0., max=360., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Stereographic', sync=True)
+    _model_name = Unicode('StereographicModel', sync=True)
 
 
 @register_scale('bqplot.LinearScale')

@@ -17,52 +17,46 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
      "use strict";
 
     var GeoScale = Widget.WidgetView.extend({
-        set_projection: function(projection) {
-            this.scale = d3.geo.path().projection(projection);
+        render: function() {
+            this.set_projection();
+            this.listenTo(this.model, "attribute_changed", this.reset_scale);
+        },
+        set_projection: function() {
+            this.scale = d3.geo.path().projection(this.model.projection);
+        },
+        reset_scale: function() {
+            this.set_projection();
+            this.trigger("domain_changed", null);
         }
     });
 
     var Mercator = GeoScale.extend({
-        render: function() {
-            var projection = d3.geo.mercator().center([0, 60]).scale(190);
-            this.set_projection(projection);
-        },
+    });
+
+    var Albers = GeoScale.extend({
     });
 
     var AlbersUSA = GeoScale.extend({
-        render: function() {
-            var projection = d3.geo.albersUsa().scale(1200);
-            this.set_projection(projection);
-        },
+    });
+
+    var EquiRectangular = GeoScale.extend({
+    });
+
+    var Orthographic = GeoScale.extend({
     });
 
     var Gnomonic = GeoScale.extend({
-        render: function() {
-            var projection = d3.geo.gnomonic()
-                .clipAngle(90 - 1e-3)
-                .scale(150)
-                //.translate([width / 2, height / 2])
-                .precision(0.1);
-            this.set_projection(projection);
-        },
     });
 
     var Stereographic = GeoScale.extend({
-        render: function() {
-            var projection = d3.geo.stereographic()
-                .scale(245)
-                //.translate([width / 2, height / 2])
-                .rotate([-20, 0])
-                .clipAngle(180 - 1e-4)
-                //.clipExtent([[0, 0], [width, height]])
-                .precision(0.1);
-            this.set_projection(projection);
-        },
     });
 
     return {
         Mercator: Mercator,
+        Albers: Albers,
         AlbersUSA: AlbersUSA,
+        EquiRectangular: EquiRectangular,
+        Orthographic: Orthographic,
         Gnomonic: Gnomonic,
         Stereographic: Stereographic,
     };
