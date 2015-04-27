@@ -991,7 +991,7 @@ class MapMark(Mark):
         list containing the selected countries in the map
     hover_highlight: bool (default: True)
         boolean to control if the map should be aware of which country is being
-        hovered on. If it is set to False, tooltip will not be displayed
+        hovered on.
     map_data: tuple (default: ("worldmap", "nbextensions/bqplot/WorldMapData")
         tuple containing which map is to be displayed
 

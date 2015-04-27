@@ -111,7 +111,7 @@ class Mercator(GeoScale):
 
     Attributes
     ----------
-    scale: float (default: 190)
+    scale_factor: float (default: 190)
         Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
@@ -124,7 +124,7 @@ class Mercator(GeoScale):
         the associated data type / domain type
     """
 
-    scale = Float(190., sync=True)
+    scale_factor = Float(190., sync=True)
     center = Tuple((0, 60), sync=True)
     rotate = Tuple((0, 0), sync=True)
     rtype = '(Number, Number)'
@@ -144,12 +144,12 @@ class Albers(GeoScale):
 
     Attributes
     ----------
+    scale_factor: float (default: 250)
+        Specifies the scale value for the projection
     rotate: tuple (default: (96, 0))
         Degree of rotation in each axis.
     parallels: tuple (default: (29.5, 45.5))
         Sets the two parallels for the conic projection.
-    scale: float (default: 250)
-        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     precision: float (default: 0.1)
@@ -162,7 +162,7 @@ class Albers(GeoScale):
         the associated data type / domain type
     """
 
-    scale = Float(250., sync=True)
+    scale_factor = Float(250., sync=True)
     rotate = Tuple((96, 0), sync=True)
     center = Tuple((0, 60), sync=True)
     parallels = Tuple((29.5, 45.5), sync=True)
@@ -181,7 +181,7 @@ class AlbersUSA(GeoScale):
 
     Attributes
     ----------
-    scale: float (default: 1200)
+    scale_factor: float (default: 1200)
         Specifies the scale value for the projection
     rtype: (Number, Number) (class-level attribute)
         This attribute should not be modifed. The range type of a geo
@@ -190,7 +190,7 @@ class AlbersUSA(GeoScale):
         the associated data type / domain type
     """
 
-    scale = Float(1200., sync=True)
+    scale_factor = Float(1200., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('AlbersUSA', sync=True)
@@ -206,13 +206,13 @@ class EquiRectangular(GeoScale):
 
     Attributes
     ----------
-    scale: float (default: 145)
+    scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     """
 
-    scale = Float(145., sync=True)
+    scale_factor = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
@@ -230,7 +230,7 @@ class Orthographic(GeoScale):
 
     Attributes
     ----------
-    scale: float (default: 145)
+    scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
@@ -241,10 +241,9 @@ class Orthographic(GeoScale):
     precision: float (default: 0.1)
         Specifies the threshold for the projections adaptive resampling to the
         specified value in pixels.
-
     """
 
-    scale = Float(145., sync=True)
+    scale_factor = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
     rotate = Tuple((0, 0), sync=True)
     clip_angle = BoundedFloat(90., min=0., max=360., sync=True)
@@ -264,7 +263,7 @@ class Gnomonic(GeoScale):
 
     Attributes
     ----------
-    scale: float (default: 145)
+    scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
@@ -275,7 +274,7 @@ class Gnomonic(GeoScale):
         Specifies the clipping circle radius to the specified angle in degrees.
     """
 
-    scale = Float(145., sync=True)
+    scale_factor = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
     precision = Float(0.1, sync=True)
     clip_angle = BoundedFloat(89.999, min=0., max=360., sync=True)
@@ -295,10 +294,10 @@ class Stereographic(GeoScale):
 
     Attributes
     ----------
+    scale_factor: float (default: 250)
+        Specifies the scale value for the projection
     rotate: tuple (default: (96, 0))
         Degree of rotation in each axis.
-    scale: float (default: 250)
-        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     precision: float (default: 0.1)
@@ -308,7 +307,7 @@ class Stereographic(GeoScale):
         Specifies the clipping circle radius to the specified angle in degrees.
     """
 
-    scale = Float(145., sync=True)
+    scale_factor = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
     precision = Float(0.1, sync=True)
     rotate = Tuple((96, 0), sync=True)
