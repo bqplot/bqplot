@@ -64,7 +64,7 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 import warnings
 warnings.filterwarnings('ignore', module='IPython.html.widgets',
                         category=FutureWarning)
-warnings.filterwarnings('ignore', module='jupyter_notebook.widgets',
+warnings.filterwarnings('ignore', module='ipython_widgets',
                         category=FutureWarning)
 warnings.filterwarnings('ignore', module='IPython.utils.traitlets',
                         category=UserWarning)
