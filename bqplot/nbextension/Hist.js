@@ -33,6 +33,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 self.process_interactions();
                 self.create_listeners();
                 self.draw();
+                self.update_selected(self.model, self.model.get("selected"));
             });
         },
         set_ranges: function() {

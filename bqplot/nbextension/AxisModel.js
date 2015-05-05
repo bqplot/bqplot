@@ -48,7 +48,8 @@ define(["widgets/js/widget", "./d3", "./BaseModel"], function(Widget, d3, BaseMo
     },
     {
         serializers: _.extend({
-             scale: {deserialize: Widget.unpack_models}
+             scale: {deserialize: Widget.unpack_models},
+             offset: {deserialize: Widget.unpack_models}
         }, Widget.WidgetModel.serializers),
     });
 

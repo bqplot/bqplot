@@ -64,6 +64,9 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
         reset: function() {
             //inherited classes should implement this function
         },
+        selected_changed: function() {
+            //inherited classes should implement this function
+        },
     });
 
     var BaseXSelector = BaseSelector.extend({
