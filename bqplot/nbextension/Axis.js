@@ -692,7 +692,7 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             } else {
                 //diff is more than a year
                 return  [["%b %d", function(d) { return d.getDate() !== 1; }],
-                         ["%b %Y", function() { return d.getMonth();}],
+                         ["%b %Y", function(d) { return d.getMonth();}],
                          ["%Y", function() { return true; }]];
             }
         },
