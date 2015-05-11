@@ -37,17 +37,26 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             this.selected_indices = this.model.get("selected");
 
             this.display_el_classes = ["dot", "legendtext"];
-            this.event_metadata = {"mouse_over":      {"msg_name": "hover",
-                                                       "lookup_data": false,
-                                                       "hit_test": true },
-                                   "legend_clicked":  {"msg_name": "legend_click",
-                                                       "hit_test": true },
-                                   "element_clicked": {"msg_name": "element_click",
-                                                       "lookup_data": false,
-                                                       "hit_test": true},
-                                   "parent_clicked":  {"msg_name": "background_click",
-                                                       "hit_test": false}
-                                  };
+            this.event_metadata = {
+                "mouse_over": {
+                    "msg_name": "hover",
+                    "lookup_data": false,
+                    "hit_test": true
+                },
+                "legend_clicked":  {
+                    "msg_name": "legend_click",
+                    "hit_test": true
+                },
+                "element_clicked": {
+                    "msg_name": "element_click",
+                    "lookup_data": false,
+                    "hit_test": true
+                },
+                "parent_clicked":  {
+                   "msg_name": "background_click",
+                   "hit_test": false
+                }
+            };
             var self = this;
             this.after_displayed(function() {
                 this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
@@ -400,7 +409,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 if(interactions["click"] !== undefined &&
                   interactions["click"] !== null) {
                     if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["element_clicked"] = function() {
+                            return this.refresh_tooltip(true);
+                        };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     } else if (interactions["click"] === "add") {
                         this.event_listeners["parent_clicked"] = this.add_element;
@@ -423,7 +434,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 if(interactions["legend_click"] !== undefined &&
                   interactions["legend_click"] !== null) {
                     if(interactions["legend_click"] === "tooltip") {
-                        this.event_listeners["legend_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["legend_clicked"] = function() {
+                            return this.refresh_tooltip(true);
+                        };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     }
                 } else {
@@ -446,7 +459,9 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                   return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
               }).on("mouseover", _.bind(this.highlight_axes, this))
               .on("mouseout", _.bind(this.unhighlight_axes, this))
-              .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this));
+              .on("click", _.bind(function() {
+                  this.event_dispatcher("legend_clicked");
+              }, this));
 
               el_added.append("path")
               .attr("transform", function(d, i) {
