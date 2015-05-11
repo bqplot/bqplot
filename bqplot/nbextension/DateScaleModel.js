@@ -24,7 +24,6 @@ define(["./d3", "./LinearScaleModel"], function(d3, LinearScaleModelModule) {
             this.global_max = new Date();
         },
         min_max_changed: function() {
-            this.format_date = d3.time.format(this.get("date_format"));
             this.min = this.get_date_elem("min");
             this.max = this.get_date_elem("max");
             this.min_from_data = (this.min === null);

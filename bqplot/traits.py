@@ -178,28 +178,27 @@ class CInstance(Instance):
             return self._cast(value)
 
 
-from datetime import date as dt
-import datetime as dtime
+import datetime as dt
 
 
 class Date(TraitType):
 
     """
-    A date trait. Converts the passed date into a string format
+    A datetime trait. Converts the passed date into a string format
     easily understandable by javasscript
     """
-    klass = dtime.datetime
+    klass = dt.datetime
 
     def validate(self, obj, value):
         try:
-            if(isinstance(value, dt)
+            if(isinstance(value, dt.datetime)
                or np.issubdtype(np.dtype(value), np.datetime64)):
-                return value
+                return dt.datetime(value)
         except Exception:
             self.error(obj, value)
         self.error(obj, value)
 
-    def __init__(self, default_value=dt.today(), **kwargs):
+    def __init__(self, default_value=dt.datetime.today(), **kwargs):
         args = (default_value,)
         self.default_value = default_value
         kwargs.setdefault('to_json', Date.to_json)
@@ -210,15 +209,12 @@ class Date(TraitType):
     def to_json(value):
         if value is None:
             return value
-        # Convert to a numpy datetime first. Then the string representation
-        # gives the desired format
-        if(isinstance(value, dt)):
-            value = np.datetime64(value)
-        return str(value)
+        else:
+            return value.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
     @staticmethod
     def from_json(value):
-        return np.datetime64(value)
+        return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
 
 
 class NdArray(CInstance):
