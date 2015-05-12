@@ -51,7 +51,8 @@ from ..figure import Figure
 from ..scales import Scale, LinearScale, Mercator
 from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, MapMark, Label
-from ..interacts import panzoom, BrushIntervalSelector, FastIntervalSelector, BrushSelector, IndexSelector, MultiSelector, LassoSelector
+from ..interacts import panzoom, BrushIntervalSelector, FastIntervalSelector,\
+    BrushSelector, IndexSelector, MultiSelector, LassoSelector
 
 _context = {
     'figure': None,
@@ -653,8 +654,8 @@ def _get_context_scale(dimension):
 
 
 def _create_selector(int_type, func, trait, **kwargs):
-    """Creates a selector of the specified type. Also attaches the function
-    `func` as an event listener for the trait `trait`.
+    """Creates a selector of the specified type. Also  attaches the function
+    `func` as an event listener for the trait `trait` of the selector.
 
     Parameters
     ----------
@@ -664,7 +665,7 @@ def _create_selector(int_type, func, trait, **kwargs):
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
-        The name of the trait to trigger the call back
+        The name of the interaction attirbute triggering the call back
 
     """
     interaction = _add_interaction(int_type, **kwargs)
