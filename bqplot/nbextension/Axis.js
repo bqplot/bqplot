@@ -24,7 +24,6 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
               .style("display", this.model.get("visible") ? "inline" : "none");
 
             this.parent = this.options.parent;
-            this.enable_highlight = this.options.enable_highlight;
             this.margin = this.parent.margin;
             this.vertical = this.model.get("orientation") === "vertical";
             this.height = this.parent.height - (this.margin.top + this.margin.bottom);
@@ -276,20 +275,10 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             return return_promise;
         },
         highlight: function() {
-            /*
-             * Highlights the axis
-             */
-            if(this.enable_highlight){
-                this.g_axisline.classed("axisbold", true);
-            }
+            this.g_axisline.classed("axisbold", true);
         },
         unhighlight: function() {
-            /*
-             * Unhighlight the axis
-             */
-            if(this.enable_highlight){
-                this.g_axisline.classed("axisbold", false);
-            }
+            this.g_axisline.classed("axisbold", false);
         },
         get_basic_transform: function() {
             if(this.vertical){

@@ -79,12 +79,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(_.isEmpty(interactions)) {
                 //set all the event listeners to blank functions
                 this.reset_interactions();
-            }
-            else {
+            } else {
                 if(interactions["click"] !== undefined &&
                   interactions["click"] !== null) {
                     if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["element_clicked"] = function() {
+                            return this.refresh_tooltip(true);
+                        };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     } else if (interactions["click"] === "select") {
                         this.event_listeners["parent_clicked"] = this.reset_selection;
@@ -106,11 +107,22 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 if(interactions["legend_click"] !== undefined &&
                   interactions["legend_click"] !== null) {
                     if(interactions["legend_click"] === "tooltip") {
-                        this.event_listeners["legend_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["legend_clicked"] = function() {
+                            return this.refresh_tooltip(true);
+                        };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     }
                 } else {
                     this.event_listeners["legend_clicked"] = function() {};
+                }
+                if(interactions["legend_hover"] !== undefined &&
+                  interactions["legend_hover"] !== null) {
+                    if(interactions["legend_hover"] === "highlight_axes") {
+                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
+                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
+                    }
+                } else {
+                    this.reset_legend_hover();
                 }
             }
         },
@@ -137,7 +149,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         calculate_bar_width: function() {
             var x_scale = this.scales["sample"];
-            var bar_width = (x_scale.scale(this.model.max_x) - x_scale.scale(this.model.min_x)) / this.model.num_bins;
+            var bar_width = (x_scale.scale(this.model.max_x) -
+                             x_scale.scale(this.model.min_x)) / this.model.num_bins;
             if (bar_width >= 10) {
                 bar_width -= 2;
             }
@@ -201,13 +214,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .on("click", function(d, i) {
                   return that.event_dispatcher("element_clicked", {"data": d, "index": i});
               })
-              .attr("id", function(d, i) { return "rect"+i; })
+              .attr("id", function(d, i) { return "rect" + i; })
               .transition()
               .duration(this.model.get("animate_dur"))
               .attr("width", bar_width)
 		      .attr("height", function(d) {
                   return y_scale.scale(0) - y_scale.scale(d.y);
-    
               });
 
             bar_groups.exit().remove();
@@ -228,8 +240,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     // if the index is already selected and if ctrl key is
                     // pressed, remove the element from the list
                     selected.splice(elem_index, 1);
-                }
-                else {
+                } else {
                     if(d3.event.shiftKey) {
                         //If shift is pressed and the element is already
                         //selected, do not do anything
@@ -251,8 +262,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                                 selected.push(i);
                             });
                         }
-                    }
-                    else if(d3.event.ctrlKey) {
+                    } else if(d3.event.ctrlKey) {
                         //If ctrl is pressed and the bar is not already selcted
                         //add the bar to the list of selected bars.
                         selected.push(index);
@@ -268,7 +278,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 }
                 this.bars_selected = selected;
                 this.model.set("selected", ((selected.length === 0) ? null :
-                                             this.calc_data_indices(selected)), {updated_view: this});
+                                             this.calc_data_indices(selected)), 
+                                            {updated_view: this});
                 this.touch();
                 if(!d3.event) {
                     d3.event = window.event;
@@ -291,16 +302,29 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var rect_dim = inter_y_disp * 0.8;
             this.legend_el.enter()
               .append("g")
-              .attr("class", "legend" + this.uuid)
-              .attr("transform", function(d, i) {
-                  return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
-              })
-              .on("mouseover", _.bind(this.highlight_axes, this))
-              .on("mouseout", _.bind(this.unhighlight_axes, this))
-              .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this))
+                .attr("class", "legend" + this.uuid)
+                .attr("transform", function(d, i) {
+                    return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
+                })
+                .on("mouseover", _.bind(function() {
+                   this.event_dispatcher("legend_mouse_over")
+                }, this))
+                .on("mouseout", _.bind(function() {
+                   this.event_dispatcher("legend_mouse_out")
+                }, this))
+                .on("click", _.bind(function() {
+                   this.event_dispatcher("legend_clicked");
+                }, this))
               .append("rect")
-              .style("fill", function(d,i) { return that.get_colors(i); })
-              .attr({x: 0, y: 0, width: rect_dim, height: rect_dim});
+                .style("fill", function(d, i) {
+                    return that.get_colors(i);
+                })
+                .attr({
+                    x: 0,
+                    y: 0,
+                    width: rect_dim,
+                    height: rect_dim
+                });
 
             this.legend_el.append("text")
               .attr("class","legendtext")
@@ -330,8 +354,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 //reset the color of everything if selected is blank
                 this.update_selected_colors([]);
                 return;
-            }
-            else {
+            } else {
                 var indices = this.calc_bar_indices_from_data_idx(value);
                 this.update_selected_colors(indices);
             }
@@ -344,9 +367,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var bars_sel = this.el.selectAll(".bar");
             var self = this;
             _.difference(_.range(0, this.model.num_bins), indices)
-                    .forEach(function(d) {
-                        self.el.selectAll("#rect" + d).style("fill", fill_color);
-                    });
+                .forEach(function(d) {
+                    self.el.selectAll("#rect" + d).style("fill", fill_color);
+                });
             indices.forEach(function(d) {
                     self.el.selectAll("#rect" + d).style("fill", select_color);
             });
@@ -371,8 +394,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //input is a list of indices corresponding to the bars. Output is
             //the list of indices in the data
             var intervals = this.reduce_intervals(indices);
-            if(intervals.length === 0)
+            if(intervals.length === 0) {
                 return [];
+            }
 
             var x_data = this.model.get_typed_field("sample");
             var num_intervals = intervals.length;
@@ -404,12 +428,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                         end_index++;
                     } else {
                         intervals.push([this.model.x_bins[start_index],
-                            this.model.x_bins[end_index+1]]);
+                                        this.model.x_bins[end_index + 1]]);
                         start_index = end_index = indices[iter];
                     }
                 }
                 intervals.push([this.model.x_bins[start_index],
-                            this.model.x_bins[end_index+1]]);
+                                this.model.x_bins[end_index + 1]]);
             }
             return intervals;
         },
@@ -419,15 +443,17 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var x_data = this.model.get_typed_field("sample");
             var that = this;
             return _.filter(_.range(x_data.length), function(iter) {
-                                                    return (x_data[iter] >= that.model.x_bins[idx_start] &&
-                                                            x_data[iter] <= that.model.x_bins[idx_end]);
+                return (x_data[iter] >= that.model.x_bins[idx_start] &&
+                        x_data[iter] <= that.model.x_bins[idx_end]);
             });
         },
         calc_bar_indices_from_data_idx: function(selected) {
             //function to calculate bar indices for a given list of data
             //indices
             var x_data = this.model.get_typed_field("sample");
-            var data = selected.map(function(idx) { return x_data[idx];});
+            var data = selected.map(function(idx) {
+                return x_data[idx];
+            });
             var bar_indices = [];
             for(var iter = 0; iter < data.length; iter++) {
                 //x_bins is of length num_bars+1. So if the max element is

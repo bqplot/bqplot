@@ -289,12 +289,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         },
         add_axis: function(model) {
             // Called when an axis is added to the axes list.
-
-            // If we have more than two axes, then we need to highlight corresponding axes
-            // when hovering a mark legend.
-            var enable = (this.model.get("axes").length > 2);
             var that = this;
-            return this.create_child_view(model, {enable_highlight: enable})
+            return this.create_child_view(model)
               .then(function(view) {
                 that.fig_axes.node().appendChild(view.el.node());
                 that.after_displayed(function() {
@@ -307,7 +303,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             var scale_id = scale_model.id;
             if(dict[scale_id] !== undefined) {
                 delete dict[scale_id][mark_view.model.id + "_" + mark_view.cid];
-
                 if(Object.keys(dict[scale_id]).length === 0) {
                     delete dict[scale_id];
                 }
