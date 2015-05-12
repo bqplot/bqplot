@@ -218,8 +218,7 @@ class OneDSelector(Selector):
         co-ordinates. This scale is used for setting the selected attribute for
         the selector.
     """
-    scale = Instance(Scale, allow_none=True, sync=True,
-                     **widget_serialization)
+    scale = Instance(Scale, allow_none=True, sync=True, dimension='horizontal', **widget_serialization)
     _model_name = Unicode('OneDSelectorModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/OneDSelectorModel', sync=True)
 
@@ -242,9 +241,9 @@ class TwoDSelector(Selector):
         co-ordinates in the y-direction. This scale is used for setting the
         selected attribute for the selector along with x_scale.
     """
-    x_scale = Instance(Scale, allow_none=True, sync=True,
+    x_scale = Instance(Scale, allow_none=True, sync=True, dimension='horizontal',
                        **widget_serialization)
-    y_scale = Instance(Scale, allow_none=True, sync=True,
+    y_scale = Instance(Scale, allow_none=True, sync=True, dimension='vertical',
                        **widget_serialization)
 
     _model_name = Unicode('TwoDSelectorModel', sync=True)
