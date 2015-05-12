@@ -203,6 +203,9 @@ class Selector(Interaction):
     _view_name = Unicode('Selector', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Selector', sync=True)
 
+    def reset(self):
+        self.send({"type": "reset"})
+
 
 class OneDSelector(Selector):
 

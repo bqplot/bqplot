@@ -75,7 +75,8 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             var xpixel = mouse_pos[0];
             //update the index vertical line
             this.line.attr({x1: xpixel, x2: xpixel});
-            this.model.set_typed_field("selected", [this.invert_pixel(xpixel)]);
+
+            this.model.set_typed_field("selected", [this.invert_pixel(xpixel)], {js_ignore: true});
             _.each(this.mark_views, function(mark_view) {
                  mark_view.invert_point(xpixel);
             });
@@ -87,11 +88,39 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
         },
         reset: function() {
             this.active = false;
-            this.line.attr("x1", 0)
-                .attr("x2", 0)
-                .attr("visibility", "hidden");
+            this.line.attr({x1: 0, x2: 0, visibility: "hidden"});
             this.background.on("click", _.bind(this.initial_click, this));
-            this.scale = this.parent.x_scale;
+            this.model.set_typed_field("selected", [], {js_ignore : true});
+
+            _.each(this.mark_views, function(mark_view) {
+                mark_view.invert_point();
+            });
+            this.touch();
+        },
+        selected_changed: function(model, value, options) {
+            if(options && options.js_ignore) {
+                //this change was most probably triggered from the js side and
+                //should be ignored.
+                return;
+            }
+            //reposition the interval selector and set the selected attribute.
+            var selected = this.model.get_typed_field("selected");
+            if(selected.length == 0) {
+                this.reset();
+            } else if (selected.length != 1) {
+                // invalid value for selected. Ignoring the value
+                return;
+            } else {
+                var pixel = this.scale.scale(selected[0]);
+                this.line.attr({x1: pixel, x2: pixel, visibility: "visible"});
+
+                //the selected may be called before the index selector is
+                //active for the first time.
+                this.background.on("click", _.bind(this.click, this));
+                _.each(this.mark_views, function(mark_view) {
+                    mark_view.invert_point(pixel);
+                });
+            }
         },
         remove: function() {
             this.line.remove();
@@ -105,6 +134,10 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             this.background.attr("width", this.width)
                 .attr("height", this.height);
             this.set_range([this.scale]);
+        },
+        scale_changed: function() {
+            this.reset();
+            this.scale = this.parent.x_scale;
         },
         set_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {

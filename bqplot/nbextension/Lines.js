@@ -224,6 +224,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.touch();
         },
         invert_point: function(pixel) {
+            if(pixel === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return;
+            }
+
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var data_point = x_scale.scale.invert(pixel);
             var data = this.model.x_data[0] instanceof Array ?

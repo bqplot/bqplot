@@ -70,9 +70,9 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
         },
         convert_and_save: function(extent) {
             if(extent.length === 0) {
-                this.model.set("selected", extent);
+                this.model.set("selected", [], {js_ignore: true});
                 _.each(this.mark_views, function(mark_view) {
-                    mark_view.invert_2d_range(extent);
+                    mark_view.invert_2d_range([]);
                 });
                 this.touch();
                 return;
@@ -91,7 +91,8 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             this.model.set("selected", this.get_typed_selected([[extent_x[0],
                                                                  extent_y[0]],
                                                                 [extent_x[1],
-                                                                 extent_y[1]]]));
+                                                                 extent_y[1]]]),
+                            {js_ignore: true});
             this.touch();
         },
         get_typed_selected: function(extent) {
@@ -105,7 +106,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             }
             return extent;
         },
-        reset: function() {
+        scale_changed: function() {
             this.brush.clear();
             this.create_scales();
         },
@@ -120,6 +121,22 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
 
             this.set_x_range([this.x_scale]);
             this.set_y_range([this.y_scale]);
+        },
+        reset: function() {
+            this.brush.clear();
+            this._update_brush();
+
+            this.model.set("selected", [], {js_ignore: true});
+            _.each(this.mark_views, function(mark_view) {
+                mark_view.invert_2d_range([]);
+            });
+            this.touch();
+        },
+        _update_brush: function() {
+            //programmatically setting the brush does not redraw it. It is
+            //being redrawn below
+            this.brushsel = this.el.call(this.brush);
+            this.el.call(this.brush.event);
         },
     });
 
@@ -147,6 +164,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
                 }
 
                 self.create_listeners();
+                self.selected_changed();
             });
         },
         create_listeners: function() {
@@ -183,13 +201,55 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
                                            self.scale.scale(extent[1]));
                 });
             }
-            this.model.set_typed_field("selected", extent);
+            this.model.set_typed_field("selected", extent, {js_ignore: true});
             this.touch();
         },
-        reset: function() {
+        scale_changed: function() {
             this.brush.clear();
             this.create_scale();
             this.brush.x(this.scale.scale);
+        },
+        reset: function() {
+            this.brush.clear();
+            this._update_brush();
+
+            this.model.set_typed_field("selected", [], {js_ignore : true});
+            _.each(this.mark_views, function(mark_view) {
+                mark_view.invert_range([]);
+            });
+            this.touch();
+        },
+        selected_changed: function(model, value, options) {
+            if(options && options.js_ignore) {
+                //this change was most probably triggered from the js side and
+                //should be ignored.
+                return;
+            }
+            //reposition the interval selector and set the selected attribute.
+            var selected = this.model.get_typed_field("selected");
+            if(selected.length == 0) {
+                this.reset();
+            } else if (selected.length != 2) {
+                // invalid value for selected. Ignoring the value
+                return;
+            } else {
+                var self = this;
+                selected = selected.sort(function(a, b) { return a - b; });
+
+                this.brush.extent([selected[0], selected[1]]);
+                this._update_brush();
+
+                _.each(this.mark_views, function(mark_view) {
+                    mark_view.invert_range(self.scale.scale(selected[0]),
+                                           self.scale.scale(selected[1]));
+                }, this);
+            }
+        },
+        _update_brush: function() {
+            //programmatically setting the brush does not redraw it. It is
+            //being redrawn below
+            this.brushsel = this.el.call(this.brush);
+            this.el.call(this.brush.event);
         },
         remove: function() {
             this.brush.clear();
@@ -316,8 +376,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
                 old_handler.call(this);
                 d3.select(this).on("mousedown.brush", function() {
                     if(d3.event.shiftKey && d3.event.ctrlKey && d3.event.altKey) {
-                        self.clear_selectors();
-                        self.create_brush();
+                        self.reset();
                     } else if(d3.event.ctrlKey) {
                         add_remove_classes(d3.select(this), ["inactive"], ["active"]);
                         self.create_brush(d3.event);
@@ -378,12 +437,13 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             this.model.set("brushing", false);
             this.convert_and_save(extent, item);
         },
-        clear_selectors: function() {
+        reset: function() {
             this.el.selectAll(".selector")
                 .remove();
             this.model.set("_selected", {});
             this.curr_index = 0;
             this.touch();
+            this.create_brush();
         },
         convert_and_save: function(extent, item) {
             var selected = utils.deepCopy(this.model.get("_selected"));
@@ -400,7 +460,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             this.model.set("_selected", selected);
             this.touch();
         },
-        reset: function() {
+        scale_changed: function() {
             this.el.selectAll(".selector")
                 .remove();
             this.curr_index = 0;
