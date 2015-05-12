@@ -230,17 +230,17 @@ class NdArray(CInstance):
         if a is not None:
             if np.issubdtype(a.dtype, np.float):
                 # replace nan with None
-                a = np.where(np.isnan(a), None, a)
                 dtype = a.dtype
+                a = np.where(np.isnan(a), None, a)
             elif a.dtype in (int, np.int64):
-                a = a.astype('float')
                 dtype = 'float'
+                a = a.astype('float')
             elif np.issubdtype(a.dtype, np.datetime64):
-                a = a.astype('string')
                 dtype = 'date'
+                a = a.astype('string')
             else:
                 dtype = a.dtype
-            return {'values': a.tolist(), 'type': dtype}
+            return {'values': a.tolist(), 'type': str(dtype)}
         else:
             return {'values': a, 'type': None}
 
