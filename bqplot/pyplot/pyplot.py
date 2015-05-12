@@ -51,8 +51,8 @@ from ..figure import Figure
 from ..scales import Scale, LinearScale, Mercator
 from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, MapMark, Label
-from ..interacts import panzoom, BrushIntervalSelector, FastIntervalSelector,\
-    BrushSelector, IndexSelector, MultiSelector, LassoSelector
+from ..interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
+                         BrushSelector, IndexSelector, MultiSelector, LassoSelector)
 
 _context = {
     'figure': None,
