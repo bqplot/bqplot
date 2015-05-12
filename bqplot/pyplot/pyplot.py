@@ -655,7 +655,9 @@ def _get_context_scale(dimension):
 
 def _create_selector(int_type, func, trait, **kwargs):
     """Creates a selector of the specified type. Also  attaches the function
-    `func` as an event listener for the trait `trait` of the selector.
+    `func` as an `on_trait_change` listener for the trait `trait` of the selector.
+
+    This is an internal function which should not be called by the user.
 
     Parameters
     ----------
@@ -665,7 +667,8 @@ def _create_selector(int_type, func, trait, **kwargs):
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
-        The name of the interaction attirbute triggering the call back
+        The name of the Selector trait whose change triggers the
+        call back function `func`
 
     """
     interaction = _add_interaction(int_type, **kwargs)
@@ -684,7 +687,8 @@ def brush_int_selector(func=None, trait='selected', **kwargs):
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
-        The name of the trait to trigger the call back
+        The name of the BrushIntervalSelector trait whose change triggers the
+        call back function `func`
 
     """
     return _create_selector(BrushIntervalSelector, func, trait, **kwargs)
@@ -700,7 +704,8 @@ def int_selector(func=None, trait='selected', **kwargs):
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
-        The name of the trait to trigger the call back
+        The name of the IntervalSelector trait whose change triggers the
+        call back function `func`
 
     """
     return _create_selector(FastIntervalSelector, func, trait, **kwargs)
@@ -716,7 +721,8 @@ def index_selector(func=None, trait='selected', **kwargs):
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
-        The name of the trait to trigger the call back
+        The name of the IndexSelector trait whose change triggers the
+        call back function `func`
 
     """
     return _create_selector(IndexSelector, func, trait, **kwargs)
@@ -732,7 +738,8 @@ def brush_selector(func=None, trait='selected', **kwargs):
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
-        The name of the trait to trigger the call back
+        The name of the BrushSelector trait whose change triggers the
+        call back function `func`
 
     """
     return _create_selector(BrushSelector, func, trait, **kwargs)
@@ -748,8 +755,8 @@ def multi_selector(func=None, trait='selected', **kwargs):
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
-        The name of the trait to trigger the call back
-
+        The name of the MultiSelector trait whose change triggers the
+        call back function `func`
     """
     return _create_selector(MultiSelector, func, trait, **kwargs)
 
@@ -764,8 +771,8 @@ def lasso_selector(func=None, trait='selected', **kwargs):
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
-        The name of the trait to trigger the call back
-
+        The name of the LassoSelector trait whose change triggers the
+        call back function `func`
     """
     return _create_selector(LassoSelector, func, trait, **kwargs)
 
