@@ -49,7 +49,7 @@ define(["./d3", "./Scale"], function(d3, ScaleViewModule) {
         invert_range: function(pixels) {
             //pixels is a non-decreasing array of pixel values
             var self = this;
-            return pixels.map(function(pix) { return self.invert(pixel); });
+            return pixels.map(function(pix) { return self.invert(pix); });
         },
     });
 

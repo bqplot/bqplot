@@ -83,7 +83,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             if(this.x_scale.model.type == "ordinal") {
                 extent_x = this.x_scale.invert_range(extent_x);
             }
-            if(self.y_scale.model.type == "ordinal") {
+            if(this.y_scale.model.type == "ordinal") {
                 extent_y = this.y_scale.invert_range(extent_y);
             }
 
