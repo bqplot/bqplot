@@ -83,11 +83,7 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             this.touch();
         },
         invert_pixel: function(pixel) {
-            if(this.scale.model.type === "ordinal") {
-                return this.scale.invert(pixel);
-            }
-            var x_value = this.scale.scale.invert(pixel);
-            return x_value;
+            return this.scale.invert(pixel);
         },
         reset: function() {
             this.active = false;

@@ -111,12 +111,7 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             this.touch();
         },
         invert_range: function(start, end) {
-            if(this.scale.model.type == "ordinal") {
-                return this.scale.invert_range([start, end]);
-            }
-            var x_start = this.scale.scale.invert(start);
-            var x_end = this.scale.scale.invert(end);
-            return [x_start, x_end];
+            return this.scale.invert_range([start, end]);
         },
         scale_changed: function() {
             this.reset();

@@ -43,6 +43,14 @@ define(["./d3", "./Scale"], function(d3, ScaleViewModule) {
                 return unpadded_scale.invert(limit);
             }));
         },
+        invert: function(pixel) {
+            return this.scale.invert(pixel);
+        },
+        invert_range: function(pixels) {
+            //pixels is a non-decreasing array of pixel values
+            var self = this;
+            return pixels.map(function(pix) { return self.invert(pixel); });
+        },
     });
 
     return {
