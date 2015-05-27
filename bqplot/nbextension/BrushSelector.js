@@ -190,16 +190,20 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             this.convert_and_save(extent);
         },
         convert_and_save: function(extent) {
+            var self = this;
             if(extent.length === 0) {
                 _.each(this.mark_views, function(mark_view) {
                     return mark_view.invert_range(extent);
                 });
             } else {
-                var self = this;
                 _.each(this.mark_views, function(mark_view) {
                     mark_view.invert_range(self.scale.scale(extent[0]),
                                            self.scale.scale(extent[1]));
                 });
+            }
+
+            if(this.scale.model.type == "ordinal") {
+                extent = this.scale.invert_range(extent);
             }
             this.model.set_typed_field("selected", extent, {js_ignore: true});
             this.touch();
