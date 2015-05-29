@@ -47,9 +47,20 @@ define(["./d3", "./Scale"], function(d3, ScaleViewModule) {
             return this.scale.invert(pixel);
         },
         invert_range: function(pixels) {
-            //pixels is a non-decreasing array of pixel values
+            //Pixels is a non-decreasing array of pixel values
             var self = this;
             return pixels.map(function(pix) { return self.invert(pix); });
+        },
+        invert_data: function(pixel, data) {
+            //Returns the index in the data which is closest to the current
+            //value
+
+        },
+        invert_data_range: function(pixels, data) {
+            //Returns the indices of the data which are in the interval bounded
+            //by the pixels
+
+
         },
     });
 

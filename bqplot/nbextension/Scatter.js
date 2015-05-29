@@ -519,6 +519,27 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     return (show_names) ? "inline": "none";
                 });
         },
+        invert_range: function(start_pxl, end_pxl) {
+            if(start_pxl === undefined || end_pxl === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return [];
+            }
+
+            var self = this;
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_start = x_scale.scale.invert(start_pxl);
+            var x_end = x_scale.scale.invert(end_pxl);
+            var indices = _.range(this.model.mark_data.length);
+
+            var that = this;
+            var selected = _.filter(indices, function(index) {
+                var elem = that.model.mark_data[index];
+                return (elem.x >= x_start && elem.x <= xmax);
+            });
+            this.model.set("selected", selected);
+            this.touch();
+        },
         invert_2d_range: function(x_start, x_end, y_start, y_end) {
             if(!x_end) {
                 this.model.set("selected", null);

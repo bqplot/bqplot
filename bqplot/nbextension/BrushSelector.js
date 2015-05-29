@@ -204,10 +204,16 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
                     return mark_view.invert_range(extent);
                 });
             } else {
-                _.each(this.mark_views, function(mark_view) {
-                    mark_view.invert_range(self.scale.scale(extent[0]),
-                                           self.scale.scale(extent[1]));
-                });
+                if(this.scale.model.type === "ordinal") {
+                    _.each(this.mark_views, function(mark_view) {
+                        mark_view.invert_range(extent[0], extent[1]);
+                    });
+                } else {
+                    _.each(this.mark_views, function(mark_view) {
+                        mark_view.invert_range(self.scale.scale(extent[0]),
+                                            self.scale.scale(extent[1]));
+                    });
+                }
             }
 
             if(this.scale.model.type == "ordinal") {

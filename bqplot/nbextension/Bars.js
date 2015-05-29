@@ -118,6 +118,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.listenTo(this.model, "change:align", this.realign, this);
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+            this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
@@ -199,6 +200,27 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.adjust_offset();
             this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
             this.draw_bars();
+        },
+        invert_range: function(start_pxl, end_pxl) {
+            if(start_pxl === undefined || end_pxl === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return [];
+            }
+
+            var self = this;
+            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var labels = x_scale.invert_range([start_pxl, end_pxl]);
+
+            var indices = _.range(this.model.mark_data.length);
+            var x_vals = this.model.mark_data.map(function(elem) { return elem['values'][0]['x']; });
+            var filtered_indices = indices.filter(function(ind) { return (labels.indexOf(x_vals[ind]) != -1); });
+            this.model.set("selected", filtered_indices);
+            this.touch();
+        },
+        update_selected: function(model, value) {
+            this.selected_indices = value;
+            this.apply_styles();
         },
         draw: function() {
             this.set_ranges();
@@ -538,16 +560,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 e.stopPropagation();
             }
             e.preventDefault();
-            this.selected_indices = selected;
-            this.apply_styles();
         },
         reset_selection: function() {
             this.model.set("selected", null);
-            this.touch();
             this.selected_indices = null;
-            this.clear_style(this.selected_style);
-            this.clear_style(this.unselected_style);
-            this.set_default_style();
+            this.touch();
         },
         compute_view_padding: function() {
             //This function returns a dictionary with keys as the scales and
