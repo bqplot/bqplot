@@ -211,17 +211,19 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
 
             var self = this;
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var start = x_scale.scale.invert(start_pxl);
-            var end = x_scale.scale.invert(end_pxl);
-            var data = this.model.x_data[0] instanceof Array ?
+            var x_scale = this.scales["x"];
+            var x_data = this.model.x_data[0] instanceof Array ?
                 this.model.x_data[0] : this.model.x_data;
+            //TODO: Cache this
+            var x_pixels = x_data.map(function(elem) { return x_scale.scale(elem) + x_scale.offset; });
 
-            var indices = [start, end].map(function(elem) {
-				return Math.min(self.bisect(data, elem),
-								Math.max((data.length - 1), 0));
-			});
-            this.model.set("selected", indices);
+            var indices = _.range(x_data.length);
+            var that = this;
+            var selected = _.filter(indices, function(index) {
+                var elem = x_pixels[index];
+                return (elem >= start_pxl && elem <= end_pxl);
+            });
+            this.model.set("selected", selected);
             this.touch();
         },
         invert_point: function(pixel) {
@@ -231,13 +233,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 return;
             }
 
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var data_point = x_scale.scale.invert(pixel);
-            var data = this.model.x_data[0] instanceof Array ?
+            var x_scale = this.scales["x"];
+            //TODO: Cache this
+            var x_data = this.model.x_data[0] instanceof Array ?
                 this.model.x_data[0] : this.model.x_data;
+            var x_pixels = x_data.map(function(elem) { return x_scale.scale(elem) + x_scale.offset; });
 
-            var index = Math.min(this.bisect(data, data_point),
-								 Math.max((data.length - 1), 0));
+            var index = Math.min(this.bisect(x_pixels, pixel),
+								 Math.max((x_pixels.length - 1), 0));
             this.model.set("selected", [index]);
             this.touch();
         },

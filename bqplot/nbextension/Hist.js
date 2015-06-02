@@ -380,12 +380,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.touch();
                 return [];
             }
-            var x_scale = this.scales["sample"];
-            var data = [start_pxl, end_pxl].map(function(elem) {
-                return x_scale.scale.invert(elem);
-            });
 
-            var selected = this.calc_data_indices_from_data_range(d3.min(data), d3.max(data));
+            var selected = this.calc_data_indices_from_data_range(d3.min([start_pxl, end_pxl]),
+                                                                  d3.max([start_pxl, end_pxl]));
             this.model.set("selected", selected);
             this.touch();
             return selected;
@@ -437,9 +434,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
             return intervals;
         },
-        calc_data_indices_from_data_range: function(data_min, data_max) {
-            var idx_start = d3.max([0, d3.bisectLeft(this.model.x_bins, data_min) - 1]);
-            var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.model.x_bins, data_max)]);
+        calc_data_indices_from_data_range: function(start_pixel, end_pixel) {
+            //Input is pixel values and output is the list of indices for which
+            //the `sample` value lies in the interval
+            //TODO: Cache this
+            var x_scale = this.scales["sample"];
+            var bin_pixels = this.model.x_bins.map(function(el) { return x_scale.scale(el) + x_scale.offset; });
+
+            var idx_start = d3.max([0, d3.bisectLeft(bin_pixels, start_pixel) - 1]);
+            var idx_end = d3.min([this.model.num_bins, d3.bisectRight(bin_pixels, end_pixel)]);
+
             var x_data = this.model.get_typed_field("sample");
             var that = this;
             return _.filter(_.range(x_data.length), function(iter) {

@@ -527,38 +527,39 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             }
 
             var self = this;
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var x_start = x_scale.scale.invert(start_pxl);
-            var x_end = x_scale.scale.invert(end_pxl);
+            var x_scale = this.scales["x"];
+            //TODO: Cache these values
+            var x_pixels = this.model.mark_data.map(function(elem) { return x_scale.scale(elem.x) + x_scale.offset; });
             var indices = _.range(this.model.mark_data.length);
 
             var that = this;
             var selected = _.filter(indices, function(index) {
-                var elem = that.model.mark_data[index];
-                return (elem.x >= x_start && elem.x <= xmax);
+                var elem = x_pixels[index];
+                return (elem >= start_pxl && elem <= end_pxl);
             });
             this.model.set("selected", selected);
             this.touch();
         },
         invert_2d_range: function(x_start, x_end, y_start, y_end) {
+            //y_start is usually greater than y_end as the y_scale is invert
+            //by default
             if(!x_end) {
                 this.model.set("selected", null);
                 this.touch();
                 return _.range(this.model.mark_data.length);
             }
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
-
-            var xmin = x_scale.scale.invert(x_start),
-                xmax = x_scale.scale.invert(x_end),
-                ymin = y_scale.scale.invert(y_start),
-                ymax = y_scale.scale.invert(y_end);
+            //TODO: Cache these values
+            var x_pixels = this.model.mark_data.map(function(elem) { return x_scale.scale(elem.x) + x_scale.offset; });
+            var y_pixels = this.model.mark_data.map(function(elem) { return y_scale.scale(elem.y) + y_scale.offset; });
 
             var indices = _.range(this.model.mark_data.length);
             var that = this;
             var selected = _.filter(indices, function(index) {
-                var elem = that.model.mark_data[index];
-                return (elem.x >= xmin && elem.x <= xmax &&
-                        elem.y >= ymin && elem.y <= ymax);
+                var elem_x = x_pixels[index],
+                    elem_y = y_pixels[index];
+                return (elem_x >= x_start && elem_x <= x_end &&
+                        elem_y <= y_start && elem_y >= y_end);
             });
             this.model.set("selected", selected);
             this.touch();

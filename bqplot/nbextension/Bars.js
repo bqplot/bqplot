@@ -201,6 +201,22 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
             this.draw_bars();
         },
+        invert_point: function(pixel) {
+            if(pixel === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return;
+            }
+
+            var x_scale = this.scales["x"];
+            var x_vals = this.model.mark_data.map(function(elem) { return elem['values'][0]['x']; });
+            //TODO: Cache this
+            var x_pixels = x_vals.map(function(elem) { return x_scale.scale(elem) + x_scale.offset; });
+
+            var abs_diff = x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
+            this.touch();
+        },
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined) {
                 this.model.set("selected", null);
@@ -209,12 +225,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
 
             var self = this;
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var labels = x_scale.invert_range([start_pxl, end_pxl]);
+            var x_scale = this.scales["x"];
 
             var indices = _.range(this.model.mark_data.length);
             var x_vals = this.model.mark_data.map(function(elem) { return elem['values'][0]['x']; });
-            var filtered_indices = indices.filter(function(ind) { return (labels.indexOf(x_vals[ind]) != -1); });
+            //TODO: Cache this
+            var x_pixels = x_vals.map(function(elem) { return x_scale.scale(elem) + x_scale.offset; });
+            var filtered_indices = indices.filter(function(ind) { var x_pix = x_pixels[ind];
+                                                                  return (x_pix <= end_pxl && x_pix >= start_pxl); });
             this.model.set("selected", filtered_indices);
             this.touch();
         },
