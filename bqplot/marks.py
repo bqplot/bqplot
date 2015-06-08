@@ -205,7 +205,9 @@ class Mark(Widget):
     def __init__(self, **kwargs):
         super(Mark, self).__init__(**kwargs)
         self._hover_handlers = CallbackDispatcher()
+        self._click_handlers = CallbackDispatcher()
         self._legend_click_handlers = CallbackDispatcher()
+        self._legend_hover_handlers = CallbackDispatcher()
         self._element_click_handlers = CallbackDispatcher()
         self._bg_click_handlers = CallbackDispatcher()
         self.on_msg(self._handle_custom_msgs)
@@ -213,8 +215,14 @@ class Mark(Widget):
     def on_hover(self, callback, remove=False):
         self._hover_handlers.register_callback(callback, remove=remove)
 
+    def on_click(self, callback, remove=False):
+        self._click_handlers.register_callback(callback, remove=remove)
+
     def on_legend_click(self, callback, remove=False):
         self._legend_click_handlers.register_callback(callback, remove=remove)
+
+    def on_legend_hover(self, callback, remove=False):
+        self._legend_hover_handlers.register_callback(callback, remove=remove)
 
     def on_element_click(self, callback, remove=False):
         self._element_click_handlers.register_callback(callback, remove=remove)
@@ -225,8 +233,12 @@ class Mark(Widget):
     def _handle_custom_msgs(self, _, content, buffers=None):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
+        if content.get('event', '') == 'click':
+            self._click_handlers(self, content)
         elif content.get('event', '') == 'legend_click':
             self._legend_click_handlers(self, content)
+        elif content.get('event', '') == 'legend_hover':
+            self._legend_hover_handlers(self, content)
         elif content.get('event', '') == 'element_click':
             self._element_click_handlers(self, content)
         elif content.get('event', '') == 'background_click':
@@ -1022,24 +1034,6 @@ class MapMark(Mark):
                            allow_none=True, sync=True)
 
     map_data = Tuple(sync=True)
-
-    def __init__(self, **kwargs):
-        super(MapMark, self).__init__(**kwargs)
-        self._ctrl_click_handlers = CallbackDispatcher()
-        self._hover_handlers = CallbackDispatcher()
-        self.on_msg(self._handle_button_msg)
-
-    def on_ctrl_click(self, callback, remove=False):
-        self._ctrl_click_handlers.register_callback(callback, remove=remove)
-
-    def on_hover(self, callback, remove=False):
-        self._hover_handlers.register_callback(callback, remove=remove)
-
-    def _handle_button_msg(self, _, content, buffers=None):
-        if content.get('event', '') == 'click':
-            self._ctrl_click_handlers(self, content)
-        if content.get('event', '') == 'hover':
-            self._hover_handlers(self, content)
 
     _view_name = Unicode('Map', sync=True)
     _view_module = Unicode('nbextensions/bqplot/MapMark', sync=True)
