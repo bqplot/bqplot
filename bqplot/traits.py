@@ -185,13 +185,15 @@ class Date(TraitType):
 
     """
     A datetime trait. Converts the passed date into a string format
-    easily understandable by javasscript
+    that can be used to construct a JavaScript datetime.
     """
 
     def validate(self, obj, value):
         try:
             if isinstance(value, dt.datetime):
                 return value
+            if isinstance(value, dt.date):
+                return dt.datetime(value.year, value.month, value.day)
             if np.issubdtype(np.dtype(value), np.datetime64):
                 return value.astype(dt.datetime)
         except Exception:
