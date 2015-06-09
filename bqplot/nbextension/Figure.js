@@ -141,6 +141,13 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 that.mark_views = new Widget.ViewList(that.add_mark, that.remove_mark, that);
                 that.mark_views.update(that.model.get("marks"));
                 Promise.all(that.mark_views.views).then(function(views) {
+                    _.each(views, function(view) {
+                        view.dummy_node.parentNode.replaceChild(view.el.node(),
+                                                                view.dummy_node);
+                        that.after_displayed(function() {
+                            view.trigger("displayed");
+                        });
+                    });
                     that.update_marks(views);
                     that.update_legend();
                     // Update Interaction layer
@@ -217,17 +224,19 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
             // See the scale_x and scale_y attributes of the python Figure
             var that = this;
-            var x_scale_promise = this.create_child_view(this.model.get("scale_x")).then(function(view) {
-                that.scale_x = view;
-                that.scale_x.scale.clamp(true);
-                that.scale_x.set_range([0, that.plotarea_width]);
-            });
+            var x_scale_promise = this.create_child_view(this.model.get("scale_x"))
+                .then(function(view) {
+                    that.scale_x = view;
+                    that.scale_x.scale.clamp(true);
+                    that.scale_x.set_range([0, that.plotarea_width]);
+                });
 
-            var y_scale_promise = this.create_child_view(this.model.get("scale_y")).then(function(view) {
-                that.scale_y = view;
-                that.scale_y.scale.clamp(true);
-                that.scale_y.set_range([that.plotarea_height, 0]);
-            });
+            var y_scale_promise = this.create_child_view(this.model.get("scale_y"))
+                .then(function(view) {
+                    that.scale_y = view;
+                    that.scale_y.scale.clamp(true);
+                    that.scale_y.set_range([that.plotarea_height, 0]);
+                });
             return Promise.all([x_scale_promise, y_scale_promise]);
         },
         padded_range: function(direction, scale_model) {
@@ -288,7 +297,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             return this.create_child_view(model, {enable_highlight: enable})
               .then(function(view) {
                 that.fig_axes.node().appendChild(view.el.node());
-                // Trigger the displayed event of the child view.
                 that.after_displayed(function() {
                     view.trigger("displayed");
                 });
@@ -355,32 +363,28 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 model.on("data_updated redraw_legend", that.update_legend, that);
             });
 
-            var dummy = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
-                return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
-                    dummy.parentNode.replaceChild(view.el.node(), dummy);
-		            view.on("mark_padding_updated", function() {
-		                that.mark_padding_updated(view);
-		            }, that);
-		            view.on("mark_scales_updated", function() {
-		                that.mark_scales_updated(view);
-		            }, that);
-                    // Trigger the displayed event of the child view.
-                    var child_x_scale = view.model.get("scales")["x"];
-                    var child_y_scale = view.model.get("scales")["y"];
+            var dummy_node = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
 
-                    if(child_x_scale == undefined) {
-                        child_x_scale = that.scale_x.model;
-                    }
-                    if(child_y_scale == undefined) {
-                        child_y_scale = that.scale_y.model;
-                    }
-                    that.update_padding_dict(that.x_pad_dict, view, child_x_scale, view.x_padding);
-                    that.update_padding_dict(that.y_pad_dict, view, child_y_scale, view.y_padding);
-                    // Trigger the displayed event of the child view.
-                    that.after_displayed(function() {
-                        view.trigger("displayed");
-                    });
-                    return view;
+            return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
+                view.dummy_node = dummy_node;
+                view.on("mark_padding_updated", function() {
+	                that.mark_padding_updated(view);
+	            }, that);
+	            view.on("mark_scales_updated", function() {
+	                that.mark_scales_updated(view);
+	            }, that);
+                var child_x_scale = view.model.get("scales")["x"];
+                var child_y_scale = view.model.get("scales")["y"];
+                if(child_x_scale == undefined) {
+                    child_x_scale = that.scale_x.model;
+                }
+                if(child_y_scale == undefined) {
+                    child_y_scale = that.scale_y.model;
+                }
+                that.update_padding_dict(that.x_pad_dict, view, child_x_scale, view.x_padding);
+                that.update_padding_dict(that.y_pad_dict, view, child_y_scale, view.y_padding);
+
+                return view;
             });
         },
         update_paddings: function() {
@@ -563,7 +567,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                         }
                         self.interaction_view = view;
                         self.interaction.node().appendChild(view.el.node());
-                        // Trigger the displayed event of the child view.
                         self.after_displayed(function() {
                             view.trigger("displayed");
                         }, self);
