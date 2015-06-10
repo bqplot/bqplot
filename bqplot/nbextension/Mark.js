@@ -60,8 +60,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                     "msg_name": "background_click",
                     "hit_test": false,
                 },
-                "legend_over": {
-                    "msg_name": "legend_over",
+                "legend_mouse_over": {
+                    "msg_name": "legend_hover",
                     "hit_test": true
                 },
             };
@@ -326,8 +326,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             this.event_listeners["mouse_out"] = function() {};
         },
         reset_legend_hover: function() {
-            this.event_listeners["legend_over"] = function() {};
-            this.event_listeners["legend_out"] = function() {};
+            this.event_listeners["legend_mouse_over"] = function() {};
+            this.event_listeners["legend_mouse_out"] = function() {};
         },
         mouse_over: function() {
             if(this.model.get("enable_hover")) {
