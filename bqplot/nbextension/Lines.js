@@ -283,13 +283,20 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 .attr("class", "legend" + this.uuid)
                 .attr("transform", function(d, i) {
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
-                }).on("mouseover", _.bind(this.highlight_axes, this))
-                .on("mouseout", _.bind(this.unhighlight_axes, this))
-                .on("click", _.bind(function() {this.event_dispatcher("legend_clicked");}, this))
+                })
+                .on("mouseover", _.bind(function() {
+                   this.event_dispatcher("legend_mouse_over")
+                }, this))
+                .on("mouseout", _.bind(function() {
+                   this.event_dispatcher("legend_mouse_out")
+                }, this))
+                .on("click", _.bind(function() {
+                   this.event_dispatcher("legend_clicked");
+                }, this))
               .append("path")
                 .attr("fill", "none")
                 .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
-                .style("stroke", function(d,i) {
+                .style("stroke", function(d, i) {
                     return that.get_element_color(d, i);
                 })
                 .style("fill", function(d, i) { return fill_color[i]; })
@@ -337,7 +344,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var path = "#curve" + (index + 1);
             var opacity = this.model.mark_data[index].opacity = (this.model.mark_data[index].opacity === 1) ?
                 0.1 : 1;
-            this.el.select("#legend"+(index+1))
+            this.el.select("#legend" + (index + 1))
               .style("opacity", opacity + 0.4);
             this.el.select(path).style("opacity", opacity);
         },
@@ -420,7 +427,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .style("opacity", function(d, i) {
                   return opacity[i];
               })
-              .on("click", _.bind(function() { this.event_dispatcher("element_clicked");}, this));
+              .on("click", _.bind(function() {
+                  this.event_dispatcher("element_clicked");
+              }, this));
 
             // Having a transition on exit is complicated. Please refer to
             // Scatter.js for detailed explanation.
@@ -443,7 +452,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   });
                 curves_sel.select(".curve_label")
                   .attr("display", function(d, i) {
-                      return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
+                      return (curves_subset.indexOf(i) !== -1 &&
+                              that.model.get("labels_visibility") === "label") ?
                           "inline" : "none";
                   });
             }
@@ -452,7 +462,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         compute_view_padding: function() {
             //This function sets the padding for the view through the variables
             //x_padding and y_padding which are view specific paddings in pixel
-            var x_padding = this.model.get("stroke_width")/2.0;
+            var x_padding = this.model.get("stroke_width") / 2.0;
             var y_padding = x_padding;
             if(x_padding !== this.x_padding || y_padding !== this.y_padding) {
                 this.x_padding = x_padding;
@@ -506,12 +516,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(_.isEmpty(interactions)) {
                 //set all the event listeners to blank functions
                 this.reset_interactions();
-            }
-            else {
+            } else {
                 if(interactions["click"] !== undefined &&
                   interactions["click"] !== null) {
                     if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["element_clicked"] = function() {
+                            return this.refresh_tooltip(true);
+                        };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     }
                 } else {
@@ -526,6 +537,15 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     }
                 } else {
                     this.reset_hover();
+                }
+                if(interactions["legend_hover"] !== undefined &&
+                  interactions["legend_hover"] !== null) {
+                    if(interactions["legend_hover"] === "highlight_axes") {
+                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
+                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
+                    }
+                } else {
+                    this.reset_legend_hover();
                 }
             }
         },

@@ -67,9 +67,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             Pie.__super__.create_listeners.apply(this);
-            this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
-                .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
-                .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
+            this.el
+              .on("mouseover", _.bind(function() {
+                  this.event_dispatcher("mouse_over");
+              }, this))
+              .on("mousemove", _.bind(function() {
+                  this.event_dispatcher("mouse_move");
+              }, this))
+              .on("mouseout", _.bind(function() {
+                  this.event_dispatcher("mouse_out");
+              }, this));
 
             this.model.on("data_updated", this.draw, this);
             this.model.on("change:colors", this.update_colors, this);
@@ -96,12 +103,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(_.isEmpty(interactions)) {
                 //set all the event listeners to blank functions
                 this.reset_interactions();
-            }
-            else {
+            } else {
                 if(interactions["click"] !== undefined &&
                   interactions["click"] !== null) {
                     if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["element_clicked"] = function() {
+                            return this.refresh_tooltip(true);
+                        };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     } else if (interactions["click"] === "select") {
                         this.event_listeners["parent_clicked"] = this.reset_selection;
@@ -123,11 +131,22 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 if(interactions["legend_click"] !== undefined &&
                   interactions["legend_click"] !== null) {
                     if(interactions["legend_click"] === "tooltip") {
-                        this.event_listeners["legend_clicked"] = function() { return this.refresh_tooltip(true); };
+                        this.event_listeners["legend_clicked"] = function() {
+                            return this.refresh_tooltip(true);
+                        };
                         this.event_listeners["parent_clicked"] = this.hide_tooltip;
                     }
                 } else {
                     this.event_listeners["legend_clicked"] = function() {};
+                }
+                if(interactions["legend_hover"] !== undefined &&
+                  interactions["legend_hover"] !== null) {
+                    if(interactions["legend_hover"] === "highlight_axes") {
+                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
+                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
+                    }
+                } else {
+                    this.reset_legend_hover();
                 }
             }
         },
@@ -165,15 +184,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             elements.select("text")
               .transition().duration(animate_dur)
               .attr("transform", function(d) {
-                        return "translate(" + arc.centroid(d) + ")"; });
+                  return "translate(" + arc.centroid(d) + ")";
+              });
         },
         draw: function() {
             this.set_ranges();
             this.position_center();
 
             var pie = d3.layout.pie()
-              .startAngle(this.model.get("start_angle")*2*Math.PI/360)
-              .endAngle(this.model.get("end_angle")*2*Math.PI/360)
+              .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
+              .endAngle(this.model.get("end_angle") * 2 * Math.PI/360)
                 .value(function(d) { return d.size; });
             if (!this.model.get("sort")) { pie.sort(null); }
 
@@ -192,9 +212,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("pointer-events", "none")
               .style("text-anchor", "middle");
 
-            elements.sort(function(dat1, dat2) { return dat2['startAngle'] - dat1['startAngle'];});
+            elements.sort(function(dat1, dat2) { return dat2["startAngle"] - dat1["startAngle"]; });
             elements.on("click", function(d, i) {
-                  return that.event_dispatcher("element_clicked", {"data": d, "index": i});
+                return that.event_dispatcher("element_clicked", {"data": d, "index": i});
             });
             elements.exit().remove();
 

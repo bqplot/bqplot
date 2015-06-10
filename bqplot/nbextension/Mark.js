@@ -59,7 +59,11 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                 "parent_clicked":  {
                     "msg_name": "background_click",
                     "hit_test": false,
-                }
+                },
+                "legend_mouse_over": {
+                    "msg_name": "legend_hover",
+                    "hit_test": true
+                },
             };
 
             return scale_creation_promise;
@@ -298,8 +302,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                         if(event_data["lookup_data"]) {
                             data = this.model.get_data_dict(data, data.index);
                         }
-                    }
-                    else {
+                    } else {
                         //do not send mssg if hit test fails
                         return;
                     }
@@ -310,6 +313,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         reset_interactions: function() {
             this.reset_click();
             this.reset_hover();
+            this.reset_legend_hover();
             this.event_listeners["legend_clicked"] = function() {};
         },
         reset_click: function() {
@@ -321,6 +325,10 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             this.event_listeners["mouse_move"] = function() {};
             this.event_listeners["mouse_out"] = function() {};
         },
+        reset_legend_hover: function() {
+            this.event_listeners["legend_mouse_over"] = function() {};
+            this.event_listeners["legend_mouse_out"] = function() {};
+        },
         mouse_over: function() {
             if(this.model.get("enable_hover")) {
                 var el = d3.select(d3.event.target);
@@ -330,8 +338,10 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                     var hovered_data = this.model.get_data_dict(data, data.index);
                     this.trigger("update_tooltip", hovered_data);
                     this.show_tooltip();
-                    this.send({event: "hover",
-                            point: hovered_data});
+                    this.send({
+                        event: "hover",
+                        point: hovered_data,
+                    });
                 }
             }
         },
@@ -343,8 +353,10 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
                     var hovered_data = this.model.get_data_dict(data, data.index);
                     // make tooltip invisible
                     this.hide_tooltip();
-                    this.send({event: "hover",
-                            point: hovered_data});
+                    this.send({
+                        event: "hover",
+                        point: hovered_data,
+                    });
                 }
             }
         },
@@ -357,9 +369,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
         //TODO: Rename function
         is_hover_element: function(elem) {
             var hit_check = this.display_el_classes.map(function(class_name) {
-                                       return elem.classed(class_name); });
+                return elem.classed(class_name);
+            });
             return (_.compact(hit_check).length > 0);
-
         },
     });
 
