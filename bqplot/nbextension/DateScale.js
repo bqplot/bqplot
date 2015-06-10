@@ -19,12 +19,10 @@ define(["./d3", "./LinearScale"], function(d3, LinearScaleViewModule) {
     var DateScale = LinearScaleViewModule.LinearScale.extend({
         render: function() {
             this.scale = d3.time.scale();
-            if(this.model.domain.length > 0) {
+            if(this.model.domain.length > 0)
                 this.scale.domain(this.model.domain);
-            }
             this.offset = 0;
             this.create_event_listeners();
-            this.format_date = this.model.format_date;
         },
     });
 

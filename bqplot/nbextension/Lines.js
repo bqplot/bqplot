@@ -251,11 +251,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var idx_end = Math.min(this.bisect(data, x_end),
 								   Math.max((data.length - 1), 0));
 
-            x_start = (x_scale.model.type === "date") ?
-                x_scale.format_date(x_start) : x_start;
-            x_end = (x_scale.model.type === "date") ?
-                x_scale.format_date(x_end) : x_end;
-
             this.selector_model.set("selected", [idx_start, idx_end]);
             this.selector.touch();
         },

@@ -61,15 +61,24 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
                     "border": "solid white"
                 })
                 .text(function(d) { return d.children ? null : d.name; })
-	            .style({'font': '11px sans-serif', 'position': 'absolute', 'text-align': 'center', 'overflow': 'hidden',
-                       'color': 'white'});
+	            .style({
+                    'font': '11px sans-serif',
+                    'position': 'absolute',
+                    'text-align': 'center',
+                    'overflow': 'hidden',
+                    'color': 'white',
+                });
 
         },
         position: function(){
             this.style("left", function(d) { return d.x + "px"; })
                 .style("top", function(d) { return d.y + "px"; })
-                .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
-                .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+                .style("width", function(d) {
+                    return Math.max(0, d.dx - 1) + "px";
+                })
+                .style("height", function(d) {
+                    return Math.max(0, d.dy - 1) + "px";
+                });
         },
     });
 

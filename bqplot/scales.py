@@ -393,8 +393,6 @@ class DateScale(Scale):
         if not None, max is the maximal value of the domain
     domain_class: type (default: Date)
          traitlet type used to validate values in of the domain of the scale.
-    date_format: string (default: '')
-
     rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
         The range type of a linear scale is numerical.
@@ -406,7 +404,6 @@ class DateScale(Scale):
     domain_class = Type(Date, sync=False)
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
-    date_format = Unicode('', sync=True)  # TODO: allow and default to None?
 
     _view_name = Unicode('DateScale', sync=True)
     _view_module = Unicode('nbextensions/bqplot/DateScale', sync=True)
@@ -455,11 +452,11 @@ class ColorScale(Scale):
     colors: list of colors (default: [])
 
     min: float or None (default: None)
-
+        if not None, min is the minimal value of the domain
     max: float or None (default: None)
-
+        if not None, max is the maximal value of the domain
     mid: float or None (default: None)
-
+        if not None, mid is the value corresponding to the mid color.
     scheme: string (default: 'RdYlGn')
 
     rtype: string (class-level attribute)
@@ -494,13 +491,11 @@ class DateColorScale(ColorScale):
     Attributes
     ----------
     min: Date or None (default: None)
-
+        if not None, min is the minimal value of the domain
     max: Date or None (default: None)
-
+        if not None, max is the maximal value of the domain
     mid: Date or None (default: None)
-
-    date_format: string (default: '')
-
+        if not None, mid is the value corresponding to the mid color.
     rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
         The range type of a color scale is 'Color'.
@@ -512,7 +507,6 @@ class DateColorScale(ColorScale):
     min = Date(default_value=None, sync=True, allow_none=True)
     max = Date(default_value=None, sync=True, allow_none=True)
     mid = Unicode(default_value=None, sync=True, allow_none=True)
-    date_format = Unicode(sync=True)
 
     _view_name = Unicode('DateColorScale', sync=True)
     _view_module = Unicode('nbextensions/bqplot/DateColorScale', sync=True)
