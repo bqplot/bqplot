@@ -34,7 +34,6 @@ Interacts
    PanZoom
    Selector
    TwoDSelector
-   PanZoom
 """
 
 from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance,
@@ -160,7 +159,7 @@ class PanZoom(Interaction):
         self.on_trait_change(self.snapshot, name='scales')
 
     def snapshot(self):
-        self.scales_states = {k: [s.get_state() for s in self.scales[k]]
+        self.scales_states = {k: [s.get_state()[0] for s in self.scales[k]]
                               for k in self.scales}
 
     def reset(self):
