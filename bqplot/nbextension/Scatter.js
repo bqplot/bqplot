@@ -519,6 +519,22 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     return (show_names) ? "inline": "none";
                 });
         },
+        invert_point: function(pixel) {
+            if(pixel === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return;
+            }
+
+            var x_scale = this.scales["x"];
+            //TODO: Cache this
+            var x_pixels = this.model.mark_data.map(function(elem) { return x_scale.scale(elem.x) + x_scale.offset; });
+            var abs_diff = x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            var sel_index = abs_diff.indexOf(d3.min(abs_diff));
+
+            this.model.set("selected", [sel_index]);
+            this.touch();
+        },
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined) {
                 this.model.set("selected", null);

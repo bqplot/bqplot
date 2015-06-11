@@ -374,6 +374,26 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                     self.el.selectAll("#rect" + d).style("fill", select_color);
             });
         },
+        invert_point: function(pixel) {
+            // Sets the selected to the data contained in the bin closest
+            // to the value of the pixel.
+            // Used by Index Selector.
+            if(pixel === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return;
+            }
+
+            var bar_width = this.calculate_bar_width();
+            //TODO: Cache this
+            var x_scale = this.scales["sample"];
+            var bin_pixels = this.model.x_bins.map(function(el) { return x_scale.scale(el) + x_scale.offset + bar_width / 2.0; });
+
+            var abs_diff = bin_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            var sel_index = abs_diff.indexOf(d3.min(abs_diff));
+            this.model.set("selected", this.calc_data_indices([sel_index]));
+            this.touch();
+        },
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined ) {
                 this.model.set("selected", null);
