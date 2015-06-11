@@ -150,17 +150,10 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
 
             var mark_width = this.calculate_mark_width();
             if(mark_width instanceof Date) mark_width = mark_width.getTime();
-            var that = this;
             var x_scale = this.scales["x"];
-            var min = 0;
-            var max = 0;
-            if(x_scale.model.type !== "ordinal") {
-                min = x_scale.scale.invert(start_pxl);
-                max = x_scale.scale.invert(end_pxl);
-            }
-            if(min instanceof Date && min !== 0) min = min.getTime();
-            if(max instanceof Date && max !== 0) max = max.getTime();
-
+            /*
+             * I did not remove this as I was not sure of what this is doing.
+             * So I am not sure if the new code is equivalent to the old one.
             // Avoid accounting for width if there is no width to account for
             if(this.model.px.o !== -1) max += mark_width * 0.75 * 0.5;
             if(this.model.px.c !== -1) min -= mark_width * 0.75 * 0.5;
@@ -168,15 +161,19 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 min = new Date(min);
                 max = new Date(max);
             }
-
+            */
             var idx_start = -1;
             var idx_end = -1;
             var indices = _.range(this.model.mark_data.length);
+            //TODO: Cache this
+            var x_pixels = this.model.mark_data.map(function(el)
+                                                    { return x_scale.scale(el[0]) + x_scale.offset });
             var that = this;
             var selected = _.filter(indices, function(index) {
-                var elem = that.model.mark_data[index];
-                return (elem[0] >= min && elem[0] <= max);
+                var elem = x_pixels[index];
+                return (elem >= start_pxl && elem <= end_pxl);
             });
+
             if(selected.length > 0 &&
                 (start_pxl !== x_scale.scale.range()[0] ||
                     end_pxl !== x_scale.scale.range()[1]))
@@ -185,20 +182,22 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 idx_end = selected[selected.length - 1];
             }
             this.update_selected_colors(idx_start, idx_end);
+            this.model.set("selected", selected);
+            this.touch();
             return selected;
         },
         invert_point: function(pixel) {
             var x_scale = this.scales["x"];
             var point = 0;
-            if(x_scale.model.type !== "ordinal") {
-                point = x_scale.scale.invert(pixel);
-            }
-            var index = this.bisect(this.model.mark_data.map(function(d) {
-                return d[0];
-            }), point);
-            this.model.set("selected", [index]);
+            //TODO: Cache this
+            var x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset });
+
+            var abs_diff = x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            var sel_index = abs_diff.indexOf(d3.min(abs_diff));
+            this.update_selected_colors(sel_index, sel_index);
+            this.model.set("selected", [sel_index]);
             this.touch();
-            return index;
+            return sel_index;
         },
         draw: function() {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
