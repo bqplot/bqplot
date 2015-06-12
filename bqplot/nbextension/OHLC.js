@@ -140,8 +140,8 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             });
         },
         invert_range: function(start_pxl, end_pxl) {
-            if((start_pxl === undefined && end_pxl === undefined) ||
-               (this.model.mark_data.length === 0))
+            if(start_pxl === undefined || end_pxl === undefined ||
+               this.model.mark_data.length === 0)
             {
                 this.update_selected_colors(-1,-1);
                 selected = [];
