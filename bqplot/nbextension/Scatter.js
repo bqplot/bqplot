@@ -357,6 +357,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                                     "," + (y_scale.scale(d.y) + y_scale.offset) + ")"
                            + that.get_element_rotation(d);
               });
+            this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
+            this.y_pixels = this.model.mark_data.map(function(el) { return y_scale.scale(el.y) + y_scale.offset; });
         },
         draw: function() {
             this.set_ranges();
@@ -527,9 +529,7 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             }
 
             var x_scale = this.scales["x"];
-            //TODO: Cache this
-            var x_pixels = this.model.mark_data.map(function(elem) { return x_scale.scale(elem.x) + x_scale.offset; });
-            var abs_diff = x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
             var sel_index = abs_diff.indexOf(d3.min(abs_diff));
 
             this.model.set("selected", [sel_index]);
@@ -544,13 +544,12 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
 
             var self = this;
             var x_scale = this.scales["x"];
-            //TODO: Cache these values
-            var x_pixels = this.model.mark_data.map(function(elem) { return x_scale.scale(elem.x) + x_scale.offset; });
+            var that = this;
             var indices = _.range(this.model.mark_data.length);
 
             var that = this;
             var selected = _.filter(indices, function(index) {
-                var elem = x_pixels[index];
+                var elem = that.x_pixels[index];
                 return (elem >= start_pxl && elem <= end_pxl);
             });
             this.model.set("selected", selected);
@@ -565,15 +564,12 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                 return _.range(this.model.mark_data.length);
             }
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            //TODO: Cache these values
-            var x_pixels = this.model.mark_data.map(function(elem) { return x_scale.scale(elem.x) + x_scale.offset; });
-            var y_pixels = this.model.mark_data.map(function(elem) { return y_scale.scale(elem.y) + y_scale.offset; });
 
             var indices = _.range(this.model.mark_data.length);
             var that = this;
             var selected = _.filter(indices, function(index) {
-                var elem_x = x_pixels[index],
-                    elem_y = y_pixels[index];
+                var elem_x = that.x_pixels[index],
+                    elem_y = that.y_pixels[index];
                 return (elem_x >= x_start && elem_x <= x_end &&
                         elem_y <= y_start && elem_y >= y_end);
             });

@@ -223,6 +223,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               });
 
             bar_groups.exit().remove();
+
+            //bin_pixels contains the pixel values of the start points of each
+            //of the bins and the end point of the last bin.
+            this.bin_pixels = this.model.x_bins.map(function(el) { return x_scale.scale(el) + x_scale.offset; });
             this.update_stroke_and_opacity();
         },
         bar_click_handler: function (args) {
@@ -385,11 +389,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
 
             var bar_width = this.calculate_bar_width();
-            //TODO: Cache this
             var x_scale = this.scales["sample"];
-            var bin_pixels = this.model.x_bins.map(function(el) { return x_scale.scale(el) + x_scale.offset + bar_width / 2.0; });
 
-            var abs_diff = bin_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            //adding "bar_width / 2.0" to bin_pixels as we need to select the
+            //bar whose center is closest to the current location of the mouse.
+            var abs_diff = this.bin_pixels.map(function(elem) { return Math.abs(elem + bar_width / 2.0 - pixel); });
             var sel_index = abs_diff.indexOf(d3.min(abs_diff));
             this.model.set("selected", this.calc_data_indices([sel_index]));
             this.touch();
@@ -457,12 +461,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         calc_data_indices_from_data_range: function(start_pixel, end_pixel) {
             //Input is pixel values and output is the list of indices for which
             //the `sample` value lies in the interval
-            //TODO: Cache this
             var x_scale = this.scales["sample"];
-            var bin_pixels = this.model.x_bins.map(function(el) { return x_scale.scale(el) + x_scale.offset; });
 
-            var idx_start = d3.max([0, d3.bisectLeft(bin_pixels, start_pixel) - 1]);
-            var idx_end = d3.min([this.model.num_bins, d3.bisectRight(bin_pixels, end_pixel)]);
+            var idx_start = d3.max([0, d3.bisectLeft(this.bin_pixels, start_pixel) - 1]);
+            var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.bin_pixels, end_pixel)]);
 
             var x_data = this.model.get_typed_field("sample");
             var that = this;
