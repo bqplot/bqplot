@@ -165,12 +165,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var idx_start = -1;
             var idx_end = -1;
             var indices = _.range(this.model.mark_data.length);
-            //TODO: Cache this
-            var x_pixels = this.model.mark_data.map(function(el)
-                                                    { return x_scale.scale(el[0]) + x_scale.offset });
             var that = this;
             var selected = _.filter(indices, function(index) {
-                var elem = x_pixels[index];
+                var elem = that.x_pixels[index];
                 return (elem >= start_pxl && elem <= end_pxl);
             });
 
@@ -189,10 +186,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
         invert_point: function(pixel) {
             var x_scale = this.scales["x"];
             var point = 0;
-            //TODO: Cache this
-            var x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset });
-
-            var abs_diff = x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
             var sel_index = abs_diff.indexOf(d3.min(abs_diff));
             this.update_selected_colors(sel_index, sel_index);
             this.model.set("selected", [sel_index]);
@@ -263,6 +257,8 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 this.model.mark_data.map(function(d) {
                     return d[1];
                 }));
+
+            this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
         },
         draw_mark_paths: function(type, selector, dat) {
             /* Calculate some values so that we can draw the marks

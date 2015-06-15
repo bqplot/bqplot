@@ -15,7 +15,6 @@
 
 define(["./d3", "./Mark"], function(d3, MarkViewModule) {
     "use strict";
-
     var  boxplotView = MarkViewModule.Mark.extend({
        render: function() {
             var base_creation_promise = boxplotView.__super__.render.apply(this);
@@ -196,9 +195,6 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             });
         },
         invert_range: function(start_pxl, end_pxl) {
-            var x_scale = this.scales["x"];
-            var y_scale = this.scales["y"];
-
             if(start_pxl === undefined || end_pxl === undefined ||
                this.model.mark_data.length === 0)
             {
@@ -206,12 +202,10 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 idx_selected = [];
                 return idx_selected;
             }
-            var x_pixels = this.model.mark_data.map(function(el) {
-                                return x_scale.scale(el[0]) + x_scale.offset; });
-
+            var that = this;
             var indices = _.range(this.model.mark_data.length);
             var idx_selected = _.filter(indices, function(index) {
-                var elem = x_pixels[index];
+                var elem = that.x_pixels[index];
                 return (elem <= end_pxl && elem >= start_pxl);
             });
 
@@ -227,11 +221,8 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 this.touch();
                 return;
             }
-            var x_scale = this.scales["x"];
-            var x_pixels = this.model.mark_data.map(function(el) {
-                                return x_scale.scale(el[0]) + x_scale.offset; });
 
-            var abs_diff = x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
             var sel_index = abs_diff.indexOf(d3.min(abs_diff));
 
             this.model.set("selected", [sel_index]);
@@ -294,13 +285,14 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
         },
         draw: function() {
             this.set_ranges();
-
+            var x_scale = this.scales["x"];
             // get the visual representation of boxplots
             this.prepareBoxPlots();
             var plotData = this.plotData;
 
             // Draw the visual elements with data which was bound
             this.draw_mark_paths(".boxplot", this.el, plotData);
+            this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
         },
         draw_mark_paths: function(parentClass, selector, plotData) {
             var that = this;
