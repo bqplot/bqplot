@@ -141,13 +141,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 that.mark_views = new Widget.ViewList(that.add_mark, that.remove_mark, that);
                 that.mark_views.update(that.model.get("marks"));
                 Promise.all(that.mark_views.views).then(function(views) {
-                    _.each(views, function(view) {
-                        view.dummy_node.parentNode.replaceChild(view.el.node(),
-                                                                view.dummy_node);
-                        that.after_displayed(function() {
-                            view.trigger("displayed");
-                        });
-                    });
+                    that.replace_dummy_nodes(views);
                     that.update_marks(views);
                     that.update_legend();
                     // Update Interaction layer
@@ -171,6 +165,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                 that.model.on("change:marks", function(model, value, options) {
                     this.mark_views.update(value);
                     Promise.all(this.mark_views.views).then(function(views) {
+                        that.replace_dummy_nodes(views);
                         that.update_marks(views);
                         that.update_legend();
                     });
@@ -198,6 +193,18 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
                     that.model.on("msg:custom", that.dispatch_custom_messages, that);
                 });
             });
+        },
+        replace_dummy_nodes: function(views) {
+            _.each(views, function(view) {
+                if (view.dummy_node !== null) {
+                    view.dummy_node.parentNode.replaceChild(view.el.node(),
+                                                            view.dummy_node);
+                    view.dummy_node = null;
+                    this.after_displayed(function() {
+                        view.trigger("displayed");
+                    });
+                }
+            }, this);
         },
         dispatch_custom_messages: function(msg) {
             if (msg.type === "save") {
