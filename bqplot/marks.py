@@ -324,7 +324,7 @@ class Lines(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
                             'y': {'orientation': 'vertical', 'dimension': 'vertical'},
                             'color': {'dimension': 'color'}}, sync=True)
-    colors = List(trait=Color(None, allow_none=True), default_value=CATEGORY10,
+    colors = List(trait=Color(allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=3, display_name='Colors')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=4,
                          display_name='Stroke width')
@@ -341,7 +341,7 @@ class Lines(Mark):
                          display_name='Interpolation')
     close_path = Bool(sync=True, exposed=True, display_index=8,
                       display_name='Close path')
-    fill = List(trait=Color(None, allow_none=True), sync=True, exposed=True, display_index=9,
+    fill = List(trait=Color(allow_none=True), sync=True, exposed=True, display_index=9,
                 display_name='Fill Colors')
     opacity = List(sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
@@ -602,7 +602,7 @@ class Hist(Mark):
     midpoints = List(sync=True, read_only=True,
                      display_index=3, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
-    colors = List(trait=Color, default_value=CATEGORY10,
+    colors = List(trait=Color(allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=5, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
@@ -748,7 +748,7 @@ class Bars(Mark):
     type = Enum(['stacked', 'grouped'], default_value='stacked',
                 sync=True, exposed=True, display_index=3,
                 display_name='Type')
-    colors = List(trait=Color(None, allow_none=True), default_value=CATEGORY10,
+    colors = List(trait=Color(allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
@@ -963,7 +963,7 @@ class Pie(Mark):
                             'y': {'orientation': 'vertical', 'dimension': 'vertical'},
                             'color': {'dimension': 'color'}}, sync=True)
     sort = Bool(False, sync=True)
-    colors = List(trait=Color(), default_value=CATEGORY10, sync=True,
+    colors = List(trait=Color(allow_none=True), default_value=CATEGORY10, sync=True,
                   exposed=True, display_index=4, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
