@@ -208,14 +208,14 @@ class Date(TraitType):
         super(Date, self).__init__(args=args, **kwargs)
 
     @staticmethod
-    def to_json(value):
+    def to_json(value, obj=None):
         if value is None:
             return value
         else:
             return value.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
     @staticmethod
-    def from_json(value):
+    def from_json(value, obj=None):
         return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
 
 
@@ -224,7 +224,7 @@ class NdArray(CInstance):
     info_text = 'type aware numpy array'
 
     @staticmethod
-    def _to_json(a):
+    def _to_json(a, obj=None):
         if a is not None:
             if np.issubdtype(a.dtype, np.float):
                 # replace nan with None
@@ -266,14 +266,14 @@ class NdArray(CInstance):
         return value
 
     @staticmethod
-    def _asarray(value):
+    def _from_json(value, obj=None):
         if value is not None:
             array_dtype = (np.datetime64 if (value.get('type') == 'date')
                            else object)
             return np.asarray(value['values'], dtype=array_dtype)
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('from_json', NdArray._asarray)
+        kwargs.setdefault('from_json', NdArray._from_json)
         kwargs.setdefault('to_json', NdArray._to_json)
         kwargs.setdefault('args', (0,))
         self.squeeze = kwargs.pop('squeeze', True)
@@ -334,7 +334,7 @@ class PandasDataFrame(Instance):
         kwargs.setdefault('args', ())
         super(PandasDataFrame, self).__init__(*args, **kwargs)
 
-    def _from_json(self, value):
+    def _from_json(self, value, obj=None):
         if value is not None:
             df = pd.DataFrame(value)
             df = df.set_index('index')
@@ -343,9 +343,9 @@ class PandasDataFrame(Instance):
             df = pd.DataFrame()
         return df
 
-    def _to_json(self, df):
+    def _to_json(self, df, obj=None):
         if df is not None:
-            return df.reset_index().to_dict(outtype='records')
+            return df.reset_index().to_dict(orient='records')
         else:
             return []
 
@@ -377,8 +377,8 @@ class PandasSeries(Instance):
         kwargs.setdefault('args', ())
         super(PandasSeries, self).__init__(*args, **kwargs)
 
-    def _from_json(self, value):
+    def _from_json(self, value, obj=None):
         return pd.Series(value)
 
-    def _to_json(self, s):
+    def _to_json(self, s, obj=None):
         return s.to_dict()
