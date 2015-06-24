@@ -235,7 +235,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.el.select(".pielayout").selectAll(".slice")
               .style("fill", function(d, i) {
                   return (d.data.color !== undefined && color_scale !== undefined) ?
-                      color_scale.scale(d.data.color) : that.get_colors(i);
+                      color_scale.scale(d.data.color) : that.get_colors(d.data.index);
               });
         },
         update_labels: function() {
