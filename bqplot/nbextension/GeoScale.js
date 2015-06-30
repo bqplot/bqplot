@@ -22,7 +22,8 @@ define(["widgets/js/widget", "./d3"], function(Widget, d3) {
             this.listenTo(this.model, "attribute_changed", this.reset_scale);
         },
         set_projection: function() {
-            this.scale = d3.geo.path().projection(this.model.projection);
+            this.path = d3.geo.path().projection(this.model.projection);
+            this.scale = this.model.projection;
         },
         reset_scale: function() {
             this.set_projection();

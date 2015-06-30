@@ -85,7 +85,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
 			    .data(topojson.feature(this.model.geodata, this.model.geodata.objects.subunits).features)
 				.enter()
 				.append("path")
-				.attr("d", projection.scale)
+				.attr("d", projection.path)
 				.style("fill", function(d, i) {
                     return that.fill_g_colorfill(d, i);
                 });
@@ -94,7 +94,7 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
 				.enter()
 				.append("path")
                 .attr("class", "event_layer")
-				.attr("d", projection.scale)
+				.attr("d", projection.path)
                 .style("fill-opacity", 0.0)
                 .on("click", function(d, i) {
                     return that.event_dispatcher("element_clicked", {"data": d, "index": i});
