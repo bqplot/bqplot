@@ -40,10 +40,10 @@ define(["base/js/utils", "./d3", "./utils", "./Interaction"], function(ipy_utils
             var scales = this.model.get("scales");
             var that = this;
             this.scale_promises = ipy_utils.resolve_promises_dict({
-                "x": Promise.all(scales["x"].map(function(model) {
+                "x": Promise.all((scales["x"] || []).map(function(model) {
                         return that.create_child_view(model);
                      })),
-                "y": Promise.all(scales["y"].map(function(model) {
+                "y": Promise.all((scales["y"] || []).map(function(model) {
                         return that.create_child_view(model);
                      })),
             });
@@ -69,12 +69,12 @@ define(["base/js/utils", "./d3", "./utils", "./Interaction"], function(ipy_utils
             this.el.style({"cursor": "move"});
             this.previous_pos = d3.mouse(this.el.node());
             // A copy of the original domains is required to avoid additional
-            //  drift when Paning.
+            // drift when Paning.
             this.domains = {
-                "x": scales["x"].map(function(s) {
+                "x": (scales["x"] || []).map(function(s) {
                     return s.domain.slice(0);
                 }),
-                "y": scales["y"].map(function(s) {
+                "y": (scales["y"] || []).map(function(s) {
                     return s.domain.slice(0);
                 }),
             };
