@@ -55,13 +55,13 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 .on("mousemove", _.bind(this.mouse_move, this))
                 .on("mouseout", _.bind(this.mouse_out, this));
 
-            this.model.on("change:stroke", this.update_stroke, this);
-            this.model.on("change:stroke_width", this.update_stroke_width, this);
-            this.model.on("change:colors", this.update_colors, this);
-            this.model.on("change:opacity", this.update_opacity, this);
-            this.model.on("change:marker", this.update_marker, this);
-            this.model.on("format_updated", this.draw, this);
-            this.model.on("data_updated", this.draw);
+            this.listenTo(this.model, "change:stroke", this.update_stroke, this);
+            this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
+            this.listenTo(this.model, "change:colors", this.update_colors, this);
+            this.listenTo(this.model, "change:opacity", this.update_opacity, this);
+            this.listenTo(this.model, "change:marker", this.update_marker, this);
+            this.listenTo(this.model, "format_updated", this.draw, this);
+            this.listenTo(this.model, "data_updated", this.draw);
         },
         update_stroke: function() {
             var stroke = this.model.get("stroke");

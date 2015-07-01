@@ -52,12 +52,12 @@ define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
         },
         create_listeners: function() {
             boxplotView.__super__.create_listeners.apply(this);
-            this.model.on("change:stroke", this.update_stroke, this);
-            this.model.on("change:opacity", this.update_opacity, this);
-            this.model.on("change:marker", this.update_marker, this);
-            this.model.on("change:outlier_fill_color", this.update_outlier_fill_color, this);
-            this.model.on("change:box_fill_color", this.update_box_fill_color, this);
-            this.model.on("data_updated", this.draw, this);
+            this.listenTo(this.model, "change:stroke", this.update_stroke, this);
+            this.listenTo(this.model, "change:opacity", this.update_opacity, this);
+            this.listenTo(this.model, "change:marker", this.update_marker, this);
+            this.listenTo(this.model, "change:outlier_fill_color", this.update_outlier_fill_color, this);
+            this.listenTo(this.model, "change:box_fill_color", this.update_box_fill_color, this);
+            this.listenTo(this.model, "data_updated", this.draw, this);
         },
         update_stroke: function() {
             var stroke = this.model.get("stroke");
@@ -172,8 +172,8 @@ define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             var unselected_indices = (sel_indices ?
                 _.range(this.model.mark_data.length)
                     .filter(function(index) {
-                        return sel_indices.indexOf(index) == -1; })
-                : []);
+                        return sel_indices.indexOf(index) == -1;
+                    }): []);
             this.style_updated(style, unselected_indices);
         },
         update_selected_colors: function(idx_start, idx_end) {

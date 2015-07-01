@@ -62,7 +62,7 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
         },
         create_listeners: function() {
             FastIntervalSelector.__super__.create_listeners.apply(this);
-            this.model.on("change:color", this.color_change, this);
+            this.listenTo(this.model, "change:color", this.color_change, this);
         },
         color_change: function() {
             if(this.model.get("color")!=null) {

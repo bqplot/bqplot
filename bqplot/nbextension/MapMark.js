@@ -226,12 +226,12 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
                 .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
 
-            this.model.on("data_updated", this.draw, this);
-            this.model.on("change:color", this.update_style, this);
-            this.model.on("change:stroke_color", this.change_stroke_color, this);
-            this.model.on("change:default_color", this.change_map_color, this);
-            this.model.on("change:selected", this.change_selected, this);
-            this.model.on("change:selected_styles", function() {
+            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "change:color", this.update_style, this);
+            this.listenTo(this.model, "change:stroke_color", this.change_stroke_color, this);
+            this.listenTo(this.model, "change:default_color", this.change_map_color, this);
+            this.listenTo(this.model, "change:selected", this.change_selected, this);
+            this.listenTo(this.model, "change:selected_styles", function() {
                 that.change_selected_fill();
                 that.change_selected_stroke();
             });

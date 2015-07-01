@@ -395,26 +395,26 @@ define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./require-less/less!
         create_listeners: function() {
             var that = this;
 
-            this.model.on('change:color', function() {
+            this.listenTo(this.model, 'change:color', function() {
                 that.color_change();
             });
-            this.model.on("change:stroke_color", function() {
+            this.listenTo(this.model, "change:stroke_color", function() {
                 that.change_stroke_color();
             });
-            this.model.on("change:default_color", function() {
+            this.listenTo(this.model, "change:default_color", function() {
                 that.change_map_color();
             });
-            this.model.on("change:selected", function() {
+            this.listenTo(this.model, "change:selected", function() {
                 that.change_selected();
             });
-            this.model.on("change:selected_styles", function() {
+            this.listenTo(this.model, "change:selected_styles", function() {
                 that.change_selected_fill();
                 that.change_selected_stroke();
             });
-            this.model.on("change:tooltip_widget", function() {
+            this.listenTo(this.model, "change:tooltip_widget", function() {
                 that.create_tooltip_widget();
             });
-            this.model.on("change:axis", function() {
+            this.listenTo(this.model, "change:axis", function() {
                 that.create_axis();
             });
             $(this.options.cell).on("output_area_resize."+this.map_id, function() {

@@ -35,7 +35,7 @@ define(["./d3", "./utils", "./Interaction"], function(d3, utils, InteractionView
 
             // Update line index
             this.update_line_index();
-            this.model.on("change:line_index", this.update_line_index, this);
+            this.listenTo(this.model, "change:line_index", this.update_line_index, this);
             this.model.on_some_change(["min_x", "max_x"], this.set_limits,
                                       this);
         },

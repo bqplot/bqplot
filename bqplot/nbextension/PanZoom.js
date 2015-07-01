@@ -31,10 +31,10 @@ define(["base/js/utils", "./d3", "./utils", "./Interaction"], function(ipy_utils
             this.active = false;
 
             this.update_scales();
-            this.model.on("change:scales", this.update_scales, this);
+            this.listenTo(this.model, "change:scales", this.update_scales, this);
 
             this.set_ranges();
-            this.parent.on("margin_updated", this.set_ranges, this);
+            this.listenTo(this.parent, "margin_updated", this.set_ranges, this);
         },
         update_scales: function() {
             var scales = this.model.get("scales");

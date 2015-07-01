@@ -30,7 +30,7 @@ define(["./d3", "./LinearColorScale", "./ColorUtils"], function(d3, LinearColorS
             }
             this.set_range();
 
-            this.model.on("domain_changed", this.model_domain_changed, this);
+            this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
         },
     });

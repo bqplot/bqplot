@@ -46,11 +46,11 @@ define(["./d3", "./Lines"], function(d3, LinesViewModule) {
         },
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
-            this.model.on("change:interpolation", this.update_interpolation, this);
-            this.model.on("change:colors", this.update_colors, this);
-            this.model.on("change:stroke_width", this.update_stroke_width, this);
-            this.model.on("change:labels_visibility", this.update_legend_labels, this);
-            this.model.on("change:color change:width", this.update_and_draw, this);
+            this.listenTo(this.model, "change:interpolation", this.update_interpolation, this);
+            this.listenTo(this.model, "change:colors", this.update_colors, this);
+            this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
+            this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
+            this.listenTo(this.model, "change:color change:width", this.update_and_draw, this);
         },
         update_stroke_width: function(model, stroke_width){
             this.el.selectAll(".curve").selectAll("path")

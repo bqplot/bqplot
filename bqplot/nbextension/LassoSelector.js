@@ -51,7 +51,7 @@ define(["./d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors
         },
         create_listeners: function() {
             LassoSelector.__super__.create_listeners.apply(this);
-            this.model.on("change:color", this.change_color, this);
+            this.listenTo(this.model, "change:color", this.change_color, this);
         },
         change_color: function(model, color) {
             if (color) {

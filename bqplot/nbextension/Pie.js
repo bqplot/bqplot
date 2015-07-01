@@ -78,9 +78,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   this.event_dispatcher("mouse_out");
               }, this));
 
-            this.model.on("data_updated", this.draw, this);
-            this.model.on("change:colors", this.update_colors, this);
-            this.model.on("colors_updated", this.update_colors, this);
+            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "change:colors", this.update_colors, this);
+            this.listenTo(this.model, "colors_updated", this.update_colors, this);
             this.model.on_some_change(["inner_radius", "radius"], function() {
                 this.compute_view_padding();
                 this.update_radii();
@@ -88,8 +88,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.model.on_some_change(["x", "y"], this.position_center, this);
             this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
-            this.model.on("labels_updated", this.update_labels, this);
-            this.model.on("change:selected", function() {
+            this.listenTo(this.model, "labels_updated", this.update_labels, this);
+            this.listenTo(this.model, "change:selected", function() {
                 this.selected_indices = this.model.get("selected");
                 this.apply_styles();
             }, this);

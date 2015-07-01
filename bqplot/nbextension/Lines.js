@@ -73,19 +73,20 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
                 .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
 
-            this.model.on("change:tooltip", this.create_tooltip, this);
+            this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
 
             // FIXME: multiple calls to update_path_style. Use on_some_change.
-            this.model.on("change:interpolation", this.update_path_style, this);
-            this.model.on("change:close_path", this.update_path_style, this);
+            this.listenTo(this.model, "change:interpolation", this.update_path_style, this);
+            this.listenTo(this.model, "change:close_path", this.update_path_style, this);
+
             // FIXME: multiple calls to update_style. Use on_some_change.
-            this.model.on("change:colors", this.update_style, this);
-            this.model.on("change:fill", this.update_style, this);
-            this.model.on("change:opacity", this.update_style, this);
-            this.model.on("data_updated", this.draw, this);
-            this.model.on("change:stroke_width", this.update_stroke_width, this);
-            this.model.on("change:labels_visibility", this.update_legend_labels, this);
-            this.model.on("change:line_style", this.update_line_style, this);
+            this.listenTo(this.model, "change:colors", this.update_style, this);
+            this.listenTo(this.model, "change:fill", this.update_style, this);
+            this.listenTo(this.model, "change:opacity", this.update_style, this);
+            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
+            this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
+            this.listenTo(this.model, "change:line_style", this.update_line_style, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
