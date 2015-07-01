@@ -45,22 +45,22 @@ define(["./d3", "./utils", "./ColorUtils", "./Axis"], function(d3, utils, Col_Pi
             });
         },
         create_listeners: function() {
-            this.model.on("change:scale", function(model, value) {
+            this.listenTo(this.model, "change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
                 // TODO: rescale_axis does too many things. Decompose
                 this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
                 this.rescale_axis();
             }, this);
 
-            this.model.on("change:tick_format", this.tickformat_changed, this);
+            this.listenTo(this.model, "change:tick_format", this.tickformat_changed, this);
             this.axis_scale.on("domain_changed", this.redraw_axisline, this);
             this.axis_scale.on("color_scale_range_changed", this.redraw_axis, this);
             this.axis_scale.on("highlight_axis", this.highlight, this);
             this.axis_scale.on("unhighlight_axis", this.unhighlight, this);
 
             this.parent.on("margin_updated", this.parent_margin_updated, this);
-            this.model.on("change:visible", this.update_visibility, this);
-            this.model.on("change:label", this.update_label, this);
+            this.listenTo(this.model, "change:visible", this.update_visibility, this);
+            this.listenTo(this.model, "change:label", this.update_label, this);
             this.model.on_some_change(["side", "orientation"], this.update_display, this);
         },
         update_display: function() {

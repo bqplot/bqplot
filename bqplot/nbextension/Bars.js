@@ -111,12 +111,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   this.event_dispatcher("mouse_out");
               }, this));
 
-            this.model.on("data_updated", this.draw, this);
-            this.model.on("change:colors", this.update_colors, this);
-            this.model.on("colors_updated", this.update_colors, this);
-            this.model.on("change:type", this.draw, this);
-            this.model.on("change:align", this.realign, this);
-            this.model.on("change:tooltip", this.create_tooltip, this);
+            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "change:colors", this.update_colors, this);
+            this.listenTo(this.model, "colors_updated", this.update_colors, this);
+            this.listenTo(this.model, "change:type", this.draw, this);
+            this.listenTo(this.model, "change:align", this.realign, this);
+            this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() {

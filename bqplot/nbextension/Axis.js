@@ -47,27 +47,27 @@ define(["widgets/js/widget", "./d3", "./utils"], function(Widget, d3, bqutils) {
             });
         },
         create_listeners: function() {
-            this.model.on("change:scale", function(model, value) {
+            this.listenTo(this.model, "change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
                 // TODO: rescale_axis does too many things. Decompose
                 this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
                 this.rescale_axis();
             }, this);
 
-            this.model.on("change:tick_values", this.set_tick_values, this);
-            this.model.on("change:tick_format", this.tickformat_changed, this);
-            this.model.on("change:num_ticks", function(model, value) {
+            this.listenTo(this.model, "change:tick_values", this.set_tick_values, this);
+            this.listenTo(this.model, "change:tick_format", this.tickformat_changed, this);
+            this.listenTo(this.model, "change:num_ticks", function(model, value) {
                 this.num_ticks = value;
                 this.set_tick_values();
             }, this);
-            this.model.on("change:color", this.update_color, this);
+            this.listenTo(this.model, "change:color", this.update_color, this);
             this.model.on_some_change(["label", "label_color"], this.update_label, this);
             this.model.on_some_change(["grid_color", "grid_lines"], this.update_grid_lines, this);
-            this.model.on("change:label_location", this.update_label_location, this);
-            this.model.on("change:label_offset", this.update_label_offset, this);
-            this.model.on("change:visible", this.update_visibility, this);
+            this.listenTo(this.model, "change:label_location", this.update_label_location, this);
+            this.listenTo(this.model, "change:label_offset", this.update_label_offset, this);
+            this.listenTo(this.model, "change:visible", this.update_visibility, this);
             this.model.on_some_change(["side", "orientation"], this.update_display, this);
-            this.model.on("change:offset", function() {
+            this.listenTo(this.model, "change:offset", function() {
                 var offset_creation_promise = this.get_offset();
                 var that = this;
                 offset_creation_promise.then(function() {

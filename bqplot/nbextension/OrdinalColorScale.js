@@ -19,8 +19,8 @@ define(["./d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleView
     var OrdinalColorScale = OrdinalScaleViewModule.OrdinalScale.extend({
         render: function(){
             OrdinalColorScale.__super__.render.apply(this);
-            this.model.on("domain_changed", this.model_domain_changed, this);
-            this.model.on("set_ticks", this.model_ticks_changed, this);
+            this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
+            this.listenTo(this.model, "set_ticks", this.model_ticks_changed, this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
             this.set_range();
         },

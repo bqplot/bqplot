@@ -24,7 +24,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             this.uuid = utils.uuid();
             var scale_creation_promise = this.set_scale_views();
             var self = this;
-            this.model.on("scales_updated", function() {
+            this.listenTo(this.model, "scales_updated", function() {
                 this.set_scale_views().then( function() { self.draw(); });
             }, this);
 
@@ -107,9 +107,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, util
             // is overloaded.
         },
         create_listeners: function() {
-            this.model.on("change:visible", this.update_visibility, this);
-            this.model.on("change:selected_style", this.selected_style_updated, this);
-            this.model.on("change:unselected_style", this.unselected_style_updated, this);
+            this.listenTo(this.model, "change:visible", this.update_visibility, this);
+            this.listenTo(this.model, "change:selected_style", this.selected_style_updated, this);
+            this.listenTo(this.model, "change:unselected_style", this.unselected_style_updated, this);
 
             this.parent.on("margin_updated", this.relayout, this);
             this.model.on_some_change(["labels", "display_legend"], function() {

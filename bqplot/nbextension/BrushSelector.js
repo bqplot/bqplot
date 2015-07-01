@@ -48,7 +48,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
         },
         create_listeners: function() {
             BrushSelector.__super__.create_listeners.apply(this);
-            this.model.on("change:color", this.color_change, this);
+            this.listenTo(this.model, "change:color", this.color_change, this);
         },
         color_change: function() {
              if (this.model.get("color") != null) {
@@ -169,7 +169,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
         },
         create_listeners: function() {
             BrushSelector.__super__.create_listeners.apply(this);
-            this.model.on("change:color", this.change_color, this);
+            this.listenTo(this.model, "change:color", this.change_color, this);
         },
         change_color: function() {
             if (this.model.get("color") != null) {

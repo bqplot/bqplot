@@ -168,19 +168,19 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                   this.event_dispatcher("mouse_out");
               }, this));
 
-            this.model.on("change:default_color", this.update_default_color, this);
-            this.model.on("change:stroke", this.update_stroke, this);
-            this.model.on("change:stroke_width", this.update_stroke_width, this);
-            this.model.on("change:default_opacity", this.update_default_opacity, this);
-            this.model.on("change:default_skew", this.update_default_skew, this);
-            this.model.on("change:default_rotation", this.update_default_rotation, this);
-            this.model.on("data_updated", this.draw, this);
-            this.model.on("change:marker", this.update_marker, this);
-            this.model.on("change:default_size", this.update_default_size, this);
-            this.model.on("change:fill", this.update_fill, this);
-            this.model.on("change:display_names", this.update_display_names, this);
-            this.model.on("change:tooltip", this.create_tooltip, this);
-            this.model.on("change:enable_hover", function() { this.hide_tooltip(); }, this);
+            this.listenTo(this.model, "change:default_color", this.update_default_color, this);
+            this.listenTo(this.model, "change:stroke", this.update_stroke, this);
+            this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
+            this.listenTo(this.model, "change:default_opacity", this.update_default_opacity, this);
+            this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
+            this.listenTo(this.model, "change:default_rotation", this.update_default_rotation, this);
+            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "change:marker", this.update_marker, this);
+            this.listenTo(this.model, "change:default_size", this.update_default_size, this);
+            this.listenTo(this.model, "change:fill", this.update_fill, this);
+            this.listenTo(this.model, "change:display_names", this.update_display_names, this);
+            this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
+            this.listenTo(this.model, "change:enable_hover", function() { this.hide_tooltip(); }, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.parent, "bg_clicked", function() {

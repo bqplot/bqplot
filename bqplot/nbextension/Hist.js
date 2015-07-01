@@ -64,11 +64,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
                 .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
 
-            this.model.on("change:tooltip", this.create_tooltip, this);
-            this.model.on("data_updated", this.draw, this);
-            this.model.on("change:colors",this.update_colors,this);
+            this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
+            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "change:colors",this.update_colors,this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
-            this.model.on("change:selected", this.update_selected, this);
+            this.listenTo(this.model, "change:selected", this.update_selected, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");

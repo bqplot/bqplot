@@ -212,7 +212,7 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             }
         },
         create_listeners: function() {
-            this.model.on("change:fig_color", this.change_color, this);
+            this.listenTo(this.model, "change:fig_color", this.change_color, this);
         },
         change_color: function() {
             if (this.model.get("fig_color") !== null) {
@@ -222,7 +222,6 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             }
         },
         remove: function() {
-            this.model.off(null, null, this);
             this.svg.remove();
             $(this.options.cell).off("output_area_resize."+this.id);
             Figure.__super__.remove.apply(this);

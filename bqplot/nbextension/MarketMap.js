@@ -140,25 +140,31 @@ define(["widgets/js/widget", "./d3", "./Figure", "base/js/utils"], function(Widg
             this.group_iter = 1;
         },
         create_listeners: function() {
-            this.model.on("change:color", this.recolor_chart, this);
-            this.model.on("change:show_groups", this.show_groups, this);
-            this.model.on("change:selected_stroke", this.update_selected_stroke, this);
-            this.model.on("change:hovered_stroke", this.update_hovered_stroke, this);
-            this.model.on("change:selected", function() { this.clear_selected(); this.apply_selected(); }, this);
+            this.listenTo(this.model, "change:color", this.recolor_chart, this);
+            this.listenTo(this.model, "change:show_groups", this.show_groups, this);
+            this.listenTo(this.model, "change:selected_stroke", this.update_selected_stroke, this);
+            this.listenTo(this.model, "change:hovered_stroke", this.update_hovered_stroke, this);
+            this.listenTo(this.model, "change:selected", function() {
+                this.clear_selected();
+                this.apply_selected();
+            }, this);
             this.model.on_some_change(["names", "groups", "ref_data"], function() {
                 this.update_data();
                 this.compute_dimensions_and_draw();
             }, this);
-            this.model.on("change:rows", function(model, value) { this.num_rows = value;
-                                                                  this.compute_dimensions_and_draw();
-                                                                }, this);
-            this.model.on("change:cols", function(model, value) { this.num_cols = value;
-                                                                  this.compute_dimensions_and_draw();
-                                                                }, this);
-            this.model.on("change:row_groups", function(model, value) { this.row_groups = value;
-                                                                        this.compute_dimensions_and_draw();
-                                                                      }, this);
-            this.model.on("change:tooltip_widget", this.create_tooltip_widget, this);
+            this.listenTo(this.model, "change:rows", function(model, value) {
+                this.num_rows = value;
+                this.compute_dimensions_and_draw();
+            }, this);
+            this.listenTo(this.model, "change:cols", function(model, value) {
+                this.num_cols = value;
+                this.compute_dimensions_and_draw();
+            }, this);
+            this.listenTo(this.model, "change:row_groups", function(model, value) {
+                this.row_groups = value;
+                this.compute_dimensions_and_draw();
+            }, this);
+            this.listenTo(this.model, "change:tooltip_widget", this.create_tooltip_widget, this);
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
