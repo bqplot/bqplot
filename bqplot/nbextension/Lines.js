@@ -202,7 +202,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
-            this.x_pixels = this.model.mark_data[0].values.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
+            this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
+                                                                        { return x_scale.scale(el.x) + x_scale.offset; })
+                                                              : [];
             this.create_labels();
         },
         invert_range: function(start_pxl, end_pxl) {
@@ -403,7 +405,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   return that.line(d.values) + that.path_closure();
               });
 
-            this.x_pixels = this.model.mark_data[0].values.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
+            this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
+                                                                        { return x_scale.scale(el.x) + x_scale.offset; })
+                                                              : [];
         },
         draw: function() {
             this.set_ranges();
