@@ -62,21 +62,28 @@ define(["./d3", "./colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
         cycle_colors_from_scheme: function(scheme, num_steps) {
             var index = color_schemes.indexOf(scheme);
             index = (index === -1) ? 28 : index;
+            var color_set = colorbrewer[color_schemes[index]];
 
-            if(index < 2) {
-                return this.cycle_colors(colorbrewer[color_schemes[index]][12], num_steps);
+            if (num_steps === 2) {
+                return [color_set[3][0], color_set[3][2]];
+            } else if (color_set.hasOwnProperty(num_steps)) {
+                return color_set[num_steps];
+            } else if (index < 2){
+                return this.cycle_colors(color_set[12], num_steps);
             } else {
-                return this.cycle_colors(colorbrewer[color_schemes[index]][9], num_steps);
+                return this.cycle_colors(color_set[9], num_steps);
             }
         },
         get_colors: function(scheme, num_colors) {
             var index = color_schemes.indexOf(scheme);
+
             if(index === -1) {
                 index = 28;
             }
 
             var colors_object = colorbrewer[color_schemes[index]];
             if(index < 2) {
+
                 return this.cycle_colors(colors_object[Math.min(num_colors, 12)], num_colors);
             }
             if(index < 4) {
@@ -92,6 +99,7 @@ define(["./d3", "./colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
             if(index === -1 && index < 4) {
                 index = 28;
             }
+
             var colors = colorbrewer[color_schemes[index]][9];
             var scale = d3.scale.linear();
             if(index > 21) {
@@ -121,3 +129,4 @@ define(["./d3", "./colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
         },
     };
 });
+
