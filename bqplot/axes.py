@@ -92,6 +92,8 @@ class Axis(BaseAxis):
             'middle'
         label_color: Color or None (default: None)
             The color of the axis label
+        grid_lines: {'none', 'solid', 'dashed'}
+            The display of the grid lines
         grid_color: Color or None (default: None)
             The color of the grid lines
         color: Color or None (default: None)
