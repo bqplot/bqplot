@@ -469,7 +469,7 @@ class ColorScale(Scale):
     dtype = np.number
     scale_type = Enum(['linear'], default_value='linear',
                       sync=True)
-    colors = List(trait=Color(), sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True), sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
     mid = Float(default_value=None, sync=True, allow_none=True)
