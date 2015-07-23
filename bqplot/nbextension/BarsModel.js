@@ -66,16 +66,29 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                             index: index,
                             sub_index: y_index,
                             x: x_elem,
+                            // In the following code, the values y0, y1 are
+                            // only relevant for a stacked bar chart. grouped
+                            // bars only deal with base_value and y.
+
+                            // y0 is the value on the y scale for the upper end
+                            // of the bar.
                             y0: (positive) ? y0 : y0_neg,
+                            // y1 is the value on the y scale for the lower end
+                            // of the bar.
                             y1: (positive) ? (y0 += value) : (function() {
                                 y0_neg += value;
                                 return (y0_neg - value);
                             }()),
+                            // y is the value on the y scale which represents
+                            // the height of the bar
                             y: value,
-                            // analogous to the height of the bar
                         };
                     });
+                    // pos_max is the maximum positive value for a group of
+                    // bars.
                     data.pos_max = y0;
+                    // neg_max is the minimum negative value for a group of
+                    // bars.
                     data.neg_max = y0_neg;
                     return data;
                 });
@@ -141,12 +154,12 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     var min = d3.min(this.mark_data,
                         function(c) {
                             return d3.min(c.values, function(val) {
-                                return val.val;
+                                return val.y;
                             });
                         });
                     var max = d3.max(this.mark_data, function(c) {
                         return d3.max(c.values, function(val) {
-                            return val.val;
+                            return val.y;
                         });
                     });
                     y_scale.compute_and_set_domain([min, max, this.base_value], this.id);
