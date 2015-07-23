@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
+define(["./d3", "./Mark"], function(d3, MarkViewModule) {
     "use strict";
-
-    var perf = p;
 
     var  boxplotView = MarkViewModule.Mark.extend({
        render: function() {
@@ -238,8 +236,6 @@ define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
             return idx_selected;
         },
         invert_point: function(pixel) {
-            perf("invert_point").start();
-
             var x_scale = this.scales["x"];
 
             var point = x_scale.scale.invert(pixel);
@@ -304,9 +300,6 @@ define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
 
         },
         draw: function() {
-
-            perf("draw").start();
-
             this.set_ranges();
 
             // get the visual representation of boxplots
@@ -315,12 +308,8 @@ define(["./d3", "./Mark", "./PerfCounter"], function(d3, MarkViewModule, p) {
 
             // Draw the visual elements with data which was bound
             this.draw_mark_paths(".boxplot", this.el, plotData);
-
-            perf("draw").stop();
-
         },
         draw_mark_paths: function(parentClass, selector, plotData) {
-            perf("invert_point").stop();
             var that = this;
 
             var mark_max_width = this.calculate_mark_max_width();
