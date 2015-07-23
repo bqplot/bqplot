@@ -114,7 +114,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.listenTo(this.model, "data_updated", this.draw, this);
             this.listenTo(this.model, "change:colors", this.update_colors, this);
             this.listenTo(this.model, "colors_updated", this.update_colors, this);
-            this.listenTo(this.model, "change:type", this.draw, this);
+            this.listenTo(this.model, "change:type", this.update_type, this);
             this.listenTo(this.model, "change:align", this.realign, this);
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
@@ -307,6 +307,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                       return Math.abs(y_scale.scale(that.model.base_value) - (y_scale.scale(d.y)));
                   });
             }
+        },
+        update_type: function(model, value) {
+            // We need to update domains here as the y_domain needs to be
+            // changed when we switch from stacked to grouped.
+            this.model.update_domains();
+            this.draw();
         },
         update_stroke_and_opacity: function() {
             var stroke = this.model.get("stroke");
