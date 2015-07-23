@@ -195,7 +195,11 @@ class Date(TraitType):
             if isinstance(value, dt.date):
                 return dt.datetime(value.year, value.month, value.day)
             if np.issubdtype(np.dtype(value), np.datetime64):
-                return value.astype(dt.datetime)
+                ##TODO: Fix this. Right now, we have to limit the precision
+                ## of time to microseconds because np.datetime64.astype(datetime)
+                ## returns date values only for precision <= 'us'
+                value_truncated = np.datetime64(value, 'us')
+                return value_truncated.astype(dt.datetime)
         except Exception:
             self.error(obj, value)
         self.error(obj, value)
