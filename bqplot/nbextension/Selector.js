@@ -115,7 +115,7 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
                     that.x_scale = view;
                     that.update_xscale_domain();
                     that.set_x_range([that.x_scale]);
-                    that.scale.on("domain_changed", that.update_xscale_domain, that);
+                    that.x_scale.on("domain_changed", that.update_xscale_domain, that);
                     return view;
                 }));
             }
@@ -124,7 +124,7 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
                     that.y_scale = view;
                     that.update_yscale_domain();
                     that.set_y_range([that.y_scale]);
-                    that.scale.on("domain_changed", that.update_yscale_domain, that);
+                    that.y_scale.on("domain_changed", that.update_yscale_domain, that);
                     return view;
                 }));
             }

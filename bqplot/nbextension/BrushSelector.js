@@ -134,7 +134,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
         },
         update_xscale_domain: function() {
             // Call the base class function to update the scale.
-            BrushIntervalSelector.__super__.update_xscale_domain.apply(this);
+            BrushSelector.__super__.update_xscale_domain.apply(this);
             if(this.brush !== undefined && this.brush !== null) {
                 this.brush.x(this.x_scale.scale);
             }
@@ -143,7 +143,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
         },
          update_yscale_domain: function() {
             // Call the base class function to update the scale.
-            BrushIntervalSelector.__super__.update_yscale_domain.apply(this);
+            BrushSelector.__super__.update_yscale_domain.apply(this);
             if(this.brush !== undefined && this.brush !== null) {
                 this.brush.y(this.y_scale.scale);
             }
