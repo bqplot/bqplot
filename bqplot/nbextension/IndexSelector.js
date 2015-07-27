@@ -88,8 +88,13 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
         },
         reset: function() {
             this.active = false;
-            this.line.attr({x1: 0, x2: 0, visibility: "hidden"});
-            this.background.on("click", _.bind(this.initial_click, this));
+            if(this.line !== undefined && this.line !== null) {
+                this.line.attr({x1: 0, x2: 0, visibility: "hidden"});
+            }
+
+            if(this.background !== undefined && this.background !== null) {
+                this.background.on("click", _.bind(this.initial_click, this));
+            }
             this.model.set_typed_field("selected", [], {js_ignore : true});
 
             _.each(this.mark_views, function(mark_view) {
@@ -97,12 +102,14 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             });
             this.touch();
         },
-        update_scale_domain: function() {
+        update_scale_domain: function(ignore_gui_update) {
             // Call the base class function to update the scale.
             IndexSelector.__super__.update_scale_domain.apply(this);
-
-            // If there is selected, update the visual element to the correct
-            // value.
+            if(ignore_gui_update !== true) {
+                this.selected_changed();
+            }
+        },
+        update_visual_element: function(pixel) {
 
         },
         selected_changed: function(model, value, options) {
@@ -120,8 +127,9 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
                 return;
             } else {
                 var pixel = this.scale.scale(selected[0]);
-                this.line.attr({x1: pixel, x2: pixel, visibility: "visible"});
-
+                if(this.line !== undefined && this.line !== null) {
+                    this.line.attr({x1: pixel, x2: pixel, visibility: "visible"});
+                }
                 //the selected may be called before the index selector is
                 //active for the first time.
                 this.background.on("click", _.bind(this.click, this));

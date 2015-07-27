@@ -140,12 +140,12 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             });
             this.touch();
         },
-        update_scale_domain: function() {
+        update_scale_domain: function(ignore_gui_update) {
             // Call the base class function to update the scale.
             FastIntervalSelector.__super__.update_scale_domain.apply(this);
-
-            // If there is a selection, update the visual element.
-
+            if(ignore_gui_update !== true) {
+                this.selected_changed();
+            }
         },
         selected_changed: function(model, value, options) {
             //TODO: should the size get overridden if it was set previously and

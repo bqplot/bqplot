@@ -237,14 +237,15 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             });
             this.touch();
         },
-        update_scale_domain: function() {
+        update_scale_domain: function(ignore_gui_update) {
             // Call the base class function to update the scale.
             BrushIntervalSelector.__super__.update_scale_domain.apply(this);
             if(this.brush !== undefined && this.brush !== null) {
                 this.brush.x(this.scale.scale);
             }
-            // If there is a selection, update the visual element.
-
+            if(ignore_gui_update !== true) {
+                this.selected_changed();
+            }
         },
         selected_changed: function(model, value, options) {
             if(options && options.js_ignore) {
