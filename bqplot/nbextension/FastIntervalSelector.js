@@ -140,6 +140,13 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
             });
             this.touch();
         },
+        update_scale_domain: function() {
+            // Call the base class function to update the scale.
+            FastIntervalSelector.__super__.update_scale_domain.apply(this);
+
+            // If there is a selection, update the visual element.
+
+        },
         selected_changed: function(model, value, options) {
             //TODO: should the size get overridden if it was set previously and
             //then selected was changed from the python side?
