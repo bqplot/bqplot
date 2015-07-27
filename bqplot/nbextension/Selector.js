@@ -78,14 +78,23 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
                 var that = this;
                 return this.create_child_view(this.model.get("scale")).then(function(view) {
                     that.scale = view;
+                    that.update_scale_domain();
                     that.set_range([that.scale]);
+                    that.scale.on("domain_changed", that.update_scale_domain, that);
                     return view;
                 });
             }
         },
+        update_scale_domain: function() {
+            // When the domain of the scale is updated, the domain of the scale
+            // for the selector must be expanded to account for the padding.
+            var initial_range = this.parent.padded_range("x", this.scale.model);
+            var target_range = this.parent.range("x");
+            this.scale.expand_domain(initial_range, target_range);
+        },
         set_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {
-                array[iter].set_range([0, this.width]);
+                array[iter].set_range(this.parent.range("x"));
             }
         },
     });
