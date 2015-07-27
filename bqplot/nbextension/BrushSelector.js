@@ -138,7 +138,7 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             if(this.brush !== undefined && this.brush !== null) {
                 this.brush.x(this.x_scale.scale);
             }
-            // If there is a selection, update the visual element.
+            // TODO:If there is a selection, update the visual element.
 
         },
          update_yscale_domain: function() {
@@ -147,8 +147,6 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             if(this.brush !== undefined && this.brush !== null) {
                 this.brush.y(this.y_scale.scale);
             }
-            // If there is a selection, update the visual element.
-
         },
         _update_brush: function() {
             //programmatically setting the brush does not redraw it. It is

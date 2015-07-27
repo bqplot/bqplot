@@ -109,9 +109,6 @@ define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
                 this.selected_changed();
             }
         },
-        update_visual_element: function(pixel) {
-
-        },
         selected_changed: function(model, value, options) {
             if(options && options.js_ignore) {
                 //this change was most probably triggered from the js side and
