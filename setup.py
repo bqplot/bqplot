@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='bqplot',
       version='0.1',
+      include_package_data=True,
       install_requires=['ipython', 'numpy'],
-      packages=['bqplot'],
+      packages=find_packages(),
       zip_safe=False)
