@@ -379,6 +379,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     """
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', _context['scales'])
+    print "scales: ", _context['scales']
+    print "registry: ", _context['scale_registry']
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
         # TODO: the following should also happen if name in kwargs and
@@ -387,6 +389,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
             traitlet = mark_type.class_traits()[name]
             rtype = traitlet.get_metadata('rtype')
             dtype = traitlet.validate(None, kwargs[name]).dtype
+            ## Fetching the first matching scale for the rtype and dtype of the
+            ## scaled attributes of the mark.
             compat_scale_types = [Scale.scale_types[key]
                                   for key in Scale.scale_types
                                   if Scale.scale_types[key].rtype == rtype
@@ -820,3 +824,13 @@ def _update_fig_axis_registry(fig, dimension, scale, axis):
     dimension_scales.append({'scale': scale, 'axis': axis})
     axis_registry[dimension] = dimension_scales
     setattr(fig, 'axis_registry', axis_registry)
+
+
+def _get_attribute_dimension(mark_type, trait_name):
+    '''
+    Returns the dimension for the name of the trait for
+    the mark specified.
+    Returns `None` if the `trait_name` is not valid for `mark_type`.
+    '''
+    scale_metadata = mark_type.class_traits()['scales_metadata'].default_args[0]
+    return scale_metadata.get(trait_name, {}).get('dimension', None)
