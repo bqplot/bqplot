@@ -159,9 +159,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if (this.legend_el){
                 this.legend_el.select("path")
                   .style("stroke", function(d, i) {
-                      return that.get_element_color(d, i);
+                      return that.get_element_color(d, i) || fill_color[i];
                   })
-                 .style("fill", function(d, i) {
+                  .style("fill", function(d, i) {
                       return fill_color[i];
                   })
                   .style("opacity", function(d, i) {
@@ -258,7 +258,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var curve_labels = this.model.update_labels();
             var legend_data = this.model.mark_data.map(function(d) {
-                return {"index": d["index"], "name": d["name"]};
+                return {"index": d["index"], "name": d["name"], "color": d["color"],
+                        "opacity": d["opacity"]};
             });
             this.legend_el = elem.selectAll(".legend" + this.uuid)
               .data(legend_data, function(d, i) {
@@ -298,9 +299,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 .attr("fill", "none")
                 .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
                 .style("stroke", function(d, i) {
-                    return that.get_element_color(d, i);
+                    return that.get_element_color(d, i) || fill_color[i];
                 })
-                .style("fill", function(d, i) { return fill_color[i]; })
+                .style("fill", function(d, i) {
+                    return fill_color[i];
+                })
                 .style("opacity", function(d, i) { return opacity[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", _.bind(this.get_line_style, this));
@@ -311,9 +314,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("y", rect_dim / 2)
               .attr("dy", "0.35em")
               .text(function(d, i) { return curve_labels[i]; })
-              .style("fill", function(d,i) {
-                  return that.get_element_color(d, i);
-              });
+              .style("fill", function(d, i) {
+                  return that.get_element_color(d, i) || fill_color[i];
+              })
+              .style("opacity", function(d, i) { return opacity[i]; });
 
             var max_length = d3.max(curve_labels, function(d) {
                 return d.length;
