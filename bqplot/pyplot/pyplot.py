@@ -62,6 +62,18 @@ _context = {
     'last_mark': None
 }
 
+Keep = Ellipsis
+
+_scale_dimension_lookup = {
+    'x': 'horizontal',
+    'y': 'vertical',
+    'sample': 'horizoontal',
+    'counts': 'vertical',
+    'color': 'color',
+    'size': 'size',
+    'opacity': 'opacity',
+}
+
 
 def _default_toolbar(figure):
     pz = panzoom(figure.marks)
@@ -197,6 +209,13 @@ def figure(key=None, fig=None, **kwargs):
             _context['figure'] = _context['figure_registry'][key]
             for arg in kwargs:
                 setattr(_context['figure'], arg, kwargs[arg])
+    '''
+    Right now the scales dictionary has keys `x`, `y`, `color` etc.
+    Aim is to convert it to `horizontal`, `vertical` and `color`.
+    By default it reverts to look at the _scale_dimension_dictionary
+    if no mark is provided to look up the dimension for a given scale
+    attribute.
+    '''
     scales(key, scales=scales_arg)
     ## Set the axis reference dictionary. This dictionary contains the mapping
     ## from the possible dimensions in the figure to the list of scales with
@@ -222,9 +241,6 @@ def close(key):
         figure()
     figure_registry[key].pyplot.close()
     del figure_registry[key]
-
-
-Keep = Ellipsis
 
 
 def scales(key=None, scales={}):
@@ -267,12 +283,13 @@ def scales(key=None, scales={}):
     """
     old_ctxt = _context['scales']
     if key is None:  # No key provided
-        _context['scales'] = {k: scales[k] if scales[k] is not Ellipsis
-                              else old_ctxt[k] for k in scales}
+        _context['scales'] = {_get_attribute_dimension(k): scales[k] if scales[k] is not Ellipsis
+                              else old_ctxt[_get_attribute_dimension(k)] for k in scales}
     else:  # A key is provided
         if key not in _context['scale_registry']:
-            _context['scale_registry'][key] = {k: scales[k] if scales[k]
-                                               is not Ellipsis else old_ctxt[k]
+            _context['scale_registry'][key] = {_get_attribute_dimension(k): scales[k]
+                                               if scales[k] is not Ellipsis
+                                               else old_ctxt[_get_attribute_dimension(k)]
                                                for k in scales}
         _context['scales'] = _context['scale_registry'][key]
 
@@ -302,7 +319,7 @@ def set_lim(min, max, name):
         When no context figure is associated with the provided key.
 
     """
-    scale = _context['scales'][name]
+    scale = _context['scales'][_get_attribute_dimension[name]]
     scale.min = min
     scale.max = max
     return scale
@@ -826,11 +843,15 @@ def _update_fig_axis_registry(fig, dimension, scale, axis):
     setattr(fig, 'axis_registry', axis_registry)
 
 
-def _get_attribute_dimension(mark_type, trait_name):
+def _get_attribute_dimension(trait_name, mark_type=None):
     '''
     Returns the dimension for the name of the trait for
     the mark specified.
+    If `mark_type` is `None`, then the lookup is performed in the
+    `_scale_dimension_lookup` dictionary.
     Returns `None` if the `trait_name` is not valid for `mark_type`.
     '''
+    if(mark_type is None):
+        return _scale_dimension_lookup[trait_name]
     scale_metadata = mark_type.class_traits()['scales_metadata'].default_args[0]
     return scale_metadata.get(trait_name, {}).get('dimension', None)
