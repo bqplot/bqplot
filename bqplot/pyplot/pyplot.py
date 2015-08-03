@@ -312,7 +312,7 @@ def set_lim(min, max, name):
         When no context figure is associated with the provided key.
 
     """
-    scale = _context['scales'][_get_attribute_dimension[name]]
+    scale = _context['scales'][_get_attribute_dimension(name)]
     scale.min = min
     scale.max = max
     return scale
