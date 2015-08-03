@@ -209,13 +209,6 @@ def figure(key=None, fig=None, **kwargs):
             _context['figure'] = _context['figure_registry'][key]
             for arg in kwargs:
                 setattr(_context['figure'], arg, kwargs[arg])
-    '''
-    Right now the scales dictionary has keys `x`, `y`, `color` etc.
-    Aim is to convert it to `horizontal`, `vertical` and `color`.
-    By default it reverts to look at the _scale_dimension_dictionary
-    if no mark is provided to look up the dimension for a given scale
-    attribute.
-    '''
     scales(key, scales=scales_arg)
     ## Set the axis reference dictionary. This dictionary contains the mapping
     ## from the possible dimensions in the figure to the list of scales with
