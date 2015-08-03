@@ -67,8 +67,8 @@ Keep = Ellipsis
 _scale_dimension_lookup = {
     'x': 'horizontal',
     'y': 'vertical',
-    'sample': 'horizoontal',
-    'counts': 'vertical',
+    'sample': 'horizontal',
+    'count': 'vertical',
     'color': 'color',
     'size': 'size',
     'opacity': 'opacity',
@@ -359,8 +359,9 @@ def axes(mark=None, options={}, **kwargs):
 
         axis = _fetch_axis(fig, dimension, scales[name])
         if axis is not None:
-        ## for this figure, an axis exists for the scale in the given
-        ## dimension
+        # For this figure, an axis exists for the scale in the given
+        # dimension. Apply the properties and return back the object.
+            _apply_properties(axis, options.get(name, {}))
             axes[name] = axis
             continue
 
@@ -372,7 +373,7 @@ def axes(mark=None, options={}, **kwargs):
             axis = axis_type(scale=scales[name], **axis_args)
             axes[name] = axis
             fig_axes.append(axis)
-            ## update the axis registry of the figure once the axis is added
+            # Update the axis registry of the figure once the axis is added
             _update_fig_axis_registry(fig, dimension, scales[name], axis)
     fig.axes = fig_axes
     return axes
@@ -395,19 +396,29 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
         for the constructor of the corresponding axis type.
     """
     fig = kwargs.pop('figure', current_figure())
-    scales = kwargs.pop('scales', _context['scales'])
-    print "scales: ", _context['scales']
-    print "registry: ", _context['scale_registry']
+    scales = kwargs.pop('scales', {})
+
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
+        dimension = _get_attribute_dimension(name)
         # TODO: the following should also happen if name in kwargs and
         # scales[name] is incompatible.
-        if name in kwargs and name not in scales:
+        if name not in kwargs:
+            # The scaled attribute is not being passed to the mark. So no need
+            # create a scale for this.
+            continue
+        elif name in scales:
+            _context['scales'][dimension] = scales[name]
+        # Scale has to be fetched from the conext or created as it has not
+        # been passed.
+        elif dimension not in _context['scales']:
+        # Creating a scale for the dimension if a matching scale is not
+        # present in _context['scales']
             traitlet = mark_type.class_traits()[name]
             rtype = traitlet.get_metadata('rtype')
             dtype = traitlet.validate(None, kwargs[name]).dtype
-            ## Fetching the first matching scale for the rtype and dtype of the
-            ## scaled attributes of the mark.
+            # Fetching the first matching scale for the rtype and dtype of the
+            # scaled attributes of the mark.
             compat_scale_types = [Scale.scale_types[key]
                                   for key in Scale.scale_types
                                   if Scale.scale_types[key].rtype == rtype
@@ -416,6 +427,11 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
             # TODO: something better than taking the FIRST compatible
             # scale type.
             scales[name] = compat_scale_types[0](**options.get(name, {}))
+            # Adding the scale to the conext scales
+            _context['scales'][dimension] = scales[name]
+        else:
+            scales[name] = _context['scales'][dimension]
+
     mark = mark_type(scales=scales, **kwargs)
     _context['last_mark'] = mark
     fig.marks = [m for m in fig.marks] + [mark]
@@ -524,18 +540,23 @@ def hist(sample, options={}, **kwargs):
     sample: numpy.ndarray, 1d
         The sample for which the histogram must be generated
     options: dict (default: {})
-        Options for the scales to be created. If a scale labeled 'count'
-        is required for that mark, options['count'] contains optional keyword
+        Options for the scales to be created. If a scale labeled 'counts'
+        is required for that mark, options['counts'] contains optional keyword
         arguments for the constructor of the corresponding scale type.
     axes_options: dict (default: {})
-        Options for the axes to be created. If an axis labeled 'count' is
-        required for that mark, axes_options['count'] contains optional
+        Options for the axes to be created. If an axis labeled 'counts' is
+        required for that mark, axes_options['counts'] contains optional
         keyword arguments for the constructor of the corresponding axis type.
     """
     kwargs['sample'] = sample
-    scales = kwargs.pop('scales', _context['scales'])
+    scales = kwargs.pop('scales', {})
     if 'count' not in scales:
-        scales['count'] = LinearScale(**options.get('count', {}))
+        dimension = _get_attribute_dimension('count', Hist)
+        if dimension in _context['scales']:
+            scales['count'] = _context['scales'][dimension]
+        else:
+            scales['count'] = LinearScale(**options.get('count', {}))
+            _context['scales'][dimension] = scales['count']
     kwargs['scales'] = scales
     return _draw_mark(Hist, options=options, **kwargs)
 
@@ -666,12 +687,7 @@ def _get_context_scale(dimension):
         The dimension along which the current context scale is to be fetched
 
     """
-    if dimension == 'horizontal':
-        return _context['scales']['x']
-    elif dimension == 'vertical':
-        return _context['scales']['y']
-    else:
-        return _context['scales'][dimension]
+    return _context['scales'][dimension]
 
 
 def _create_selector(int_type, func, trait, **kwargs):
@@ -852,6 +868,17 @@ def _get_attribute_dimension(trait_name, mark_type=None):
     Returns `None` if the `trait_name` is not valid for `mark_type`.
     '''
     if(mark_type is None):
-        return _scale_dimension_lookup[trait_name]
+        return _scale_dimension_lookup.get(trait_name, None)
     scale_metadata = mark_type.class_traits()['scales_metadata'].default_args[0]
     return scale_metadata.get(trait_name, {}).get('dimension', None)
+
+
+def _apply_properties(widget, properties={}):
+    '''
+    Apply the properties one after the other to the widget.
+    `properties` is a dictionary with key value pairs corresponding
+    to the properties to be applied to the widget.
+    '''
+    with widget.hold_sync():
+        for key, value in properties.iteritems():
+            setattr(widget, key, value)
