@@ -393,7 +393,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
 
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
-        dimension = _get_attribute_dimension(name)
+        dimension = _get_attribute_dimension(name, mark_type)
         # TODO: the following should also happen if name in kwargs and
         # scales[name] is incompatible.
         if name not in kwargs:
