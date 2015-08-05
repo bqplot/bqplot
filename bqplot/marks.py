@@ -32,6 +32,7 @@ Marks
    Label
    OHLC
    Pie
+   MapMark
 """
 from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
 from IPython.utils.traitlets import (Int, Unicode, List, Enum, Dict, Bool,
