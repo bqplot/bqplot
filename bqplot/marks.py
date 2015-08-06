@@ -44,6 +44,7 @@ except ImportError:
 
 from .scales import Scale
 from .traits import NdArray, BoundedFloat, Date
+from .extras import topo_load
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
@@ -994,11 +995,11 @@ class MapMark(Mark):
         default color for items of the map when no color data is passed
     selected_styles: Dict (default: {'selected_fill': 'Red',
                                      'selected_stroke': None,
-                                     'selected_stroke_width': 5.0})
+                                     'selected_stroke_width': 2.0})
         Dictionary containing the styles for selected subunits
     hovered_styles: Dict (default: {'hovered_fill': 'Orange',
                                     'hovered_stroke': None,
-                                    'hovered_stroke_width': 5.0})
+                                    'hovered_stroke_width': 2.0})
         Dictionary containing the styles for hovered subunits
     selected: List (default: [])
         list containing the selected countries in the map
@@ -1021,7 +1022,7 @@ class MapMark(Mark):
 
     hover_highlight = Bool(True, sync=True)
     hovered_styles = Dict({'hovered_fill': 'Orange', 'hovered_stroke': None,
-                           'hovered_stroke_width': 5.0}, allow_none=True,
+                           'hovered_stroke_width': 2.0}, allow_none=True,
                           sync=True)
 
     stroke_color = Color(default_value=None, sync=True, allow_none=True)
@@ -1031,10 +1032,10 @@ class MapMark(Mark):
 
     selected = List(sync=True)
     selected_styles = Dict({'selected_fill': 'Red', 'selected_stroke': None,
-                            'selected_stroke_width': 5.0},
+                            'selected_stroke_width': 2.0},
                            allow_none=True, sync=True)
 
-    map_data = Tuple(sync=True)
+    map_data = Tuple(topo_load('WorldMapData.json'), sync=True)
 
     _view_name = Unicode('Map', sync=True)
     _view_module = Unicode('nbextensions/bqplot/MapMark', sync=True)
