@@ -89,6 +89,27 @@
         text-align: center;
         padding: 0.5em;
     }
+    .world_map .hovered {
+        fill: Orange;
+        stroke: Orange;
+        stroke-width: 2.5px;
+    }
+
+    .world_map #container {
+        margin:10px 10%;
+        border:2px solid #000;
+        border-radius: 5px;
+        height:100%;
+        overflow:hidden;
+        background: #F0F8FF;
+    }
+
+    .world_map .graticule {
+        fill: none;
+        stroke: #bbb;
+        stroke-width: .5px;
+        stroke-opacity: .5;
+    }
 }
 
 .theme-light {
@@ -122,6 +143,12 @@
     .mark_tooltip table {
         background: #ececec;
     }
+    .world_map path {
+        stroke: #FFF;
+        stroke-width: 0.25px;
+        fill: dodgerblue;
+    }
+
 }
 
 /* by default, activate theme-light*/
@@ -156,6 +183,11 @@
     }
     .mark_tooltip table {
         background: black;
+    }
+    .world_map path {
+        stroke: black;
+        stroke-width: 0.25px;
+        fill: seagreen;
     }
 }
 
