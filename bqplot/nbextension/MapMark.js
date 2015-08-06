@@ -22,7 +22,7 @@ requirejs.config({
           }
 });
 
-define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark", "./require-less/less!./worldmap"],
+define(["./d3", "d3topojson", "./Figure", "base/js/utils", "./Mark"],
        function(d3, topojson, FigureViewModule, utils, Mark) {
     "use strict";
 
