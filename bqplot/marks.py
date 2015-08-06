@@ -1048,3 +1048,35 @@ class MapMark(Mark):
     _view_module = Unicode('nbextensions/bqplot/MapMark', sync=True)
     _model_name = Unicode('MapModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MapMarkModel', sync=True)
+
+
+class GridHeatMap(Mark):
+
+    """GridHeatMap mark.
+
+    """
+    # Scaled attributes
+    row = NdArray(sync=True, display_index=1, scaled=True,
+                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    column = NdArray(sync=True, display_index=2, scaled=True,
+                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True,  sync=True, display_index=8,
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis',
+                    min_dim=1, max_dim=2)
+
+    # Other attributes
+    scales_metadata = Dict({'row': {'orientation': 'vertical', 'dimension': 'vertical'},
+                            'column': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'color': {'dimension': 'color'}}, sync=True)
+    padding = Float(0.05, sync=True)
+    stroke = Color('white', allow_none=True, sync=True)
+    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
+                           exposed=True, display_index=7,
+                           display_name='Opacity')
+    align = Enum(['center', 'left', 'right'], default_value='center',
+                 sync=True, exposed=True)
+
+    _view_name = Unicode('GridHeatMap', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/GridHeatMap', sync=True)
+    _model_name = Unicode('GridHeatMapModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/GridHeatMapModel', sync=True)
