@@ -45,7 +45,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 // The y_range is reversed because we want the first row
                 // to start at the top of the plotarea and not the bottom.
                 var row_range = this.parent.padded_range("y", row_scale.model);
-                row_scale.set_range([row_range[1], row_range[0]]);
+                row_scale.set_range(row_range);
+                // row_scale.set_range([row_range[1], row_range[0]]);
             }
             var col_scale = this.scales["column"];
             if(col_scale) {
@@ -78,9 +79,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                                         {
                                             return scale.scale(el);
                                         });
-                var min_diff = d3.min(current_pixels.slice(1).map(function(el, index) {
+                var diffs = current_pixels.slice(1).map(function(el, index) {
                                             return el - current_pixels[index];
-                                        }));
+                                        });
+                //TODO: Explain what is going on here.
+                if(diffs[0] < 0) {
+                    start = !(start);
+                }
+                var min_diff = d3.min(diffs);
                 var new_pixel = 0;
                 if(start) {
                     new_pixel = current_pixels[current_pixels.length - 1] + min_diff;
@@ -271,11 +277,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // is to be generated. mode refers to the expansion of the data to
             // generate the plotting data and start is a boolean indicating the
             // alignment of the data w.r.t the cells.
+            var reversed_scale = false;
             var start_points = [];
             var widths = [];
             if(mode === "middle") {
                 start_points = data.map(function(d) { return scale.scale(d); });
                 widths = data.map(function(d) { return scale.scale.rangeBand(); });
+
+                return {'start': start_points, 'widths': widths};
             }
             if(mode === "boundaries") {
                 start_points = data.slice(0, -1).map(function(d)
@@ -284,49 +293,69 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                                 });
                 widths = start_points.slice(1).map(function(d, ind)
                             {
-                                 return d - start_points[ind];
+                                 return Math.abs(d - start_points[ind]);
                             });
                 widths[widths.length] = scale.scale(data.slice(-1)[0]) - start_points.slice(-1)[0];
                 return {'start': start_points, 'widths': widths};
             }
             if(mode === "expand_one") {
-                // If start is True, end value should be expanded.
                 if(start) {
-                    start_points = data.map(function(d)
-                                    {
-                                        return scale.scale(d);
-                                    });
-                    widths = start_points.slice(1).map(function(d, ind)
-                                {
-                                    return d - start_points[ind];
-                                });
-                    widths[widths.length] = scale.scale.range()[1] - start_points.slice(-1)[0];
-                    return {'start': start_points, 'widths': widths};
+                    // Start points remain the same as the data.
+                    start_points = data.map(function(d) {
+                        return scale.scale(d);
+                    });
+                    widths = start_points.slice(1).map(function(d, ind) {
+                        // Absolute value is required as the order of the data
+                        // can be increasing or decreasing in terms of pixels
+                        return Math.abs(d - start_points[ind]);
+                    });
+                    // Now we have n-1 widths. We have to add the last width.
+                    var bounds = d3.max(scale.scale.range());
+                    widths = Array.prototype.concat(widths, [Math.abs(bounds - d3.max(start_points))]);
+                } else {
+                    start_points = data.map(function(d) {
+                        return scale.scale(d);
+                    });
+                    widths = start_points.slice(1).map(function(d, ind) {
+                        // Absolute value is required as the order of the data
+                        // can be increasing or decreasing in terms of pixels
+                        return Math.abs(d - start_points[ind]);
+                    });
+                    var bounds = d3.min(scale.scale.range());
+                    if(start_points[1] > start_points[0]) {
+                        // The point corresponding to the bounds is added at
+                        // the start of the array. Hence it has to be added to
+                        // the start_points and the last start_point can be
+                        // removed.
+                        start_points.splice(0, 0, Math.abs(0, 0, bounds));
+                        widths.splice(0, 0, start_points[1] - start_points[0]);
+                        start_points.splice(-1, 1);
+                    } else {
+                        // The point for the bounds is added to the end of the
+                        // array. The first start point can now be removed as
+                        // this will be the last end point.
+                        widths = Array.prototype.concat(widths, [Math.abs(bounds - start_points.slice(-1)[0])]);
+                        start_points = Array.prototype.concat(start_points, bounds);
+                        start_points.splice(0, 1);
+                    }
                 }
-                else {
-                    start_points = data.map(function(d)
-                                    {
-                                        return scale.scale(d);
-                                    });
-                    start_points.splice(0, 0, scale.scale.range()[0]);
-                    widths = start_points.slice(1).map(function(d, ind)
-                                {
-                                    return d - start_points[ind];
-                                });
-                    return {'start': start_points, 'widths': widths};
-                }
+                return {'widths': widths, 'start': start_points};
             }
             if(mode === "expand_two") {
                 start_points = data.map(function(d)
                                 {
                                     return scale.scale(d);
                                 });
-                start_points.splice(0, 0, scale.scale.range()[0]);
+
+                var is_positive = (start_points[1] - start_points[0]) > 0;
+                var bound = (is_positive) ? d3.min(scale.scale.range()) : d3.max(scale.scale.range());
+                start_points.splice(0, 0, bound);
                 widths = start_points.slice(1).map(function(d, ind)
                             {
-                                return d - start_points[ind];
+                                return Math.abs(d - start_points[ind]);
                             });
-                widths[widths.length] = scale.scale.range()[1] - start_points.slice(-1)[0];
+                bound = (is_positive) ? d3.max(scale.scale.range()) : d3.min(scale.scale.range());
+                widths[widths.length] = Math.abs(bound - start_points.slice(-1)[0]);
                 return {'start': start_points, 'widths': widths};
             }
         },
