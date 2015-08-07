@@ -24,6 +24,7 @@ define(["./d3", "./ScaleModel"], function(d3, ScaleModelModule) {
             this.max_from_data = true;
             this.on("change:domain", this.domain_changed, this);
             this.on("change:ticks", this.ticks_changed, this);
+            this.on("change:reverse", this.reverse_changed, this);
         },
         domain_changed: function() {
             this.ord_domain = this.get("domain");
@@ -37,6 +38,12 @@ define(["./d3", "./ScaleModel"], function(d3, ScaleModelModule) {
                 this.min_from_data = true;
                 this.domain = [];
                 this.update_domain();
+            }
+        },
+        reverse_changed: function() {
+            if(this.domain.length > 0) {
+                this.domain.reverse();
+                this.trigger("domain_changed", this.domain);
             }
         },
         update_domain: function() {
@@ -62,7 +69,11 @@ define(["./d3", "./ScaleModel"], function(d3, ScaleModelModule) {
                this.set_domain([], id);
                return;
             }
-            this.set_domain(_.flatten(data_array), id);
+            var domain = _.flatten(data_array);
+            if(this.get("reverse")) {
+                domain.reverse();
+            }
+            this.set_domain(domain, id);
         },
     });
 
