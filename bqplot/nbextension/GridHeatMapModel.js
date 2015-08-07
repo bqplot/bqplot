@@ -19,7 +19,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
     var GridHeatMapModel = MarkModelModule.MarkModel.extend({
         initialize: function() {
             GridHeatMapModel.__super__.initialize.apply(this);
-            this.on_some_change(["x", "y", "color"], this.update_data, this);
+            this.on_some_change(["row", "column", "color"], this.update_data, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
@@ -45,9 +45,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
 
                 return {
                     row_num : row_num,
-                    col_num : col_num,
-                    row : that.rows[row_num],
-                    column : that.columns[col_num],
+                    column_num : col_num,
                     data : that.colors[row_num][col_num],
                 }
             });

@@ -70,26 +70,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 color_scale.on("color_scale_range_changed", this.update_style, this);
             }
         },
-        adjust_offsets: function() {
-            var x_scale = this.scales["column"];
-            var y_scale = this.scales["row"];
-
-            if(y_scale.model.type !== "ordinal") {
-                this.y_offset = 0;
-            } else {
-                //
-                this.y_offset = (y_scale.scale.rangeBand() / 2);
-            }
-
-            if(x_scale.model.type !== "ordinal") {
-                this.x_offset = 0;
-            } else {
-                this.x_offset = (x_scale.scale.rangeBand() / 2);
-            }
-        },
         expand_scale_domain: function(scale, data, mode, start) {
-            // This function expands the domain so that it has the minimum
-            // extent needed to draw itself.
+            // This function expands the domain so that the heatmap has the
+            // minimum area needed to draw itself.
             if(mode === "expand_one") {
                 var current_pixels = data.map(function(el)
                                         {
@@ -121,6 +104,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         create_listeners: function() {
             GridHeatMap.__super__.create_listeners.apply(this);
+            this.listenTo(this.model, "change:stroke", this.update_stroke, this);
+            this.listenTo(this.model, "change:opacity", this.update_opacity, this);
             /*
             this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
@@ -207,7 +192,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         draw: function() {
             this.set_ranges();
-            this.adjust_offsets();
 
             var that = this;
             var num_rows = this.model.colors.length;
@@ -216,8 +200,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var row_scale = this.scales["row"];
             var column_scale = this.scales["column"];
 
+            var row_start_aligned = this.model.get("row_align") === "start";
+            var col_start_aligned = this.model.get("column_align") === "start";
+
             if(this.model.modes["row"] !== "middle" && this.model.modes["row"] !== "boundaries") {
-                var new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes["row"], true);
+                var new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes["row"], row_start_aligned);
                 if(new_domain[0] < row_scale.model.domain[0] || new_domain[1] > row_scale.model.domain[1]) {
                     // Update domain if domain has changed
                     row_scale.model.compute_and_set_domain(new_domain, row_scale.model.id);
@@ -225,15 +212,15 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
 
             if(this.model.modes["column"] !== "middle" && this.model.modes["column"] !== "boundaries") {
-                var new_domain = this.expand_scale_domain(column_scale, this.model.columns, this.model.modes["column"], true);
+                var new_domain = this.expand_scale_domain(column_scale, this.model.columns, this.model.modes["column"], col_start_aligned);
                 if(new_domain[0] < column_scale.model.domain[0] || new_domain[1] > column_scale.model.domain[1]) {
                     // Update domain if domain has changed
                     column_scale.model.compute_and_set_domain(new_domain, column_scale.model.id);
                 }
             }
 
-            var row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes["row"], true);
-            var column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes["column"], true);
+            var row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes["row"], row_start_aligned);
+            var column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes["column"], col_start_aligned);
 
             this.display_rows = this.el.selectAll(".heatmaprow")
                 .data(_.range(num_rows));
@@ -256,6 +243,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 .append("rect")
                 .attr("class", "heatmapcell");
 
+            var stroke = this.model.get("stroke");
+            var opacity = this.model.get("opacity");
             this.display_cells
                 .attr({"x": function(d, i)
                              {
@@ -263,11 +252,25 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                              },
                        "y": 0})
                 .attr("width", function(d, i) { return column_plot_data['widths'][i];})
-                .attr("height",function(d, i) { return row_plot_data['widths'][i];})
+                .attr("height",function(d) { return row_plot_data['widths'][d['row_num']];})
                 .style("fill", function(d) { return that.get_fill(d); })
-                .style("stroke", "black");
+                .style({"stroke" : stroke,
+                        "opacity" : opacity});
+        },
+        update_stroke: function(model, value) {
+            this.display_cells.style("stroke", value);
+        },
+        update_opacity: function(model, value) {
+            this.display_cells.style("opacity", value);
         },
         get_tile_plotting_data(scale, data, mode, start) {
+            // This function returns the starting points and widths of the
+            // cells based on the parameters passed.
+            //
+            // scale is the scale and data is the data for which the plot data
+            // is to be generated. mode refers to the expansion of the data to
+            // generate the plotting data and start is a boolean indicating the
+            // alignment of the data w.r.t the cells.
             var start_points = [];
             var widths = [];
             if(mode === "middle") {
@@ -329,24 +332,6 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         get_fill: function(dat) {
             return this.scales['color'].scale(dat['data']);
-        },
-        compute_view_padding: function() {
-            //This function returns a dictionary with keys as the scales and
-            //value as the pixel padding required for the rendering of the
-            //mark.
-            var y_scale = this.scales["row"];
-            var x_scale = this.scales["column"];
-            var y_padding = this.get_padding_for_scale(y_scale, this.model.rows, this.parent.plotarea_height);
-            var x_padding = this.get_padding_for_scale(x_scale, this.model.columns, this.parent.plotarea_width);
-            if(x_padding !== this.x_padding || y_padding != this.y_padding) {
-                this.x_padding = x_padding;
-                this.y_padding = y_padding;
-
-                this.trigger("mark_padding_updated");
-            }
-		},
-        get_padding_for_scale(scale, data_arr, extent) {
-            return 0.0;
         },
         process_interactions: function() {
             /*

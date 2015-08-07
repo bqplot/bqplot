@@ -1067,6 +1067,40 @@ class GridHeatMap(Mark):
 
     If rows and columns are not passed, and scales for them are also not passed,
     then ordinal scales are generated for the rows and columns.
+    Attributes
+    ----------
+    row_align: Enum(['start', end'])
+        This is only valid if the number of entries in `row` exactly match the
+        number of rows in `color` and the `row_scale` is not `OrdinalScale`.
+        `start` aligns the row values passed to be aligned with the start of the
+        tiles and `end` aligns the row values to the end of the tiles.
+    column_align: Enum(['start', end'])
+        This is only valid if the number of entries in `column` exactly match the
+        number of columns in `color` and the `column_scale` is not `OrdinalScale`.
+        `start` aligns the column values passed to be aligned with the start of the
+        tiles and `end` aligns the column values to the end of the tiles.
+
+    Data Attributes
+    ---------------
+    color: numpy.ndarray
+        color of the data points (2d array). The number of elements in this array
+        correspond to the number of cells created in the heatmap.
+    row: numpy.ndarray or None
+        lables for the rows of the `color` array passed. The length of this can be
+        no more than 1 away from the number of rows in `color`.
+        This is a scaled attribute and can be used to affect the height of the
+        cells as the entries of `row` can indicate the start or the end points
+        of the cells. Refer to the property `row_align`.
+        If this prorety is None, then a uniformly spaced grid is generated in
+        the row direction.
+    column: numpy.ndarray or None
+        lables for the columns of the `color` array passed. The length of this can be
+        no more than 1 away from the number of columns in `color`
+        This is a scaled attribute and can be used to affect the width of the
+        cells as the entries of `column` can indicate the start or the end points
+        of the cells. Refer to the property `column_align`.
+        If this prorety is None, then a uniformly spaced grid is generated in
+        the column direction.
     """
     # Scaled attributes
     row = NdArray(sync=True, display_index=1, scaled=True, allow_none=True,
@@ -1076,18 +1110,17 @@ class GridHeatMap(Mark):
     color = NdArray(None, allow_none=True,  sync=True, display_index=8,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=2)
+    row_align = Enum(['start', 'end'], default_value='start', sync=True)
+    column_align = Enum(['start', 'end'], default_value='start', sync=True)
 
     # Other attributes
     scales_metadata = Dict({'row': {'orientation': 'vertical', 'dimension': 'vertical'},
                             'column': {'orientation': 'horizontal', 'dimension': 'horizontal'},
                             'color': {'dimension': 'color'}}, sync=True)
-    padding = Float(0.05, sync=True)
-    stroke = Color('white', allow_none=True, sync=True)
+    stroke = Color('black', allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
-    align = Enum(['center', 'left', 'right'], default_value='center',
-                 sync=True, exposed=True)
 
     _view_name = Unicode('GridHeatMap', sync=True)
     _view_module = Unicode('nbextensions/bqplot/GridHeatMap', sync=True)
