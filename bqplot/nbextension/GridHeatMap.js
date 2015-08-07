@@ -211,7 +211,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             if(this.model.modes["row"] !== "middle" && this.model.modes["row"] !== "boundaries") {
                 var new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes["row"], row_start_aligned);
-                if(new_domain[0] < row_scale.model.domain[0] || new_domain[1] > row_scale.model.domain[1]) {
+                if(d3.min(new_domain) < d3.min(row_scale.model.domain) || d3.max(new_domain) > d3.max(row_scale.model.domain)) {
                     // Update domain if domain has changed
                     row_scale.model.compute_and_set_domain(new_domain, row_scale.model.id);
                 }
@@ -219,7 +219,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             if(this.model.modes["column"] !== "middle" && this.model.modes["column"] !== "boundaries") {
                 var new_domain = this.expand_scale_domain(column_scale, this.model.columns, this.model.modes["column"], col_start_aligned);
-                if(new_domain[0] < column_scale.model.domain[0] || new_domain[1] > column_scale.model.domain[1]) {
+                if(d3.min(new_domain) < d3.min(column_scale.model.domain) || d3.max(new_domain) > d3.max(column_scale.model.domain)) {
                     // Update domain if domain has changed
                     column_scale.model.compute_and_set_domain(new_domain, column_scale.model.id);
                 }
