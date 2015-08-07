@@ -87,29 +87,36 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.x_offset = (x_scale.scale.rangeBand() / 2);
             }
         },
-        expand_row_scale_domain: function() {
+        expand_scale_domain: function(scale, data, mode, start) {
             // This function expands the domain so that it has the minimum
             // extent needed to draw itself.
-            var row_scale = this.scales["row"];
-            if(this.modes["row"] === "expand_one") {
-                var current_pixels = this.model.rows.map(function(el)
+            if(mode === "expand_one") {
+                var current_pixels = data.map(function(el)
                                         {
-                                            return row_scale.scale(el);
+                                            return scale.scale(el);
                                         });
-                var min_diff = Math.min(current_pixels.slice(1).map(function(el, index) {
+                var min_diff = d3.min(current_pixels.slice(1).map(function(el, index) {
                                             return el - current_pixels[index];
                                         }));
                 var new_pixel = 0;
-                if(this.model.get("row_align") === "top") {
+                if(start) {
                     new_pixel = current_pixels[current_pixels.length - 1] + min_diff;
-                    
+                    return [data[0], scale.invert(new_pixel)];
                 } else {
                     new_pixel = current_pixels[0] - min_diff;
-
+                    return [scale.invert(new_pixel), data[current_pixels.length - 1]];
                 }
-            } else if(this.modes["column"] === "expand_two") {
-
-
+            } else if(mode === "expand_two") {
+                var current_pixels = data.map(function(el)
+                                        {
+                                            return scale.scale(el);
+                                        });
+                var min_diff = d3.min(current_pixels.slice(1).map(function(el, index) {
+                                            return el - current_pixels[index];
+                                        }));
+                var new_end = current_pixels[current_pixels.length - 1] + min_diff;
+                var new_start = current_pixels[0] - min_diff;
+                return [scale.invert(new_start), scale.invert(new_end)];
             }
         },
         create_listeners: function() {
@@ -201,26 +208,46 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         draw: function() {
             this.set_ranges();
             this.adjust_offsets();
-            this.display_rows = this.el.selectAll(".heatmaprow")
-                .data(this.model.rows);
+
             var that = this;
-            var num_rows = this.model.rows.length;
+            var num_rows = this.model.colors.length;
+            var num_cols = this.model.colors[0].length;
+
             var row_scale = this.scales["row"];
             var column_scale = this.scales["column"];
 
-            var cell_width = column_scale.scale(this.model.columns[1]) - column_scale.scale(this.model.columns[0]);
-            var cell_height = row_scale.scale(this.model.rows[1]) - row_scale.scale(this.model.rows[0]);
+            if(this.model.modes["row"] !== "middle" && this.model.modes["row"] !== "boundaries") {
+                var new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes["row"], true);
+                if(new_domain[0] < row_scale.model.domain[0] || new_domain[1] > row_scale.model.domain[1]) {
+                    // Update domain if domain has changed
+                    row_scale.model.compute_and_set_domain(new_domain, row_scale.model.id);
+                }
+            }
 
+            if(this.model.modes["column"] !== "middle" && this.model.modes["column"] !== "boundaries") {
+                var new_domain = this.expand_scale_domain(column_scale, this.model.columns, this.model.modes["column"], true);
+                if(new_domain[0] < column_scale.model.domain[0] || new_domain[1] > column_scale.model.domain[1]) {
+                    // Update domain if domain has changed
+                    column_scale.model.compute_and_set_domain(new_domain, column_scale.model.id);
+                }
+            }
+
+            var row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes["row"], true);
+            var column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes["column"], true);
+
+            this.display_rows = this.el.selectAll(".heatmaprow")
+                .data(_.range(num_rows));
             this.display_rows.enter().append("g")
                 .attr("class", "heatmaprow");
             this.display_rows
-                .attr("transform", function(d, i)
+                .attr("transform", function(d)
                                     {
-                                        return "translate(0, " + (row_scale.scale(d) - (cell_height / 2.0) + that.y_offset) + ")";
+                                        return "translate(0, " + row_plot_data['start'][d] + ")";
                                     });
 
+            var col_nums = _.range(num_cols);
             this.display_cells = this.display_rows.selectAll(".heatmapcell")
-                .data(function(d, i) { return that.model.columns.map(function(col, ind)
+                .data(function(d, i) { return col_nums.map(function(ind)
                                         {
                                             return that.model.mark_data[i*num_rows+ind];
                                         });
@@ -232,13 +259,73 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.display_cells
                 .attr({"x": function(d, i)
                              {
-                                return column_scale.scale(d['column']) - (cell_width / 2.0) + that.x_offset;
+                                return column_plot_data['start'][i];
                              },
                        "y": 0})
-                .attr("width", cell_width)
-                .attr("height", cell_height)
+                .attr("width", function(d, i) { return column_plot_data['widths'][i];})
+                .attr("height",function(d, i) { return row_plot_data['widths'][i];})
                 .style("fill", function(d) { return that.get_fill(d); })
                 .style("stroke", "black");
+        },
+        get_tile_plotting_data(scale, data, mode, start) {
+            var start_points = [];
+            var widths = [];
+            if(mode === "middle") {
+                start_points = data.map(function(d) { return scale.scale(d); });
+                widths = data.map(function(d) { return scale.scale.rangeBand(); });
+            }
+            if(mode === "boundaries") {
+                start_points = data.slice(0, -1).map(function(d)
+                                {
+                                    return scale.scale(d);
+                                });
+                widths = start_points.slice(1).map(function(d, ind)
+                            {
+                                 return d - start_points[ind];
+                            });
+                widths[widths.length] = scale.scale(data.slice(-1)[0]) - start_points.slice(-1)[0];
+                return {'start': start_points, 'widths': widths};
+            }
+            if(mode === "expand_one") {
+                // If start is True, end value should be expanded.
+                if(start) {
+                    start_points = data.map(function(d)
+                                    {
+                                        return scale.scale(d);
+                                    });
+                    widths = start_points.slice(1).map(function(d, ind)
+                                {
+                                    return d - start_points[ind];
+                                });
+                    widths[widths.length] = scale.scale.range()[1] - start_points.slice(-1)[0];
+                    return {'start': start_points, 'widths': widths};
+                }
+                else {
+                    start_points = data.map(function(d)
+                                    {
+                                        return scale.scale(d);
+                                    });
+                    start_points.splice(0, 0, scale.scale.range()[0]);
+                    widths = start_points.slice(1).map(function(d, ind)
+                                {
+                                    return d - start_points[ind];
+                                });
+                    return {'start': start_points, 'widths': widths};
+                }
+            }
+            if(mode === "expand_two") {
+                start_points = data.map(function(d)
+                                {
+                                    return scale.scale(d);
+                                });
+                start_points.splice(0, 0, scale.scale.range()[0]);
+                widths = start_points.slice(1).map(function(d, ind)
+                            {
+                                return d - start_points[ind];
+                            });
+                widths[widths.length] = scale.scale.range()[1] - start_points.slice(-1)[0];
+                return {'start': start_points, 'widths': widths};
+            }
         },
         get_fill: function(dat) {
             return this.scales['color'].scale(dat['data']);
@@ -259,18 +346,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
 		},
         get_padding_for_scale(scale, data_arr, extent) {
-            // scale is a view of the scale object and not just the function.
-            var start_padding = 0;
-            var end_padding = 0;
-            var count = data_arr.length;
-
-            if(scale.model.type === "ordinal") {
-                // For an Ordinal Scale there is no padding that is needed.
-                // Because 
-                return 0.0;
-            } else {
-                return extent / (data_arr.length * 2.0);
-            }
+            return 0.0;
         },
         process_interactions: function() {
             /*

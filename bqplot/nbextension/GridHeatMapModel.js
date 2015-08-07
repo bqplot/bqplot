@@ -51,6 +51,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     data : that.colors[row_num][col_num],
                 }
             });
+            this.identify_modes();
             this.update_domains();
             this.dirty = false;
             this.trigger("data_updated");
@@ -100,11 +101,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             if(row_scale.type === "ordinal") {
                 modes["row"] = "middle";
             } else {
-                if(data_nrow === this.rows.length + 1) {
+                if(data_nrow === this.rows.length - 1) {
                     modes["row"] = "boundaries";
                 } else if(data_nrow === this.rows.length) {
                     modes["row"] = "expand_one";
-                } else if(data_nrow === this.rows.length -1) {
+                } else if(data_nrow === this.rows.length + 1) {
                     modes["row"] = "expand_two";
                 }
             }
@@ -112,11 +113,11 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             if(column_scale.type === "ordinal") {
                 modes["column"] = "middle";
             } else {
-                if(data_ncol === this.columns.length + 1) {
+                if(data_ncol === this.columns.length - 1) {
                     modes["column"] = "boundaries";
                 } else if(data_ncol === this.columns.length) {
                     modes["column"] = "expand_one";
-                } else if(data_ncol === this.columns.length -1) {
+                } else if(data_ncol === this.columns.length + 1) {
                     modes["column"] = "expand_two";
                 }
             }
