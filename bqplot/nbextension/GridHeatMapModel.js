@@ -31,14 +31,15 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // Handling data updates
             var that = this;
             this.colors = this.get_typed_field("color");
-
             this.rows = this.get_typed_field("row");
             this.columns = this.get_typed_field("column");
-                var num_rows = this.rows.length;
-                var num_cols = this.columns.length;
-            var data_indices = _.range(num_rows * num_cols);
 
-            this.mark_data = data_indices.map(function(index) {
+            var num_rows = this.colors.length;
+            var num_cols = this.colors[0].length;
+            var flat_colors = [];
+            flat_colors = flat_colors.concat.apply(flat_colors, this.colors);
+
+            this.mark_data = flat_colors.map(function(data, index) {
                 var row_num = Math.floor(index / num_rows);
                 var col_num = index % num_rows;
 
@@ -85,6 +86,41 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
         },
         get_data_dict: function(data, index) {
             return data;
+        },
+        identify_modes: function() {
+            //based on the data, identify the mode in which the heatmap should
+            //be plotted.
+            var modes = {}
+            var scales = this.get("scales");
+            var row_scale = scales["row"];
+            var column_scale = scales["column"];
+            var data_nrow = this.colors.length;
+            var data_ncol = this.colors[0].length;
+
+            if(row_scale.type === "ordinal") {
+                modes["row"] = "middle";
+            } else {
+                if(data_nrow === this.rows.length + 1) {
+                    modes["row"] = "boundaries";
+                } else if(data_nrow === this.rows.length) {
+                    modes["row"] = "expand_one";
+                } else if(data_nrow === this.rows.length -1) {
+                    modes["row"] = "expand_two";
+                }
+            }
+
+            if(column_scale.type === "ordinal") {
+                modes["column"] = "middle";
+            } else {
+                if(data_ncol === this.columns.length + 1) {
+                    modes["column"] = "boundaries";
+                } else if(data_ncol === this.columns.length) {
+                    modes["column"] = "expand_one";
+                } else if(data_ncol === this.columns.length -1) {
+                    modes["column"] = "expand_two";
+                }
+            }
+            this.modes = modes;
         },
     });
 

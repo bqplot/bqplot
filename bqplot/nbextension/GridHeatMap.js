@@ -70,6 +70,48 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 color_scale.on("color_scale_range_changed", this.update_style, this);
             }
         },
+        adjust_offsets: function() {
+            var x_scale = this.scales["column"];
+            var y_scale = this.scales["row"];
+
+            if(y_scale.model.type !== "ordinal") {
+                this.y_offset = 0;
+            } else {
+                //
+                this.y_offset = (y_scale.scale.rangeBand() / 2);
+            }
+
+            if(x_scale.model.type !== "ordinal") {
+                this.x_offset = 0;
+            } else {
+                this.x_offset = (x_scale.scale.rangeBand() / 2);
+            }
+        },
+        expand_row_scale_domain: function() {
+            // This function expands the domain so that it has the minimum
+            // extent needed to draw itself.
+            var row_scale = this.scales["row"];
+            if(this.modes["row"] === "expand_one") {
+                var current_pixels = this.model.rows.map(function(el)
+                                        {
+                                            return row_scale.scale(el);
+                                        });
+                var min_diff = Math.min(current_pixels.slice(1).map(function(el, index) {
+                                            return el - current_pixels[index];
+                                        }));
+                var new_pixel = 0;
+                if(this.model.get("row_align") === "top") {
+                    new_pixel = current_pixels[current_pixels.length - 1] + min_diff;
+                    
+                } else {
+                    new_pixel = current_pixels[0] - min_diff;
+
+                }
+            } else if(this.modes["column"] === "expand_two") {
+
+
+            }
+        },
         create_listeners: function() {
             GridHeatMap.__super__.create_listeners.apply(this);
             /*
@@ -158,6 +200,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         draw: function() {
             this.set_ranges();
+            this.adjust_offsets();
             this.display_rows = this.el.selectAll(".heatmaprow")
                 .data(this.model.rows);
             var that = this;
@@ -166,14 +209,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var column_scale = this.scales["column"];
 
             var cell_width = column_scale.scale(this.model.columns[1]) - column_scale.scale(this.model.columns[0]);
-            var cell_height = row_scale.scale(this.model.rows[1]) - row_scale.scale(this.model.rows[0]);;
+            var cell_height = row_scale.scale(this.model.rows[1]) - row_scale.scale(this.model.rows[0]);
 
             this.display_rows.enter().append("g")
                 .attr("class", "heatmaprow");
             this.display_rows
                 .attr("transform", function(d, i)
                                     {
-                                        return "translate(0, " + (row_scale.scale(d) - (cell_height / 2.0)) + ")";
+                                        return "translate(0, " + (row_scale.scale(d) - (cell_height / 2.0) + that.y_offset) + ")";
                                     });
 
             this.display_cells = this.display_rows.selectAll(".heatmapcell")
@@ -189,7 +232,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.display_cells
                 .attr({"x": function(d, i)
                              {
-                                return column_scale.scale(d['column']) - (cell_width / 2.0);
+                                return column_scale.scale(d['column']) - (cell_width / 2.0) + that.x_offset;
                              },
                        "y": 0})
                 .attr("width", cell_width)
@@ -222,7 +265,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var count = data_arr.length;
 
             if(scale.model.type === "ordinal") {
-                return scale.scale.rangeBand() / 2;
+                // For an Ordinal Scale there is no padding that is needed.
+                // Because 
+                return 0.0;
             } else {
                 return extent / (data_arr.length * 2.0);
             }

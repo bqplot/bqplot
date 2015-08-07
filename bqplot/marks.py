@@ -1053,12 +1053,25 @@ class MapMark(Mark):
 class GridHeatMap(Mark):
 
     """GridHeatMap mark.
+    Alignment: The tiles can be aligned so that the data matches either the
+    start, the end or the midpoints of the tiles. This is controlled by the
+    align attribute.
 
+    Suppose the data passed is a m-by-n matrix. If the scale for the rows is
+    Ordinal, then alignment is by default the mid points. For a non-ordinal
+    scale, the data cannot be aligned to the mid points of the rectangles.
+
+    If it is not ordinal, then two cases arise. If the number of rows passed
+    is m, then align attribute can be used. If the number of rows passed is m+1,
+    then the data are the boundaries of the m rectangles.
+
+    If rows and columns are not passed, and scales for them are also not passed,
+    then ordinal scales are generated for the rows and columns.
     """
     # Scaled attributes
-    row = NdArray(sync=True, display_index=1, scaled=True,
+    row = NdArray(sync=True, display_index=1, scaled=True, allow_none=True,
                 rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    column = NdArray(sync=True, display_index=2, scaled=True,
+    column = NdArray(sync=True, display_index=2, scaled=True, allow_none=True,
                 rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
     color = NdArray(None, allow_none=True,  sync=True, display_index=8,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
