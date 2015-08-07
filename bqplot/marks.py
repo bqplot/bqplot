@@ -42,7 +42,7 @@ try:
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 
-from .scales import Scale
+from .scales import Scale, OrdinalScale
 from .traits import NdArray, BoundedFloat, Date
 from .extras import topo_load
 
@@ -1121,6 +1121,28 @@ class GridHeatMap(Mark):
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
+
+    def __init__(self, **kwargs):
+        row = kwargs.pop('row', None)
+        column = kwargs.pop('column', None)
+        scales = kwargs.pop('scales', {})
+        data = kwargs['color']
+        # Adding default row and column data if they are not passed.
+        # Adding scales in case they are not passed too.
+
+        if(row is None and scales.get('row', None) is None):
+            row = range(data.shape[0])
+            row_scale = OrdinalScale(reverse=True)
+            scales['row'] = row_scale
+        kwargs['row'] = row
+
+        if(column is None and scales.get('column', None) is None):
+            column = range(data.shape[1])
+            column_scale = OrdinalScale()
+            scales['column'] = column_scale
+        kwargs['column'] = column
+        kwargs['scales'] = scales
+        super(GridHeatMap, self).__init__(**kwargs)
 
     _view_name = Unicode('GridHeatMap', sync=True)
     _view_module = Unicode('nbextensions/bqplot/GridHeatMap', sync=True)
