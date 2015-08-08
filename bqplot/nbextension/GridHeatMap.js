@@ -30,7 +30,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.create_tooltip();
             });
 
-            // this.display_el_classes = ["line", "legendtext"];
+            this.display_el_classes = ["heatmapcell"];
             return base_render_promise.then(function() {
                 that.event_listeners = {};
                 that.process_interactions();
@@ -112,14 +112,18 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             GridHeatMap.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:stroke", this.update_stroke, this);
             this.listenTo(this.model, "change:opacity", this.update_opacity, this);
-            /*
+
             this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
                 .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
 
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
-
-            // FIXME: multiple calls to update_path_style. Use on_some_change.
+            this.listenTo(this.parent, "bg_clicked", function() {
+                this.event_dispatcher("parent_clicked");
+            });
+            this.listenTo(this.model, "change:selected", this.update_selected);
+            /*
+             *            // FIXME: multiple calls to update_path_style. Use on_some_change.
             this.listenTo(this.model, "change:interpolation", this.update_path_style, this);
             this.listenTo(this.model, "change:close_path", this.update_path_style, this);
 
@@ -132,10 +136,71 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
             this.listenTo(this.model, "change:line_style", this.update_line_style, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
-            this.listenTo(this.parent, "bg_clicked", function() {
-                this.event_dispatcher("parent_clicked");
-            });
+
            */
+        },
+        update_selected: function(model, value) {
+            this.selected_indices = value;
+            this.apply_styles();
+        },
+        set_style_on_elements: function(style, indices) {
+            // If the index array is undefined or of length=0, exit the
+            // function without doing anything
+            if(!indices || indices.length === 0) {
+                return;
+            }
+            // Also, return if the style object itself is blank
+            if(Object.keys(style).length === 0) {
+                return;
+            }
+            var elements = this.el.selectAll(".dot");
+            elements = elements.filter(function(data, index) {
+                return indices.indexOf(index) !== -1;
+            });
+            elements.style(style);
+        },
+        set_default_style: function(indices) {
+            // For all the elements with index in the list indices, the default
+            // style is applied.
+            if(!indices || indices.length === 0) {
+                return;
+            }
+            var elements = this.el.selectAll(".dot").filter(function(data, index) {
+                return indices.indexOf(index) !== -1;
+            });
+            var fill = this.model.get("fill"),
+                stroke = this.model.get("stroke"),
+                stroke_width = this.model.get("stroke_width"),
+                that = this;
+            elements
+              .style("fill", fill ? function(d) {
+                 return that.get_element_color(d);
+              } : "none")
+              .style("stroke", stroke ? stroke : function(d) {
+                  return that.get_element_color(d);
+              }).style("opacity", function(d) {
+                  return that.get_element_opacity(d);
+              }).style("stroke-width", stroke_width);
+        },
+        clear_style: function(style_dict, indices) {
+            // Function to clear the style of a dict on some or all the elements of the
+            // chart.If indices is null, clears the style on all elements. If
+            // not, clears on only the elements whose indices are mathcing.
+            //
+            // This function is not used right now. But it can be used if we
+            // decide to accomodate more properties than those set by default.
+            // Because those have to cleared specifically.
+            var elements = this.el.selectAll(".dot");
+            if(indices) {
+                elements = elements.filter(function(d, index) {
+                    return indices.indexOf(index) !== -1;
+                });
+            }
+            var clearing_style = {};
+            for(var key in style_dict) {
+                clearing_style[key] = null;
+            }
+            elements.style(clearing_style);
         },
         relayout: function() {
             this.set_ranges();
@@ -247,7 +312,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                                      });
             this.display_cells.enter()
                 .append("rect")
-                .attr("class", "heatmapcell");
+                .attr("class", "heatmapcell")
+                .on("click", _.bind(function() {
+                    this.event_dispatcher("element_clicked");
+                }, this));
 
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
@@ -360,10 +428,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         get_fill: function(dat) {
-            return this.scales['color'].scale(dat['data']);
+            return this.scales['color'].scale(dat['color']);
         },
         process_interactions: function() {
-            /*
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {
                 //set all the event listeners to blank functions
@@ -390,17 +457,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 } else {
                     this.reset_hover();
                 }
-                if(interactions["legend_hover"] !== undefined &&
-                  interactions["legend_hover"] !== null) {
-                    if(interactions["legend_hover"] === "highlight_axes") {
-                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
-                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
-                    }
-                } else {
-                    this.reset_legend_hover();
-                }
             }
-           */
         },
     });
 

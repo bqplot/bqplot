@@ -46,7 +46,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                 return {
                     row_num : row_num,
                     column_num : col_num,
-                    data : that.colors[row_num][col_num],
+                    color : that.colors[row_num][col_num],
                 }
             });
             this.identify_modes();
@@ -76,7 +76,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             if(color_scale !== null && color_scale !== undefined) {
                 if(!this.get("preserve_domain")["color"]) {
                     color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                        return elem.data;
+                        return elem.color;
                     }), this.id);
                 } else {
                     color_scale.del_domain([], this.id);
