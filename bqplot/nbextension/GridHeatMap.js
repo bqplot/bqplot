@@ -30,6 +30,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.create_tooltip();
             });
 
+            this.selected_style = this.model.get("selected_style");
+            this.unselected_style = this.model.get("unselected_style");
             this.display_el_classes = ["heatmapcell"];
             return base_render_promise.then(function() {
                 that.event_listeners = {};
@@ -153,34 +155,27 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(Object.keys(style).length === 0) {
                 return;
             }
-            var elements = this.el.selectAll(".dot");
-            elements = elements.filter(function(data, index) {
-                return indices.indexOf(index) !== -1;
-            });
+            var elements =this._filter_cells_by_index(indices);
             elements.style(style);
         },
         set_default_style: function(indices) {
             // For all the elements with index in the list indices, the default
             // style is applied.
+            //
+
             if(!indices || indices.length === 0) {
                 return;
             }
-            var elements = this.el.selectAll(".dot").filter(function(data, index) {
-                return indices.indexOf(index) !== -1;
-            });
-            var fill = this.model.get("fill"),
-                stroke = this.model.get("stroke"),
-                stroke_width = this.model.get("stroke_width"),
-                that = this;
-            elements
-              .style("fill", fill ? function(d) {
-                 return that.get_element_color(d);
-              } : "none")
-              .style("stroke", stroke ? stroke : function(d) {
-                  return that.get_element_color(d);
-              }).style("opacity", function(d) {
-                  return that.get_element_opacity(d);
-              }).style("stroke-width", stroke_width);
+            var elements = this._filter_cells_by_index(indices);
+            var stroke = this.model.get("stroke");
+            var opacity = this.model.get("opacity");
+            var that = this;
+
+            elements.style("fill", function(d) {
+                 return that.get_element_fill(d);
+              })
+              .style("opacity", opacity)
+              .style("stroke", stroke);
         },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
@@ -190,17 +185,69 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // This function is not used right now. But it can be used if we
             // decide to accomodate more properties than those set by default.
             // Because those have to cleared specifically.
-            var elements = this.el.selectAll(".dot");
+            var elements = this.display_cells;
             if(indices) {
-                elements = elements.filter(function(d, index) {
-                    return indices.indexOf(index) !== -1;
-                });
+                elements = this._filter_cells_by_index(indices);
             }
             var clearing_style = {};
             for(var key in style_dict) {
                 clearing_style[key] = null;
             }
             elements.style(clearing_style);
+        },
+        _filter_cells_by_index :function(indices, cells_subset) {
+            if(cells_subset === undefined || cells_subset === null) {
+                cells_subset = this.display_cells;
+            }
+            var filtered_cells = cells_subset.filter(function(data) {
+                var arr = [data['row_num'], data['column_num']];
+                for(var iter in indices) {
+                    if(_.isEqual(arr, indices[iter])) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            return filtered_cells;
+        },
+        unselected_style_updated: function(model, style) {
+            this.unselected_style = style;
+            var sel_indices = this.selected_indices;
+            var all_indices = _.flatten(row_nums.map(function(row) { return col_nums.map(function(col) { return [row, col]; }); }));
+            var that = this;
+            var unselected_indices = (!this.selected_indices) ? all_indices
+                                     : all_indices.filter(function(index) {
+                                        for(var selected_iter in that.selected_indices) {
+                                            if(_.isEqual(index, that.selected_indices[selected_iter]))
+                                                return false;
+                                        }
+                                        return true;
+                                    });
+            this.clear_style(model.previous("unselected_style"), unselected_indices);
+            this.style_updated(style, unselected_indices);
+        },
+        apply_styles: function() {
+            var row_nums = _.range(this.model.colors.length);
+            var col_nums = _.range(this.model.colors[0].length);
+
+            // generating all indices which is the cartesian product of the
+            // row_nums and col_nums.
+            var all_indices = _.flatten(row_nums.map(function(row) { return col_nums.map(function(col) { return [row, col]; }); }), true);
+            this.clear_style(this.selected_style);
+            this.clear_style(this.unselected_style);
+
+            this.set_default_style(all_indices);
+            var that = this;
+            this.set_style_on_elements(this.selected_style, this.selected_indices);
+            var unselected_indices = (!this.selected_indices) ? all_indices
+                                     : all_indices.filter(function(index) {
+                                        for(var selected_iter in that.selected_indices) {
+                                            if(_.isEqual(index, that.selected_indices[selected_iter]))
+                                                return false;
+                                        }
+                                        return true;
+                                    });
+            this.set_style_on_elements(this.unselected_style, unselected_indices);
         },
         relayout: function() {
             this.set_ranges();
@@ -327,7 +374,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                        "y": 0})
                 .attr("width", function(d, i) { return column_plot_data['widths'][i];})
                 .attr("height",function(d) { return row_plot_data['widths'][d['row_num']];})
-                .style("fill", function(d) { return that.get_fill(d); })
+                .style("fill", function(d) { return that.get_element_fill(d); })
                 .style({"stroke" : stroke,
                         "opacity" : opacity});
         },
@@ -427,7 +474,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 return {'start': start_points, 'widths': widths};
             }
         },
-        get_fill: function(dat) {
+        get_element_fill: function(dat) {
             return this.scales['color'].scale(dat['color']);
         },
         process_interactions: function() {
