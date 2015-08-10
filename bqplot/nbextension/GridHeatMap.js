@@ -124,49 +124,34 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.event_dispatcher("parent_clicked");
             });
             this.listenTo(this.model, "change:selected", this.update_selected);
-            /*
-             *            // FIXME: multiple calls to update_path_style. Use on_some_change.
-            this.listenTo(this.model, "change:interpolation", this.update_path_style, this);
-            this.listenTo(this.model, "change:close_path", this.update_path_style, this);
-
-            // FIXME: multiple calls to update_style. Use on_some_change.
-            this.listenTo(this.model, "change:colors", this.update_style, this);
-            this.listenTo(this.model, "change:fill", this.update_style, this);
-            this.listenTo(this.model, "change:opacity", this.update_style, this);
-            this.listenTo(this.model, "data_updated", this.draw, this);
-            this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
-            this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
-            this.listenTo(this.model, "change:line_style", this.update_line_style, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
-
-           */
         },
         update_selected: function(model, value) {
             this.selected_indices = value;
             this.apply_styles();
         },
-        set_style_on_elements: function(style, indices) {
+        set_style_on_elements: function(style, indices, elements) {
             // If the index array is undefined or of length=0, exit the
             // function without doing anything
-            if(!indices || indices.length === 0) {
+            if(!indices || indices.length === 0 && (!elements || elements.length === 0) ) {
                 return;
             }
             // Also, return if the style object itself is blank
             if(Object.keys(style).length === 0) {
                 return;
             }
-            var elements =this._filter_cells_by_index(indices);
+            elements = (!elements || elements.length === 0) ? this._filter_cells_by_index(indices) : elements;
             elements.style(style);
         },
-        set_default_style: function(indices) {
+        set_default_style: function(indices, elements) {
             // For all the elements with index in the list indices, the default
             // style is applied.
             //
 
-            if(!indices || indices.length === 0) {
+            if(!indices || indices.length === 0 && (!elements || elements.length === 0) ) {
                 return;
             }
-            var elements = this._filter_cells_by_index(indices);
+            elements = (!elements || elements.length === 0) ? this._filter_cells_by_index(indices) : elements;
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             var that = this;
@@ -177,83 +162,74 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .style("opacity", opacity)
               .style("stroke", stroke);
         },
-        clear_style: function(style_dict, indices) {
+        clear_style: function(style_dict, indices, elements) {
             // Function to clear the style of a dict on some or all the elements of the
             // chart.If indices is null, clears the style on all elements. If
             // not, clears on only the elements whose indices are mathcing.
             //
-            // This function is not used right now. But it can be used if we
-            // decide to accomodate more properties than those set by default.
-            // Because those have to cleared specifically.
+            // If elements are passed, then indices are ignored and the style
+            // is cleared only on the elements that are passed.
+            //
+            // This can be used if we decide to accomodate more properties than
+            // those set by default. Because those have to cleared specifically.
             //
             if(Object.keys(style_dict).length === 0) {
                 // No style to clear
                 return;
             }
 
-            var elements = this.display_cells;
-            if(indices) {
-                elements = this._filter_cells_by_index(indices);
+            if(!elements || elements.length === 0) {
+                if(indices) {
+                    elements = this._filter_cells_by_index(indices);
+                } else {
+                    elements = this.display_cells;
+                }
             }
+
             var clearing_style = {};
             for(var key in style_dict) {
                 clearing_style[key] = null;
             }
             elements.style(clearing_style);
         },
-        _filter_cells_by_index :function(indices, cells_subset) {
-            if(cells_subset === undefined || cells_subset === null) {
-                cells_subset = this.display_cells;
-            }
-            var filtered_cells = cells_subset.filter(function(data) {
-                var arr = [data['row_num'], data['column_num']];
-                for(var iter in indices) {
-                    if(_.isEqual(arr, indices[iter])) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-            return filtered_cells;
+        _filter_cells_by_cell_num: function(cell_numbers) {
+            return this.display_cells.filter(function(el) {
+               return (cell_numbers.indexOf(el['_cell_num']) !== -1);});
+        },
+        selected_style_updated: function(model, style) {
+            this.selected_style = style;
+            this.clear_style(model.previous("selected_style"), this.selected_indices, this.selected_elements);
+            this.style_updated(style, this.selected_indices, this.selected_elements);
         },
         unselected_style_updated: function(model, style) {
             this.unselected_style = style;
-            var sel_indices = this.selected_indices;
-            var all_indices = _.flatten(row_nums.map(function(row) { return col_nums.map(function(col) { return [row, col]; }); }));
-            var that = this;
-            var unselected_indices = (!this.selected_indices) ? all_indices
-                                     : all_indices.filter(function(index) {
-                                        for(var selected_iter in that.selected_indices) {
-                                            if(_.isEqual(index, that.selected_indices[selected_iter]))
-                                                return false;
-                                        }
-                                        return true;
-                                    });
-            this.clear_style(model.previous("unselected_style"), unselected_indices);
-            this.style_updated(style, unselected_indices);
+            this.clear_style(model.previous("unselected_style"), [], this.unselected_elements);
+            this.style_updated(style, [], this.unselected_elements);
         },
         apply_styles: function() {
-            var row_nums = _.range(this.model.colors.length);
-            var col_nums = _.range(this.model.colors[0].length);
+            var num_rows = this.model.colors.length;
+            var num_cols = this.model.colors[0].length;
 
-            // generating all indices which is the cartesian product of the
-            // row_nums and col_nums.
-            var all_indices = _.flatten(row_nums.map(function(row) { return col_nums.map(function(col) { return [row, col]; }); }), true);
             this.clear_style(this.selected_style);
             this.clear_style(this.unselected_style);
 
-            this.set_default_style(all_indices);
+            this.set_default_style([], this.display_cells);
             var that = this;
-            this.set_style_on_elements(this.selected_style, this.selected_indices);
-            var unselected_indices = (!this.selected_indices) ? []
-                                     : all_indices.filter(function(index) {
-                                        for(var selected_iter in that.selected_indices) {
-                                            if(_.isEqual(index, that.selected_indices[selected_iter]))
-                                                return false;
-                                        }
-                                        return true;
-                                    });
-            this.set_style_on_elements(this.unselected_style, unselected_indices);
+
+            var selected_cell_nums = this._cell_nums_from_indices(this.selected_indices);
+            var unsel_cell_nums = (selected_cell_nums === null) ? []
+                                    : _.difference(_.range(num_rows*num_cols), selected_cell_nums);
+
+            this.selected_elements = this._filter_cells_by_cell_num(selected_cell_nums);
+            this.set_style_on_elements(this.selected_style, this.selected_indices, this.selected_elements);
+
+            this.unselected_elements = this._filter_cells_by_cell_num(unsel_cell_nums);
+            this.set_style_on_elements(this.unselected_style, [], this.unselected_elements);
+        },
+        style_updated: function(new_style, indices, elements) {
+            // reset the style of the elements and apply the new style
+            this.set_default_style(indices, elements);
+            this.set_style_on_elements(new_style, indices, elements);
         },
         relayout: function() {
             this.set_ranges();
@@ -261,6 +237,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //TODO: The call to draw has to be changed to something less
             //expensive.
             this.draw();
+        },
+        _cell_nums_from_indices: function(indices) {
+            if(indices === null || indices === undefined) {
+                return null;
+            }
+            var num_rows = this.model.colors.length;
+            return indices.map(function(i) { return i[0] * num_rows + i[1];});
         },
         invert_point: function(pixel) {
             // For now, an index selector is not supported for the heatmap
@@ -275,13 +258,23 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var self = this;
             var x_scale = this.scales["column"];
             var that = this;
+
+            var x_start = start_pxl;
+            var x_end = end_pxl;
+
+            if(start_pxl > end_pxl) {
+                x_start = end_pxl;
+                x_end = start_pxl;
+            }
             var column_indices = _.range(this.model.colors.length);
 
             var that = this;
             var selected = _.filter(column_indices, function(index) {
                 var elem = that.column_pixels[index];
-                return (elem >= start_pxl && elem <= end_pxl);
+                return (elem >= x_start && elem <= x_end);
             });
+
+            // Adding all the rows for the selected columns.
             var rows = _.range(this.model.colors.length);
             selected = selected.map(function(s) { return rows.map(function(r) { return [r, s]; }); });
             selected = _.flatten(selected, true);
@@ -299,13 +292,15 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var x_scale = this.scales["column"], y_scale = this.scales["row"];
             var y_min = d3.min([y_start, y_end]);
             var y_max = d3.max([y_start, y_end]);
+            var x_min = d3.min([x_start, x_end]);
+            var x_max = d3.max([x_start, x_end]);
 
             var col_indices = _.range(this.model.colors[0].length);
             var row_indices = _.range(this.model.colors.length);
             var that = this;
             var sel_cols = _.filter(col_indices, function(index) {
                 var elem_x = that.column_pixels[index];
-                return (elem_x >= x_start && elem_x <= x_end);
+                return (elem_x >= x_min && elem_x <= x_max);
             });
             var sel_rows = _.filter(row_indices, function(index) {
                 var elem_y = that.row_pixels[index];

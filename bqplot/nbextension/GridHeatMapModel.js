@@ -47,6 +47,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
                     row_num : row_num,
                     column_num : col_num,
                     color : that.colors[row_num][col_num],
+                    _cell_num : row_num * num_rows + col_num,
                 }
             });
             this.identify_modes();
