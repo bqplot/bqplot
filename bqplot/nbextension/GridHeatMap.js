@@ -185,6 +185,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // This function is not used right now. But it can be used if we
             // decide to accomodate more properties than those set by default.
             // Because those have to cleared specifically.
+            //
+            if(Object.keys(style_dict).length === 0) {
+                // No style to clear
+                return;
+            }
+
             var elements = this.display_cells;
             if(indices) {
                 elements = this._filter_cells_by_index(indices);
@@ -239,7 +245,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.set_default_style(all_indices);
             var that = this;
             this.set_style_on_elements(this.selected_style, this.selected_indices);
-            var unselected_indices = (!this.selected_indices) ? all_indices
+            var unselected_indices = (!this.selected_indices) ? []
                                      : all_indices.filter(function(index) {
                                         for(var selected_iter in that.selected_indices) {
                                             if(_.isEqual(index, that.selected_indices[selected_iter]))
@@ -256,6 +262,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //expensive.
             this.draw();
         },
+        invert_point: function(pixel) {
+            // For now, an index selector is not supported for the heatmap
+        },
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined) {
                 this.model.set("selected", null);
@@ -264,49 +273,49 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
 
             var self = this;
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var start = x_scale.scale.invert(start_pxl);
-            var end = x_scale.scale.invert(end_pxl);
-            var data = this.model.x_data[0] instanceof Array ?
-                this.model.x_data[0] : this.model.x_data;
+            var x_scale = this.scales["column"];
+            var that = this;
+            var column_indices = _.range(this.model.colors.length);
 
-            var indices = [start, end].map(function(elem) {
-				return Math.min(self.bisect(data, elem),
-								Math.max((data.length - 1), 0));
-			});
-            this.model.set("selected", indices);
+            var that = this;
+            var selected = _.filter(column_indices, function(index) {
+                var elem = that.column_pixels[index];
+                return (elem >= start_pxl && elem <= end_pxl);
+            });
+            var rows = _.range(this.model.colors.length);
+            selected = selected.map(function(s) { return rows.map(function(r) { return [r, s]; }); });
+            selected = _.flatten(selected, true);
+            this.model.set("selected", selected);
             this.touch();
         },
-        invert_point: function(pixel) {
-            if(pixel === undefined) {
+        invert_2d_range: function(x_start, x_end, y_start, y_end) {
+            //y_start is usually greater than y_end as the y_scale is invert
+            //by default
+            if(!x_end) {
                 this.model.set("selected", null);
                 this.touch();
-                return;
+                return _.range(this.model.mark_data.length);
             }
+            var x_scale = this.scales["column"], y_scale = this.scales["row"];
+            var y_min = d3.min([y_start, y_end]);
+            var y_max = d3.max([y_start, y_end]);
 
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var data_point = x_scale.scale.invert(pixel);
-            var data = this.model.x_data[0] instanceof Array ?
-                this.model.x_data[0] : this.model.x_data;
-
-            var index = Math.min(this.bisect(data, data_point),
-								 Math.max((data.length - 1), 0));
-            this.model.set("selected", [index]);
+            var col_indices = _.range(this.model.colors[0].length);
+            var row_indices = _.range(this.model.colors.length);
+            var that = this;
+            var sel_cols = _.filter(col_indices, function(index) {
+                var elem_x = that.column_pixels[index];
+                return (elem_x >= x_start && elem_x <= x_end);
+            });
+            var sel_rows = _.filter(row_indices, function(index) {
+                var elem_y = that.row_pixels[index];
+                return (elem_y <= y_max && elem_y >= y_min);
+            });
+            var selected = sel_cols.map(function(s) { return sel_rows.map(function(r) { return [r, s]; }); });
+            selected = _.flatten(selected, true);
+            this.model.set("selected", selected);
             this.touch();
-        },
-        update_multi_range: function(brush_extent) {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var x_start = brush_extent[0];
-            var x_end = brush_extent[1];
-
-            var data = this.model.x_data[0] instanceof Array ?
-                this.model.x_data[0] : this.model.x_data;
-            var idx_start = this.bisect(data, x_start);
-            var idx_end = Math.min(this.bisect(data, x_end),
-								   Math.max((data.length - 1), 0));
-
-            this.selector_model.set("selected", [idx_start, idx_end]);
-            this.selector.touch();
+            return selected;
         },
         draw: function() {
             this.set_ranges();
@@ -339,6 +348,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             var row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes["row"], row_start_aligned);
             var column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes["column"], col_start_aligned);
+
+            this.row_pixels = row_plot_data['start'];
+            this.column_pixels = column_plot_data['start'];
 
             this.display_rows = this.el.selectAll(".heatmaprow")
                 .data(_.range(num_rows));
