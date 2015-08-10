@@ -132,6 +132,22 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             });
             this.touch();
         },
+        update_xscale_domain: function() {
+            // Call the base class function to update the scale.
+            BrushSelector.__super__.update_xscale_domain.apply(this);
+            if(this.brush !== undefined && this.brush !== null) {
+                this.brush.x(this.x_scale.scale);
+            }
+            // TODO:If there is a selection, update the visual element.
+
+        },
+         update_yscale_domain: function() {
+            // Call the base class function to update the scale.
+            BrushSelector.__super__.update_yscale_domain.apply(this);
+            if(this.brush !== undefined && this.brush !== null) {
+                this.brush.y(this.y_scale.scale);
+            }
+        },
         _update_brush: function() {
             //programmatically setting the brush does not redraw it. It is
             //being redrawn below
@@ -218,6 +234,16 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
                 mark_view.invert_range([]);
             });
             this.touch();
+        },
+        update_scale_domain: function(ignore_gui_update) {
+            // Call the base class function to update the scale.
+            BrushIntervalSelector.__super__.update_scale_domain.apply(this);
+            if(this.brush !== undefined && this.brush !== null) {
+                this.brush.x(this.scale.scale);
+            }
+            if(ignore_gui_update !== true) {
+                this.selected_changed();
+            }
         },
         selected_changed: function(model, value, options) {
             if(options && options.js_ignore) {

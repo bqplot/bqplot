@@ -78,14 +78,24 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
                 var that = this;
                 return this.create_child_view(this.model.get("scale")).then(function(view) {
                     that.scale = view;
+                    // The argument is to supress the update to gui
+                    that.update_scale_domain(true);
                     that.set_range([that.scale]);
+                    that.scale.on("domain_changed", that.update_scale_domain, that);
                     return view;
                 });
             }
         },
+        update_scale_domain: function() {
+            // When the domain of the scale is updated, the domain of the scale
+            // for the selector must be expanded to account for the padding.
+            var initial_range = this.parent.padded_range("x", this.scale.model);
+            var target_range = this.parent.range("x");
+            this.scale.expand_domain(initial_range, target_range);
+        },
         set_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {
-                array[iter].set_range([0, this.width]);
+                array[iter].set_range(this.parent.range("x"));
             }
         },
     });
@@ -103,14 +113,18 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
             if(this.model.get("x_scale")) {
                 scale_promises.push(this.create_child_view(this.model.get("x_scale")).then(function(view) {
                     that.x_scale = view;
+                    that.update_xscale_domain();
                     that.set_x_range([that.x_scale]);
+                    that.x_scale.on("domain_changed", that.update_xscale_domain, that);
                     return view;
                 }));
             }
             if(this.model.get("y_scale")) {
                 scale_promises.push(this.create_child_view(this.model.get("y_scale")).then(function(view) {
                     that.y_scale = view;
+                    that.update_yscale_domain();
                     that.set_y_range([that.y_scale]);
+                    that.y_scale.on("domain_changed", that.update_yscale_domain, that);
                     return view;
                 }));
             }
@@ -119,13 +133,27 @@ define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
         },
         set_x_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {
-                array[iter].set_range([0, this.width]);
+                array[iter].set_range(this.parent.range("x"));
             }
         },
         set_y_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {
-                array[iter].set_range([this.height, 0]);
+                array[iter].set_range(this.parent.range("y"));
             }
+        },
+        update_xscale_domain: function() {
+            // When the domain of the scale is updated, the domain of the scale
+            // for the selector must be expanded to account for the padding.
+            var initial_range = this.parent.padded_range("x", this.x_scale.model);
+            var target_range = this.parent.range("x");
+            this.x_scale.expand_domain(initial_range, target_range);
+        },
+        update_yscale_domain: function() {
+            // When the domain of the scale is updated, the domain of the scale
+            // for the selector must be expanded to account for the padding.
+            var initial_range = this.parent.padded_range("x", this.y_scale.model);
+            var target_range = this.parent.range("x");
+            this.y_scale.expand_domain(initial_range, target_range);
         },
     });
 
