@@ -553,7 +553,7 @@ class Hist(Mark):
 
     """Histogram mark.
 
-    In the case of the Hist mark, scales for 'sample' and 'counts' MUST be
+    In the case of the Hist mark, scales for 'sample' and 'count' MUST be
     provided.
 
     Attributes
@@ -571,7 +571,7 @@ class Hist(Mark):
     ---------------
     sample: numpy.ndarray
         sample of which the histogram must be computed.
-    counts: numpy.ndarray (read-only)
+    count: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
 
     Tooltip
@@ -590,15 +590,15 @@ class Hist(Mark):
     # Scaled attributes
     sample = NdArray(sync=True, min_dim=1, max_dim=1,
                      display_name='Sample', scaled=True, rtype='Number', atype='bqplot.Axis')
-    counts = NdArray(sync=True, display_index=4,
-                     display_name='Count', scaled=True, rtype='Number',
-                     read_only=True, atype='bqplot.Axis')
-    # FIXME: Should we allow none for counts?
-    # counts is a read-only attribute that is set when the mark is drawn
+    count = NdArray(sync=True, display_index=4,
+                    display_name='Count', scaled=True, rtype='Number',
+                    read_only=True, atype='bqplot.Axis')
+    # FIXME: Should we allow None for count?
+    # count is a read-only attribute that is set when the mark is drawn
 
     # Other attributes
     scales_metadata = Dict({'sample': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'counts': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
+                            'count': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
     bins = Int(10, sync=True, exposed=True, display_index=2,
                display_name='Number of bins')
     midpoints = List(sync=True, read_only=True,
