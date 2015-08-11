@@ -564,6 +564,13 @@ class Hist(Mark):
         user-friendly name of the mark
     bins: nonnegative int (default: 10)
         number of bins in the histogram
+    colors: list of colors (default: CATEGORY10)
+        List of colors of the Histogram. If the list is shorter than the number
+        of bins, the colors are reused.
+    stroke: Color or None (default: 'white')
+        Stroke color of the histogram
+    opacity: float (default: 1.0)
+        opacity of the histogram.
     midpoints: list (default: [])
         midpoints of the bins of the histogram. It is a read-only attribute.
 
