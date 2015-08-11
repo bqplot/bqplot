@@ -21,7 +21,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // TODO: should not need to set this.data
             HistModel.__super__.initialize.apply(this);
             this.mark_data = [];
-            // For the histogram, changing the "sample" scale changes the "counts" values being plotted.
+            // For the histogram, changing the "sample" scale changes the "count" values being plotted.
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"
             // function, and not merely "update_domains".
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
@@ -62,9 +62,9 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             //adding index attribute to mark_data of the model
             this.mark_data.forEach(function(data, index) { data['index'] = index; });
 
-            this.counts = this.mark_data.map(function(d) { return d.length; });
+            this.count = this.mark_data.map(function(d) { return d.length; });
             this.set("midpoints", this.x_mid);
-            this.set_typed_field("counts", this.counts);
+            this.set_typed_field("count", this.count);
 
             this.update_domains();
             this.save_changes();
@@ -76,7 +76,7 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             return_dict['bin_start'] = this.x_bins[index];
             return_dict['bin_end'] = this.x_bins[index+1];
             return_dict['index'] = index;
-            return_dict['count'] = this.counts[index];
+            return_dict['count'] = this.count[index];
             return return_dict;
         },
         update_domains: function() {
@@ -87,8 +87,8 @@ define(["./d3", "./MarkModel"], function(d3, MarkModelModule) {
             // things including the data which is to be plotted. So the x-domain
             // change is handled by the update_data function and only the
             // y-domain change is handled by this function.
-            var y_scale = this.get("scales")["counts"];
-            if(!this.get("preserve_domain")["counts"]) {
+            var y_scale = this.get("scales")["count"];
+            if(!this.get("preserve_domain")["count"]) {
                 y_scale.set_domain([0, d3.max(this.mark_data, function(d) {
                     return d.y;
                 }) * 1.05], this.id);

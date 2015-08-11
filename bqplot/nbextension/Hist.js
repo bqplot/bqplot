@@ -41,7 +41,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
-            var y_scale = this.scales["counts"];
+            var y_scale = this.scales["count"];
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
@@ -50,7 +50,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // In the case of Hist, a change in the "sample" scale triggers
             // a full "update_data" instead of a simple redraw.
             var x_scale = this.scales["sample"],
-                y_scale = this.scales["counts"];
+                y_scale = this.scales["count"];
             this.listenTo(x_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.model.update_data(); }
             });
@@ -160,7 +160,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.set_ranges();
 
             var x_scale = this.scales["sample"],
-                y_scale = this.scales["counts"];
+                y_scale = this.scales["count"];
 			this.el.selectAll(".bar")
 			  .attr("transform", function(d) {
                   return "translate(" + x_scale.scale(d.x) +
@@ -187,7 +187,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             });
 
             var x_scale = this.scales["sample"],
-                y_scale = this.scales["counts"];
+                y_scale = this.scales["count"];
             var that = this;
             var bar_width = this.calculate_bar_width();
             var bar_groups = this.el.selectAll(".bar")
