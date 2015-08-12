@@ -638,8 +638,9 @@ class Boxplot(Mark):
         stroke color of the marker
     color: color
         fill color of the box
-    opacity: float
-        opacity of the marker
+    opacities: list of floats (default: [])
+        Opacity for the bins of the histogram. Defaults to 1 when list is too
+        short, or set to None.
     outlier-color: color
         color for the outlier
 
@@ -671,7 +672,7 @@ class Boxplot(Mark):
     stroke = Color('white',            sync=True, exposed=True, display_index=3, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, exposed=True, display_index=4, display_name='Fill color for the box')
     outlier_fill_color = Color('gray',   sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
-    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=6, display_name='Opacities')
 
     _view_name = Unicode('Boxplot', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Boxplot', sync=True)
