@@ -229,6 +229,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //bin_pixels contains the pixel values of the start points of each
             //of the bins and the end point of the last bin.
             this.bin_pixels = this.model.x_bins.map(function(el) { return x_scale.scale(el) + x_scale.offset; });
+            this.update_stroke_and_opacities();
         },
         bar_click_handler: function (args) {
             var data = args["data"];
