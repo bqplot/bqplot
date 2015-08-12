@@ -82,7 +82,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // FIXME: multiple calls to update_style. Use on_some_change.
             this.listenTo(this.model, "change:colors", this.update_style, this);
             this.listenTo(this.model, "change:fill", this.update_style, this);
-            this.listenTo(this.model, "change:opacity", this.update_style, this);
+            this.listenTo(this.model, "change:opacities", this.update_style, this);
             this.listenTo(this.model, "data_updated", this.draw, this);
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
             this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
@@ -143,7 +143,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         update_style: function() {
             var that = this,
                 fill_color = this.model.get("fill"),
-                opacity = this.model.get("opacity");
+                opacities = this.model.get("opacities");
             // update curve colors
             this.el.selectAll(".curve").select("path")
               .style("stroke", function(d, i) {
@@ -153,7 +153,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   return fill_color[i];
               })
               .style("opacity", function(d, i) {
-                  return opacity[i];
+                  return opacities[i];
               });
             // update legend style
             if (this.legend_el){
@@ -165,14 +165,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                       return fill_color[i];
                   })
                   .style("opacity", function(d, i) {
-                      return opacity[i];
+                      return opacities[i];
                   });
                 this.legend_el.select("text")
                   .style("fill", function(d, i) {
                       return that.get_element_color(d, i) || fill_color[i];
                   })
                   .style("opacity", function(d, i) {
-                      return opacity[i];
+                      return opacities[i];
                   });
             }
         },
@@ -269,7 +269,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var that = this,
                 rect_dim = inter_y_disp * 0.8,
                 fill_color = this.model.get("fill"),
-                opacity = this.model.get("opacity");
+                opacities = this.model.get("opacities");
 
             this.legend_line = d3.svg.line()
                 .interpolate(this.model.get("interpolation"))
@@ -304,7 +304,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 .style("fill", function(d, i) {
                     return fill_color[i];
                 })
-                .style("opacity", function(d, i) { return opacity[i]; })
+                .style("opacity", function(d, i) { return opacities[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", _.bind(this.get_line_style, this));
 
@@ -317,7 +317,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .style("fill", function(d, i) {
                   return that.get_element_color(d, i) || fill_color[i];
               })
-              .style("opacity", function(d, i) { return opacity[i]; });
+              .style("opacity", function(d, i) { return opacities[i]; });
 
             var max_length = d3.max(curve_labels, function(d) {
                 return d.length;
@@ -419,7 +419,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("fill", "none");
 
             var fill_color = this.model.get("fill");
-            var opacity = this.model.get("opacity");
+            var opacities = this.model.get("opacities");
             var that = this;
             curves_sel.select("path")
               .attr("id", function(d, i) { return "curve" + (i+1); })
@@ -429,8 +429,8 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .style("fill", function(d, i) { return fill_color[i]; })
               .style("stroke-width", this.model.get("stroke_width"))
               .style("stroke-dasharray", _.bind(this.get_line_style, this))
-              .style("opacity", function(d, i) {
-                  return opacity[i];
+              .style("opacities", function(d, i) {
+                  return opacities[i];
               })
               .on("click", _.bind(function() {
                   this.event_dispatcher("element_clicked");

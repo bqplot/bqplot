@@ -267,7 +267,7 @@ class Lines(Mark):
         Whether to close the paths or not.
     fill: list of colors (default: [])
         Fill colors for the patches. Defaults to no-fill when no color provided.
-    opacity: list of floats (default: [])
+    opacities: list of floats (default: [])
         Opacity for the  lines and patches. Defaults to 1 when list is too
         short, or set to None.
     stroke_width: float (default: 1.5)
@@ -345,7 +345,7 @@ class Lines(Mark):
                       display_name='Close path')
     fill = List(trait=Color(default_value=None, allow_none=True), sync=True, exposed=True, display_index=9,
                 display_name='Fill Colors')
-    opacity = List(sync=True, display_index=10, display_name='Opacity')
+    opacities = List(sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
     _model_name = Unicode('LinesModel', sync=True)
@@ -569,7 +569,7 @@ class Hist(Mark):
         of bins, the colors are reused.
     stroke: Color or None (default: 'white')
         Stroke color of the histogram
-    opacity: float (default: 1.0)
+    opacities: float (default: 1.0)
         opacity of the histogram.
     midpoints: list (default: [])
         midpoints of the bins of the histogram. It is a read-only attribute.
@@ -614,9 +614,7 @@ class Hist(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=5, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
-    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacity')
 
     _view_name = Unicode('Hist', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Hist', sync=True)
