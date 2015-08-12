@@ -79,6 +79,14 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             }
             var extent_x = [extent[0][0], extent[1][0]];
             var extent_y = [extent[0][1], extent[1][1]];
+
+            if(this.x_scale.model.type == "ordinal") {
+                extent_x = this.x_scale.invert_range(extent_x);
+            }
+            if(this.y_scale.model.type == "ordinal") {
+                extent_y = this.y_scale.invert_range(extent_y);
+            }
+
             var self = this;
             _.each(this.mark_views, function(mark_view) {
                 mark_view.invert_2d_range(self.x_scale.scale(extent_x[0]),
@@ -206,16 +214,26 @@ define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
             this.convert_and_save(extent);
         },
         convert_and_save: function(extent) {
+            var self = this;
             if(extent.length === 0) {
                 _.each(this.mark_views, function(mark_view) {
                     return mark_view.invert_range(extent);
                 });
             } else {
-                var self = this;
-                _.each(this.mark_views, function(mark_view) {
-                    mark_view.invert_range(self.scale.scale(extent[0]),
-                                           self.scale.scale(extent[1]));
-                });
+                if(this.scale.model.type === "ordinal") {
+                    _.each(this.mark_views, function(mark_view) {
+                        mark_view.invert_range(extent[0], extent[1]);
+                    });
+                } else {
+                    _.each(this.mark_views, function(mark_view) {
+                        mark_view.invert_range(self.scale.scale(extent[0]),
+                                            self.scale.scale(extent[1]));
+                    });
+                }
+            }
+
+            if(this.scale.model.type == "ordinal") {
+                extent = this.scale.invert_range(extent);
             }
             this.model.set_typed_field("selected", extent, {js_ignore: true});
             this.touch();

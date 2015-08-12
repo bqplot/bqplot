@@ -357,6 +357,8 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                                     "," + (y_scale.scale(d.y) + y_scale.offset) + ")"
                            + that.get_element_rotation(d);
               });
+            this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
+            this.y_pixels = this.model.mark_data.map(function(el) { return y_scale.scale(el.y) + y_scale.offset; });
         },
         draw: function() {
             this.set_ranges();
@@ -519,7 +521,43 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
                     return (show_names) ? "inline": "none";
                 });
         },
+        invert_point: function(pixel) {
+            if(pixel === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return;
+            }
+
+            var x_scale = this.scales["x"];
+            var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            var sel_index = abs_diff.indexOf(d3.min(abs_diff));
+
+            this.model.set("selected", [sel_index]);
+            this.touch();
+        },
+        invert_range: function(start_pxl, end_pxl) {
+            if(start_pxl === undefined || end_pxl === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return [];
+            }
+
+            var self = this;
+            var x_scale = this.scales["x"];
+            var that = this;
+            var indices = _.range(this.model.mark_data.length);
+
+            var that = this;
+            var selected = _.filter(indices, function(index) {
+                var elem = that.x_pixels[index];
+                return (elem >= start_pxl && elem <= end_pxl);
+            });
+            this.model.set("selected", selected);
+            this.touch();
+        },
         invert_2d_range: function(x_start, x_end, y_start, y_end) {
+            //y_start is usually greater than y_end as the y_scale is invert
+            //by default
             if(!x_end) {
                 this.model.set("selected", null);
                 this.touch();
@@ -527,17 +565,13 @@ define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, 
             }
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
 
-            var xmin = x_scale.scale.invert(x_start),
-                xmax = x_scale.scale.invert(x_end),
-                ymin = y_scale.scale.invert(y_start),
-                ymax = y_scale.scale.invert(y_end);
-
             var indices = _.range(this.model.mark_data.length);
             var that = this;
             var selected = _.filter(indices, function(index) {
-                var elem = that.model.mark_data[index];
-                return (elem.x >= xmin && elem.x <= xmax &&
-                        elem.y >= ymin && elem.y <= ymax);
+                var elem_x = that.x_pixels[index],
+                    elem_y = that.y_pixels[index];
+                return (elem_x >= x_start && elem_x <= x_end &&
+                        elem_y <= y_start && elem_y >= y_end);
             });
             this.model.set("selected", selected);
             this.touch();
