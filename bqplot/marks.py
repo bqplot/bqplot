@@ -569,8 +569,9 @@ class Hist(Mark):
         of bins, the colors are reused.
     stroke: Color or None (default: 'white')
         Stroke color of the histogram
-    opacities: float (default: 1.0)
-        opacity of the histogram.
+    opacities: list of floats (default: [])
+        Opacity for the bins of the histogram. Defaults to 1 when list is too
+        short, or set to None.
     midpoints: list (default: [])
         midpoints of the bins of the histogram. It is a read-only attribute.
 
