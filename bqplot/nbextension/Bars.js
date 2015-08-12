@@ -118,6 +118,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.listenTo(this.model, "change:align", this.realign, this);
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+            this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
@@ -192,13 +193,42 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("y1", y_scale.scale(this.model.base_value))
               .attr("y2", y_scale.scale(this.model.base_value));
 
-            var bar_groups = this.el.selectAll(".bargroup");
-            var bars_sel = bar_groups.selectAll(".bar");
-
             this.x.rangeRoundBands(this.set_x_range(), this.padding);
             this.adjust_offset();
             this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
             this.draw_bars();
+        },
+        invert_point: function(pixel) {
+            if(pixel === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return;
+            }
+
+            var x_scale = this.scales["x"];
+            var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+            this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
+            this.touch();
+        },
+        invert_range: function(start_pxl, end_pxl) {
+            if(start_pxl === undefined || end_pxl === undefined) {
+                this.model.set("selected", null);
+                this.touch();
+                return [];
+            }
+
+            var self = this;
+            var x_scale = this.scales["x"];
+
+            var indices = _.range(this.model.mark_data.length);
+            var filtered_indices = indices.filter(function(ind) { var x_pix = self.x_pixels[ind];
+                                                                  return (x_pix <= end_pxl && x_pix >= start_pxl); });
+            this.model.set("selected", filtered_indices);
+            this.touch();
+        },
+        update_selected: function(model, value) {
+            this.selected_indices = value;
+            this.apply_styles();
         },
         draw: function() {
             this.set_ranges();
@@ -307,6 +337,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                       return Math.abs(y_scale.scale(that.model.base_value) - (y_scale.scale(d.y)));
                   });
             }
+
+            this.x_pixels = this.model.mark_data.map(function(el) {
+                                                        return x_scale.scale(el.key) + x_scale.offset; });
         },
         update_type: function(model, value) {
             // We need to update domains here as the y_domain needs to be
@@ -538,16 +571,11 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 e.stopPropagation();
             }
             e.preventDefault();
-            this.selected_indices = selected;
-            this.apply_styles();
         },
         reset_selection: function() {
             this.model.set("selected", null);
-            this.touch();
             this.selected_indices = null;
-            this.clear_style(this.selected_style);
-            this.clear_style(this.unselected_style);
-            this.set_default_style();
+            this.touch();
         },
         compute_view_padding: function() {
             //This function returns a dictionary with keys as the scales and

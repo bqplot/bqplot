@@ -195,12 +195,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         relayout: function() {
             this.set_ranges();
+            var x_scale = this.scales["x"];
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
               .transition().duration(this.model.get("animate_dur"))
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
+            this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
+                                                                        { return x_scale.scale(el.x) + x_scale.offset; })
+                                                              : [];
             this.create_labels();
         },
         invert_range: function(start_pxl, end_pxl) {
@@ -211,17 +215,15 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
 
             var self = this;
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var start = x_scale.scale.invert(start_pxl);
-            var end = x_scale.scale.invert(end_pxl);
-            var data = this.model.x_data[0] instanceof Array ?
-                this.model.x_data[0] : this.model.x_data;
+            var x_scale = this.scales["x"];
 
-            var indices = [start, end].map(function(elem) {
-				return Math.min(self.bisect(data, elem),
-								Math.max((data.length - 1), 0));
-			});
-            this.model.set("selected", indices);
+            var indices = _.range(this.x_pixels.length);
+            var that = this;
+            var selected = _.filter(indices, function(index) {
+                var elem = self.x_pixels[index];
+                return (elem >= start_pxl && elem <= end_pxl);
+            });
+            this.model.set("selected", selected);
             this.touch();
         },
         invert_point: function(pixel) {
@@ -231,13 +233,9 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 return;
             }
 
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
-            var data_point = x_scale.scale.invert(pixel);
-            var data = this.model.x_data[0] instanceof Array ?
-                this.model.x_data[0] : this.model.x_data;
-
-            var index = Math.min(this.bisect(data, data_point),
-								 Math.max((data.length - 1), 0));
+            var x_scale = this.scales["x"];
+            var index = Math.min(this.bisect(this.x_pixels, pixel),
+								 Math.max((this.x_pixels.length - 1), 0));
             this.model.set("selected", [index]);
             this.touch();
         },
@@ -406,6 +404,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
+
+            this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
+                                                                        { return x_scale.scale(el.x) + x_scale.offset; })
+                                                              : [];
         },
         draw: function() {
             this.set_ranges();

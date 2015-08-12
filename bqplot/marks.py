@@ -669,9 +669,9 @@ class Boxplot(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
                             'y': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
 
-    stroke = Color('white',            sync=True, exposed=True, display_index=3, display_name='Stroke color')
+    stroke = Color('white', sync=True, exposed=True, display_index=3, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, exposed=True, display_index=4, display_name='Fill color for the box')
-    outlier_fill_color = Color('gray',   sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
+    outlier_fill_color = Color('gray', sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
     opacities = List(sync=True, exposed=True, display_index=6, display_name='Opacities')
 
     _view_name = Unicode('Boxplot', sync=True)

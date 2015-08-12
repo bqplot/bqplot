@@ -46,6 +46,26 @@ define(["./d3", "./Scale"], function(d3, ScaleViewModule) {
                 Math.abs((new_range[1] - old_range[1]) / unpadded_scale.rangeBand()) : 0;
             this.scale.rangeBands(new_range, 0.0, outer_padding);
         },
+        invert: function(pixel) {
+            // returns the element in the domain which is closest to pixel
+            // value passed. If the pixel is outside the range of the scale,
+            var self = this;
+            var domain = this.scale.domain();
+            var pixel_vals = domain.map(function(d) { return self.scale(d) + self.scale.rangeBand() / 2; });
+            var abs_diff = pixel_vals.map(function(d) { return Math.abs(pixel - d); });
+            return domain[abs_diff.indexOf(d3.min(abs_diff))];
+        },
+        invert_range: function(pixels) {
+            //return all the indices between a range
+            //pixels should be a non-decreasing two element array
+            var self = this;
+            var domain = this.scale.domain();
+            var pixel_vals = domain.map(function(d) { return self.scale(d) + self.scale.rangeBand() / 2; });
+            var indices = _.range(pixel_vals.length);
+            var filtered_ind = indices.filter(function(ind) { return (pixel_vals[ind] >= pixels[0] &&
+                                                                      pixel_vals[ind] <= pixels[1]);});
+            return filtered_ind.map(function(ind) { return domain[ind]; });
+        },
     });
 
     return {
