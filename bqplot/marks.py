@@ -911,8 +911,9 @@ class Pie(Mark):
         list of colors for the slices.
     stroke: color (default: 'white')
         stroke color for the marker
-    opacity: float
-        opacity of the mark. Then number must be between 0 and 1
+    opacities: list of floats (default: [])
+        Opacities for the slices of the Pie mark. Defaults to 1 when list is too
+        short, or set to None.
     sort: bool (default: False)
         sort the pie slices by descending sizes
     x: Float (default: 0.5) or Date
@@ -969,9 +970,7 @@ class Pie(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10, sync=True,
                   exposed=True, display_index=4, display_name='Colors')
     stroke = Color('white', allow_none=True, sync=True)
-    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
     radius = BoundedFloat(default_value=300.0, min=0.0, max=float('inf'),
                           sync=True)
     inner_radius = BoundedFloat(default_value=0.1, min=0.0, max=float('inf'),
