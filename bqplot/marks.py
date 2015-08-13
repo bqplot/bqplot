@@ -630,16 +630,12 @@ class Boxplot(Mark):
 
     Attributes
     ----------
-    icon: string
-        font-awesome icon for that mark
-    name: string
-        user-friendly name of the mark
     stroke: color
         stroke color of the marker
     color: color
         fill color of the box
     opacities: list of floats (default: [])
-        Opacity for the bins of the histogram. Defaults to 1 when list is too
+        Opacities for the markers of the boxplot. Defaults to 1 when list is too
         short, or set to None.
     outlier-color: color
         color for the outlier
@@ -711,8 +707,9 @@ class Bars(Mark):
         value is specified as a percentage of the width of the bar
     stroke: color (default: 'white')
         stroke color for the bars
-    opacity: float (default: 1.0)
-        opacity of the mark. Then number must be bewteen 0 and 1
+    opacities: list of floats (default: [])
+        Opacities for the bars. Defaults to 1 when list is too
+        short, or set to None.
     base: float (default: 0.0)
         reference value from which the bars are drawn. defaults to 0.0
     align: {'center', 'left', 'right'}
@@ -762,9 +759,7 @@ class Bars(Mark):
     padding = Float(0.05, sync=True)
     stroke = Color('white', allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
-    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
     align = Enum(['center', 'left', 'right'], default_value='center',
                  sync=True, exposed=True)
 

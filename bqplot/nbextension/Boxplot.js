@@ -15,9 +15,9 @@
 
 define(["./d3", "./Mark"], function(d3, MarkViewModule) {
     "use strict";
-    var boxplotView = MarkViewModule.Mark.extend({
+    var Boxplot = MarkViewModule.Mark.extend({
        render: function() {
-            var base_creation_promise = boxplotView.__super__.render.apply(this);
+            var base_creation_promise = Boxplot.__super__.render.apply(this);
             var that = this;
 
             return base_creation_promise.then(function() {
@@ -48,7 +48,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             });
         },
         create_listeners: function() {
-            boxplotView.__super__.create_listeners.apply(this);
+            Boxplot.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:stroke", this.update_stroke, this);
             this.listenTo(this.model, "change:opacities", this.update_opacities, this);
             this.listenTo(this.model, "change:marker", this.update_marker, this);
@@ -480,7 +480,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             return mark_width;
         },
         relayout: function() {
-            boxplotView.__super__.relayout.apply(this);
+            Boxplot.__super__.relayout.apply(this);
             this.set_ranges();
             this.el.select(".intselmouse")
                 .attr("width", this.width)
@@ -530,9 +530,6 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
         },
     });
     return {
-        Boxplot: boxplotView,
+        Boxplot: Boxplot,
     };
 });
-
-
-
