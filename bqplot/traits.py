@@ -272,8 +272,8 @@ class NdArray(CInstance):
     @staticmethod
     def _from_json(value, obj=None):
         if value is not None:
-            array_dtype = (np.datetime64 if (value.get('type') == 'date')
-                           else object)
+            array_dtype = {'date': np.datetime64,
+                           'float': np.float64}.get(value.get('type'), object)
             return np.asarray(value['values'], dtype=array_dtype)
 
     def __init__(self, *args, **kwargs):
