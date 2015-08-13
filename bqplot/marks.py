@@ -838,8 +838,9 @@ class OHLC(Mark):
         stroke width of the marker
     colors: List of colors (default: ['limegreen', 'red'])
         fill colors for the markers (up/down)
-    opacity: float (default: 1.0)
-        opacity of the marker
+    opacities: list of floats (default: [])
+        Opacities for the markers of the OHLC mark. Defaults to 1 when list is too
+        short, or set to None.
     format: string (default: 'ohlc')
         description of y data being passed
         supports all permutations of the strings 'ohlc', 'oc', and 'hl'
@@ -889,9 +890,7 @@ class OHLC(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=['limegreen', 'red'],
                   display_index=6,
                   sync=True, display_name='Colors')
-    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
     format = Unicode(default_value='ohlc', exposed=True,
                      display_index=8, display_name='Format', sync=True)
 
