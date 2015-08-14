@@ -1069,7 +1069,7 @@ class GridHeatMap(Mark):
     then ordinal scales are generated for the rows and columns.
     Attributes
     ----------
-    row_align: Enum(['start', end'])
+    row_align: Enum(['start', 'end'])
         This is only valid if the number of entries in `row` exactly match the
         number of rows in `color` and the `row_scale` is not `OrdinalScale`.
         `start` aligns the row values passed to be aligned with the start of the
@@ -1123,23 +1123,19 @@ class GridHeatMap(Mark):
                            display_name='Opacity')
 
     def __init__(self, **kwargs):
-        row = kwargs.get('row', None)
-        column = kwargs.get('column', None)
-        scales = kwargs.pop('scales', {})
         data = kwargs['color']
+        row = kwargs.pop('row', range(data.shape[0]))
+        column = kwargs.pop('column', range(data.shape[1]))
+        scales = kwargs.pop('scales', {})
         # Adding default row and column data if they are not passed.
         # Adding scales in case they are not passed too.
 
-        if(row is None):
-            row = range(data.shape[0])
-            kwargs['row'] = row
+        kwargs['row'] = row
         if(scales.get('row', None) is None):
             row_scale = OrdinalScale(reverse=True)
             scales['row'] = row_scale
 
-        if(column is None):
-            column = range(data.shape[1])
-            kwargs['column'] = column
+        kwargs['column'] = column
         if(scales.get('column', None) is None):
             column_scale = OrdinalScale()
             scales['column'] = column_scale
