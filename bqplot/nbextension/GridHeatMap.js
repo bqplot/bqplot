@@ -85,10 +85,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                                             return el - current_pixels[index];
                                         });
                 //TODO: Explain what is going on here.
+                var min_diff = 0;
                 if(diffs[0] < 0) {
                     start = !(start);
+                    // diffs are negative. So max instead of min
+                    min_diff = d3.max(diffs);
+                } else {
+                    min_diff = d3.min(diffs);
                 }
-                var min_diff = d3.min(diffs);
                 var new_pixel = 0;
                 if(start) {
                     new_pixel = current_pixels[current_pixels.length - 1] + min_diff;
@@ -326,7 +330,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var col_start_aligned = this.model.get("column_align") === "start";
 
             if(this.model.modes["row"] !== "middle" && this.model.modes["row"] !== "boundaries") {
-                var new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes["row"], row_start_aligned);
+                var new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes["row"], (row_start_aligned));
                 if(d3.min(new_domain) < d3.min(row_scale.model.domain) || d3.max(new_domain) > d3.max(row_scale.model.domain)) {
                     // Update domain if domain has changed
                     row_scale.model.compute_and_set_domain(new_domain, row_scale.model.id);
@@ -431,9 +435,15 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                         // can be increasing or decreasing in terms of pixels
                         return Math.abs(d - start_points[ind]);
                     });
-                    // Now we have n-1 widths. We have to add the last width.
+                    // Now we have n-1 widths. We have to add the last or the
+                    // first width depending on scale is increasing or
+                    // decreasing.
                     var bounds = d3.max(scale.scale.range());
-                    widths = Array.prototype.concat(widths, [Math.abs(bounds - d3.max(start_points))]);
+                    if(start_points[0] < start_points[1]) {
+                        widths = Array.prototype.concat(widths, [Math.abs(bounds - d3.max(start_points))]);
+                    } else {
+                        widths = Array.prototype.concat([Math.abs(bounds - d3.max(start_points))], widths);
+                    }
                 } else {
                     start_points = data.map(function(d) {
                         return scale.scale(d);
