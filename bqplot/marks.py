@@ -274,6 +274,9 @@ class Lines(Mark):
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
         Visibility of the curve labels
+    curves_subset: list of integers or None (default: [])
+        If set to None, all the lines are displayed. Otherwise, only the items
+        in the list will have full opacity, while others will be faded.
     line_style: {'solid', 'dashed', 'dotted'}
         Line style.
     interpolation: {'linear', 'basis', 'cardinal', 'monotone'}
