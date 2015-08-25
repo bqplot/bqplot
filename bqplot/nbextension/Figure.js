@@ -337,8 +337,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             var model = view.model;
             var scale_models = model.get("scales");
 
-            this.update_padding_dict(this.x_pad_dict, view, scale_models["x"], view.x_padding);
-            this.update_padding_dict(this.y_pad_dict, view, scale_models["y"], view.y_padding);
+            this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("horizontal")], view.x_padding);
+            this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("vertical")], view.y_padding);
 
             this.update_paddings();
         },
@@ -374,8 +374,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
 	            view.on("mark_scales_updated", function() {
 	                that.mark_scales_updated(view);
 	            }, that);
-                var child_x_scale = view.model.get("scales")["x"];
-                var child_y_scale = view.model.get("scales")["y"];
+                var child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("horizontal")];
+                var child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("vertical")];
                 if(child_x_scale == undefined) {
                     child_x_scale = that.scale_x.model;
                 }

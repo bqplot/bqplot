@@ -42,7 +42,7 @@ try:
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 
-from .scales import Scale
+from .scales import Scale, OrdinalScale
 from .traits import NdArray, BoundedFloat, Date
 from .extras import topo_load
 
@@ -1048,3 +1048,101 @@ class MapMark(Mark):
     _view_module = Unicode('nbextensions/bqplot/MapMark', sync=True)
     _model_name = Unicode('MapModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MapMarkModel', sync=True)
+
+
+class GridHeatMap(Mark):
+
+    """GridHeatMap mark.
+    Alignment: The tiles can be aligned so that the data matches either the
+    start, the end or the midpoints of the tiles. This is controlled by the
+    align attribute.
+
+    Suppose the data passed is a m-by-n matrix. If the scale for the rows is
+    Ordinal, then alignment is by default the mid points. For a non-ordinal
+    scale, the data cannot be aligned to the mid points of the rectangles.
+
+    If it is not ordinal, then two cases arise. If the number of rows passed
+    is m, then align attribute can be used. If the number of rows passed is m+1,
+    then the data are the boundaries of the m rectangles.
+
+    If rows and columns are not passed, and scales for them are also not passed,
+    then ordinal scales are generated for the rows and columns.
+    Attributes
+    ----------
+    row_align: Enum(['start', 'end'])
+        This is only valid if the number of entries in `row` exactly match the
+        number of rows in `color` and the `row_scale` is not `OrdinalScale`.
+        `start` aligns the row values passed to be aligned with the start of the
+        tiles and `end` aligns the row values to the end of the tiles.
+    column_align: Enum(['start', end'])
+        This is only valid if the number of entries in `column` exactly match the
+        number of columns in `color` and the `column_scale` is not `OrdinalScale`.
+        `start` aligns the column values passed to be aligned with the start of the
+        tiles and `end` aligns the column values to the end of the tiles.
+
+    Data Attributes
+    ---------------
+    color: numpy.ndarray
+        color of the data points (2d array). The number of elements in this array
+        correspond to the number of cells created in the heatmap.
+    row: numpy.ndarray or None
+        lables for the rows of the `color` array passed. The length of this can be
+        no more than 1 away from the number of rows in `color`.
+        This is a scaled attribute and can be used to affect the height of the
+        cells as the entries of `row` can indicate the start or the end points
+        of the cells. Refer to the property `row_align`.
+        If this prorety is None, then a uniformly spaced grid is generated in
+        the row direction.
+    column: numpy.ndarray or None
+        lables for the columns of the `color` array passed. The length of this can be
+        no more than 1 away from the number of columns in `color`
+        This is a scaled attribute and can be used to affect the width of the
+        cells as the entries of `column` can indicate the start or the end points
+        of the cells. Refer to the property `column_align`.
+        If this prorety is None, then a uniformly spaced grid is generated in
+        the column direction.
+    """
+    # Scaled attributes
+    row = NdArray(sync=True, display_index=1, scaled=True, allow_none=True,
+                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    column = NdArray(sync=True, display_index=2, scaled=True, allow_none=True,
+                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True,  sync=True, display_index=8,
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis',
+                    min_dim=1, max_dim=2)
+    row_align = Enum(['start', 'end'], default_value='start', sync=True)
+    column_align = Enum(['start', 'end'], default_value='start', sync=True)
+
+    # Other attributes
+    scales_metadata = Dict({'row': {'orientation': 'vertical', 'dimension': 'vertical'},
+                            'column': {'orientation': 'horizontal', 'dimension': 'horizontal'},
+                            'color': {'dimension': 'color'}}, sync=True)
+    stroke = Color('black', allow_none=True, sync=True)
+    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
+                           exposed=True, display_index=7,
+                           display_name='Opacity')
+
+    def __init__(self, **kwargs):
+        data = kwargs['color']
+        row = kwargs.pop('row', range(data.shape[0]))
+        column = kwargs.pop('column', range(data.shape[1]))
+        scales = kwargs.pop('scales', {})
+        # Adding default row and column data if they are not passed.
+        # Adding scales in case they are not passed too.
+
+        kwargs['row'] = row
+        if(scales.get('row', None) is None):
+            row_scale = OrdinalScale(reverse=True)
+            scales['row'] = row_scale
+
+        kwargs['column'] = column
+        if(scales.get('column', None) is None):
+            column_scale = OrdinalScale()
+            scales['column'] = column_scale
+        kwargs['scales'] = scales
+        super(GridHeatMap, self).__init__(**kwargs)
+
+    _view_name = Unicode('GridHeatMap', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/GridHeatMap', sync=True)
+    _model_name = Unicode('GridHeatMapModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/GridHeatMapModel', sync=True)
