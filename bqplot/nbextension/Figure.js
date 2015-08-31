@@ -327,12 +327,12 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
         mark_scales_updated: function(view) {
             var model = view.model;
             var prev_scale_models = model.previous("scales");
-            this.remove_from_padding_dict(this.x_pad_dict, view, prev_scale_models[model.get_key_for_dimension("horizontal")]);
-            this.remove_from_padding_dict(this.y_pad_dict, view, prev_scale_models[model.get_key_for_dimension("vertical")]);
+            this.remove_from_padding_dict(this.x_pad_dict, view, prev_scale_models[model.get_key_for_dimension("x")]);
+            this.remove_from_padding_dict(this.y_pad_dict, view, prev_scale_models[model.get_key_for_dimension("y")]);
 
             var scale_models = model.get("scales");
-            this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("horizontal")], view.x_padding);
-            this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("vertical")], view.y_padding);
+            this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("x")], view.x_padding);
+            this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("y")], view.y_padding);
 
             this.update_paddings();
         },
@@ -340,8 +340,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             var model = view.model;
             var scale_models = model.get("scales");
 
-            this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("horizontal")], view.x_padding);
-            this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("vertical")], view.y_padding);
+            this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("x")], view.x_padding);
+            this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("y")], view.y_padding);
 
             this.update_paddings();
         },
@@ -357,8 +357,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             model.off("mark_padding_updated", null, this);
 
             var scale_models = model.get("scales");
-            this.remove_from_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("horizontal")]);
-            this.remove_from_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("vertical")]);
+            this.remove_from_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("x")]);
+            this.remove_from_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("y")]);
             view.remove();
         },
         add_mark: function(model) {
@@ -377,8 +377,8 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
 	            view.on("mark_scales_updated", function() {
 	                that.mark_scales_updated(view);
 	            }, that);
-                var child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("horizontal")];
-                var child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("vertical")];
+                var child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("x")];
+                var child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("y")];
                 if(child_x_scale == undefined) {
                     child_x_scale = that.scale_x.model;
                 }
