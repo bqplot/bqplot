@@ -306,6 +306,9 @@ define(["widgets/js/widget", "./d3", "base/js/utils", "./require-less/less!./bqp
             });
         },
         remove_from_padding_dict: function(dict, mark_view, scale_model) {
+            if(scale_model === undefined || scale_model === null) {
+                return;
+            }
             var scale_id = scale_model.id;
             if(dict[scale_id] !== undefined) {
                 delete dict[scale_id][mark_view.model.id + "_" + mark_view.cid];

@@ -64,16 +64,6 @@ _context = {
 
 Keep = Ellipsis
 
-_scale_dimension_lookup = {
-    'x': 'horizontal',
-    'y': 'vertical',
-    'sample': 'horizontal',
-    'count': 'vertical',
-    'color': 'color',
-    'size': 'size',
-    'opacity': 'opacity',
-}
-
 
 def _default_toolbar(figure):
     pz = panzoom(figure.marks)
@@ -856,12 +846,12 @@ def _get_attribute_dimension(trait_name, mark_type=None):
     '''
     Returns the dimension for the name of the trait for
     the mark specified.
-    If `mark_type` is `None`, then the lookup is performed in the
-    `_scale_dimension_lookup` dictionary.
+    If `mark_type` is `None`, then the `trait_name` is returned
+    as is.
     Returns `None` if the `trait_name` is not valid for `mark_type`.
     '''
     if(mark_type is None):
-        return _scale_dimension_lookup.get(trait_name, None)
+        return trait_name
     scale_metadata = mark_type.class_traits()['scales_metadata'].default_args[0]
     return scale_metadata.get(trait_name, {}).get('dimension', None)
 
