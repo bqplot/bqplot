@@ -134,9 +134,20 @@
             stroke: black;
             fill: black;
         }
-        .sticktext {fill: black;}
-        .brushintsel, .intsel {fill: #000000;}
-        .grid-line { stroke: grey; }
+        .bargroup, .slice {
+            rect, path, line {
+                stroke: black;
+            }
+        }
+        .sticktext {
+            fill: black;
+        }
+        .brushintsel, .intsel {
+            fill: #000000;
+        }
+        .grid-line {
+            stroke: grey;
+        }
         text.axislabel, tspan.axislabel, text.mainheading {
             fill: black;
         }
@@ -177,6 +188,11 @@
         .stick, .zeroLine {
             stroke: white;
             fill: white;
+        }
+        .bargroup, .slice {
+            rect, path, line {
+                stroke: white;
+            }
         }
         .sticktext {
             fill: white;
