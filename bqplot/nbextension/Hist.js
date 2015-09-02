@@ -127,10 +127,10 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             }
         },
         update_colors: function(model, colors) {
-            this.el.selectAll(".bar").selectAll("rect")
+            this.el.selectAll(".bargroup").selectAll("rect")
               .style("fill", this.get_colors(0));
             if (model.get("labels") && colors.length > 1) {
-                this.el.selectAll(".bar").selectAll("text")
+                this.el.selectAll(".bargroup").selectAll("text")
                   .style("fill", this.get_colors(1));
             }
             if (this.legend_el) {
@@ -144,7 +144,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             this.el.selectAll(".rect")
-              .style("stroke", (stroke === null || stroke === undefined) ? "none" : stroke)
+              .style("stroke", stroke)
               .style("opacity", opacity);
         },
         calculate_bar_width: function() {
@@ -161,13 +161,13 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
 
             var x_scale = this.scales["sample"],
                 y_scale = this.scales["count"];
-			this.el.selectAll(".bar")
+			this.el.selectAll(".bargroup")
 			  .attr("transform", function(d) {
                   return "translate(" + x_scale.scale(d.x) +
                                   "," + y_scale.scale(d.y) + ")";
               });
             var bar_width = this.calculate_bar_width();
-            this.el.selectAll(".bar").select("rect")
+            this.el.selectAll(".bargroup").select("rect")
               .transition().duration(this.model.get("animate_dur"))
 		      .attr("x", 2)
               .attr("width", bar_width)
@@ -190,12 +190,12 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 y_scale = this.scales["count"];
             var that = this;
             var bar_width = this.calculate_bar_width();
-            var bar_groups = this.el.selectAll(".bar")
+            var bar_groups = this.el.selectAll(".bargroup")
                 .data(this.model.mark_data);
 
 	        var bars_added = bar_groups.enter()
               .append("g")
-			  .attr("class","bar");
+			  .attr("class","bargroup");
 
             // initial values for width and height are set for animation
             bars_added.append("rect")
@@ -368,7 +368,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var colors = this.model.get("colors");
             var select_color = colors.length > 1 ? colors[1] : "red";
             var fill_color = colors[0];
-            var bars_sel = this.el.selectAll(".bar");
+            var bars_sel = this.el.selectAll(".bargroup");
             var self = this;
             _.difference(_.range(0, this.model.num_bins), indices)
                 .forEach(function(d) {

@@ -567,7 +567,7 @@ class Hist(Mark):
     colors: list of colors (default: CATEGORY10)
         List of colors of the Histogram. If the list is shorter than the number
         of bins, the colors are reused.
-    stroke: Color or None (default: 'white')
+    stroke: Color or None (default: None)
         Stroke color of the histogram
     opacity: float (default: 1.0)
         opacity of the histogram.
@@ -613,7 +613,7 @@ class Hist(Mark):
     # midpoints is a read-only attribute that is set when the mark is drawn
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=5, display_name='Colors')
-    stroke = Color('white', allow_none=True, sync=True)
+    stroke = Color(None, allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
@@ -635,9 +635,9 @@ class Boxplot(Mark):
         font-awesome icon for that mark
     name: string
         user-friendly name of the mark
-    stroke: color
+    stroke: Color or None
         stroke color of the marker
-    color: color
+    color: Color
         fill color of the box
     opacity: float
         opacity of the marker
@@ -669,7 +669,7 @@ class Boxplot(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
                             'y': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
 
-    stroke = Color('white', sync=True, exposed=True, display_index=3, display_name='Stroke color')
+    stroke = Color(None, allow_none=True, sync=True, exposed=True, display_index=3, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, exposed=True, display_index=4, display_name='Fill color for the box')
     outlier_fill_color = Color('gray', sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
     opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
@@ -709,7 +709,7 @@ class Bars(Mark):
     padding: float (default: 0.05)
         attribute to control the spacing between the bars
         value is specified as a percentage of the width of the bar
-    stroke: color (default: 'white')
+    stroke: Color or None (default: None)
         stroke color for the bars
     opacity: float (default: 1.0)
         opacity of the mark. Then number must be bewteen 0 and 1
@@ -760,7 +760,7 @@ class Bars(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
-    stroke = Color('white', allow_none=True, sync=True)
+    stroke = Color(None, allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
@@ -974,7 +974,7 @@ class Pie(Mark):
     sort = Bool(False, sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10, sync=True,
                   exposed=True, display_index=4, display_name='Colors')
-    stroke = Color('white', allow_none=True, sync=True)
+    stroke = Color(None, allow_none=True, sync=True)
     opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
                            exposed=True, display_index=7,
                            display_name='Opacity')
