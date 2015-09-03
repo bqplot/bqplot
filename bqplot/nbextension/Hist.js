@@ -67,7 +67,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.listenTo(this.model, "data_updated", this.draw, this);
             this.listenTo(this.model, "change:colors",this.update_colors,this);
-            this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+            this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
             this.listenTo(this.model, "change:selected", this.update_selected, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() {
@@ -140,12 +140,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                   .style("fill", this.get_colors(0));
             }
         },
-        update_stroke_and_opacity: function() {
+        update_stroke_and_opacities: function() {
             var stroke = this.model.get("stroke");
-            var opacity = this.model.get("opacity");
+            var opacities = this.model.get("opacities");
             this.el.selectAll(".rect")
               .style("stroke", stroke)
-              .style("opacity", opacity);
+              .style("opacity", function(d, i) {
+                    return opacities[i]
+              });
         },
         calculate_bar_width: function() {
             var x_scale = this.scales["sample"];
@@ -227,7 +229,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             //bin_pixels contains the pixel values of the start points of each
             //of the bins and the end point of the last bin.
             this.bin_pixels = this.model.x_bins.map(function(el) { return x_scale.scale(el) + x_scale.offset; });
-            this.update_stroke_and_opacity();
+            this.update_stroke_and_opacities();
         },
         bar_click_handler: function (args) {
             var data = args["data"];

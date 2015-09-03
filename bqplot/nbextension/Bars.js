@@ -117,7 +117,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.listenTo(this.model, "change:type", this.update_type, this);
             this.listenTo(this.model, "change:align", this.realign, this);
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
-            this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+            this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() {
@@ -347,12 +347,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.model.update_domains();
             this.draw();
         },
-        update_stroke_and_opacity: function() {
+        update_stroke_and_opacities: function() {
             var stroke = this.model.get("stroke");
-            var opacity = this.model.get("opacity");
+            var opacities = this.model.get("opacities");
             this.el.selectAll(".bar")
                 .style("stroke", stroke)
-                .style("opacity", opacity);
+                .style("opacity", function(d, i) {
+                            return opacities[i]
+                      });
         },
         update_colors: function() {
             //the following if condition is to handle the case of single
@@ -496,7 +498,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // For all the elements with index in the list indices, the default
             // style is applied.
             this.update_colors();
-            this.update_stroke_and_opacity();
+            this.update_stroke_and_opacities();
         },
         set_x_range: function() {
             var x_scale = this.scales["x"];

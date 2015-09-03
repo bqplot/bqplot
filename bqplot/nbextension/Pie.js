@@ -85,7 +85,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 this.compute_view_padding();
                 this.update_radii();
             }, this);
-            this.model.on_some_change(["stroke", "opacity"], this.update_stroke_and_opacity, this);
+            this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
             this.model.on_some_change(["x", "y"], this.position_center, this);
             this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
             this.listenTo(this.model, "labels_updated", this.update_labels, this);
@@ -222,12 +222,14 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.update_labels();
             this.apply_styles();
         },
-        update_stroke_and_opacity: function() {
+        update_stroke_and_opacities: function() {
             var stroke = this.model.get("stroke");
-            var opacity = this.model.get("opacity");
+            var opacities = this.model.get("opacities");
             this.el.select(".pielayout").selectAll(".slice")
               .style("stroke", stroke)
-              .style("opacity", opacity);
+              .style("opacity", function(d, i) {
+                            return opacities[i]
+                    });
         },
         update_colors: function() {
             var that = this;
@@ -274,7 +276,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             // For all the elements with index in the list indices, the default
             // style is applied.
             this.update_colors();
-            this.update_stroke_and_opacity();
+            this.update_stroke_and_opacities();
         },
         click_handler: function (args) {
             var data = args["data"];

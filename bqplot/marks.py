@@ -267,9 +267,9 @@ class Lines(Mark):
         Whether to close the paths or not.
     fill: list of colors (default: [])
         Fill colors for the patches. Defaults to no-fill when no color provided.
-    opacity: list of floats (default: [])
-        Opacity for the  lines and patches. Defaults to 1 when list is too
-        short, or set to None.
+    opacities: list of floats (default: [])
+        Opacity for the  lines and patches. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     stroke_width: float (default: 1.5)
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
@@ -345,7 +345,7 @@ class Lines(Mark):
                       display_name='Close path')
     fill = List(trait=Color(default_value=None, allow_none=True), sync=True, exposed=True, display_index=9,
                 display_name='Fill Colors')
-    opacity = List(sync=True, display_index=10, display_name='Opacity')
+    opacities = List(sync=True, display_index=10, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
     _model_name = Unicode('LinesModel', sync=True)
@@ -569,8 +569,9 @@ class Hist(Mark):
         of bins, the colors are reused.
     stroke: Color or None (default: None)
         Stroke color of the histogram
-    opacity: float (default: 1.0)
-        opacity of the histogram.
+    opacities: list of floats (default: [])
+        Opacity for the bins of the histogram. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     midpoints: list (default: [])
         midpoints of the bins of the histogram. It is a read-only attribute.
 
@@ -614,9 +615,7 @@ class Hist(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=5, display_name='Colors')
     stroke = Color(None, allow_none=True, sync=True)
-    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacity')
 
     _view_name = Unicode('Hist', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Hist', sync=True)
@@ -631,16 +630,13 @@ class Boxplot(Mark):
 
     Attributes
     ----------
-    icon: string
-        font-awesome icon for that mark
-    name: string
-        user-friendly name of the mark
     stroke: Color or None
         stroke color of the marker
     color: Color
         fill color of the box
-    opacity: float
-        opacity of the marker
+    opacities: list of floats (default: [])
+        Opacities for the markers of the boxplot. Defaults to 1 when the list is
+        too short, or the element of the list is set to None.
     outlier-color: color
         color for the outlier
 
@@ -672,7 +668,7 @@ class Boxplot(Mark):
     stroke = Color(None, allow_none=True, sync=True, exposed=True, display_index=3, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, exposed=True, display_index=4, display_name='Fill color for the box')
     outlier_fill_color = Color('gray', sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
-    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True, exposed=True, display_index=6, display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=6, display_name='Opacities')
 
     _view_name = Unicode('Boxplot', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Boxplot', sync=True)
@@ -711,8 +707,9 @@ class Bars(Mark):
         value is specified as a percentage of the width of the bar
     stroke: Color or None (default: None)
         stroke color for the bars
-    opacity: float (default: 1.0)
-        opacity of the mark. Then number must be bewteen 0 and 1
+    opacities: list of floats (default: [])
+        Opacities for the bars. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     base: float (default: 0.0)
         reference value from which the bars are drawn. defaults to 0.0
     align: {'center', 'left', 'right'}
@@ -762,9 +759,7 @@ class Bars(Mark):
     padding = Float(0.05, sync=True)
     stroke = Color(None, allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
-    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
     align = Enum(['center', 'left', 'right'], default_value='center',
                  sync=True, exposed=True)
 
@@ -843,8 +838,9 @@ class OHLC(Mark):
         stroke width of the marker
     colors: List of colors (default: ['limegreen', 'red'])
         fill colors for the markers (up/down)
-    opacity: float (default: 1.0)
-        opacity of the marker
+    opacities: list of floats (default: [])
+        Opacities for the markers of the OHLC mark. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     format: string (default: 'ohlc')
         description of y data being passed
         supports all permutations of the strings 'ohlc', 'oc', and 'hl'
@@ -894,9 +890,7 @@ class OHLC(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=['limegreen', 'red'],
                   display_index=6,
                   sync=True, display_name='Colors')
-    opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
     format = Unicode(default_value='ohlc', exposed=True,
                      display_index=8, display_name='Format', sync=True)
 
@@ -917,8 +911,9 @@ class Pie(Mark):
         list of colors for the slices.
     stroke: color (default: 'white')
         stroke color for the marker
-    opacity: float
-        opacity of the mark. Then number must be between 0 and 1
+    opacities: list of floats (default: [])
+        Opacities for the slices of the Pie mark. Defaults to 1 when the list is
+        too short, or the element of the list is set to None.
     sort: bool (default: False)
         sort the pie slices by descending sizes
     x: Float (default: 0.5) or Date
@@ -975,9 +970,7 @@ class Pie(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10, sync=True,
                   exposed=True, display_index=4, display_name='Colors')
     stroke = Color(None, allow_none=True, sync=True)
-    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
     radius = BoundedFloat(default_value=300.0, min=0.0, max=float('inf'),
                           sync=True)
     inner_radius = BoundedFloat(default_value=0.1, min=0.0, max=float('inf'),

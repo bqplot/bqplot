@@ -15,9 +15,9 @@
 
 define(["./d3", "./Mark"], function(d3, MarkViewModule) {
     "use strict";
-    var  boxplotView = MarkViewModule.Mark.extend({
+    var Boxplot = MarkViewModule.Mark.extend({
        render: function() {
-            var base_creation_promise = boxplotView.__super__.render.apply(this);
+            var base_creation_promise = Boxplot.__super__.render.apply(this);
             var that = this;
 
             return base_creation_promise.then(function() {
@@ -48,9 +48,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             });
         },
         create_listeners: function() {
-            boxplotView.__super__.create_listeners.apply(this);
+            Boxplot.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:stroke", this.update_stroke, this);
-            this.listenTo(this.model, "change:opacity", this.update_opacity, this);
+            this.listenTo(this.model, "change:opacities", this.update_opacities, this);
             this.listenTo(this.model, "change:marker", this.update_marker, this);
             this.listenTo(this.model, "change:outlier_fill_color", this.update_outlier_fill_color, this);
             this.listenTo(this.model, "change:box_fill_color", this.update_box_fill_color, this);
@@ -73,12 +73,16 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             this.el.selectAll(".box")
                     .style("fill", this.model.get("box_fill_color"));
         },
-        update_opacity: function() {
-            var opacity = this.model.get("opacity");
-            this.el.selectAll(".boxplot").style("opacity", opacity);
+        update_opacities: function() {
+            var opacities = this.model.get("opacities");
+            this.el.selectAll(".boxplot").style("opacity", function(d, i) {
+                                                    return opacities[i]
+                                               });
 
             if (this.legend_el) {
-                this.legend_el.selectAll("path").attr("opacity", opacity);
+                this.legend_el.selectAll("path").attr("opacity", function(d, i) {
+                                                        return opacities[i]
+                                                     });
             }
         },
         update_marker: function() {
@@ -130,7 +134,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             }
             var color = this.model.get("color");
             var stroke = this.model.get("stroke");
-            var opacity = this.model.get("opacity");
+            var opacities = this.model.get("opacities");
             var elements = this.el.selectAll(".boxplot")
                 .filter(function(data, index) {
                     return indices.indexOf(index) != -1;
@@ -140,7 +144,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                   return (d[0] > d[3] ? color : "none");
               })
               .style("stroke", stroke)
-              .style("opacity", opacity);
+              .style("opacity", function(d, i) {
+                        return opacities[i]
+                    });
         },
         clear_style: function(style_dict, indices) {
             var elements = this.el.selectAll(".boxplot");
@@ -474,7 +480,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             return mark_width;
         },
         relayout: function() {
-            boxplotView.__super__.relayout.apply(this);
+            Boxplot.__super__.relayout.apply(this);
             this.set_ranges();
             this.el.select(".intselmouse")
                 .attr("width", this.width)
@@ -524,9 +530,6 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
         },
     });
     return {
-        Boxplot: boxplotView,
+        Boxplot: Boxplot,
     };
 });
-
-
-

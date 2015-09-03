@@ -16,9 +16,9 @@
 define(["widgets/js/manager", "./d3", "./MarkModel"], function(WidgetManager, d3, MarkModelModule) {
         "use strict";
 
-        var model = MarkModelModule.MarkModel.extend({
+        var BoxplotModel = MarkModelModule.MarkModel.extend({
         initialize: function() {
-            model.__super__.initialize.apply(this);
+            BoxplotModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
 	    },
@@ -81,7 +81,7 @@ define(["widgets/js/manager", "./d3", "./MarkModel"], function(WidgetManager, d3
         },
     });
    return {
-        BoxplotModel: model,
+        BoxplotModel: BoxplotModel,
     };
 });
 

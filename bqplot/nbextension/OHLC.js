@@ -58,7 +58,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             this.listenTo(this.model, "change:stroke", this.update_stroke, this);
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
             this.listenTo(this.model, "change:colors", this.update_colors, this);
-            this.listenTo(this.model, "change:opacity", this.update_opacity, this);
+            this.listenTo(this.model, "change:opacities", this.update_opacities, this);
             this.listenTo(this.model, "change:marker", this.update_marker, this);
             this.listenTo(this.model, "format_updated", this.draw, this);
             this.listenTo(this.model, "data_updated", this.draw);
@@ -92,12 +92,16 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 this.legend_el.selectAll("path").style("fill", up_color);
             }
         },
-        update_opacity: function() {
-            var opacity = this.model.get("opacity");
-            this.el.selectAll(".stick").style("opacity", opacity);
+        update_opacities: function() {
+            var opacities = this.model.get("opacities");
+            this.el.selectAll(".stick").style("opacity", function(d, i) {
+                                                    return opacities[i];
+                                             });
 
             if(this.legend_el) {
-                this.legend_el.selectAll("path").attr("opacity", opacity);
+                this.legend_el.selectAll("path").attr("opacity", function(d, i) {
+                                                        return opacities[i]
+                                                     });
             }
         },
         update_marker: function() {
@@ -197,6 +201,7 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             this.set_ranges();
             var colors = this.model.get("colors");
+            var opacities = this.model.get("opacities");
             var up_color = (colors[0] ? colors[0] : "none");
             var down_color = (colors[1] ? colors[1] : "none");
             var px = this.model.px;
@@ -211,7 +216,9 @@ define(["./d3", "./Mark"], function(d3, MarkViewModule) {
                 .attr("class", "stick")
                 .attr("id", function(d, i) { return "stick"+i; })
                 .style("stroke", this.model.get("stroke"))
-                .style("opacity", this.model.get("opacity"));
+                .style("opacity", function(d, i) {
+                            return opacities[i];
+                      });
 
             new_sticks.append("path").attr("class", "stick_head");
             new_sticks.append("path").attr("class", "stick_tail");
