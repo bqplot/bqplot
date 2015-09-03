@@ -1,2 +1,3 @@
 recursive-include bqplot/nbextension *.*
 recursive-exclude bqplot/nbextension .git
+include bqplot/*.json

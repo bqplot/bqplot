@@ -42,7 +42,7 @@ try:
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 
-from .scales import Scale
+from .scales import Scale, OrdinalScale
 from .traits import NdArray, BoundedFloat, Date
 from .extras import topo_load
 
@@ -274,7 +274,7 @@ class Lines(Mark):
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
         Visibility of the curve labels
-    curve_subset: list of integers or None (default: [])
+    curves_subset: list of integers or None (default: [])
         If set to None, all the lines are displayed. Otherwise, only the items
         in the list will have full opacity, while others will be faded.
     line_style: {'solid', 'dashed', 'dotted'}
@@ -323,8 +323,8 @@ class Lines(Mark):
 
     # Other attributes
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=3, display_name='Colors')
@@ -386,8 +386,8 @@ class FlexLine(Lines):
                     scaled=True, rtype='Number')
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10, sync=True)
     _view_name = Unicode('FlexLine', sync=True)
@@ -494,8 +494,8 @@ class Scatter(Mark):
                        scaled=True, rtype='Number', min_dim=1, max_dim=1)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}, 'size': {'dimension': 'size'},
                             'opacity': {'dimension': 'opacity'}}, sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
@@ -567,7 +567,7 @@ class Hist(Mark):
     colors: list of colors (default: CATEGORY10)
         List of colors of the Histogram. If the list is shorter than the number
         of bins, the colors are reused.
-    stroke: Color or None (default: 'white')
+    stroke: Color or None (default: None)
         Stroke color of the histogram
     opacities: list of floats (default: [])
         Opacity for the bins of the histogram. Defaults to 1 when list is too
@@ -605,8 +605,8 @@ class Hist(Mark):
     # count is a read-only attribute that is set when the mark is drawn
 
     # Other attributes
-    scales_metadata = Dict({'sample': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'count': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'sample': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'count': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
     bins = Int(10, sync=True, exposed=True, display_index=2,
                display_name='Number of bins')
     midpoints = List(sync=True, read_only=True,
@@ -614,7 +614,7 @@ class Hist(Mark):
     # midpoints is a read-only attribute that is set when the mark is drawn
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=5, display_name='Colors')
-    stroke = Color('white', allow_none=True, sync=True)
+    stroke = Color(None, allow_none=True, sync=True)
     opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacity')
 
     _view_name = Unicode('Hist', sync=True)
@@ -630,9 +630,9 @@ class Boxplot(Mark):
 
     Attributes
     ----------
-    stroke: color
+    stroke: Color or None
         stroke color of the marker
-    color: color
+    color: Color
         fill color of the box
     opacities: list of floats (default: [])
         Opacities for the markers of the boxplot. Defaults to 1 when list is too
@@ -662,10 +662,10 @@ class Boxplot(Mark):
 
     # Other attributes
     # marker = Enum([boxplottype], sync=True, default_value='candle', exposed=True, display_index=3, display_name='Marker')
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'y': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'y': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
 
-    stroke = Color('white', sync=True, exposed=True, display_index=3, display_name='Stroke color')
+    stroke = Color(None, allow_none=True, sync=True, exposed=True, display_index=3, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, exposed=True, display_index=4, display_name='Fill color for the box')
     outlier_fill_color = Color('gray', sync=True, exposed=True, display_index=5, display_name='Fill color for the outlier circle')
     opacities = List(sync=True, exposed=True, display_index=6, display_name='Opacities')
@@ -705,7 +705,7 @@ class Bars(Mark):
     padding: float (default: 0.05)
         attribute to control the spacing between the bars
         value is specified as a percentage of the width of the bar
-    stroke: color (default: 'white')
+    stroke: Color or None (default: None)
         stroke color for the bars
     opacities: list of floats (default: [])
         Opacities for the bars. Defaults to 1 when list is too
@@ -746,8 +746,8 @@ class Bars(Mark):
                     min_dim=1, max_dim=1)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto',
                       sync=True)
@@ -757,7 +757,7 @@ class Bars(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, exposed=True, display_index=4, display_name='Colors')
     padding = Float(0.05, sync=True)
-    stroke = Color('white', allow_none=True, sync=True)
+    stroke = Color(None, allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
     opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
     align = Enum(['center', 'left', 'right'], default_value='center',
@@ -803,8 +803,8 @@ class Label(Mark):
     y = Date(sync=True) | Float(sync=True) | Unicode(sync=True)
     x_offset = Int(sync=True)
     y_offset = Int(sync=True)
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
     color = Color(None, allow_none=True, sync=True)
     rotate_angle = Float(sync=True)
@@ -878,8 +878,8 @@ class OHLC(Mark):
     _y_default = None
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'y': {'orientation': 'vertical', 'dimension': 'vertical'}}, sync=True)
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'y': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
     marker = Enum(['candle', 'bar'], default_value='candle',
                   exposed=True, display_index=3, display_name='Marker',
                   sync=True)
@@ -963,13 +963,13 @@ class Pie(Mark):
     y = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'horizontal'},
-                            'y': {'orientation': 'vertical', 'dimension': 'vertical'},
+    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
     sort = Bool(False, sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10, sync=True,
                   exposed=True, display_index=4, display_name='Colors')
-    stroke = Color('white', allow_none=True, sync=True)
+    stroke = Color(None, allow_none=True, sync=True)
     opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
     radius = BoundedFloat(default_value=300.0, min=0.0, max=float('inf'),
                           sync=True)
@@ -1041,3 +1041,101 @@ class MapMark(Mark):
     _view_module = Unicode('nbextensions/bqplot/MapMark', sync=True)
     _model_name = Unicode('MapModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/MapMarkModel', sync=True)
+
+
+class GridHeatMap(Mark):
+
+    """GridHeatMap mark.
+    Alignment: The tiles can be aligned so that the data matches either the
+    start, the end or the midpoints of the tiles. This is controlled by the
+    align attribute.
+
+    Suppose the data passed is a m-by-n matrix. If the scale for the rows is
+    Ordinal, then alignment is by default the mid points. For a non-ordinal
+    scale, the data cannot be aligned to the mid points of the rectangles.
+
+    If it is not ordinal, then two cases arise. If the number of rows passed
+    is m, then align attribute can be used. If the number of rows passed is m+1,
+    then the data are the boundaries of the m rectangles.
+
+    If rows and columns are not passed, and scales for them are also not passed,
+    then ordinal scales are generated for the rows and columns.
+    Attributes
+    ----------
+    row_align: Enum(['start', 'end'])
+        This is only valid if the number of entries in `row` exactly match the
+        number of rows in `color` and the `row_scale` is not `OrdinalScale`.
+        `start` aligns the row values passed to be aligned with the start of the
+        tiles and `end` aligns the row values to the end of the tiles.
+    column_align: Enum(['start', end'])
+        This is only valid if the number of entries in `column` exactly match the
+        number of columns in `color` and the `column_scale` is not `OrdinalScale`.
+        `start` aligns the column values passed to be aligned with the start of the
+        tiles and `end` aligns the column values to the end of the tiles.
+
+    Data Attributes
+    ---------------
+    color: numpy.ndarray
+        color of the data points (2d array). The number of elements in this array
+        correspond to the number of cells created in the heatmap.
+    row: numpy.ndarray or None
+        lables for the rows of the `color` array passed. The length of this can be
+        no more than 1 away from the number of rows in `color`.
+        This is a scaled attribute and can be used to affect the height of the
+        cells as the entries of `row` can indicate the start or the end points
+        of the cells. Refer to the property `row_align`.
+        If this prorety is None, then a uniformly spaced grid is generated in
+        the row direction.
+    column: numpy.ndarray or None
+        lables for the columns of the `color` array passed. The length of this can be
+        no more than 1 away from the number of columns in `color`
+        This is a scaled attribute and can be used to affect the width of the
+        cells as the entries of `column` can indicate the start or the end points
+        of the cells. Refer to the property `column_align`.
+        If this prorety is None, then a uniformly spaced grid is generated in
+        the column direction.
+    """
+    # Scaled attributes
+    row = NdArray(sync=True, display_index=1, scaled=True, allow_none=True,
+                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    column = NdArray(sync=True, display_index=2, scaled=True, allow_none=True,
+                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True,  sync=True, display_index=8,
+                    scaled=True, rtype='Color', atype='bqplot.ColorAxis',
+                    min_dim=1, max_dim=2)
+    row_align = Enum(['start', 'end'], default_value='start', sync=True)
+    column_align = Enum(['start', 'end'], default_value='start', sync=True)
+
+    # Other attributes
+    scales_metadata = Dict({'row': {'orientation': 'vertical', 'dimension': 'y'},
+                            'column': {'orientation': 'horizontal', 'dimension': 'x'},
+                            'color': {'dimension': 'color'}}, sync=True)
+    stroke = Color('black', allow_none=True, sync=True)
+    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
+                           exposed=True, display_index=7,
+                           display_name='Opacity')
+
+    def __init__(self, **kwargs):
+        data = kwargs['color']
+        row = kwargs.pop('row', range(data.shape[0]))
+        column = kwargs.pop('column', range(data.shape[1]))
+        scales = kwargs.pop('scales', {})
+        # Adding default row and column data if they are not passed.
+        # Adding scales in case they are not passed too.
+
+        kwargs['row'] = row
+        if(scales.get('row', None) is None):
+            row_scale = OrdinalScale(reverse=True)
+            scales['row'] = row_scale
+
+        kwargs['column'] = column
+        if(scales.get('column', None) is None):
+            column_scale = OrdinalScale()
+            scales['column'] = column_scale
+        kwargs['scales'] = scales
+        super(GridHeatMap, self).__init__(**kwargs)
+
+    _view_name = Unicode('GridHeatMap', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/GridHeatMap', sync=True)
+    _model_name = Unicode('GridHeatMapModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/GridHeatMapModel', sync=True)

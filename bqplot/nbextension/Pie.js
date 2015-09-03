@@ -226,7 +226,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             var stroke = this.model.get("stroke");
             var opacities = this.model.get("opacities");
             this.el.select(".pielayout").selectAll(".slice")
-              .style("stroke", (stroke === undefined || stroke === null) ? "none" : stroke)
+              .style("stroke", stroke)
               .style("opacity", function(d, i) {
                             return opacities[i]
                     });

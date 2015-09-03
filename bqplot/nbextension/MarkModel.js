@@ -58,6 +58,15 @@ define(["widgets/js/widget", "./d3", "./BaseModel"], function(Widget, d3, BaseMo
         handle_destroy: function() {
             this.unregister_all_scales(this.get("scales"));
         },
+        get_key_for_dimension: function(dimension) {
+            var scales_metadata = this.get("scales_metadata");
+            for (var scale in scales_metadata) {
+                if(scales_metadata[scale]['dimension'] === dimension) {
+                    return scale;
+                }
+            }
+            return null;
+        },
     },
     {
         serializers: _.extend({

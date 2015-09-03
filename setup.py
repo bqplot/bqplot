@@ -15,8 +15,8 @@
 from setuptools import setup, find_packages
 
 setup(name='bqplot',
-      version='0.1',
+      version='0.2.1',
       include_package_data=True,
-      install_requires=['ipython', 'numpy'],
+      install_requires=['ipython', 'numpy', 'pandas'],
       packages=find_packages(),
       zip_safe=False)

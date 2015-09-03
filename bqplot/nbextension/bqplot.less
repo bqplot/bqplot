@@ -44,10 +44,19 @@
         .zeroLine {
             shape-rendering: crispEdges;
         }
-        .brushintsel, .intsel {pointer-events: none;}
-        .indsel {stroke: red;}
-        .brushintsel, .intsel {fill-opacity: 0.2;}
-        .intselmouse {visibility: hidden; pointer-events: all;/*none?*/}
+        .brushintsel, .intsel {
+            pointer-events: none;
+        }
+        .indsel {
+            stroke: red;
+        }
+        .brushintsel, .intsel {
+            fill-opacity: 0.2;
+        }
+        .intselmouse {
+            visibility: hidden;
+            pointer-events: all;/*none?*/
+        }
         text.legendtext {
             text-anchor: start;
             font: 14px sans-serif;
@@ -115,17 +124,30 @@
 .theme-light {
     .common();
     svg.bqplot {
-        fill: black;
+        background: white;
         .axis {
-            rect, path, line {stroke: black;}
+            rect, path, line {
+                stroke: black;
+            }
         }
         .stick, .zeroLine {
             stroke: black;
             fill: black;
         }
-        .sticktext {fill: black;}
-        .brushintsel, .intsel {fill: #000000;}
-        .grid-line { stroke: grey; }
+        .bargroup, .slice {
+            rect, path, line {
+                stroke: black;
+            }
+        }
+        .sticktext {
+            fill: black;
+        }
+        .brushintsel, .intsel {
+            fill: #000000;
+        }
+        .grid-line {
+            stroke: grey;
+        }
         text.axislabel, tspan.axislabel, text.mainheading {
             fill: black;
         }
@@ -157,16 +179,30 @@
 .theme-dark {
     .common();
     svg.bqplot {
+        background: #1a1a1a;
         .axis {
-            rect, path, line {stroke: white;}
+            rect, path, line {
+                stroke: white;
+            }
         }
         .stick, .zeroLine {
             stroke: white;
             fill: white;
         }
-        .sticktext {fill: white;}
-        .brushintsel, .intsel {fill: #ffffff;}
-        .grid_lines .grid-line {stroke: grey;}
+        .bargroup, .slice {
+            rect, path, line {
+                stroke: white;
+            }
+        }
+        .sticktext {
+            fill: white;
+        }
+        .brushintsel, .intsel {
+            fill: #ffffff;
+        }
+        .grid_lines .grid-line {
+            stroke: grey;
+        }
         text.axislabel, tspan.axislabel, text.mainheading {
             fill: orange;
         }
