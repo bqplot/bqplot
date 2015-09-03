@@ -268,8 +268,8 @@ class Lines(Mark):
     fill: list of colors (default: [])
         Fill colors for the patches. Defaults to no-fill when no color provided.
     opacities: list of floats (default: [])
-        Opacity for the  lines and patches. Defaults to 1 when list is too
-        short, or set to None.
+        Opacity for the  lines and patches. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     stroke_width: float (default: 1.5)
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
@@ -570,8 +570,8 @@ class Hist(Mark):
     stroke: Color or None (default: None)
         Stroke color of the histogram
     opacities: list of floats (default: [])
-        Opacity for the bins of the histogram. Defaults to 1 when list is too
-        short, or set to None.
+        Opacity for the bins of the histogram. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     midpoints: list (default: [])
         midpoints of the bins of the histogram. It is a read-only attribute.
 
@@ -635,8 +635,8 @@ class Boxplot(Mark):
     color: Color
         fill color of the box
     opacities: list of floats (default: [])
-        Opacities for the markers of the boxplot. Defaults to 1 when list is too
-        short, or set to None.
+        Opacities for the markers of the boxplot. Defaults to 1 when the list is
+        too short, or the element of the list is set to None.
     outlier-color: color
         color for the outlier
 
@@ -708,8 +708,8 @@ class Bars(Mark):
     stroke: Color or None (default: None)
         stroke color for the bars
     opacities: list of floats (default: [])
-        Opacities for the bars. Defaults to 1 when list is too
-        short, or set to None.
+        Opacities for the bars. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     base: float (default: 0.0)
         reference value from which the bars are drawn. defaults to 0.0
     align: {'center', 'left', 'right'}
@@ -839,8 +839,8 @@ class OHLC(Mark):
     colors: List of colors (default: ['limegreen', 'red'])
         fill colors for the markers (up/down)
     opacities: list of floats (default: [])
-        Opacities for the markers of the OHLC mark. Defaults to 1 when list is too
-        short, or set to None.
+        Opacities for the markers of the OHLC mark. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     format: string (default: 'ohlc')
         description of y data being passed
         supports all permutations of the strings 'ohlc', 'oc', and 'hl'
@@ -912,8 +912,8 @@ class Pie(Mark):
     stroke: color (default: 'white')
         stroke color for the marker
     opacities: list of floats (default: [])
-        Opacities for the slices of the Pie mark. Defaults to 1 when list is too
-        short, or set to None.
+        Opacities for the slices of the Pie mark. Defaults to 1 when the list is
+        too short, or the element of the list is set to None.
     sort: bool (default: False)
         sort the pie slices by descending sizes
     x: Float (default: 0.5) or Date
