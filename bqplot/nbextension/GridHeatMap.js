@@ -64,26 +64,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 if (!this.model.dirty) { this.draw(); }
             });
         },
-        initialize_additional_scales: function() {
-            var color_scale = this.scales["color"];
-            if(color_scale) {
-                this.listenTo(color_scale, "domain_changed", function() {
-                    this.update_style();
-                });
-                color_scale.on("color_scale_range_changed", this.update_style, this);
-            }
-        },
         expand_scale_domain: function(scale, data, mode, start) {
             // This function expands the domain so that the heatmap has the
             // minimum area needed to draw itself.
             if(mode === "expand_one") {
-                var current_pixels = data.map(function(el)
-                                        {
-                                            return scale.scale(el);
-                                        });
+                var current_pixels = data.map(function(el) {
+                    return scale.scale(el);
+                });
                 var diffs = current_pixels.slice(1).map(function(el, index) {
-                                            return el - current_pixels[index];
-                                        });
+                    return el - current_pixels[index];
+                });
                 //TODO: Explain what is going on here.
                 var min_diff = 0;
                 if(diffs[0] < 0) {
@@ -122,7 +112,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
                 .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
-
+            this.listenTo(this.model, "data_updated", this.draw, this);
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
