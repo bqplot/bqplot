@@ -43,7 +43,7 @@ except ImportError:
     widget_serialization = {}  # IPython 3.*
 
 from .scales import Scale, OrdinalScale
-from .traits import NdArray, BoundedFloat, Date
+from .traits import NdArray, Date
 from .extras import topo_load
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
@@ -509,11 +509,11 @@ class Scatter(Mark):
                    display_index=5, display_name='Stroke color')
     stroke_width = Float(1.5, sync=True, exposed=True, display_index=6,
                          display_name='Stroke width')
-    default_opacity = BoundedFloat(default_value=1.0, min=0, max=1, sync=True,
-                                   exposed=True, display_index=8,
-                                   display_name='Default opacity')
-    default_skew = BoundedFloat(default_value=0.5, min=0, max=1,
-                                display_index=11, sync=True)
+    default_opacity = Float(default_value=1.0, min=0, max=1, sync=True,
+                            exposed=True, display_index=8,
+                            display_name='Default opacity')
+    default_skew = Float(default_value=0.5, min=0, max=1,
+                         display_index=11, sync=True)
     default_size = Int(64, sync=True, exposed=True, display_index=10,
                        display_name='Default size')  # dot size in pixels
     names = NdArray(sync=True)
@@ -971,10 +971,8 @@ class Pie(Mark):
                   exposed=True, display_index=4, display_name='Colors')
     stroke = Color(None, allow_none=True, sync=True)
     opacities = List(sync=True, exposed=True, display_index=7, display_name='Opacities')
-    radius = BoundedFloat(default_value=300.0, min=0.0, max=float('inf'),
-                          sync=True)
-    inner_radius = BoundedFloat(default_value=0.1, min=0.0, max=float('inf'),
-                                sync=True)
+    radius = Float(default_value=300.0, min=0.0, max=float('inf'), sync=True)
+    inner_radius = Float(default_value=0.1, min=0.0, max=float('inf'), sync=True)
     start_angle = Float(default_value=0.0, sync=True, exposed=True)
     end_angle = Float(default_value=360.0, sync=True, exposed=True)
 
@@ -1111,9 +1109,8 @@ class GridHeatMap(Mark):
                             'column': {'orientation': 'horizontal', 'dimension': 'x'},
                             'color': {'dimension': 'color'}}, sync=True)
     stroke = Color('black', allow_none=True, sync=True)
-    opacity = BoundedFloat(default_value=1.0, min=0.2, max=1, sync=True,
-                           exposed=True, display_index=7,
-                           display_name='Opacity')
+    opacity = Float(default_value=1.0, min=0.2, max=1, sync=True, exposed=True,
+                    display_index=7, display_name='Opacity')
 
     def __init__(self, **kwargs):
         data = kwargs['color']
