@@ -1079,7 +1079,7 @@ class GridHeatMap(Mark):
         color of the data points (2d array). The number of elements in this array
         correspond to the number of cells created in the heatmap.
     row: numpy.ndarray or None
-        lables for the rows of the `color` array passed. The length of this can be
+        labels for the rows of the `color` array passed. The length of this can be
         no more than 1 away from the number of rows in `color`.
         This is a scaled attribute and can be used to affect the height of the
         cells as the entries of `row` can indicate the start or the end points
@@ -1087,7 +1087,7 @@ class GridHeatMap(Mark):
         If this prorety is None, then a uniformly spaced grid is generated in
         the row direction.
     column: numpy.ndarray or None
-        lables for the columns of the `color` array passed. The length of this can be
+        labels for the columns of the `color` array passed. The length of this can be
         no more than 1 away from the number of columns in `color`
         This is a scaled attribute and can be used to affect the width of the
         cells as the entries of `column` can indicate the start or the end points
@@ -1097,9 +1097,9 @@ class GridHeatMap(Mark):
     """
     # Scaled attributes
     row = NdArray(sync=True, display_index=1, scaled=True, allow_none=True,
-                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+                  rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
     column = NdArray(sync=True, display_index=2, scaled=True, allow_none=True,
-                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+                     rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
     color = NdArray(None, allow_none=True,  sync=True, display_index=8,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=2)

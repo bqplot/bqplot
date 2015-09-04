@@ -64,26 +64,16 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 if (!this.model.dirty) { this.draw(); }
             });
         },
-        initialize_additional_scales: function() {
-            var color_scale = this.scales["color"];
-            if(color_scale) {
-                this.listenTo(color_scale, "domain_changed", function() {
-                    this.update_style();
-                });
-                color_scale.on("color_scale_range_changed", this.update_style, this);
-            }
-        },
         expand_scale_domain: function(scale, data, mode, start) {
             // This function expands the domain so that the heatmap has the
             // minimum area needed to draw itself.
             if(mode === "expand_one") {
-                var current_pixels = data.map(function(el)
-                                        {
-                                            return scale.scale(el);
-                                        });
+                var current_pixels = data.map(function(el) {
+                    return scale.scale(el);
+                });
                 var diffs = current_pixels.slice(1).map(function(el, index) {
-                                            return el - current_pixels[index];
-                                        });
+                    return el - current_pixels[index];
+                });
                 //TODO: Explain what is going on here.
                 var min_diff = 0;
                 if(diffs[0] < 0) {
@@ -122,7 +112,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
             this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
                 .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
                 .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
-
+            this.listenTo(this.model, "data_updated", this.draw, this);
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
@@ -198,7 +188,7 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
         },
         _filter_cells_by_cell_num: function(cell_numbers) {
             return this.display_cells.filter(function(el) {
-               return (cell_numbers.indexOf(el['_cell_num']) !== -1);});
+               return (cell_numbers.indexOf(el["_cell_num"]) !== -1);});
         },
         selected_style_updated: function(model, style) {
             this.selected_style = style;
@@ -410,19 +400,19 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                 start_points = data.map(function(d) { return scale.scale(d); });
                 widths = data.map(function(d) { return scale.scale.rangeBand(); });
 
-                return {'start': start_points, 'widths': widths};
+                return {"start": start_points, "widths": widths};
             }
             if(mode === "boundaries") {
-                start_points = data.slice(0, -1).map(function(d)
-                                {
-                                    return scale.scale(d);
-                                });
-                widths = start_points.slice(1).map(function(d, ind)
-                            {
-                                 return Math.abs(d - start_points[ind]);
-                            });
-                widths[widths.length] = scale.scale(data.slice(-1)[0]) - start_points.slice(-1)[0];
-                return {'start': start_points, 'widths': widths};
+                var pixel_points = data.map(function(d) {
+                    return scale.scale(d);
+                });
+                var widths = [];
+                for (var i=1; i<pixel_points.length; ++i) {
+                    widths[i - 1] = Math.abs(pixel_points[i] - pixel_points[i - 1]);
+                }
+                var start_points = pixel_points[1] > pixel_points[0] ?
+                    pixel_points.slice(0, -1) : pixel_points.slice(1);
+                return {"start": start_points, "widths": widths};
             }
             if(mode === "expand_one") {
                 if(start) {
@@ -471,24 +461,22 @@ define(["./d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
                         start_points.splice(0, 1);
                     }
                 }
-                return {'widths': widths, 'start': start_points};
+                return {"widths": widths, "start": start_points};
             }
             if(mode === "expand_two") {
-                start_points = data.map(function(d)
-                                {
-                                    return scale.scale(d);
-                                });
+                start_points = data.map(function(d) {
+                    return scale.scale(d);
+                });
 
                 var is_positive = (start_points[1] - start_points[0]) > 0;
                 var bound = (is_positive) ? d3.min(scale.scale.range()) : d3.max(scale.scale.range());
                 start_points.splice(0, 0, bound);
-                widths = start_points.slice(1).map(function(d, ind)
-                            {
-                                return Math.abs(d - start_points[ind]);
-                            });
+                widths = start_points.slice(1).map(function(d, ind) {
+                    return Math.abs(d - start_points[ind]);
+                });
                 bound = (is_positive) ? d3.max(scale.scale.range()) : d3.min(scale.scale.range());
                 widths[widths.length] = Math.abs(bound - start_points.slice(-1)[0]);
-                return {'start': start_points, 'widths': widths};
+                return {"start": start_points, "widths": widths};
             }
         },
         get_element_fill: function(dat) {
