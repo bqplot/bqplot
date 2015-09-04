@@ -43,7 +43,7 @@ from IPython.utils.traitlets import (Unicode, List, Enum, Float, Bool, Type,
                                      Tuple)
 
 import numpy as np
-from .traits import Date, BoundedFloat
+from .traits import Date
 
 
 def register_scale(key=None):
@@ -246,7 +246,7 @@ class Orthographic(GeoScale):
     scale_factor = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
     rotate = Tuple((0, 0), sync=True)
-    clip_angle = BoundedFloat(90., min=0., max=360., sync=True)
+    clip_angle = Float(default_value=90., min=0., max=360., sync=True)
     precision = Float(0.1, sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
@@ -277,7 +277,7 @@ class Gnomonic(GeoScale):
     scale_factor = Float(145., sync=True)
     center = Tuple((0, 60), sync=True)
     precision = Float(0.1, sync=True)
-    clip_angle = BoundedFloat(89.999, min=0., max=360., sync=True)
+    clip_angle = Float(default_value=89.999, min=0., max=360., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Gnomonic', sync=True)
@@ -311,7 +311,7 @@ class Stereographic(GeoScale):
     center = Tuple((0, 60), sync=True)
     precision = Float(0.1, sync=True)
     rotate = Tuple((96, 0), sync=True)
-    clip_angle = BoundedFloat(179.9999, min=0., max=360., sync=True)
+    clip_angle = Float(default_value=179.9999, min=0., max=360., sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('Stereographic', sync=True)

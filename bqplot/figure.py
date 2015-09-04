@@ -27,7 +27,7 @@ Figure
 """
 
 from IPython.utils.traitlets import (Unicode, Instance, List, Dict,
-                                     CFloat, Bool, Enum)
+                                     CFloat, Bool, Enum, Float)
 from IPython.html.widgets import DOMWidget, register, Color
 
 try:
@@ -35,7 +35,6 @@ try:
 except ImportError:
     widget_serialization = {}  # IPython 3.*
 
-from .traits import BoundedFloat
 from .scales import Scale, LinearScale
 from .interacts import Interaction
 from .marks import Mark
@@ -68,10 +67,10 @@ class Figure(DOMWidget):
         Scale representing the x values of the figure
     scale_y: Scale
         Scale representing the y values of the figure
-    padding_x: BoundedFloat (default: 0.0)
+    padding_x: Float (default: 0.0)
         Padding to be applied in the horizontal direction of the figure
         around the data points, proportion of the horizontal length
-    padding_y: BoundedFloat (default: 0.025)
+    padding_y: Float (default: 0.025)
         Padding to be applied in the vertical direction of the figure
         around the data points, proportion of the vertical length
     legend_location:  {'top-right', 'top', 'top-left', 'left',
@@ -113,8 +112,8 @@ class Figure(DOMWidget):
                            display_name='Preserve aspect ratio')
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)
-    padding_x = BoundedFloat(0.0, min=0.0, max=1.0, sync=True)
-    padding_y = BoundedFloat(0.025, min=0.0, max=1.0, sync=True)
+    padding_x = Float(default_value=0.0, min=0.0, max=1.0, sync=True)
+    padding_y = Float(default_value=0.025, min=0.0, max=1.0, sync=True)
     legend_location = Enum(['top-right', 'top', 'top-left', 'left',
                             'bottom-left', 'bottom', 'bottom-right', 'right'],
                            default_value='top-right', sync=True, exposed=True,

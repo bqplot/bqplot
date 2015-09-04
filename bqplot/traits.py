@@ -23,146 +23,19 @@ Custom Traits
 .. autosummary::
    :toctree: generate/
 
-   BoundedFloat
-   BoundedInt
    CInstance
    Date
    NdArray
    PandasDataFrame
    PandasSeries
-   isrgbcolor
-   safe_directional_link
-   safe_dlink
 """
 
-from IPython.utils.traitlets import Instance, Int, Float, TraitError, TraitType
+from IPython.utils.traitlets import Instance, TraitError, TraitType
 
 import numpy as np
 import pandas as pd
-import contextlib
 import warnings
-
-
-class safe_directional_link(object):
-
-    """Link the trait of a source object with traits of target objects.
-
-    Parameters
-    ----------
-    source : pair of object, name
-    targets : pairs of objects/attributes
-
-    Examples
-    --------
-
-    # >>> c = directional_link((src, 'value'), (tgt1, 'value'),
-    # (tgt2, 'value'))
-    # >>> src.value = 5  # updates target objects
-    # >>> tgt1.value = 6 # does not update other objects
-    """
-    updating = False
-
-    def __init__(self, source, *targets, **kwargs):
-        self.source = source
-        self.targets = targets
-        self.status = kwargs.get('status')
-        self.readout = kwargs.get('readout')
-
-        # Update current value
-        src_attr_value = getattr(source[0], source[1])
-        if self.status is not None:
-            setattr(self.status[0], self.status[1], True)
-        if self.readout is not None:
-            setattr(self.readout[0], self.readout[1], "")
-        try:
-            for obj, attr in targets:
-                setattr(obj, attr, src_attr_value)
-        except TraitError as e:
-            if self.status is not None:
-                setattr(self.status[0], self.status[1], False)
-            if self.readout is not None:
-                setattr(self.readout[0], self.readout[1], e.message)
-        finally:
-            self.source[0].on_trait_change(self._update, self.source[1])
-
-    @contextlib.contextmanager
-    def _busy_updating(self):
-        self.updating = True
-        try:
-            yield
-        finally:
-            self.updating = False
-
-    def _update(self, name, old, new):
-        if self.updating:
-            return
-        with self._busy_updating():
-            if self.status is not None:
-                setattr(self.status[0], self.status[1], True)
-            if self.readout is not None:
-                setattr(self.readout[0], self.readout[1], "")
-            try:
-                for obj, attr in self.targets:
-                    setattr(obj, attr, new)
-            except TraitError as e:
-                if self.status is not None:
-                    setattr(self.status[0], self.status[1], False)
-                if self.readout is not None:
-                    setattr(self.readout[0], self.readout[1], e.message)
-
-    def unlink(self):
-        self.source[0].on_trait_change(self._update, self.source[1],
-                                       remove=True)
-        self.source = None
-        self.targets = []
-
-
-def safe_dlink(source, *targets, **kwargs):
-    """Shorter helper function returning a directional_link object"""
-    return safe_directional_link(source, *targets, **kwargs)
-
-
-class BoundedInt(Int):
-
-    """
-    A bounded integer trait
-    """
-
-    def __init__(self, default_value=0, **metadata):
-        self.min = metadata.setdefault('min', 0)
-        self.max = metadata.setdefault('max',  float('inf'))
-        super(BoundedInt, self).__init__(default_value, **metadata)
-
-    def info(self):
-        return "an int between %s and %s" % (self.min, self.max)
-
-    def validate(self, obj, value):
-        if isinstance(value, int) and (value >= self.min) and (value <= self.max):
-            return value
-        self.error(obj, value)
-
-
-class BoundedFloat(Float):
-
-    """
-    A bounded float trait
-    """
-
-    def __init__(self, default_value=0, **metadata):
-        self.min = metadata.setdefault('min', 0)
-        self.max = metadata.setdefault('max',  float('inf'))
-        super(BoundedFloat, self).__init__(default_value, **metadata)
-
-    def info(self):
-        return "a float between %s and %s" % (self.min, self.max)
-
-    def validate(self, obj, value):
-        if isinstance(value, (float, int)) and (value >= self.min) and (value <= self.max):
-            if isinstance(value, float):
-                return value
-            else:
-                return float(value)
-        self.error(obj, value)
+import datetime as dt
 
 
 # Numpy and Pandas Traitlets
@@ -176,9 +49,6 @@ class CInstance(Instance):
             return value
         else:
             return self._cast(value)
-
-
-import datetime as dt
 
 
 class Date(TraitType):
