@@ -117,14 +117,14 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
                   .data(that.model.mark_data[index]["values"]);
                 lines.enter().append("line");
                 lines.attr("class", "line-elem")
-                  .attr({"x1": function(dataelem) { return x_scale.scale(dataelem.x1); },
-                         "x2": function(dataelem) { return x_scale.scale(dataelem.x2); },
-                         "y1": function(dataelem) { return y_scale.scale(dataelem.y1); },
-                         "y2": function(dataelem) { return y_scale.scale(dataelem.y2); }})
-                  .attr("stroke", function(dataelem) {
-                      return that.get_element_color(dataelem);
-                  }).attr("stroke-width", function(dataelem) {
-                      return that.get_element_width(dataelem);
+                  .attr({"x1": function(d) { return x_scale.scale(d.x1); },
+                         "x2": function(d) { return x_scale.scale(d.x2); },
+                         "y1": function(d) { return y_scale.scale(d.y1); },
+                         "y2": function(d) { return y_scale.scale(d.y2); }})
+                  .attr("stroke", function(d) {
+                      return that.get_element_color(d);
+                  }).attr("stroke-width", function(d) {
+                      return that.get_element_width(d);
                   });
             });
 
@@ -152,17 +152,17 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
                   });
             }
         },
-        get_element_color: function(dataelem) {
+        get_element_color: function(d) {
             var color_scale = this.scales["color"];
-            if(color_scale !== undefined && dataelem.color !== undefined) {
-                return color_scale.scale(dataelem.color);
+            if(color_scale !== undefined && d.color !== undefined) {
+                return color_scale.scale(d.color);
             }
             return this.model.get("colors")[0];
         },
-        get_element_width: function(dataelem) {
+        get_element_width: function(d) {
             var width_scale = this.scales["width"];
-            if(width_scale !== undefined && dataelem.size !== undefined) {
-                return width_scale.scale(dataelem.size);
+            if(width_scale !== undefined && d.size !== undefined) {
+                return width_scale.scale(d.size);
             }
             return this.model.get("stroke_width");
         },
@@ -175,10 +175,10 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
               .transition().duration(this.model.get("animate_dur"))
-              .attr({"x1": function(dataelem) { return x_scale.scale(dataelem.x1); },
-                     "x2": function(dataelem) { return x_scale.scale(dataelem.x2); },
-                     "y1": function(dataelem) { return y_scale.scale(dataelem.y1); },
-                     "y2": function(dataelem) { return y_scale.scale(dataelem.y2); },
+              .attr({"x1": function(d) { return x_scale.scale(d.x1); },
+                     "x2": function(d) { return x_scale.scale(d.x2); },
+                     "y1": function(d) { return y_scale.scale(d.y1); },
+                     "y2": function(d) { return y_scale.scale(d.y2); },
               });
         },
         create_labels: function() {
