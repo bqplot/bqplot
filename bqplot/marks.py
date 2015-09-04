@@ -408,8 +408,9 @@ class Scatter(Mark):
         Stroke color of the marker
     stroke_width: Float (default: 1.5)
         Stroke width of the marker
-    default_opacity: float (default: 1.0)
-        This number is validated to be between 0 and 1.
+    default_opacities: list of floats (default: [])
+        Default opacities of the markers. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
     default_skew: float (default: 0.5)
         Default skew of the marker.
         This number is validated to be between 0 and 1.
@@ -490,10 +491,10 @@ class Scatter(Mark):
     default_color = Color('green', sync=True, display_name='Default color')
     stroke = Color(None, allow_none=True, sync=True, display_name='Stroke color')
     stroke_width = Float(1.5, sync=True, display_name='Stroke width')
-    default_opacity = Float(default_value=1.0, min=0, max=1, sync=True,
-                            display_name='Default opacity')
+    default_opacities = List(sync=True, display_name='Opacity')
     default_skew = Float(default_value=0.5, min=0, max=1, sync=True)
     default_size = Int(64, sync=True, display_name='Default size')
+
     names = NdArray(sync=True)
     display_names = Bool(True, sync=True, display_name='Display names')
     fill = Bool(True, sync=True)

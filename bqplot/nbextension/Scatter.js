@@ -140,7 +140,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             }
             if(opacity_scale) {
                 this.listenTo(opacity_scale, "domain_changed", function() {
-                    this.update_default_opacity();
+                    this.update_default_opacities();
                 });
             }
             if(skew_scale) {
@@ -170,7 +170,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             this.listenTo(this.model, "change:default_color", this.update_default_color, this);
             this.listenTo(this.model, "change:stroke", this.update_stroke, this);
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
-            this.listenTo(this.model, "change:default_opacity", this.update_default_opacity, this);
+            this.listenTo(this.model, "change:default_opacites", this.update_default_opacities, this);
             this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
             this.listenTo(this.model, "change:default_rotation", this.update_default_rotation, this);
             this.listenTo(this.model, "data_updated", this.draw, this);
@@ -243,18 +243,20 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                   .style("stroke", stroke);
             }
         },
-        update_default_opacity: function() {
+        update_default_opacities: function() {
             if(!this.model.dirty) {
-                var default_opacity = this.model.get("default_opacity");
+                var default_opacities = this.model.get("default_opacities");
                 // update opacity scale range?
                 var that = this;
                 this.el.selectAll(".dot")
-                .style("opacity", function(data) {
-                    return that.get_element_opacity(data);
+                .style("opacity", function(data, i) {
+                    return that.get_element_opacity(data, i);
                 });
                 if (this.legend_el) {
                     this.legend_el.select("path")
-                    .style("opacity", default_opacity)
+                    .style("opacity", function(d, i) {
+                        return default_opacities[i];
+                    })
                     .style("fill", this.model.get("default_color"));
                 }
             }
@@ -307,12 +309,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             }
             return this.model.get("default_size");
         },
-        get_element_opacity: function(data) {
+        get_element_opacity: function(data, i) {
             var opacity_scale = this.scales["opacity"];
+            var default_opacities = this.model.get("default_opacities");
             if(opacity_scale && data.opacity !== undefined) {
                 return opacity_scale.scale(data.opacity);
             }
-            return this.model.get("default_opacity");
+            return default_opacities[i];
         },
         get_element_skew: function(data) {
             var skew_scale = this.scales["skew"];
@@ -615,8 +618,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
               } : "none")
               .style("stroke", stroke ? stroke : function(d) {
                   return that.get_element_color(d);
-              }).style("opacity", function(d) {
-                  return that.get_element_opacity(d);
+              }).style("opacity", function(d, i) {
+                  return that.get_element_opacity(d, i);
               }).style("stroke-width", stroke_width);
         },
         clear_style: function(style_dict, indices) {
