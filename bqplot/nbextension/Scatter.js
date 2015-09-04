@@ -167,7 +167,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                   this.event_dispatcher("mouse_out");
               }, this));
 
-            this.listenTo(this.model, "change:default_color", this.update_default_color, this);
+            this.listenTo(this.model, "change:default_colors", this.update_default_colors, this);
             this.listenTo(this.model, "change:stroke", this.update_stroke, this);
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
             this.listenTo(this.model, "change:default_opacites", this.update_default_opacities, this);
@@ -186,37 +186,50 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 this.event_dispatcher("parent_clicked");
             });
         },
-        update_default_color: function(model, new_color) {
+        update_default_colors: function(model, new_colors) {
             if(!this.model.dirty) {
                 var that = this,
-                    stroke = this.model.get("stroke");
+                    stroke = this.model.get("stroke"),
+                    len = new_colors.length;
                 this.el.selectAll(".dot")
                 .style("fill", this.model.get("fill") ?
-                    function(d) {
-                        return that.get_element_color(d);
+                    function(d, i) {
+                        return that.get_element_color(d, i);
                     } : "none")
-                .style("stroke", stroke ? stroke : function(d) {
-                    return that.get_element_color(d);
+                .style("stroke", stroke ? stroke : function(d, i) {
+                    return that.get_element_color(d, i);
                 });
 
                 if (this.legend_el) {
                     this.legend_el.select("path")
-                    .style("fill", new_color)
-                    .style("stroke", stroke ? stroke : new_color);
+                    .style("fill", function(d, i) {
+                        return new_colors[i % len];
+                    })
+                    .style("stroke", stroke ? stroke :
+                           function(d, i)
+                           {
+                              return new_colors[i % len];
+                           }
+                    );
                     this.legend_el.select("text")
-                    .style("fill", this.model.get("fill") ? new_color : "none");
+                    .style("fill", this.model.get("fill") ? function(d, i) {
+                        return new_colors[i % len];
+                        } : "none");
                 }
             }
         },
         update_fill: function(model, fill) {
             var that = this,
-                default_color = this.model.get("default_color");
-            this.el.selectAll(".dot").style("fill", fill  ? function(d) {
-                return that.get_element_color(d);
+                default_colors = this.model.get("default_colors"),
+                len = default_colors.length;
+            this.el.selectAll(".dot").style("fill", fill  ? function(d, i) {
+                return that.get_element_color(d, i);
             } : "none");
             if (this.legend_el) {
                 this.legend_el.selectAll("path")
-                  .style("fill", fill  ? default_color : "none");
+                  .style("fill", fill  ? function(d, i) {
+                      return default_colors[i % len];
+                    } : "none");
             }
         },
         update_stroke_width: function() {
@@ -234,8 +247,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             var that = this,
                 stroke = this.model.get("stroke");
             this.el.selectAll(".dot")
-              .style("stroke", stroke ? stroke : function(d) {
-                  return that.get_element_color(d);
+              .style("stroke", stroke ? stroke : function(d, i) {
+                  return that.get_element_color(d, i);
               });
 
             if (this.legend_el) {
@@ -246,6 +259,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         update_default_opacities: function() {
             if(!this.model.dirty) {
                 var default_opacities = this.model.get("default_opacities");
+                var default_colors = this.model.get("default_colors");
+                var len = default_colors.length;
                 // update opacity scale range?
                 var that = this;
                 this.el.selectAll(".dot")
@@ -257,7 +272,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                     .style("opacity", function(d, i) {
                         return default_opacities[i];
                     })
-                    .style("fill", this.model.get("default_color"));
+                    .style("fill", function(d, i) {
+                        return default_colors[i % len]
+                    });
                 }
             }
         },
@@ -295,12 +312,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         // In fact they are more than convenience functions as they limit the
         // points of entry to that logic which makes it easier to manage and to
         // keep consistent across different places where we use it.
-        get_element_color: function(data) {
+        get_element_color: function(data, index) {
             var color_scale = this.scales["color"];
+            var default_colors = this.model.get("default_colors");
+            var len = default_colors.length;
             if(color_scale && data.color !== undefined && data.color !== null) {
                 return color_scale.scale(data.color);
             }
-            return this.model.get("default_color");
+            return default_colors[index % len];
         },
         get_element_size: function(data) {
             var size_scale = this.scales["size"];
@@ -309,13 +328,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             }
             return this.model.get("default_size");
         },
-        get_element_opacity: function(data, i) {
+        get_element_opacity: function(data, index) {
             var opacity_scale = this.scales["opacity"];
             var default_opacities = this.model.get("default_opacities");
             if(opacity_scale && data.opacity !== undefined) {
                 return opacity_scale.scale(data.opacity);
             }
-            return default_opacities[i];
+            return default_opacities[index];
         },
         get_element_skew: function(data) {
             var skew_scale = this.scales["skew"];
@@ -331,18 +350,17 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         },
         color_scale_updated: function() {
             var that = this,
-                default_color = this.model.get("default_color"),
                 fill = this.model.get("fill"),
                 stroke = this.model.get("stroke");
 
             this.el.selectAll(".dot_grp")
               .select("path")
               .style("fill", fill ?
-                  function(d) {
-                      return that.get_element_color(d);
+                  function(d, i) {
+                      return that.get_element_color(d, i);
                   } : "none")
-              .style("stroke", stroke ? stroke : function(d) {
-                      return that.get_element_color(d);
+              .style("stroke", stroke ? stroke : function(d, i) {
+                      return that.get_element_color(d, i);
                   });
         },
         relayout: function() {
@@ -366,7 +384,6 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             this.set_ranges();
             var x_scale = this.scales["x"], y_scale = this.scales["y"];
             var that = this,
-                default_color = this.model.get("default_color"),
                 fill = this.model.get("fill");
 
             var elements = this.el.selectAll(".dot_grp")
@@ -470,7 +487,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
               .data([this.model.mark_data[0]]);
-            var default_color = this.model.get("default_color"),
+            var default_colors = this.model.get("default_colors"),
+                len = default_colors.length,
                 stroke = this.model.get("stroke");
 
             var that = this;
@@ -495,8 +513,16 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                   return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
               })
               .attr("d", this.dot.size(64))
-              .style("fill", this.model.get("fill")  ? default_color : "none")
-              .style("stroke", stroke ? stroke : default_color);
+              .style("fill", this.model.get("fill")  ?
+                     function(d, i) {
+                        return default_colors[i % len]
+                    } : "none")
+              .style("stroke", stroke ? stroke :
+                     function(d, i)
+                     {
+                         return default_colors[i % len];
+                     }
+              );
 
             this.legend_el.append("text")
               .attr("class","legendtext")
@@ -506,7 +532,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
               .text(function(d, i) {
                   return that.model.get("labels")[i];
               })
-              .style("fill", default_color);
+              .style("fill", function(d, i) {
+                  return default_colors[i % len]
+              });
 
             var max_length = d3.max(this.model.get("labels"), function(d) {
                 return d.length;
@@ -613,11 +641,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 stroke_width = this.model.get("stroke_width"),
                 that = this;
             elements
-              .style("fill", fill ? function(d) {
-                 return that.get_element_color(d);
+              .style("fill", fill ? function(d, i) {
+                 return that.get_element_color(d, i);
               } : "none")
-              .style("stroke", stroke ? stroke : function(d) {
-                  return that.get_element_color(d);
+              .style("stroke", stroke ? stroke : function(d, i) {
+                  return that.get_element_color(d, i);
               }).style("opacity", function(d, i) {
                   return that.get_element_opacity(d, i);
               }).style("stroke-width", stroke_width);
@@ -774,7 +802,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 return;
             }
             var dot = this.dot,
-                default_color = this.model.get("default_color");
+                default_colors = this.model.get("default_colors"),
+                len = default_colors.length;
             dot.size(this.model.get("default_size"));
 
             d3.select(dragged_node)
@@ -786,8 +815,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             if (this.model.get("drag_color")) {
                 d3.select(dragged_node)
                   .select("path")
-                  .style("fill",  default_color)
-                  .style("stroke", default_color);
+                  .style("fill",  function(d, i) {
+                      return default_colors[i % len]
+                  })
+                  .style("stroke", function(d, i) {
+                      return default_colors[i % len]
+                  });
             }
 
             if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {

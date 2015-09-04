@@ -402,8 +402,9 @@ class Scatter(Mark):
     marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
              'triangle-up', 'arrow', 'rectangle', 'ellipse'}
         Marker shape
-    default_color: Color (default: 'green')
-        Default color of the marker
+    default_colors: list of colors (default: ['DeepSkyBlue'])
+        List of colors of the markers. If the list is shorter than the number
+        of lines, the colors are reused.
     stroke: Color or None (default: None)
         Stroke color of the marker
     stroke_width: Float (default: 1.5)
@@ -491,7 +492,8 @@ class Scatter(Mark):
     default_color = Color('green', sync=True, display_name='Default color')
     stroke = Color(None, allow_none=True, sync=True, display_name='Stroke color')
     stroke_width = Float(1.5, sync=True, display_name='Stroke width')
-    default_opacities = List(sync=True, display_name='Opacity')
+    default_opacities = List(trait=Float(default_value=1.0, min=0, max=1,
+                             allow_none=True), sync=True, display_name='Opacity')
     default_skew = Float(default_value=0.5, min=0, max=1, sync=True)
     default_size = Int(64, sync=True, display_name='Default size')
 
@@ -590,7 +592,8 @@ class Hist(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, display_name='Colors')
     stroke = Color(None, allow_none=True, sync=True)
-    opacities = List(sync=True, display_name='Opacity')
+    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
+                                 allow_none=True), sync=True, display_name='Opacities')
 
     _view_name = Unicode('Hist', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Hist', sync=True)
@@ -643,7 +646,9 @@ class Boxplot(Mark):
     stroke = Color(None, allow_none=True, sync=True, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, display_name='Fill color for the box')
     outlier_fill_color = Color('gray', sync=True, display_name='Outlier fill color')
-    opacities = List(sync=True, display_name='Opacities')
+    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
+                     allow_none=True), sync=True,
+                     display_name='Opacities')
 
     _view_name = Unicode('Boxplot', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Boxplot', sync=True)
@@ -733,8 +738,10 @@ class Bars(Mark):
     padding = Float(0.05, sync=True)
     stroke = Color(None, allow_none=True, sync=True)
     base = Float(default_value=0.0, sync=True)
-    opacities = List(sync=True, display_name='Opacities')
-    align = Enum(['center', 'left', 'right'], default_value='center', sync=True)
+    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
+                     allow_none=True), sync=True, display_name='Opacities')
+    align = Enum(['center', 'left', 'right'], default_value='center',
+                 sync=True)
 
     _view_name = Unicode('Bars', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Bars', sync=True)
@@ -858,7 +865,9 @@ class OHLC(Mark):
     stroke_width = Float(1.0, sync=True, display_name='Stroke Width')
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=['limegreen', 'red'],
                   sync=True, display_name='Colors')
-    opacities = List(sync=True, display_name='Opacities')
+    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
+                     allow_none=True), sync=True,
+                     display_name='Opacities')
     format = Unicode(default_value='ohlc', display_name='Format', sync=True)
 
     _view_name = Unicode('OHLC', sync=True)
@@ -936,7 +945,9 @@ class Pie(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True),
                   default_value=CATEGORY10, sync=True, display_name='Colors')
     stroke = Color(None, allow_none=True, sync=True)
-    opacities = List(sync=True, display_name='Opacities')
+    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
+                     allow_none=True), sync=True,
+                     display_name='Opacities')
     radius = Float(default_value=300.0, min=0.0, max=float('inf'), sync=True)
     inner_radius = Float(default_value=0.1, min=0.0, max=float('inf'), sync=True)
     start_angle = Float(default_value=0.0, sync=True)
