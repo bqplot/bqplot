@@ -128,8 +128,8 @@ class NdArray(CInstance):
         ## If it is an object, I have to check if it can be cast into a date
         if (not isinstance(value, self.klass) or value.dtype == 'object'):
             value = self._cast(value)
-        min_dim = self._metadata.get('min_dim', 0)
-        max_dim = self._metadata.get('max_dim', np.inf)
+        min_dim = self.get_metadata('min_dim', 0)
+        max_dim = self.get_metadata('max_dim', np.inf)
         shape = np.shape(value)
         dim = 0 if value is None else len(shape)
         if (dim > 1) and (1 in shape):
@@ -225,7 +225,7 @@ class PandasDataFrame(Instance):
 
     def validate(self, obj, value):
         value = super(PandasDataFrame, self).validate(obj, value)
-        if self._metadata.get('lexsort'):
+        if self.get_metadata('lexsort'):
             if isinstance(value.columns, pd.MultiIndex):
                 value = value.sortlevel(0, axis=1)
         return value
