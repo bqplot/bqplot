@@ -12,11 +12,72 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import setup, find_packages
+from __future__ import print_function
+from setuptools import setup, find_packages, Command
+from setuptools.command.build_py import build_py
+from setuptools.command.sdist import sdist
+from subprocess import check_call
+import os
+import sys
 
-setup(name='bqplot',
-      version='0.2.1',
-      include_package_data=True,
-      install_requires=['ipython', 'numpy', 'pandas'],
-      packages=find_packages(),
-      zip_safe=False)
+here = os.path.abspath(os.path.dirname(__file__))
+
+
+class Bower(Command):
+    description = "fetch static components with bower"
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def get_inputs(self):
+        return []
+
+    def get_outputs(self):
+        return []
+
+    def run(self):
+        try:
+            check_call(
+                ['bower', 'install', '--allow-root', '--config.interactive=false'],
+                cwd=here,
+                env=os.environ.copy(),
+            )
+        except OSError as e:
+            print("Failed to run bower: %s" % e, file=sys.stderr)
+            raise
+
+
+class custom_build_py(build_py):
+
+    def run(self):
+        self.run_command('js')
+        return build_py.run(self)
+
+
+class custom_sdist(sdist):
+
+    def run(self):
+        self.run_command('js')
+        return sdist.run(self)
+
+
+setup_args = {
+    'name': 'bqplot',
+    'version': '0.2.1',
+    'include_package_data': True,
+    'install_requires': ['ipython', 'numpy', 'pandas'],
+    'packages': find_packages(),
+    'zip_safe': False,
+    'cmdclass': {
+        'js': Bower,
+        'build_py': custom_build_py,
+        'sdist': custom_sdist,
+    }
+}
+
+setup(**setup_args)

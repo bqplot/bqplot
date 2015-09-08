@@ -1,0 +1,9 @@
+{
+  "name": "bqplot-deps",
+  "version": "0.0.1",
+  "dependencies": {
+    "d3": "~3.4",
+    "topojson": "*",
+    "require-less": "0.1.5"
+  }
+}
