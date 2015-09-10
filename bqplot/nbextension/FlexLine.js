@@ -23,16 +23,6 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
 
             return base_render_promise.then(function() {
                 var x_scale = self.scales["x"], y_scale = self.scales["y"];
-
-                self.line = d3.svg.line()
-                  .interpolate(self.model.get("interpolation"))
-                  .x(function(d) {
-                      return x_scale.scale(d.x) + x_scale.offset;
-                  })
-                  .y(function(d) {
-                      return y_scale.scale(d.y) + y_scale.offset;
-                  })
-                  .defined(function(d) { return d.y !== null; });
                 self.create_listeners();
                 self.draw();
             });
@@ -46,26 +36,9 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
         },
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
-            this.listenTo(this.model, "change:interpolation", this.update_interpolation, this);
             this.listenTo(this.model, "change:colors", this.update_colors, this);
-            this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
             this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
             this.listenTo(this.model, "change:color change:width", this.update_and_draw, this);
-        },
-        update_stroke_width: function(model, stroke_width){
-            this.el.selectAll(".curve").selectAll("path")
-              .style("stroke-width", stroke_width);
-        },
-        update_interpolate: function(model, interpolate) {
-            var that = this;
-            this.line.interpolate(interpolate);
-            this.el.selectAll(".curve").selectAll("path")
-              .attr("d", function(d) { return that.line(d.values); });
-        },
-        update_colors: function(model, colors) {
-            var that = this;
-            this.el.selectAll(".curve").select("path")
-              .style("stroke", function(d, i) { return that.get_colors(i); });
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var g_elements = elem.selectAll(".legend" + this.uuid)
@@ -127,30 +100,6 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
                       return that.get_element_width(d);
                   });
             });
-
-            this.el.selectAll(".curve")
-              .select(".curve_label")
-              .attr("display", function(d) {
-                  return that.model.get("labels_visibility") === "label" ?
-                      "inline" : "none";
-              });
-
-            // alter the display only if a few of the curves are visible
-            var curves_subset = this.model.get("curves_subset");
-            if(curves_subset.length > 0) {
-                this.el.selectAll(".curve")
-                  .select("path")
-                  .attr("display", function(d, i) {
-                      return curves_subset.indexOf(i) !== -1 ?
-                          "inline" : "none";
-                  });
-                this.el.selectAll(".curve")
-                  .select(".curve_label")
-                  .attr("display", function(d, i) {
-                      return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
-                          "inline" : "none";
-                  });
-            }
         },
         get_element_color: function(d) {
             var color_scale = this.scales["color"];
