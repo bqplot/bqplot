@@ -60,18 +60,6 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 
 """
 
-# ignore the IPython future warning that widgets might change
-import warnings
-warnings.filterwarnings('ignore', module='IPython.html.widgets',
-                        category=FutureWarning)
-warnings.filterwarnings('ignore', module='ipywidgets',
-                        category=FutureWarning)
-warnings.filterwarnings('ignore', module='IPython.utils.traitlets',
-                        category=UserWarning)
-warnings.filterwarnings('ignore', module='IPython.html',
-                        category=UserWarning)
-
-
 from .figure import *
 from .axes import *
 from .marks import *
