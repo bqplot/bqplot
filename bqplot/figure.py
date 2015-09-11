@@ -96,8 +96,7 @@ class Figure(DOMWidget):
         than the sum of the margins.
 
     """
-    title = Unicode(sync=True, exposed=True, display_index=1,
-                    display_name='Title')
+    title = Unicode(sync=True, display_name='Title')
     axes = List(Instance(Axis), sync=True, **widget_serialization)
     marks = List(Instance(Mark), sync=True, **widget_serialization)
     interaction = Instance(Interaction, allow_none=True, sync=True,
@@ -108,16 +107,15 @@ class Figure(DOMWidget):
 
     min_width = CFloat(800.0, sync=True)
     min_height = CFloat(600.0, sync=True)
-    preserve_aspect = Bool(False, sync=True, exposed=True, display_index=3,
-                           display_name='Preserve aspect ratio')
+    preserve_aspect = Bool(False, sync=True, display_name='Preserve aspect ratio')
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)
     padding_x = Float(default_value=0.0, min=0.0, max=1.0, sync=True)
     padding_y = Float(default_value=0.025, min=0.0, max=1.0, sync=True)
     legend_location = Enum(['top-right', 'top', 'top-left', 'left',
                             'bottom-left', 'bottom', 'bottom-right', 'right'],
-                           default_value='top-right', sync=True, exposed=True,
-                           display_index=2, display_name='Legend position')
+                           default_value='top-right', sync=True,
+                           display_name='Legend position')
 
     def save(self):
         self.send({"type": "save"})
