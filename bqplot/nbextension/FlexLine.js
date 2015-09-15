@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./Lines"], function(d3, LinesViewModule) {
+define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
     "use strict";
 
     var FlexLine = LinesViewModule.Lines.extend({

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./topojson/topojson", "./Figure", "base/js/utils", "./Mark"],
+define(["./components/d3/d3", "./components/topojson/topojson", "./Figure", "base/js/utils", "./Mark"],
        function(d3, topojson, FigureViewModule, utils, Mark) {
     "use strict";
 

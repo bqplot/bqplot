@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./Interaction" ], function(d3, InteractionViewModule) {
+define(["./components/d3/d3", "./Interaction" ], function(d3, InteractionViewModule) {
     "use strict";
 
     var BaseSelector = InteractionViewModule.Interaction.extend({

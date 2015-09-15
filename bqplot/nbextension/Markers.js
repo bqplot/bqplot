@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3"], function(d3) {
+define(["./components/d3/d3"], function(d3) {
 
     var pi = Math.PI,
         radian = pi / 180,

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./utils", "./Interaction"], function(d3, utils, InteractionViewModule) {
+define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, InteractionViewModule) {
     "use strict";
 
     var HandDraw = InteractionViewModule.Interaction.extend({

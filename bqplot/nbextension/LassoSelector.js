@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, utils, point_in_lasso) {
+define(["./components/d3/d3", "./Selector", "./utils", "./lasso_test"], function(d3, Selectors, utils, point_in_lasso) {
     "use strict";
 
     var LassoSelector = Selectors.BaseXYSelector.extend({
