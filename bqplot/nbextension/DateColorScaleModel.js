@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./DateScaleModel"], function(d3, DateScaleModelModule) {
+define(["./components/d3/d3", "./DateScaleModel"], function(d3, DateScaleModelModule) {
     "use strict";
 
     var DateColorScaleModel = DateScaleModelModule.DateScaleModel.extend({

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./Selector" ], function(d3, BaseSelectors) {
+define(["./components/d3/d3", "./Selector" ], function(d3, BaseSelectors) {
     "use strict";
 
     var FastIntervalSelector = BaseSelectors.BaseXSelector.extend({

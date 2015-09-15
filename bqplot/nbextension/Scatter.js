@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, utils, markers) {
+define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, utils, markers) {
     "use strict";
     var min_size = 10;
     var bqSymbol = markers.symbol;

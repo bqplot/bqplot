@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./ScaleModel"], function(d3, ScaleModelModule) {
+define(["./components/d3/d3", "./ScaleModel"], function(d3, ScaleModelModule) {
     "use strict";
 
     var OrdinalScaleModel = ScaleModelModule.ScaleModel.extend({

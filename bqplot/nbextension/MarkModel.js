@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "./d3", "./BaseModel"], function(Widget, d3, BaseModel) {
+define(["widgets/js/widget", "./components/d3/d3", "./BaseModel"], function(Widget, d3, BaseModel) {
     "use strict";
 
     var MarkModel = BaseModel.BaseModel.extend({

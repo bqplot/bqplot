@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
+define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
     "use strict";
 
     var BrushSelector = BaseSelectors.BaseXYSelector.extend({

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "./d3", "base/js/utils"], function(Widget, d3, utils) {
+define(["widgets/js/widget", "./components/d3/d3", "base/js/utils"], function(Widget, d3, utils) {
     "use strict";
 
     var Mark = Widget.WidgetView.extend({

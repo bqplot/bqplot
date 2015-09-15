@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3"], function(d3) {
+define(["./components/d3/d3"], function(d3) {
     "use strict";
      //the following is a regex to match all valid time formats that can be
      //generated with d3 as of 2nd March 2015. If new formats are added to d3

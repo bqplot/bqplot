@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./d3", "./LinearColorScale", "./ColorUtils"], function(d3, LinearColorScaleViewModule, ColorUtils) {
+define(["./components/d3/d3", "./LinearColorScale", "./ColorUtils"], function(d3, LinearColorScaleViewModule, ColorUtils) {
     "use strict";
 
     var DateColorScale = LinearColorScaleViewModule.LinearColorScale.extend({
