@@ -25,8 +25,8 @@ Extras
 
    Tooltip
 """
-from IPython.html.widgets import DOMWidget
-from IPython.utils.traitlets import Unicode, List, Bool
+from ipywidgets import DOMWidget
+from traitlets import Unicode, List, Bool
 
 
 class Tooltip(DOMWidget):

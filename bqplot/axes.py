@@ -27,13 +27,8 @@ Axes
    ColorAxis
 """
 
-from IPython.utils.traitlets import Int, Unicode, Instance, Enum, Dict, Bool
-from IPython.html.widgets import Widget, Color
-
-try:
-    from IPython.html.widgets import widget_serialization  # IPython 4.0
-except ImportError:
-    widget_serialization = {}  # IPython 3.*
+from traitlets import Int, Unicode, Instance, Enum, Dict, Bool
+from ipywidgets import Widget, Color, widget_serialization
 
 from .scales import Scale, ColorScale
 from .traits import NdArray

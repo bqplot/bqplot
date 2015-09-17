@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "./MarkModel", "base/js/utils"], function(Widget, MarkModel, utils) {
+define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "base/js/utils"], function(Widget, MarkModel, utils) {
     "use strict";
 
     var MapModel = MarkModel.MarkModel.extend({

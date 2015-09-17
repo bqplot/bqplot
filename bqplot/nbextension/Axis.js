@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "./components/d3/d3", "./utils"], function(Widget, d3, bqutils) {
+define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils"], function(Widget, d3, bqutils) {
     "use strict";
 
      var units_array = ["em", "ex", "px"];

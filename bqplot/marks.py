@@ -34,13 +34,9 @@ Marks
    Pie
    MapMark
 """
-from IPython.html.widgets import Widget, DOMWidget, CallbackDispatcher, Color
-from IPython.utils.traitlets import (Int, Unicode, List, Enum, Dict, Bool,
-                                     Float, TraitError, Instance, Tuple)
-try:
-    from IPython.html.widgets import widget_serialization  # IPython 4.0
-except ImportError:
-    widget_serialization = {}  # IPython 3.*
+from ipywidgets import Widget, DOMWidget, CallbackDispatcher, Color, widget_serialization
+from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float, TraitError,
+                       Instance, Tuple)
 
 from .scales import Scale, OrdinalScale
 from .traits import NdArray, Date
