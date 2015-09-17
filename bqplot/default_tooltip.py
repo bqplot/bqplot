@@ -14,11 +14,11 @@
 
 r"""
 
-=====
-Extras
-=====
+=============================
+Default bqplot tooltip widget
+=============================
 
-.. currentmodule:: bqplot.extras
+.. currentmodule:: bqplot.default_tooltip
 
 .. autosummary::
    :toctree: generate/
@@ -41,7 +41,7 @@ class Tooltip(DOMWidget):
     formats: list (default: [])
         list of formats to be applied to each of the fields.
         if no format is specified for a field, the value is displayed as it is
-    labels: list(default: [])
+    labels: list (default: [])
         list of labels to be displayed in the table instead of the fields. If
         the length of labels is less than the length of fields, then the field
         names are displayed for those fields for which label is missing.
@@ -58,14 +58,3 @@ class Tooltip(DOMWidget):
 
     _view_name = Unicode('Tooltip', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Tooltip', sync=True)
-
-
-import os
-import json
-
-
-def topo_load(name):
-    with open(os.path.join(os.path.split(os.path.realpath(__file__))[0],
-              name)) as data_file:
-        data = json.load(data_file)
-    return data

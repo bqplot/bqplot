@@ -40,7 +40,6 @@ from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float, TraitError,
 
 from .scales import Scale, OrdinalScale
 from .traits import NdArray, Date
-from .extras import topo_load
 
 from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
@@ -938,6 +937,17 @@ class Pie(Mark):
     _view_module = Unicode('nbextensions/bqplot/Pie', sync=True)
     _model_name = Unicode('PieModel', sync=True)
     _model_module = Unicode('nbextensions/bqplot/PieModel', sync=True)
+
+
+import os
+import json
+
+
+def topo_load(name):
+    with open(os.path.join(os.path.split(os.path.realpath(__file__))[0],
+              name)) as data_file:
+        data = json.load(data_file)
+    return data
 
 
 @register_mark('bqplot.Map')

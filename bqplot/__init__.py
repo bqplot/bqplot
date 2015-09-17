@@ -55,15 +55,13 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 
 .. automodule:: bqplot.pyplot
 
-
-
-
 """
 
 from .figure import *
 from .axes import *
 from .marks import *
 from .scales import *
+from .default_tooltip import *
 
 
 def install_nbextension(**kwargs):
