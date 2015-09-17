@@ -45,7 +45,7 @@ Pyplot
 """
 
 from IPython.display import display
-from IPython.html.widgets import VBox, HBox, Button, ToggleButton
+from ipywidgets import VBox, HBox, Button, ToggleButton
 import numpy as np
 from ..figure import Figure
 from ..scales import Scale, LinearScale, Mercator

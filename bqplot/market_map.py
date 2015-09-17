@@ -27,14 +27,8 @@ Market Map
    SquareMarketMap
 """
 
-from IPython.utils.traitlets import (Int, Unicode, List, Dict, Enum, Bool,
-                                     Instance)
-from IPython.html.widgets import DOMWidget, CallbackDispatcher
-
-try:
-    from IPython.html.widgets import widget_serialization  # IPython 4.0
-except ImportError:
-    widget_serialization = {}  # IPython 3.*
+from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance
+from ipywidgets import DOMWidget, CallbackDispatcher, widget_serialization
 
 from .traits import NdArray, PandasDataFrame
 from .marks import CATEGORY10

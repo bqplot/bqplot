@@ -29,7 +29,7 @@ Getting Started
 This package depends on the following packages:
 
 -   `numpy`
--   `IPython` (version >=3.0)
+-   `IPython` (version >=4.0)
 
 ### Installation
 
@@ -84,7 +84,7 @@ Examples
     n = 10
     x_data = np.arange(n)
     y_data = np.cumsum(np.random.randn(n)) * 100.0
-    y_data_2 = np.cumsum(np.random.randn(n)) *100.0
+    y_data_2 = np.cumsum(np.random.randn(n)) * 100.0
     y_data_3 = np.cumsum(np.random.randn(n)) * 100.0
 
     sc_ord = bq.OrdinalScale()
@@ -154,6 +154,6 @@ Examples
 License
 -------
 
-This software is licensed under the Apache 2.0 license.  See the LICENSE file
+This software is licensed under the Apache 2.0 license. See the LICENSE file
 for details.
 

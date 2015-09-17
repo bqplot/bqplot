@@ -30,7 +30,7 @@ Custom Traits
    PandasSeries
 """
 
-from IPython.utils.traitlets import Instance, TraitError, TraitType
+from traitlets import Instance, TraitError, TraitType
 
 import numpy as np
 import pandas as pd

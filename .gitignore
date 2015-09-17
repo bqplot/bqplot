@@ -36,3 +36,4 @@ nosetests.xml
 .pydevproject
 
 .ipynb_checkpoints/
+bqplot/nbextension/components/

@@ -36,14 +36,8 @@ Interacts
    TwoDSelector
 """
 
-from IPython.utils.traitlets import (Bool, Int, Float, Unicode, Dict, Instance,
-                                     List, TraitError)
-from IPython.html.widgets import Widget, Color
-
-try:
-    from IPython.html.widgets import widget_serialization  # IPython 4.0
-except ImportError:
-    widget_serialization = {}  # IPython 3.*
+from traitlets import Bool, Int, Float, Unicode, Dict, Instance, List, TraitError
+from ipywidgets import Widget, Color, widget_serialization
 
 from .scales import Scale, DateScale
 from .traits import Date, NdArray

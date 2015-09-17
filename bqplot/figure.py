@@ -26,14 +26,8 @@ Figure
    Figure
 """
 
-from IPython.utils.traitlets import (Unicode, Instance, List, Dict,
-                                     CFloat, Bool, Enum, Float)
-from IPython.html.widgets import DOMWidget, register, Color
-
-try:
-    from IPython.html.widgets import widget_serialization  # IPython 4.0
-except ImportError:
-    widget_serialization = {}  # IPython 3.*
+from traitlets import Unicode, Instance, List, Dict, CFloat, Bool, Enum, Float
+from ipywidgets import DOMWidget, register, Color, widget_serialization
 
 from .scales import Scale, LinearScale
 from .interacts import Interaction

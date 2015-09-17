@@ -38,9 +38,8 @@ Scales
    Stereographic
 """
 
-from IPython.html.widgets import Widget, Color
-from IPython.utils.traitlets import (Unicode, List, Enum, Float, Bool, Type,
-                                     Tuple)
+from ipywidgets import Widget, Color
+from traitlets import Unicode, List, Enum, Float, Bool, Type, Tuple
 
 import numpy as np
 from .traits import Date
