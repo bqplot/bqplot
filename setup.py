@@ -74,7 +74,7 @@ class custom_sdist(sdist):
 
 setup_args = {
     'name': 'bqplot',
-    'version': '0.3.0',
+    'version': '0.3.1',
     'include_package_data': True,
     'install_requires': ['ipython', 'numpy', 'pandas'],
     'packages': find_packages(),
