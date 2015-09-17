@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["widgets/js/widget", "./components/d3/d3", "base/js/utils", "./components/require-less/less!./bqplot"], function(Widget, d3, utils) {
+define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js/utils", "./components/require-less/less!./bqplot"], function(Widget, d3, utils) {
     "use strict";
 
     var Figure = Widget.DOMWidgetView.extend({

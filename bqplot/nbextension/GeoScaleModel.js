@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "widgets/js/widget"], function(d3, Widget) {
+define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], function(Widget, d3) {
     "use strict";
 
     var GeoScaleModel = Widget.WidgetModel.extend({
