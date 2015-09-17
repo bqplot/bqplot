@@ -19,6 +19,7 @@ from setuptools.command.sdist import sdist
 from subprocess import check_call
 import os
 import sys
+import platform
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -42,11 +43,16 @@ class Bower(Command):
 
     def run(self):
         try:
+            if platform.system() == 'Windows':
+                cmd = 'bower.cmd'
+            else:
+                cmd = 'bower'
             check_call(
-                ['bower', 'install', '--allow-root', '--config.interactive=false'],
+                [cmd, 'install', '--allow-root', '--config.interactive=false'],
                 cwd=here,
                 env=os.environ.copy(),
             )
+
         except OSError as e:
             print("Failed to run bower: %s" % e, file=sys.stderr)
             raise
