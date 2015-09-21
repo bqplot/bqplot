@@ -27,9 +27,10 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var self = this;
             this.el.append("g")
               .attr("class", "pielayout");
+            var self = this;
             this.after_displayed(function() {
-                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
-                this.create_tooltip();
+                self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
+                self.create_tooltip();
             });
 
             return base_creation_promise.then(function() {

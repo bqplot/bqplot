@@ -19,12 +19,13 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
     var OHLC = MarkViewModule.Mark.extend({
         render: function() {
             var base_creation_promise = OHLC.__super__.render.apply(this);
-            this.after_displayed(function() {
-                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
-                this.create_tooltip();
-            });
 
             var that = this;
+            this.after_displayed(function() {
+                that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
+                that.create_tooltip();
+            });
+
             return base_creation_promise.then(function() {
                 that.create_listeners();
                 that.draw(); },
