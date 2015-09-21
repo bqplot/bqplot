@@ -69,37 +69,15 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             this.tooltip_div = d3.select(document.createElement("div"))
                 .attr("class", "tooltip_div");
 
-            var gradient_id = "gd_id" + this.id;
-
-            var background_gradient = this.svg.append("svg:defs")
-                .append("svg:linearGradient")
-                  .attr("id", gradient_id)
-                  .attr("x1", "50%")
-                  .attr("y1", "0%")
-                  .attr("x2", "50%")
-                  .attr("y2", "100%")
-                  .attr("spreadMethod", "pad");
-            background_gradient.append("svg:stop")
-                  .attr("offset", "0%")
-                  .attr("stop-color", "#8fd4ff")
-                  .attr("stop-opacity", 0.1);
-            background_gradient.append("svg:stop")
-                  .attr("offset", "100%")
-                  .attr("stop-color", "black")
-                  .attr("stop-opacity", 0);
-
             this.bg = this.fig.append("rect")
+              .attr("class", "plotarea_background")
               .attr("x", 0).attr("y", 0)
               .attr("width", this.plotarea_width)
               .attr("height", this.plotarea_height)
               .on("click", function() { that.trigger("bg_clicked"); })
               .style("pointer-events", "all");
 
-            if(this.model.get("fig_color")!==null) {
-                this.bg.style("fill", this.model.get("fig_color"));
-            } else {
-                this.bg.style("fill", "url(#" + gradient_id + ")");
-            }
+            this.change_color();
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
@@ -215,11 +193,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             this.listenTo(this.model, "change:fig_color", this.change_color, this);
         },
         change_color: function() {
-            if (this.model.get("fig_color") !== null) {
-                this.bg.style("fill", this.model.get("fig_color"));
-            } else {
-                this.bg.style("fill", "url(#gd_id" + this.id + ")" );
-            }
+            this.bg.style("fill", this.model.get("fig_color"));
         },
         remove: function() {
             this.svg.remove();
