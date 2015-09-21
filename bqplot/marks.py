@@ -307,7 +307,6 @@ class Lines(Mark):
                     min_dim=1, max_dim=1)
 
     # Other attributes
-    # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
                             'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
@@ -333,7 +332,7 @@ class Lines(Mark):
 
 
 @register_mark('bqplot.FlexLine')
-class FlexLine(Lines):
+class FlexLine(Mark):
 
     """Flexible Lines mark.
 
@@ -348,31 +347,40 @@ class FlexLine(Lines):
         user-friendly name of the mark
     colors: list of colors (default: CATEGORY10)
         List of colors for the Lines
+    stroke_width: float (default: 1.5)
+        Default stroke width of the Lines
 
     Data Attributes
     ---------------
+    x: numpy.ndarray (default: [])
+        abscissas of the data points (1d array)
+    y: numpy.ndarray (default: [])
+        ordinates of the data points (1d array)
     color: numpy.ndarray or None (default: [])
         Array controlling the color of the data points
     width: numpy.ndarray or None (default: [])
         Array controlling the widths of the Lines.
     """
     # Mark decoration
+    icon = 'fa-line-chart'
     name = 'Flexible lines'
 
     # Scaled attributes
-    color = NdArray(None, allow_none=True, sync=True, scaled=True,
-                    rtype='Color', atype='bqplot.ColorAxis')
-    width = NdArray(None, allow_none=True, sync=True, scaled=True,
-                    rtype='Number')
+    x = NdArray(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
+    y = NdArray(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True, sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis')
+    width = NdArray(None, allow_none=True, sync=True, scaled=True, rtype='Number')
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
                             'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
+    stroke_width = Float(1.5, sync=True, exposed=True, display_name='Stroke width')
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10, sync=True)
     _view_name = Unicode('FlexLine', sync=True)
     _view_module = Unicode('nbextensions/bqplot/FlexLine', sync=True)
     _model_name = Unicode('FlexLineModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/LinesModel', sync=True)
 
 
 @register_mark('bqplot.Scatter')
