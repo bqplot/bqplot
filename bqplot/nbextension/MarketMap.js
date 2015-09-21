@@ -106,7 +106,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                 this.update_layout();
                 this.draw_group_names();
                 this.create_tooltip_widget();
-            });
+            }, this);
             $(this.options.cell).on("output_area_resize"+this.id, function() {
                 self.update_layout();
             });
