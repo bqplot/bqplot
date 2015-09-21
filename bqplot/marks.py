@@ -404,14 +404,14 @@ class Scatter(Mark):
         Marker shape
     default_colors: list of colors (default: ['DeepSkyBlue'])
         List of colors of the markers. If the list is shorter than the number
-        of lines, the colors are reused.
+        of points, the colors are reused.
     stroke: Color or None (default: None)
         Stroke color of the marker
     stroke_width: Float (default: 1.5)
         Stroke width of the marker
-    default_opacities: list of floats (default: [])
-        Default opacities of the markers. Defaults to 1 when the list is too
-        short, or the element of the list is set to None.
+    default_opacities: list of floats (default: [1.0])
+        Default opacities of the markers. If the list is shorter than the number
+        of points, the opacities are reused.
     default_skew: float (default: 0.5)
         Default skew of the marker.
         This number is validated to be between 0 and 1.
@@ -489,7 +489,9 @@ class Scatter(Mark):
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value='circle', sync=True, display_name='Marker')
-    default_color = Color('green', sync=True, display_name='Default color')
+    default_colors = List(trait=Color(default_value=None, allow_none=True),
+                          default_value=['DeepSkyBlue'], sync=True,
+                          display_name='Colors')
     stroke = Color(None, allow_none=True, sync=True, display_name='Stroke color')
     stroke_width = Float(1.5, sync=True, display_name='Stroke width')
     default_opacities = List(trait=Float(default_value=1.0, min=0, max=1,

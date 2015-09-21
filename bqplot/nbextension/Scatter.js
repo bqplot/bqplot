@@ -170,7 +170,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             this.listenTo(this.model, "change:default_colors", this.update_default_colors, this);
             this.listenTo(this.model, "change:stroke", this.update_stroke, this);
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
-            this.listenTo(this.model, "change:default_opacites", this.update_default_opacities, this);
+            this.listenTo(this.model, "change:default_opacities", this.update_default_opacities, this);
             this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
             this.listenTo(this.model, "change:default_rotation", this.update_default_rotation, this);
             this.listenTo(this.model, "data_updated", this.draw, this);
@@ -261,6 +261,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 var default_opacities = this.model.get("default_opacities");
                 var default_colors = this.model.get("default_colors");
                 var len = default_colors.length;
+                var len_opac = default_opacities.length;
                 // update opacity scale range?
                 var that = this;
                 this.el.selectAll(".dot")
@@ -270,7 +271,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 if (this.legend_el) {
                     this.legend_el.select("path")
                     .style("opacity", function(d, i) {
-                        return default_opacities[i];
+                        return default_opacities[i % len_opac];
                     })
                     .style("fill", function(d, i) {
                         return default_colors[i % len]
@@ -331,10 +332,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         get_element_opacity: function(data, index) {
             var opacity_scale = this.scales["opacity"];
             var default_opacities = this.model.get("default_opacities");
+            var len = default_opacities.length;
             if(opacity_scale && data.opacity !== undefined) {
                 return opacity_scale.scale(data.opacity);
             }
-            return default_opacities[index];
+            return default_opacities[index % len];
         },
         get_element_skew: function(data) {
             var skew_scale = this.scales["skew"];
