@@ -33,7 +33,7 @@ This package depends on the following packages:
 
 ### Installation
 
-1. Installing `bqplot` is really easy. Just use `pip`!
+1. Installing `bqplot`:
 
     ```
     $ pip install bqplot
@@ -42,7 +42,7 @@ This package depends on the following packages:
     or for a development installation, close this repository and run
 
     ```
-    $ pip install -r ./bqplot
+    $ pip install -e ./bqplot
     ```
 
 2. Next, we need to install the JavaScript code.
