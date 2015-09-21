@@ -495,7 +495,7 @@ class Scatter(Mark):
     stroke = Color(None, allow_none=True, sync=True, display_name='Stroke color')
     stroke_width = Float(1.5, sync=True, display_name='Stroke width')
     default_opacities = List(trait=Float(default_value=1.0, min=0, max=1,
-                             allow_none=True), sync=True, display_name='Opacity')
+                             allow_none=True), sync=True, display_name='Opacities')
     default_skew = Float(default_value=0.5, min=0, max=1, sync=True)
     default_size = Int(64, sync=True, display_name='Default size')
 
