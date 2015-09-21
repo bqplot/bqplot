@@ -80,7 +80,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             return return_dict;
         },
         update_domains: function() {
-            if(!this.mark_data) {
+            if(!this.mark_data || this.mark_data.length === 0) {
                 return;
             }
             // For histogram, changing the x-scale domain changes a lot of

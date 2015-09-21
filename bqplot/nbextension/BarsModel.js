@@ -106,7 +106,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             //this is taken care of by the update_data itself. This is separate
             //in bars because update data does a lot more complex calculations
             //which should be avoided when possible
-            if(!this.mark_data) {
+            if(!this.mark_data || this.mark_data.length === 0) {
                 return;
             }
             var color = this.get_typed_field("color");
@@ -129,7 +129,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
         },
         update_domains: function() {
-            if(!this.mark_data) {
+            if(!this.mark_data || this.mark_data.length === 0) {
                 return;
             }
             var scales = this.get("scales");

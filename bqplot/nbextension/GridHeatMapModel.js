@@ -56,7 +56,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.trigger("data_updated");
         },
         update_domains: function() {
-            if(!this.mark_data) {
+            if(!this.mark_data || this.mark_data.length === 0) {
                 return;
             }
             var scales = this.get("scales");
