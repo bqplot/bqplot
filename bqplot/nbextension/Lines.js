@@ -26,8 +26,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             // created. Make sure none of the event handler functions make that
             // assumption.
             this.after_displayed(function() {
-                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
-                this.create_tooltip();
+                that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
+                that.create_tooltip();
             });
 
             this.display_el_classes = ["line", "legendtext"];

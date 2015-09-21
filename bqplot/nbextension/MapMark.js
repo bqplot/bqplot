@@ -30,8 +30,8 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure", "bas
             this.display_el_classes = ["event_layer"];
             var that = this;
             this.after_displayed(function() {
-                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
-                this.create_tooltip();
+                that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
+                that.create_tooltip();
             });
             return base_render_promise.then(function() {
                 that.event_listeners = {};
