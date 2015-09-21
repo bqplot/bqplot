@@ -26,11 +26,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
               .size(this.model.get("default_size"))
               .skew(this.model.get("default_skew"));
 
-            var that = this;
+            var self = this;
             this.drag_listener = d3.behavior.drag()
-              .on("dragstart", function(d) { return that.drag_start(d, this); })
-              .on("drag", function(d, i) { return that.on_drag(d, i, this); })
-              .on("dragend", function(d, i) { return that.drag_ended(d, i, this); });
+              .on("dragstart", function(d) { return self.drag_start(d, this); })
+              .on("drag", function(d, i) { return self.on_drag(d, i, this); })
+              .on("dragend", function(d, i) { return self.drag_ended(d, i, this); });
 
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
@@ -57,10 +57,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                     "hit_test": false
                 }
             };
-            var self = this;
             this.after_displayed(function() {
-                this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
-                this.create_tooltip();
+                self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
+                self.create_tooltip();
             });
 
             return base_creation_promise.then(function() {
