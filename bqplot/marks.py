@@ -32,7 +32,7 @@ Marks
    Label
    OHLC
    Pie
-   MapMark
+   Map
 """
 from ipywidgets import Widget, DOMWidget, CallbackDispatcher, Color, widget_serialization
 from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float, TraitError,
@@ -951,7 +951,7 @@ def topo_load(name):
 
 
 @register_mark('bqplot.Map')
-class MapMark(Mark):
+class Map(Mark):
 
     """Map mark.
 
@@ -1004,9 +1004,9 @@ class MapMark(Mark):
     map_data = Tuple(topo_load('WorldMapData.json'), sync=True)
 
     _view_name = Unicode('Map', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/MapMark', sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Map', sync=True)
     _model_name = Unicode('MapModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MapMarkModel', sync=True)
+    _model_module = Unicode('nbextensions/bqplot/MapModel', sync=True)
 
 
 class GridHeatMap(Mark):

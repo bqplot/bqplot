@@ -50,7 +50,7 @@ import numpy as np
 from ..figure import Figure
 from ..scales import Scale, LinearScale, Mercator
 from ..axes import Axis
-from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, MapMark, Label
+from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
 from ..interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
                          BrushSelector, IndexSelector, MultiSelector, LassoSelector)
 
@@ -627,7 +627,7 @@ def geo(map_data, **kwargs):
         scales['projection'] = Mercator(**options.get('projection', {}))
     kwargs['scales'] = scales
     kwargs['map_data'] = map_data
-    return _draw_mark(MapMark, **kwargs)
+    return _draw_mark(Map, **kwargs)
 
 
 def _add_interaction(int_type, **kwargs):
