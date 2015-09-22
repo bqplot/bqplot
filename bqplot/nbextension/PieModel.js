@@ -42,7 +42,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.trigger("data_updated");
         },
         update_labels: function() {
-            if(!this.mark_data) {
+            if(!this.mark_data || this.mark_data.length === 0) {
                 return;
             }
             var labels = this.get("labels");
@@ -52,7 +52,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.trigger("labels_updated");
         },
         update_color: function() {
-            if(!this.mark_data) {
+            if(!this.mark_data || this.mark_data.length === 0) {
                 return;
             }
             var color = this.get_typed_field("color");
@@ -66,7 +66,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
         },
         update_domains: function() {
-            if(!this.mark_data) {
+            if(!this.mark_data || this.mark_data.length === 0) {
                 return;
             }
             var scales = this.get("scales");
