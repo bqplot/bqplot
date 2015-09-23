@@ -28,7 +28,7 @@ define(["./components/d3/d3", "./Scale"], function(d3, ScaleViewModule) {
         set_range: function(range, padding) {
            padding = (padding === undefined) ? 0 : padding;
            this.scale.rangeBands(range, padding, padding / 2.0);
-           this.offset = this.scale.rangeBand() / 2.0;
+           this.offset = (this.scale.domain().length == 0) ? 0 : this.scale.rangeBand() / 2.0;
         },
         expand_domain: function(old_range, new_range) {
             // If you have a current range and then a new range and want to

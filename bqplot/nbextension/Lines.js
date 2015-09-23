@@ -431,7 +431,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
               .style("fill", function(d, i) { return fill_color[i]; })
               .style("stroke-width", this.model.get("stroke_width"))
               .style("stroke-dasharray", _.bind(this.get_line_style, this))
-              .style("opacities", function(d, i) {
+              .style("opacity", function(d, i) {
                   return opacities[i];
               })
               .on("click", _.bind(function() {
