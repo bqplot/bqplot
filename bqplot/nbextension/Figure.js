@@ -99,7 +99,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             </div>
             */
 
-            this.clip_path = this.svg.select("defs")
+            this.clip_path = this.svg.append("svg:defs")
               .append("svg:clipPath")
               .attr("id", this.clip_id)
               .append("rect")
