@@ -48,5 +48,7 @@ define([], function() {
 
         return is_inside;
     }
-    return point_in_lasso
-}
+
+    return point_in_lasso;
+
+});
