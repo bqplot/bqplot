@@ -53,6 +53,12 @@ from ..axes import Axis
 from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
 from ..interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
                          BrushSelector, IndexSelector, MultiSelector, LassoSelector)
+from traitlets.utils.sentinel import Sentinel
+
+Keep = Sentinel('Keep', 'bqplot.pyplot', '''
+        Used in bqplot.pyplot to specify that the same scale should be used for
+        a certain dimension.
+        ''')
 
 _context = {
     'figure': None,
@@ -61,8 +67,6 @@ _context = {
     'scale_registry': {},
     'last_mark': None
 }
-
-Keep = Ellipsis
 
 
 def _default_toolbar(figure):
