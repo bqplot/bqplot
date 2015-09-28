@@ -50,7 +50,7 @@ This package depends on the following packages:
     - Linux users:
 
     ```
-    $ ipython -c "import bqplot; bqplot.install_nbextension(symlink=True)"
+    $ ipython -c "import bqplot; bqplot.install_nbextension(symlink=True, user=True)"
     ```
 
     - Windows users:
