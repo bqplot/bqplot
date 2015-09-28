@@ -75,6 +75,8 @@ class custom_sdist(sdist):
 setup_args = {
     'name': 'bqplot',
     'version': '0.3.2',
+    'description': 'Interactive plotting for the Jupyter notebook, using d3.js and ipywidgets.',
+    'License': 'Apache',
     'include_package_data': True,
     'install_requires': ['ipywidgets', 'numpy', 'pandas'],
     'packages': find_packages(),
@@ -83,7 +85,29 @@ setup_args = {
         'js': Bower,
         'build_py': custom_build_py,
         'sdist': custom_sdist,
-    }
+    },
+    'author': 'BQplot Development Team',
+    'url': 'https://github.com/bloomberg/bqplot',
+    'keywords': [
+        'ipython',
+        'jupyter',
+        'widgets',
+        'graphics',
+        'plotting',
+        'd3',
+    ],
+    'classifiers': [
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'Topic :: Multimedia :: Graphics',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+    ],
 }
 
 setup(**setup_args)
