@@ -65,8 +65,8 @@ class Axis(BaseAxis):
             A registry of existing axis types.
         orientation: {'horizontal', 'vertical'}
             The orientation of the axis, either vertical or horizontal
-        side: {'bottom', 'top', 'left', 'right'}
-            The side of the axis, either bottom, top, left or right
+        side: {'bottom', 'top', 'left', 'right'} or None (default: None)
+            The side of the axis, either bottom, top, left or right.
         label: string (default: '')
             The axis label
         tick_format: string or None (default: '')
@@ -103,7 +103,7 @@ class Axis(BaseAxis):
     icon = 'fa-arrows'
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
                        sync=True)
-    side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
+    side = Enum(['bottom', 'top', 'left', 'right'], allow_none=True, default_value=None,
                 sync=True)
     label = Unicode(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
