@@ -90,7 +90,10 @@ class Date(TraitType):
 
     @staticmethod
     def from_json(value, obj=None):
-        return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
+        if value:
+            return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
+        else:
+            return value
 
 
 class NdArray(CInstance):
