@@ -651,7 +651,7 @@ def _add_interaction(int_type, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     marks = kwargs.pop('marks', [_context['last_mark']])
 
-    for name, traitlet in int_type.class_traits().iteritems():
+    for name, traitlet in int_type.class_traits().items():
         dimension = traitlet.get_metadata('dimension')
         if dimension is not None:
             ## only scales have this attribute in interactions
@@ -867,5 +867,5 @@ def _apply_properties(widget, properties={}):
     to the properties to be applied to the widget.
     '''
     with widget.hold_sync():
-        for key, value in properties.iteritems():
+        for key, value in properties.items():
             setattr(widget, key, value)

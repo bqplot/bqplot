@@ -106,10 +106,10 @@ class NdArray(CInstance):
                 a = np.where(np.isnan(a), None, a)
             elif a.dtype in (int, np.int64):
                 dtype = 'float'
-                a = a.astype('float')
+                a = a.astype(np.float64)
             elif np.issubdtype(a.dtype, np.datetime64):
                 dtype = 'date'
-                a = a.astype('string')
+                a = a.astype(np.str)
             else:
                 dtype = a.dtype
             return {'values': a.tolist(), 'type': str(dtype)}
