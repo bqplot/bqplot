@@ -62,15 +62,3 @@ from .axes import *
 from .marks import *
 from .scales import *
 from .default_tooltip import *
-
-
-def install_nbextension(**kwargs):
-    """Install the appropriate html and javascript into the nbextension.
-
-    Keyword arguments will be passed on to the Jupyter install_nbextension function.
-    """
-    import os.path
-    from notebook import nbextensions
-    pkgdir = os.path.dirname(__file__)
-    kwargs['destination'] = 'bqplot'
-    nbextensions.install_nbextension(os.path.join(pkgdir, 'nbextension'), **kwargs)

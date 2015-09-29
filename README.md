@@ -50,17 +50,17 @@ This package depends on the following packages:
     - Linux users:
 
     ```
-    $ ipython -c "import bqplot; bqplot.install_nbextension(symlink=True, user=True)"
+    $ python -m bqplot.install --symlink --user --force
     ```
 
     - Windows users:
 
     ```
-    $ ipython -c "import bqplot; bqplot.install_nbextension(symlink=False)"
+    $ python -m bqplot.install --user --force
     ```
 
-3. Note for developers: the `symlink=True` argument in Linux allows one to
-   modify the JavaScript code inplace. This feature is not available with Windows.
+3. Note for developers: the `--symlink` argument in Linux allows one to
+   modify the JavaScript code in-place. This feature is not available with Windows.
 
 
 ### Loading `bqplot`
