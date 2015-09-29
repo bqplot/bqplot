@@ -18,6 +18,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
 
     var AxisModel = BaseModel.BaseModel.extend({
         initialize: function() {
+            AxisModel.__super__.initialize.apply(this, arguments);
             this.on("change:side", this.validate_orientation, this);
             this.on("change:orientation", this.validate_side, this);
         },
@@ -38,12 +39,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
         validate_orientation: function() {
             var orientation = this.get("orientation"),
                 side = this.get("side");
-            if(side === "left" || side === "right") {
-                this.set("orientation", "vertical");
-            } else {
-                this.set("orientation", "horizontal");
+            if (side) {
+                if(side === "left" || side === "right") {
+                    this.set("orientation", "vertical");
+                } else {
+                    this.set("orientation", "horizontal");
+                }
+                this.save_changes();
             }
-            this.save_changes();
         }
     },
     {
