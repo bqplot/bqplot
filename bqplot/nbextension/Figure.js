@@ -404,15 +404,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             this.svg.attr("width", null);
             this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") +
                                         " " + this.model.get("min_height"));
-            setTimeout(_.bind(this.update_layout2, this), 0);
-        },
-        update_layout2: function() {
             var rect = this.el.getBoundingClientRect();
             this.width = rect.width > 0 ? rect.width : this.model.get("min_width");
             this.height = rect.height > 0 ? rect.height : this.model.get("min_height");
-            setTimeout(_.bind(this.update_layout3, this), 0);
-        },
-        update_layout3: function() {
             var preserve_aspect = this.model.get("preserve_aspect");
             if (preserve_aspect === true) {
                 var aspect_ratio = this.model.get("min_width") / this.model.get("min_height");
