@@ -71,7 +71,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
 
             // code for tool tip to be displayed
             this.tooltip_div = d3.select(document.createElement("div"))
-                .attr("id", "map_tooltip")
+                .attr("class", "mark_tooltip")
                 .style("opacity", 0)
                 .style("position", "absolute")
                 .style("pointer-events", "none")
@@ -551,7 +551,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             var mouse_pos = d3.mouse(this.el);
             var that = this;
             var tooltip_div = d3.select(this.el.parentNode)
-                .select("#map_tooltip");
+                .select(".mark_tooltip");
             tooltip_div.transition()
                 .style("opacity", 0.9);
 
@@ -579,7 +579,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
         },
         hide_tooltip: function() {
             var tooltip_div = d3.select(this.el.parentNode)
-                .select("#map_tooltip");
+                .select(".mark_tooltip");
             tooltip_div.transition()
                 .style("opacity", 0);
         },
