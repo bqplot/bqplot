@@ -100,7 +100,7 @@ class Figure(DOMWidget):
     fig_color = Color(None, allow_none=True, sync=True)
 
     min_width = CFloat(800.0, sync=True)
-    min_height = CFloat(600.0, sync=True)
+    min_height = CFloat(500.0, sync=True)
     preserve_aspect = Bool(False, sync=True, display_name='Preserve aspect ratio')
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)
