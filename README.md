@@ -39,10 +39,13 @@ This package depends on the following packages:
     $ pip install bqplot
     ```
 
-    or for a development installation, close this repository and run
+    or for a development installation,
 
     ```
-    $ pip install -e ./bqplot
+    $ git clone git@github.com:bloomberg/bqplot.git
+    $ cd bqplot
+    $ pip install -e .
+    $ bower install
     ```
 
 2. Next, we need to install the JavaScript code.
@@ -66,7 +69,7 @@ This package depends on the following packages:
 ### Loading `bqplot`
     # In an IPython shell
     $ ipython
-    In [1]: import bqplot as bq
+    In [1]: import bqplot
 
 That's it! You're ready to go!
 
@@ -77,9 +80,9 @@ Examples
 
 
     ```python
-    import bqplot as bq
     import numpy as np
     from IPython.display import display
+    from bqplot import *
 
     n = 10
     x_data = np.arange(n)
@@ -87,51 +90,51 @@ Examples
     y_data_2 = np.cumsum(np.random.randn(n)) * 100.0
     y_data_3 = np.cumsum(np.random.randn(n)) * 100.0
 
-    sc_ord = bq.OrdinalScale()
-    sc_y = bq.LinearScale()
-    sc_y_2 = bq.LinearScale()
+    sc_ord = OrdinalScale()
+    sc_y = LinearScale()
+    sc_y_2 = LinearScale()
 
-    ord_ax = bq.Axis(scale=sc_ord,
-                     label='Test X',
-                     tick_format='0.0f',
-                     grid_lines='none')
+    ord_ax = Axis(scale=sc_ord,
+                  label='Test X',
+                  tick_format='0.0f',
+                  grid_lines='none')
 
-    y_ax = bq.Axis(scale=sc_y,
-                   label='Test Y',
-                   tick_format='0.2f',
-                   grid_lines='solid',
-                   orientation='vertical')
+    y_ax = Axis(scale=sc_y,
+                label='Test Y',
+                tick_format='0.2f',
+                grid_lines='solid',
+                orientation='vertical')
 
-    y_ax_2 = bq.Axis(label='Test Y 2',
-                     scale=sc_y_2,
-                     orientation='vertical',
-                     side='right',
-                     tick_format='0.0f',
-                     grid_lines='dashed')
+    y_ax_2 = Axis(label='Test Y 2',
+                  scale=sc_y_2,
+                  orientation='vertical',
+                  side='right',
+                  tick_format='0.0f',
+                  grid_lines='dashed')
 
-    line_chart = bq.Lines(x=x_data,
-                          y=[y_data, y_data_2, y_data_3],
-                          scales={
-                              'x': sc_ord,
-                              'y': sc_y
-                          },
-                          stroke_width=3,
-                          labels=['Line1', 'Line2', 'Line3'],
-                          display_legend=True)
+    line_chart = Lines(x=x_data,
+                       y=[y_data, y_data_2, y_data_3],
+                       scales={
+                           'x': sc_ord,
+                           'y': sc_y,
+                       },
+                       stroke_width=3,
+                       labels=['Line1', 'Line2', 'Line3'],
+                       display_legend=True)
 
-    bar_chart = bq.Bars(x=x_data,
-                        y=[y_data, y_data_2, y_data_3],
-                        scales={
-                            'x': sc_ord,
-                            'y': sc_y_2
-                        },
-                        opacity=0.5,
-                        labels=['Bar1', 'Bar2', 'Bar3'],
-                        display_legend=True)
+    bar_chart = Bars(x=x_data,
+                     y=[y_data, y_data_2, y_data_3],
+                     scales={
+                         'x': sc_ord,
+                         'y': sc_y_2,
+                     },
+                     opacity=0.5,
+                     labels=['Bar1', 'Bar2', 'Bar3'],
+                     display_legend=True)
 
-    fig = bq.Figure(axes=[ord_ax, y_ax, y_ax_2],
-                    marks=[bar_chart, line_chart],
-                    legend_location='top-left')
+    fig = Figure(axes=[ord_ax, y_ax, y_ax_2],
+                 marks=[bar_chart, line_chart],
+                 legend_location='top-left')
 
     display(fig)
     ```
