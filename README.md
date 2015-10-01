@@ -42,7 +42,7 @@ This package depends on the following packages:
     or for a development installation,
 
     ```
-    $ git clone git@github.com:bloomberg/bqplot.git
+    $ git clone https://github.com/bloomberg/bqplot.git
     $ cd bqplot
     $ pip install -e .
     $ bower install
