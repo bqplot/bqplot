@@ -158,7 +158,7 @@ class PanZoom(Interaction):
 
     def reset(self):
         for k in self.scales:
-            for i in xrange(len(self.scales[k])):
+            for i in range(len(self.scales[k])):
                 self.scales[k][i].set_state(self.scales_states[k][i])
                 self.scales[k][i].send_state()
 
