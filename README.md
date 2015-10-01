@@ -31,6 +31,8 @@ This package depends on the following packages:
 -   `numpy`
 -   `IPython` (version >=4.0)
 
+Make sure you have `bower` installed. [See `bower`'s installation instructions.](http://bower.io/)
+
 ### Installation
 
 1. Installing `bqplot`:
