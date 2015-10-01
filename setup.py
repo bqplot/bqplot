@@ -164,7 +164,7 @@ class custom_sdist(sdist):
 
 setup_args = {
     'name': 'bqplot',
-    'version': '0.3.6',
+    'version': '0.3.7',
     'description': 'Interactive plotting for the Jupyter notebook, using d3.js and ipywidgets.',
     'long_description': LONG_DESCRIPTION,
     'License': 'Apache',
