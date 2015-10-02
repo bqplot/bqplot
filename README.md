@@ -10,7 +10,7 @@ Goals
 -----
 
 -   provide a unified framework for 2d visualizations with a pythonic API.
--   provide a sensible API for adding user interations (panning, zooming, selection, etc)
+-   provide a sensible API for adding user interactions (panning, zooming, selection, etc)
 -   pip installable
 
 Two main APIs are provided
