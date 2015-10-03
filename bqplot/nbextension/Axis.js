@@ -100,14 +100,15 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 if (this.axis_scale.model.type === "ordinal") {
                     this.axis.tickValues(this.axis_scale.scale.domain());
                 } else if (this.axis_scale.model.type === "log") {
+                    var i, r;
                     var allticks = this.axis_scale.scale.ticks();
                     var oom = Math.abs(Math.log10(this.axis_scale.scale.domain()[1] / this.axis_scale.scale.domain()[0]));
                     if (oom < 2) {
                         this.axis.tickValues(allticks);
                     } else if (oom < 7) {
                         useticks = [];
-                        for (var i = 0; i < allticks.length; i++) {
-                            var r = Math.abs(Math.log10(allticks[i]) % 1);
+                        for (i = 0; i < allticks.length; i++) {
+                            r = Math.abs(Math.log10(allticks[i]) % 1);
                             if ((Math.abs(r) < 0.001) ||
                                 (Math.abs(r-1) < 0.001) ||
                                 (Math.abs(r-0.30103) < 0.001) ||
@@ -119,8 +120,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                     } else {
                         useticks = [];
                         var s = Math.round(oom / 10);
-                        for (var i = 0; i < allticks.length; i++) {
-                            var r = Math.abs(Math.log10(allticks[i]) % s);
+                        for (i = 0; i < allticks.length; i++) {
+                            r = Math.abs(Math.log10(allticks[i]) % s);
                             if ((Math.abs(r) < 0.001) || (Math.abs(r-s) < 0.001)) {
                                 useticks.push(allticks[i]);
                             }
@@ -131,8 +132,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                     this.axis.tickValues(this.axis_scale.scale.ticks());
                 }
             }
-            if(this.model.get("tick_format") == null ||
-                this.model.get("tick_format") == undefined) {
+            if(this.model.get("tick_format") === null ||
+                this.model.get("tick_format") === undefined) {
                     if(this.axis_scale.type !== "ordinal") {
                         // TODO: can be avoided if num_ticks and tickValues are
                         // not mentioned
@@ -245,14 +246,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             var that = this;
             var return_promise = Promise.resolve();
             var offset = this.model.get("offset");
-            if(offset["value"] !== undefined && offset["value"] !== null) {
+            if(offset.value !== undefined && offset.value !== null) {
                 //If scale is undefined but, the value is defined, then we have
                 //to
-                if(offset["scale"] === undefined) {
+                if(offset.scale === undefined) {
                     this.offset_scale = (this.vertical) ?
                         this.parent.scale_x : this.parent.scale_y;
                 } else {
-                    var offset_scale_model = offset["scale"];
+                    var offset_scale_model = offset.scale;
                     return_promise = this.create_child_view(offset_scale_model)
                         .then(function(view) {
                             that.offset_scale = view;
@@ -266,7 +267,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                                                  }, that);
                         });
                 }
-                this.offset_value = offset["value"];
+                this.offset_value = offset.value;
             } else {
                 //required if the offset has been changed from a valid value
                 //to null
@@ -509,6 +510,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             // If an array is passed, then just scale and return equally spaced
             // points in the array. This is the way it is done for ordinal
             // scales.
+            var step, max;
             if(this.axis_scale.model.type === "ordinal") {
                 data_array = this.axis_scale.scale.domain();
             }
@@ -518,7 +520,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 if(data_array.length <= this.num_ticks) {
                     return data_array;
                 } else {
-                   var step = Math.floor(data_array.length / (this.num_ticks - 1));
+                   step = Math.floor(data_array.length / (this.num_ticks - 1));
                    var indices = _.range(0, data_array.length, step);
                    return indices.map(function(index) {
                        return data_array[index];
@@ -527,20 +529,20 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }
             var scale_range = this.axis_scale.scale.domain();
             var max_index = (this.axis_scale.scale.domain().length - 1);
-            var step = (scale_range[max_index] - scale_range[0]) / (this.num_ticks - 1);
+            step = (scale_range[max_index] - scale_range[0]) / (this.num_ticks - 1);
             if(this.axis_scale.model.type === "date" ||
                this.axis_scale.model.type === "date_color_linear") {
             //For date scale, the dates have to be converted into milliseconds
             //since epoch time and then back.
                 scale_range[0] = scale_range[0].getTime();
                 scale_range[max_index] = scale_range[max_index].getTime();
-                var max = (scale_range[max_index] + (step * 0.5));
+                max = (scale_range[max_index] + (step * 0.5));
                 var range_in_times = _.range(scale_range[0], max, step);
                 return range_in_times.map(function(elem) {
                     return new Date(elem);
                 });
             } else {
-                var max = (scale_range[max_index] + (step * 0.5));
+                max = (scale_range[max_index] + (step * 0.5));
                 return _.range(scale_range[0], max, step);
             }
         },
@@ -565,7 +567,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.set_scale(value);
         },
         _get_digits: function(number) {
-            return (number == 0) ? 1 : (Math.floor(Math.log10(Math.abs(number))) + 1);
+            return (number === 0) ? 1 : (Math.floor(Math.log10(Math.abs(number))) + 1);
         },
         _replace_trailing_zeros: function(str) {
             //regex to replace the trailing
@@ -583,7 +585,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
         get_format_func: function(prec) {
             if(prec === 0) {
             // format this as an integer
-                return function(number) { return d3.format("d")(Math.round(number)); }
+                return function(number) { return d3.format("d")(Math.round(number)); };
             }
             //if it is -1, then it is a generic format
             var fmt_string = (prec == -1) ? "" : ("." + (prec));
@@ -658,23 +660,23 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return [[".%L", function(d) { return d.getMilliseconds(); }],
                 [":%S", function(d) { return d.getSeconds(); }],
                 ["%I:%M", function(d) { return true; }]];
-            } else if (Math.floor(diff / (div *= 60)) == 0) {
+            } else if (Math.floor(diff / (div *= 60)) === 0) {
                 //diff is less than a minute
                  return [[":%S", function(d) { return d.getSeconds(); }],
                  ["%I:%M", function(d) { return true; }]];
-            } else if (Math.floor(diff / (div *= 60)) == 0) {
+            } else if (Math.floor(diff / (div *= 60)) === 0) {
                 // diff is less than an hour
                 return [["%I:%M", function(d) { return d.getMinutes(); }],
                 ["%I %p", function(d) { return true; }]];
-            } else if (Math.floor(diff / (div *= 24)) == 0) {
+            } else if (Math.floor(diff / (div *= 24)) === 0) {
                 //diff is less than a day
                  return [["%I %p", function(d) { return d.getHours(); }],
                  ["%b %d", function(d) { return true; }]];
-            } else if (Math.floor(diff / (div *= 27)) == 0) {
+            } else if (Math.floor(diff / (div *= 27)) === 0) {
                 //diff is less than a month
                 return [["%b %d", function(d) { return d.getDate() !== 1; }],
                         ["%b %Y", function(d) { return true; }]];
-            } else if (Math.floor(diff / (div *= 12)) == 0) {
+            } else if (Math.floor(diff / (div *= 12)) === 0) {
                 //diff is less than a year
                 return [["%b %d", function(d) { return d.getDate() !== 1; }],
                         ["%b %Y", function() { return true;}]];
