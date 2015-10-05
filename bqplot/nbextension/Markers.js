@@ -22,90 +22,90 @@ define(["./components/d3/d3"], function(d3) {
 
     var circleSymbol = function(size) {
         var r = Math.sqrt(size / pi);
-        return "M0," + r
-            + "A" + r + "," + r + " 0 1,1 0," + (-r)
-            + "A" + r + "," + r + " 0 1,1 0," + r
-            + "Z";
+        return "M0," + r +
+            "A" + r + "," + r + " 0 1,1 0," + (-r) +
+            "A" + r + "," + r + " 0 1,1 0," + r +
+            "Z";
     };
     var bqSymbolTypes = d3.map({
         "circle": circleSymbol,
         "cross": function(size,e) {
             var r = Math.sqrt(size / 5) / 2;
-            return "M" + -3 * r + "," + -r
-                + "H" + -r
-                + "V" + -3 * r
-                + "H" + r
-                + "V" + -r
-                + "H" + 3 * r
-                + "V" + r
-                + "H" + r
-                + "V" + 3 * r
-                + "H" + -r
-                + "V" + r
-                + "H" + -3 * r
-                + "Z";
+            return "M" + -3 * r + "," + -r +
+                "H" + -r +
+                "V" + -3 * r +
+                "H" + r +
+                "V" + -r +
+                "H" + 3 * r +
+                "V" + r +
+                "H" + r +
+                "V" + 3 * r +
+                "H" + -r +
+                "V" + r +
+                "H" + -3 * r +
+                "Z";
         },
         "diamond": function(size, s) {
             var ry = Math.sqrt(size / (2 * tan30)),
                 rx = ry * tan30;
-            return "M0," + -ry
-                + "L" + rx + ",0"
-                + " 0," + ry
-                + " " + -rx + ",0"
-                + "Z";
+            return "M0," + -ry +
+                "L" + rx + ",0" +
+                " 0," + ry +
+                " " + -rx + ",0" +
+                "Z";
         },
         "square": function(size, s) {
             var r = Math.sqrt(size) / 2;
-            return "M" + -r + "," + -r
-                + "L" + r + "," + -r
-                + " " + r + "," + r
-                + " " + -r + "," + r
-                + "Z";
+            return "M" + -r + "," + -r +
+                "L" + r + "," + -r +
+                " " + r + "," + r +
+                " " + -r + "," + r +
+                "Z";
         },
         "triangle-down": function(size, s) {
             var rx = Math.sqrt(size / sqrt3),
                 ry = rx * sqrt3 / 2;
-            return "M0," + ry
-                + "L" + rx +"," + -ry
-                + " " + -rx + "," + -ry
-                + "Z";
+            return "M0," + ry +
+                "L" + rx +"," + -ry +
+                " " + -rx + "," + -ry +
+                "Z";
         },
         "triangle-up": function(size, s) {
             var rx = Math.sqrt(size / sqrt3),
                 ry = rx * sqrt3 / 2;
-            return "M0," + -ry
-                + "L" + rx +"," + ry
-                + " " + -rx + "," + ry
-                + "Z";
+            return "M0," + -ry +
+                "L" + rx +"," + ry +
+                " " + -rx + "," + ry +
+                "Z";
         },
         "arrow": function(size, skew) {
             var angle = 60 + (5 - 60) * skew,
                 s = Math.tan(angle * radian),
                 ry = Math.sqrt(size / s),
                 rx = ry * s / 2;
-            return "M0," + -ry
-                + "L" + rx +"," + ry
-                + " " + -rx + "," + ry
-                + "Z";
+            return "M0," + -ry +
+                "L" + rx +"," + ry +
+                " " + -rx + "," + ry +
+                "Z";
         },
         "ellipse": function(size, skew) {
             var s = Math.pow(10, skew),
                 rx = Math.sqrt(size / (pi * s)),
                 ry = rx * s;
-            return "M0," + ry
-                + "A" + rx + "," + ry + " 0 1,1 0," + (-ry)
-                + "A" + rx + "," + ry + " 0 1,1 0," + ry
-                + "Z";
+            return "M0," + ry +
+                "A" + rx + "," + ry + " 0 1,1 0," + (-ry) +
+                "A" + rx + "," + ry + " 0 1,1 0," + ry +
+                "Z";
         },
         "rectangle": function(size, skew) {
             var s = Math.pow(10, skew),
                 rx = Math.sqrt(size / s) / 2,
                 ry = rx * s;
-            return "M" + -rx + "," + -ry
-                + "L" + rx + "," + -ry
-                + " " + rx + "," + ry
-                + " " + -rx + "," + ry
-                + "Z";
+            return "M" + -rx + "," + -ry +
+                "L" + rx + "," + -ry +
+                " " + rx + "," + ry +
+                " " + -rx + "," + ry +
+                "Z";
         },
     });
 

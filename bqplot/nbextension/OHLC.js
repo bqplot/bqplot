@@ -32,17 +32,17 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             null);
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
-            var y_scale = this.scales["y"];
+            var y_scale = this.scales.y;
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
         },
         set_positional_scales: function() {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             this.listenTo(x_scale, "domain_changed", function() {
                 if(!this.model.dirty) { this.draw(); }
             });
@@ -85,7 +85,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
 
             // Fill candles based on the opening and closing values
             this.el.selectAll(".stick").style("fill", function(d) {
-                return (d["y"][that.model.px.o] > d["y"][that.model.px.c] ?
+                return (d.y[that.model.px.o] > d.y[that.model.px.c] ?
                     down_color : up_color);
             });
 
@@ -100,9 +100,8 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
                                              });
 
             if(this.legend_el) {
-                this.legend_el.selectAll("path").attr("opacity", function(d, i) {
-                                                        return opacities[i]
-                                                     });
+                this.legend_el.selectAll("path")
+                    .attr("opacity", function(d, i) { return opacities[i]; });
             }
         },
         update_marker: function() {
@@ -155,7 +154,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
 
             var mark_width = this.calculate_mark_width();
             if(mark_width instanceof Date) mark_width = mark_width.getTime();
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             /*
              * I did not remove this as I was not sure of what this is doing.
              * So I am not sure if the new code is equivalent to the old one.
@@ -189,7 +188,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             return selected;
         },
         invert_point: function(pixel) {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             var point = 0;
             var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
             var sel_index = abs_diff.indexOf(d3.min(abs_diff));
@@ -199,7 +198,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             return sel_index;
         },
         draw: function() {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             this.set_ranges();
             var colors = this.model.get("colors");
             var opacities = this.model.get("opacities");
@@ -237,8 +236,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             // Update all of the marks
             this.el.selectAll(".stick")
                 .style("fill", function(d, i) {
-                    return (d["y"][px.o] > d["y"][px.c]) ?
-                        down_color : up_color;
+                    return (d.y[px.o] > d.y[px.c]) ? down_color : up_color;
                 })
                 .attr("stroke-width", this.model.get("stroke_width"));
             if(x_scale.model.type === "ordinal") {
@@ -248,15 +246,15 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
                 this.el.selectAll(".stick").attr( "transform", function(d, i) {
                     return "translate(" + ((x_scale.scale(that.model.mark_data[i][0]) !== undefined ?
                                             x_scale.scale(that.model.mark_data[i][0]) : x_max) +
-                                            x_scale.scale.rangeBand()/2) + ","
-                                        + (y_scale.scale(d["y"][y_index]) + y_scale.offset) + ")";
+                                            x_scale.scale.rangeBand()/2) + "," +
+                                          (y_scale.scale(d.y[y_index]) + y_scale.offset) + ")";
                 });
             } else {
                 this.el.selectAll(".stick").attr( "transform", function(d, i) {
-                     return "translate(" + (x_scale.scale(that.model.mark_data[i][0])
-                                         + x_scale.offset) + ","
-                                         + (y_scale.scale(d["y"][y_index])
-                                         + y_scale.offset) + ")";
+                     return "translate(" + (x_scale.scale(that.model.mark_data[i][0]) +
+                                         x_scale.offset) + "," +
+                                         (y_scale.scale(d.y[y_index]) +
+                                         y_scale.offset) + ")";
                  });
             }
 
@@ -302,7 +300,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             var scaled_mark_widths = [];
 
             var min_x_difference = this.calculate_mark_width();
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             var offset_in_x_units, data_point;
 
             for(var i = 0; i < dat.length; i++) {
@@ -462,7 +460,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             var sum = 0;
             var average_height = 0;
             var scales = this.model.get("scales");
-            var x_scale = scales["x"];
+            var x_scale = scales.x;
 
             for(var i = 1; i < that.model.mark_data.length; i++) {
                 var dist = that.model.mark_data[i][0] -

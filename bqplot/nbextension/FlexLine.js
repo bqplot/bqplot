@@ -22,14 +22,14 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
             var self = this;
 
             return base_render_promise.then(function() {
-                var x_scale = self.scales["x"], y_scale = self.scales["y"];
+                var x_scale = self.scales.x, y_scale = self.scales.y;
                 self.create_listeners();
                 self.draw();
             });
         },
         set_ranges: function() {
             FlexLine.__super__.set_ranges.apply(this);
-            var width_scale = this.scales["width"];
+            var width_scale = this.scales.width;
             if(width_scale) {
                 width_scale.set_range([0.5, this.model.get("stroke_width")]);
             }
@@ -82,12 +82,12 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
               .transition().duration(this.model.get("animate_dur"))
               .remove();
 
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
 
             var that = this;
             curves_sel[0].forEach(function(elem, index) {
                 var lines = d3.select(elem).selectAll("line")
-                  .data(that.model.mark_data[index]["values"]);
+                  .data(that.model.mark_data[index].values);
                 lines.enter().append("line");
                 lines.attr("class", "line-elem")
                   .attr({"x1": function(d) { return x_scale.scale(d.x1); },
@@ -102,14 +102,14 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
             });
         },
         get_element_color: function(d) {
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
             if(color_scale !== undefined && d.color !== undefined) {
                 return color_scale.scale(d.color);
             }
             return this.model.get("colors")[0];
         },
         get_element_width: function(d) {
-            var width_scale = this.scales["width"];
+            var width_scale = this.scales.width;
             if(width_scale !== undefined && d.size !== undefined) {
                 return width_scale.scale(d.size);
             }
@@ -119,7 +119,7 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
             LinesViewModule.Lines.__super__.relayout.apply(this);
             this.set_ranges();
 
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
 
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
@@ -137,5 +137,5 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
 
     return {
         FlexLine: FlexLine,
-    }
+    };
 });

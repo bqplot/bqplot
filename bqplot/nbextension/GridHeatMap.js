@@ -38,12 +38,12 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 that.event_listeners = {};
                 that.process_interactions();
                 that.create_listeners();
-				that.compute_view_padding();
+                that.compute_view_padding();
                 that.draw();
             });
         },
         set_ranges: function() {
-            var row_scale = this.scales["row"];
+            var row_scale = this.scales.row;
             if(row_scale) {
                 // The y_range is reversed because we want the first row
                 // to start at the top of the plotarea and not the bottom.
@@ -51,13 +51,13 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 row_scale.set_range(row_range);
                 // row_scale.set_range([row_range[1], row_range[0]]);
             }
-            var col_scale = this.scales["column"];
+            var col_scale = this.scales.column;
             if(col_scale) {
                 col_scale.set_range(this.parent.padded_range("x", col_scale.model));
             }
         },
         set_positional_scales: function() {
-            var x_scale = this.scales["column"], y_scale = this.scales["row"];
+            var x_scale = this.scales.column, y_scale = this.scales.row;
             this.listenTo(x_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.draw(); }
             });
@@ -68,15 +68,16 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         expand_scale_domain: function(scale, data, mode, start) {
             // This function expands the domain so that the heatmap has the
             // minimum area needed to draw itself.
+            var current_pixels, min_diff;
             if(mode === "expand_one") {
-                var current_pixels = data.map(function(el) {
+                current_pixels = data.map(function(el) {
                     return scale.scale(el);
                 });
                 var diffs = current_pixels.slice(1).map(function(el, index) {
                     return el - current_pixels[index];
                 });
                 //TODO: Explain what is going on here.
-                var min_diff = 0;
+                min_diff = 0;
                 if(diffs[0] < 0) {
                     start = !(start);
                     // diffs are negative. So max instead of min
@@ -93,11 +94,11 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     return [scale.invert(new_pixel), data[current_pixels.length - 1]];
                 }
             } else if(mode === "expand_two") {
-                var current_pixels = data.map(function(el)
+                current_pixels = data.map(function(el)
                                         {
                                             return scale.scale(el);
                                         });
-                var min_diff = d3.min(current_pixels.slice(1).map(function(el, index) {
+                min_diff = d3.min(current_pixels.slice(1).map(function(el, index) {
                                             return el - current_pixels[index];
                                         }));
                 var new_end = current_pixels[current_pixels.length - 1] + min_diff;
@@ -189,7 +190,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         },
         _filter_cells_by_cell_num: function(cell_numbers) {
             return this.display_cells.filter(function(el) {
-               return (cell_numbers.indexOf(el["_cell_num"]) !== -1);});
+               return (cell_numbers.indexOf(el._cell_num) !== -1);});
         },
         selected_style_updated: function(model, style) {
             this.selected_style = style;
@@ -250,8 +251,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 return [];
             }
 
-            var self = this;
-            var x_scale = this.scales["column"];
+            var x_scale = this.scales.column;
             var that = this;
 
             var x_start = start_pxl;
@@ -263,7 +263,6 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
             var column_indices = _.range(this.model.colors.length);
 
-            var that = this;
             var selected = _.filter(column_indices, function(index) {
                 var elem = that.column_pixels[index];
                 return (elem >= x_start && elem <= x_end);
@@ -284,7 +283,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 this.touch();
                 return _.range(this.model.mark_data.length);
             }
-            var x_scale = this.scales["column"], y_scale = this.scales["row"];
+            var x_scale = this.scales.column, y_scale = this.scales.row;
             var y_min = d3.min([y_start, y_end]);
             var y_max = d3.max([y_start, y_end]);
             var x_min = d3.min([x_start, x_end]);
@@ -314,33 +313,34 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var num_rows = this.model.colors.length;
             var num_cols = this.model.colors[0].length;
 
-            var row_scale = this.scales["row"];
-            var column_scale = this.scales["column"];
+            var row_scale = this.scales.row;
+            var column_scale = this.scales.column;
 
             var row_start_aligned = this.model.get("row_align") === "start";
             var col_start_aligned = this.model.get("column_align") === "start";
+            var new_domain;
 
-            if(this.model.modes["row"] !== "middle" && this.model.modes["row"] !== "boundaries") {
-                var new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes["row"], (row_start_aligned));
+            if(this.model.modes.row !== "middle" && this.model.modes.row !== "boundaries") {
+                new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes.row, (row_start_aligned));
                 if(d3.min(new_domain) < d3.min(row_scale.model.domain) || d3.max(new_domain) > d3.max(row_scale.model.domain)) {
                     // Update domain if domain has changed
                     row_scale.model.compute_and_set_domain(new_domain, row_scale.model.id);
                 }
             }
 
-            if(this.model.modes["column"] !== "middle" && this.model.modes["column"] !== "boundaries") {
-                var new_domain = this.expand_scale_domain(column_scale, this.model.columns, this.model.modes["column"], col_start_aligned);
+            if(this.model.modes.column !== "middle" && this.model.modes.column !== "boundaries") {
+                new_domain = this.expand_scale_domain(column_scale, this.model.columns, this.model.modes.column, col_start_aligned);
                 if(d3.min(new_domain) < d3.min(column_scale.model.domain) || d3.max(new_domain) > d3.max(column_scale.model.domain)) {
                     // Update domain if domain has changed
                     column_scale.model.compute_and_set_domain(new_domain, column_scale.model.id);
                 }
             }
 
-            var row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes["row"], row_start_aligned);
-            var column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes["column"], col_start_aligned);
+            var row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes.row, row_start_aligned);
+            var column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes.column, col_start_aligned);
 
-            this.row_pixels = row_plot_data['start'];
-            this.column_pixels = column_plot_data['start'];
+            this.row_pixels = row_plot_data.start;
+            this.column_pixels = column_plot_data.start;
 
             this.display_rows = this.el.selectAll(".heatmaprow")
                 .data(_.range(num_rows));
@@ -349,7 +349,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.display_rows
                 .attr("transform", function(d)
                                     {
-                                        return "translate(0, " + row_plot_data['start'][d] + ")";
+                                        return "translate(0, " + row_plot_data.start[d] + ")";
                                     });
 
             var col_nums = _.range(num_cols);
@@ -371,11 +371,11 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.display_cells
                 .attr({"x": function(d, i)
                              {
-                                return column_plot_data['start'][i];
+                                return column_plot_data.start[i];
                              },
                        "y": 0})
-                .attr("width", function(d, i) { return column_plot_data['widths'][i];})
-                .attr("height",function(d) { return row_plot_data['widths'][d['row_num']];})
+                .attr("width", function(d, i) { return column_plot_data.widths[i];})
+                .attr("height",function(d) { return row_plot_data.widths[d.row_num];})
                 .style("fill", function(d) { return that.get_element_fill(d); })
                 .style({"stroke" : stroke,
                         "opacity" : opacity});
@@ -386,7 +386,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         update_opacity: function(model, value) {
             this.display_cells.style("opacity", value);
         },
-        get_tile_plotting_data(scale, data, mode, start) {
+        get_tile_plotting_data: function(scale, data, mode, start) {
             // This function returns the starting points and widths of the
             // cells based on the parameters passed.
             //
@@ -407,15 +407,16 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 var pixel_points = data.map(function(d) {
                     return scale.scale(d);
                 });
-                var widths = [];
+                widths = [];
                 for (var i=1; i<pixel_points.length; ++i) {
                     widths[i - 1] = Math.abs(pixel_points[i] - pixel_points[i - 1]);
                 }
-                var start_points = pixel_points[1] > pixel_points[0] ?
+                start_points = pixel_points[1] > pixel_points[0] ?
                     pixel_points.slice(0, -1) : pixel_points.slice(1);
                 return {"start": start_points, "widths": widths};
             }
             if(mode === "expand_one") {
+                var bounds;
                 if(start) {
                     // Start points remain the same as the data.
                     start_points = data.map(function(d) {
@@ -429,7 +430,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     // Now we have n-1 widths. We have to add the last or the
                     // first width depending on scale is increasing or
                     // decreasing.
-                    var bounds = d3.max(scale.scale.range());
+                    bounds = d3.max(scale.scale.range());
                     if(start_points[0] < start_points[1]) {
                         widths = Array.prototype.concat(widths, [Math.abs(bounds - d3.max(start_points))]);
                     } else {
@@ -444,7 +445,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                         // can be increasing or decreasing in terms of pixels
                         return Math.abs(d - start_points[ind]);
                     });
-                    var bounds = d3.min(scale.scale.range());
+                    bounds = d3.min(scale.scale.range());
+                    bounds = d3.min(scale.scale.range());
                     if(start_points[1] > start_points[0]) {
                         // The point corresponding to the bounds is added at
                         // the start of the array. Hence it has to be added to
@@ -481,7 +483,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
         },
         get_element_fill: function(dat) {
-            return this.scales['color'].scale(dat['color']);
+            return this.scales.color.scale(dat.color);
         },
         process_interactions: function() {
             var interactions = this.model.get("interactions");
@@ -489,23 +491,23 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 //set all the event listeners to blank functions
                 this.reset_interactions();
             } else {
-                if(interactions["click"] !== undefined &&
-                  interactions["click"] !== null) {
-                    if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() {
+                if(interactions.click !== undefined &&
+                  interactions.click !== null) {
+                    if(interactions.click === "tooltip") {
+                        this.event_listeners.element_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
                     }
                 } else {
                     this.reset_click();
                 }
-                if(interactions["hover"] !== undefined &&
-                  interactions["hover"] !== null) {
-                    if(interactions["hover"] === "tooltip") {
-                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
-                        this.event_listeners["mouse_move"] = this.show_tooltip;
-                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                if(interactions.hover !== undefined &&
+                  interactions.hover !== null) {
+                    if(interactions.hover === "tooltip") {
+                        this.event_listeners.mouse_over = this.refresh_tooltip;
+                        this.event_listeners.mouse_move = this.show_tooltip;
+                        this.event_listeners.mouse_out = this.hide_tooltip;
                     }
                 } else {
                     this.reset_hover();

@@ -48,7 +48,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                     column_num : col_num,
                     color : that.colors[row_num][col_num],
                     _cell_num : row_num * num_rows + col_num,
-                }
+                };
             });
             this.identify_modes();
             this.update_domains();
@@ -60,22 +60,22 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 return;
             }
             var scales = this.get("scales");
-            var y_scale = scales["row"], x_scale = scales["column"];
-            var color_scale = scales["color"];
+            var y_scale = scales.row, x_scale = scales.column;
+            var color_scale = scales.color;
 
-            if(!this.get("preserve_domain")["row"]) {
+            if(!this.get("preserve_domain").row) {
                 y_scale.compute_and_set_domain(this.rows, this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
 
-            if(!this.get("preserve_domain")["column"]) {
+            if(!this.get("preserve_domain").column) {
                 x_scale.compute_and_set_domain(this.columns, this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
             if(color_scale !== null && color_scale !== undefined) {
-                if(!this.get("preserve_domain")["color"]) {
+                if(!this.get("preserve_domain").color) {
                     color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.color;
                     }), this.id);
@@ -90,34 +90,34 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
         identify_modes: function() {
             //based on the data, identify the mode in which the heatmap should
             //be plotted.
-            var modes = {}
+            var modes = {};
             var scales = this.get("scales");
-            var row_scale = scales["row"];
-            var column_scale = scales["column"];
+            var row_scale = scales.row;
+            var column_scale = scales.column;
             var data_nrow = this.colors.length;
             var data_ncol = this.colors[0].length;
 
             if(row_scale.type === "ordinal") {
-                modes["row"] = "middle";
+                modes.row = "middle";
             } else {
                 if(data_nrow === this.rows.length - 1) {
-                    modes["row"] = "boundaries";
+                    modes.row = "boundaries";
                 } else if(data_nrow === this.rows.length) {
-                    modes["row"] = "expand_one";
+                    modes.row = "expand_one";
                 } else if(data_nrow === this.rows.length + 1) {
-                    modes["row"] = "expand_two";
+                    modes.row = "expand_two";
                 }
             }
 
             if(column_scale.type === "ordinal") {
-                modes["column"] = "middle";
+                modes.column = "middle";
             } else {
                 if(data_ncol === this.columns.length - 1) {
-                    modes["column"] = "boundaries";
+                    modes.column = "boundaries";
                 } else if(data_ncol === this.columns.length) {
-                    modes["column"] = "expand_one";
+                    modes.column = "expand_one";
                 } else if(data_ncol === this.columns.length + 1) {
-                    modes["column"] = "expand_two";
+                    modes.column = "expand_two";
                 }
             }
             this.modes = modes;

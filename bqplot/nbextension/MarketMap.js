@@ -86,7 +86,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
 
             var scale_creation_promise = this.create_scale_views();
             scale_creation_promise.then(function() {
-                var color_scale = self.scales["color"];
+                var color_scale = self.scales.color;
                 if(color_scale){
                     color_scale.set_range();
                     color_scale.on("color_scale_range_changed", self.update_map_colors, self);
@@ -241,7 +241,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             this.running_sums.pop();
         },
         update_domains: function() {
-            var color_scale_model = this.model.get("scales")["color"];
+            var color_scale_model = this.model.get("scales").color;
             var color_data = this.model.get_typed_field("color");
             if(color_scale_model && color_data.length > 0) {
                 color_scale_model.compute_and_set_domain(color_data, this.model.id);
@@ -320,8 +320,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
         },
         set_scales: function() {
             var self = this;
-            if(this.scales["color"]) {
-                this.listenTo(this.scales["color"], "domain_changed", function() {
+            if(this.scales.color) {
+                this.listenTo(this.scales.color, "domain_changed", function() {
                     self.update_map_colors();
                 });
             }
@@ -338,7 +338,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             this.fig_names.selectAll(".names_object").remove();
             this.rect_groups = this.fig_map.selectAll(".element_group")
                 .data(this.groups);
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
 
             var that = this;
             this.rect_groups.enter()
@@ -381,7 +381,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                     .on("mouseover", function(data, ind) { that.mouseover_handler(data, (element_count + ind), this);})
                     .on("mouseout", function(data, ind) { that.mouseout_handler(data, (element_count + ind), this);})
                     .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
-                    .attr("id", function(data) { return "market_map_element_" + data['name'];});
+                    .attr("id", function(data) { return "market_map_element_" + data.name;});
 
                 groups.selectAll(".market_map_rect")
                     .attr("width", that.column_width)
@@ -389,13 +389,13 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                     .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
                     .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) {
                         return (color_scale && elem.color !== undefined) ?
-                            color_scale.scale(elem["color"]) :
+                            color_scale.scale(elem.color) :
                             that.colors_map(i);}});
 
                 groups.selectAll(".market_map_text")
                     .attr("x", that.column_width / 2.0)
                     .attr("y", that.row_height / 2.0)
-                    .text(function(data, j) { return data['display']; })
+                    .text(function(data, j) { return data.display; })
                     .style("opacity", (that.model.get("show_groups") ? 0.2 : 1.0));
 
                 // Removing the old nodes
@@ -430,7 +430,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             this.update_data();
             this.rect_groups = this.fig.selectAll(".element_group")
                 .data(this.groups);
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
 
             this.rect_groups[0].forEach(function(d, i) {
                 var data = that.grouped_data[that.groups[i]];
@@ -440,15 +440,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                     .data(data)
                     .select('rect')
                     .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j)
-                           { return (color_scale && elem.color !== undefined
-                                    && elem.color !== null) ?
-                               color_scale.scale(elem['color']) :
+                           { return (color_scale && elem.color !== undefined && elem.color !== null) ?
+                               color_scale.scale(elem.color) :
                                that.colors_map(i);}});
             });
         },
         update_map_colors: function() {
             var that = this;
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
             if(this.rect_groups !== undefined && this.rect_groups !== null) {
                 this.rect_groups[0].forEach(function(d, i) {
                     var data = that.grouped_data[that.groups[i]];
@@ -460,7 +459,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                         .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) {
                             return (color_scale && elem.color !== undefined &&
                                    elem.color !== null) ?
-                                color_scale.scale(elem['color']) :
+                                color_scale.scale(elem.color) :
                                 that.colors_map(i);}});
                 });
             }
@@ -575,7 +574,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                     .attr("class", "tooltiptext")
                     .text(function(datum, index) { return that.tooltip_formats[index](data.ref_data[datum]);});
             }
-            this.send({event: "hover", data: data["name"], ref_data: data.ref_data});
+            this.send({event: "hover", data: data.name, ref_data: data.ref_data});
         },
         hide_tooltip: function() {
             var tooltip_div = d3.select(this.el.parentNode)
@@ -676,6 +675,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             var init_x = x_direction;
             var init_y = y_direction;
             var end_points = [];
+            var current_row;
 
             var rows_remaining = (init_y == 1) ? (bottom_row - start_row) : (start_row - top_row + 1);
             var cols_remaining = (init_x == 1) ? (this.num_cols - 1 - start_col) : (start_col); // this is the num of columns remaining
@@ -685,7 +685,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             //between the current top and bottom rows
             var num_rows = bottom_row - top_row;
 
-            if(elem_remaining !== 0){
+            if(elem_remaining !== 0) {
                 // starting corener of the path
                 this.calc_end_point_source(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
                 var elem_filled = Math.min(rows_remaining, elem_remaining);
@@ -698,7 +698,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                     // row itself.
                     this.calc_end_point_source(start_col, start_row, (-1) * init_x, init_y).forEach(function(d) { end_points.push(d); });
 
-                    var current_row = start_row + (elem_remaining - 1) * init_y;
+                    current_row = start_row + (elem_remaining - 1) * init_y;
                     this.calc_end_point_dest(start_col, current_row, (-1) * init_x, init_y).forEach(function(e) { end_points.push(e); });
                     this.calc_end_point_dest(start_col, current_row, init_x, init_y).forEach(function(e) { end_points.push(e); });
 
@@ -836,7 +836,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                 this.calc_end_point_source(start_col, start_row, init_x * (-1), init_y).forEach(function(d) { end_points.push(d); });
 
                 // The points corresponding to the cell at which we stop.
-                var current_row = start_row + (elem_remaining - 1) * init_y;  // this is the row in which we end
+                current_row = start_row + (elem_remaining - 1) * init_y;  // this is the row in which we end
                 // Two points need to be added. The boundary of the last cell
                 // in the y-direction.
                 this.calc_end_point_dest(start_col, current_row, init_x, init_y).forEach(function(d) { end_points.push(d); });

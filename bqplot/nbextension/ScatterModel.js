@@ -36,9 +36,9 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             var x_data = this.get_typed_field("x"),
                 y_data = this.get_typed_field("y"),
                 scales = this.get("scales"),
-                x_scale = scales["x"],
-                y_scale = scales["y"],
-                color_scale = scales["color"];
+                x_scale = scales.x,
+                y_scale = scales.y,
+                color_scale = scales.color;
 
             if (x_data.length === 0 || y_data.length === 0) {
                 this.mark_data = [];
@@ -55,7 +55,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                     rotation = this.get_typed_field("rotation");
 
                 if(color_scale) {
-                    if(!this.get("preserve_domain")["color"]) {
+                    if(!this.get("preserve_domain").color) {
                         color_scale.compute_and_set_domain(color, this.id);
                     } else {
                         color_scale.del_domain([], this.id);
@@ -94,8 +94,8 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
 
             this.mark_data.forEach(function(data, index){
-                                       data["name"] = names[index];
-                                       data["unique_id"] = unique_ids[index];
+                                       data.name = names[index];
+                                       data.unique_id = unique_ids[index];
             });
         },
         get_data_dict: function(data, index) {
@@ -109,21 +109,21 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             // should be moved here as soon as that is fixed.
 
             var scales = this.get("scales"),
-                x_scale = scales["x"],
-                y_scale = scales["y"],
-                size_scale = scales["size"],
-                opacity_scale = scales["opacity"],
-                skew_scale = scales["skew"],
-                rotation_scale = scales["rotation"];
+                x_scale = scales.x,
+                y_scale = scales.y,
+                size_scale = scales.size,
+                opacity_scale = scales.opacity,
+                skew_scale = scales.skew,
+                rotation_scale = scales.rotation;
 
-            if(!this.get("preserve_domain")["x"]) {
+            if(!this.get("preserve_domain").x) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.x;
                 }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
-            if(!this.get("preserve_domain")["y"]) {
+            if(!this.get("preserve_domain").y) {
                 y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.y;
                 }), this.id);
@@ -131,7 +131,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 y_scale.del_domain([], this.id);
             }
             if(size_scale) {
-                if(!this.get("preserve_domain")["size"]) {
+                if(!this.get("preserve_domain").size) {
                     size_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.size;
                     }), this.id);
@@ -140,7 +140,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
             }
             if(opacity_scale) {
-                if(!this.get("preserve_domain")["opacity"]) {
+                if(!this.get("preserve_domain").opacity) {
                     opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.opacity;
                     }), this.id);
@@ -149,7 +149,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
             }
             if(skew_scale) {
-                if(!this.get("preserve_domain")["skew"]) {
+                if(!this.get("preserve_domain").skew) {
                     skew_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.skew;
                     }), this.id);
@@ -158,7 +158,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
             }
             if(rotation_scale) {
-                if(!this.get("preserve_domain")["rotation"]) {
+                if(!this.get("preserve_domain").rotation) {
                     rotation_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.rotation;
                     }), this.id);

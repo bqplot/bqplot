@@ -40,24 +40,25 @@ define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], func
             var scales = this.model.get("scales");
             var that = this;
             this.scale_promises = ipy_utils.resolve_promises_dict({
-                "x": Promise.all((scales["x"] || []).map(function(model) {
+                "x": Promise.all((scales.x || []).map(function(model) {
                         return that.create_child_view(model);
                      })),
-                "y": Promise.all((scales["y"] || []).map(function(model) {
+                "y": Promise.all((scales.y || []).map(function(model) {
                         return that.create_child_view(model);
                      })),
             });
         },
         set_ranges: function() {
            var that = this;
+           var i;
            this.scale_promises.then(function(scale_views) {
-               var xscale_views = scale_views["x"];
-               for (var i=0; i<xscale_views.length; i++) {
+               var xscale_views = scale_views.x;
+               for (i=0; i<xscale_views.length; i++) {
                    xscale_views[i].set_range(that.parent.padded_range("x",
                                                     xscale_views[i].model));
                }
-               var yscale_views = scale_views["y"];
-               for (var i=0; i<yscale_views.length; i++) {
+               var yscale_views = scale_views.y;
+               for (i=0; i<yscale_views.length; i++) {
                    yscale_views[i].set_range(that.parent.padded_range("y",
                                                     yscale_views[i].model));
                }
@@ -71,10 +72,10 @@ define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], func
             // A copy of the original domains is required to avoid additional
             // drift when Paning.
             this.domains = {
-                "x": (scales["x"] || []).map(function(s) {
+                "x": (scales.x || []).map(function(s) {
                     return s.domain.slice(0);
                 }),
-                "y": (scales["y"] || []).map(function(s) {
+                "y": (scales.y || []).map(function(s) {
                     return s.domain.slice(0);
                 }),
             };
@@ -94,8 +95,8 @@ define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], func
                 var scales = this.model.get("scales");
                 var that = this;
                 this.scale_promises.then(function(scale_views) {
-                    var xscale_views = scale_views["x"];
-                    var xdomains = that.domains["x"];
+                    var xscale_views = scale_views.x;
+                    var xdomains = that.domains.x;
                     var xdiffs = xscale_views.map(function(view) {
                         if (view.scale.invert) {
                             // Categorical scales don't have an inversion.
@@ -103,18 +104,19 @@ define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], func
                                    view.scale.invert(that.previous_pos[0]);
                         }
                     });
-                    for (var i=0; i<xscale_views.length; i++) {
-                        var domain = xdomains[i];
-                        var min = domain[0] - xdiffs[i];
-                        var max = domain[1] - xdiffs[i];
-                        that.set_scale_attribute(scales["x"][i], "min", min);
-                        that.set_scale_attribute(scales["x"][i], "max", max);
+                    var i, domain, min, max;
+                    for (i=0; i<xscale_views.length; i++) {
+                        domain = xdomains[i];
+                        min = domain[0] - xdiffs[i];
+                        max = domain[1] - xdiffs[i];
+                        that.set_scale_attribute(scales.x[i], "min", min);
+                        that.set_scale_attribute(scales.x[i], "max", max);
                         // TODO? Only do in mouseup?
                         xscale_views[i].touch();
                     }
 
-                    var yscale_views = scale_views["y"];
-                    var ydomains = that.domains["y"];
+                    var yscale_views = scale_views.y;
+                    var ydomains = that.domains.y;
                     var ydiffs = yscale_views.map(function(view) {
                         if (view.scale.invert) {
                             // Categorical scales don't have an inversion.
@@ -122,12 +124,12 @@ define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], func
                                    view.scale.invert(that.previous_pos[1]);
                         }
                     });
-                    for (var i=0; i<yscale_views.length; i++) {
-                        var domain = ydomains[i];
-                        var min = domain[0] - ydiffs[i];
-                        var max = domain[1] - ydiffs[i];
-                        that.set_scale_attribute(scales["y"][i], "min", min);
-                        that.set_scale_attribute(scales["y"][i], "max", max);
+                    for (i=0; i<yscale_views.length; i++) {
+                        domain = ydomains[i];
+                        min = domain[0] - ydiffs[i];
+                        max = domain[1] - ydiffs[i];
+                        that.set_scale_attribute(scales.y[i], "min", min);
+                        that.set_scale_attribute(scales.y[i], "max", max);
                         // TODO? Only do this on mouseup?
                         yscale_views[i].touch();
                     }
@@ -148,32 +150,35 @@ define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], func
                     var scales = this.model.get("scales");
                     var that = this;
                     this.scale_promises.then(function(scale_views) {
-                        var xscale_views = scale_views["x"];
+                        var i, domain, min, max;
+                        var xscale_views = scale_views.x;
                         var xpos = xscale_views.map(function(view) {
                              return view.scale.invert(mouse_pos[0]);
                         });
                         var factor = Math.exp(-delta * 0.001);
-                        for (var i=0; i<xscale_views.length; i++) {
-                            var domain = scales["x"][i].domain;
-                            var min = domain[0], max = domain[1];
-                            that.set_scale_attribute(scales["x"][i], "min",
+                        for (i=0; i<xscale_views.length; i++) {
+                            domain = scales.x[i].domain;
+                            min = domain[0];
+                            max = domain[1];
+                            that.set_scale_attribute(scales.x[i], "min",
                                         (1 - factor) * xpos[i] + factor * min);
-                            that.set_scale_attribute(scales["x"][i], "max",
+                            that.set_scale_attribute(scales.x[i], "max",
                                         (1 - factor) * xpos[i] + factor * max);
                             // TODO? Only do in mouseup?
                             xscale_views[i].touch();
                         }
 
-                        var yscale_views = scale_views["y"];
+                        var yscale_views = scale_views.y;
                         var ypos = yscale_views.map(function(view) {
                             return view.scale.invert(mouse_pos[1]);
                         });
-                        for (var i=0; i<yscale_views.length; i++) {
-                            var domain = scales["y"][i].domain;
-                            var min = domain[0], max = domain[1];
-                            that.set_scale_attribute(scales["y"][i], "min",
+                        for (i=0; i<yscale_views.length; i++) {
+                            domain = scales.y[i].domain;
+                            min = domain[0];
+                            max = domain[1];
+                            that.set_scale_attribute(scales.y[i], "min",
                                         (1 - factor) * ypos[i] + factor * min);
-                            that.set_scale_attribute(scales["y"][i], "max",
+                            that.set_scale_attribute(scales.y[i], "max",
                                         (1 - factor) * ypos[i] + factor * max);
                             // TODO? Only do this on mouseup?
                             yscale_views[i].touch();

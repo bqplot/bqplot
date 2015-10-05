@@ -85,8 +85,8 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
                 if (!memory || !("previous_pos" in this)) {
                     this.previous_pos = mouse_pos;
                 }
-                var scale_x = this.lines_view.scales["x"].scale;
-                var scale_y = this.lines_view.scales["y"].scale;
+                var scale_x = this.lines_view.scales.x.scale;
+                var scale_y = this.lines_view.scales.y.scale;
 
                 var newx = scale_x.invert(mouse_pos[0]);
                 var newy = scale_y.invert(mouse_pos[1]);
@@ -123,7 +123,7 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
                             this.model.get("min_x"));
         },
         set_limits: function() {
-            var is_date = (this.lines_view.scales["x"].model.type == "date");
+            var is_date = (this.lines_view.scales.x.model.type == "date");
             if(is_date) {
                 this.min_x = this.model.get_date_elem("min_x");
                 this.valid_min = !(this.min_x === null ||

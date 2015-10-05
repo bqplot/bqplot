@@ -35,7 +35,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.color_data = this.get_typed_field("color");
 
             var scales = this.get("scales");
-            var x_scale = scales["x"], y_scale = scales["y"];
+            var x_scale = scales.x, y_scale = scales.y;
             var curve_labels = this.get("labels");
             if (this.x_data.length === 0 || this.y_data.length === 0) {
                 this.mark_data = [];
@@ -100,10 +100,10 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 return;
             }
             var scales = this.get("scales");
-            var x_scale = scales["x"], y_scale = scales["y"];
-            var color_scale = scales["color"];
+            var x_scale = scales.x, y_scale = scales.y;
+            var color_scale = scales.color;
 
-            if(!this.get("preserve_domain")["x"]) {
+            if(!this.get("preserve_domain").x) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.values.map(function(d) { return d.x; });
                 }), this.id);
@@ -111,7 +111,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 x_scale.del_domain([], this.id);
             }
 
-            if(!this.get("preserve_domain")["y"]) {
+            if(!this.get("preserve_domain").y) {
                 y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.values.map(function(d) { return d.y; });
                 }), this.id);
@@ -119,7 +119,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 y_scale.del_domain([], this.id);
             }
             if(color_scale !== null && color_scale !== undefined) {
-                if(!this.get("preserve_domain")["color"]) {
+                if(!this.get("preserve_domain").color) {
                     color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.color;
                     }), this.id);
@@ -142,7 +142,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.y_data = this.get_typed_field("y");
 
             var scales = this.get("scales");
-            var x_scale = scales["x"], y_scale = scales["y"];
+            var x_scale = scales.x, y_scale = scales.y;
             var curve_labels = this.get("labels");
             if (this.x_data.length === 0 || this.y_data.length === 0) {
                 this.mark_data = [];
@@ -179,24 +179,24 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 return;
             }
             var scales = this.get("scales");
-            var x_scale = scales["x"], y_scale = scales["y"];
-            var color_scale = scales["color"];
-            var width_scale = scales["width"];
+            var x_scale = scales.x, y_scale = scales.y;
+            var color_scale = scales.color;
+            var width_scale = scales.width;
 
-            if(!this.get("preserve_domain")["x"]) {
+            if(!this.get("preserve_domain").x) {
                 x_scale.compute_and_set_domain(this.x_data[0].slice(0, this.data_len), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
 
-            if(!this.get("preserve_domain")["y"]) {
+            if(!this.get("preserve_domain").y) {
                 y_scale.compute_and_set_domain(this.y_data[0].slice(0, this.data_len), this.id);
             } else {
                 y_scale.del_domain([], this.id);
             }
 
             if(color_scale !== null && color_scale !== undefined) {
-                if(!this.get("preserve_domain")["color"]) {
+                if(!this.get("preserve_domain").color) {
                     color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.values.map(function(d) {
                             return d.color;
@@ -207,7 +207,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }
             }
             if(width_scale !== null && width_scale !== undefined) {
-                if(!this.get("preserve_domain")["width"]) {
+                if(!this.get("preserve_domain").width) {
                     width_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.values.map(function(d) {
                             return d.size;

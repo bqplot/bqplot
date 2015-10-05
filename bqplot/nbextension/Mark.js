@@ -231,10 +231,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                     //node
                     var parent_rect = this.parent.el.getBoundingClientRect();
                     var tooltip_div_rect = this.tooltip_div.node().getBoundingClientRect();
-                    this.tooltip_div.style("left", (this.parent.el.offsetLeft + 5 + parent_rect["width"] * 0.5
-                                                    - tooltip_div_rect["width"] * 0.5) + "px")
-                        .style("top", (this.parent.el.offsetTop + 5 + parent_rect["height"] * 0.5
-                                                    - tooltip_div_rect["height"] * 0.5) + "px");
+                    this.tooltip_div.style("left", (this.parent.el.offsetLeft + 5 + parent_rect.width * 0.5 -
+                                                    tooltip_div_rect.width * 0.5) + "px")
+                        .style("top", (this.parent.el.offsetTop + 5 + parent_rect.height * 0.5 -
+                                                    tooltip_div_rect.height * 0.5) + "px");
                 }
                 else {
                     this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
@@ -294,12 +294,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             var event_data = this.event_metadata[event_name];
             if(event_data !== undefined) {
                 var data = null;
-                if(event_data["hit_test"]) {
+                if(event_data.hit_test) {
                     //do a hit test to check valid element
                     var el = d3.select(d3.event.target);
                     if(this.is_hover_element(el)) {
                         data = el.data()[0];
-                        if(event_data["lookup_data"]) {
+                        if(event_data.lookup_data) {
                             data = this.model.get_data_dict(data, data.index);
                         }
                     } else {
@@ -307,27 +307,27 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                         return;
                     }
                 }
-                this.send({event: event_data["msg_name"], data: data});
+                this.send({event: event_data.msg_name, data: data});
             }
         },
         reset_interactions: function() {
             this.reset_click();
             this.reset_hover();
             this.reset_legend_hover();
-            this.event_listeners["legend_clicked"] = function() {};
+            this.event_listeners.legend_clicked = function() {};
         },
         reset_click: function() {
-            this.event_listeners["element_clicked"] = function() {};
-            this.event_listeners["parent_clicked"] = function() {};
+            this.event_listeners.element_clicked = function() {};
+            this.event_listeners.parent_clicked = function() {};
         },
         reset_hover: function() {
-            this.event_listeners["mouse_over"] = function() {};
-            this.event_listeners["mouse_move"] = function() {};
-            this.event_listeners["mouse_out"] = function() {};
+            this.event_listeners.mouse_over = function() {};
+            this.event_listeners.mouse_move = function() {};
+            this.event_listeners.mouse_out = function() {};
         },
         reset_legend_hover: function() {
-            this.event_listeners["legend_mouse_over"] = function() {};
-            this.event_listeners["legend_mouse_out"] = function() {};
+            this.event_listeners.legend_mouse_over = function() {};
+            this.event_listeners.legend_mouse_out = function() {};
         },
         mouse_over: function() {
             if(this.model.get("enable_hover")) {

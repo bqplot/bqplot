@@ -27,7 +27,6 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var self = this;
             this.el.append("g")
               .attr("class", "pielayout");
-            var self = this;
             this.after_displayed(function() {
                 self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
                 self.create_tooltip();
@@ -42,12 +41,12 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }, null);
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
                 this.x_offset = x_scale.offset;
             }
-            var y_scale = this.scales["y"];
+            var y_scale = this.scales.y;
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
                 this.y_offset = y_scale.offset;
@@ -55,8 +54,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         },
         set_positional_scales: function() {
             // If no scale for "x" or "y" is specified, figure scales are used.
-            var x_scale = this.scales["x"] ? this.scales["x"] : this.parent.scale_x;
-            var y_scale = this.scales["y"] ? this.scales["y"] : this.parent.scale_y;
+            var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
+            var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
 
             var that = this;
             this.listenTo(x_scale, "domain_changed", function() {
@@ -105,46 +104,46 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 //set all the event listeners to blank functions
                 this.reset_interactions();
             } else {
-                if(interactions["click"] !== undefined &&
-                  interactions["click"] !== null) {
-                    if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() {
+                if(interactions.click !== undefined &&
+                  interactions.click !== null) {
+                    if(interactions.click === "tooltip") {
+                        this.event_listeners.element_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
-                    } else if (interactions["click"] === "select") {
-                        this.event_listeners["parent_clicked"] = this.reset_selection;
-                        this.event_listeners["element_clicked"] = this.click_handler;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
+                    } else if (interactions.click === "select") {
+                        this.event_listeners.parent_clicked = this.reset_selection;
+                        this.event_listeners.element_clicked = this.click_handler;
                     }
                 } else {
                     this.reset_click();
                 }
-                if(interactions["hover"] !== undefined &&
-                  interactions["hover"] !== null) {
-                    if(interactions["hover"] === "tooltip") {
-                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
-                        this.event_listeners["mouse_move"] = this.show_tooltip;
-                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                if(interactions.hover !== undefined &&
+                  interactions.hover !== null) {
+                    if(interactions.hover === "tooltip") {
+                        this.event_listeners.mouse_over = this.refresh_tooltip;
+                        this.event_listeners.mouse_move = this.show_tooltip;
+                        this.event_listeners.mouse_out = this.hide_tooltip;
                     }
                 } else {
                     this.reset_hover();
                 }
-                if(interactions["legend_click"] !== undefined &&
-                  interactions["legend_click"] !== null) {
-                    if(interactions["legend_click"] === "tooltip") {
-                        this.event_listeners["legend_clicked"] = function() {
+                if(interactions.legend_click !== undefined &&
+                  interactions.legend_click !== null) {
+                    if(interactions.legend_click === "tooltip") {
+                        this.event_listeners.legend_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
                     }
                 } else {
-                    this.event_listeners["legend_clicked"] = function() {};
+                    this.event_listeners.legend_clicked = function() {};
                 }
-                if(interactions["legend_hover"] !== undefined &&
-                  interactions["legend_hover"] !== null) {
-                    if(interactions["legend_hover"] === "highlight_axes") {
-                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
-                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
+                if(interactions.legend_hover !== undefined &&
+                  interactions.legend_hover !== null) {
+                    if(interactions.legend_hover === "highlight_axes") {
+                        this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
+                        this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
                     }
                 } else {
                     this.reset_legend_hover();
@@ -157,8 +156,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.update_radii();
         },
         position_center: function() {
-            var x_scale = this.scales["x"] ? this.scales["x"] : this.parent.scale_x;
-            var y_scale = this.scales["y"] ? this.scales["y"] : this.parent.scale_y;
+            var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
+            var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
             var x = (x_scale.model.type === "date") ?
                 this.model.get_date_elem("x") : this.model.get("x");
             var y = (y_scale.model.type === "date") ?
@@ -213,7 +212,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
               .attr("pointer-events", "none")
               .style("text-anchor", "middle");
 
-            elements.sort(function(dat1, dat2) { return dat2["startAngle"] - dat1["startAngle"]; });
+            elements.sort(function(dat1, dat2) { return dat2.startAngle - dat1.startAngle; });
             elements.on("click", function(d, i) {
                 return that.event_dispatcher("element_clicked", {"data": d, "index": i});
             });
@@ -228,13 +227,11 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var opacities = this.model.get("opacities");
             this.el.select(".pielayout").selectAll(".slice")
               .style("stroke", stroke)
-              .style("opacity", function(d, i) {
-                            return opacities[i]
-                    });
+              .style("opacity", function(d, i) { return opacities[i]; });
         },
         update_colors: function() {
             var that = this;
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
             this.el.select(".pielayout").selectAll(".slice")
               .style("fill", function(d, i) {
                   return (d.data.color !== undefined && color_scale !== undefined) ?
@@ -280,8 +277,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.update_stroke_and_opacities();
         },
         click_handler: function (args) {
-            var data = args["data"];
-            var index = args["index"];
+            var data = args.data;
+            var index = args.index;
             var that = this;
             // if(this.model.get("select_slices")) {
                 var idx = this.model.get("selected");
@@ -353,8 +350,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var scales = this.model.get("scales");
             var r = d3.max([this.model.get("radius"), this.model.get("inner_radius")]);
 
-            var x_padding = (scales["x"]) ? (r+1) : 0;
-            var y_padding = (scales["y"]) ? (r+1) : 0;
+            var x_padding = (scales.x) ? (r+1) : 0;
+            var y_padding = (scales.y) ? (r+1) : 0;
             if(x_padding !== this.x_padding || y_padding !== this.y_padding) {
                 this.x_padding = x_padding;
                 this.y_padding = y_padding;
