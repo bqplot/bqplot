@@ -14,8 +14,7 @@
 
 from __future__ import print_function
 from setuptools import setup, find_packages, Command
-from setuptools.command.build_py import build_py
-from setuptools.command.sdist import sdist
+from setuptools.command.egg_info import egg_info
 from subprocess import check_call
 import os
 import sys
@@ -147,20 +146,11 @@ class Bower(Command):
             print("Failed to run bower: %s" % e, file=sys.stderr)
             raise
 
-
-class custom_build_py(build_py):
-
+class custom_egg_info(egg_info):
+    """Customize egg_info to get js files before building the manifest."""
     def run(self):
         self.run_command('js')
-        return build_py.run(self)
-
-
-class custom_sdist(sdist):
-
-    def run(self):
-        self.run_command('js')
-        return sdist.run(self)
-
+        return egg_info.run(self)
 
 setup_args = {
     'name': 'bqplot',
@@ -174,8 +164,7 @@ setup_args = {
     'zip_safe': False,
     'cmdclass': {
         'js': Bower,
-        'build_py': custom_build_py,
-        'sdist': custom_sdist,
+        'egg_info': custom_egg_info,
     },
     'author': 'BQplot Development Team',
     'url': 'https://github.com/bloomberg/bqplot',
