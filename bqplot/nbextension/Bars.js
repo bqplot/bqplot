@@ -27,7 +27,6 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.unselected_style = this.model.get("unselected_style");
 
             this.display_el_classes = ["bar", "legendtext"];
-            var self = this
             this.after_displayed(function() {
                 self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
                 self.create_tooltip();
@@ -42,8 +41,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             });
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"],
-                y_scale = this.scales["y"];
+            var x_scale = this.scales.x,
+                y_scale = this.scales.y;
             if(x_scale.model.type !== "ordinal") {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             } else {
@@ -57,7 +56,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.y_offset = y_scale.offset;
         },
         set_positional_scales: function() {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             this.listenTo(x_scale, "domain_changed", function() {
                 if (!this.model.dirty) {
                     this.draw();
@@ -79,7 +78,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             // the value have to be negatively offset by half of the width of
             // the bars, because ordinal scales give the values corresponding
             // to the start of the bin but linear scale gives the actual value.
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             if(x_scale.model.type !== "ordinal") {
                 if (this.model.get("align")==="center") {
                     this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
@@ -131,46 +130,46 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 this.reset_interactions();
             }
             else {
-                if(interactions["click"] !== undefined &&
-                  interactions["click"] !== null) {
-                    if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() {
+                if(interactions.click !== undefined &&
+                  interactions.click !== null) {
+                    if(interactions.click === "tooltip") {
+                        this.event_listeners.element_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
-                    } else if (interactions["click"] === "select") {
-                        this.event_listeners["parent_clicked"] = this.reset_selection;
-                        this.event_listeners["element_clicked"] = this.bar_click_handler;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
+                    } else if (interactions.click === "select") {
+                        this.event_listeners.parent_clicked = this.reset_selection;
+                        this.event_listeners.element_clicked = this.bar_click_handler;
                     }
                 } else {
                     this.reset_click();
                 }
-                if(interactions["hover"] !== undefined &&
-                  interactions["hover"] !== null) {
-                    if(interactions["hover"] === "tooltip") {
-                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
-                        this.event_listeners["mouse_move"] = this.show_tooltip;
-                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                if(interactions.hover !== undefined &&
+                  interactions.hover !== null) {
+                    if(interactions.hover === "tooltip") {
+                        this.event_listeners.mouse_over = this.refresh_tooltip;
+                        this.event_listeners.mouse_move = this.show_tooltip;
+                        this.event_listeners.mouse_out = this.hide_tooltip;
                     }
                 } else {
                     this.reset_hover();
                 }
-                if(interactions["legend_click"] !== undefined &&
-                  interactions["legend_click"] !== null) {
-                    if(interactions["legend_click"] === "tooltip") {
-                        this.event_listeners["legend_clicked"] = function() {
+                if(interactions.legend_click !== undefined &&
+                  interactions.legend_click !== null) {
+                    if(interactions.legend_click === "tooltip") {
+                        this.event_listeners.legend_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
                     }
                 } else {
-                    this.event_listeners["legend_clicked"] = function() {};
+                    this.event_listeners.legend_clicked = function() {};
                 }
-                if(interactions["legend_hover"] !== undefined &&
-                  interactions["legend_hover"] !== null) {
-                    if(interactions["legend_hover"] === "highlight_axes") {
-                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
-                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
+                if(interactions.legend_hover !== undefined &&
+                  interactions.legend_hover !== null) {
+                    if(interactions.legend_hover === "highlight_axes") {
+                        this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
+                        this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
                     }
                 } else {
                     this.reset_legend_hover();
@@ -183,7 +182,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.relayout();
         },
         relayout: function() {
-            var y_scale = this.scales["y"];
+            var y_scale = this.scales.y;
             this.set_ranges();
             this.compute_view_padding();
 
@@ -205,7 +204,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 return;
             }
 
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
             this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
             this.touch();
@@ -218,7 +217,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
 
             var self = this;
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
 
             var indices = _.range(this.model.mark_data.length);
             var filtered_indices = indices.filter(function(ind) { var x_pix = self.x_pixels[ind];
@@ -240,7 +239,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                   return d.key;
               });
 
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             // this.x is the ordinal scale used to draw the bars. If a linear
             // scale is given, then the ordinal scale is created from the
             // linear scale.
@@ -305,7 +304,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var bars_sel = bar_groups.selectAll(".bar");
             var that = this;
 
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             if(x_scale.model.type === "ordinal") {
                 var x_max = d3.max(this.parent.range("x"));
                 bar_groups.attr("transform", function(d) {
@@ -353,7 +352,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.el.selectAll(".bar")
                 .style("stroke", stroke)
                 .style("opacity", function(d, i) {
-                            return opacities[i]
+                            return opacities[i];
                       });
         },
         update_colors: function() {
@@ -363,7 +362,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             //if y is multi-dimensional, the correspoding values should be of
             //the same color.
             var that = this;
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
             if(this.model.mark_data.length > 0) {
                 if(!(this.model.is_y_2d)) {
                     this.el.selectAll(".bar").style("fill", function(d, i) {
@@ -402,12 +401,12 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
 
             var legend_data = this.model.mark_data[0].values.map(function(data) {
                 return {
-                    index: data["sub_index"],
-                    color: data["color"],
-                    color_index: data["color_index"]
+                    index: data.sub_index,
+                    color: data.color,
+                    color_index: data.color_index
                 };
             });
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
             this.legend_el = elem.selectAll(".legend" + this.uuid)
                 .data(legend_data);
 
@@ -420,10 +419,10 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
                 })
                 .on("mouseover", _.bind(function() {
-                    this.event_dispatcher("legend_mouse_over")
+                    this.event_dispatcher("legend_mouse_over");
                 }, this))
                 .on("mouseout", _.bind(function() {
-                    this.event_dispatcher("legend_mouse_out")
+                    this.event_dispatcher("legend_mouse_out");
                 }, this))
                 .on("click", _.bind(function() {
                     this.event_dispatcher("legend_clicked");
@@ -501,7 +500,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.update_stroke_and_opacities();
         },
         set_x_range: function() {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             if(x_scale.model.type === "ordinal") {
                 return x_scale.scale.rangeExtent();
             } else {
@@ -510,8 +509,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
         },
         bar_click_handler: function (args) {
-            var data = args["data"];
-            var index = args["index"];
+            var data = args.data;
+            var index = args.index;
             var that = this;
             var idx = this.model.get("selected");
             var selected = idx ? utils.deepCopy(idx) : [];
@@ -583,7 +582,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             //This function returns a dictionary with keys as the scales and
             //value as the pixel padding required for the rendering of the
             //mark.
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             var x_padding = 0;
             if(x_scale) {
                 if (this.x !== null && this.x !== undefined &&
