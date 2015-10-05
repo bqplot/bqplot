@@ -32,7 +32,7 @@ define(["nbextensions/widgets/widgets/js/manager", "./components/d3/d3", "./Mark
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
 
-            y_data.forEach(function(elm) { elm.sort(function(a, b){return a-b;} ) });
+            y_data.forEach(function(elm) { elm.sort(function(a, b) { return a - b; }); });
 
             if(x_data.length > y_data.length) {
                 x_data = x_data.slice(0, y_data.length);
@@ -50,19 +50,19 @@ define(["nbextensions/widgets/widgets/js/manager", "./components/d3/d3", "./Mark
             // should be moved here as soon as that is fixed.
 
             var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
-            var size_scale = scales["size"];
-            var opacity_scale = scales["opacity"];
+            var x_scale = scales.x;
+            var y_scale = scales.y;
+            var size_scale = scales.size;
+            var opacity_scale = scales.opacity;
 
-            if(!this.get("preserve_domain")["x"] && this.mark_data) {
+            if(!this.get("preserve_domain").x && this.mark_data) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem[0];
                 }), this.id);
             } else {
                 x_scale.del_domain([], this.id);
             }
-            if(!this.get("preserve_domain")["y"] && this.mark_data) {
+            if(!this.get("preserve_domain").y && this.mark_data) {
                //The values are sorted, so we are using that to calculate the min/max
 
                 var min = d3.min(this.mark_data.map(function(d) {
