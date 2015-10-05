@@ -13,7 +13,7 @@ Goals
 -   provide a sensible API for adding user interactions (panning, zooming, selection, etc)
 -   pip installable
 
-Two main APIs are provided
+Two APIs are provided
 
 - Users can build a custom visualization using our object model, that is inspired by
   the constructs of the Grammar of Graphics (figure, marks, axes, scales), and enrich their
@@ -67,92 +67,62 @@ This package depends on the following packages:
 
 
 ### Loading `bqplot`
-    # In an IPython shell
-    $ ipython
-    In [1]: import bqplot
+
+```python
+# In a Jupyter notebook
+import bqplot
+```
 
 That's it! You're ready to go!
 
 Examples
 --------
 
-1. Using the `bqplot` internal object model
+### Using the `pyplot` API
+
+```python
+from bqplot import pyplot as plt
+import numpy as np
+
+plt.figure(1)
+np.random.seed(0)
+n = 200
+x = np.linspace(0.0, 10.0, n)
+y = np.cumsum(np.random.randn(n))
+plt.plot(x,y, axes_options={'y': {'grid_lines': 'dashed'}})
+plt.show()
+```
+
+![Pyplot Screenshot](/pyplot-screenshot.png)
+
+### Using the `bqplot` internal object model
 
 
-    ```python
-    import numpy as np
-    from IPython.display import display
-    from bqplot import *
+```python
+import numpy as np
+from IPython.display import display
+from bqplot import *
 
-    n = 10
-    x_data = np.arange(n)
-    y_data = np.cumsum(np.random.randn(n)) * 100.0
-    y_data_2 = np.cumsum(np.random.randn(n)) * 100.0
-    y_data_3 = np.cumsum(np.random.randn(n)) * 100.0
+size = 20
+np.random.seed(0)
 
-    sc_ord = OrdinalScale()
-    sc_y = LinearScale()
-    sc_y_2 = LinearScale()
+x_data = np.arange(size)
 
-    ord_ax = Axis(scale=sc_ord,
-                  label='Test X',
-                  tick_format='0.0f',
-                  grid_lines='none')
+x_ord = OrdinalScale()
+y_sc = LinearScale()
 
-    y_ax = Axis(scale=sc_y,
-                label='Test Y',
-                tick_format='0.2f',
-                grid_lines='solid',
-                orientation='vertical')
+bar = Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y': y_sc}, type='stacked')
+line = Lines(x=x_data, y=np.random.randn(size), scales={'x': x_ord, 'y': y_sc},
+             stroke_width=3, colors=['red'], display_legend=True, labels=['Line chart'])
 
-    y_ax_2 = Axis(label='Test Y 2',
-                  scale=sc_y_2,
-                  orientation='vertical',
-                  side='right',
-                  tick_format='0.0f',
-                  grid_lines='dashed')
+ax_x = Axis(scale=x_ord)
+ax_y = Axis(scale=y_sc, orientation='vertical', tick_format='0.2f', grid_lines='solid')
 
-    line_chart = Lines(x=x_data,
-                       y=[y_data, y_data_2, y_data_3],
-                       scales={
-                           'x': sc_ord,
-                           'y': sc_y,
-                       },
-                       stroke_width=3,
-                       labels=['Line1', 'Line2', 'Line3'],
-                       display_legend=True)
+fig = Figure(marks=[bar, line], axes=[ax_x, ax_y])
+display(fig)
+```
 
-    bar_chart = Bars(x=x_data,
-                     y=[y_data, y_data_2, y_data_3],
-                     scales={
-                         'x': sc_ord,
-                         'y': sc_y_2,
-                     },
-                     opacity=0.5,
-                     labels=['Bar1', 'Bar2', 'Bar3'],
-                     display_legend=True)
-
-    fig = Figure(axes=[ord_ax, y_ax, y_ax_2],
-                 marks=[bar_chart, line_chart],
-                 legend_location='top-left')
-
-    display(fig)
-    ```
-
-2. Using the `pyplot` API
-
-    ```python
-    from bqplot import pyplot as plt
-    import numpy as np
-
-    plt.figure(1)
-    np.random.seed(0)
-    n = 200
-    x = np.linspace(0.0, 10.0, n)
-    y = np.cumsum(np.random.randn(n))
-    plt.plot(x,y, axes_options={'y': {'grid_lines': 'dashed'}})
-    plt.show()
-    ```
+![Bqplot Screenshot](/bqplot-screenshot.png)
 
 License
 -------
