@@ -29,7 +29,7 @@ Getting Started
 This package depends on the following packages:
 
 -   `numpy`
--   `IPython` (version >=4.0)
+-   `ipywidgets` (version >=4.0)
 
 ### Installation
 
@@ -111,7 +111,8 @@ x_data = np.arange(size)
 x_ord = OrdinalScale()
 y_sc = LinearScale()
 
-bar = Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y': y_sc}, type='stacked')
+bar = Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y': y_sc},
+           type='stacked')
 line = Lines(x=x_data, y=np.random.randn(size), scales={'x': x_ord, 'y': y_sc},
              stroke_width=3, colors=['red'], display_legend=True, labels=['Line chart'])
 
@@ -127,6 +128,6 @@ display(fig)
 License
 -------
 
-This software is licensed under the Apache 2.0 license. See the LICENSE file
+This software is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file
 for details.
 
