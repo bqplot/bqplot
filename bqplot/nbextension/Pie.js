@@ -226,7 +226,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         update_stroke_and_opacities: function() {
             var stroke = this.model.get("stroke");
             var opacities = this.model.get("opacities");
-            this.el.select(".pielayout").selectAll(".slice")
+            this.el.select(".pielayout").selectAll(".slice").select(".pie_slice")
               .style("stroke", stroke)
               .style("opacity", function(d, i) {
                             return opacities[i]
