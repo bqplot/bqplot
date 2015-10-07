@@ -950,7 +950,7 @@ class Pie(Mark):
     opacities = List(trait=Float(default_value=1.0, min=0, max=1,
                      allow_none=True), sync=True,
                      display_name='Opacities')
-    radius = Float(default_value=300.0, min=0.0, max=float('inf'), sync=True)
+    radius = Float(default_value=180.0, min=0.0, max=float('inf'), sync=True)
     inner_radius = Float(default_value=0.1, min=0.0, max=float('inf'), sync=True)
     start_angle = Float(default_value=0.0, sync=True)
     end_angle = Float(default_value=360.0, sync=True)
