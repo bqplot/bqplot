@@ -62,3 +62,4 @@ from .axes import *
 from .marks import *
 from .scales import *
 from .default_tooltip import *
+from ._version import version_info, __version__
