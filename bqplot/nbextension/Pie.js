@@ -165,17 +165,16 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var transform = "translate(" + (x_scale.scale(x) + x_scale.offset) +
                                     ", " + (y_scale.scale(y) + y_scale.offset) + ")";
             this.el.select(".pielayout").transition()
-              .duration(this.model.get("animate_dur"))
+              .duration(this.parent.model.get("animate_dur"))
               .attr("transform", transform);
         },
         update_radii: function() {
-
             var arc = d3.svg.arc()
               .outerRadius(this.model.get("radius"))
               .innerRadius(this.model.get("inner_radius"));
 
             var elements = this.el.select(".pielayout").selectAll(".slice");
-            var animate_dur = this.model.get("animate_dur");
+            var animate_dur = this.parent.model.get("animate_dur");
 
             elements.select("path")
               .transition().duration(animate_dur)

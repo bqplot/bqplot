@@ -35,7 +35,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 that.event_listeners = {};
                 that.process_interactions();
                 that.create_listeners();
-				that.compute_view_padding();
+                that.compute_view_padding();
                 that.draw();
             });
         },
@@ -198,7 +198,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var x_scale = this.scales.x;
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
-              .transition().duration(this.model.get("animate_dur"))
+              .transition().duration(this.parent.model.get("animate_dur"))
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
@@ -400,7 +400,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
 
             var that = this;
             this.el.selectAll(".curve").select("path")
-              .transition().duration(this.model.get("animate_dur"))
+              .transition().duration(this.parent.model.get("animate_dur"))
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
@@ -476,7 +476,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 this.y_padding = y_padding;
                 this.trigger("mark_padding_updated");
             }
-		},
+        },
         update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                            point_in_lasso_func)
         {

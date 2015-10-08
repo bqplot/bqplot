@@ -234,7 +234,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.set_ranges();
             var colors = this.model.get("colors");
             var that = this;
-            var animate_dur = this.model.get("animate_dur");
+            var animate_dur = this.parent.model.get("animate_dur");
             var bar_groups = this.el.selectAll(".bargroup")
               .data(this.model.mark_data, function(d) {
                   return d.key;
@@ -318,7 +318,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 });
             }
             if(this.model.get("type") === "stacked") {
-                bars_sel.transition().duration(this.model.get("animate_dur"))
+                bars_sel.transition().duration(this.parent.model.get("animate_dur"))
                     .attr("x", 0)
                     .attr("width", this.x.rangeBand().toFixed(2))
                     .attr("y", function(d) {
@@ -327,7 +327,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                         return Math.abs(y_scale.scale(d.y1 + d.y) - y_scale.scale(d.y1));
                     });
             } else {
-                bars_sel.transition().duration(this.model.get("animate_dur"))
+                bars_sel.transition().duration(this.parent.model.get("animate_dur"))
                   .attr("x", function(datum, index) {
                         return that.x1(index);
                   }).attr("width", this.x1.rangeBand().toFixed(2))

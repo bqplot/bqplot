@@ -72,6 +72,9 @@ class Figure(DOMWidget):
         location of the legend relative to the center of the figure
     fig_color: Color (default: None)
         background color of the figure
+    animate_dur: nonnegative int (default: 0)
+        Duration of transition on change of data attributes, in milliseconds.
+
 
     Layout Attributes
 
@@ -110,6 +113,8 @@ class Figure(DOMWidget):
                             'bottom-left', 'bottom', 'bottom-right', 'right'],
                            default_value='top-right', sync=True,
                            display_name='Legend position')
+    animate_dur = Int(0, sync=True, display_name='Animation duration')
+
 
     def save(self):
         self.send({'type': 'save'})
