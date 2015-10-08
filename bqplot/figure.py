@@ -26,7 +26,8 @@ Figure
    Figure
 """
 
-from traitlets import Unicode, Instance, List, Dict, CFloat, Bool, Enum, Float
+from traitlets import (Unicode, Instance, List, Dict, CFloat, Bool, Enum,
+                       Float, Int)
 from ipywidgets import DOMWidget, register, Color, widget_serialization
 
 from .scales import Scale, LinearScale
