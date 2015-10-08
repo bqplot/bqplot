@@ -35,8 +35,8 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
             var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
+            var x_scale = scales.x;
+            var y_scale = scales.y;
             y_data = (y_data.length === 0 || y_data[0] instanceof Array) ?
                 y_data : [y_data];
             var self = this;
@@ -110,7 +110,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 return;
             }
             var color = this.get_typed_field("color");
-            var color_scale = this.get("scales")["color"];
+            var color_scale = this.get("scales").color;
             var color_mode = this.get("color_mode");
             var apply_color_to_groups = ((color_mode === "group") ||
                                          (color_mode === "auto" && !(this.is_y_2d)));
@@ -121,7 +121,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 });
             });
             if(color_scale && color.length > 0) {
-                    if(!this.get("preserve_domain")["color"]) {
+                    if(!this.get("preserve_domain").color) {
                         color_scale.compute_and_set_domain(color, this.id);
                     } else {
                         color_scale.del_domain([], this.id);
@@ -133,10 +133,10 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 return;
             }
             var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
+            var x_scale = scales.x;
+            var y_scale = scales.y;
 
-            if(!this.get("preserve_domain")["x"]) {
+            if(!this.get("preserve_domain").x) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.key;
                 }), this.id);
@@ -145,7 +145,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 x_scale.del_domain([], this.id);
             }
 
-            if(!this.get("preserve_domain")["y"]) {
+            if(!this.get("preserve_domain").y) {
                 if(this.get("type") === "stacked") {
                     y_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
                                                     d3.max(this.mark_data, function(c) { return c.pos_max; }), this.base_value],

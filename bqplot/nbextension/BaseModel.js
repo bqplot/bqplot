@@ -26,9 +26,9 @@ define(["nbextensions/widgets/widgets/js/widget"], function(Widget) {
             var self = this;
             if(value.hasOwnProperty("type") &&
                value.hasOwnProperty("values") &&
-               value["values"] !== null) {
+               value.values !== null) {
                 if(value.type === "date") {
-                    return_value = this.get(param)["values"];
+                    return_value = this.get(param).values;
                     if(return_value[0] instanceof Array) {
                        return_value = return_value.map(function(val) {
                            return val.map(function(elem) {
@@ -41,7 +41,7 @@ define(["nbextensions/widgets/widgets/js/widget"], function(Widget) {
                         });
                     }
                 } else {
-                    return_value = this.get(param)["values"];
+                    return_value = this.get(param).values;
                 }
             }
             return return_value;
@@ -72,8 +72,8 @@ define(["nbextensions/widgets/widgets/js/widget"], function(Widget) {
                     });
             }
             //TODO: this is not good. Need to think of something better
-            return_object["type"] = (is_date) ? "date" : "object";
-            return_object["values"] = saved_value;
+            return_object.type = (is_date) ? "date" : "object";
+            return_object.values = saved_value;
             this.set(param, return_object, options);
         },
         get_date_elem: function(param) {

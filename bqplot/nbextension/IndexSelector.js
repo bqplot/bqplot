@@ -54,7 +54,7 @@ define(["./components/d3/d3", "./Selector" ], function(d3, BaseSelectors) {
             this.listenTo(this.model, "change:color", this.color_change, this);
         },
         color_change: function() {
-            if(this.model.get("color")!=null){
+            if(this.model.get("color") !== null){
                 this.line.style("stroke", this.model.get("color"));
             }
         },
@@ -116,7 +116,7 @@ define(["./components/d3/d3", "./Selector" ], function(d3, BaseSelectors) {
             }
             //reposition the interval selector and set the selected attribute.
             var selected = this.model.get_typed_field("selected");
-            if(selected.length == 0) {
+            if(selected.length === 0) {
                 this.reset();
             } else if (selected.length != 1) {
                 // invalid value for selected. Ignoring the value

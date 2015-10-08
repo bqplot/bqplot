@@ -61,7 +61,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], functio
                     "border": "solid white"
                 })
                 .text(function(d) { return d.children ? null : d.name; })
-	            .style({
+                .style({
                     'font': '11px sans-serif',
                     'position': 'absolute',
                     'text-align': 'center',

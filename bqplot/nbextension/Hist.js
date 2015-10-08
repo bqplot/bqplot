@@ -37,11 +37,11 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             });
         },
         set_ranges: function() {
-            var x_scale = this.scales["sample"];
+            var x_scale = this.scales.sample;
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
-            var y_scale = this.scales["count"];
+            var y_scale = this.scales.count;
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
@@ -49,8 +49,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         set_positional_scales: function() {
             // In the case of Hist, a change in the "sample" scale triggers
             // a full "update_data" instead of a simple redraw.
-            var x_scale = this.scales["sample"],
-                y_scale = this.scales["count"];
+            var x_scale = this.scales.sample,
+                y_scale = this.scales.count;
             this.listenTo(x_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.model.update_data(); }
             });
@@ -80,46 +80,46 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 //set all the event listeners to blank functions
                 this.reset_interactions();
             } else {
-                if(interactions["click"] !== undefined &&
-                  interactions["click"] !== null) {
-                    if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() {
+                if(interactions.click !== undefined &&
+                  interactions.click !== null) {
+                    if(interactions.click === "tooltip") {
+                        this.event_listeners.element_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
-                    } else if (interactions["click"] === "select") {
-                        this.event_listeners["parent_clicked"] = this.reset_selection;
-                        this.event_listeners["element_clicked"] = this.bar_click_handler;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
+                    } else if (interactions.click === "select") {
+                        this.event_listeners.parent_clicked = this.reset_selection;
+                        this.event_listeners.element_clicked = this.bar_click_handler;
                     }
                 } else {
                     this.reset_click();
                 }
-                if(interactions["hover"] !== undefined &&
-                  interactions["hover"] !== null) {
-                    if(interactions["hover"] === "tooltip") {
-                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
-                        this.event_listeners["mouse_move"] = this.show_tooltip;
-                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                if(interactions.hover !== undefined &&
+                  interactions.hover !== null) {
+                    if(interactions.hover === "tooltip") {
+                        this.event_listeners.mouse_over = this.refresh_tooltip;
+                        this.event_listeners.mouse_move = this.show_tooltip;
+                        this.event_listeners.mouse_out = this.hide_tooltip;
                     }
                 } else {
                     this.reset_hover();
                 }
-                if(interactions["legend_click"] !== undefined &&
-                  interactions["legend_click"] !== null) {
-                    if(interactions["legend_click"] === "tooltip") {
-                        this.event_listeners["legend_clicked"] = function() {
+                if(interactions.legend_click !== undefined &&
+                  interactions.legend_click !== null) {
+                    if(interactions.legend_click === "tooltip") {
+                        this.event_listeners.legend_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
                     }
                 } else {
-                    this.event_listeners["legend_clicked"] = function() {};
+                    this.event_listeners.legend_clicked = function() {};
                 }
-                if(interactions["legend_hover"] !== undefined &&
-                  interactions["legend_hover"] !== null) {
-                    if(interactions["legend_hover"] === "highlight_axes") {
-                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
-                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
+                if(interactions.legend_hover !== undefined &&
+                  interactions.legend_hover !== null) {
+                    if(interactions.legend_hover === "highlight_axes") {
+                        this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
+                        this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
                     }
                 } else {
                     this.reset_legend_hover();
@@ -146,11 +146,11 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.el.selectAll(".rect")
               .style("stroke", stroke)
               .style("opacity", function(d, i) {
-                    return opacities[i]
+                    return opacities[i];
               });
         },
         calculate_bar_width: function() {
-            var x_scale = this.scales["sample"];
+            var x_scale = this.scales.sample;
             var bar_width = (x_scale.scale(this.model.max_x) -
                              x_scale.scale(this.model.min_x)) / this.model.num_bins;
             if (bar_width >= 10) {
@@ -161,19 +161,19 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         relayout: function() {
             this.set_ranges();
 
-            var x_scale = this.scales["sample"],
-                y_scale = this.scales["count"];
-			this.el.selectAll(".bargroup")
-			  .attr("transform", function(d) {
+            var x_scale = this.scales.sample,
+                y_scale = this.scales.count;
+            this.el.selectAll(".bargroup")
+                .attr("transform", function(d) {
                   return "translate(" + x_scale.scale(d.x) +
                                   "," + y_scale.scale(d.y) + ")";
-              });
+                });
             var bar_width = this.calculate_bar_width();
             this.el.selectAll(".bargroup").select("rect")
               .transition().duration(this.model.get("animate_dur"))
-		      .attr("x", 2)
+              .attr("x", 2)
               .attr("width", bar_width)
-		      .attr("height", function(d) {
+              .attr("height", function(d) {
                   return y_scale.scale(0) - y_scale.scale(d.y);
               });
         },
@@ -188,16 +188,16 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 indices.push(i);
             });
 
-            var x_scale = this.scales["sample"],
-                y_scale = this.scales["count"];
+            var x_scale = this.scales.sample,
+                y_scale = this.scales.count;
             var that = this;
             var bar_width = this.calculate_bar_width();
             var bar_groups = this.el.selectAll(".bargroup")
                 .data(this.model.mark_data);
 
-	        var bars_added = bar_groups.enter()
+            var bars_added = bar_groups.enter()
               .append("g")
-			  .attr("class","bargroup");
+              .attr("class","bargroup");
 
             // initial values for width and height are set for animation
             bars_added.append("rect")
@@ -206,12 +206,12 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
               .attr("width", 0)
               .attr("height", 0);
 
-			bar_groups.attr("transform", function(d) {
+            bar_groups.attr("transform", function(d) {
                   return "translate(" + x_scale.scale(d.x) + "," +
                                         y_scale.scale(d.y) + ")";
               });
 
-		    bar_groups.select(".rect")
+            bar_groups.select(".rect")
               .style("fill", fill_color)
               .on("click", function(d, i) {
                   return that.event_dispatcher("element_clicked", {"data": d, "index": i});
@@ -220,7 +220,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
               .transition()
               .duration(this.model.get("animate_dur"))
               .attr("width", bar_width)
-		      .attr("height", function(d) {
+              .attr("height", function(d) {
                   return y_scale.scale(0) - y_scale.scale(d.y);
               });
 
@@ -232,8 +232,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.update_stroke_and_opacities();
         },
         bar_click_handler: function (args) {
-            var data = args["data"];
-            var index = args["index"];
+            var data = args.data;
+            var index = args.index;
             //code repeated from bars. We should unify the two.
             var that = this;
             if(this.model.get("select_bars")) {
@@ -284,7 +284,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 }
                 this.bars_selected = selected;
                 this.model.set("selected", ((selected.length === 0) ? null :
-                                             this.calc_data_indices(selected)), 
+                                             this.calc_data_indices(selected)),
                                             {updated_view: this});
                 this.touch();
                 if(!d3.event) {
@@ -313,10 +313,10 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
                 })
                 .on("mouseover", _.bind(function() {
-                   this.event_dispatcher("legend_mouse_over")
+                   this.event_dispatcher("legend_mouse_over");
                 }, this))
                 .on("mouseout", _.bind(function() {
-                   this.event_dispatcher("legend_mouse_out")
+                   this.event_dispatcher("legend_mouse_out");
                 }, this))
                 .on("click", _.bind(function() {
                    this.event_dispatcher("legend_clicked");
@@ -391,7 +391,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
 
             var bar_width = this.calculate_bar_width();
-            var x_scale = this.scales["sample"];
+            var x_scale = this.scales.sample;
 
             //adding "bar_width / 2.0" to bin_pixels as we need to select the
             //bar whose center is closest to the current location of the mouse.
@@ -463,7 +463,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         calc_data_indices_from_data_range: function(start_pixel, end_pixel) {
             //Input is pixel values and output is the list of indices for which
             //the `sample` value lies in the interval
-            var x_scale = this.scales["sample"];
+            var x_scale = this.scales.sample;
 
             var idx_start = d3.max([0, d3.bisectLeft(this.bin_pixels, start_pixel) - 1]);
             var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.bin_pixels, end_pixel)]);

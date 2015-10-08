@@ -40,7 +40,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
                 self.brushsel = self.el.attr("class", "selector brushintsel")
                     .call(self.brush);
 
-                if (self.model.get("color") != null) {
+                if (self.model.get("color") !== null) {
                     self.brushsel.style("fill", self.model.get("color"));
                 }
                 self.create_listeners();
@@ -51,7 +51,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
             this.listenTo(this.model, "change:color", this.color_change, this);
         },
         color_change: function() {
-             if (this.model.get("color") != null) {
+             if (this.model.get("color") !== null) {
                 this.brushsel.style("fill", this.model.get("color"));
             }
         },
@@ -183,7 +183,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
                     .attr("y", 0)
                     .attr("height", self.height);
 
-                if(self.model.get("color")!=null) {
+                if(self.model.get("color") !== null) {
                     self.brushsel.style("fill", self.model.get("color"));
                 }
 
@@ -196,7 +196,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
             this.listenTo(this.model, "change:color", this.change_color, this);
         },
         change_color: function() {
-            if (this.model.get("color") != null) {
+            if (this.model.get("color") !== null) {
                 this.brushsel.style("fill", this.model.get("color"));
             }
         },
@@ -271,7 +271,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
             }
             //reposition the interval selector and set the selected attribute.
             var selected = this.model.get_typed_field("selected");
-            if(selected.length == 0) {
+            if(selected.length === 0) {
                 this.reset();
             } else if (selected.length != 2) {
                 // invalid value for selected. Ignoring the value
@@ -399,7 +399,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
                 .attr("y", 0)
                 .attr("height", this.height);
 
-            if(self.model.get("color")!=null) {
+            if(self.model.get("color") !== null) {
                 self.new_brushsel.style("fill", self.model.get("color"));
             }
 

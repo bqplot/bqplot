@@ -33,10 +33,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "base/js/utils"
         },
         update_domains: function() {
             var scales = this.get("scales");
-            var color_scale = scales["color"];
+            var color_scale = scales.color;
             var color_data = this.get("color");
             if(color_scale !== null && color_scale !== undefined) {
-                if(!this.get("preserve_domain")["color"]) {
+                if(!this.get("preserve_domain").color) {
                     color_scale.compute_and_set_domain(
                         Object.keys(color_data).map(function (d) {
                             return color_data[d];
@@ -47,11 +47,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "base/js/utils"
             }
         },
         get_subunit_name: function(id) {
-		    for(var i = 0; i< this.subunits.length; i++) {
-			    if(id == this.subunits[i].id){
-				    name = this.subunits[i].Name;
-				}
-			}
+            for(var i = 0; i< this.subunits.length; i++) {
+                if(id == this.subunits[i].id){
+                    name = this.subunits[i].Name;
+                }
+            }
             return name;
         },
         get_data_dict: function(data, index) {

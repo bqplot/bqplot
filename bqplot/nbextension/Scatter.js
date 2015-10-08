@@ -71,12 +71,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             });
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"],
-                y_scale = this.scales["y"],
-                size_scale = this.scales["size"],
-                opacity_scale = this.scales["opacity"],
-                skew_scale = this.scales["skew"],
-                rotation_scale = this.scales["rotation"];
+            var x_scale = this.scales.x,
+                y_scale = this.scales.y,
+                size_scale = this.scales.size,
+                opacity_scale = this.scales.opacity,
+                skew_scale = this.scales.skew,
+                rotation_scale = this.scales.rotation;
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
@@ -107,8 +107,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             }
         },
         set_positional_scales: function() {
-            var x_scale = this.scales["x"],
-                y_scale = this.scales["y"];
+            var x_scale = this.scales.x,
+                y_scale = this.scales.y;
             this.listenTo(x_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.update_xy_position(); }
             });
@@ -119,11 +119,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         initialize_additional_scales: function() {
             // function to create the additional scales and create the
             // listeners for the additional scales
-            var color_scale = this.scales["color"],
-                size_scale = this.scales["size"],
-                opacity_scale = this.scales["opacity"],
-                skew_scale = this.scales["skew"],
-                rotation_scale = this.scales["rotation"];
+            var color_scale = this.scales.color,
+                size_scale = this.scales.size,
+                opacity_scale = this.scales.opacity,
+                skew_scale = this.scales.skew,
+                rotation_scale = this.scales.rotation;
             // the following handlers are for changes in data that does not
             // impact the position of the elements
             if(color_scale) {
@@ -274,7 +274,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                         return default_opacities[i % len_opac];
                     })
                     .style("fill", function(d, i) {
-                        return default_colors[i % len]
+                        return default_colors[i % len];
                     });
                 }
             }
@@ -314,7 +314,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         // points of entry to that logic which makes it easier to manage and to
         // keep consistent across different places where we use it.
         get_element_color: function(data, index) {
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
             var default_colors = this.model.get("default_colors");
             var len = default_colors.length;
             if(color_scale && data.color !== undefined && data.color !== null) {
@@ -323,14 +323,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             return default_colors[index % len];
         },
         get_element_size: function(data) {
-            var size_scale = this.scales["size"];
+            var size_scale = this.scales.size;
             if(size_scale && data.size !== undefined) {
                 return size_scale.scale(data.size);
             }
             return this.model.get("default_size");
         },
         get_element_opacity: function(data, index) {
-            var opacity_scale = this.scales["opacity"];
+            var opacity_scale = this.scales.opacity;
             var default_opacities = this.model.get("default_opacities");
             var len = default_opacities.length;
             if(opacity_scale && data.opacity !== undefined) {
@@ -339,14 +339,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             return default_opacities[index % len];
         },
         get_element_skew: function(data) {
-            var skew_scale = this.scales["skew"];
+            var skew_scale = this.scales.skew;
             if(skew_scale && data.skew !== undefined) {
                 return skew_scale.scale(data.skew);
             }
             return this.model.get("default_skew");
         },
         get_element_rotation: function(d) {
-            var rotation_scale = this.scales["rotation"];
+            var rotation_scale = this.scales.rotation;
             return (!rotation_scale || !d.rotation) ? "" :
                 "rotate(" + rotation_scale.scale(d.rotation) + ")";
         },
@@ -370,21 +370,21 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             this.update_xy_position();
         },
         update_xy_position: function() {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             var that = this;
             this.el.selectAll(".dot_grp").transition()
               .duration(this.model.get("animate_dur"))
               .attr("transform", function(d) {
                     return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
-                                    "," + (y_scale.scale(d.y) + y_scale.offset) + ")"
-                           + that.get_element_rotation(d);
+                                    "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
+                           that.get_element_rotation(d);
               });
             this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
             this.y_pixels = this.model.mark_data.map(function(el) { return y_scale.scale(el.y) + y_scale.offset; });
         },
         draw: function() {
             this.set_ranges();
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             var that = this,
                 fill = this.model.get("fill");
 
@@ -394,8 +394,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
               .attr("class", "dot_grp")
               .attr("transform", function(d) {
                     return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
-                                    "," + (y_scale.scale(d.y) + y_scale.offset) + ")"
-                           + that.get_element_rotation(d);
+                                    "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
+                           that.get_element_rotation(d);
               });
 
             elements_added.append("path").attr("class", "dot");
@@ -440,46 +440,46 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 this.reset_interactions();
             }
             else {
-                if(interactions["click"] !== undefined &&
-                  interactions["click"] !== null) {
-                    if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() {
+                if(interactions.click !== undefined &&
+                  interactions.click !== null) {
+                    if(interactions.click === "tooltip") {
+                        this.event_listeners.element_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
-                    } else if (interactions["click"] === "add") {
-                        this.event_listeners["parent_clicked"] = this.add_element;
-                        this.event_listeners["element_clicked"] = function() {};
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
+                    } else if (interactions.click === "add") {
+                        this.event_listeners.parent_clicked = this.add_element;
+                        this.event_listeners.element_clicked = function() {};
                     }
                 } else {
                     this.reset_click();
                 }
-                if(interactions["hover"] !== undefined &&
-                  interactions["hover"] !== null) {
-                    if(interactions["hover"] === "tooltip") {
-                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
-                        this.event_listeners["mouse_move"] = this.show_tooltip;
-                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                if(interactions.hover !== undefined &&
+                  interactions.hover !== null) {
+                    if(interactions.hover === "tooltip") {
+                        this.event_listeners.mouse_over = this.refresh_tooltip;
+                        this.event_listeners.mouse_move = this.show_tooltip;
+                        this.event_listeners.mouse_out = this.hide_tooltip;
                     }
                 } else {
                     this.reset_hover();
                 }
-                if(interactions["legend_click"] !== undefined &&
-                  interactions["legend_click"] !== null) {
-                    if(interactions["legend_click"] === "tooltip") {
-                        this.event_listeners["legend_clicked"] = function() {
+                if(interactions.legend_click !== undefined &&
+                  interactions.legend_click !== null) {
+                    if(interactions.legend_click === "tooltip") {
+                        this.event_listeners.legend_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
                     }
                 } else {
-                    this.event_listeners["legend_clicked"] = function() {};
+                    this.event_listeners.legend_clicked = function() {};
                 }
-                if(interactions["legend_hover"] !== undefined &&
-                  interactions["legend_hover"] !== null) {
-                    if(interactions["legend_hover"] === "highlight_axes") {
-                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
-                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
+                if(interactions.legend_hover !== undefined &&
+                  interactions.legend_hover !== null) {
+                    if(interactions.legend_hover === "highlight_axes") {
+                        this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
+                        this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
                     }
                 } else {
                     this.reset_legend_hover();
@@ -502,10 +502,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
                 })
                 .on("mouseover", _.bind(function() {
-                   this.event_dispatcher("legend_mouse_over")
+                   this.event_dispatcher("legend_mouse_over");
                 }, this))
                 .on("mouseout", _.bind(function() {
-                   this.event_dispatcher("legend_mouse_out")
+                   this.event_dispatcher("legend_mouse_out");
                 }, this))
                 .on("click", _.bind(function() {
                     this.event_dispatcher("legend_clicked");
@@ -517,7 +517,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
               .attr("d", this.dot.size(64))
               .style("fill", this.model.get("fill")  ?
                      function(d, i) {
-                        return default_colors[i % len]
+                        return default_colors[i % len];
                     } : "none")
               .style("stroke", stroke ? stroke :
                      function(d, i)
@@ -535,7 +535,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                   return that.model.get("labels")[i];
               })
               .style("fill", function(d, i) {
-                  return default_colors[i % len]
+                  return default_colors[i % len];
               });
 
             var max_length = d3.max(this.model.get("labels"), function(d) {
@@ -560,7 +560,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 return;
             }
 
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
             var sel_index = abs_diff.indexOf(d3.min(abs_diff));
 
@@ -574,12 +574,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 return [];
             }
 
-            var self = this;
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             var that = this;
             var indices = _.range(this.model.mark_data.length);
 
-            var that = this;
             var selected = _.filter(indices, function(index) {
                 var elem = that.x_pixels[index];
                 return (elem >= start_pxl && elem <= end_pxl);
@@ -595,7 +593,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 this.touch();
                 return _.range(this.model.mark_data.length);
             }
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
 
             var indices = _.range(this.model.mark_data.length);
             var that = this;
@@ -682,11 +680,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 this.y_padding = x_padding;
                 this.trigger("mark_padding_updated");
             }
-		},
+        },
         update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                            point_in_lasso_func)
         {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"],
+            var x_scale = this.scales.x, y_scale = this.scales.y,
                 idx = this.model.get("selected"),
                 selected = idx ? utils.deepCopy(idx) : [],
                 data_in_lasso = false;
@@ -721,8 +719,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             return data_in_lasso;
         },
         update_array: function(d, i) {
-            var x_scale = this.scales["x"],
-                y_scale = this.scales["y"];
+            var x_scale = this.scales.x,
+                y_scale = this.scales.y;
 
             if (!this.model.get("restrict_y")){
                 var x_data = [];
@@ -771,7 +769,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             if(!this.model.get("enable_move")) {
                 return;
             }
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             // If restrict_x is true, then the move is restricted only to the X
             // direction.
             if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {
@@ -818,10 +816,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 d3.select(dragged_node)
                   .select("path")
                   .style("fill",  function(d, i) {
-                      return default_colors[i % len]
+                      return default_colors[i % len];
                   })
                   .style("stroke", function(d, i) {
-                      return default_colors[i % len]
+                      return default_colors[i % len];
                   });
             }
 
@@ -851,7 +849,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             var mouse_pos = d3.mouse(this.el.node());
             var curr_pos = [mouse_pos[0], mouse_pos[1]];
 
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             //add the new point to dat
             var x_data = [];
             this.model.get_typed_field("x").forEach(function(d) {

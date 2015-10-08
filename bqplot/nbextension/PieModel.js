@@ -47,7 +47,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
             var labels = this.get("labels");
             this.mark_data.forEach( function(data, index) {
-                data["label"] = labels[index];
+                data.label = labels[index];
             });
             this.trigger("labels_updated");
         },
@@ -56,9 +56,9 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 return;
             }
             var color = this.get_typed_field("color");
-            var color_scale = this.get("scales")["color"];
+            var color_scale = this.get("scales").color;
             if(color_scale) {
-                if(!this.get("preserve_domain")["color"]) {
+                if(!this.get("preserve_domain").color) {
                     color_scale.compute_and_set_domain(color, this.id);
                 } else {
                     color_scale.del_domain([], this.id);
@@ -70,20 +70,20 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 return;
             }
             var scales = this.get("scales");
-            var x_scale = scales["x"];
-            var y_scale = scales["y"];
+            var x_scale = scales.x;
+            var y_scale = scales.y;
 
             if(x_scale) {
                 var x = (x_scale.type === "date") ?
                     this.get_date_elem("x") : this.get("x");
-                if(!this.get("preserve_domain")["x"]) {
+                if(!this.get("preserve_domain").x) {
                     x_scale.compute_and_set_domain([x], this.id);
                 } else {
                     x_scale.del_domain([], this.id);
                 }
             }
             if(y_scale) {
-                if(!this.get("preserve_domain")["y"]) {
+                if(!this.get("preserve_domain").y) {
                     y_scale.compute_and_set_domain([this.get("y")], this.id);
                 } else {
                     y_scale.del_domain([], this.id);
@@ -91,7 +91,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
         },
         get_data_dict: function(data, index) {
-            return data['data'];
+            return data.data;
         },
     });
 

@@ -40,17 +40,17 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             });
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
-            var y_scale = this.scales["y"];
+            var y_scale = this.scales.y;
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
         },
         set_positional_scales: function() {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             this.listenTo(x_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.update_line_xy(); }
             });
@@ -59,7 +59,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             });
         },
         initialize_additional_scales: function() {
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
             if(color_scale) {
                 this.listenTo(color_scale, "domain_changed", function() {
                     this.update_style();
@@ -195,7 +195,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         },
         relayout: function() {
             this.set_ranges();
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
               .transition().duration(this.model.get("animate_dur"))
@@ -215,7 +215,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
 
             var self = this;
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
 
             var indices = _.range(this.x_pixels.length);
             var that = this;
@@ -233,14 +233,14 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 return;
             }
 
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             var index = Math.min(this.bisect(this.x_pixels, pixel),
-								 Math.max((this.x_pixels.length - 1), 0));
+              Math.max((this.x_pixels.length - 1), 0));
             this.model.set("selected", [index]);
             this.touch();
         },
         update_multi_range: function(brush_extent) {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             var x_start = brush_extent[0];
             var x_end = brush_extent[1];
 
@@ -248,7 +248,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 this.model.x_data[0] : this.model.x_data;
             var idx_start = this.bisect(data, x_start);
             var idx_end = Math.min(this.bisect(data, x_end),
-								   Math.max((data.length - 1), 0));
+                Math.max((data.length - 1), 0));
 
             this.selector_model.set("selected", [idx_start, idx_end]);
             this.selector.touch();
@@ -256,8 +256,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var curve_labels = this.model.update_labels();
             var legend_data = this.model.mark_data.map(function(d) {
-                return {"index": d["index"], "name": d["name"], "color": d["color"],
-                        "opacity": d["opacity"]};
+                return {index: d.index, name: d.name, color: d.color,
+                        opacity: d.opacity};
             });
             this.legend_el = elem.selectAll(".legend" + this.uuid)
               .data(legend_data, function(d, i) {
@@ -285,10 +285,10 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
                 })
                 .on("mouseover", _.bind(function() {
-                   this.event_dispatcher("legend_mouse_over")
+                   this.event_dispatcher("legend_mouse_over");
                 }, this))
                 .on("mouseout", _.bind(function() {
-                   this.event_dispatcher("legend_mouse_out")
+                   this.event_dispatcher("legend_mouse_out");
                 }, this))
                 .on("click", _.bind(function() {
                    this.event_dispatcher("legend_clicked");
@@ -324,7 +324,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             return [this.model.mark_data.length, max_length];
         },
         create_labels: function() {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"],
+            var x_scale = this.scales.x, y_scale = this.scales.y,
                 that = this;
             var curves_sel = this.el.selectAll(".curve");
 
@@ -380,14 +380,14 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
         },
         get_element_color: function(data, index) {
-            var color_scale = this.scales["color"];
+            var color_scale = this.scales.color;
             if(color_scale && data.color !== undefined && data.color !== null) {
                 return color_scale.scale(data.color);
             }
             return this.get_colors(index);
         },
         update_line_xy: function() {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             this.line = d3.svg.line()
               .interpolate(this.model.get("interpolation"))
               .x(function(d) {
@@ -480,7 +480,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                            point_in_lasso_func)
         {
-            var x_scale = this.scales["x"], y_scale = this.scales["y"];
+            var x_scale = this.scales.x, y_scale = this.scales.y;
             var idx = this.model.get("selected");
             var selected = idx ? utils.deepCopy(idx) : [];
             var data_in_lasso = false;
@@ -524,32 +524,32 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 //set all the event listeners to blank functions
                 this.reset_interactions();
             } else {
-                if(interactions["click"] !== undefined &&
-                  interactions["click"] !== null) {
-                    if(interactions["click"] === "tooltip") {
-                        this.event_listeners["element_clicked"] = function() {
+                if(interactions.click !== undefined &&
+                  interactions.click !== null) {
+                    if(interactions.click === "tooltip") {
+                        this.event_listeners.element_clicked = function() {
                             return this.refresh_tooltip(true);
                         };
-                        this.event_listeners["parent_clicked"] = this.hide_tooltip;
+                        this.event_listeners.parent_clicked = this.hide_tooltip;
                     }
                 } else {
                     this.reset_click();
                 }
-                if(interactions["hover"] !== undefined &&
-                  interactions["hover"] !== null) {
-                    if(interactions["hover"] === "tooltip") {
-                        this.event_listeners["mouse_over"] = this.refresh_tooltip;
-                        this.event_listeners["mouse_move"] = this.show_tooltip;
-                        this.event_listeners["mouse_out"] = this.hide_tooltip;
+                if(interactions.hover !== undefined &&
+                  interactions.hover !== null) {
+                    if(interactions.hover === "tooltip") {
+                        this.event_listeners.mouse_over = this.refresh_tooltip;
+                        this.event_listeners.mouse_move = this.show_tooltip;
+                        this.event_listeners.mouse_out = this.hide_tooltip;
                     }
                 } else {
                     this.reset_hover();
                 }
-                if(interactions["legend_hover"] !== undefined &&
-                  interactions["legend_hover"] !== null) {
-                    if(interactions["legend_hover"] === "highlight_axes") {
-                        this.event_listeners["legend_mouse_over"] = _.bind(this.highlight_axes, this);
-                        this.event_listeners["legend_mouse_out"] = _.bind(this.unhighlight_axes, this);
+                if(interactions.legend_hover !== undefined &&
+                  interactions.legend_hover !== null) {
+                    if(interactions.legend_hover === "highlight_axes") {
+                        this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
+                        this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
                     }
                 } else {
                     this.reset_legend_hover();

@@ -224,20 +224,21 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             // Typically all marks do this. Axis do not do this.
             // Also, if a mark does not set the domain, it can potentially call
             // the unpadded ranges.
-            if(!(scale_model.get("allow_padding"))) {
+            var scale_padding, fig_padding;
+            if(!scale_model.get("allow_padding")) {
                 return this.range(direction);
             }
             var scale_id = scale_model.id;
 
             if(direction==="x") {
-                var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
+                scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
                     this.x_padding_arr[scale_id] : 0;
-                var fig_padding = (this.plotarea_width) * this.figure_padding_x;
+                fig_padding = (this.plotarea_width) * this.figure_padding_x;
                 return [(fig_padding + scale_padding), (this.plotarea_width - fig_padding - scale_padding)];
             } else if(direction==="y") {
-                var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
+                scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
                     this.y_padding_arr[scale_id] : 0;
-                var fig_padding = (this.plotarea_height) * this.figure_padding_y;
+                fig_padding = (this.plotarea_height) * this.figure_padding_y;
                 return [this.plotarea_height - scale_padding - fig_padding, scale_padding + fig_padding];
             }
         },
@@ -353,10 +354,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
 	            }, that);
                 var child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("x")];
                 var child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("y")];
-                if(child_x_scale == undefined) {
+                if(child_x_scale === undefined) {
                     child_x_scale = that.scale_x.model;
                 }
-                if(child_y_scale == undefined) {
+                if(child_y_scale === undefined) {
                     child_y_scale = that.scale_y.model;
                 }
                 that.update_padding_dict(that.x_pad_dict, view, child_x_scale, view.x_padding);

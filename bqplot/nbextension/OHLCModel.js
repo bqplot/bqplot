@@ -55,9 +55,10 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }, { o: -1, h: -1, l: -1, c: -1 });
 
             // We cannot have high without low and vice versa
-            if((this.px.h !== -1 && this.px.l === -1)
-            || (this.px.h === -1 && this.px.l !== -1)
-            || format.length < 2 || format.length > 4) {
+            if((this.px.h !== -1 && this.px.l === -1) ||
+               (this.px.h === -1 && this.px.l !== -1) ||
+                format.length < 2 || format.length > 4)
+            {
                 print_bad_format(format);
                 x_data = [];
                 y_data = [];
@@ -65,11 +66,10 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 // Verify that OHLC data is valid
                 var that = this;
                 var px = this.px;
-                if((this.px.h !== -1
-                && !y_data.every(function(d) {
+                if((this.px.h !== -1 &&
+                   !y_data.every(function(d) {
                     return (d[px.h] === d3.max(d) &&
-                            d[px.l] === d3.min(d)); }))
-                || !y_data.every(function(d) {
+                            d[px.l] === d3.min(d)); })) || !y_data.every(function(d) {
                     return d.length === format.length; }))
                 {
                     x_data = [];
@@ -86,7 +86,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
 
             this.mark_data = _.zip(x_data, y_data);
-            this.mark_data.forEach(function(elem, i) { elem['index'] = i;});
+            this.mark_data.forEach(function(elem, i) { elem.index = i;});
             this.update_domains();
             this.trigger("data_updated");
         },
@@ -96,7 +96,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
             var that = this;
             var scales = this.get("scales");
-            var x_scale = scales["x"], y_scale = scales["y"];
+            var x_scale = scales.x, y_scale = scales.y;
             var min_x_dist = Number.POSITIVE_INFINITY;
             var max_y_height = 0, dist = 0, height = 0;
 
@@ -119,17 +119,18 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 min_x_dist = 0;
             }
 
+            var min, max;
             // X Scale
-            if((!this.get("preserve_domain")["x"]) && this.mark_data.length !== 0) {
+            if((!this.get("preserve_domain").x) && this.mark_data.length !== 0) {
                 if(x_scale.type === "ordinal") {
                     x_scale.compute_and_set_domain(
                         this.mark_data.map(function(d) { return d[0]; })
                     );
                 } else {
-                    var min = d3.min(this.mark_data.map(function(d) {
+                    min = d3.min(this.mark_data.map(function(d) {
                         return d[0];
                     }));
-                    var max = d3.max(this.mark_data.map(function(d) {
+                    max = d3.max(this.mark_data.map(function(d) {
                         return d[0];
                     }));
                     if(max instanceof Date) max = max.getTime();
@@ -140,7 +141,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             }
 
             // Y Scale
-            if((!this.get("preserve_domain")["y"]) && this.mark_data.length !== 0) {
+            if((!this.get("preserve_domain").y) && this.mark_data.length !== 0) {
                 // Remember that elem contains OHLC data here so we cannot use
                 // compute_and_set_domain
                 var top = this.px.h;
@@ -149,10 +150,10 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                     top = this.px.o;
                     bottom = this.px.c;
                 }
-                var min = d3.min(this.mark_data.map(function(d) {
+                min = d3.min(this.mark_data.map(function(d) {
                     return (d[1][bottom] < d[1][top]) ? d[1][bottom] : d[1][top];
                 }));
-                var max = d3.max(this.mark_data.map(function(d) {
+                max = d3.max(this.mark_data.map(function(d) {
                     return (d[1][top] > d[1][bottom]) ? d[1][top] : d[1][bottom];
                 }));
                 if(max instanceof  Date) max = max.getTime();
@@ -164,10 +165,10 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
         get_data_dict: function(data, index) {
             var that = this;
             var return_val ={};
-            return_val['index'] = index;
-            return_val['x'] = data['x'];
+            return_val.index = index;
+            return_val.x = data.x;
             ["open", "low", "high", "close"].forEach(function(str) {
-                return_val[str] = data['y'][that.px[str.substr(0, 1)]];
+                return_val[str] = data.y[that.px[str.substr(0, 1)]];
             });
             return return_val;
         },

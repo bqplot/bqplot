@@ -26,23 +26,23 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             null);
         },
         set_ranges: function() {
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             if(x_scale) {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             }
-            var y_scale = this.scales["y"];
+            var y_scale = this.scales.y;
             if(y_scale) {
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
         },
         set_positional_scales: function() {
 
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             this.listenTo(x_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.draw(); }
             });
 
-            var y_scale = this.scales["y"];
+            var y_scale = this.scales.y;
             this.listenTo(y_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.draw(); }
             });
@@ -76,12 +76,12 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
         update_opacities: function() {
             var opacities = this.model.get("opacities");
             this.el.selectAll(".boxplot").style("opacity", function(d, i) {
-                                                    return opacities[i]
+                                                    return opacities[i];
                                                });
 
             if (this.legend_el) {
                 this.legend_el.selectAll("path").attr("opacity", function(d, i) {
-                                                        return opacities[i]
+                                                        return opacities[i];
                                                      });
             }
         },
@@ -114,12 +114,12 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             this.set_default_style(all_indices);
 
             this.set_style_on_elements(this.selected_style, this.selected_indices);
-            var unselected_indices = (indices == undefined) ?
+            var unselected_indices = (indices === undefined) ?
                 [] : _.difference(all_indices, indices);
             this.set_style_on_elements(this.unselected_style, unselected_indices);
         },
         set_style_on_elements: function(style, indices) {
-            if(indices === undefined || indices.length == 0) {
+            if(indices === undefined || indices.length === 0) {
                 return;
             }
             var elements = this.el.selectAll(".boxplot");
@@ -129,7 +129,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             elements.style(style);
         },
         set_default_style: function(indices) {
-            if(indices === undefined || indices.length == 0) {
+            if(indices === undefined || indices.length === 0) {
                 return;
             }
             var color = this.model.get("color");
@@ -145,12 +145,12 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
               })
               .style("stroke", stroke)
               .style("opacity", function(d, i) {
-                        return opacities[i]
+                        return opacities[i];
                     });
         },
         clear_style: function(style_dict, indices) {
             var elements = this.el.selectAll(".boxplot");
-            if(indices != undefined) {
+            if(indices !== undefined) {
                 elements = elements.filter(function(d, index) {
                     return indices.indexOf(index) != -1;
                 });
@@ -238,8 +238,8 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
         },
         prepareBoxPlots: function () {
 
-            var x_scale = this.scales["x"];
-            var y_scale = this.scales["y"];
+            var x_scale = this.scales.x;
+            var y_scale = this.scales.y;
 
            // convert the domain data to the boxes to be drawn on the screen
            // find the quantiles, min/max and outliers for the box plot
@@ -291,7 +291,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
         },
         draw: function() {
             this.set_ranges();
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             // get the visual representation of boxplots
             this.prepareBoxPlots();
             var plotData = this.plotData;
@@ -461,7 +461,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             var that = this;
             var min_distance = Infinity;
 
-            var x_scale = this.scales["x"];
+            var x_scale = this.scales.x;
             for(var i = 1; i < that.model.mark_data.length; i++) {
                 var dist = x_scale.scale(that.model.mark_data[i][0]) -
                             x_scale.scale(that.model.mark_data[i-1][0]);

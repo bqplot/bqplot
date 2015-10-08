@@ -27,14 +27,14 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
         },
         update_data: function() {
-	        var x_data = this.get_typed_field("sample");
+            var x_data = this.get_typed_field("sample");
             var scales = this.get("scales");
-            var x_scale = scales["sample"];
+            var x_scale = scales.sample;
 
             // TODO: This potentially triggers domain_changed and therefore a
             // Draw, while update_data is generally followed by a Draw.
 
-            if(!this.get("preserve_domain")["sample"]) {
+            if(!this.get("preserve_domain").sample) {
                 x_scale.compute_and_set_domain(x_data, this.id);
             } else {
                 x_scale.del_domain([], this.id);
@@ -52,15 +52,15 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             });
 
             this.num_bins = this.get("bins");
-	        this.x_bins =  this.create_uniform_bins(this.min_x, this.max_x, this.num_bins);
+            this.x_bins =  this.create_uniform_bins(this.min_x, this.max_x, this.num_bins);
             this.x_mid = this.x_bins.map(function(d, i) {
                 return 0.5 * (d + that.x_bins[i - 1]);
             }).slice(1);
-            this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d){
-                return d["value"];
+            this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d) {
+                return d.value;
             })(x_data_ind);
             //adding index attribute to mark_data of the model
-            this.mark_data.forEach(function(data, index) { data['index'] = index; });
+            this.mark_data.forEach(function(data, index) { data.index = index; });
 
             this.count = this.mark_data.map(function(d) { return d.length; });
             this.set("midpoints", this.x_mid);
@@ -72,11 +72,11 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
         },
         get_data_dict: function(data, index) {
             var return_dict = {};
-            return_dict['midpoint'] = this.x_mid[index];
-            return_dict['bin_start'] = this.x_bins[index];
-            return_dict['bin_end'] = this.x_bins[index+1];
-            return_dict['index'] = index;
-            return_dict['count'] = this.count[index];
+            return_dict.midpoint = this.x_mid[index];
+            return_dict.bin_start = this.x_bins[index];
+            return_dict.bin_end = this.x_bins[index + 1];
+            return_dict.index = index;
+            return_dict.count = this.count[index];
             return return_dict;
         },
         update_domains: function() {
@@ -87,8 +87,8 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             // things including the data which is to be plotted. So the x-domain
             // change is handled by the update_data function and only the
             // y-domain change is handled by this function.
-            var y_scale = this.get("scales")["count"];
-            if(!this.get("preserve_domain")["count"]) {
+            var y_scale = this.get("scales").count;
+            if(!this.get("preserve_domain").count) {
                 y_scale.set_domain([0, d3.max(this.mark_data, function(d) {
                     return d.y;
                 }) * 1.05], this.id);

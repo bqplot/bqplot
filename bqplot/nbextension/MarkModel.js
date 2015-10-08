@@ -61,7 +61,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
         get_key_for_dimension: function(dimension) {
             var scales_metadata = this.get("scales_metadata");
             for (var scale in scales_metadata) {
-                if(scales_metadata[scale]['dimension'] === dimension) {
+                if(scales_metadata[scale].dimension === dimension) {
                     return scale;
                 }
             }
