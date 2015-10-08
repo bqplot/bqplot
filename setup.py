@@ -170,7 +170,7 @@ setup_args = {
         'js': Bower,
         'egg_info': custom_egg_info,
     },
-    'author': 'BQplot Development Team',
+    'author': 'The BQplot Development Team',
     'url': 'https://github.com/bloomberg/bqplot',
     'keywords': [
         'ipython',

@@ -14,14 +14,14 @@
 
 r"""
 
-=============
-Custom Traits
-=============
+============
+Traits Types
+============
 
 .. currentmodule:: bqplot.traits
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    CInstance
    Date
@@ -54,8 +54,10 @@ class CInstance(Instance):
 class Date(TraitType):
 
     """
-    A datetime trait. Converts the passed date into a string format
-    that can be used to construct a JavaScript datetime.
+    A datetime trait type.
+
+    Converts the passed date into a string format that can be used to
+    construct a JavaScript datetime.
     """
 
     def validate(self, obj, value):
@@ -97,6 +99,10 @@ class Date(TraitType):
 
 
 class NdArray(CInstance):
+
+    """A numpy array trait type.
+    """
+
     klass = np.ndarray
     info_text = 'type aware numpy array'
 
@@ -195,12 +201,12 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
 
 class PandasDataFrame(Instance):
 
-    """
-    traitlet for pandas data frame. json representation is array of dicts
-    which is amenable for consumption by JavaScript. also note that index name
-    is ignored and when deserializing will use the 'index' attribute as an
-    index for the df. This means if the data frame has a column called 'index'
-    then there's a problem
+    """A pandas Dataframe trait type.
+
+    The json representation is an array of dicts which is amenable for
+    consumption by JavaScript. also note that index name is ignored and when
+    deserializing will use the 'index' attribute as an index for the df. This
+    means if the data frame cannot have a column called 'index'.
     """
     klass = pd.DataFrame
     info_text = 'a pandas DataFrame'
@@ -238,12 +244,12 @@ class PandasDataFrame(Instance):
 
 class PandasSeries(Instance):
 
-    """
-    traitlet for pandas series. json representation is array of dicts
-    which is amenable for consumption by JavaScript. also note that index name
-    is ignored and when deserializing will use the 'index' attribute as an
-    index for the df. This means if the data frame has a column called 'index'.
-    then there's a problem.
+    """A pandas Series trait type.
+
+    The json representation is an array of dicts which is amenable for
+    consumption by JavaScript. Also note that index name is ignored and when
+    deserializing will use the 'index' attribute as an index for the df. This
+    means if the data frame has a column called 'index'.
     """
     klass = pd.Series
     info_text = 'a pandas series'

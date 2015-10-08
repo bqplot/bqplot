@@ -21,7 +21,7 @@ Default bqplot tooltip widget
 .. currentmodule:: bqplot.default_tooltip
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    Tooltip
 """
@@ -35,6 +35,7 @@ class Tooltip(DOMWidget):
 
     Attributes
     ----------
+
     fields: list (default: [])
         list of names of fields to be displayed in the tooltip
         All the attributes  of the mark are accesible in the tooltip
@@ -48,7 +49,6 @@ class Tooltip(DOMWidget):
     show_labels: bool (default: True)
         Boolean attribute to enable and disable display of the label /field name
         as the first column along with the value
-
     """
 
     fields = List(sync=True)

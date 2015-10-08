@@ -21,7 +21,7 @@ Scales
 .. currentmodule:: bqplot.scales
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    Scale
    LinearScale
@@ -46,10 +46,13 @@ from .traits import Date
 
 
 def register_scale(key=None):
-    """Returns a decorator registering a scale class in the scale type
-    registry. If no key is provided, the class name is used as a key. A key is
+
+    """Returns a decorator to register a scale type in the scale type registry.
+
+    If no key is provided, the class name is used as a key. A key is
     provided for each core bqplot scale type so that the frontend can use
-    this key regardless of the kernal language."""
+    this key regardless of the kernal language.
+    """
     def wrap(scale):
         label = key if key is not None else scale.__module__ + scale.__name__
         Scale.scale_types[label] = scale
@@ -59,13 +62,14 @@ def register_scale(key=None):
 
 class Scale(Widget):
 
-    """The base scale class
+    """The base scale class.
 
     Scale objects represent a mapping between data (the domain) and a visual
     quantity (The range).
 
     Attributes
     ----------
+
     scale_types: dict (class-level attribute)
         A registry of existing scale types.
     domain_class: type (default: Float)
@@ -103,13 +107,14 @@ class GeoScale(Scale):
 @register_scale('bqplot.Mercator')
 class Mercator(GeoScale):
 
-    """A Geo Scale usually used for World Maps.
+    """A geographical projection scale commonly used for world maps.
 
     The Mercator projection is a cylindrical map projection which ensures that
     any course of constant bearing is a straight line.
 
     Attributes
     ----------
+
     scale_factor: float (default: 190)
         Specifies the scale value for the projection
     center: list (default: (0, 60))
@@ -135,7 +140,7 @@ class Mercator(GeoScale):
 @register_scale('bqplot.Albers')
 class Albers(GeoScale):
 
-    """A Geo Scale which is an alias for a conic equal area projection.
+    """A georaphical scale which is an alias for a conic equal area projection.
 
     The Albers projection is a conic equal area map. It does not preserve scale
     or shape, though it is recommended for chloropleths since it preserves the
@@ -143,6 +148,7 @@ class Albers(GeoScale):
 
     Attributes
     ----------
+
     scale_factor: float (default: 250)
         Specifies the scale value for the projection
     rotate: tuple (default: (96, 0))
@@ -180,6 +186,7 @@ class AlbersUSA(GeoScale):
 
     Attributes
     ----------
+
     scale_factor: float (default: 1200)
         Specifies the scale value for the projection
     rtype: (Number, Number) (class-level attribute)
@@ -205,6 +212,7 @@ class EquiRectangular(GeoScale):
 
     Attributes
     ----------
+
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
@@ -229,6 +237,7 @@ class Orthographic(GeoScale):
 
     Attributes
     ----------
+
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
@@ -262,6 +271,7 @@ class Gnomonic(GeoScale):
 
     Attributes
     ----------
+
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
@@ -293,6 +303,7 @@ class Stereographic(GeoScale):
 
     Attributes
     ----------
+
     scale_factor: float (default: 250)
         Specifies the scale value for the projection
     rotate: tuple (default: (96, 0))
@@ -320,12 +331,13 @@ class Stereographic(GeoScale):
 @register_scale('bqplot.LinearScale')
 class LinearScale(Scale):
 
-    """A linear scale
+    """A linear scale.
 
     An affine mapping from a numerical domain to a numerical range.
 
     Attributes
     ----------
+
     min: float or None (default: None)
         if not None, min is the minimal value of the domain
     max: float or None (default: None)
@@ -356,6 +368,7 @@ class LogScale(Scale):
 
     Attributes
     ----------
+
     min: float or None (default: None)
         if not None, min is the minimal value of the domain
     max: float or None (default: None)
@@ -386,6 +399,7 @@ class DateScale(Scale):
 
     Attributes
     ----------
+
     min: Date or None (default: None)
         if not None, min is the minimal value of the domain
     max: Date (default: None)
@@ -419,6 +433,7 @@ class OrdinalScale(Scale):
 
     Attributes
     ----------
+
     domain: list (default: [])
         The discrete values mapped by the ordinal scale
     rtype: string (class-level attribute)
@@ -446,10 +461,11 @@ class ColorScale(Scale):
 
     Attributes
     ----------
+
     scale_type: {'linear'}
-
+        scale type
     colors: list of colors (default: [])
-
+        list of colors
     min: float or None (default: None)
         if not None, min is the minimal value of the domain
     max: float or None (default: None)
@@ -457,17 +473,15 @@ class ColorScale(Scale):
     mid: float or None (default: None)
         if not None, mid is the value corresponding to the mid color.
     scheme: string (default: 'RdYlGn')
-
+        Colorbrewer color scheme of the color scale.
     rtype: string (class-level attribute)
-        This attribute should not be modifed by the user.
-        The range type of a color scale is 'Color'.
+        The range type of a color scale is 'Color'. This should not be modifed.
     dtype: type (class-level attribute)
         the associated data type / domain type
     """
     rtype = 'Color'
     dtype = np.number
-    scale_type = Enum(['linear'], default_value='linear',
-                      sync=True)
+    scale_type = Enum(['linear'], default_value='linear', sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True), sync=True)
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
@@ -489,6 +503,7 @@ class DateColorScale(ColorScale):
 
     Attributes
     ----------
+
     min: Date or None (default: None)
         if not None, min is the minimal value of the domain
     max: Date or None (default: None)
@@ -522,6 +537,7 @@ class OrdinalColorScale(ColorScale):
 
     Attributes
     ----------
+
     domain: list (default: [])
         The discrete values mapped by the ordinal scales.
     rtype: string (class-level attribute)

@@ -21,7 +21,7 @@ Axes
 .. currentmodule:: bqplot.axes
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    Axis
    ColorAxis
@@ -36,9 +36,11 @@ from .traits import NdArray
 
 def register_axis(key=None):
     """Returns a decorator registering an axis class in the axis type registry.
+
     If no key is provided, the class name is used as a key. A key is provided
     for each core bqplot axis so that the frontend can use this key regardless
-    of the kernel language."""
+    of the kernel language.
+    """
     def wrap(axis):
         l = key if key is not None else axis.__module__ + axis.__name__
         BaseAxis.axis_types[l] = axis
@@ -59,46 +61,46 @@ class Axis(BaseAxis):
 
     Attributes
     ----------
-        icon: string (class-level attribute)
-            The font-awesome icon name for this object.
-        axis_types: dict (class-level attribute)
-            A registry of existing axis types.
-        orientation: {'horizontal', 'vertical'}
-            The orientation of the axis, either vertical or horizontal
-        side: {'bottom', 'top', 'left', 'right'} or None (default: None)
-            The side of the axis, either bottom, top, left or right.
-        label: string (default: '')
-            The axis label
-        tick_format: string or None (default: '')
-            The tick format for the axis.
-        scale: Scale
-            The scale represented by the axis
-        num_ticks: int or None (default: None)
-            If tick_values is None, number of ticks
-        tick_values: numpy.ndarray or None (default: [])
-            Tick values for the axis
-        offset: dict (default: {})
-            Containing a scale and a value {'scale': scale or None,
-                                            'value': value of the offset}
-            If offset['scale'] is None, the corresponding figure scale is used
-            instead.
-        label_location: {'middle', 'start', 'end'}
-            The location of the label along the axis, one of 'start', 'end' or
-            'middle'
-        label_color: Color or None (default: None)
-            The color of the axis label
-        grid_lines: {'none', 'solid', 'dashed'}
-            The display of the grid lines
-        grid_color: Color or None (default: None)
-            The color of the grid lines
-        color: Color or None (default: None)
-            The color of the line
-        label_offset: string or None (default: None)
-            Label displacement from the axis line. Units allowed are 'em', 'px'
-            and 'ex'. Positive values are away from the figure and negative
-            values are towards the figure with resepect to the axis line.
-        visible: bool (default: True)
-            A visibility toggle for the axis
+
+    icon: string (class-level attribute)
+        The font-awesome icon name for this object.
+    axis_types: dict (class-level attribute)
+        A registry of existing axis types.
+    orientation: {'horizontal', 'vertical'}
+        The orientation of the axis, either vertical or horizontal
+    side: {'bottom', 'top', 'left', 'right'} or None (default: None)
+        The side of the axis, either bottom, top, left or right.
+    label: string (default: '')
+        The axis label
+    tick_format: string or None (default: '')
+        The tick format for the axis.
+    scale: Scale
+        The scale represented by the axis
+    num_ticks: int or None (default: None)
+        If tick_values is None, number of ticks
+    tick_values: numpy.ndarray or None (default: [])
+        Tick values for the axis
+    offset: dict (default: {})
+        Contains a scale and a value {'scale': scale or None, 'value': value of the offset}
+        If offset['scale'] is None, the corresponding figure scale is used
+        instead.
+    label_location: {'middle', 'start', 'end'}
+        The location of the label along the axis, one of 'start', 'end' or
+        'middle'
+    label_color: Color or None (default: None)
+        The color of the axis label
+    grid_lines: {'none', 'solid', 'dashed'}
+        The display of the grid lines
+    grid_color: Color or None (default: None)
+        The color of the grid lines
+    color: Color or None (default: None)
+        The color of the line
+    label_offset: string or None (default: None)
+        Label displacement from the axis line. Units allowed are 'em', 'px'
+        and 'ex'. Positive values are away from the figure and negative
+        values are towards the figure with resepect to the axis line.
+    visible: bool (default: True)
+        A visibility toggle for the axis
     """
     icon = 'fa-arrows'
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',

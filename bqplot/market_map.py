@@ -21,7 +21,7 @@ Market Map
 .. currentmodule:: bqplot.market_map
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    MarketMap
    SquareMarketMap
@@ -36,10 +36,11 @@ from .marks import CATEGORY10
 
 class MarketMap(DOMWidget):
 
-    """Class to generate a waffle wrapped map of the list of data provided.
+    """Waffle wrapped map.
 
     Attributes
     ----------
+
     names: numpy.ndarray of strings or objects convertible to strings (default: [])
         primary key for the data of the map. One rectangle is created for each
         unique entry in this array
@@ -57,7 +58,7 @@ class MarketMap(DOMWidget):
         data is NaN for a cell, then the color of the cell is the color of the
         group it belongs to in absence of data for color
     scales: Dictionary of , scales holding a scale for each data attribute
-        - If the map has data being passed as color, then a corresponding color
+        If the map has data being passed as color, then a corresponding color
         scale is required
     axes: List of axes
         Ability to add an axis for the scales which are used to scale data
@@ -80,7 +81,7 @@ class MarketMap(DOMWidget):
         True, the finer elements are blurred
 
     Map Drawing Attributes
-    ------------------
+
     map_width: int
         minimum width of the entire map
     map_height: int
@@ -107,7 +108,7 @@ class MarketMap(DOMWidget):
         more square cells for each of the groups
 
     Display Attributes
-    ------------------
+
     colors: list of colors
         colors for each of the groups which are cycled over to cover all the
         groups
@@ -121,7 +122,7 @@ class MarketMap(DOMWidget):
         stroke for the cell being hovered on
 
     Other Attributes
-    ----------------
+
     enable_select: bool
         boolean to control the ability to select the cells of the map by
         clicking

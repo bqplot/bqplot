@@ -21,7 +21,7 @@ Pyplot
 .. currentmodule:: bqplot.pyplot.pyplot
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    figure
    show
@@ -121,6 +121,7 @@ def show(key=None, display_toolbar=True):
 
     Parameters
     ----------
+
     key : hashable, optional
         Any variable that can be used as a key for a dictionary.
     display_toolbar: bool (default: True)
@@ -129,6 +130,7 @@ def show(key=None, display_toolbar=True):
 
     Raises
     ------
+
     KeyError
         When no context figure is associated with the provided key.
 
@@ -179,6 +181,7 @@ def figure(key=None, fig=None, **kwargs):
 
     Parameters
     ----------
+
     key: hashable, optional
         Any variable that can be used as a key for a dictionary
     fig: Figure, optional
@@ -213,10 +216,11 @@ def figure(key=None, fig=None, **kwargs):
 
 
 def close(key):
-    """Closes and unregister the context figure corresponding to the key
+    """Closes and unregister the context figure corresponding to the key.
 
     Parameters
     ----------
+
     key: hashable
         Any variable that can be used as a key for a dictionary
 
@@ -231,7 +235,7 @@ def close(key):
 
 
 def scales(key=None, scales={}):
-    """Creates and switches between context scales
+    """Creates and switches between context scales.
 
     If no key is provided, a new blank context is created.
 
@@ -243,29 +247,33 @@ def scales(key=None, scales={}):
 
     Parameters
     ----------
+
     key: hashable, optional
         Any variable that can be used as a key for a dictionary
     scales: dictionary
-        Dictionary of scales to be used in the new context.
+        Dictionary of scales to be used in the new context
 
-        This parameter is ignored if the `key` argument is not Keep and context
-        scales already exist for that key.
+    Example
+    ------- 
 
-        For example:
+        >>> scales(scales={
+        >>>    'x': Keep,
+        >>>    'color': ColorScale(min=0, max=1)
+        >>> })
 
-        scales(scales={
-                          'x': Keep,
-                          'color': ColorScale(min=0, max=1)
-                      })
-        Creates a new scales context, where the 'x' scale is kept from the
-        previous context, the 'color' scale is an instance of ColorScale
-        provided by the user. Other scales, potentially needed such as the 'y'
-        scale in the case of a line chart will be created on the fly when
-        needed.
+    This creates a new scales context, where the 'x' scale is kept from the
+    previous context, the 'color' scale is an instance of ColorScale
+    provided by the user. Other scales, potentially needed such as the 'y'
+    scale in the case of a line chart will be created on the fly when
+    needed.
 
     Notes
     -----
+
     Every call to the function figure triggers a call to scales.
+
+    The `scales` parameter is ignored if the `key` argument is not Keep and
+    context scales already exist for that key.
 
     """
     old_ctxt = _context['scales']
@@ -295,13 +303,16 @@ def ylim(min, max):
 
 def set_lim(min, max, name):
     """Set the domain bounds of the scale associated with the provided key.
+
     Parameters
     ----------
+
     name: hashable
         Any variable that can be used as a key for a dictionary
 
     Raises
     ------
+
     KeyError
         When no context figure is associated with the provided key.
 
@@ -313,12 +324,13 @@ def set_lim(min, max, name):
 
 
 def axes(mark=None, options={}, **kwargs):
-    """Draws axes corresponding to the scales of a given mark and returns a
-    dictionary of drawn axes. If mark is not provided, the last drawn mark
-    is used.
+    """Draws axes corresponding to the scales of a given mark.
+
+    It also returns a dictionary of drawn axes. If the mark is not provided, the last drawn mark is used.
 
     Parameters
     ----------
+
     mark: Mark or None (default: None)
         The mark to inspect to create axes. If None, the last mark drawn is
         used instead.
@@ -371,6 +383,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
 
     Parameters
     ----------
+
     mark_type: type
         The type of mark to be drawn
     options: dict (default: {})
@@ -430,15 +443,16 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
 def plot(*args, **kwargs):
     """Draws lines in the current context figure.
 
-    Signature: plot(x, y, **kwargs) or plot(y, **kwargs), depending of the
+    Signature: `plot(x, y, **kwargs)` or `plot(y, **kwargs)`, depending of the
     length of the list of positional arguments. In the case where the `x` array
-    is not provided
+    is not provided.
 
     Parameters
     ----------
+
     x: numpy.ndarray or list, 1d or 2d (optional)
         The x-coordinates of the plotted line. When not provided, the function
-        defaults to numpy.linspace(0.0, len(y)-1, len(y))
+        defaults to `numpy.linspace(0.0, len(y) - 1, len(y))`
         x can be 1-dimensional or 2-dimensional.
     y: numpy.ndarray or list, 1d or 2d
         The y-coordinates of the plotted line. If argument `x` is 2-dimensional
@@ -465,15 +479,16 @@ def plot(*args, **kwargs):
 def ohlc(*args, **kwargs):
     """Draws ohlc bars or candle bars in the current context figure.
 
-    Signature: ohlc(x, y, **kwargs) or ohlc(y, **kwargs), depending of the
+    Signature: `ohlc(x, y, **kwargs)` or `ohlc(y, **kwargs)`, depending of the
     length of the list of positional arguments. In the case where the `x` array
     is not provided
 
     Parameters
     ----------
+
     x: numpy.ndarray or list, 1d (optional)
         The x-coordinates of the plotted line. When not provided, the function
-        defaults to numpy.linspace(0.0, len(y)-1, len(y)).
+        defaults to `numpy.linspace(0.0, len(y) - 1, len(y))`.
     y: numpy.ndarray or list, 2d
         The ohlc (open/high/low/close) information. A two dimensional array. y
         must have the shape (n, 4).
@@ -501,6 +516,7 @@ def scatter(x, y, **kwargs):
 
     Parameters
     ----------
+
     x: numpy.ndarray, 1d
         The x-coordinates of the data points.
     y: numpy.ndarray, 1d
@@ -524,6 +540,7 @@ def hist(sample, options={}, **kwargs):
 
     Parameters
     ----------
+
     sample: numpy.ndarray, 1d
         The sample for which the histogram must be generated
     options: dict (default: {})
@@ -549,10 +566,11 @@ def hist(sample, options={}, **kwargs):
 
 
 def bar(x, y, **kwargs):
-    """Draws a BarChart in the current context figure.
+    """Draws a bar chart in the current context figure.
 
     Parameters
     ----------
+
     x: numpy.ndarray, 1d
         The x-coordinates of the data points.
     y: numpy.ndarray, 1d
@@ -576,6 +594,7 @@ def pie(sizes, **kwargs):
 
     Parameters
     ----------
+
     sizes: numpy.ndarray, 1d
         The proportions to be represented by the pie.
     options: dict (default: {})
@@ -596,6 +615,7 @@ def label(text, **kwargs):
 
     Parameters
     ----------
+
     text: string
         The label to be displayed.
     options: dict (default: {})
@@ -612,10 +632,11 @@ def label(text, **kwargs):
 
 
 def geo(map_data, **kwargs):
-    """Draws a Map in the current context figure.
+    """Draws a map in the current context figure.
 
     Parameters
     ----------
+
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -636,14 +657,16 @@ def geo(map_data, **kwargs):
 
 def _add_interaction(int_type, **kwargs):
     """ Adds the interaction for the specified type.
+
     If a figure is passed using the key-word argument `figure` it is used. Else
-    the context figure is used
+    the context figure is used.
     If a list of marks are passed using the key-word argument `marks` it is used.
     Else the latest mark that is passed is used as the only mark associated with
     the selector.
 
     Parameters
     ----------
+
     int_type: type
         The type of interaction to be added
     """
@@ -665,11 +688,11 @@ def _add_interaction(int_type, **kwargs):
 
 
 def _get_context_scale(dimension):
-    """ This function returns the scale instance in the current context for a
-    given dimension
+    """Returns the scale instance in the current context for a given dimension.
 
     Parameters
     ----------
+
     dimension: string
         The dimension along which the current context scale is to be fetched
 
@@ -678,13 +701,15 @@ def _get_context_scale(dimension):
 
 
 def _create_selector(int_type, func, trait, **kwargs):
-    """Creates a selector of the specified type. Also  attaches the function
+    """Creates a selector of the specified type. Also  attaches the function.
+
     `func` as an `on_trait_change` listener for the trait `trait` of the selector.
 
     This is an internal function which should not be called by the user.
 
     Parameters
     ----------
+
     int_type: type
         The type of selector to be added
     func: function
@@ -693,7 +718,6 @@ def _create_selector(int_type, func, trait, **kwargs):
     trait: string
         The name of the Selector trait whose change triggers the
         call back function `func`
-
     """
     interaction = _add_interaction(int_type, **kwargs)
     if func is not None:
@@ -703,78 +727,84 @@ def _create_selector(int_type, func, trait, **kwargs):
 
 def brush_int_selector(func=None, trait='selected', **kwargs):
     """Creates a `BrushIntervalSelector` interaction for the `figure`.
+
     Also attaches the function `func` as an event listener for the trait `trait`.
 
     Parameters
     ----------
+
     func: function
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the BrushIntervalSelector trait whose change triggers the
         call back function `func`
-
     """
     return _create_selector(BrushIntervalSelector, func, trait, **kwargs)
 
 
 def int_selector(func=None, trait='selected', **kwargs):
     """Creates a `FastIntervalSelector` interaction for the `figure`.
+
     Also attaches the function `func` as an event listener for the trait `trait`.
 
     Parameters
     ----------
+
     func: function
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the IntervalSelector trait whose change triggers the
         call back function `func`
-
     """
     return _create_selector(FastIntervalSelector, func, trait, **kwargs)
 
 
 def index_selector(func=None, trait='selected', **kwargs):
     """Creates an `IndexSelector` interaction for the `figure`.
+
     Also attaches the function `func` as an event listener for the trait `trait`.
 
     Parameters
     ----------
+
     func: function
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the IndexSelector trait whose change triggers the
         call back function `func`
-
     """
     return _create_selector(IndexSelector, func, trait, **kwargs)
 
 
 def brush_selector(func=None, trait='selected', **kwargs):
     """Creates a `BrushSelector` interaction for the `figure`.
+
     Also attaches the function `func` as an event listener for the trait `trait`.
 
     Parameters
     ----------
+
     func: function
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the BrushSelector trait whose change triggers the
         call back function `func`
-
     """
     return _create_selector(BrushSelector, func, trait, **kwargs)
 
 
 def multi_selector(func=None, trait='selected', **kwargs):
     """Creates a `MultiSelector` interaction for the `figure`.
+
     Also attaches the function `func` as an event listener for the trait `trait`.
 
     Parameters
     ----------
+
     func: function
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
@@ -787,10 +817,12 @@ def multi_selector(func=None, trait='selected', **kwargs):
 
 def lasso_selector(func=None, trait='selected', **kwargs):
     """Creates a `LassoSelector` interaction for the `figure`.
-    Also attaches the function `func` as an event listener for the trait `trait`.
+
+    Also attaches the function `func` as an event listener for the specified trait.
 
     Parameters
     ----------
+
     func: function
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
@@ -802,7 +834,7 @@ def lasso_selector(func=None, trait='selected', **kwargs):
 
 
 def clear():
-    """Clears the current context figure of all marks axes and grid lines"""
+    """Clears the current context figure of all marks axes and grid lines."""
     fig = _context['figure']
     if fig is not None:
         fig.marks = []
@@ -810,7 +842,7 @@ def clear():
 
 
 def current_figure():
-    """Returns the current context figure"""
+    """Returns the current context figure."""
     if _context['figure'] is None:
         figure()
     return _context['figure']
@@ -819,7 +851,7 @@ def current_figure():
 
 
 def get_context():
-    """Used for debug only. Return the current global context dictionary"""
+    """Used for debug only. Return the current global context dictionary."""
     return _context
 
 
@@ -847,13 +879,12 @@ def _update_fig_axis_registry(fig, dimension, scale, axis):
 
 
 def _get_attribute_dimension(trait_name, mark_type=None):
-    '''
-    Returns the dimension for the name of the trait for
-    the mark specified.
+    """Returns the dimension for the name of the trait for the specified mark.
+
     If `mark_type` is `None`, then the `trait_name` is returned
     as is.
     Returns `None` if the `trait_name` is not valid for `mark_type`.
-    '''
+    """
     if(mark_type is None):
         return trait_name
     scale_metadata = mark_type.class_traits()['scales_metadata'].default_args[0]
@@ -861,11 +892,11 @@ def _get_attribute_dimension(trait_name, mark_type=None):
 
 
 def _apply_properties(widget, properties={}):
-    '''
-    Apply the properties one after the other to the widget.
+    """Applies the specified properties to the widget.
+
     `properties` is a dictionary with key value pairs corresponding
     to the properties to be applied to the widget.
-    '''
+    """
     with widget.hold_sync():
         for key, value in properties.items():
             setattr(widget, key, value)

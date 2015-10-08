@@ -21,7 +21,7 @@ Marks
 .. currentmodule:: bqplot.marks
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    Mark
    Lines
@@ -45,10 +45,13 @@ from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
 
 
 def register_mark(key=None):
+
     """Returns a decorator registering a mark class in the mark type registry.
+
     If no key is provided, the class name is used as a key. A key is provided
     for each core bqplot mark so that the frontend can use
-    this key regardless of the kernel language."""
+    this key regardless of the kernel language.
+    """
     def wrap(mark):
         l = key if key is not None else mark.__module__ + mark.__name__
         Mark.mark_types[l] = mark
@@ -62,8 +65,8 @@ class Mark(Widget):
 
     Traitlet mark attributes may be decorated with metadata.
 
-    Data Attribute Decoration
-    -------------------------
+    **Data Attribute Decoration**
+
     Data attributes are decorated with the following values:
 
     scaled: bool
@@ -75,15 +78,11 @@ class Mark(Widget):
         Key in bqplot's axis registry of the recommended axis type to represent
         this scale. When not specified, the default is 'bqplot.Axis'.
 
-    GUI Generation Decoration
-    -------------------------
-    More decoration is added for automatic GUI generation purpose:
+    Attributes
+    ----------
 
     display_name: string
         Holds a user-friendly name for the trait attribute.
-
-    Attributes
-    ----------
     mark_types: dict (class-level attribute)
         A registry of existing mark types.
     scales: Dict of scales (default: {})
@@ -241,6 +240,7 @@ class Lines(Mark):
 
     Attributes
     ----------
+
     icon: string (class-level attribute)
         Font-awesome icon for the respective mark
     name: string (class-level attribute)
@@ -270,7 +270,7 @@ class Lines(Mark):
         about the different interpolation schemes.
 
     Data Attributes
-    ---------------
+
     x: numpy.ndarray (default: [])
         abscissas of the data points (1d or 2d array)
     y: numpy.ndarray (default: [])
@@ -281,8 +281,9 @@ class Lines(Mark):
         and if the size of colors is less than the number of lines, the
         remaining lines are given the default colors.
 
-    Tooltip
-    -------
+    Notes 
+    -----
+
     The fields which can be passed to the default tooltip are:
         name: label of the line
         index: index of the line being hovered on
@@ -343,6 +344,7 @@ class FlexLine(Mark):
 
     Attributes
     ----------
+
     name: string (class-level attributes)
         user-friendly name of the mark
     colors: list of colors (default: CATEGORY10)
@@ -351,7 +353,7 @@ class FlexLine(Mark):
         Default stroke width of the Lines
 
     Data Attributes
-    ---------------
+
     x: numpy.ndarray (default: [])
         abscissas of the data points (1d array)
     y: numpy.ndarray (default: [])
@@ -395,12 +397,12 @@ class Scatter(Mark):
 
     Attributes
     ----------
+
     icon: string (class-level attribute)
         Font-awesome icon for that mark
     name: string (class-level attribute)
         User-friendly name of the mark
-    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
-             'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse'}
         Marker shape
     default_colors: list of colors (default: ['DeepSkyBlue'])
         List of colors of the markers. If the list is shorter than the number
@@ -423,11 +425,9 @@ class Scatter(Mark):
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
-    fill, drag_color, names_unique, enable_move, enable_add,
-    enable_delete, restrict_x, restrict_y, update_on_move.
 
     Data Attributes
-    ---------------
+
     x: numpy.ndarray (default: [])
         abscissas of the data points (1d array)
     y: numpy.ndarray (default: [])
@@ -449,8 +449,9 @@ class Scatter(Mark):
         The rotation scale's range is [0, 180]
         Defaults to 0 when not provided or when a value is NaN.
 
-    Tooltip
-    -------
+    Notes 
+    -----
+
     The fields which can be passed to the default tooltip are:
         All the data attributes
         index: index of the marker being hovered on
@@ -540,6 +541,7 @@ class Hist(Mark):
 
     Attributes
     ----------
+
     icon: string (class-level attribute)
         font-awesome icon for that mark
     name: string (class-level attribute)
@@ -558,14 +560,15 @@ class Hist(Mark):
         midpoints of the bins of the histogram. It is a read-only attribute.
 
     Data Attributes
-    ---------------
+
     sample: numpy.ndarray
         sample of which the histogram must be computed.
     count: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
 
-    Tooltip
-    -------
+    Note
+    ----
+
     The fields which can be passed to the default tooltip are:
         midpoint: mid-point of the bin related to the rectangle hovered on
         count: number of elements in the bin hovered on
@@ -610,6 +613,7 @@ class Boxplot(Mark):
 
     Attributes
     ----------
+
     stroke: Color or None
         stroke color of the marker
     color: Color
@@ -621,7 +625,7 @@ class Boxplot(Mark):
         color for the outlier
 
     Data Attributes
-    ---------------
+
     _y_default: numpy.ndarray
         default 2 dimensional value for y
     x: numpy.ndarray
@@ -670,6 +674,7 @@ class Bars(Mark):
 
     Attributes
     ----------
+
     icon: string (class-level attribute)
         font-awesome icon for that mark
     name: string (class-level attribute)
@@ -682,11 +687,12 @@ class Bars(Mark):
         'auto' picks 'group' and 'element' for 1-d and 2-d values of
         Y respectively.
     type: {'stacked', 'grouped'}
+        whether 2-dimensional bar charts should appear grouped or stacked.
     colors: list of colors (default: CATEGORY10)
         list of colors for the bars.
     padding: float (default: 0.05)
-        attribute to control the spacing between the bars
-        value is specified as a percentage of the width of the bar
+        attribute to control the spacing between the bars value is specified
+        as a percentage of the width of the bar
     stroke: Color or None (default: None)
         stroke color for the bars
     opacities: list of floats (default: [])
@@ -698,7 +704,7 @@ class Bars(Mark):
         alignment of bars with respect to the tick value
 
     Data Attributes
-    ---------------
+
     x: numpy.ndarray
         abscissas of the data points (1d array)
     y: numpy.ndarray
@@ -707,8 +713,9 @@ class Bars(Mark):
         color of the data points (1d array). Defaults to default_color when not
         provided or when a value is NaN
 
-    Tooltip
-    -------
+    Note 
+    ----
+
     The fields which can be passed to the default tooltip are:
         All the data attributes
         index: index of the bar being hovered on
@@ -758,6 +765,7 @@ class Label(Mark):
 
     Attributes
     ----------
+
     x: Date or float
         horizontal position of the label, in data coordinates or in figure
         coordinates
@@ -808,6 +816,7 @@ class OHLC(Mark):
 
     Attributes
     ----------
+
     icon: string (class-level attribute)
         font-awesome icon for that mark
     name: string (class-level attribute)
@@ -828,7 +837,7 @@ class OHLC(Mark):
         supports all permutations of the strings 'ohlc', 'oc', and 'hl'
 
     Data Attributes
-    ---------------
+
     _y_default: numpy.ndarray
         default 2 dimensional value for y
     x: numpy.ndarray
@@ -836,8 +845,9 @@ class OHLC(Mark):
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
 
-    Tooltip
-    -------
+    Note
+    ----
+
     The fields which can be passed to the default tooltip are:
         x: the x value associated with the bar/candle
         open: open value for the bar/candle
@@ -885,6 +895,7 @@ class Pie(Mark):
 
     Attributes
     ----------
+
     colors: list of colors (default: CATEGORY10)
         list of colors for the slices.
     stroke: color (default: 'white')
@@ -910,15 +921,16 @@ class Pie(Mark):
         end angle of the pie (from top), in degrees
 
     Data Attributes
-    ---------------
+
     sizes: numpy.ndarray
         proportions of the pie slices
     color: numpy.ndarray or None
         color of the data points (1d array). Defaults to colors when not
         provided
 
-    Tooltip
-    -------
+    Note 
+    ----
+
     The fields which can be passed to the default tooltip are:
         : the x value associated with the bar/candle
         open: open value for the bar/candle
@@ -979,15 +991,12 @@ class Map(Mark):
 
     Attributes
     ----------
+
     default_color: Color or None (default: None)
         default color for items of the map when no color data is passed
-    selected_styles: Dict (default: {'selected_fill': 'Red',
-                                     'selected_stroke': None,
-                                     'selected_stroke_width': 2.0})
+    selected_styles: Dict (default: {'selected_fill': 'Red', 'selected_stroke': None, 'selected_stroke_width': 2.0})
         Dictionary containing the styles for selected subunits
-    hovered_styles: Dict (default: {'hovered_fill': 'Orange',
-                                    'hovered_stroke': None,
-                                    'hovered_stroke_width': 2.0})
+    hovered_styles: Dict (default: {'hovered_fill': 'Orange', 'hovered_stroke': None, 'hovered_stroke_width': 2.0})
         Dictionary containing the styles for hovered subunits
     selected: List (default: [])
         list containing the selected countries in the map
@@ -998,7 +1007,7 @@ class Map(Mark):
         tuple containing which map is to be displayed
 
     Data Attributes
-    ---------------
+
     color: Dict or None (default: None)
         dictionary containing the data associated with every country for the
         color scale
@@ -1031,6 +1040,7 @@ class Map(Mark):
     _model_module = Unicode('nbextensions/bqplot/MapModel', sync=True)
 
 
+@register_mark('bqplot.GridHeatMap')
 class GridHeatMap(Mark):
 
     """GridHeatMap mark.
@@ -1048,8 +1058,10 @@ class GridHeatMap(Mark):
 
     If rows and columns are not passed, and scales for them are also not passed,
     then ordinal scales are generated for the rows and columns.
+
     Attributes
     ----------
+
     row_align: Enum(['start', 'end'])
         This is only valid if the number of entries in `row` exactly match the
         number of rows in `color` and the `row_scale` is not `OrdinalScale`.
@@ -1062,7 +1074,7 @@ class GridHeatMap(Mark):
         tiles and `end` aligns the column values to the end of the tiles.
 
     Data Attributes
-    ---------------
+
     color: numpy.ndarray
         color of the data points (2d array). The number of elements in this array
         correspond to the number of cells created in the heatmap.
