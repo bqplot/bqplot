@@ -101,25 +101,25 @@ plt.show()
 ```python
 import numpy as np
 from IPython.display import display
-from bqplot import *
+import bqplot as bq
 
 size = 20
 np.random.seed(0)
 
 x_data = np.arange(size)
 
-x_ord = OrdinalScale()
-y_sc = LinearScale()
+x_ord = bq.OrdinalScale()
+y_sc = bq.LinearScale()
 
-bar = Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y': y_sc},
+bar = bq.Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y': y_sc},
            type='stacked')
-line = Lines(x=x_data, y=np.random.randn(size), scales={'x': x_ord, 'y': y_sc},
+line = bq.Lines(x=x_data, y=np.random.randn(size), scales={'x': x_ord, 'y': y_sc},
              stroke_width=3, colors=['red'], display_legend=True, labels=['Line chart'])
 
-ax_x = Axis(scale=x_ord)
-ax_y = Axis(scale=y_sc, orientation='vertical', tick_format='0.2f', grid_lines='solid')
+ax_x = bq.Axis(scale=x_ord)
+ax_y = bq.Axis(scale=y_sc, orientation='vertical', tick_format='0.2f', grid_lines='solid')
 
-fig = Figure(marks=[bar, line], axes=[ax_x, ax_y])
+fig = bq.Figure(marks=[bar, line], axes=[ax_x, ax_y])
 display(fig)
 ```
 
