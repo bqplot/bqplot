@@ -164,7 +164,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                     that.update_layout();
                 });
 
-                that.after_displayed(function() {
+                that.displayed.then(function() {
                     that.el.parentNode.appendChild(that.tooltip_div.node());
                     that.create_listeners();
                     that.update_layout();
@@ -178,7 +178,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                     view.dummy_node.parentNode.replaceChild(view.el.node(),
                                                             view.dummy_node);
                     view.dummy_node = null;
-                    this.after_displayed(function() {
+                    this.displayed.then(function() {
                         view.trigger("displayed");
                     });
                 }
@@ -274,7 +274,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             return this.create_child_view(model)
               .then(function(view) {
                 that.fig_axes.node().appendChild(view.el.node());
-                that.after_displayed(function() {
+                that.displayed.then(function() {
                     view.trigger("displayed");
                 });
                 return view;
@@ -540,9 +540,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                         }
                         self.interaction_view = view;
                         self.interaction.node().appendChild(view.el.node());
-                        self.after_displayed(function() {
+                        self.displayed.then(function() {
                             view.trigger("displayed");
-                        }, self);
+                        });
                     });
                 });
             }

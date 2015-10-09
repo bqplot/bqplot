@@ -83,7 +83,6 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
 
             this.update_plotarea_dimensions();
 
-
             var scale_creation_promise = this.create_scale_views();
             scale_creation_promise.then(function() {
                 var color_scale = self.scales.color;
@@ -99,15 +98,16 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                     self.axis_views.update(value);
                 });
             });
-            this.after_displayed(function() {
+
+            this.displayed.then(function() {
                 // Adding the tooltip to the parent of the el so as to not
                 // pollute the DOM
-                this.el.parentNode.appendChild(this.tooltip_div.node());
-                this.update_layout();
-                this.draw_group_names();
-                this.create_tooltip_widget();
-            }, this);
-            $(this.options.cell).on("output_area_resize"+this.id, function() {
+                self.el.parentNode.appendChild(self.tooltip_div.node());
+                self.update_layout();
+                self.draw_group_names();
+                self.create_tooltip_widget();
+            });
+            $(this.options.cell).on("output_area_resize" + this.id, function() {
                 self.update_layout();
             });
         },

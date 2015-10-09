@@ -25,10 +25,9 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             // because some of the functions depend on child scales being
             // created. Make sure none of the event handler functions make that
             // assumption.
-            var self = this;
-            this.after_displayed(function() {
-                self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
-                self.create_tooltip();
+            this.displayed.then(function() {
+                that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
+                that.create_tooltip();
             });
 
             this.selected_style = this.model.get("selected_style");
