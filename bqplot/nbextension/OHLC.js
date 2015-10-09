@@ -152,9 +152,6 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
                 return selected;
             }
 
-            var mark_width = this.calculate_mark_width();
-            if(mark_width instanceof Date) mark_width = mark_width.getTime();
-
             var indices = _.range(this.model.mark_data.length);
             var that = this;
             var selected = _.filter(indices, function(index) {
