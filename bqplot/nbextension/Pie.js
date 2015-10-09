@@ -270,7 +270,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         update_colors: function() {
             var that = this;
             var color_scale = this.scales.color;
-            this.el.select(".pielayout").selectAll("path")
+            this.el.select(".pielayout").selectAll(".pie_slice")
               .style("fill", function(d, i) {
                   return (d.data.color !== undefined && color_scale !== undefined) ?
                       color_scale.scale(d.data.color) : that.get_colors(d.data.index);
