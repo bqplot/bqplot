@@ -152,9 +152,13 @@ class custom_egg_info(egg_info):
         self.run_command('js')
         return egg_info.run(self)
 
+version_ns = {}
+with open(os.path.join(here, 'bqplot', '_version.py')) as f:
+    exec(f.read(), {}, version_ns)
+
 setup_args = {
     'name': 'bqplot',
-    'version': '0.3.9',
+    'version': version_ns['__version__'],
     'description': 'Interactive plotting for the Jupyter notebook, using d3.js and ipywidgets.',
     'long_description': LONG_DESCRIPTION,
     'License': 'Apache',
