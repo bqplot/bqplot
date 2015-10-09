@@ -154,20 +154,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
 
             var mark_width = this.calculate_mark_width();
             if(mark_width instanceof Date) mark_width = mark_width.getTime();
-            var x_scale = this.scales.x;
-            /*
-             * I did not remove this as I was not sure of what this is doing.
-             * So I am not sure if the new code is equivalent to the old one.
-            // Avoid accounting for width if there is no width to account for
-            if(this.model.px.o !== -1) max += mark_width * 0.75 * 0.5;
-            if(this.model.px.c !== -1) min -= mark_width * 0.75 * 0.5;
-            if(x_scale.model.type === 'date') {
-                min = new Date(min);
-                max = new Date(max);
-            }
-            */
-            var idx_start = -1;
-            var idx_end = -1;
+
             var indices = _.range(this.model.mark_data.length);
             var that = this;
             var selected = _.filter(indices, function(index) {
@@ -175,6 +162,9 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
                 return (elem >= start_pxl && elem <= end_pxl);
             });
 
+            var x_scale = this.scales.x;
+            var idx_start = -1;
+            var idx_end = -1;
             if(selected.length > 0 &&
                 (start_pxl !== x_scale.scale.range()[0] ||
                     end_pxl !== x_scale.scale.range()[1]))
