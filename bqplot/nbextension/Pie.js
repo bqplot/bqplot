@@ -25,13 +25,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
 
             this.display_el_classes = ["pie_slice", "pie_text"];
             var that = this;
-            this.el.append("g")
-              .attr("class", "pielayout");
-
-            this.pie = d3.layout.pie()
-                .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
-                .endAngle(this.model.get("end_angle") * 2 * Math.PI/360)
-                .value(function(d) { return d.size; });
+            this.el.append("g").attr("class", "pielayout");
 
             this.arc = d3.svg.arc()
                 .outerRadius(this.model.get("radius"))
@@ -47,7 +41,6 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 that.process_interactions();
                 that.create_listeners();
                 that.compute_view_padding();
-                that.setup_sort();
                 that.draw();
             }, null);
         },
@@ -98,8 +91,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }, this);
             this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
             this.model.on_some_change(["x", "y"], this.position_center, this);
-            this.model.on_some_change(["start_angle", "end_angle"], this.draw, this);
-            this.listenTo(this.model, "change:sort", this.setup_sort, this);
+            this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
             this.listenTo(this.model, "labels_updated", this.update_labels, this);
             this.listenTo(this.model, "change:selected", function() {
                 this.selected_indices = this.model.get("selected");
@@ -184,15 +176,15 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.arc.outerRadius(this.model.get("radius"))
                 .innerRadius(this.model.get("inner_radius"));
 
-            var elements = this.el.select(".pielayout").selectAll(".slice");
+            var slices = this.el.select(".pielayout").selectAll(".slice");
             var animate_dur = this.parent.model.get("animate_dur");
 
-            elements.select("path")
+            slices.select("path")
                 .transition().duration(animate_dur)
                 .attr("d", this.arc);
 
             var that = this;
-            elements.select("text")
+            slices.select("text")
                 .transition().duration(animate_dur)
                 .attr("transform", function(d) {
                     return "translate(" + that.arc.centroid(d) + ")";
@@ -202,13 +194,17 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.set_ranges();
             this.position_center();
 
-            this.pie.startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
-                .endAngle(this.model.get("end_angle") * 2 * Math.PI/360);
+            var pie = d3.layout.pie()
+                .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
+                .endAngle(this.model.get("end_angle") * 2 * Math.PI/360)
+                .value(function(d) { return d.size; });
+
+            if (!this.model.get("sort")) { pie.sort(null); }
 
             var that = this;
             var slices = this.el.select(".pielayout")
                 .selectAll(".slice")
-                .data(this.pie(this.model.mark_data));
+                .data(pie(this.model.mark_data));
 
             slices.enter().append("g")
                 .attr("class", "slice")
@@ -226,15 +222,12 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
 
             var animate_dur = this.parent.model.get("animate_dur");
             //animate slices on data changes using custom tween
-            slices.select("path")
-                .transition().duration(animate_dur)
-                .attrTween("d", updateTween);
-
-            slices.select("text")
-                .transition().duration(animate_dur)
-                .attr("transform", function(d) {
-                    return "translate(" + that.arc.centroid(d) + ")";
-                });
+            var t = slices.transition().duration(animate_dur);
+            t.select("path").attrTween("d", updateTween);
+            t.select("text").attr("transform", function(d) {
+                return "translate(" + that.arc.centroid(d) + ")";
+            });
+            slices.exit().remove();
 
             slices.on("click", function(d, i) {
                 return that.event_dispatcher("element_clicked", {data: d, index: i});
@@ -243,8 +236,6 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.update_labels();
             this.apply_styles();
 
-            slices.exit().remove();
-
             //for data updates transition from current angles to new angles
             function updateTween(d) {
                 /*jshint validthis: true */
@@ -252,13 +243,6 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 this.currData = d;
                 return function(t) { return that.arc(i(t)); };
             }
-        },
-        setup_sort: function() {
-            function descending(a, b) {
-                return b.value - a.value;
-            }
-            var sort = this.model.get("sort");
-            this.pie.sort(sort ? descending : null);
         },
         update_stroke_and_opacities: function() {
             var stroke = this.model.get("stroke");
