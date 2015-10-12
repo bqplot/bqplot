@@ -22,18 +22,19 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.bars_selected = [];
 
             this.display_el_classes = ["rect", "legendtext"];
-            var self = this;
-            this.after_displayed(function() {
-                self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
-                self.create_tooltip();
+
+            var that = this;
+            this.displayed.then(function() {
+                that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
+                that.create_tooltip();
             });
 
             return base_creation_promise.then(function() {
-                self.event_listeners = {};
-                self.process_interactions();
-                self.create_listeners();
-                self.draw();
-                self.update_selected(self.model, self.model.get("selected"));
+                that.event_listeners = {};
+                that.process_interactions();
+                that.create_listeners();
+                that.draw();
+                that.update_selected(that.model, that.model.get("selected"));
             });
         },
         set_ranges: function() {

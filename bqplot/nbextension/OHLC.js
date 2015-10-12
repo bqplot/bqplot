@@ -21,7 +21,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             var base_creation_promise = OHLC.__super__.render.apply(this);
 
             var that = this;
-            this.after_displayed(function() {
+            this.displayed.then(function() {
                 that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
                 that.create_tooltip();
             });

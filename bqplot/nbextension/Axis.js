@@ -552,9 +552,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             if (this.axis_scale) { this.axis_scale.remove(); }
             return this.create_child_view(model).then(function(view) {
                 // Trigger the displayed event of the child view.
-                that.after_displayed(function() {
+                that.displayed.then(function() {
                     view.trigger("displayed");
-                }, that);
+                });
                 that.axis_scale = view;
                 that.axis_scale.on("domain_changed", that.redraw_axisline, that);
                 that.axis_scale.on("highlight_axis", that.highlight, that);

@@ -29,7 +29,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure", "bas
             this.enable_hover = this.model.get("enable_hover");
             this.display_el_classes = ["event_layer"];
             var that = this;
-            this.after_displayed(function() {
+            this.displayed.then(function() {
                 that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
                 that.create_tooltip();
             });

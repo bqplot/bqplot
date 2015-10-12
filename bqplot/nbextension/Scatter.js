@@ -57,7 +57,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                     "hit_test": false
                 }
             };
-            this.after_displayed(function() {
+            this.displayed.then(function() {
                 self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
                 self.create_tooltip();
             });

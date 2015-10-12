@@ -80,9 +80,9 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis"], function(d3,
             if (this.axis_scale) { this.axis_scale.remove(); }
             return this.create_child_view(model).then(function(view) {
                 // Trigger the displayed event of the child view.
-                that.after_displayed(function() {
+                that.displayed.then(function() {
                     view.trigger("displayed");
-                }, that);
+                });
                 that.axis_scale = view;
                 // TODO: eventually removes what follows
                 if(that.axis_scale.model.type === "date_color_linear") {

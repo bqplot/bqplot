@@ -21,23 +21,24 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.padding = this.model.get("padding");
             var base_creation_promise = Bars.__super__.render.apply(this);
             this.set_internal_scales();
-            var self = this;
             this.selected_indices = this.model.get("selected");
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
 
             this.display_el_classes = ["bar", "legendtext"];
-            this.after_displayed(function() {
-                self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
-                self.create_tooltip();
+
+            var that = this;
+            this.displayed.then(function() {
+                that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
+                that.create_tooltip();
             });
 
             return base_creation_promise.then(function() {
-                self.event_listeners = {};
-                self.process_interactions();
-                self.create_listeners();
-                self.compute_view_padding();
-                self.draw();
+                that.event_listeners = {};
+                that.process_interactions();
+                that.create_listeners();
+                that.compute_view_padding();
+                that.draw();
             });
         },
         set_ranges: function() {
