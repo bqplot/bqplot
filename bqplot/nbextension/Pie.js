@@ -169,7 +169,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var transform = "translate(" + (x_scale.scale(x) + x_scale.offset) +
                                     ", " + (y_scale.scale(y) + y_scale.offset) + ")";
             this.el.select(".pielayout")
-                .transition().duration(this.parent.model.get("animate_dur"))
+                .transition().duration(this.parent.model.get("animation_duration"))
                 .attr("transform", transform);
         },
         update_radii: function() {
@@ -177,15 +177,15 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 .innerRadius(this.model.get("inner_radius"));
 
             var slices = this.el.select(".pielayout").selectAll(".slice");
-            var animate_dur = this.parent.model.get("animate_dur");
+            var animation_duration = this.parent.model.get("animation_duration");
 
             slices.select("path")
-                .transition().duration(animate_dur)
+                .transition().duration(animation_duration)
                 .attr("d", this.arc);
 
             var that = this;
             slices.select("text")
-                .transition().duration(animate_dur)
+                .transition().duration(animation_duration)
                 .attr("transform", function(d) {
                     return "translate(" + that.arc.centroid(d) + ")";
                 });
@@ -220,9 +220,9 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                         .style("text-anchor", "middle");
                 });
 
-            var animate_dur = this.parent.model.get("animate_dur");
+            var animation_duration = this.parent.model.get("animation_duration");
             //animate slices on data changes using custom tween
-            var t = slices.transition().duration(animate_dur);
+            var t = slices.transition().duration(animation_duration);
             t.select("path").attrTween("d", updateTween);
             t.select("text").attr("transform", function(d) {
                 return "translate(" + that.arc.centroid(d) + ")";

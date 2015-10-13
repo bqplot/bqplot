@@ -144,7 +144,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
 
             if(this.g_axisline) {
                  this.g_axisline
-                    .transition().duration(animate ? this.parent.model.get("animate_dur") : 0)
+                    .transition().duration(animate ? this.parent.model.get("animation_duration") : 0)
                     .call(this.axis);
             }
         },
@@ -267,7 +267,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                                                  function() {
                                                     this.update_offset_scale_domain();
                                                     this.g_axisline
-                                                        .transition().duration(this.parent.model.get("animate_dur"))
+                                                        .transition().duration(this.parent.model.get("animation_duration"))
                                                         .attr("transform", this.get_axis_transform());
                                                  }, that);
                         });
@@ -450,7 +450,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }
 
             this.g_axisline
-                .transition().duration(animate ? this.parent.model.get("animate_dur") : 0)
+                .transition().duration(animate ? this.parent.model.get("animation_duration") : 0)
                 .call(this.axis)
                 .selectAll(".tick line")
                 .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null)

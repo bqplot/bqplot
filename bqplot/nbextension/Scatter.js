@@ -290,7 +290,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             if(!this.model.dirty) {
                 var that = this;
                 this.el.selectAll(".dot").transition()
-                  .duration(this.parent.model.get("animate_dur"))
+                  .duration(this.parent.model.get("animation_duration"))
                   .attr("d", this.dot.skew(function(data) {
                     return that.get_element_skew(data);
                   }));
@@ -302,7 +302,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             if(!this.model.dirty) {
                 var that = this;
                 this.el.selectAll(".dot").transition()
-                  .duration(this.parent.model.get("animate_dur"))
+                  .duration(this.parent.model.get("animation_duration"))
                   .attr("d", this.dot.size(function(data) {
                     return that.get_element_size(data);
                   }));
@@ -373,7 +373,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var that = this;
             this.el.selectAll(".dot_grp").transition()
-              .duration(this.parent.model.get("animate_dur"))
+              .duration(this.parent.model.get("animation_duration"))
               .attr("transform", function(d) {
                     return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                                     "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
@@ -401,7 +401,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             elements_added.append("path").attr("class", "dot");
             elements_added.append("text").attr("class", "dot_text");
             elements.select("path").transition()
-              .duration(this.parent.model.get("animate_dur"))
+              .duration(this.parent.model.get("animation_duration"))
               .attr("d", this.dot
                     .size(function(d) { return that.get_element_size(d); })
                     .skew(function(d) { return that.get_element_skew(d); }));

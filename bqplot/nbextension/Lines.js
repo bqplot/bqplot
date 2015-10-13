@@ -198,7 +198,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var x_scale = this.scales.x;
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
-              .transition().duration(this.parent.model.get("animate_dur"))
+              .transition().duration(this.parent.model.get("animation_duration"))
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
@@ -400,7 +400,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
 
             var that = this;
             this.el.selectAll(".curve").select("path")
-              .transition().duration(this.parent.model.get("animate_dur"))
+              .transition().duration(this.parent.model.get("animation_duration"))
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
