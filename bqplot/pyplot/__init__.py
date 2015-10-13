@@ -14,9 +14,9 @@
 
 r"""
 
-==========================
-Pyplot interface to bqplot
-==========================
+======
+Pyplot
+======
 
 .. currentmodule:: bqplot.pyplot
 

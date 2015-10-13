@@ -30,10 +30,19 @@ nosetests.xml
 # Translations
 *.mo
 
-# Mr Developer
+# Project files
 .mr.developer.cfg
 .project
 .pydevproject
 
+# Sphinx
+_build/
+_generate/
+_static/
+_templates/
+
+# Jupyter notebook checkpoints
 .ipynb_checkpoints/
+
+# Bower components
 bqplot/nbextension/components/

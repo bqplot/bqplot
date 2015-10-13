@@ -11,15 +11,14 @@ Goals
 
 -   provide a unified framework for 2d visualizations with a pythonic API.
 -   provide a sensible API for adding user interactions (panning, zooming, selection, etc)
--   pip installable
 
 Two APIs are provided
 
-- Users can build a custom visualization using our object model, that is inspired by
-  the constructs of the Grammar of Graphics (figure, marks, axes, scales), and enrich their
-  visualization with our Interaction Layer.
-- Or they can use the context-based API similar to Matplotlib's pyplot, which provides
-  sensible default choices for most parameters.
+- Users can build custom visualizations using the internal object model, which
+  is inspired by the constructs of the Grammar of Graphics (figure, marks, axes,
+  scales), and enrich their visualization with our Interaction Layer.
+- Or they can use the context-based API similar to Matplotlib's pyplot, which
+  provides sensible default choices for most parameters.
 
 Getting Started
 ---------------
@@ -112,9 +111,9 @@ x_ord = bq.OrdinalScale()
 y_sc = bq.LinearScale()
 
 bar = bq.Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y': y_sc},
-           type='stacked')
+              type='stacked')
 line = bq.Lines(x=x_data, y=np.random.randn(size), scales={'x': x_ord, 'y': y_sc},
-             stroke_width=3, colors=['red'], display_legend=True, labels=['Line chart'])
+                stroke_width=3, colors=['red'], display_legend=True, labels=['Line chart'])
 
 ax_x = bq.Axis(scale=x_ord)
 ax_y = bq.Axis(scale=y_sc, orientation='vertical', tick_format='0.2f', grid_lines='solid')

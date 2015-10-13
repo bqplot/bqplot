@@ -21,7 +21,7 @@ BQPlot Package
 .. currentmodule:: bqplot
 
 
-Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` objects (horizontal and vertical) and a number of `Mark` objects. Each `Mark` object is a visual representation of the data. Each `Axis` and `Mark` has a `Scale` object.  The `Scale` objects transform data into a visual property (typically a location in pixel space, but could be a color, etc.).  An `Axis` draws an axis associated with the scale. ::
+Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` objects (representing scales) and a number of `Mark` objects. `Mark` objects are a visual representation of the data. Scales transform data into visual properties (typically a number of pixels, a color, etc.).  ::
 
     from bqplot import *
     from IPython.display import display
@@ -37,7 +37,7 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 
     line = Lines(x=x_data,
                  y=y_data,
-                 scales={'x':x_sc, 'y':y_sc},
+                 scales={'x': x_sc, 'y': y_sc},
                  colors=['red', 'yellow'])
 
     fig = Figure(axes=[ax_x, ax_y], marks=[line])
@@ -51,7 +51,6 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 .. automodule:: bqplot.market_map
 .. automodule:: bqplot.interacts
 .. automodule:: bqplot.traits
-.. automodule:: bqplot.map
 
 .. automodule:: bqplot.pyplot
 

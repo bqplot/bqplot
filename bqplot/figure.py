@@ -21,7 +21,7 @@ Figure
 .. currentmodule:: bqplot.figure
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    Figure
 """
@@ -49,7 +49,8 @@ class Figure(DOMWidget):
 
     Attributes
     ----------
-    title: string (default: "")
+
+    title: string (default: '')
         title of the figure
     axes: List of Axes (default: [])
         list containing the instances of the axes for the figure
@@ -67,14 +68,13 @@ class Figure(DOMWidget):
     padding_y: Float (default: 0.025)
         Padding to be applied in the vertical direction of the figure
         around the data points, proportion of the vertical length
-    legend_location:  {'top-right', 'top', 'top-left', 'left',
-                       'bottom-left', 'bottom', 'bottom-right', 'right'}
+    legend_location: {'top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'}
         location of the legend relative to the center of the figure
     fig_color: Color (default: None)
         background color of the figure
 
     Layout Attributes
-    -----------------
+
     min_width: CFloat (default: 800.0)
         minimum width of the figure including the figure margins
     min_height: CFloat (default: 600.0)
@@ -112,7 +112,7 @@ class Figure(DOMWidget):
                            display_name='Legend position')
 
     def save(self):
-        self.send({"type": "save"})
+        self.send({'type': 'save'})
 
     def _scale_x_default(self):
         return LinearScale(min=0, max=1)

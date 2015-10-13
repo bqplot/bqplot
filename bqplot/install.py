@@ -12,6 +12,7 @@ def install(user=False, symlink=False, overwrite=False, **kwargs):
     
     Parameters
     ----------
+
     user: bool
         Install for current user instead of system-wide.
     symlink: bool

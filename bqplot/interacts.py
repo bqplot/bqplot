@@ -21,7 +21,7 @@ Interacts
 .. currentmodule:: bqplot.interacts
 
 .. autosummary::
-   :toctree: generate/
+   :toctree: _generate/
 
    BrushIntervalSelector
    BrushSelector
@@ -45,10 +45,13 @@ from .marks import Lines, Scatter
 
 
 def register_interaction(key=None):
-    """Returns a decorator registering an interaction class in the interaction
-    type registry. If no key is provided, the class name is used as a key. A
+
+    """Returns a decorator registering an interaction class in the registry.
+
+    If no key is provided, the class name is used as a key. A
     key is provided for each core bqplot interaction type so that the frontend
-    can use this key regardless of the kernal language."""
+    can use this key regardless of the kernal language.
+    """
     def wrap(interaction):
         l = key if key is not None else interaction.__module__ + interaction.__name__
         interaction.types[l] = interaction
@@ -58,7 +61,7 @@ def register_interaction(key=None):
 
 class Interaction(Widget):
 
-    """The base interaction class
+    """The base interaction class.
 
     An interaction is a mouse interaction layer for a figure that requires the
     capture of all mouse events on the plot area. A consequence is that one can
@@ -71,6 +74,7 @@ class Interaction(Widget):
 
     Attributes
     ----------
+
     types: dict (class-level attribute) representing interaction types
         A registry of existing interaction types.
     """
@@ -87,7 +91,7 @@ class Interaction(Widget):
 @register_interaction('bqplot.HandDraw')
 class HandDraw(Interaction):
 
-    """A Hand Draw interaction.
+    """A hand-draw interaction.
 
     This can be used to edit the 'y' value of an existing line using the mouse.
     The minimum and maximum x values of the line which can be edited may be
@@ -99,6 +103,7 @@ class HandDraw(Interaction):
 
     Attributes
     ----------
+
     lines: an instance Lines mark or None (default: None)
         The instance of Lines which is edited using the hand-draw interaction.
         The 'y' values of the line are changed according to the path of the
@@ -131,17 +136,19 @@ class HandDraw(Interaction):
 @register_interaction('bqplot.PanZoom')
 class PanZoom(Interaction):
 
-    """An interaction to pan and zoom a figure w.r.t. certain scales.
+    """An interaction to pan and zoom wrt scales.
 
-        Attributes
-        ----------
-        allow_pan: bool (default: True)
-            attribute to set the ability to pan the figure or not
-        allow_zoom: bool (default: True)
-            attribute to set the ability to zoom the figure or not
-        scales: Dictionary of lists of Scales (default: {})
-            Dictionary with keys as 'x' and 'y' and values being the scales in
-            the corresponding direction which should be panned or zoomed.
+    Attributes
+    ----------
+
+    allow_pan: bool (default: True)
+        attribute to set the ability to pan the figure or not
+    allow_zoom: bool (default: True)
+        attribute to set the ability to zoom the figure or not
+    scales: Dictionary of lists of Scales (default: {})
+        Dictionary with keys such as 'x' and 'y' and values being the scales in
+        the corresponding direction (dimensions )which should be panned or
+        zoomed.
     """
     allow_pan = Bool(True, sync=True)
     allow_zoom = Bool(True, sync=True)
@@ -169,9 +176,10 @@ class PanZoom(Interaction):
 
 
 def panzoom(marks):
-    """helper function for panning and zooming over a set of marks
-        Creates and returns a panzoom interaction with the 'x' and 'y' scales
-        containing the scales of the marks passed.
+    """Helper function for panning and zooming over a set of marks.
+
+    Creates and returns a panzoom interaction with the 'x' and 'y' scales
+    containing the scales of the marks passed.
     """
     return PanZoom(scales={
         'x': [mark.scales.get('x') for mark in marks if 'x' in mark.scales],
@@ -187,6 +195,7 @@ class Selector(Interaction):
 
     Attributes
     ----------
+
     marks: list (default: [])
         list of marks for which the `selected` attribute is updated based on
         the data selected by the selector.
@@ -202,13 +211,14 @@ class Selector(Interaction):
 
 class OneDSelector(Selector):
 
-    """OneDSelector interaction
+    """One-dimensional selector interaction
 
     Base class for all selectors which select data in one dimension, i.e.,
     either the x or the y direction. The 'scale' attribute should be provided.
 
     Attributes
     ----------
+
     scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
         co-ordinates. This scale is used for setting the selected attribute for
@@ -221,13 +231,14 @@ class OneDSelector(Selector):
 
 class TwoDSelector(Selector):
 
-    """TwoDSelector interaction
+    """Two-dimensional selector interaction.
 
     Base class for all selectors which select data in both the x and y
     dimensions. The attributes 'x_scale' and 'y_scale' should be provided.
 
     Attributes
     ----------
+
     x_scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
         co-ordinates in the x-direction. This scale is used for setting the
@@ -249,7 +260,7 @@ class TwoDSelector(Selector):
 @register_interaction('bqplot.FastIntervalSelector')
 class FastIntervalSelector(OneDSelector):
 
-    """Fast Interval Selector interaction.
+    """Fast interval selector interaction.
 
     This 1-D selector is used to select an interval on the x-scale
     by just moving the mouse (without clicking or dragging). The
@@ -272,6 +283,7 @@ class FastIntervalSelector(OneDSelector):
 
     Attributes
     ----------
+
     selected: numpy.ndarray
         Two-element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
@@ -300,10 +312,12 @@ class IndexSelector(OneDSelector):
         1. default mode: The mouse controls the x-position of the selector.
         2. frozen mode: In this mode, the selector is frozen at a point and
                 does not respond to mouse events.
+
         A single click switches between the two modes.
 
     Attributes
     ----------
+
     selected: numpy.ndarray
         A single element array containing the point corresponding the
         x-position of the mouse. This attribute is updated as you move the
@@ -339,6 +353,7 @@ class BrushIntervalSelector(OneDSelector):
 
     Attributes
     ----------
+
     selected: numpy.ndarray
         Two element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
@@ -380,6 +395,7 @@ class BrushSelector(TwoDSelector):
 
     Attributes
     ----------
+
     selected: numpy.ndarray
         Two element array containing the start and end of the interval selected
         in terms of the scales of the selector. This is a read-only attribute.
@@ -460,6 +476,7 @@ class MultiSelector(OneDSelector):
 
     Attributes
     ----------
+
     selected: dict
         A dictionary with keys being the names of the intervals and values
         being the two element arrays containing the start and end of the
@@ -532,6 +549,7 @@ class LassoSelector(TwoDSelector):
 
     Attributes
     ----------
+
     marks: List of marks which are instances of {Lines, Scatter} (default: [])
         List of marks on which lasso selector will be applied.
     color: Color (default: None)
