@@ -173,7 +173,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             this.listenTo(this.model, "change:default_opacities", this.update_default_opacities, this);
             this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
             this.listenTo(this.model, "change:default_rotation", this.update_default_rotation, this);
-            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "data_updated", function() {
+                //animate dots on data update
+                var animate = true;
+                this.draw(animate);
+            }, this);
             this.listenTo(this.model, "change:marker", this.update_marker, this);
             this.listenTo(this.model, "change:default_size", this.update_default_size, this);
             this.listenTo(this.model, "change:fill", this.update_fill, this);
@@ -369,43 +373,47 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             this.set_ranges();
             this.update_xy_position();
         },
-        update_xy_position: function() {
+        update_xy_position: function(animate) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var that = this;
+            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+
             this.el.selectAll(".dot_grp").transition()
-              .duration(this.parent.model.get("animation_duration"))
-              .attr("transform", function(d) {
+                .duration(animation_duration)
+                .attr("transform", function(d) {
                     return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                                     "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
                            that.get_element_rotation(d);
-              });
+                });
             this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
             this.y_pixels = this.model.mark_data.map(function(el) { return y_scale.scale(el.y) + y_scale.offset; });
         },
-        draw: function() {
+        draw: function(animate) {
             this.set_ranges();
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var that = this,
                 fill = this.model.get("fill");
 
+            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+
             var elements = this.el.selectAll(".dot_grp")
-              .data(this.model.mark_data, function(d) { return d.unique_id; });
+                .data(this.model.mark_data, function(d) { return d.unique_id; });
             var elements_added = elements.enter().append("g")
-              .attr("class", "dot_grp")
-              .attr("transform", function(d) {
+                .attr("class", "dot_grp")
+                .attr("transform", function(d) {
                     return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                                     "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
                            that.get_element_rotation(d);
-              });
+                });
 
             elements_added.append("path").attr("class", "dot");
             elements_added.append("text").attr("class", "dot_text");
             elements.select("path").transition()
-              .duration(this.parent.model.get("animation_duration"))
-              .attr("d", this.dot
+                .duration(animation_duration)
+                .attr("d", this.dot
                     .size(function(d) { return that.get_element_size(d); })
                     .skew(function(d) { return that.get_element_skew(d); }));
-            this.update_xy_position();
+            this.update_xy_position(animate);
 
             elements.call(this.drag_listener);
             elements.on("click", _.bind(function() {
@@ -417,13 +425,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 show_names = (this.model.get("display_names") && names.length !== 0);
 
             elements.select("text")
-              .text(function(d) {
-                  return d.name;
-              }).attr("transform", function(d) {
-                  return "translate(" + (text_loc) + "," + (-text_loc) + ")";
-              }).attr("display", function(d) {
-                  return (show_names) ? "inline": "none";
-              });
+                .text(function(d) { return d.name; })
+                .attr("transform", function(d) {
+                    return "translate(" + (text_loc) + "," + (-text_loc) + ")";})
+                .attr("display", function(d) { return (show_names) ? "inline": "none"; });
 
             // Removed the transition on exit as it was causing issues.
             // Elements are not removed until the transition is complete and
