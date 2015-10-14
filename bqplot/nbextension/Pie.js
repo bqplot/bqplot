@@ -82,16 +82,24 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                   this.event_dispatcher("mouse_out");
               }, this));
 
-            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "data_updated", function() {
+                //animate on data update
+                var animate = true;
+                this.draw(animate);
+            }, this);
             this.listenTo(this.model, "change:colors", this.update_colors, this);
             this.listenTo(this.model, "colors_updated", this.update_colors, this);
             this.model.on_some_change(["inner_radius", "radius"], function() {
                 this.compute_view_padding();
-                this.update_radii();
+                var animate = true;
+                this.update_radii(animate);
             }, this);
             this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
             this.model.on_some_change(["x", "y"], this.position_center, this);
-            this.model.on_some_change(["start_angle", "end_angle", "sort"], this.draw, this);
+            this.model.on_some_change(["start_angle", "end_angle", "sort"], function() {
+                var animate = true;
+                this.draw(animate);
+            }, this);
             this.listenTo(this.model, "labels_updated", this.update_labels, this);
             this.listenTo(this.model, "change:selected", function() {
                 this.selected_indices = this.model.get("selected");
@@ -159,7 +167,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.position_center();
             this.update_radii();
         },
-        position_center: function() {
+        position_center: function(animate) {
+            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
             var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
             var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
             var x = (x_scale.model.type === "date") ?
@@ -169,15 +178,15 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var transform = "translate(" + (x_scale.scale(x) + x_scale.offset) +
                                     ", " + (y_scale.scale(y) + y_scale.offset) + ")";
             this.el.select(".pielayout")
-                .transition().duration(this.parent.model.get("animation_duration"))
+                .transition().duration(animation_duration)
                 .attr("transform", transform);
         },
-        update_radii: function() {
+        update_radii: function(animate) {
             this.arc.outerRadius(this.model.get("radius"))
                 .innerRadius(this.model.get("inner_radius"));
 
             var slices = this.el.select(".pielayout").selectAll(".slice");
-            var animation_duration = this.parent.model.get("animation_duration");
+            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
 
             slices.select("path")
                 .transition().duration(animation_duration)
@@ -190,9 +199,9 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     return "translate(" + that.arc.centroid(d) + ")";
                 });
         },
-        draw: function() {
+        draw: function(animate) {
             this.set_ranges();
-            this.position_center();
+            this.position_center(animate);
 
             var pie = d3.layout.pie()
                 .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
@@ -220,7 +229,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                         .style("text-anchor", "middle");
                 });
 
-            var animation_duration = this.parent.model.get("animation_duration");
+            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
             //animate slices on data changes using custom tween
             var t = slices.transition().duration(animation_duration);
             t.select("path").attrTween("d", updateTween);
