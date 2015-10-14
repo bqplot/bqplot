@@ -18,7 +18,7 @@ r"""
 Pyplot
 ======
 
-.. currentmodule:: bqplot.pyplot.pyplot
+.. currentmodule:: bqplot.pyplot
 
 .. autosummary::
    :toctree: _generate/
@@ -47,12 +47,12 @@ Pyplot
 from IPython.display import display
 from ipywidgets import VBox, HBox, Button, ToggleButton
 import numpy as np
-from ..figure import Figure
-from ..scales import Scale, LinearScale, Mercator
-from ..axes import Axis
-from ..marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
-from ..interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
-                         BrushSelector, IndexSelector, MultiSelector, LassoSelector)
+from .figure import Figure
+from .scales import Scale, LinearScale, Mercator
+from .axes import Axis
+from .marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
+from .interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
+                        BrushSelector, IndexSelector, MultiSelector, LassoSelector)
 from traitlets.utils.sentinel import Sentinel
 
 Keep = Sentinel('Keep', 'bqplot.pyplot', '''
@@ -295,7 +295,6 @@ def xlim(min, max):
     return set_lim(min, max, 'x')
 
 
-def ylim(min, max):
     """Sets the domain bounds of the current 'y' scale.
     """
     return set_lim(min, max, 'y')
@@ -701,9 +700,10 @@ def _get_context_scale(dimension):
 
 
 def _create_selector(int_type, func, trait, **kwargs):
-    """Creates a selector of the specified type. Also  attaches the function.
+    """Creates a selector of the specified type.
 
-    `func` as an `on_trait_change` listener for the trait `trait` of the selector.
+    Also attaches the function `func` as an `on_trait_change` listener
+    for the trait `trait` of the selector.
 
     This is an internal function which should not be called by the user.
 
