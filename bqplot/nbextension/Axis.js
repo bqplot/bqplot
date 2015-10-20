@@ -431,8 +431,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             var grid_type = this.model.get("grid_lines");
             var side = this.model.get("side");
             var orientation = this.model.get("orientation");
+            var is_x = orientation !== "vertical";
 
             var tickSize = orientation === "vertical" ? -this.width : -this.height;
+            var tickOffset = 0;
 
             //apply offsets if applicable
             if (this.offset_scale) {
@@ -440,8 +442,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
 
                 if (side === "bottom" || side == "right") {
                     tickSize = -offset;
+                    tickOffset = is_x ? this.height - offset : this.width - offset;
                 } else {
                     tickSize += offset;
+                    tickOffset = -offset;
                 }
             }
 
@@ -453,6 +457,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 .transition().duration(animate ? this.parent.model.get("animation_duration") : 0)
                 .call(this.axis)
                 .selectAll(".tick line")
+                .attr(is_x ? "y1" : "x1", this.offset_scale ? tickOffset : null)
                 .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null)
                 .style("opacity", grid_type === "none" ? 1.0 : 0.2);
 
