@@ -237,8 +237,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             if(indices === null || indices === undefined) {
                 return null;
             }
-            var num_rows = this.model.colors.length;
-            return indices.map(function(i) { return i[0] * num_rows + i[1];});
+            var num_cols = this.model.colors[0].length;
+            return indices.map(function(i) { return i[0] * num_cols + i[1];});
         },
         invert_point: function(pixel) {
             // For now, an index selector is not supported for the heatmap
