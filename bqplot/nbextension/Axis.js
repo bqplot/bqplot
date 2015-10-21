@@ -432,6 +432,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             var side = this.model.get("side");
             var orientation = this.model.get("orientation");
             var is_x = orientation !== "vertical";
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             var tickSize = orientation === "vertical" ? -this.width : -this.height;
             var tickOffset = 0;
@@ -451,13 +452,16 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
 
             if (grid_type !== "none") {
                 this.axis.innerTickSize(tickSize).outerTickSize(6);
+            } else {
+                this.axis.tickSize(6);
             }
 
             this.g_axisline
-                .transition().duration(animate ? this.parent.model.get("animation_duration") : 0)
+                .transition().duration(animation_duration)
                 .call(this.axis)
                 .selectAll(".tick line")
-                .attr(is_x ? "y1" : "x1", this.offset_scale ? tickOffset : null)
+                .attr(is_x ? "y1" : "x1",
+                      (this.offset_scale && grid_type !== "none")? tickOffset : null)
                 .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null)
                 .style("opacity", grid_type === "none" ? 1.0 : 0.2);
 
