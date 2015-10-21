@@ -2,10 +2,7 @@
 
 import argparse
 from os.path import dirname, abspath, join
-try:  # IPython/Jupyter 4.0
-    from notebook.nbextensions import install_nbextension
-except ImportError:  # IPython 3.x
-    from IPython.html.nbextensions import install_nbextension
+from notebook.nbextensions import install_nbextension
 
 def install(user=False, symlink=False, overwrite=False, **kwargs):
     """Install the bqplot nbextension.
