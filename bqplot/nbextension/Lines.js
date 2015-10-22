@@ -201,6 +201,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var x_scale = this.scales.x;
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
+              .transition().duration(0) //FIXME: this is a temporary fix to make the lines displace according to the padding
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
