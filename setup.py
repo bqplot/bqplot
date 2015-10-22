@@ -163,7 +163,7 @@ setup_args = {
     'long_description': LONG_DESCRIPTION,
     'License': 'Apache',
     'include_package_data': True,
-    'install_requires': ['ipywidgets', 'numpy', 'pandas'],
+    'install_requires': ['ipywidgets>=4.0.3', 'numpy', 'pandas'],
     'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': {
