@@ -266,9 +266,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                             that.offset_scale.on("domain_changed",
                                                  function() {
                                                     this.update_offset_scale_domain();
-                                                    this.g_axisline
-                                                        .transition().duration(this.parent.model.get("animation_duration"))
-                                                        .attr("transform", this.get_axis_transform());
+                                                    this.g_axisline.attr("transform", this.get_axis_transform());
+                                                    this.update_grid_lines();
                                                  }, that);
                         });
                 }
@@ -465,7 +464,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null)
                 .style("opacity", grid_type === "none" ? 1.0 : 0.2);
 
-            if (grid_type !== "none" && this.model.get("grid_color")) {
+            if (this.model.get("grid_color")) {
                 this.g_axisline
                     .selectAll(".tick line")
                     .style("stroke", this.model.get("grid_color"));
