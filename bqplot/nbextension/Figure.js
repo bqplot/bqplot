@@ -347,11 +347,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
                 view.dummy_node = dummy_node;
                 view.on("mark_padding_updated", function() {
-	                that.mark_padding_updated(view);
-	            }, that);
-	            view.on("mark_scales_updated", function() {
-	                that.mark_scales_updated(view);
-	            }, that);
+                    that.mark_padding_updated(view);
+                }, that);
+                view.on("mark_scales_updated", function() {
+                    that.mark_scales_updated(view);
+                }, that);
                 var child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("x")];
                 var child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("y")];
                 if(child_x_scale === undefined) {

@@ -21,7 +21,7 @@ define(["nbextensions/widgets/widgets/js/manager", "./components/d3/d3", "./Mark
             BoxplotModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
-	    },
+        },
         update_bounding_box: function(model, value) {
             // TODO: Actually add some padding.
             var pad = 0;
