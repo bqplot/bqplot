@@ -295,6 +295,7 @@ def xlim(min, max):
     return set_lim(min, max, 'x')
 
 
+def ylim(min, max):
     """Sets the domain bounds of the current 'y' scale.
     """
     return set_lim(min, max, 'y')
