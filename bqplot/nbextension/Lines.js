@@ -35,7 +35,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 that.event_listeners = {};
                 that.process_interactions();
                 that.create_listeners();
-				that.compute_view_padding();
+                that.compute_view_padding();
                 that.draw();
             });
         },
@@ -83,7 +83,10 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.listenTo(this.model, "change:colors", this.update_style, this);
             this.listenTo(this.model, "change:fill", this.update_style, this);
             this.listenTo(this.model, "change:opacities", this.update_style, this);
-            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "data_updated", function() {
+                var animate = true;
+                this.draw(animate);
+            }, this);
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
             this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
             this.listenTo(this.model, "change:line_style", this.update_line_style, this);
@@ -198,7 +201,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var x_scale = this.scales.x;
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
-              .transition().duration(this.model.get("animate_dur"))
+              .transition().duration(0) //FIXME: this is a temporary fix to make the lines displace according to the padding
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
@@ -386,8 +389,10 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
             return this.get_colors(index);
         },
-        update_line_xy: function() {
+        update_line_xy: function(animate) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+
             this.line = d3.svg.line()
               .interpolate(this.model.get("interpolation"))
               .x(function(d) {
@@ -400,7 +405,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
 
             var that = this;
             this.el.selectAll(".curve").select("path")
-              .transition().duration(this.model.get("animate_dur"))
+              .transition().duration(animation_duration)
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
@@ -409,7 +414,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                                                                         { return x_scale.scale(el.x) + x_scale.offset; })
                                                               : [];
         },
-        draw: function() {
+        draw: function(animate) {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
               .data(this.model.mark_data, function(d, i) { return d.name; });
@@ -441,7 +446,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             // Having a transition on exit is complicated. Please refer to
             // Scatter.js for detailed explanation.
             curves_sel.exit().remove();
-            this.update_line_xy();
+            this.update_line_xy(animate);
 
             curves_sel.select(".curve_label")
               .attr("display", function(d) {
@@ -476,7 +481,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 this.y_padding = y_padding;
                 this.trigger("mark_padding_updated");
             }
-		},
+        },
         update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                            point_in_lasso_func)
         {

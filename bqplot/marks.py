@@ -103,8 +103,6 @@ class Mark(Widget):
         considered as False.
     display_legend: bool (default: False)
         Display toggle for the mark legend in the general figure legend
-    animate_dur: nonnegative int (default: 0)
-        Duration of transition on change of data attributes, in milliseconds.
     labels: list of unicode strings (default: [])
         Labels of the items of the mark. This attribute has different meanings
         depending on the type of mark.
@@ -146,7 +144,6 @@ class Mark(Widget):
     scales_metadata = Dict(sync=True)
     preserve_domain = Dict(sync=True)
     display_legend = Bool(False, sync=True, display_name='Display legend')
-    animate_dur = Int(0, sync=True, display_name='Animation duration')
     labels = List(trait=Unicode(), sync=True, display_name='Labels')
     apply_clip = Bool(True, sync=True)
     visible = Bool(True, sync=True)

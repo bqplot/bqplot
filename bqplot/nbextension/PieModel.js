@@ -24,6 +24,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 this.update_color();
                 this.trigger("colors_updated");
             }, this);
+            this.on("change:labels", this.update_labels, this);
 
             this.on_some_change(["preserve_domain"], this.update_domains, this);
         },

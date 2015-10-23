@@ -79,7 +79,7 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
               .attr("class", "curve");
 
             curves_sel.exit()
-              .transition().duration(this.model.get("animate_dur"))
+              .transition().duration(this.parent.model.get("animation_duration"))
               .remove();
 
             var x_scale = this.scales.x, y_scale = this.scales.y;
@@ -123,7 +123,7 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
 
             var that = this;
             this.el.selectAll(".curve").selectAll(".line-elem")
-              .transition().duration(this.model.get("animate_dur"))
+              .transition().duration(this.parent.model.get("animation_duration"))
               .attr({"x1": function(d) { return x_scale.scale(d.x1); },
                      "x2": function(d) { return x_scale.scale(d.x2); },
                      "y1": function(d) { return y_scale.scale(d.y1); },

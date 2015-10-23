@@ -26,7 +26,8 @@ Figure
    Figure
 """
 
-from traitlets import Unicode, Instance, List, Dict, CFloat, Bool, Enum, Float
+from traitlets import (Unicode, Instance, List, Dict, CFloat, Bool, Enum,
+                       Float, Int)
 from ipywidgets import DOMWidget, register, Color, widget_serialization
 
 from .scales import Scale, LinearScale
@@ -72,6 +73,9 @@ class Figure(DOMWidget):
         location of the legend relative to the center of the figure
     fig_color: Color (default: None)
         background color of the figure
+    animation_duration: nonnegative int (default: 0)
+        Duration of transition on change of data attributes, in milliseconds.
+
 
     Layout Attributes
 
@@ -110,6 +114,8 @@ class Figure(DOMWidget):
                             'bottom-left', 'bottom', 'bottom-right', 'right'],
                            default_value='top-right', sync=True,
                            display_name='Legend position')
+    animation_duration = Int(0, sync=True, display_name='Animation duration')
+
 
     def save(self):
         self.send({'type': 'save'})

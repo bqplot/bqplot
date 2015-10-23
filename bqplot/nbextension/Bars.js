@@ -111,7 +111,11 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                   this.event_dispatcher("mouse_out");
               }, this));
 
-            this.listenTo(this.model, "data_updated", this.draw, this);
+            this.listenTo(this.model, "data_updated", function() {
+                //animate bars on data update
+                var animate = true;
+                this.draw(animate);
+            }, this);
             this.listenTo(this.model, "change:colors", this.update_colors, this);
             this.listenTo(this.model, "colors_updated", this.update_colors, this);
             this.listenTo(this.model, "change:type", this.update_type, this);
@@ -230,11 +234,10 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.selected_indices = value;
             this.apply_styles();
         },
-        draw: function() {
+        draw: function(animate) {
             this.set_ranges();
             var colors = this.model.get("colors");
             var that = this;
-            var animate_dur = this.model.get("animate_dur");
             var bar_groups = this.el.selectAll(".bargroup")
               .data(this.model.mark_data, function(d) {
                   return d.key;
@@ -287,7 +290,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
               .attr("width", 0)
               .attr("height", 0);
 
-            this.draw_bars();
+            this.draw_bars(animate);
 
             this.apply_styles();
 
@@ -300,13 +303,14 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
               .attr("y1", y_scale.scale(this.model.base_value))
               .attr("y2", y_scale.scale(this.model.base_value));
         },
-        draw_bars: function() {
+        draw_bars: function(animate) {
             var bar_groups = this.el.selectAll(".bargroup");
             var bars_sel = bar_groups.selectAll(".bar");
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
 
             var x_scale = this.scales.x, y_scale = this.scales.y;
-            if(x_scale.model.type === "ordinal") {
+            if (x_scale.model.type === "ordinal") {
                 var x_max = d3.max(this.parent.range("x"));
                 bar_groups.attr("transform", function(d) {
                     return "translate(" + ((x_scale.scale(d.key) !== undefined ?
@@ -317,8 +321,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     return "translate(" + (x_scale.scale(d.key) + that.x_offset) + ", 0)";
                 });
             }
-            if(this.model.get("type") === "stacked") {
-                bars_sel.transition().duration(this.model.get("animate_dur"))
+            if (this.model.get("type") === "stacked") {
+                bars_sel.transition().duration(animation_duration)
                     .attr("x", 0)
                     .attr("width", this.x.rangeBand().toFixed(2))
                     .attr("y", function(d) {
@@ -327,7 +331,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                         return Math.abs(y_scale.scale(d.y1 + d.y) - y_scale.scale(d.y1));
                     });
             } else {
-                bars_sel.transition().duration(this.model.get("animate_dur"))
+                bars_sel.transition().duration(animation_duration)
                   .attr("x", function(datum, index) {
                         return that.x1(index);
                   }).attr("width", this.x1.rangeBand().toFixed(2))

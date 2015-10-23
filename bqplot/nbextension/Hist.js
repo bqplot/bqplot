@@ -171,7 +171,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 });
             var bar_width = this.calculate_bar_width();
             this.el.selectAll(".bargroup").select("rect")
-              .transition().duration(this.model.get("animate_dur"))
+              .transition().duration(this.parent.model.get("animation_duration"))
               .attr("x", 2)
               .attr("width", bar_width)
               .attr("height", function(d) {
@@ -219,7 +219,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
               })
               .attr("id", function(d, i) { return "rect" + i; })
               .transition()
-              .duration(this.model.get("animate_dur"))
+              .duration(this.parent.model.get("animation_duration"))
               .attr("width", bar_width)
               .attr("height", function(d) {
                   return y_scale.scale(0) - y_scale.scale(d.y);

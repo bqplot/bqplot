@@ -32,7 +32,6 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             var scale_promise = this.set_scale(this.model.get("scale"));
             this.side = this.model.get("side");
             this.padding = this.model.get("padding");
-            this.offset = 0;
             this.num_ticks = this.model.get("num_ticks");
             this.label_loc = this.model.get("label_location");
             this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
@@ -74,6 +73,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                     that.set_scales_range();
                     that.update_offset_scale_domain();
                     that.g_axisline.attr("transform", that.get_axis_transform());
+                    that.update_grid_lines();
                 });
             }, this);
             this.parent.on("margin_updated", this.parent_margin_updated, this);
@@ -89,7 +89,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
             this.rescale_axis();
         },
-        set_tick_values: function() {
+        set_tick_values: function(animate) {
             var tick_values = this.model.get_typed_field("tick_values");
             var useticks = [];
             if (tick_values !== undefined && tick_values !== null && tick_values.length > 0) {
@@ -141,8 +141,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                     }
             }
             this.axis.tickFormat(this.tick_format);
+
             if(this.g_axisline) {
-                this.g_axisline.call(this.axis);
+                 this.g_axisline
+                    .transition().duration(animate === true ? this.parent.model.get("animation_duration") : 0)
+                    .call(this.axis);
             }
         },
         tickformat_changed: function() {
@@ -161,7 +164,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.axis.scale(this.axis_scale.scale);
         },
         update_offset_scale_domain: function() {
-            if(this.offset_scale) {
+            if (this.offset_scale) {
                 var initial_range = (!this.vertical) ?
                     this.parent.padded_range("y", this.offset_scale.model) :
                     this.parent.padded_range("x", this.offset_scale.model);
@@ -209,7 +212,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }
         },
         create_axis_line: function() {
-            if(this.vertical) {
+            if (this.vertical) {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
                   .orient(this.side === "right" ? "right" : "left");
             } else {
@@ -223,15 +226,15 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.update_offset_scale_domain();
 
             this.g_axisline = this.el.append("g")
-              .attr("class", "axis")
-              .attr("transform", this.get_axis_transform())
-              .call(this.axis);
+                .attr("class", "axis")
+                .attr("transform", this.get_axis_transform())
+                .call(this.axis);
 
             this.g_axisline.append("text")
-              .attr("class", "axislabel")
-              .attr(this.get_label_attributes())
-              .style(this.get_text_styling())
-              .text(this.model.get("label"));
+                .attr("class", "axislabel")
+                .attr(this.get_label_attributes())
+                .style(this.get_text_styling())
+                .text(this.model.get("label"));
 
             this.set_tick_values();
             this.update_grid_lines();
@@ -246,7 +249,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             var that = this;
             var return_promise = Promise.resolve();
             var offset = this.model.get("offset");
-            if(offset.value !== undefined && offset.value !== null) {
+            if (offset.value !== undefined && offset.value !== null) {
                 //If scale is undefined but, the value is defined, then we have
                 //to
                 if(offset.scale === undefined) {
@@ -264,6 +267,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                                                  function() {
                                                     this.update_offset_scale_domain();
                                                     this.g_axisline.attr("transform", this.get_axis_transform());
+                                                    this.update_grid_lines();
                                                  }, that);
                         });
                 }
@@ -422,47 +426,57 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.el.remove();
             Axis.__super__.remove.apply(this);
         },
-        update_grid_lines: function() {
-            this.el.select("g." + "grid_lines").remove();
-            var grid_lines = this.el.append("g")
-                                   .attr("class", "grid_lines");
-            var that = this;
-
-            grid_lines.selectAll("line.grid-line").remove();
+        update_grid_lines: function(animate) {
             var grid_type = this.model.get("grid_lines");
-            var is_x = !(this.vertical) ;
+            var side = this.model.get("side");
+            var orientation = this.model.get("orientation");
+            var is_x = orientation !== "vertical";
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-            //will not work for ordinal scale
-            if(grid_type !== "none") {
-                grid_lines.selectAll("line.grid-line")
-                    .data(this.axis.tickValues())
-                    .enter().append("line")
-                    .attr("class", "grid-line")
-                    .attr("x1", is_x ? function(d) { return (that.axis_scale.scale(d) + that.axis_scale.offset);} : 0)
-                    .attr("x2", is_x ? function(d) { return (that.axis_scale.scale(d) + that.axis_scale.offset);} : this.width)
-                    .attr("y1", is_x ? 0 : function(d) { return (that.axis_scale.scale(d) + that.axis_scale.offset);})
-                    .attr("y2", is_x ? this.height : function(d) { return (that.axis_scale.scale(d) + that.axis_scale.offset);})
-                    .attr("stroke", "grey")
-                    .attr("stroke-opacity", 0.4)
-                    .attr("stroke-dasharray", grid_type === "solid" ?
-                          "none" : ("5, 5"));
+            var tickSize = orientation === "vertical" ? -this.width : -this.height;
+            var tickOffset = 0;
 
-                if(this.model.get("grid_color") !== "" &&
-                   this.model.get("grid_color") !== null) {
-                    grid_lines.selectAll("line.grid-line")
-                      .attr("stroke", this.model.get("grid_color"));
+            //apply offsets if applicable
+            if (this.offset_scale) {
+                var offset = this.offset_scale.scale(this.offset_value);
+
+                if (side === "bottom" || side == "right") {
+                    tickSize = -offset;
+                    tickOffset = is_x ? this.height - offset : this.width - offset;
+                } else {
+                    tickSize += offset;
+                    tickOffset = -offset;
                 }
+            }
+
+            if (grid_type !== "none") {
+                this.axis.innerTickSize(tickSize).outerTickSize(6);
+            } else {
+                this.axis.tickSize(6);
+            }
+
+            this.g_axisline
+                .transition().duration(animation_duration)
+                .call(this.axis)
+                .selectAll(".tick line")
+                .attr(is_x ? "y1" : "x1",
+                      (this.offset_scale && grid_type !== "none")? tickOffset : null)
+                .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null)
+                .style("opacity", grid_type === "none" ? 1.0 : 0.2);
+
+            if (this.model.get("grid_color")) {
+                this.g_axisline
+                    .selectAll(".tick line")
+                    .style("stroke", this.model.get("grid_color"));
             }
         },
         update_color: function() {
-            if(this.model.get("color") !== "" &&
-               this.model.get("color") !== null) {
-                this.el.selectAll(".tick").selectAll("line")
-                  .style("stroke", this.model.get("color"));
-                this.el.selectAll(".tick").selectAll("text")
-                  .style("fill", this.model.get("color"));
+            if (this.model.get("color")) {
+                this.el.selectAll(".tick")
+                    .selectAll("text")
+                    .style("fill", this.model.get("color"));
                 this.el.selectAll(".domain")
-                  .style("stroke", this.model.get("color"));
+                    .style("stroke", this.model.get("color"));
             }
         },
         redraw_axisline: function() {
@@ -472,8 +486,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.update_axis_domain();
             this.update_offset_scale_domain();
 
-            this.set_tick_values();
-            this.update_grid_lines();
+            //animate axis and grid lines on domain changes
+            var animate = true;
+            this.set_tick_values(animate);
+            this.update_grid_lines(animate);
         },
         rescale_axis: function() {
             //function to be called when the range of the axis has been updated
