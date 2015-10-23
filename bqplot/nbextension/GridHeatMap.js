@@ -237,8 +237,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             if(indices === null || indices === undefined) {
                 return null;
             }
-            var num_rows = this.model.colors.length;
-            return indices.map(function(i) { return i[0] * num_rows + i[1];});
+            var num_cols = this.model.colors[0].length;
+            return indices.map(function(i) { return i[0] * num_cols + i[1];});
         },
         invert_point: function(pixel) {
             // For now, an index selector is not supported for the heatmap
@@ -352,12 +352,13 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                                     });
 
             var col_nums = _.range(num_cols);
-            this.display_cells = this.display_rows.selectAll(".heatmapcell")
-                .data(function(d, i) { return col_nums.map(function(ind)
-                                        {
-                                            return that.model.mark_data[i*num_rows+ind];
-                                        });
-                                     });
+            var row_nums = _.range(num_rows);
+
+            var data_array = row_nums.map(function(row) { return col_nums.map( function(col) {
+                                                            return that.model.mark_data[row*num_cols + col];})
+                                                        });
+
+            this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) { return data_array[i]; });
             this.display_cells.enter()
                 .append("rect")
                 .attr("class", "heatmapcell")

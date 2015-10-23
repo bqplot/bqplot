@@ -40,14 +40,16 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             flat_colors = flat_colors.concat.apply(flat_colors, this.colors);
 
             this.mark_data = flat_colors.map(function(data, index) {
-                var row_num = Math.floor(index / num_rows);
-                var col_num = index % num_rows;
+                var row_num = Math.floor(index / num_cols);
+                var col_num = index % num_cols;
 
                 return {
                     row_num : row_num,
+                    row : that.rows[row_num],
+                    column : that.columns[col_num],
                     column_num : col_num,
-                    color : that.colors[row_num][col_num],
-                    _cell_num : row_num * num_rows + col_num,
+                    color : data,
+                    _cell_num : index,
                 };
             });
             this.identify_modes();
