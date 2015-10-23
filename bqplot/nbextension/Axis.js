@@ -144,7 +144,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
 
             if(this.g_axisline) {
                  this.g_axisline
-                    .transition().duration(animate ? this.parent.model.get("animation_duration") : 0)
+                    .transition().duration(animate === true ? this.parent.model.get("animation_duration") : 0)
                     .call(this.axis);
             }
         },

@@ -306,7 +306,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         draw_bars: function(animate) {
             var bar_groups = this.el.selectAll(".bargroup");
             var bars_sel = bar_groups.selectAll(".bar");
-            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
 
             var x_scale = this.scales.x, y_scale = this.scales.y;

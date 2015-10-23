@@ -276,7 +276,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 var default_colors = this.model.get("default_colors");
                 var len = default_colors.length;
                 var len_opac = default_opacities.length;
-                var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+                var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
                 // update opacity scale range?
                 var that = this;
@@ -309,7 +309,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         },
         update_default_skew: function(animate) {
             if (!this.model.dirty) {
-                var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+                var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
                 var that = this;
                 this.el.selectAll(".dot")
                     .transition()
@@ -323,7 +323,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             this.compute_view_padding();
             // update size scale range?
             if (!this.model.dirty) {
-                var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+                var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
                 var that = this;
                 this.el.selectAll(".dot")
                     .transition()
@@ -379,7 +379,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             var that = this,
                 fill = this.model.get("fill"),
                 stroke = this.model.get("stroke");
-                var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+                var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             this.el.selectAll(".dot_grp")
               .select("path")
@@ -400,7 +400,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         update_xy_position: function(animate) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var that = this;
-            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             this.el.selectAll(".dot_grp").transition()
                 .duration(animation_duration)
@@ -418,7 +418,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             var that = this,
                 fill = this.model.get("fill");
 
-            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             var elements = this.el.selectAll(".dot_grp")
                 .data(this.model.mark_data, function(d) { return d.unique_id; });

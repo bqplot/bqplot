@@ -391,7 +391,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         },
         update_line_xy: function(animate) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
-            var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             this.line = d3.svg.line()
               .interpolate(this.model.get("interpolation"))
