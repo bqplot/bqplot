@@ -33,7 +33,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
 
             this.scales = {};
             this.set_top_el_style();
-            var self = this;
+            var that = this;
             this.margin = this.model.get("map_margin");
             this.num_rows = this.model.get("rows");
             this.num_cols = this.model.get("cols");
@@ -85,30 +85,30 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
 
             var scale_creation_promise = this.create_scale_views();
             scale_creation_promise.then(function() {
-                var color_scale = self.scales.color;
+                var color_scale = that.scales.color;
                 if(color_scale){
                     color_scale.set_range();
-                    color_scale.on("color_scale_range_changed", self.update_map_colors, self);
+                    color_scale.on("color_scale_range_changed", that.update_map_colors, that);
                 }
-                self.create_listeners();
+                that.create_listeners();
 
-                self.axis_views = new Widget.ViewList(self.add_axis, null, self);
-                self.axis_views.update(self.model.get("axes"));
-                self.model.on("change:axes", function(model, value, options) {
-                    self.axis_views.update(value);
+                that.axis_views = new Widget.ViewList(that.add_axis, null, that);
+                that.axis_views.update(that.model.get("axes"));
+                that.model.on("change:axes", function(model, value, options) {
+                    that.axis_views.update(value);
                 });
             });
 
             this.displayed.then(function() {
                 // Adding the tooltip to the parent of the el so as to not
                 // pollute the DOM
-                self.el.parentNode.appendChild(self.tooltip_div.node());
-                self.update_layout();
-                self.draw_group_names();
-                self.create_tooltip_widget();
+                that.el.parentNode.appendChild(that.tooltip_div.node());
+                that.update_layout();
+                that.draw_group_names();
+                that.create_tooltip_widget();
             });
             $(this.options.cell).on("output_area_resize" + this.id, function() {
-                self.update_layout();
+                that.update_layout();
             });
         },
         set_top_el_style: function() {
@@ -210,7 +210,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             this.trigger("margin_updated");
         },
         update_data: function() {
-            var self = this;
+            var that = this;
             this.data = this.model.get_typed_field("names");
             this.ref_data = this.model.get("ref_data");
             this.group_data = this.model.get_typed_field("groups");
@@ -220,15 +220,15 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
 
             this.colors = this.model.get("colors");
             var num_colors = this.colors.length;
-            this.colors_map = function(d) { return self.get_color(d, num_colors);};
+            this.colors_map = function(d) { return that.get_color(d, num_colors);};
             var color_data = this.model.get_typed_field("color");
             var mapped_data = this.data.map(function(d, i) {
                 return {'display': display_text[i], 'name': d, 'color': color_data[i],
-                        'group': self.group_data[i], 'ref_data': self.ref_data[i]};
+                        'group': that.group_data[i], 'ref_data': that.ref_data[i]};
             });
 
             this.update_domains();
-            this.grouped_data = _.groupBy(mapped_data, function(d, i) { return self.group_data[i]; });
+            this.grouped_data = _.groupBy(mapped_data, function(d, i) { return that.group_data[i]; });
             this.groups = [];
             this.running_sums = [];
             this.running_sums[0] = 0;
@@ -319,10 +319,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             });
         },
         set_scales: function() {
-            var self = this;
+            var that = this;
             if(this.scales.color) {
                 this.listenTo(this.scales.color, "domain_changed", function() {
-                    self.update_map_colors();
+                    that.update_map_colors();
                 });
             }
         },
@@ -487,17 +487,17 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
         },
         apply_selected: function() {
             var selected = this.model.get("selected");
-            var self = this;
+            var that = this;
             if(selected === undefined || selected === null || selected.length === 0)
                 this.clear_selected();
             else{
                 selected.forEach(function(data) {
                     var cell_id = "market_map_element_" + data;
-                    self.fig_click.select("#click_" + cell_id)
+                    that.fig_click.select("#click_" + cell_id)
                         .remove();
-                    if(self.fig_map.selectAll("#"+ cell_id)[0].length == 1) {
-                        var transform = self.fig_map.selectAll("#"+ cell_id).attr("transform");
-                        self.add_selected_cell(cell_id, transform);
+                    if(that.fig_map.selectAll("#"+ cell_id)[0].length == 1) {
+                        var transform = that.fig_map.selectAll("#"+ cell_id).attr("transform");
+                        that.add_selected_cell(cell_id, transform);
                     }
                });
             }
@@ -589,12 +589,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
                 this.tooltip_view.remove();
                 this.tooltip_view = null;
             }
-            var self = this;
+            var that = this;
             if(tooltip_model) {
                 var tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
                 tooltip_widget_creation_promise.then(function(view) {
-                    self.tooltip_view = view;
-                    self.tooltip_div.node().appendChild(d3.select(view.el).node());
+                    that.tooltip_view = view;
+                    that.tooltip_div.node().appendChild(d3.select(view.el).node());
                 });
             }
         },

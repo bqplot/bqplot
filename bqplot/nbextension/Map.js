@@ -311,35 +311,35 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure", "bas
         },
         change_selected: function() {
             this.highlight_g.selectAll("path").remove();
-            var self = this;
+            var that = this;
             var select = this.model.get("selected").slice();
             var temp = this.stroke_g.selectAll("path").data();
             this.stroke_g.selectAll("path").style("stroke", function(d, i) {
-                return self.hoverfill(d, i);
+                return that.hoverfill(d, i);
             });
             var nodes = this.stroke_g.selectAll("path");
             for (var i=0; i<temp.length; i++) {
                 if(select.indexOf(temp[i].id) > -1) {
-                    self.highlight_g.append(function() {
+                    that.highlight_g.append(function() {
                         return nodes[0][i].cloneNode(true);
                     }).attr("id", temp[i].id)
                     .style("fill-opacity", function() {
-                        if (self.validate_color(self.model.get("selected_styles").selected_fill)) {
+                        if (that.validate_color(that.model.get("selected_styles").selected_fill)) {
                             return 1.0;
                         } else {
                             return 0.0;
                         }
                     })
-                    .style("fill", self.model.get("selected_styles").selected_fill)
+                    .style("fill", that.model.get("selected_styles").selected_fill)
                     .style("stroke-opacity", function() {
-                        if (self.validate_color(self.model.get("selected_styles").selected_stroke)) {
+                        if (that.validate_color(that.model.get("selected_styles").selected_stroke)) {
                             return 1.0;
                         } else {
                             return 0.0;
                         }
                     })
-                    .style("stroke", self.model.get("selected_styles").selected_stroke)
-                    .style("stroke-width", self.model.get("selected_styles").selected_stroke_width)
+                    .style("stroke", that.model.get("selected_styles").selected_stroke)
+                    .style("stroke-width", that.model.get("selected_styles").selected_stroke_width)
                     .classed("selected", true);
                 }
             }
