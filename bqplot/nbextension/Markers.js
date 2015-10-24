@@ -18,7 +18,7 @@ define(["./components/d3/d3"], function(d3) {
     var pi = Math.PI,
         radian = pi / 180,
         sqrt3 = Math.sqrt(3),
-        tan30 = Math.tan(30);
+        tan30 = Math.tan(pi/6);
 
     var circleSymbol = function(size) {
         var r = Math.sqrt(size / pi);
