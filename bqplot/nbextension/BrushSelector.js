@@ -19,7 +19,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
     var BrushSelector = BaseSelectors.BaseXYSelector.extend({
         render : function() {
             BrushSelector.__super__.render.apply(this);
-            var self = this;
+            var that = this;
             var scale_creation_promise = this.create_scales();
             //TODO: For all selectors, the brush background etc can be created
             //without waiting for the promise. But the issue is with resizing
@@ -27,23 +27,23 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
             //defensive move, I am creating them inside the promise. Should be
             //moved outside the promise.
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
-                self.brush = d3.svg.brush()
-                    .x(self.x_scale.scale)
-                    .y(self.y_scale.scale)
-                    .on("brushstart", _.bind(self.brush_start, self))
-                    .on("brush", _.bind(self.brush_move, self))
-                    .on("brushend", _.bind(self.brush_end, self));
+                that.brush = d3.svg.brush()
+                    .x(that.x_scale.scale)
+                    .y(that.y_scale.scale)
+                    .on("brushstart", _.bind(that.brush_start, that))
+                    .on("brush", _.bind(that.brush_move, that))
+                    .on("brushend", _.bind(that.brush_end, that));
 
-                self.is_x_date = (self.x_scale.model.type === "date");
-                self.is_y_date = (self.y_scale.model.type === "date");
+                that.is_x_date = (that.x_scale.model.type === "date");
+                that.is_y_date = (that.y_scale.model.type === "date");
 
-                self.brushsel = self.el.attr("class", "selector brushintsel")
-                    .call(self.brush);
+                that.brushsel = that.el.attr("class", "selector brushintsel")
+                    .call(that.brush);
 
-                if (self.model.get("color") !== null) {
-                    self.brushsel.style("fill", self.model.get("color"));
+                if (that.model.get("color") !== null) {
+                    that.brushsel.style("fill", that.model.get("color"));
                 }
-                self.create_listeners();
+                that.create_listeners();
             });
         },
         create_listeners: function() {
@@ -87,12 +87,12 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
                 extent_y = this.y_scale.invert_range(extent_y);
             }
 
-            var self = this;
+            var that = this;
             _.each(this.mark_views, function(mark_view) {
-                mark_view.invert_2d_range(self.x_scale.scale(extent_x[0]),
-                                          self.x_scale.scale(extent_x[1]),
-                                          self.y_scale.scale(extent_y[0]),
-                                          self.y_scale.scale(extent_y[1]));
+                mark_view.invert_2d_range(that.x_scale.scale(extent_x[0]),
+                                          that.x_scale.scale(extent_x[1]),
+                                          that.y_scale.scale(extent_y[0]),
+                                          that.y_scale.scale(extent_y[1]));
             });
             // TODO: The call to the function can be removed once _pack_models is
             // changed
@@ -167,28 +167,28 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
     var BrushIntervalSelector = BaseSelectors.BaseXSelector.extend({
         render : function() {
             BrushIntervalSelector.__super__.render.apply(this);
-            var self = this;
+            var that = this;
             var scale_creation_promise = this.create_scales();
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
-                self.brush = d3.svg.brush()
-                    .x(self.scale.scale)
-                    .on("brushstart", _.bind(self.brush_start, self))
-                    .on("brush", _.bind(self.brush_move, self))
-                    .on("brushend", _.bind(self.brush_end, self));
+                that.brush = d3.svg.brush()
+                    .x(that.scale.scale)
+                    .on("brushstart", _.bind(that.brush_start, that))
+                    .on("brush", _.bind(that.brush_move, that))
+                    .on("brushend", _.bind(that.brush_end, that));
 
-                self.el.attr("class", "selector brushintsel");
+                that.el.attr("class", "selector brushintsel");
 
-                self.brushsel = self.el.call(self.brush)
+                that.brushsel = that.el.call(that.brush)
                     .selectAll("rect")
                     .attr("y", 0)
-                    .attr("height", self.height);
+                    .attr("height", that.height);
 
-                if(self.model.get("color") !== null) {
-                    self.brushsel.style("fill", self.model.get("color"));
+                if(that.model.get("color") !== null) {
+                    that.brushsel.style("fill", that.model.get("color"));
                 }
 
-                self.create_listeners();
-                self.selected_changed();
+                that.create_listeners();
+                that.selected_changed();
             });
         },
         create_listeners: function() {
@@ -214,7 +214,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
             this.convert_and_save(extent);
         },
         convert_and_save: function(extent) {
-            var self = this;
+            var that = this;
             if(extent.length === 0) {
                 _.each(this.mark_views, function(mark_view) {
                     return mark_view.invert_range(extent);
@@ -226,8 +226,8 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
                     });
                 } else {
                     _.each(this.mark_views, function(mark_view) {
-                        mark_view.invert_range(self.scale.scale(extent[0]),
-                                            self.scale.scale(extent[1]));
+                        mark_view.invert_range(that.scale.scale(extent[0]),
+                                            that.scale.scale(extent[1]));
                     });
                 }
             }
@@ -277,15 +277,15 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
                 // invalid value for selected. Ignoring the value
                 return;
             } else {
-                var self = this;
+                var that = this;
                 selected = selected.sort(function(a, b) { return a - b; });
 
                 this.brush.extent([selected[0], selected[1]]);
                 this._update_brush();
 
                 _.each(this.mark_views, function(mark_view) {
-                    mark_view.invert_range(self.scale.scale(selected[0]),
-                                           self.scale.scale(selected[1]));
+                    mark_view.invert_range(that.scale.scale(selected[0]),
+                                           that.scale.scale(selected[1]));
                 }, this);
             }
         },
@@ -333,7 +333,7 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
         render : function() {
             MultiSelector.__super__.render.apply(this);
 
-            var self = this;
+            var that = this;
             this.names = this.model.get("names");
             this.curr_index = 0;
 
@@ -343,20 +343,20 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
             var scale_creation_promise = this.create_scales();
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
                 var brush = d3.svg.brush()
-                    .x(self.scale.scale)
-                    .on("brushstart", function() { self.brush_start(name, self); })
-                    .on("brush", function() { self.brush_move(name, self); })
-                    .on("brushend", function() { self.brush_end(name, self); });
+                    .x(that.scale.scale)
+                    .on("brushstart", function() { that.brush_start(name, that); })
+                    .on("brush", function() { that.brush_move(name, that); })
+                    .on("brushend", function() { that.brush_end(name, that); });
 
                 // attribute to see if the scale is a date scale
-                self.is_date = (self.scale.model.type === "date");
+                that.is_date = (that.scale.model.type === "date");
 
-                self.el.attr("class", "multiselector");
+                that.el.attr("class", "multiselector");
 
-                self.create_brush();
-                self.model.on("change:names", self.labels_change, self);
-                self.selecting_brush = false;
-                self.create_listeners();
+                that.create_brush();
+                that.model.on("change:names", that.labels_change, that);
+                that.selecting_brush = false;
+                that.create_listeners();
             });
         },
         labels_change: function(model, value) {
@@ -364,14 +364,14 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
             this.names = value;
 
             var data = _.range(this.curr_index + 1);
-            var self = this;
+            var that = this;
             var selected = utils.deepCopy(this.model.get("selected"));
             //TODO: Use do diff?
             data.forEach(function(elem) {
-                var label = self.get_label(elem);
-                var prev_label = self.get_label(elem, prev_names);
+                var label = that.get_label(elem);
+                var prev_label = that.get_label(elem, prev_names);
                 if(prev_label !== label) {
-                    self.el.select(".brush_text_" + elem).text(label);
+                    that.el.select(".brush_text_" + elem).text(label);
                     selected[label] = selected[prev_label];
                     delete selected[prev_label];
                 }
@@ -381,26 +381,26 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
         },
         create_brush: function(event) {
             // Function to add new brushes.
-            var self = this;
+            var that = this;
             var name = (this.names.length > this.curr_index) ?
                 this.names[this.curr_index] : this.curr_index;
             var index = this.curr_index;
             var brush = d3.svg.brush()
                 .x(this.scale.scale)
-                .on("brushstart", function() { self.brush_start(); })
-                .on("brush", function() { self.brush_move(index, this); })
-                .on("brushend", function() { self.brush_end(index, this); });
+                .on("brushstart", function() { that.brush_start(); })
+                .on("brush", function() { that.brush_move(index, this); })
+                .on("brushend", function() { that.brush_end(index, this); });
 
             var new_brush_g = this.el.append("g")
                 .attr("class", "selector brushintsel active");
 
-            self.new_brushsel = new_brush_g.call(brush)
+            that.new_brushsel = new_brush_g.call(brush)
                 .selectAll("rect")
                 .attr("y", 0)
                 .attr("height", this.height);
 
-            if(self.model.get("color") !== null) {
-                self.new_brushsel.style("fill", self.model.get("color"));
+            if(that.model.get("color") !== null) {
+                that.new_brushsel.style("fill", that.model.get("color"));
             }
 
             new_brush_g.append("text")
@@ -414,24 +414,24 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
 
             var old_handler = new_brush_g.on("mousedown.brush");
             new_brush_g.on("mousedown.brush", function() {
-                add_remove_classes(self.el.selectAll(".selector"), ["inactive"], ["visible"]);
+                add_remove_classes(that.el.selectAll(".selector"), ["inactive"], ["visible"]);
                 add_remove_classes(d3.select(this), ["active"], ["inactive"]);
 
                 old_handler.call(this);
                 d3.select(this).on("mousedown.brush", function() {
                     if(d3.event.shiftKey && d3.event.ctrlKey && d3.event.altKey) {
-                        self.reset();
+                        that.reset();
                     } else if(d3.event.ctrlKey) {
                         add_remove_classes(d3.select(this), ["inactive"], ["active"]);
-                        self.create_brush(d3.event);
-                    } else if(d3.event.shiftKey && self.selecting_brush === false) {
-                        add_remove_classes(self.el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
-                        self.selecting_brush = true;
+                        that.create_brush(d3.event);
+                    } else if(d3.event.shiftKey && that.selecting_brush === false) {
+                        add_remove_classes(that.el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
+                        that.selecting_brush = true;
                     } else {
-                        add_remove_classes(self.el.selectAll(".selector"), ["inactive"], ["visible"]);
+                        add_remove_classes(that.el.selectAll(".selector"), ["inactive"], ["visible"]);
                         add_remove_classes(d3.select(this), ["active"], ["inactive"]);
                         old_handler.call(this);
-                        self.selecting_brush = false;
+                        that.selecting_brush = false;
                     }
                 });
             });
@@ -475,7 +475,6 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
         },
         brush_end: function (item, brush_g) {
             var brush = d3.event.target;
-            var self = this;
             var extent = brush.empty() ?
                 this.scale.scale.domain() : brush.extent();
             this.model.set("brushing", false);
@@ -491,15 +490,15 @@ define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelecto
         },
         convert_and_save: function(extent, item) {
             var selected = utils.deepCopy(this.model.get("_selected"));
-            var self = this;
+            var that = this;
             _.each(this.mark_views, function(mark_view) {
-                mark_view.invert_range(self.scale.scale(extent[0]),
-                                       self.scale.scale(extent[1]));
+                mark_view.invert_range(that.scale.scale(extent[0]),
+                                       that.scale.scale(extent[1]));
             });
             // TODO: remove the ternary operator once _pack_models is changed
             selected[this.get_label(item)] = extent.map(function(elem) {
-                return (self.is_date) ?
-                    self.scale.model.convert_to_json(elem) : elem;
+                return (that.is_date) ?
+                    that.scale.model.convert_to_json(elem) : elem;
             });
             this.model.set("_selected", selected);
             this.touch();

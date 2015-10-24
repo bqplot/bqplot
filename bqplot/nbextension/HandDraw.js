@@ -42,13 +42,13 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
         set_lines_view: function() {
             var fig = this.parent;
             var lines_model = this.model.get("lines");
-            var self = this;
+            var that = this;
             return Promise.all(fig.mark_views.views).then(function(views) {
                 var fig_mark_ids = fig.mark_views._models.map(function(mark_model) {
                     return mark_model.id; // Model ids of the marks in the figure
                 });
                 var mark_index = fig_mark_ids.indexOf(lines_model.id);
-                self.lines_view = views[mark_index];
+                that.lines_view = views[mark_index];
             });
         },
         mousedown: function () {
