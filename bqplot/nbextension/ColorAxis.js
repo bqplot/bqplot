@@ -266,7 +266,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis"], function(d3,
             this.set_axisline_scale_range();
             // shifting the entire g of the color bar first.
             this.el.style("transform", this.get_topg_transform());
-            var self = this;
+            var that = this;
             var bar_width = this.get_color_bar_width() / this.colors.length;
             if(this.ordinal) {
                 var rectangles = this.el.select("#colorBarG" + this.cid)
@@ -275,7 +275,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis"], function(d3,
                     .attr("width", bar_width);
                 if(this.vertical) {
                     rectangles.attr("x", function(d, i) {
-                        return (i * bar_width) - (self.height - 2 * self.x_offset);
+                        return (i * bar_width) - (that.height - 2 * that.x_offset);
                     });
                 } else {
                     rectangles.attr("x", function(d, i) {

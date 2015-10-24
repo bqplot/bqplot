@@ -605,12 +605,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }
             //if it is -1, then it is a generic format
             var fmt_string = (prec == -1) ? "" : ("." + (prec));
-            var self = this;
+            var that = this;
             return function(number) {
                 var str = d3.format(fmt_string + "g")(number);
                 var reg_str = str.replace(/-|\.|e/gi, "");
                 if(reg_str.length < 6) {
-                    return self._replace_trailing_zeros(str);
+                    return that._replace_trailing_zeros(str);
                 } else {
                     //if length is more than 6, format it exponentially
                     if(fmt_string === "") {
@@ -622,10 +622,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                             //limit to be 6
                              new_str = d3.format(".6e")(number);
                         }
-                        return self._replace_trailing_zeros(new_str);
+                        return that._replace_trailing_zeros(new_str);
                     } else {
                         //Format with the precision required
-                        return self._replace_trailing_zeros(d3.format(fmt_string + "e")(number));
+                        return that._replace_trailing_zeros(d3.format(fmt_string + "e")(number));
                     }
                 }
             };
