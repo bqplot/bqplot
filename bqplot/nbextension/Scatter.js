@@ -827,12 +827,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             if (!this.model.get("enable_move")) {
                 return;
             }
-            if(!this.drag_started) {
+            if (!this.drag_started) {
                 return;
             }
             var dot = this.dot,
                 default_colors = this.model.get("default_colors"),
-                len = default_colors.length;
+                len = default_colors.length,
+                x_scale = this.scales.x,
+                y_scale = this.scales.y;
             dot.size(this.model.get("default_size"));
 
             d3.select(dragged_node)
