@@ -372,13 +372,13 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var select_color = colors.length > 1 ? colors[1] : "red";
             var fill_color = colors[0];
             var bars_sel = this.el.selectAll(".bargroup");
-            var self = this;
+            var that = this;
             _.difference(_.range(0, this.model.num_bins), indices)
                 .forEach(function(d) {
-                    self.el.selectAll("#rect" + d).style("fill", fill_color);
+                    that.el.selectAll("#rect" + d).style("fill", fill_color);
                 });
             indices.forEach(function(d) {
-                    self.el.selectAll("#rect" + d).style("fill", select_color);
+                    that.el.selectAll("#rect" + d).style("fill", select_color);
             });
         },
         invert_point: function(pixel) {

@@ -19,12 +19,12 @@ define(["./components/d3/d3", "./Lines"], function(d3, LinesViewModule) {
     var FlexLine = LinesViewModule.Lines.extend({
         render: function() {
             var base_render_promise = LinesViewModule.Lines.__super__.render.apply(this);
-            var self = this;
+            var that = this;
 
             return base_render_promise.then(function() {
-                var x_scale = self.scales.x, y_scale = self.scales.y;
-                self.create_listeners();
-                self.draw();
+                var x_scale = that.scales.x, y_scale = that.scales.y;
+                that.create_listeners();
+                that.draw();
             });
         },
         set_ranges: function() {
