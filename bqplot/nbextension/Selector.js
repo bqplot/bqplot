@@ -40,7 +40,7 @@ define(["./components/d3/d3", "./Interaction" ], function(d3, InteractionViewMod
         },
         populate_mark_views: function() {
             var fig = this.parent;
-            var self = this;
+            var that = this;
             var mark_ids = this.model.get("marks").map(function(mark_model) {
                 return mark_model.id; // Model ids of the marks of the selector
             });
@@ -51,7 +51,7 @@ define(["./components/d3/d3", "./Interaction" ], function(d3, InteractionViewMod
                 var mark_indices = mark_ids.map(function(mark_model_id) {
                     return fig_mark_ids.indexOf(mark_model_id); // look up based on model ids
                 });
-                self.mark_views = mark_indices.map(function(elem) {
+                that.mark_views = mark_indices.map(function(elem) {
                     return views[elem]; // return the views, based on the assumption that fig.mark_views is an ordered list
                 });
             });

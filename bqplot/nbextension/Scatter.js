@@ -26,11 +26,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
               .size(this.model.get("default_size"))
               .skew(this.model.get("default_skew"));
 
-            var self = this;
+            var that = this;
             this.drag_listener = d3.behavior.drag()
-              .on("dragstart", function(d) { return self.drag_start(d, this); })
-              .on("drag", function(d, i) { return self.on_drag(d, i, this); })
-              .on("dragend", function(d, i) { return self.drag_ended(d, i, this); });
+              .on("dragstart", function(d) { return that.drag_start(d, this); })
+              .on("drag", function(d, i) { return that.on_drag(d, i, this); })
+              .on("dragend", function(d, i) { return that.drag_ended(d, i, this); });
 
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
@@ -58,16 +58,16 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 }
             };
             this.displayed.then(function() {
-                self.parent.tooltip_div.node().appendChild(self.tooltip_div.node());
-                self.create_tooltip();
+                that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
+                that.create_tooltip();
             });
 
             return base_creation_promise.then(function() {
-                self.event_listeners = {};
-                self.process_interactions();
-                self.create_listeners();
-                self.compute_view_padding();
-                self.draw();
+                that.event_listeners = {};
+                that.process_interactions();
+                that.create_listeners();
+                that.compute_view_padding();
+                that.draw();
             });
         },
         set_ranges: function() {
@@ -166,7 +166,6 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         },
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
-            var self = this;
             this.el.on("mouseover", _.bind(function() {
                   this.event_dispatcher("mouse_over");
               }, this))
