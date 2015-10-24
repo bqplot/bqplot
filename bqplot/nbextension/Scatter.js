@@ -182,7 +182,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
             this.listenTo(this.model, "change:default_opacities", this.update_default_opacities, this);
             this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
-            this.listenTo(this.model, "change:default_rotation", this.update_default_rotation, this);
+            this.listenTo(this.model, "change:default_rotation", this.update_xy_position, this);
             this.listenTo(this.model, "data_updated", function() {
                 //animate dots on data update
                 var animate = true;
