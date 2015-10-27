@@ -46,7 +46,7 @@ Pyplot
 
 from IPython.display import display
 from ipywidgets import VBox, HBox, Button, ToggleButton
-import numpy as np
+from numpy import linspace, issubdtype
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
@@ -254,7 +254,7 @@ def scales(key=None, scales={}):
         Dictionary of scales to be used in the new context
 
     Example
-    ------- 
+    -------
 
         >>> scales(scales={
         >>>    'x': Keep,
@@ -422,8 +422,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
             compat_scale_types = [Scale.scale_types[key]
                                   for key in Scale.scale_types
                                   if Scale.scale_types[key].rtype == rtype
-                                  and np.issubdtype(dtype,
-                                                    Scale.scale_types[key].dtype)]
+                                  and issubdtype(dtype,
+                                                 Scale.scale_types[key].dtype)]
             # TODO: something better than taking the FIRST compatible
             # scale type.
             scales[name] = compat_scale_types[0](**options.get(name, {}))
@@ -472,7 +472,7 @@ def plot(*args, **kwargs):
     elif len(args) == 1:
         kwargs['y'] = args[0]
         length = len(args[0])
-        kwargs['x'] = np.linspace(0.0, length - 1, length)
+        kwargs['x'] = linspace(0.0, length - 1, length)
     return _draw_mark(Lines, **kwargs)
 
 
@@ -507,7 +507,7 @@ def ohlc(*args, **kwargs):
     elif len(args) == 1:
         kwargs['y'] = args[0]
         length = len(args[0])
-        kwargs['x'] = np.linspace(0.0, length - 1, length)
+        kwargs['x'] = linspace(0.0, length - 1, length)
     return _draw_mark(OHLC, **kwargs)
 
 
