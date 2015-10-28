@@ -1163,6 +1163,9 @@ class MarkerLines(Mark):
             {'circle', 'cross', 'diamond', 'square', 'triangle-down',
             'triangle-up', 'arrow', 'rectangle', 'ellipse'}
         List of marker shapes for lines
+    marker_size: nonnegative int (default: 64)
+        marker size in pixels.
+
     """
     # Mark decoration
     icon = 'fa-line-chart'
@@ -1185,6 +1188,7 @@ class MarkerLines(Mark):
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value='circle', sync=True, display_name='Marker')
+    marker_size = Int(64, sync=True, display_name='Marker size')
 
     stroke_width = Float(1.5, sync=True, exposed=True,
                          display_name='Stroke Width')
