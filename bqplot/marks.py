@@ -41,11 +41,10 @@ from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float, TraitError,
 from .scales import Scale, OrdinalScale
 from .traits import NdArray, Date
 
-from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
+from .colorschemes import CATEGORY10
 
 
 def register_mark(key=None):
-
     """Returns a decorator registering a mark class in the mark type registry.
 
     If no key is provided, the class name is used as a key. A key is provided
@@ -278,7 +277,7 @@ class Lines(Mark):
         and if the size of colors is less than the number of lines, the
         remaining lines are given the default colors.
 
-    Notes 
+    Notes
     -----
 
     The fields which can be passed to the default tooltip are:
@@ -297,7 +296,7 @@ class Lines(Mark):
 
     # Scaled attributes
     x = NdArray(sync=True, min_dim=1, max_dim=2,
-                 scaled=True, rtype='Number', atype='bqplot.Axis')
+                scaled=True, rtype='Number', atype='bqplot.Axis')
     y = NdArray(sync=True, min_dim=1, max_dim=2,
                 scaled=True, rtype='Number', atype='bqplot.Axis')
     color = NdArray(None, sync=True, allow_none=True,
@@ -446,7 +445,7 @@ class Scatter(Mark):
         The rotation scale's range is [0, 180]
         Defaults to 0 when not provided or when a value is NaN.
 
-    Notes 
+    Notes
     -----
 
     The fields which can be passed to the default tooltip are:
@@ -563,7 +562,7 @@ class Hist(Mark):
     count: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
 
-    Note
+    Notes
     ----
 
     The fields which can be passed to the default tooltip are:
@@ -710,7 +709,7 @@ class Bars(Mark):
         color of the data points (1d array). Defaults to default_color when not
         provided or when a value is NaN
 
-    Note 
+    Notes
     ----
 
     The fields which can be passed to the default tooltip are:
@@ -925,7 +924,7 @@ class Pie(Mark):
         color of the data points (1d array). Defaults to colors when not
         provided
 
-    Note 
+    Note
     ----
 
     The fields which can be passed to the default tooltip are:
