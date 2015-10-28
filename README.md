@@ -124,6 +124,12 @@ display(fig)
 
 ![Bqplot Screenshot](/bqplot-screenshot.png)
 
+
+Help / Documentation
+--------------------
+
+- API reference documentation: [![Read the documentation of the stable version](https://readthedocs.org/projects/pip/badge/?version=stable)](http://bqplot.readthedocs.org/en/stable/) [![Read the documentation of the development version](https://readthedocs.org/projects/pip/badge/?version=latest)](http://bqplot.readthedocs.org/en/latest/)
+
 License
 -------
 
