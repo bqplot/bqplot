@@ -20,19 +20,22 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
     var MarkerLines = LinesViewModule.Lines.extend({
         render: function() {
             var base_render_promise = LinesViewModule.Lines.__super__.render.apply(this);
-            this.dot = bqSymbol().type(this.model.get("marker")).size(50);
+            this.dot = bqSymbol().type(this.model.get("marker"))
+                .size(this.model.get("marker_size"));
 
             var that = this;
             return base_render_promise.then(function() {
                 that.event_listeners = {};
                 that.process_interactions();
                 that.create_listeners();
+                that.compute_view_padding();
                 that.draw();
             });
         },
         create_listeners: function() {
             MarkerLines.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:marker", this.update_marker, this);
+            this.listenTo(this.model, "change:marker_size", this.update_marker_size, this);
         },
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var curve_labels = this.model.update_labels();
@@ -98,7 +101,6 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
 
             var new_curves = curves_sel.enter().append("g").attr("class", "curve");
             new_curves.append("path").attr("class", "line").attr("fill", "none");
-            new_curves.append("g").attr("class", "dots");
 
             var that = this;
             curves_sel.select(".line")
@@ -108,19 +110,21 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
                 .style("stroke-dasharray", _.bind(this.get_line_style, this))
                 .attr("d", function(d) { return that.line(d.values); });
 
-            var dots = curves_sel.select(".dots")
-                .selectAll("path")
+            var dots = curves_sel.selectAll(".dot")
                 .data(function(d) {
                     return d.values.map(function(e, i) {
                         return {x: e.x, y: e.y, color: that.get_colors(d.index)}; });
                 });
 
-            dots.enter().append("path");
+            dots.enter()
+                .append("path")
+                .attr("class", "dot");
+
             dots.transition().duration(animation_duration)
                 .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                            "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
                 })
-                .attr("d", this.dot)
+                .attr("d", this.dot.size(this.model.get("marker_size")))
                 .style("fill", function(d) { return d.color; });
 
             //TODO: add drag listeners a la scatter
@@ -138,12 +142,9 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
             curves_sel.exit().remove();
         },
         update_marker: function(model, marker) {
-            if (!this.model.dirty) {
-                this.el.selectAll(".dots path").attr("d", this.dot.type(marker));
-
-            this.legend_el.select("path")
-                .attr("d", this.dot.type(marker));
-            }
+            this.el.selectAll(".dot").attr("d", this.dot.type(marker));
+            this.legend_el.select("path").attr("d", this.dot.type(marker));
+            //update legend as well
         },
         relayout: function() {
             this.set_ranges();
@@ -151,6 +152,24 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
         },
         create_labels: function() {
             //do nothing
+        },
+        compute_view_padding: function() {
+            var x_padding = Math.sqrt(this.model.get("marker_size")) / 2 + 1.0;
+
+            if(x_padding !== this.x_padding || x_padding !== this.y_padding) {
+                this.x_padding = x_padding;
+                this.y_padding = x_padding;
+                this.trigger("mark_padding_updated");
+            }
+        },
+        update_marker_size: function(model, marker_size) {
+            this.compute_view_padding();
+            var that = this;
+            this.el.selectAll(".curve")
+                .each(function() {
+                    var curve = d3.select(this);
+                    curve.selectAll(".dot").attr("d", that.dot.size(marker_size));
+                });
         },
     });
 
