@@ -46,7 +46,7 @@ Pyplot
 
 from IPython.display import display
 from ipywidgets import VBox, HBox, Button, ToggleButton
-from numpy import linspace, issubdtype
+from numpy import arange, issubdtype
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
@@ -140,7 +140,7 @@ def show(key=None, display_toolbar=True):
         >>> import numpy as np
         >>> import pyplot as plt
         >>> n = 100
-        >>> x = np.linspace(0.0, 100.0, n)
+        >>> x = np.arange(n)
         >>> y = np.cumsum(np.random.randn(n))
         >>> plt.plot(x,y)
         >>> plt.show()
@@ -207,10 +207,10 @@ def figure(key=None, fig=None, **kwargs):
             for arg in kwargs:
                 setattr(_context['figure'], arg, kwargs[arg])
     scales(key, scales=scales_arg)
-    ## Set the axis reference dictionary. This dictionary contains the mapping
-    ## from the possible dimensions in the figure to the list of scales with
-    ## respect to which axes have been drawn for this figure.
-    ## Used to automatically generate axis.
+    # Set the axis reference dictionary. This dictionary contains the mapping
+    # from the possible dimensions in the figure to the list of scales with
+    # respect to which axes have been drawn for this figure.
+    # Used to automatically generate axis.
     if(getattr(_context['figure'], 'axis_registry', None) is None):
         setattr(_context['figure'], 'axis_registry', {})
 
@@ -326,7 +326,8 @@ def set_lim(min, max, name):
 def axes(mark=None, options={}, **kwargs):
     """Draws axes corresponding to the scales of a given mark.
 
-    It also returns a dictionary of drawn axes. If the mark is not provided, the last drawn mark is used.
+    It also returns a dictionary of drawn axes. If the mark is not provided,
+    the last drawn mark is used.
 
     Parameters
     ----------
@@ -358,8 +359,8 @@ def axes(mark=None, options={}, **kwargs):
 
         axis = _fetch_axis(fig, dimension, scales[name])
         if axis is not None:
-        # For this figure, an axis exists for the scale in the given
-        # dimension. Apply the properties and return back the object.
+            # For this figure, an axis exists for the scale in the given
+            # dimension. Apply the properties and return back the object.
             _apply_properties(axis, options.get(name, {}))
             axes[name] = axis
             continue
@@ -412,8 +413,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
         # Scale has to be fetched from the conext or created as it has not
         # been passed.
         elif dimension not in _context['scales']:
-        # Creating a scale for the dimension if a matching scale is not
-        # present in _context['scales']
+            # Creating a scale for the dimension if a matching scale is not
+            # present in _context['scales']
             traitlet = mark_type.class_traits()[name]
             rtype = traitlet.get_metadata('rtype')
             dtype = traitlet.validate(None, kwargs[name]).dtype
@@ -421,9 +422,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
             # scaled attributes of the mark.
             compat_scale_types = [Scale.scale_types[key]
                                   for key in Scale.scale_types
-                                  if Scale.scale_types[key].rtype == rtype
-                                  and issubdtype(dtype,
-                                                 Scale.scale_types[key].dtype)]
+                                  if Scale.scale_types[key].rtype == rtype and
+                                  issubdtype(dtype, Scale.scale_types[key].dtype)]
             # TODO: something better than taking the FIRST compatible
             # scale type.
             scales[name] = compat_scale_types[0](**options.get(name, {}))
@@ -452,7 +452,7 @@ def plot(*args, **kwargs):
 
     x: numpy.ndarray or list, 1d or 2d (optional)
         The x-coordinates of the plotted line. When not provided, the function
-        defaults to `numpy.linspace(0.0, len(y) - 1, len(y))`
+        defaults to `numpy.arange(len(y))`
         x can be 1-dimensional or 2-dimensional.
     y: numpy.ndarray or list, 1d or 2d
         The y-coordinates of the plotted line. If argument `x` is 2-dimensional
@@ -472,7 +472,7 @@ def plot(*args, **kwargs):
     elif len(args) == 1:
         kwargs['y'] = args[0]
         length = len(args[0])
-        kwargs['x'] = linspace(0.0, length - 1, length)
+        kwargs['x'] = arange(length)
     return _draw_mark(Lines, **kwargs)
 
 
@@ -488,7 +488,7 @@ def ohlc(*args, **kwargs):
 
     x: numpy.ndarray or list, 1d (optional)
         The x-coordinates of the plotted line. When not provided, the function
-        defaults to `numpy.linspace(0.0, len(y) - 1, len(y))`.
+        defaults to `numpy.arange(len(y))`.
     y: numpy.ndarray or list, 2d
         The ohlc (open/high/low/close) information. A two dimensional array. y
         must have the shape (n, 4).
@@ -507,7 +507,7 @@ def ohlc(*args, **kwargs):
     elif len(args) == 1:
         kwargs['y'] = args[0]
         length = len(args[0])
-        kwargs['x'] = linspace(0.0, length - 1, length)
+        kwargs['x'] = arange(length)
     return _draw_mark(OHLC, **kwargs)
 
 
@@ -677,7 +677,7 @@ def _add_interaction(int_type, **kwargs):
     for name, traitlet in int_type.class_traits().items():
         dimension = traitlet.get_metadata('dimension')
         if dimension is not None:
-            ## only scales have this attribute in interactions
+            # only scales have this attribute in interactions
             kwargs[name] = _get_context_scale(dimension)
     kwargs['marks'] = marks
     interaction = int_type(**kwargs)
@@ -857,10 +857,10 @@ def get_context():
 
 
 def _fetch_axis(fig, dimension, scale):
-    ## Internal utility function.
-    ## Given a figure instance `fig`, the dimension of the scaled attribute and
-    ## the instance of a scale, returns the axis if an axis is present for that
-    ## combination. Else returns `None`
+    # Internal utility function.
+    # Given a figure instance `fig`, the dimension of the scaled attribute and
+    # the instance of a scale, returns the axis if an axis is present for that
+    # combination. Else returns `None`
     axis_registry = getattr(fig, 'axis_registry', {})
     dimension_data = axis_registry.get(dimension, [])
     dimension_scales = [dim['scale'] for dim in dimension_data]
