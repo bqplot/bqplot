@@ -121,6 +121,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     return "10,10";
                 case "dotted":
                     return "2,10";
+                case "dash_dotted":
+                    return "10,5,2,5";
             }
         },
         // Updating the style of the curve, stroke, colors, dashed etc...

@@ -313,8 +313,9 @@ class Lines(Mark):
     labels_visibility = Enum(['none', 'label'], default_value='none',
                              sync=True, display_name='Labels visibility')
     curves_subset = List(sync=True)
-    line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid',
-                      sync=True, display_name='Line style')
+    line_style = Enum(['solid', 'dashed', 'dotted', 'dash_dotted'],
+                      default_value='solid', sync=True,
+                      display_name='Line style')
     interpolation = Enum(['linear', 'basis', 'cardinal', 'monotone'],
                          default_value='linear', sync=True,
                          display_name='Interpolation')
@@ -1183,8 +1184,8 @@ class MarkerLines(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
                             'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
-    line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid',
-                      sync=True, display_name='Line style')
+    line_style = Enum(['solid', 'dashed', 'dotted', 'dash_dotted'],
+                      default_value='solid', sync=True, display_name='Line style')
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value='circle', sync=True, display_name='Marker')
