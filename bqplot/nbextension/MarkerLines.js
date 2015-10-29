@@ -69,13 +69,18 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
                 .each(function(d, i) {
                     var g = d3.select(this);
                     g.append("line")
-                        .style("stroke", function(d,i) { return that.get_colors(i); })
-                        .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
+                        .style("stroke", that.get_element_color(d, i))
+                        .attr({x1: 0, x2: rect_dim * 2, y1: rect_dim / 2 , y2: rect_dim / 2});
+                    g.append("path")
+                        .attr("transform", "translate(" + rect_dim +
+                           "," + rect_dim / 2 + ")")
+                        .attr("d", that.dot.size(20))
+                        .style("fill", that.get_element_color(d, i))
                 });
 
            this.legend_el.append("text")
                .attr("class", "legendtext")
-               .attr("x", rect_dim * 1.2)
+               .attr("x", rect_dim * 2.4)
                .attr("y", rect_dim / 2)
                .attr("dy", "0.35em")
                .text(function(d, i) { return curve_labels[i]; })
