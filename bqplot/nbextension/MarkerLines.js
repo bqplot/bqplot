@@ -147,9 +147,9 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
             curves_sel.exit().remove();
         },
         update_marker: function(model, marker) {
-            this.el.selectAll(".dot").attr("d", this.dot.type(marker));
-            this.legend_el.select("path").attr("d", this.dot.type(marker));
-            //update legend as well
+            this.el.selectAll(".dot")
+                .attr("d", this.dot.type(marker).size(this.model.get("marker_size")));
+            this.legend_el.select("path").attr("d", this.dot.type(marker).size(20));
         },
         relayout: function() {
             this.set_ranges();
@@ -171,10 +171,8 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
             this.compute_view_padding();
             var that = this;
             this.el.selectAll(".curve")
-                .each(function() {
-                    var curve = d3.select(this);
-                    curve.selectAll(".dot").attr("d", that.dot.size(marker_size));
-                });
+                .selectAll(".dot")
+                .attr("d", that.dot.size(marker_size));
         },
     });
 
