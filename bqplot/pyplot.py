@@ -43,16 +43,17 @@ Pyplot
    ylim
 
 """
-
+from collections import OrderedDict
 from IPython.display import display
 from ipywidgets import VBox, HBox, Button, ToggleButton
 from numpy import arange, issubdtype
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
-from .marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
+from .marks import Lines, MarkerLines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
 from .interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
-                        BrushSelector, IndexSelector, MultiSelector, LassoSelector)
+                        BrushSelector, IndexSelector, MultiSelector,
+                        LassoSelector)
 from traitlets.utils.sentinel import Sentinel
 
 Keep = Sentinel('Keep', 'bqplot.pyplot', '''
@@ -67,6 +68,15 @@ _context = {
     'scale_registry': {},
     'last_mark': None
 }
+
+LINE_STYLE_CODES = OrderedDict([(':', 'dotted'), ('-.', 'dash_dotted'),
+                                ('--', 'dashed'), ('-', 'solid')])
+
+COLOR_CODES = {'b': 'blue', 'g': 'green', 'r': 'red', 'c': 'cyan',
+               'm': 'magenta', 'y': 'yellow', 'k': 'black'}
+
+MARKER_CODES = {'o': 'circle', 'v': 'triangle-down', '^': 'triangle-up',
+                's': 'square', 'd': 'diamond', '+': 'cross'}
 
 
 def _default_toolbar(figure):
@@ -457,6 +467,9 @@ def plot(*args, **kwargs):
     y: numpy.ndarray or list, 1d or 2d
         The y-coordinates of the plotted line. If argument `x` is 2-dimensional
         it must also be 2-dimensional.
+    marker_str: string
+        string representing line_style, marker and color.
+        For e.g. 'g--o', 'sr' etc
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -466,14 +479,53 @@ def plot(*args, **kwargs):
         for that mark, axes_options['x'] contains optional keyword arguments
         for the constructor of the corresponding axis type.
     """
-    if len(args) == 2:
+    marker_str = None
+    mark_type = None
+
+    if len(args) == 1:
+        kwargs['y'] = args[0]
+        kwargs['x'] = arange(len(args[0]))
+    elif len(args) == 2:
+        if type(args[1]) == str:
+            kwargs['y'] = args[0]
+            kwargs['x'] = arange(len(args[0]))
+            marker_str = args[1].strip()
+        else:
+            kwargs['x'] = args[0]
+            kwargs['y'] = args[1]
+    elif len(args) == 3:
         kwargs['x'] = args[0]
         kwargs['y'] = args[1]
-    elif len(args) == 1:
-        kwargs['y'] = args[0]
-        length = len(args[0])
-        kwargs['x'] = arange(length)
-    return _draw_mark(Lines, **kwargs)
+        if type(args[2]) == str:
+            marker_str = args[2].strip()
+
+    if marker_str:
+        line_style, color, marker = _get_line_styles(marker_str)
+
+        # only color specified => draw lines
+        if color and not line_style and not marker:
+            kwargs['colors'] = [color]
+            return _draw_mark(Lines, **kwargs)
+
+        # both line_style and marker specified => draw marker_lines
+        if line_style and marker:
+            kwargs['line_style'] = line_style
+            kwargs['marker'] = marker
+            if color:
+                kwargs['colors'] = [color]
+            return _draw_mark(MarkerLines, **kwargs)
+        elif marker:  # only marker specified => draw scatter
+            kwargs['marker'] = marker
+            if color:
+                kwargs['default_colors'] = [color]
+            return _draw_mark(Scatter, **kwargs)
+        elif line_style:  # only line_style specified => draw lines
+            kwargs['line_style'] = line_style
+            if color:
+                kwargs['colors'] = [color]
+            return _draw_mark(Lines, **kwargs)
+    else:  # no marker string specified => draw lines
+        return _draw_mark(Lines, **kwargs)
 
 
 def ohlc(*args, **kwargs):
@@ -901,3 +953,28 @@ def _apply_properties(widget, properties={}):
     with widget.hold_sync():
         for key, value in properties.items():
             setattr(widget, key, value)
+
+
+def _get_line_styles(marker_str):
+    """returns the line style, color and the marker type from a given
+       marker string. For e.g. if the `marker_str` is 'g-o' then the method
+       returns ('solid', 'green', 'circle')
+    """
+    def _extract_marker_value(marker_str, code_dict):
+        """Extracts the marker value from a given marker string.
+           Looks up the `code_dict` and returns the corresponding
+           marker for a specific code.
+
+           For e.g. if the `marker_str` is 'g-o' then the method extracts
+           'green' if the code_dict is color_codes, 'circle' if the
+           code_dict is marker_codes etc
+        """
+        val = None
+        for code in code_dict:
+            if code in marker_str:
+                val = code_dict[code]
+                break
+        return val
+
+    return [_extract_marker_value(marker_str, code_dict) for
+            code_dict in [LINE_STYLE_CODES, COLOR_CODES, MARKER_CODES]]
