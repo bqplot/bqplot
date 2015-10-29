@@ -75,7 +75,7 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
                         .attr("transform", "translate(" + rect_dim +
                            "," + rect_dim / 2 + ")")
                         .attr("d", that.dot.size(20))
-                        .style("fill", that.get_element_color(d, i))
+                        .style("fill", that.get_element_color(d, i));
                 });
 
            this.legend_el.append("text")
@@ -84,7 +84,7 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
                .attr("y", rect_dim / 2)
                .attr("dy", "0.35em")
                .text(function(d, i) { return curve_labels[i]; })
-               .style("fill", function(d, i) { return that.get_element_color(d, i); })
+               .style("fill", function(d, i) { return that.get_element_color(d, i); });
 
             var max_length = d3.max(curve_labels, function(d) {
                 return d.length;
@@ -140,9 +140,10 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
 
             dots.exit().remove();
 
-            this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
-            this.y_pixels = this.model.mark_data.map(function(el) { return y_scale.scale(el.y) + y_scale.offset; });
-            this.apply_styles();
+            this.x_pixels = (this.model.mark_data.length > 0) ?
+                this.model.mark_data[0].values.map(function(d) {
+                    return x_scale.scale(d.x) + x_scale.offset;
+                }) : [];
 
             curves_sel.exit().remove();
         },
@@ -174,6 +175,16 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
                 .selectAll(".dot")
                 .attr("d", that.dot.size(marker_size));
         },
+        set_positional_scales: function() {
+            var x_scale = this.scales.x, y_scale = this.scales.y;
+            this.listenTo(x_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
+            });
+            this.listenTo(y_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
+            });
+        },
+
     });
 
     return {
