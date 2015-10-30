@@ -49,7 +49,7 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
               });
 
             var that = this,
-                rect_dim = inter_y_disp * 0.8;
+                rect_dim = inter_y_disp;
 
             this.legend_el.enter()
                 .append("g")
@@ -70,9 +70,9 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
                     var g = d3.select(this);
                     g.append("line")
                         .style("stroke", that.get_element_color(d, i))
-                        .attr({x1: 0, x2: rect_dim * 2, y1: rect_dim / 2 , y2: rect_dim / 2});
+                        .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
                     g.append("path")
-                        .attr("transform", "translate(" + rect_dim +
+                        .attr("transform", "translate(" + rect_dim / 2 +
                            "," + rect_dim / 2 + ")")
                         .attr("d", that.dot.size(20))
                         .style("fill", that.get_element_color(d, i));
@@ -80,7 +80,7 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
 
            this.legend_el.append("text")
                .attr("class", "legendtext")
-               .attr("x", rect_dim * 2.4)
+               .attr("x", rect_dim * 1.2)
                .attr("y", rect_dim / 2)
                .attr("dy", "0.35em")
                .text(function(d, i) { return curve_labels[i]; })
@@ -184,6 +184,14 @@ define(["./components/d3/d3", "./Lines", "./Markers"], function(d3, LinesViewMod
                 if (!this.model.dirty) { this.draw(); }
             });
         },
+        update_line_style: function() {
+            MarkerLines.__super__.update_line_style.apply(this);
+            if (this.legend_el) {
+                this.legend_el.select("line")
+                  .style("stroke-dasharray", _.bind(this.get_line_style, this));
+            }
+        },
+
 
     });
 
