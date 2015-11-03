@@ -41,7 +41,7 @@ from ipywidgets import Widget, Color, widget_serialization
 
 from .scales import Scale, DateScale
 from .traits import Date, NdArray
-from .marks import Lines, Scatter, MarkerLines
+from .marks import Lines, Scatter
 
 
 def register_interaction(key=None):
@@ -550,15 +550,15 @@ class LassoSelector(TwoDSelector):
     Attributes
     ----------
 
-    marks: List of marks which are instances of {Lines, Scatter, MarkerLines}
+    marks: List of marks which are instances of {Lines, Scatter}
            (default: [])
         List of marks on which lasso selector will be applied.
     color: Color (default: None)
         Color of the lasso
 
     """
-    marks = List(Instance(Lines) | Instance(Scatter) | Instance(MarkerLines),
-                 sync=True, **widget_serialization)
+    marks = List(Instance(Lines) | Instance(Scatter), sync=True,
+                 **widget_serialization)
     color = Color(None, sync=True, allow_none=True)
 
     def __init__(self, marks=None, **kwargs):
