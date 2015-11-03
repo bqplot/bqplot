@@ -50,7 +50,7 @@ from numpy import arange, issubdtype
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
-from .marks import Lines, MarkerLines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
+from .marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
 from .interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
                         BrushSelector, IndexSelector, MultiSelector,
                         LassoSelector)
@@ -502,29 +502,21 @@ def plot(*args, **kwargs):
     if marker_str:
         line_style, color, marker = _get_line_styles(marker_str)
 
-        # only color specified => draw lines
-        if color and not line_style and not marker:
-            kwargs['colors'] = [color]
-            return _draw_mark(Lines, **kwargs)
-
-        # both line_style and marker specified => draw marker_lines
-        if line_style and marker:
-            kwargs['line_style'] = line_style
-            kwargs['marker'] = marker
-            if color:
-                kwargs['colors'] = [color]
-            return _draw_mark(MarkerLines, **kwargs)
-        elif marker:  # only marker specified => draw scatter
+        # only marker specified => draw scatter
+        if marker and not line_style:
             kwargs['marker'] = marker
             if color:
                 kwargs['default_colors'] = [color]
             return _draw_mark(Scatter, **kwargs)
-        elif line_style:  # only line_style specified => draw lines
-            kwargs['line_style'] = line_style
+        else:  # draw lines in all other cases
+            kwargs['line_style'] = line_style or 'solid'
+
+            if marker:
+                kwargs['marker'] = marker
             if color:
                 kwargs['colors'] = [color]
             return _draw_mark(Lines, **kwargs)
-    else:  # no marker string specified => draw lines
+    else:
         return _draw_mark(Lines, **kwargs)
 
 
