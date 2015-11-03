@@ -264,6 +264,11 @@ class Lines(Mark):
         Interpolation scheme used for interpolation between the data points
         provided. Please refer to the svg interpolate documentation for details
         about the different interpolation schemes.
+    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
+             'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+        Marker shape
+    marker_size: nonnegative int (default: 64)
+        Default marker size in pixels
 
     Data Attributes
 
@@ -322,6 +327,12 @@ class Lines(Mark):
     close_path = Bool(sync=True, display_name='Close path')
     fill = List(trait=Color(default_value=None, allow_none=True), sync=True,
                 display_name='Fill Colors')
+    marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
+                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
+                  default_value=None, allow_none=True, sync=True,
+                  display_name='Marker')
+    marker_size = Int(64, sync=True, display_name='Default size')
+
     opacities = List(sync=True, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
