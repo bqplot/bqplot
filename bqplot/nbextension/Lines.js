@@ -21,9 +21,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         render: function() {
             var base_render_promise = Lines.__super__.render.apply(this);
             var that = this;
+            this.dot = bqSymbol().size(this.model.get("marker_size"));
             if (this.model.get("marker")) {
-                this.dot = bqSymbol().type(this.model.get("marker"))
-                    .size(this.model.get("marker_size"));
+                this.dot.type(this.model.get("marker"))
             }
 
             // TODO: create_listeners is put inside the promise success handler
@@ -419,21 +419,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                   return that.line(d.values) + that.path_closure();
               });
 
-            if (this.model.get("marker")) {
-                var dots = this.el.selectAll(".curve").selectAll(".dot")
-                    .data(function(d) {
-                        return d.values.map(function(e, i) {
-                            return {x: e.x, y: e.y, color: that.get_colors(d.index)}; });
-                    });
-
-                dots.transition().duration(animation_duration)
-                    .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
-                            "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
-                    })
-                    .attr("d", this.dot.size(this.model.get("marker_size")))
-                    .style("fill", function(d) { return d.color; });
-            }
-
+            this.update_dots_xy(animate);
             this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
                                                                         { return x_scale.scale(el.x) + x_scale.offset; })
                                                               : [];
@@ -467,22 +453,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                   this.event_dispatcher("element_clicked");
               }, this));
 
-            if (this.model.get("marker")) {
-                var dots = curves_sel.selectAll(".dot")
-                    .data(function(d) {
-                        return d.values.map(function(e, i) {
-                            return {x: e.x, y: e.y, color: that.get_colors(d.index)}; });
-                    });
-
-                dots.enter().append("path").attr("class", "dot");
-
-                //dots.call(this.drag_listener);
-                //dots.on("click", _.bind(function() {
-                //    this.event_dispatcher("element_clicked");
-                //}, this));
-
-                dots.exit().remove();
-            }
+            this.draw_dots();
 
             // Having a transition on exit is complicated. Please refer to
             // Scatter.js for detailed explanation.
@@ -512,6 +483,39 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             }
             this.create_labels();
         },
+        draw_dots: function() {
+            if (this.model.get("marker")) {
+                var that = this;
+                var dots = this.el.selectAll(".curve").selectAll(".dot")
+                    .data(function(d) {
+                        return d.values.map(function(e, i) {
+                            return {x: e.x, y: e.y, color: that.get_colors(d.index)}; });
+                    });
+
+                dots.enter().append("path").attr("class", "dot");
+                dots.exit().remove();
+            }
+        },
+        update_dots_xy: function(animate) {
+            if (this.model.get("marker")) {
+                var that = this;
+                var x_scale = this.scales.x, y_scale = this.scales.y;
+                var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+                var dots = this.el.selectAll(".curve").selectAll(".dot")
+                    .data(function(d) {
+                        return d.values.map(function(e, i) {
+                            return {x: e.x, y: e.y, color: that.get_colors(d.index)}; });
+                    });
+
+                dots.transition().duration(animation_duration)
+                    .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
+                            "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
+                    })
+                    .attr("d", this.dot.size(this.model.get("marker_size"))
+                                   .type(this.model.get("marker")))
+                    .style("fill", function(d) { return d.color; });
+            }
+        },
         compute_view_padding: function() {
             //This function sets the padding for the view through the variables
             //x_padding and y_padding which are view specific paddings in pixel
@@ -529,16 +533,18 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             }
         },
         update_marker: function(model, marker) {
-            this.el.selectAll(".dot")
-                .attr("d", this.dot.type(marker).size(this.model.get("marker_size")));
-            this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
+            if (marker) {
+                this.draw_dots();
+                this.update_dots_xy();
+                this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
+            } else {
+                this.el.selectAll(".dot").remove();
+                this.legend_el.select(".dot").attr("d", this.dot.size(0));
+            }
         },
         update_marker_size: function(model, marker_size) {
             this.compute_view_padding();
-            var that = this;
-            this.el.selectAll(".curve")
-                .selectAll(".dot")
-                .attr("d", that.dot.size(marker_size));
+            this.el.selectAll(".dot").attr("d", this.dot.size(marker_size));
         },
         update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                            point_in_lasso_func)
