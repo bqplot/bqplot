@@ -281,7 +281,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                                      [rect_dim / 2, 0],
                                      [rect_dim, rect_dim / 2]];
 
-            this.legend_el.enter()
+            var legend = this.legend_el.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
                 .attr("transform", function(d, i) {
@@ -295,8 +295,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 }, this))
                 .on("click", _.bind(function() {
                    this.event_dispatcher("legend_clicked");
-                }, this))
-              .append("path")
+                }, this));
+
+            legend.append("path")
                 .attr("fill", "none")
                 .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
                 .style("stroke", function(d, i) {
@@ -308,6 +309,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 .style("opacity", function(d, i) { return opacities[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", _.bind(this.get_line_style, this));
+
+            if (this.model.get("marker")) {
+                legend.append("path")
+                    .attr("class", "dot")
+                    .attr("transform", "translate(" + rect_dim / 2 + ",0)")
+                    .attr("d", that.dot.size(25))
+                    .style("fill", function(d, i) { return that.get_element_color(d, i); });
+            }
 
             this.legend_el.append("text")
               .attr("class", "legendtext")
@@ -522,7 +531,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         update_marker: function(model, marker) {
             this.el.selectAll(".dot")
                 .attr("d", this.dot.type(marker).size(this.model.get("marker_size")));
-            this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(20));
+            this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
         },
         update_marker_size: function(model, marker_size) {
             this.compute_view_padding();
