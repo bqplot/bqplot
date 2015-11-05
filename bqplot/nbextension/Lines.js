@@ -158,28 +158,33 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 fill_color = this.model.get("fill"),
                 opacities = this.model.get("opacities");
             // update curve colors
-            this.el.selectAll(".curve").select("path")
-              .style("stroke", function(d, i) {
-                  return that.get_element_color(d, i);
-              })
-              .style("fill", function(d, i) {
-                  return fill_color[i];
-              })
-              .style("opacity", function(d, i) {
-                  return opacities[i];
-              });
+            this.el.selectAll(".curve")
+                .each(function(d, i) {
+                    var curve = d3.select(this);
+                    curve.selectAll("path")
+                        .style("stroke", that.get_element_color(d, i) || fill_color[i])
+                        .style("opacity", opacities[i]);
+                    curve.select(".line")
+                        .style("fill", fill_color[i]);
+                    curve.selectAll(".dot")
+                        .style("fill", that.get_element_color(d, i) || fill_color[i]);
+                });
             // update legend style
             if (this.legend_el){
-                this.legend_el.select("path")
-                  .style("stroke", function(d, i) {
-                      return that.get_element_color(d, i) || fill_color[i];
-                  })
-                  .style("fill", function(d, i) {
-                      return fill_color[i];
-                  })
-                  .style("opacity", function(d, i) {
-                      return opacities[i];
-                  });
+                this.legend_el.select(".line")
+                    .style("stroke", function(d, i) {
+                        return that.get_element_color(d, i) || fill_color[i];
+                    })
+                    .style("opacity", function(d, i) { return opacities[i]; })
+                    .style("fill", function(d, i) { return fill_color[i]; });
+                this.legend_el.select(".dot")
+                    .style("stroke", function(d, i) {
+                        return that.get_element_color(d, i) || fill_color[i];
+                    })
+                    .style("opacity", function(d, i) { return opacities[i]; })
+                    .style("fill", function(d, i) {
+                        return that.get_element_color(d, i) || fill_color[i];
+                    });
                 this.legend_el.select("text")
                   .style("fill", function(d, i) {
                       return that.get_element_color(d, i) || fill_color[i];
@@ -298,6 +303,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 }, this));
 
             legend.append("path")
+                .attr("class", "line")
                 .attr("fill", "none")
                 .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
                 .style("stroke", function(d, i) {
