@@ -522,17 +522,16 @@ class Scatter(Mark):
     update_on_move = Bool(False, sync=True)
 
     def __init__(self, **kwargs):
-        super(Scatter, self).__init__(**kwargs)
         self._drag_end_handlers = CallbackDispatcher()
-        self.on_msg(self._handle_custom_msgs)
+        super(Scatter, self).__init__(**kwargs)
 
     def on_drag_end(self, callback, remove=False):
         self._drag_end_handlers.register_callback(callback, remove=remove)
 
     def _handle_custom_msgs(self, _, content, buffers=None):
-        super(Scatter, self)._handle_custom_msgs(self, content)
         if content.get('event', '') == 'drag_end':
             self._drag_end_handlers(self, content)
+        super(Scatter, self)._handle_custom_msgs(self, content)
 
     _view_name = Unicode('Scatter', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Scatter', sync=True)
