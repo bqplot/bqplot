@@ -217,13 +217,12 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 return [];
             }
 
-            var self = this;
             var x_scale = this.scales.x;
 
             var indices = _.range(this.x_pixels.length);
             var that = this;
             var selected = _.filter(indices, function(index) {
-                var elem = self.x_pixels[index];
+                var elem = that.x_pixels[index];
                 return (elem >= start_pxl && elem <= end_pxl);
             });
             this.model.set("selected", selected);

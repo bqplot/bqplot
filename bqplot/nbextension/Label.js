@@ -19,7 +19,7 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
     var Label = MarkViewModule.Mark.extend({
         render: function() {
             var base_render_promise = Label.__super__.render.apply(this);
-            var self = this;
+            var that = this;
 
             //TODO: create_listeners is put inside the promise success handler
             //because some of the functions depend on child scales being
@@ -31,8 +31,8 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             this.color = this.model.get("color");
             this.text = this.model.get("text");
             return base_render_promise.then(function() {
-                self.create_listeners();
-                self.draw();
+                that.create_listeners();
+                that.draw();
             });
         },
         set_ranges: function() {
@@ -83,7 +83,6 @@ define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
             this.apply_net_transform();
         },
         draw: function() {
-            var self = this;
             this.set_ranges();
             this.el.selectAll(".label")
                 .remove();

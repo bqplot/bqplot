@@ -39,7 +39,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             var y_scale = scales.y;
             y_data = (y_data.length === 0 || y_data[0] instanceof Array) ?
                 y_data : [y_data];
-            var self = this;
+            var that = this;
 
             this.base_value = this.get("base");
             if(this.base_value === undefined || this.base_value === null) {
@@ -56,11 +56,11 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 })));
                 this.mark_data = x_data.map(function (x_elem, index) {
                     var data = {};
-                    var y0 = self.base_value;
-                    var y0_neg = self.base_value;
+                    var y0 = that.base_value;
+                    var y0_neg = that.base_value;
                     data.key = x_elem;
                     data.values = y_data.map(function(y_elem, y_index) {
-                        var value = y_elem[index] - self.base_value;
+                        var value = y_elem[index] - that.base_value;
                         var positive = (value >= 0);
                         return {
                             index: index,

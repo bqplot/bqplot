@@ -50,11 +50,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
         update_tooltip: function(data) {
             //data is a dictionary passed by the parent along with the update_
             //tooltip event. Responsibility of the mark to pass the data
-            var self = this;
+            var that = this;
             this.d3_el.select("table")
                 .selectAll("tr")
                 .select(".datavalue")
-                .text(function(datum, index) { return self.tooltip_formats[index](data[datum]);});
+                .text(function(datum, index) { return that.tooltip_formats[index](data[datum]);});
         },
         create_table: function() {
             var fields = this.model.get("fields");
@@ -63,7 +63,6 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             for (; ind < fields.length; ind++) {
                 labels[ind] = fields[ind];
             }
-            var self = this;
 
             this.d3_el.select("table").remove();
             var tooltip_table = this.d3_el.append("table")

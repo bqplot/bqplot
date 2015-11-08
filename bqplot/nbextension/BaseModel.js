@@ -23,7 +23,7 @@ define(["nbextensions/widgets/widgets/js/widget"], function(Widget) {
             // the appropriate array
             var value = this.get(param);
             var return_value = [];
-            var self = this;
+            var that = this;
             if(value.hasOwnProperty("type") &&
                value.hasOwnProperty("values") &&
                value.values !== null) {
@@ -32,12 +32,12 @@ define(["nbextensions/widgets/widgets/js/widget"], function(Widget) {
                     if(return_value[0] instanceof Array) {
                        return_value = return_value.map(function(val) {
                            return val.map(function(elem) {
-                               return self.convert_to_date(elem);
+                               return that.convert_to_date(elem);
                            });
                        });
                     } else {
                         return_value = return_value.map(function(val) {
-                            return self.convert_to_date(val);
+                            return that.convert_to_date(val);
                         });
                     }
                 } else {
@@ -54,21 +54,21 @@ define(["nbextensions/widgets/widgets/js/widget"], function(Widget) {
             var saved_value = value;
             var is_date = false;
             var return_object = {};
-            var self = this;
+            var that = this;
 
             if(saved_value[0] instanceof Array) {
                 is_date = saved_value[0][0] instanceof Date;
                 if(is_date)
                     saved_value = saved_value.map(function(val) {
                         return val.map(function(elem) {
-                            return self.convert_to_json(elem);
+                            return that.convert_to_json(elem);
                         });
                     });
             } else {
                 is_date = saved_value[0] instanceof Date;
                 if(is_date)
                     saved_value = saved_value.map(function(elem) {
-                        return self.convert_to_json(elem);
+                        return that.convert_to_json(elem);
                     });
             }
             //TODO: this is not good. Need to think of something better

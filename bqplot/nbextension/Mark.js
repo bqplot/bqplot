@@ -23,9 +23,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             this.parent = this.options.parent;
             this.uuid = utils.uuid();
             var scale_creation_promise = this.set_scale_views();
-            var self = this;
+            var that = this;
             this.listenTo(this.model, "scales_updated", function() {
-                this.set_scale_views().then( function() { self.draw(); });
+                this.set_scale_views().then( function() { that.draw(); });
             }, this);
 
             this.colors = this.model.get("colors");
@@ -265,21 +265,21 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             //create tooltip widget. To be called after mark has been displayed
             //and whenever the tooltip object changes
             var tooltip_model = this.model.get("tooltip");
-            var self = this;
+            var that = this;
             if(tooltip_model) {
                 var tooltip_creation_promise = this.create_child_view(tooltip_model);
                 tooltip_creation_promise.then(function(view) {
-                    if(self.tooltip_view) {
-                        self.tooltip_view.remove();
+                    if(that.tooltip_view) {
+                        that.tooltip_view.remove();
                     }
                     //remove previous tooltip
-                    self.tooltip_view = view;
-                    self.tooltip_div.node().appendChild(d3.select(view.el).node());
+                    that.tooltip_view = view;
+                    that.tooltip_div.node().appendChild(d3.select(view.el).node());
                     view.trigger("displayed");
                 });
             } else {
-                if(self.tooltip_view) {
-                    self.tooltip_view.remove();
+                if(that.tooltip_view) {
+                    that.tooltip_view.remove();
                 }
             }
         },

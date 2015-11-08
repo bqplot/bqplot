@@ -347,11 +347,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
                 view.dummy_node = dummy_node;
                 view.on("mark_padding_updated", function() {
-	                that.mark_padding_updated(view);
-	            }, that);
-	            view.on("mark_scales_updated", function() {
-	                that.mark_scales_updated(view);
-	            }, that);
+                    that.mark_padding_updated(view);
+                }, that);
+                view.on("mark_scales_updated", function() {
+                    that.mark_scales_updated(view);
+                }, that);
                 var child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("x")];
                 var child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("y")];
                 if(child_x_scale === undefined) {
@@ -375,13 +375,13 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
             this.x_padding_arr = {};
             this.y_padding_arr = {};
 
-            var self = this;
+            var that = this;
             _.forEach(this.x_pad_dict, function(dict, scale_id) {
                 max = 0;
                 _.forEach(dict, function(value, key) {
                     max = Math.max(max, value);
                 });
-                self.x_padding_arr[scale_id] = max;
+                that.x_padding_arr[scale_id] = max;
             });
 
             _.forEach(this.y_pad_dict, function(dict, scale_id) {
@@ -389,7 +389,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                 _.forEach(dict, function(value, key) {
                     max = Math.max(max, value);
                 });
-                self.y_padding_arr[scale_id] = max;
+                that.y_padding_arr[scale_id] = max;
             });
             // This is for the figure to relayout everything to account for the
             // updated margins.
@@ -531,16 +531,16 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
         set_interaction: function(model) {
             if (model) {
                 // Sets the child interaction
-                var self = this;
+                var that = this;
                 model.state_change.then(function() {
                     // Sets the child interaction
-                    self.create_child_view(model).then(function(view) {
-                        if (self.interaction_view) {
-                            self.interaction_view.remove();
+                    that.create_child_view(model).then(function(view) {
+                        if (that.interaction_view) {
+                            that.interaction_view.remove();
                         }
-                        self.interaction_view = view;
-                        self.interaction.node().appendChild(view.el.node());
-                        self.displayed.then(function() {
+                        that.interaction_view = view;
+                        that.interaction.node().appendChild(view.el.node());
+                        that.displayed.then(function() {
                             view.trigger("displayed");
                         });
                     });

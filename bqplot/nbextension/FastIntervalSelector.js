@@ -27,37 +27,37 @@ define(["./components/d3/d3", "./Selector" ], function(d3, BaseSelectors) {
             this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
             this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
 
-            var self = this;
+            var that = this;
             var scale_creation_promise = this.create_scales();
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
                 //container for mouse events
-                self.background = self.el.append("rect")
+                that.background = that.el.append("rect")
                     .attr("x", 0)
                     .attr("y", 0)
-                    .attr("width", self.width)
-                    .attr("height", self.height)
+                    .attr("width", that.width)
+                    .attr("height", that.height)
                     .attr("class", "selector selectormouse")
                     .attr("pointer-events", "all")
                     .attr("visibility", "hidden");
 
-                self.background.on("mousemove", _.bind(self.mousemove, self))
-                    .on("click", _.bind(self.click, self))
-                    .on("dblclick", _.bind(self.dblclick, self));
+                that.background.on("mousemove", _.bind(that.mousemove, that))
+                    .on("click", _.bind(that.click, that))
+                    .on("dblclick", _.bind(that.dblclick, that));
 
-                self.rect = self.el.append("rect")
+                that.rect = that.el.append("rect")
                 .attr("class", "selector intsel")
                 .attr("x", 0)
                 .attr("y", 0)
-                .attr("width", self.size)
-                .attr("height", self.height)
+                .attr("width", that.size)
+                .attr("height", that.height)
                 .attr("pointer-events", "none")
                 .attr("display", "none");
 
-                if(self.model.get("color") !== null) {
-                    self.rect.style("fill", self.model.get("color"));
+                if(that.model.get("color") !== null) {
+                    that.rect.style("fill", that.model.get("color"));
                 }
 
-                self.create_listeners();
+                that.create_listeners();
             });
         },
         create_listeners: function() {
@@ -161,8 +161,8 @@ define(["./components/d3/d3", "./Selector" ], function(d3, BaseSelectors) {
                 // invalid value for selected. Ignoring the value
                 return;
             } else {
-                var self = this;
-                var pixels = selected.map(function(d) { return self.scale.scale(d); });
+                var that = this;
+                var pixels = selected.map(function(d) { return that.scale.scale(d); });
                 pixels = pixels.sort(function(a, b) { return a - b; });
 
                 this.rect.attr({ x: pixels[0],

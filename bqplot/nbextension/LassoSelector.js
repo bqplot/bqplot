@@ -24,29 +24,29 @@ define(["./components/d3/d3", "./Selector", "./utils", "./lasso_test"], function
             this.lasso_vertices = [];
             this.lasso_counter = 0;
 
-            var self = this;
+            var that = this;
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
                 var drag = d3.behavior.drag()
-                    .on("dragstart", _.bind(self.drag_start, self))
-                    .on("drag", _.bind(self.drag_move, self))
-                    .on("dragend", _.bind(self.drag_end, self));
+                    .on("dragstart", _.bind(that.drag_start, that))
+                    .on("drag", _.bind(that.drag_move, that))
+                    .on("dragend", _.bind(that.drag_end, that));
 
-                d3.select(window).on("keydown", _.bind(self.keydown, self));
+                d3.select(window).on("keydown", _.bind(that.keydown, that));
 
-                self.el.attr("class", "lassoselector");
+                that.el.attr("class", "lassoselector");
 
                 //container for mouse events
-                self.background = self.el.append("rect")
+                that.background = that.el.append("rect")
                     .attr("x", 0)
                     .attr("y", 0)
-                    .attr("width", self.width)
-                    .attr("height", self.height)
+                    .attr("width", that.width)
+                    .attr("height", that.height)
                     .attr("visibility", "hidden")
                     .attr("pointer-events", "all")
                     .style("cursor", "crosshair")
                     .call(drag);
 
-                self.create_listeners();
+                that.create_listeners();
             });
         },
         create_listeners: function() {
@@ -59,7 +59,6 @@ define(["./components/d3/d3", "./Selector", "./utils", "./lasso_test"], function
             }
         },
         drag_start: function() {
-            var self = this;
             this.lasso_vertices = [];
             var lasso = this.el.append("path")
                 .attr("id", "l" + (++this.lasso_counter))
@@ -84,11 +83,11 @@ define(["./components/d3/d3", "./Selector", "./utils", "./lasso_test"], function
                 .attr("d", this.line(this.lasso_vertices) + "Z");
 
             var mark_data_in_lasso = false;
-            var self = this;
+            var that = this;
             // update selected for each mark
             _.each(this.mark_views, function(mark_view) {
-                var data_in_lasso = mark_view.update_selected_in_lasso("l" + self.lasso_counter,
-                                                                             self.lasso_vertices,
+                var data_in_lasso = mark_view.update_selected_in_lasso("l" + that.lasso_counter,
+                                                                             that.lasso_vertices,
                                                                              point_in_lasso);
                 if (data_in_lasso) {
                     mark_data_in_lasso = true;
@@ -111,11 +110,11 @@ define(["./components/d3/d3", "./Selector", "./utils", "./lasso_test"], function
                //delete selected lassos
                var lassos_to_delete = this.el.selectAll(".selected");
 
-               var self = this;
+               var that = this;
                lassos_to_delete.each(function() {
                    var lasso_name = d3.select(this).attr("id");
                    // delete selected for each mark
-                   _.each(self.mark_views, function(mark_view) {
+                   _.each(that.mark_views, function(mark_view) {
                        mark_view.update_selected_in_lasso(lasso_name, null, null);
                    });
                });

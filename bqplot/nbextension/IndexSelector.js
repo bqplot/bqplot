@@ -20,33 +20,33 @@ define(["./components/d3/d3", "./Selector" ], function(d3, BaseSelectors) {
         render : function() {
             IndexSelector.__super__.render.apply(this);
             this.active = false;
-            var self = this;
+            var that = this;
             var scale_creation_promise = this.create_scales();
             Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
-                self.line = self.el.append("line")
+                that.line = that.el.append("line")
                 .attr("class", "selector indsel")
                 .attr("x1", 0)
                 .attr("y1", 0)
                 .attr("x2", 0)
-                .attr("y2", self.height)
-                .attr("stroke-width", self.model.get("line_width"))
+                .attr("y2", that.height)
+                .attr("stroke-width", that.model.get("line_width"))
                 .attr("pointer-events", "none")
                 .attr("visibility", "hidden");
 
                 //container for mouse events
-                self.background = self.el.append("rect")
+                that.background = that.el.append("rect")
                     .attr("x", 0)
                     .attr("y", 0)
-                    .attr("width", self.width)
-                    .attr("height", self.height)
+                    .attr("width", that.width)
+                    .attr("height", that.height)
                     .attr("class", "selector selectormouse")
                     .attr("pointer-events", "all")
                     .attr("visibility", "hidden");
 
-                self.background.on("mousemove", _.bind(self.mousemove, self))
-                    .on("click", _.bind(self.initial_click, self));
+                that.background.on("mousemove", _.bind(that.mousemove, that))
+                    .on("click", _.bind(that.initial_click, that));
 
-                self.create_listeners();
+                that.create_listeners();
             });
         },
         create_listeners: function() {
