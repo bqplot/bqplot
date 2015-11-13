@@ -493,9 +493,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             if (this.model.get("marker")) {
                 var that = this;
                 var dots = this.el.selectAll(".curve").selectAll(".dot")
-                    .data(function(d) {
-                        return d.values.map(function(e, i) {
-                            return {x: e.x, y: e.y, color: that.get_colors(d.index)}; });
+                    .data(function(d, i) {
+                        return d.values.map(function(e) {
+                            return {x: e.x, y: e.y, color: that.get_element_color(d, i)}; });
                     });
 
                 dots.enter().append("path").attr("class", "dot");
@@ -508,9 +508,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 var x_scale = this.scales.x, y_scale = this.scales.y;
                 var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
                 var dots = this.el.selectAll(".curve").selectAll(".dot")
-                    .data(function(d) {
-                        return d.values.map(function(e, i) {
-                            return {x: e.x, y: e.y, color: that.get_colors(d.index)}; });
+                    .data(function(d, i) {
+                        return d.values.map(function(e) {
+                            return {x: e.x, y: e.y, color: that.get_element_color(d, i)}; });
                     });
 
                 dots.transition().duration(animation_duration)
