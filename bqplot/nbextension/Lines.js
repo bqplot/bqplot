@@ -525,12 +525,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
         compute_view_padding: function() {
             //This function sets the padding for the view through the variables
             //x_padding and y_padding which are view specific paddings in pixel
+            var x_padding;
             if (this.model.get("marker")) {
                 var marker_padding = Math.sqrt(this.model.get("marker_size")) / 2 + 1.0;
                 var line_padding = this.model.get("stroke_width") / 2.0;
-                var x_padding = Math.max(marker_padding, line_padding);
+                x_padding = Math.max(marker_padding, line_padding);
             } else {
-                var x_padding = this.model.get("stroke_width") / 2.0;
+                x_padding = this.model.get("stroke_width") / 2.0;
             }
 
             var y_padding = x_padding;
