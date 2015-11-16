@@ -13,13 +13,18 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
+define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, MarkViewModule, utils, markers) {
     "use strict";
 
+    var bqSymbol = markers.symbol;
     var Lines = MarkViewModule.Mark.extend({
         render: function() {
             var base_render_promise = Lines.__super__.render.apply(this);
             var that = this;
+            this.dot = bqSymbol().size(this.model.get("marker_size"));
+            if (this.model.get("marker")) {
+                this.dot.type(this.model.get("marker"))
+            }
 
             // TODO: create_listeners is put inside the promise success handler
             // because some of the functions depend on child scales being
@@ -94,6 +99,9 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
             });
+
+            this.listenTo(this.model, "change:marker", this.update_marker, this);
+            this.listenTo(this.model, "change:marker_size", this.update_marker_size, this);
         },
         update_legend_labels: function() {
             if(this.model.get("labels_visibility") === "none") {
@@ -121,6 +129,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                     return "10,10";
                 case "dotted":
                     return "2,10";
+                case "dash_dotted":
+                    return "10,5,2,5";
             }
         },
         // Updating the style of the curve, stroke, colors, dashed etc...
@@ -148,28 +158,33 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 fill_color = this.model.get("fill"),
                 opacities = this.model.get("opacities");
             // update curve colors
-            this.el.selectAll(".curve").select("path")
-              .style("stroke", function(d, i) {
-                  return that.get_element_color(d, i);
-              })
-              .style("fill", function(d, i) {
-                  return fill_color[i];
-              })
-              .style("opacity", function(d, i) {
-                  return opacities[i];
-              });
+            this.el.selectAll(".curve")
+                .each(function(d, i) {
+                    var curve = d3.select(this);
+                    curve.selectAll("path")
+                        .style("stroke", that.get_element_color(d, i) || fill_color[i])
+                        .style("opacity", opacities[i]);
+                    curve.select(".line")
+                        .style("fill", fill_color[i]);
+                    curve.selectAll(".dot")
+                        .style("fill", that.get_element_color(d, i) || fill_color[i]);
+                });
             // update legend style
             if (this.legend_el){
-                this.legend_el.select("path")
-                  .style("stroke", function(d, i) {
-                      return that.get_element_color(d, i) || fill_color[i];
-                  })
-                  .style("fill", function(d, i) {
-                      return fill_color[i];
-                  })
-                  .style("opacity", function(d, i) {
-                      return opacities[i];
-                  });
+                this.legend_el.select(".line")
+                    .style("stroke", function(d, i) {
+                        return that.get_element_color(d, i) || fill_color[i];
+                    })
+                    .style("opacity", function(d, i) { return opacities[i]; })
+                    .style("fill", function(d, i) { return fill_color[i]; });
+                this.legend_el.select(".dot")
+                    .style("stroke", function(d, i) {
+                        return that.get_element_color(d, i) || fill_color[i];
+                    })
+                    .style("opacity", function(d, i) { return opacities[i]; })
+                    .style("fill", function(d, i) {
+                        return that.get_element_color(d, i) || fill_color[i];
+                    });
                 this.legend_el.select("text")
                   .style("fill", function(d, i) {
                       return that.get_element_color(d, i) || fill_color[i];
@@ -178,6 +193,8 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                       return opacities[i];
                   });
             }
+            this.update_stroke_width(this.model, this.model.get("stroke_width"));
+            this.update_line_style();
         },
         path_closure: function() {
             return this.model.get("close_path") ? "Z" : "";
@@ -198,16 +215,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
         },
         relayout: function() {
             this.set_ranges();
-            var x_scale = this.scales.x;
-            var that = this;
-            this.el.selectAll(".curve").selectAll("path")
-              .transition().duration(0) //FIXME: this is a temporary fix to make the lines displace according to the padding
-              .attr("d", function(d) {
-                  return that.line(d.values) + that.path_closure();
-              });
-            this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
-                                                                        { return x_scale.scale(el.x) + x_scale.offset; })
-                                                              : [];
+            this.update_line_xy();
             this.create_labels();
         },
         invert_range: function(start_pxl, end_pxl) {
@@ -280,7 +288,7 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                                      [rect_dim / 2, 0],
                                      [rect_dim, rect_dim / 2]];
 
-            this.legend_el.enter()
+            var legend = this.legend_el.enter()
               .append("g")
                 .attr("class", "legend" + this.uuid)
                 .attr("transform", function(d, i) {
@@ -294,8 +302,10 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 }, this))
                 .on("click", _.bind(function() {
                    this.event_dispatcher("legend_clicked");
-                }, this))
-              .append("path")
+                }, this));
+
+            legend.append("path")
+                .attr("class", "line")
                 .attr("fill", "none")
                 .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
                 .style("stroke", function(d, i) {
@@ -307,6 +317,14 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
                 .style("opacity", function(d, i) { return opacities[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
                 .style("stroke-dasharray", _.bind(this.get_line_style, this));
+
+            if (this.model.get("marker")) {
+                legend.append("path")
+                    .attr("class", "dot")
+                    .attr("transform", "translate(" + rect_dim / 2 + ",0)")
+                    .attr("d", that.dot.size(25))
+                    .style("fill", function(d, i) { return that.get_element_color(d, i); });
+            }
 
             this.legend_el.append("text")
               .attr("class", "legendtext")
@@ -403,12 +421,13 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
               .defined(function(d) { return d.y !== null; });
 
             var that = this;
-            this.el.selectAll(".curve").select("path")
+            this.el.selectAll(".curve").select(".line")
               .transition().duration(animation_duration)
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
 
+            this.update_dots_xy(animate);
             this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
                                                                         { return x_scale.scale(el.x) + x_scale.offset; })
                                                               : [];
@@ -427,25 +446,19 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             var fill_color = this.model.get("fill");
             var opacities = this.model.get("opacities");
             var that = this;
-            curves_sel.select("path")
+            curves_sel.select(".line")
               .attr("id", function(d, i) { return "curve" + (i+1); })
-              .style("stroke", function(d, i) {
-                  return that.get_element_color(d, i);
-              })
-              .style("fill", function(d, i) { return fill_color[i]; })
-              .style("stroke-width", this.model.get("stroke_width"))
-              .style("stroke-dasharray", _.bind(this.get_line_style, this))
-              .style("opacity", function(d, i) {
-                  return opacities[i];
-              })
               .on("click", _.bind(function() {
                   this.event_dispatcher("element_clicked");
               }, this));
+
+            this.draw_dots();
 
             // Having a transition on exit is complicated. Please refer to
             // Scatter.js for detailed explanation.
             curves_sel.exit().remove();
             this.update_line_xy(animate);
+            this.update_style();
 
             curves_sel.select(".curve_label")
               .attr("display", function(d) {
@@ -470,16 +483,66 @@ define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule,
             }
             this.create_labels();
         },
+        draw_dots: function() {
+            if (this.model.get("marker")) {
+                var that = this;
+                var dots = this.el.selectAll(".curve").selectAll(".dot")
+                    .data(function(d, i) {
+                        return d.values.map(function(e) {
+                            return {x: e.x, y: e.y, color: that.get_element_color(d, i)}; });
+                    });
+
+                dots.enter().append("path").attr("class", "dot");
+                dots.exit().remove();
+            }
+        },
+        update_dots_xy: function(animate) {
+            if (this.model.get("marker")) {
+                var that = this;
+                var x_scale = this.scales.x, y_scale = this.scales.y;
+                var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+                var dots = this.el.selectAll(".curve").selectAll(".dot");
+
+                dots.transition().duration(animation_duration)
+                    .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
+                            "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
+                    })
+                    .attr("d", this.dot.size(this.model.get("marker_size"))
+                                   .type(this.model.get("marker")));
+            }
+        },
         compute_view_padding: function() {
             //This function sets the padding for the view through the variables
             //x_padding and y_padding which are view specific paddings in pixel
-            var x_padding = this.model.get("stroke_width") / 2.0;
+            var x_padding;
+            if (this.model.get("marker")) {
+                var marker_padding = Math.sqrt(this.model.get("marker_size")) / 2 + 1.0;
+                var line_padding = this.model.get("stroke_width") / 2.0;
+                x_padding = Math.max(marker_padding, line_padding);
+            } else {
+                x_padding = this.model.get("stroke_width") / 2.0;
+            }
+
             var y_padding = x_padding;
             if(x_padding !== this.x_padding || y_padding !== this.y_padding) {
                 this.x_padding = x_padding;
                 this.y_padding = y_padding;
                 this.trigger("mark_padding_updated");
             }
+        },
+        update_marker: function(model, marker) {
+            if (marker) {
+                this.draw_dots();
+                this.update_dots_xy();
+                this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
+            } else {
+                this.el.selectAll(".dot").remove();
+                this.legend_el.select(".dot").attr("d", this.dot.size(0));
+            }
+        },
+        update_marker_size: function(model, marker_size) {
+            this.compute_view_padding();
+            this.el.selectAll(".dot").attr("d", this.dot.size(marker_size));
         },
         update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                            point_in_lasso_func)

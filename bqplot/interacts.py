@@ -550,7 +550,8 @@ class LassoSelector(TwoDSelector):
     Attributes
     ----------
 
-    marks: List of marks which are instances of {Lines, Scatter} (default: [])
+    marks: List of marks which are instances of {Lines, Scatter}
+           (default: [])
         List of marks on which lasso selector will be applied.
     color: Color (default: None)
         Color of the lasso

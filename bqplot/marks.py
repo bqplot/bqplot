@@ -41,11 +41,10 @@ from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float, TraitError,
 from .scales import Scale, OrdinalScale
 from .traits import NdArray, Date
 
-from .colorschemes import CATEGORY10, CATEGORY20, CATEGORY20b, CATEGORY20c
+from .colorschemes import CATEGORY10
 
 
 def register_mark(key=None):
-
     """Returns a decorator registering a mark class in the mark type registry.
 
     If no key is provided, the class name is used as a key. A key is provided
@@ -265,6 +264,11 @@ class Lines(Mark):
         Interpolation scheme used for interpolation between the data points
         provided. Please refer to the svg interpolate documentation for details
         about the different interpolation schemes.
+    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
+             'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+        Marker shape
+    marker_size: nonnegative int (default: 64)
+        Default marker size in pixels
 
     Data Attributes
 
@@ -278,7 +282,7 @@ class Lines(Mark):
         and if the size of colors is less than the number of lines, the
         remaining lines are given the default colors.
 
-    Notes 
+    Notes
     -----
 
     The fields which can be passed to the default tooltip are:
@@ -297,7 +301,7 @@ class Lines(Mark):
 
     # Scaled attributes
     x = NdArray(sync=True, min_dim=1, max_dim=2,
-                 scaled=True, rtype='Number', atype='bqplot.Axis')
+                scaled=True, rtype='Number', atype='bqplot.Axis')
     y = NdArray(sync=True, min_dim=1, max_dim=2,
                 scaled=True, rtype='Number', atype='bqplot.Axis')
     color = NdArray(None, sync=True, allow_none=True,
@@ -314,14 +318,21 @@ class Lines(Mark):
     labels_visibility = Enum(['none', 'label'], default_value='none',
                              sync=True, display_name='Labels visibility')
     curves_subset = List(sync=True)
-    line_style = Enum(['solid', 'dashed', 'dotted'], default_value='solid',
-                      sync=True, display_name='Line style')
+    line_style = Enum(['solid', 'dashed', 'dotted', 'dash_dotted'],
+                      default_value='solid', sync=True,
+                      display_name='Line style')
     interpolation = Enum(['linear', 'basis', 'cardinal', 'monotone'],
                          default_value='linear', sync=True,
                          display_name='Interpolation')
     close_path = Bool(sync=True, display_name='Close path')
     fill = List(trait=Color(default_value=None, allow_none=True), sync=True,
                 display_name='Fill Colors')
+    marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
+                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
+                  default_value=None, allow_none=True, sync=True,
+                  display_name='Marker')
+    marker_size = Int(64, sync=True, display_name='Default size')
+
     opacities = List(sync=True, display_name='Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
@@ -446,7 +457,7 @@ class Scatter(Mark):
         The rotation scale's range is [0, 180]
         Defaults to 0 when not provided or when a value is NaN.
 
-    Notes 
+    Notes
     -----
 
     The fields which can be passed to the default tooltip are:
@@ -563,7 +574,7 @@ class Hist(Mark):
     count: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
 
-    Note
+    Notes
     ----
 
     The fields which can be passed to the default tooltip are:
@@ -710,7 +721,7 @@ class Bars(Mark):
         color of the data points (1d array). Defaults to default_color when not
         provided or when a value is NaN
 
-    Note 
+    Notes
     ----
 
     The fields which can be passed to the default tooltip are:
@@ -925,7 +936,7 @@ class Pie(Mark):
         color of the data points (1d array). Defaults to colors when not
         provided
 
-    Note 
+    Note
     ----
 
     The fields which can be passed to the default tooltip are:

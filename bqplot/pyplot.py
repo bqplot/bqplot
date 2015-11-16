@@ -43,16 +43,17 @@ Pyplot
    ylim
 
 """
-
+from collections import OrderedDict
 from IPython.display import display
 from ipywidgets import VBox, HBox, Button, ToggleButton
-from numpy import linspace, issubdtype
+from numpy import arange, issubdtype
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
 from .interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
-                        BrushSelector, IndexSelector, MultiSelector, LassoSelector)
+                        BrushSelector, IndexSelector, MultiSelector,
+                        LassoSelector)
 from traitlets.utils.sentinel import Sentinel
 
 Keep = Sentinel('Keep', 'bqplot.pyplot', '''
@@ -67,6 +68,15 @@ _context = {
     'scale_registry': {},
     'last_mark': None
 }
+
+LINE_STYLE_CODES = OrderedDict([(':', 'dotted'), ('-.', 'dash_dotted'),
+                                ('--', 'dashed'), ('-', 'solid')])
+
+COLOR_CODES = {'b': 'blue', 'g': 'green', 'r': 'red', 'c': 'cyan',
+               'm': 'magenta', 'y': 'yellow', 'k': 'black'}
+
+MARKER_CODES = {'o': 'circle', 'v': 'triangle-down', '^': 'triangle-up',
+                's': 'square', 'd': 'diamond', '+': 'cross'}
 
 
 def _default_toolbar(figure):
@@ -140,7 +150,7 @@ def show(key=None, display_toolbar=True):
         >>> import numpy as np
         >>> import pyplot as plt
         >>> n = 100
-        >>> x = np.linspace(0.0, 100.0, n)
+        >>> x = np.arange(n)
         >>> y = np.cumsum(np.random.randn(n))
         >>> plt.plot(x,y)
         >>> plt.show()
@@ -207,10 +217,10 @@ def figure(key=None, fig=None, **kwargs):
             for arg in kwargs:
                 setattr(_context['figure'], arg, kwargs[arg])
     scales(key, scales=scales_arg)
-    ## Set the axis reference dictionary. This dictionary contains the mapping
-    ## from the possible dimensions in the figure to the list of scales with
-    ## respect to which axes have been drawn for this figure.
-    ## Used to automatically generate axis.
+    # Set the axis reference dictionary. This dictionary contains the mapping
+    # from the possible dimensions in the figure to the list of scales with
+    # respect to which axes have been drawn for this figure.
+    # Used to automatically generate axis.
     if(getattr(_context['figure'], 'axis_registry', None) is None):
         setattr(_context['figure'], 'axis_registry', {})
 
@@ -326,7 +336,8 @@ def set_lim(min, max, name):
 def axes(mark=None, options={}, **kwargs):
     """Draws axes corresponding to the scales of a given mark.
 
-    It also returns a dictionary of drawn axes. If the mark is not provided, the last drawn mark is used.
+    It also returns a dictionary of drawn axes. If the mark is not provided,
+    the last drawn mark is used.
 
     Parameters
     ----------
@@ -358,8 +369,8 @@ def axes(mark=None, options={}, **kwargs):
 
         axis = _fetch_axis(fig, dimension, scales[name])
         if axis is not None:
-        # For this figure, an axis exists for the scale in the given
-        # dimension. Apply the properties and return back the object.
+            # For this figure, an axis exists for the scale in the given
+            # dimension. Apply the properties and return back the object.
             _apply_properties(axis, options.get(name, {}))
             axes[name] = axis
             continue
@@ -412,8 +423,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
         # Scale has to be fetched from the conext or created as it has not
         # been passed.
         elif dimension not in _context['scales']:
-        # Creating a scale for the dimension if a matching scale is not
-        # present in _context['scales']
+            # Creating a scale for the dimension if a matching scale is not
+            # present in _context['scales']
             traitlet = mark_type.class_traits()[name]
             rtype = traitlet.get_metadata('rtype')
             dtype = traitlet.validate(None, kwargs[name]).dtype
@@ -421,9 +432,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
             # scaled attributes of the mark.
             compat_scale_types = [Scale.scale_types[key]
                                   for key in Scale.scale_types
-                                  if Scale.scale_types[key].rtype == rtype
-                                  and issubdtype(dtype,
-                                                 Scale.scale_types[key].dtype)]
+                                  if Scale.scale_types[key].rtype == rtype and
+                                  issubdtype(dtype, Scale.scale_types[key].dtype)]
             # TODO: something better than taking the FIRST compatible
             # scale type.
             scales[name] = compat_scale_types[0](**options.get(name, {}))
@@ -452,11 +462,14 @@ def plot(*args, **kwargs):
 
     x: numpy.ndarray or list, 1d or 2d (optional)
         The x-coordinates of the plotted line. When not provided, the function
-        defaults to `numpy.linspace(0.0, len(y) - 1, len(y))`
+        defaults to `numpy.arange(len(y))`
         x can be 1-dimensional or 2-dimensional.
     y: numpy.ndarray or list, 1d or 2d
         The y-coordinates of the plotted line. If argument `x` is 2-dimensional
         it must also be 2-dimensional.
+    marker_str: string
+        string representing line_style, marker and color.
+        For e.g. 'g--o', 'sr' etc
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -466,14 +479,45 @@ def plot(*args, **kwargs):
         for that mark, axes_options['x'] contains optional keyword arguments
         for the constructor of the corresponding axis type.
     """
-    if len(args) == 2:
+    marker_str = None
+    mark_type = None
+
+    if len(args) == 1:
+        kwargs['y'] = args[0]
+        kwargs['x'] = arange(len(args[0]))
+    elif len(args) == 2:
+        if type(args[1]) == str:
+            kwargs['y'] = args[0]
+            kwargs['x'] = arange(len(args[0]))
+            marker_str = args[1].strip()
+        else:
+            kwargs['x'] = args[0]
+            kwargs['y'] = args[1]
+    elif len(args) == 3:
         kwargs['x'] = args[0]
         kwargs['y'] = args[1]
-    elif len(args) == 1:
-        kwargs['y'] = args[0]
-        length = len(args[0])
-        kwargs['x'] = linspace(0.0, length - 1, length)
-    return _draw_mark(Lines, **kwargs)
+        if type(args[2]) == str:
+            marker_str = args[2].strip()
+
+    if marker_str:
+        line_style, color, marker = _get_line_styles(marker_str)
+
+        # only marker specified => draw scatter
+        if marker and not line_style:
+            kwargs['marker'] = marker
+            if color:
+                kwargs['default_colors'] = [color]
+            return _draw_mark(Scatter, **kwargs)
+        else:  # draw lines in all other cases
+            kwargs['line_style'] = line_style or 'solid'
+
+            if marker:
+                kwargs['marker'] = marker
+            if color:
+                kwargs['colors'] = [color]
+            return _draw_mark(Lines, **kwargs)
+    else:
+        return _draw_mark(Lines, **kwargs)
 
 
 def ohlc(*args, **kwargs):
@@ -488,7 +532,7 @@ def ohlc(*args, **kwargs):
 
     x: numpy.ndarray or list, 1d (optional)
         The x-coordinates of the plotted line. When not provided, the function
-        defaults to `numpy.linspace(0.0, len(y) - 1, len(y))`.
+        defaults to `numpy.arange(len(y))`.
     y: numpy.ndarray or list, 2d
         The ohlc (open/high/low/close) information. A two dimensional array. y
         must have the shape (n, 4).
@@ -507,7 +551,7 @@ def ohlc(*args, **kwargs):
     elif len(args) == 1:
         kwargs['y'] = args[0]
         length = len(args[0])
-        kwargs['x'] = linspace(0.0, length - 1, length)
+        kwargs['x'] = arange(length)
     return _draw_mark(OHLC, **kwargs)
 
 
@@ -677,7 +721,7 @@ def _add_interaction(int_type, **kwargs):
     for name, traitlet in int_type.class_traits().items():
         dimension = traitlet.get_metadata('dimension')
         if dimension is not None:
-            ## only scales have this attribute in interactions
+            # only scales have this attribute in interactions
             kwargs[name] = _get_context_scale(dimension)
     kwargs['marks'] = marks
     interaction = int_type(**kwargs)
@@ -857,10 +901,10 @@ def get_context():
 
 
 def _fetch_axis(fig, dimension, scale):
-    ## Internal utility function.
-    ## Given a figure instance `fig`, the dimension of the scaled attribute and
-    ## the instance of a scale, returns the axis if an axis is present for that
-    ## combination. Else returns `None`
+    # Internal utility function.
+    # Given a figure instance `fig`, the dimension of the scaled attribute and
+    # the instance of a scale, returns the axis if an axis is present for that
+    # combination. Else returns `None`
     axis_registry = getattr(fig, 'axis_registry', {})
     dimension_data = axis_registry.get(dimension, [])
     dimension_scales = [dim['scale'] for dim in dimension_data]
@@ -901,3 +945,28 @@ def _apply_properties(widget, properties={}):
     with widget.hold_sync():
         for key, value in properties.items():
             setattr(widget, key, value)
+
+
+def _get_line_styles(marker_str):
+    """returns the line style, color and the marker type from a given
+       marker string. For e.g. if the `marker_str` is 'g-o' then the method
+       returns ('solid', 'green', 'circle')
+    """
+    def _extract_marker_value(marker_str, code_dict):
+        """Extracts the marker value from a given marker string.
+           Looks up the `code_dict` and returns the corresponding
+           marker for a specific code.
+
+           For e.g. if the `marker_str` is 'g-o' then the method extracts
+           'green' if the code_dict is color_codes, 'circle' if the
+           code_dict is marker_codes etc
+        """
+        val = None
+        for code in code_dict:
+            if code in marker_str:
+                val = code_dict[code]
+                break
+        return val
+
+    return [_extract_marker_value(marker_str, code_dict) for
+            code_dict in [LINE_STYLE_CODES, COLOR_CODES, MARKER_CODES]]
