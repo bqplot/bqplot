@@ -193,6 +193,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                       return opacities[i];
                   });
             }
+            this.update_stroke_width(this.model, this.model.get("stroke_width"));
+            this.update_line_style();
         },
         path_closure: function() {
             return this.model.get("close_path") ? "Z" : "";
@@ -446,15 +448,6 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             var that = this;
             curves_sel.select(".line")
               .attr("id", function(d, i) { return "curve" + (i+1); })
-              .style("stroke", function(d, i) {
-                  return that.get_element_color(d, i);
-              })
-              .style("fill", function(d, i) { return fill_color[i]; })
-              .style("stroke-width", this.model.get("stroke_width"))
-              .style("stroke-dasharray", _.bind(this.get_line_style, this))
-              .style("opacity", function(d, i) {
-                  return opacities[i];
-              })
               .on("click", _.bind(function() {
                   this.event_dispatcher("element_clicked");
               }, this));
@@ -465,6 +458,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             // Scatter.js for detailed explanation.
             curves_sel.exit().remove();
             this.update_line_xy(animate);
+            this.update_style();
 
             curves_sel.select(".curve_label")
               .attr("display", function(d) {
@@ -507,19 +501,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
                 var that = this;
                 var x_scale = this.scales.x, y_scale = this.scales.y;
                 var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-                var dots = this.el.selectAll(".curve").selectAll(".dot")
-                    .data(function(d, i) {
-                        return d.values.map(function(e) {
-                            return {x: e.x, y: e.y, color: that.get_element_color(d, i)}; });
-                    });
+                var dots = this.el.selectAll(".curve").selectAll(".dot");
 
                 dots.transition().duration(animation_duration)
                     .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                             "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
                     })
                     .attr("d", this.dot.size(this.model.get("marker_size"))
-                                   .type(this.model.get("marker")))
-                    .style("fill", function(d) { return d.color; });
+                                   .type(this.model.get("marker")));
             }
         },
         compute_view_padding: function() {
