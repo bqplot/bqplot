@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis"], function(d3, utils, Col_Pic, AxisViewModule) {
+define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
+       function(d3, utils, Col_Pic, AxisViewModule, _) {
     "use strict";
 
     var ColorBar = AxisViewModule.Axis.extend({

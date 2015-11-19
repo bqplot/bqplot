@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], function(Widget, d3) {
+define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "underscore"],
+       function(Widget, d3, _) {
     "use strict";
 
     var SquareMarketMap = Widget.DOMWidgetView.extend({

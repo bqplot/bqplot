@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
-    "use strict";
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+    "use strict"
 
     var OHLCModel = MarkModelModule.MarkModel.extend({
         initialize: function() {

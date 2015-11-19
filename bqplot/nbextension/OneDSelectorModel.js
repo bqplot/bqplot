@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel"], function(Widget, BaseModel) {
+define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"],
+       function(Widget, BaseModel, _) {
     "use strict";
 
     var OneDSelectorModel = BaseModel.BaseModel.extend({}, {
