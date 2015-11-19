@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget"], function(Widget) {
+define(["nbextensions/widgets/widgets/js/widget", "underscore"], function(Widget, _) {
     "use strict";
 
     var BaseModel = Widget.WidgetModel.extend({

@@ -13,7 +13,12 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js/utils", "./utils", "./components/require-less/less!./bqplot"], function(Widget, d3, utils, bqutils) {
+define([
+    "nbextensions/widgets/widgets/js/widget", 
+    "./components/d3/d3", 
+    "./utils",
+    "./components/require-less/less!./bqplot.less"
+], function(Widget, d3, utils) {
     "use strict";
 
     var Tooltip = Widget.DOMWidgetView.extend({
@@ -38,7 +43,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                 var fmt = formats[index];
                 if(fmt === undefined || fmt === "") {return function(d) { return d; }; }
                 else {
-                    if(bqutils.is_valid_time_format(fmt)) {
+                    if(utils.is_valid_time_format(fmt)) {
                         return d3.time.format(fmt);
                     }
                     else {

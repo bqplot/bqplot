@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
+define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModule, _) {
     "use strict";
     var Boxplot = MarkViewModule.Mark.extend({
        render: function() {

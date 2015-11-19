@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/manager", "./components/d3/d3", "./MarkModel"], function(WidgetManager, d3, MarkModelModule) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
         "use strict";
 
         var BoxplotModel = MarkModelModule.MarkModel.extend({
