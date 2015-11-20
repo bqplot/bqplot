@@ -13,8 +13,11 @@
  * limitations under the License.
  */
 
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
-    "use strict"
+    "use strict";
 
     var OHLCModel = MarkModelModule.MarkModel.extend({
         initialize: function() {

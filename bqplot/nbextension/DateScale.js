@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define(["./components/d3/d3", "./LinearScale", "underscore"],
        function(d3, LinearScaleViewModule, _) {
     "use strict";
