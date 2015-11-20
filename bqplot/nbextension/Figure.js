@@ -18,7 +18,7 @@ if (typeof define !== 'function') { var define = require('./requirejs-shim')(mod
 
 define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/js/utils", 
         "./components/d3/d3", "underscore", "./components/require-less/less!./bqplot.less"],
-       function(Widget, utils, d3) {
+       function(Widget, utils, d3, _) {
     "use strict";
 
     var Figure = Widget.DOMWidgetView.extend({
