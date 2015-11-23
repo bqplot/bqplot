@@ -53,7 +53,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
         serializers: _.extend({
              scale: {deserialize: Widget.unpack_models},
              offset: {deserialize: Widget.unpack_models}
-        }, Widget.WidgetModel.serializers),
+        }, Widget.WidgetModel.prototype.serializers),
     });
 
     return {

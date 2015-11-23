@@ -23,7 +23,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./BaseModel"], function(Widge
             interaction: {deserialize: Widget.unpack_models},
             scale_x:  {deserialize: Widget.unpack_models},
             scale_y:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.serializers),
+        }, BaseModel.BaseModel.prototype.serializers),
     });
 
     return {

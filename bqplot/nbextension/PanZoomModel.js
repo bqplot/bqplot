@@ -19,7 +19,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./BaseModel"], function(Widge
     var PanZoomModel = BaseModel.BaseModel.extend({}, {
         serializers: _.extend({
             scales:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.serializers),
+        }, BaseModel.BaseModel.prototype.serializers),
     });
 
     return {
