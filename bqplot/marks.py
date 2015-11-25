@@ -246,12 +246,17 @@ class Lines(Mark):
         of lines, the colors are reused.
     close_path: bool (default: False)
         Whether to close the paths or not.
-    fill: list of colors (default: [])
-        Fill colors for the patches. Defaults to no-fill when no color provided.
+    fill: {'none', 'bottom', 'top', 'inside'}
+        Fill in the area defined by the curves
+    fill_colors: list of colors (default: [])
+        Fill colors for the patches. Defaults to stroke-colors when no color provided.
     opacities: list of floats (default: [])
         Opacity for the  lines and patches. Defaults to 1 when the list is too
         short, or the element of the list is set to None.
-    stroke_width: float (default: 2)
+    fill_opacities: list of floats (default: [])
+        Opacity for the  lines and patches. Defaults to 1 when the list is too
+        short, or the element of the list is set to None.
+    stroke_width: float (default: 1.5)
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
         Visibility of the curve labels
@@ -312,8 +317,11 @@ class Lines(Mark):
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
                             'y': {'orientation': 'vertical', 'dimension': 'y'},
                             'color': {'dimension': 'color'}}, sync=True)
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
-                  sync=True, display_name='Colors')
+    colors = List(trait=Color(default_value=None, allow_none=True),
+                  default_value=CATEGORY10, sync=True, display_name='Colors')
+    fill_colors = List(trait=Color(default_value=None, allow_none=True),
+                       default_value=CATEGORY10, sync=True,
+                       display_name='Fill colors')
     stroke_width = Float(2.0, sync=True, display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none',
                              sync=True, display_name='Labels visibility')
@@ -325,8 +333,8 @@ class Lines(Mark):
                          default_value='linear', sync=True,
                          display_name='Interpolation')
     close_path = Bool(sync=True, display_name='Close path')
-    fill = List(trait=Color(default_value=None, allow_none=True), sync=True,
-                display_name='Fill Colors')
+    fill = Enum(['none', 'bottom', 'top', 'inside'], default_value='none',
+                sync=True, display_name='Fill')
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                    'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value=None, allow_none=True, sync=True,
@@ -334,6 +342,7 @@ class Lines(Mark):
     marker_size = Int(64, sync=True, display_name='Default size')
 
     opacities = List(sync=True, display_name='Opacity')
+    fill_opacities = List(sync=True, display_name='Fill Opacity')
     _view_name = Unicode('Lines', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
     _model_name = Unicode('LinesModel', sync=True)
@@ -598,8 +607,7 @@ class Hist(Mark):
 
     # Other attributes
     scales_metadata = Dict({'sample': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'count': {'orientation': 'vertical', 'dimension': 'y'}},
-                            sync=True)
+                            'count': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
     bins = Int(10, sync=True, display_name='Number of bins')
     midpoints = List(sync=True, read_only=True, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
