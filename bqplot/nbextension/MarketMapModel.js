@@ -21,7 +21,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./BaseModel"], function(Widge
             scales:  {deserialize: Widget.unpack_models},
             axes:  {deserialize: Widget.unpack_models},
             tooltip_widget:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.serializers),
+        }, BaseModel.BaseModel.prototype.serializers),
     });
 
     return {
