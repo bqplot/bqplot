@@ -256,7 +256,7 @@ class Lines(Mark):
     fill_opacities: list of floats (default: [])
         Opacity for the areas. Defaults to 1 when the list is too
         short, or the element of the list is set to None.
-    stroke_width: float (default: 1.5)
+    stroke_width: float (default: 2)
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
         Visibility of the curve labels

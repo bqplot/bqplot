@@ -169,17 +169,16 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.el.selectAll(".curve")
                 .each(function(d, i) {
                     var curve = d3.select(this);
-                    curve.selectAll("path")
-                        .style("stroke", that.get_element_color(d, i) || fill_color[i])
-                        .style("opacity", opacities[i]);
                     curve.select(".line")
-                        .style("fill", function(d, i) {
-                            return that.model.get("fill") === "inside" ? that.get_fill_color(d, i) : "";
-                        })
+                        .style("opacity", opacities[i])
+                        .style("stroke", that.get_element_color(d, i) || fill_color[i])
+                        .style("fill", that.model.get("fill") === "inside" ?
+                                       that.get_fill_color(d, i) : "");
                     curve.select(".area")
-                        .style("fill", function(d, i) { return that.get_fill_color(d, i); })
-                        .style("opacity", function(d, i) { return fill_opacities[i];});
+                        .style("fill", that.get_fill_color(d, i))
+                        .style("opacity", fill_opacities[i]);
                     curve.selectAll(".dot")
+                        .style("opacity", opacities[i])
                         .style("fill", that.get_element_color(d, i) || fill_color[i]);
                 });
             // update legend style
