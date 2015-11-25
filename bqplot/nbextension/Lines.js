@@ -174,7 +174,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                         .style("opacity", opacities[i]);
                     curve.select(".line")
                         .style("fill", function(d, i) {
-                            return that.model.get("fill") === "inside" ? fill_color[i] : "";
+                            return that.model.get("fill") === "inside" ? that.get_fill_color(d, i) : "";
                         })
                     curve.select(".area")
                         .style("fill", function(d, i) { return that.get_fill_color(d, i); })
@@ -189,7 +189,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                         return that.get_element_color(d, i) || fill_color[i];
                     })
                     .style("opacity", function(d, i) { return opacities[i]; })
-                    .style("fill", function(d, i) { return fill_color[i]; });
+                    .style("fill", function(d, i) { return that.get_fill_color(d, i); });
                 this.legend_el.select(".dot")
                     .style("stroke", function(d, i) {
                         return that.get_element_color(d, i) || fill_color[i];

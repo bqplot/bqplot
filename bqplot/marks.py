@@ -249,12 +249,12 @@ class Lines(Mark):
     fill: {'none', 'bottom', 'top', 'inside'}
         Fill in the area defined by the curves
     fill_colors: list of colors (default: [])
-        Fill colors for the patches. Defaults to stroke-colors when no color provided.
+        Fill colors for the areas. Defaults to stroke-colors when no color provided.
     opacities: list of floats (default: [])
         Opacity for the  lines and patches. Defaults to 1 when the list is too
         short, or the element of the list is set to None.
     fill_opacities: list of floats (default: [])
-        Opacity for the  lines and patches. Defaults to 1 when the list is too
+        Opacity for the areas. Defaults to 1 when the list is too
         short, or the element of the list is set to None.
     stroke_width: float (default: 1.5)
         Stroke width of the Lines
@@ -263,7 +263,7 @@ class Lines(Mark):
     curves_subset: list of integers or None (default: [])
         If set to None, all the lines are displayed. Otherwise, only the items
         in the list will have full opacity, while others will be faded.
-    line_style: {'solid', 'dashed', 'dotted'}
+    line_style: {'solid', 'dashed', 'dotted', 'dash_dotted'}
         Line style.
     interpolation: {'linear', 'basis', 'cardinal', 'monotone'}
         Interpolation scheme used for interpolation between the data points
