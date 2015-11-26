@@ -118,7 +118,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
         },
         remove: function() {
             this.model.off(null, null, this);
-            this.el.remove();
+            this.el.transition().duration(0).remove();
             this.tooltip_div.remove();
             Mark.__super__.remove.apply(this);
         },
