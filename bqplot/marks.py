@@ -251,7 +251,7 @@ class Lines(Mark):
     opacities: list of floats (default: [])
         Opacity for the  lines and patches. Defaults to 1 when the list is too
         short, or the element of the list is set to None.
-    stroke_width: float (default: 1.5)
+    stroke_width: float (default: 2)
         Stroke width of the Lines
     labels_visibility: {'none', 'label'}
         Visibility of the curve labels
@@ -314,7 +314,7 @@ class Lines(Mark):
                             'color': {'dimension': 'color'}}, sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
                   sync=True, display_name='Colors')
-    stroke_width = Float(1.5, sync=True, display_name='Stroke width')
+    stroke_width = Float(2.0, sync=True, display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none',
                              sync=True, display_name='Labels visibility')
     curves_subset = List(sync=True)
