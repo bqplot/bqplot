@@ -31,8 +31,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 that.create_tooltip();
             });
 
+            this.selected_indices = this.model.get("selected");
             this.selected_style = this.model.get("selected_style");
             this.unselected_style = this.model.get("unselected_style");
+            this.anchor_style = this.model.get("anchor_style");
             this.display_el_classes = ["heatmapcell"];
             return base_render_promise.then(function() {
                 that.event_listeners = {};
@@ -121,6 +123,77 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             });
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
+        },
+        click_handler: function (args) {
+            var data = args.data;
+            var num_cols = this.model.colors[0].length;
+            var index = args.row_num * num_cols + args.column_num;
+            var row = args.row_num;
+            var column = args.column_num;
+            var that = this;
+            var idx = this.model.get("selected") ? utils.deepCopy(this.model.get("selected")) : [];
+            var selected = utils.deepCopy(this._cell_nums_from_indices(idx));
+            var elem_index = selected.indexOf(index);
+            var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+            //TODO: This is a shim for when accelKey is supported by chrome.
+            // index of slice i. Checking if it is already present in the
+            // list
+            if(elem_index > -1 && accelKey) {
+            // if the index is already selected and if ctrl key is
+            // pressed, remove the element from the list
+                idx.splice(elem_index, 1);
+            } else {
+                if(!accelKey) {
+                    selected = [];
+                    idx = [];
+                }
+                idx.push([row, column]);
+                selected.push(that._cell_nums_from_indices([[row, column]])[0]);
+                if(d3.event.shiftKey) {
+                    //If shift is pressed and the element is already
+                    //selected, do not do anything
+                    if(elem_index > -1) {
+                        return;
+                    }
+                    //Add elements before or after the index of the current
+                    //slice which has been clicked
+                    var row_index = (selected.length !== 0) ?
+                        that.anchor_cell_index[0] : row;
+                    var col_index = (selected.length !== 0) ?
+                        that.anchor_cell_index[1] : column;
+                    _.range(Math.min(row, row_index), Math.max(row, row_index)+1).forEach(function(i) {
+                        _.range(Math.min(column, col_index), Math.max(column, col_index)+1).forEach(function(j) {
+                            var cell_num = that._cell_nums_from_indices([[i, j]])[0];
+                            if (selected.indexOf(cell_num) === -1) {
+                                selected.push(cell_num);
+                                idx.push([i, j]);
+                            }
+                        })
+                    });
+                } else {
+                    // updating the array containing the slice indexes selected
+                    // and updating the style
+                    this.anchor_cell_index = [row, column];
+                }
+            }
+            this.model.set("selected",
+                ((idx.length === 0) ? null : idx),
+                {updated_view: this});
+            this.touch();
+            if(!d3.event) {
+                d3.event = window.event;
+            }
+            var e = d3.event;
+            if(e.cancelBubble !== undefined) { // IE
+                e.cancelBubble = true;
+            }
+            if(e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+            this.selected_indices = idx;
+            this.apply_styles();
+
         },
         update_selected: function(model, value) {
             this.selected_indices = value;
@@ -215,17 +288,29 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             var selected_cell_nums = this._cell_nums_from_indices(this.selected_indices);
             var unsel_cell_nums = (selected_cell_nums === null) ? []
                                     : _.difference(_.range(num_rows*num_cols), selected_cell_nums);
+            var anchor_num = this._cell_nums_from_indices([this.anchor_cell_index]);
 
             this.selected_elements = this._filter_cells_by_cell_num(selected_cell_nums);
             this.set_style_on_elements(this.selected_style, this.selected_indices, this.selected_elements);
 
             this.unselected_elements = this._filter_cells_by_cell_num(unsel_cell_nums);
             this.set_style_on_elements(this.unselected_style, [], this.unselected_elements);
+
+            this.anchor_element = this._filter_cells_by_cell_num(anchor_num);
+            this.set_style_on_elements(this.anchor_style, [], this.anchor_element);
         },
         style_updated: function(new_style, indices, elements) {
             // reset the style of the elements and apply the new style
             this.set_default_style(indices, elements);
             this.set_style_on_elements(new_style, indices, elements);
+        },
+        reset_selection: function() {
+            this.model.set("selected", null);
+            this.touch();
+            this.selected_indices = null;
+            this.clear_style(this.selected_style);
+            this.clear_style(this.unselected_style);
+            this.set_default_style();
         },
         relayout: function() {
             this.set_ranges();
@@ -380,6 +465,15 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 .style("fill", function(d) { return that.get_element_fill(d); })
                 .style({"stroke" : stroke,
                         "opacity" : opacity});
+
+            this.display_cells.on("click", function(d, i) {
+                return that.event_dispatcher("element_clicked", {
+                    data: d.color,
+                    index: i,
+                    row_num: d.row_num,
+                    column_num: d.column_num
+                });
+            });
         },
         update_stroke: function(model, value) {
             this.display_cells.style("stroke", value);
@@ -499,6 +593,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                             return this.refresh_tooltip(true);
                         };
                         this.event_listeners.parent_clicked = this.hide_tooltip;
+                    } else if (interactions.click == 'select') {
+                        this.event_listeners.parent_clicked = this.reset_selection;
+                        this.event_listeners.element_clicked = this.click_handler;
                     }
                 } else {
                     this.reset_click();
