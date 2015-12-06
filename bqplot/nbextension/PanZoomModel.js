@@ -13,11 +13,37 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"],
-       function(Widget, BaseModel, _) {
+define(["nbextensions/widgets/widgets/js/widget", "base/js/utils", "./BaseModel", "underscore"],
+       function(Widget, utils, BaseModel, _) {
     "use strict";
 
-    var PanZoomModel = BaseModel.BaseModel.extend({}, {
+    var PanZoomModel = BaseModel.BaseModel.extend({
+        initialize: function() {
+            this.on("change:scales", this.snapshot_scales, this);
+        },
+        reset_scales: function() {
+            var that = this;
+            utils.resolve_promises_dict(this.get("scales")).then(function(scales) {
+                _.each(Object.keys(scales), function(k) {
+                    _.each(scales[k], function(s, i) {
+                        s.set_state(that.scales_states[k][i]);
+                    }, that);
+                }, that);
+            });
+        },
+        snapshot_scales: function() {
+            // Save the state of the scales.
+            var that = this;
+            utils.resolve_promises_dict(this.get("scales")).then(function(scales) {
+                that.scales_states = Object.keys(scales).reduce(function(obj, key) {
+                    obj[key] = scales[key].map(function(s) {
+                        return s.get_state()
+                    });
+                    return obj;
+                }, {});
+            });
+        }
+    }, {
         serializers: _.extend({
             scales:  {deserialize: Widget.unpack_models},
         }, BaseModel.BaseModel.prototype.serializers),

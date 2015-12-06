@@ -48,6 +48,8 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction"],
                         return that.create_child_view(model);
                      })),
             });
+            utils.resolve_promises_dict(this.scale_promises)
+                .then(_.bind(this.set_ranges, this));
         },
         set_ranges: function() {
            var that = this;
