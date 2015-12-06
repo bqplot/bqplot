@@ -51,6 +51,8 @@ define(["./components/d3/d3", "nbextensions/widgets/widgets/js/utils", "./Intera
                         return that.create_child_view(model);
                      })),
             });
+            utils.resolvePromisesDict(this.scale_promises)
+                .then(_.bind(this.set_ranges, this));
         },
         set_ranges: function() {
            var that = this;

@@ -51,6 +51,7 @@ from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
+from .toolbar import Toolbar
 from .interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
                         BrushSelector, IndexSelector, MultiSelector,
                         LassoSelector)
@@ -77,54 +78,6 @@ COLOR_CODES = {'b': 'blue', 'g': 'green', 'r': 'red', 'c': 'cyan',
 
 MARKER_CODES = {'o': 'circle', 'v': 'triangle-down', '^': 'triangle-up',
                 's': 'square', 'd': 'diamond', '+': 'cross'}
-
-
-def _default_toolbar(figure):
-    pz = panzoom(figure.marks)
-    normal_btn = ToggleButton(icon='fa-circle-o', tooltip='Normal', value=True)
-    pz_btn = ToggleButton(icon='fa-arrows', tooltip='Pan and Zoom', value=False)
-    snapshot_btn = Button(icon='fa-thumb-tack', tooltip='Snapshot View')
-    reset_btn = Button(icon='fa-refresh', tooltip='Reset View')
-    save_btn = Button(icon='fa-save', tooltip='Save as .png Image')
-
-    def tog(btn, *args):
-        # Traitlets closure
-        def cb():
-            for other in args:
-                other.value = not btn.value
-        return cb
-
-    def overl(btn, value):
-        # Traitlets closure
-        def cb():
-            if btn.value:
-                figure.interaction = value
-        return cb
-
-    def snapshot(_):
-        pz.snapshot()
-
-    def reset(_):
-        pz.reset()
-
-    def save(_):
-        figure.save()
-
-    pz_btn.on_trait_change(tog(pz_btn, normal_btn))
-    pz_btn.on_trait_change(overl(pz_btn, pz))
-
-    normal_btn.on_trait_change(tog(normal_btn, pz_btn))
-    normal_btn.on_trait_change(overl(normal_btn, None))
-
-    snapshot_btn.on_click(snapshot)
-    reset_btn.on_click(reset)
-    save_btn.on_click(save)
-    figure.interaction = None
-
-    button_group = HBox([normal_btn, pz_btn, snapshot_btn, reset_btn, save_btn])
-    button_group._dom_classes = list(button_group._dom_classes) + ['btn-group']
-    return button_group
-
 
 def show(key=None, display_toolbar=True):
     """Shows the current context figure in the output area.
@@ -161,7 +114,7 @@ def show(key=None, display_toolbar=True):
     else:
         figure = _context['figure_registry'][key]
     if display_toolbar:
-        toolbar = _default_toolbar(figure)
+        toolbar = Toolbar(figure=figure)
         pyplot = VBox([figure, toolbar])
         display(pyplot)
     else:

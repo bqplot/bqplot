@@ -116,10 +116,6 @@ class Figure(DOMWidget):
                            display_name='Legend position')
     animation_duration = Int(0, sync=True, display_name='Animation duration')
 
-
-    def save(self):
-        self.send({'type': 'save'})
-
     def _scale_x_default(self):
         return LinearScale(min=0, max=1)
 

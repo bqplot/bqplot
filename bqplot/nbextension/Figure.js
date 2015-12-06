@@ -25,7 +25,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
 
         initialize : function() {
             this.setElement(document.createElementNS(d3.ns.prefix.svg, "svg"));
-            this.el.classList.add("bqplot");
+            this.el.classList.add("bqplot", "figure");
             Figure.__super__.initialize.apply(this, arguments);
         },
 
@@ -173,7 +173,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                     that.el.parentNode.appendChild(that.tooltip_div.node());
                     that.create_listeners();
                     that.update_layout();
-                    that.model.on("msg:custom", that.dispatch_custom_messages, that);
                 });
             });
         },
@@ -188,11 +187,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                     });
                 }
             }, this);
-        },
-        dispatch_custom_messages: function(msg) {
-            if (msg.type === "save") {
-                this.save_png();
-            }
         },
         create_listeners: function() {
             this.listenTo(this.model, "change:fig_color", this.change_color, this);
