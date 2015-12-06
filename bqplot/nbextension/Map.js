@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
         "nbextensions/widgets/widgets/js/utils", "./Mark", "underscore"],
        function(d3, topojson, FigureViewModule, utils, Mark, _) {

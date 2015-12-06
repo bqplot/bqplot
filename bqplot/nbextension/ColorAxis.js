@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
        function(d3, utils, Col_Pic, AxisViewModule, _) {
     "use strict";

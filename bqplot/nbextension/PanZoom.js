@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define(["./components/d3/d3", "nbextensions/widgets/widgets/js/utils", "./Interaction", "underscore"],
        function(d3, utils, InteractionViewModule, _) {
     "use strict";

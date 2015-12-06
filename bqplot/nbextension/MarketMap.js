@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
         "./Figure", "nbextensions/widgets/widgets/js/utils", "underscore"], function(Widget, d3, FigureViewModule, utils, _) {
     "use strict";
