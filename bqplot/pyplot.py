@@ -186,10 +186,10 @@ def close(key):
         return
     if _context['figure'] == figure_registry[key]:
         figure()
-    figure = figure_registry[key]
-    if hasattr(figure, 'pyplot'):
-        figure.pyplot.close()
-    figure.close()
+    fig = figure_registry[key]
+    if hasattr(fig, 'pyplot'):
+        fig.pyplot.close()
+    fig.close()
     del figure_registry[key]
 
 
