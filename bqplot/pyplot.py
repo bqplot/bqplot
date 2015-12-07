@@ -124,32 +124,27 @@ def show(key=None, display_toolbar=True):
 
 
 def figure(key=None, fig=None, **kwargs):
-    """Creates and switches between context figures.
+    """Creates figures and switches between figures.
 
-    If a bqplot.Figure object is provided via the fig optional argument, this
-    figure becomes the current context figure.
+    If a ``bqplot.Figure`` object is provided via the fig optional argument,
+    this figure becomes the current context figure.
 
     Otherwise:
-
-    If no key is provided, a new empty context figure is created.
-
-    If a key is provided for which a context already exists, the corresponding
-    context becomes current.
-
-    If a key is provided and no corresponding context exists, a new context is
-    created for that key and becomes current.
+    - If no key is provided, a new empty context figure is created.
+    - If a key is provided for which a context already exists, the
+      corresponding context becomes current.
+    - If a key is provided and no corresponding context exists, a new context
+      is reated for that key and becomes current.
 
     Besides, optional arguments allow to set or modify Attributes
     of the selected context figure.
 
     Parameters
     ----------
-
     key: hashable, optional
         Any variable that can be used as a key for a dictionary
     fig: Figure, optional
         A bqplot Figure
-
     """
     scales_arg = kwargs.pop('scales', {})
     if fig is not None:                                     # fig provided
@@ -237,7 +232,6 @@ def scales(key=None, scales={}):
 
     The `scales` parameter is ignored if the `key` argument is not Keep and
     context scales already exist for that key.
-
     """
     old_ctxt = _context['scales']
     if key is None:  # No key provided
@@ -253,13 +247,13 @@ def scales(key=None, scales={}):
 
 
 def xlim(min, max):
-    """Sets the domain bounds of the current 'x' scale.
+    """Set the domain bounds of the current 'x' scale.
     """
     return set_lim(min, max, 'x')
 
 
 def ylim(min, max):
-    """Sets the domain bounds of the current 'y' scale.
+    """Set the domain bounds of the current 'y' scale.
     """
     return set_lim(min, max, 'y')
 
@@ -343,7 +337,7 @@ def axes(mark=None, options={}, **kwargs):
 
 
 def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
-    """Draws the mark of type mark_type.
+    """Draw the mark of specified mark type.
 
     Parameters
     ----------
@@ -404,7 +398,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
 
 
 def plot(*args, **kwargs):
-    """Draws lines in the current context figure.
+    """Draw lines in the current context figure.
 
     Signature: `plot(x, y, **kwargs)` or `plot(y, **kwargs)`, depending of the
     length of the list of positional arguments. In the case where the `x` array
@@ -474,7 +468,7 @@ def plot(*args, **kwargs):
 
 
 def ohlc(*args, **kwargs):
-    """Draws ohlc bars or candle bars in the current context figure.
+    """Draw OHLC bars or candle bars in the current context figure.
 
     Signature: `ohlc(x, y, **kwargs)` or `ohlc(y, **kwargs)`, depending of the
     length of the list of positional arguments. In the case where the `x` array
@@ -509,7 +503,7 @@ def ohlc(*args, **kwargs):
 
 
 def scatter(x, y, **kwargs):
-    """Draws a scatter in the current context figure.
+    """Draw a scatter in the current context figure.
 
     Parameters
     ----------
@@ -533,13 +527,13 @@ def scatter(x, y, **kwargs):
 
 
 def hist(sample, options={}, **kwargs):
-    """Draws a histogram in the current context figure.
+    """Draw a histogram in the current context figure.
 
     Parameters
     ----------
 
     sample: numpy.ndarray, 1d
-        The sample for which the histogram must be generated
+        The sample for which the histogram must be generated.
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'counts'
         is required for that mark, options['counts'] contains optional keyword
@@ -593,7 +587,7 @@ def pie(sizes, **kwargs):
     ----------
 
     sizes: numpy.ndarray, 1d
-        The proportions to be represented by the pie.
+        The proportions to be represented by the Pie.
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -629,7 +623,7 @@ def label(text, **kwargs):
 
 
 def geo(map_data, **kwargs):
-    """Draws a map in the current context figure.
+    """Draw a map in the current context figure.
 
     Parameters
     ----------
@@ -653,7 +647,7 @@ def geo(map_data, **kwargs):
 
 
 def _add_interaction(int_type, **kwargs):
-    """ Adds the interaction for the specified type.
+    """Add the interaction for the specified type.
 
     If a figure is passed using the key-word argument `figure` it is used. Else
     the context figure is used.
@@ -665,7 +659,7 @@ def _add_interaction(int_type, **kwargs):
     ----------
 
     int_type: type
-        The type of interaction to be added
+        The type of interaction to be added.
     """
 
     fig = kwargs.pop('figure', current_figure())
@@ -685,20 +679,19 @@ def _add_interaction(int_type, **kwargs):
 
 
 def _get_context_scale(dimension):
-    """Returns the scale instance in the current context for a given dimension.
+    """Return the scale instance in the current context for a given dimension.
 
     Parameters
     ----------
 
     dimension: string
-        The dimension along which the current context scale is to be fetched
-
+        The dimension along which the current context scale is to be fetched.
     """
     return _context['scales'][dimension]
 
 
 def _create_selector(int_type, func, trait, **kwargs):
-    """Creates a selector of the specified type.
+    """Create a selector of the specified type.
 
     Also attaches the function `func` as an `on_trait_change` listener
     for the trait `trait` of the selector.
@@ -709,13 +702,13 @@ def _create_selector(int_type, func, trait, **kwargs):
     ----------
 
     int_type: type
-        The type of selector to be added
+        The type of selector to be added.
     func: function
         The call back function. It should take atleast two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the Selector trait whose change triggers the
-        call back function `func`
+        call back function `func`.
     """
     interaction = _add_interaction(int_type, **kwargs)
     if func is not None:
@@ -724,9 +717,10 @@ def _create_selector(int_type, func, trait, **kwargs):
 
 
 def brush_int_selector(func=None, trait='selected', **kwargs):
-    """Creates a `BrushIntervalSelector` interaction for the `figure`.
+    """Create a `BrushIntervalSelector` interaction for the `figure`.
 
-    Also attaches the function `func` as an event listener for the trait `trait`.
+    Also attaches the function `func` as an event listener for the
+    specified trait.
 
     Parameters
     ----------
@@ -736,7 +730,7 @@ def brush_int_selector(func=None, trait='selected', **kwargs):
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the BrushIntervalSelector trait whose change triggers the
-        call back function `func`
+        call back function `func`.
     """
     return _create_selector(BrushIntervalSelector, func, trait, **kwargs)
 
@@ -754,7 +748,7 @@ def int_selector(func=None, trait='selected', **kwargs):
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the IntervalSelector trait whose change triggers the
-        call back function `func`
+        call back function `func`.
     """
     return _create_selector(FastIntervalSelector, func, trait, **kwargs)
 
@@ -772,7 +766,7 @@ def index_selector(func=None, trait='selected', **kwargs):
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the IndexSelector trait whose change triggers the
-        call back function `func`
+        call back function `func`.
     """
     return _create_selector(IndexSelector, func, trait, **kwargs)
 
@@ -790,7 +784,7 @@ def brush_selector(func=None, trait='selected', **kwargs):
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the BrushSelector trait whose change triggers the
-        call back function `func`
+        call back function `func`.
     """
     return _create_selector(BrushSelector, func, trait, **kwargs)
 
@@ -808,7 +802,7 @@ def multi_selector(func=None, trait='selected', **kwargs):
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the MultiSelector trait whose change triggers the
-        call back function `func`
+        call back function `func`.
     """
     return _create_selector(MultiSelector, func, trait, **kwargs)
 
@@ -826,7 +820,7 @@ def lasso_selector(func=None, trait='selected', **kwargs):
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the LassoSelector trait whose change triggers the
-        call back function `func`
+        call back function `func`.
     """
     return _create_selector(LassoSelector, func, trait, **kwargs)
 
@@ -901,18 +895,20 @@ def _apply_properties(widget, properties={}):
 
 
 def _get_line_styles(marker_str):
-    """returns the line style, color and the marker type from a given
-       marker string. For e.g. if the `marker_str` is 'g-o' then the method
-       returns ('solid', 'green', 'circle')
+    """Return line style, color and marker type from specified marker string.
+       
+    For example, if ``marker_str`` is 'g-o' then the method returns
+    ``('solid', 'green', 'circle')``.
     """
     def _extract_marker_value(marker_str, code_dict):
         """Extracts the marker value from a given marker string.
-           Looks up the `code_dict` and returns the corresponding
-           marker for a specific code.
+        
+        Looks up the `code_dict` and returns the corresponding marker for a
+        specific code.
 
-           For e.g. if the `marker_str` is 'g-o' then the method extracts
-           'green' if the code_dict is color_codes, 'circle' if the
-           code_dict is marker_codes etc
+        For example if `marker_str` is 'g-o' then the method extracts 
+        - 'green' if the code_dict is color_codes,
+        - 'circle' if the code_dict is marker_codes etc.
         """
         val = None
         for code in code_dict:
