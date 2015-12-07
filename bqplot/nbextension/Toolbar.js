@@ -113,6 +113,8 @@ define([
             this.$Panzoom = $("<button />")
                 .addClass("btn btn-default widget-toggle-button")
                 .appendTo(this.$el)
+                .attr("data-toggle", "tooltip")
+                .attr("title", "PanZoom")
                 .on("click", function (e) {
                     e.preventDefault();
                     that.model.panzoom();
@@ -121,6 +123,8 @@ define([
             this.$Reset = $("<button />")
                 .addClass("btn btn-default widget-button")
                 .appendTo(this.$el)
+                .attr("data-toggle", "tooltip")
+                .attr("title", "Reset")
                 .on("click", function (e) {
                     e.preventDefault();
                     that.model.reset();
@@ -129,6 +133,8 @@ define([
             this.$Save = $("<button />")
                 .addClass("btn btn-default widget-button")
                 .appendTo(this.$el)
+                .attr("data-toggle", "tooltip")
+                .attr("title", "Save")
                 .on("click", function (e) {
                     e.preventDefault();
                     that.model.save();
