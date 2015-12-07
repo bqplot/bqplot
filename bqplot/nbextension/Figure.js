@@ -118,6 +118,9 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
               .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
               .text(this.model.get("title"));
 
+            // TODO: remove the save png event mechanism.
+            this.model.on("save_png", this.save_png, this);
+
             var figure_scale_promise = this.create_figure_scales();
             var that = this;
             figure_scale_promise.then(function() {
