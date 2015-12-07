@@ -114,13 +114,11 @@ def show(key=None, display_toolbar=True):
     else:
         figure = _context['figure_registry'][key]
     if display_toolbar:
-        toolbar = Toolbar(figure=figure)
-        pyplot = VBox([figure, toolbar])
-        display(pyplot)
+        if not hasattr(figure, 'pyplot'):
+            figure.pyplot = Toolbar(figure=figure)
+        display(VBox([figure, figure.pyplot]))
     else:
-        pyplot = figure
-        display(pyplot)
-    figure.pyplot = pyplot
+        display(figure)
 
 
 def figure(key=None, fig=None, **kwargs):
@@ -188,7 +186,10 @@ def close(key):
         return
     if _context['figure'] == figure_registry[key]:
         figure()
-    figure_registry[key].pyplot.close()
+    figure = figure_registry[key]
+    if hasattr(figure, 'pyplot'):
+        figure.pyplot.close()
+    figure.close()
     del figure_registry[key]
 
 
