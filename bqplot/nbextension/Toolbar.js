@@ -60,7 +60,10 @@ define([
             }
         },
         reset: function() {
-            // 
+            /**
+             * Reset the scales, delete the PanZoom widget, set the figure
+             * interaction back to its previous value.
+             */
             var figure = this.get("figure");
             var panning = this.get("panning");
             var that = this;
@@ -77,12 +80,15 @@ define([
             }
         },
         save: function() {
+            /**
+             * Triggers the saving for all the views of that figure.
+             */
+            // TODO: the toolbar view needs to be associated with a Figure
+            // view to avoid calling a model method here.
             var figure = this.get("figure");
             if (figure) {
-                figure.save();
+                figure.save_png();
             }
-            // TODO: The toolbar view needs to be associated with a Figure view
-            // for this to make sense.
          },
         _create_panzoom_model: function(figure) {
             /**
@@ -128,7 +134,7 @@ define([
             this.el.classList.add("bqplot", "widget-hbox");
 
             // We use ipywidget css classes (ipywidget and widget-*-*) to
-            // benefit from default width, shadows. 
+            // benefit from default width, shadows.
             // We do not use btn-group to not break alignment with ipywidget
             // buttons.
 
