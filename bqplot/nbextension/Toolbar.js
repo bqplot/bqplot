@@ -27,31 +27,53 @@ define([
     "use strict";
 
     var ToolbarModel = widget.DOMWidgetModel.extend({
+        // Backbone attributes:
+        // - panning: Bool
+        //       Whether one is currently panning - zooming the specified figure.
+        // - panzoom: Instance of Panzoom or undefined:
+        //       The created panzoom interaction. It is undefined at first.
+        // Attribute
+        // - cached_interaction: Instance of Interaction or null or undefined.
+        //   The cached interaction of the Figure. It is undefined at first
+        //   and can take the value of the figure interaction, which can be
+        //   null.
         panzoom: function() {
             var figure = this.get("figure");
-            if (this.get("panzoom")) {
+            if (this.get("panning")) {
                 if (figure) {
-                    figure.get("interaction").close();
                     figure.set("interaction", this.cached_interaction);
                     figure.save_changes();
                 }
-                this.set("panzoom", false);
+                this.set("panning", false);
             } else {
                 if (figure) {
                     this.cached_interaction = figure.get("interaction");
-                    this._create_panzoom_model(figure).then(function(model) {
+                    var panzoom_promise = this.get("panzoom") ||
+                                          this._create_panzoom_model(figure);
+                    this.set("panzoom", panzoom_promise);
+                    panzoom_promise.then(function(model) {
                         figure.set("interaction", model);
                         figure.save_changes();
                     });
                 }
-                this.set("panzoom", true);
+                this.set("panning", true);
             }
         },
         reset: function() {
+            // 
             var figure = this.get("figure");
-            var panzoom = this.get("panzoom");
-            if (figure && panzoom) {
-                figure.get("interaction").reset_scales();
+            var panning = this.get("panning");
+            var that = this;
+            if (figure) {
+                figure.set("interaction", this.cached_interaction);
+                figure.save_changes();
+                this.get("panzoom").then(function (model) {
+                    // Should reset_scales be part of PanZoomModel.close()?
+                    model.reset_scales();
+                    model.close();
+                    that.set("panzoom", undefined);
+                    that.set("panning", false);
+                });
             }
         },
         save: function() {
@@ -63,7 +85,7 @@ define([
             // for this to make sense.
          },
         _create_panzoom_model: function(figure) {
-            /*
+            /**
              * Creates a panzoom interaction widget for the specified figure.
              *
              * It will discover the relevant scales for the specified figure.
@@ -105,13 +127,15 @@ define([
             var that = this;
             this.el.classList.add("bqplot", "widget-hbox");
 
-            // We use ipywidget's css (widget-*-*) to benefit from default
-            // default width, shadows. Making a btn-group would break the
-            // alignment.
+            // We use ipywidget css classes (ipywidget and widget-*-*) to
+            // benefit from default width, shadows. 
+            // We do not use btn-group to not break alignment with ipywidget
+            // buttons.
 
             // Create the buttons
             this.$Panzoom = $("<button />")
-                .addClass("btn btn-default widget-toggle-button")
+                .addClass("btn btn-default")
+                .addClass("ipy-widget widget-toggle-button") // ipywidgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "PanZoom")
@@ -121,7 +145,8 @@ define([
                 });
 
             this.$Reset = $("<button />")
-                .addClass("btn btn-default widget-button")
+                .addClass("btn btn-default")
+                .addClass("ipy-widget widget-button") // ipywidgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "Reset")
@@ -131,7 +156,8 @@ define([
                 });
 
             this.$Save = $("<button />")
-                .addClass("btn btn-default widget-button")
+                .addClass("btn btn-default")
+                .addClass("ipy-widget widget-button") // ipywidgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "Save")
@@ -147,7 +173,7 @@ define([
         },
 
         update: function() {
-            if (this.model.get("panzoom")) {
+            if (this.model.get("panning")) {
                 this.$Panzoom.addClass("active");
             } else {
                 this.$Panzoom.removeClass("active");
