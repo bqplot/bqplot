@@ -105,12 +105,15 @@ define([
                     var x_scales = [], y_scales = [];
                     for (var i=0; i<marks.length; ++i) {
                         var scales = marks[i].get("scales");
-                        if (scales["x"]) {
-                            x_scales.push(scales["x"]);
-                        }
-                        if (scales["y"]) {
-                            y_scales.push(scales["y"]);
-                        }
+                        _.each(scales, function(v, k) {
+                            var dimension = marks[i].get("scales_metadata")[k]["dimension"];
+                            if (dimension === "x") {
+                                 x_scales.push(scales[k]);
+                            }
+                            if (dimension === "y") {
+                                 y_scales.push(scales[k]);
+                            }
+                        });
                     }
                     model.set("scales", {
                         "x": x_scales,
