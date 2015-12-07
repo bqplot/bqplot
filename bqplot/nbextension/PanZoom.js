@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
-define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], function(ipy_utils, d3, utils, InteractionViewModule) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "nbextensions/widgets/widgets/js/utils", "./Interaction"],
+       function(d3, utils, InteractionViewModule) {
     "use strict";
 
     // TODO avoid code duplication of 'x' and 'y'
@@ -39,7 +43,7 @@ define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], func
         update_scales: function() {
             var scales = this.model.get("scales");
             var that = this;
-            this.scale_promises = ipy_utils.resolve_promises_dict({
+            this.scale_promises = utils.resolvePromisesDict({
                 "x": Promise.all((scales.x || []).map(function(model) {
                         return that.create_child_view(model);
                      })),
@@ -47,6 +51,8 @@ define(["base/js/utils", "./components/d3/d3", "./utils", "./Interaction"], func
                         return that.create_child_view(model);
                      })),
             });
+            utils.resolvePromisesDict(this.scale_promises)
+                .then(_.bind(this.set_ranges, this));
         },
         set_ranges: function() {
            var that = this;

@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Scale", "./ColorUtils"], function(d3, ScaleViewModule, ColorUtils) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"], function(d3, ScaleViewModule, ColorUtils, _) {
     "use strict";
 
     var LinearColorScale = ScaleViewModule.Scale.extend({

@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Mark"], function(d3, MarkViewModule) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModule, _) {
     "use strict";
 
     var OHLC = MarkViewModule.Mark.extend({

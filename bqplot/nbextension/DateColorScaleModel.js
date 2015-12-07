@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./DateScaleModel"], function(d3, DateScaleModelModule) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./DateScaleModel", "underscore"], function(d3, DateScaleModelModule, _) {
     "use strict";
 
     var DateColorScaleModel = DateScaleModelModule.DateScaleModel.extend({

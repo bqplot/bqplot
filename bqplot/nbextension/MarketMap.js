@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figure", "base/js/utils"], function(Widget, d3, FigureViewModule, utils) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figure", "nbextensions/widgets/widgets/js/utils", "underscore"], function(Widget, d3, FigureViewModule, utils, _) {
     "use strict";
 
     var MarketMap = FigureViewModule.Figure.extend({
@@ -23,7 +26,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
         remove: function() {
             this.model.off(null, null, this);
             this.svg.remove();
-            $(this.options.cell).off("output_area_resize."+this.id);
+            $(this.options.cell).off("output_area_resize." + this.id);
             this.tooltip_div.remove();
         },
         render: function(options) {
@@ -313,7 +316,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./Figur
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
-            return utils.resolve_promises_dict(scale_promises).then(function(d) {
+            return utils.resolvePromisesDict(scale_promises).then(function(d) {
                 that.scales = d;
                 that.set_scales();
             });

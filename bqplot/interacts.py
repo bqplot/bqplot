@@ -46,11 +46,11 @@ from .marks import Lines, Scatter
 
 def register_interaction(key=None):
 
-    """Returns a decorator registering an interaction class in the registry.
+    """Decorator registering an interaction class in the registry.
 
-    If no key is provided, the class name is used as a key. A
-    key is provided for each core bqplot interaction type so that the frontend
-    can use this key regardless of the kernal language.
+    If no key is provided, the class name is used as a key. A key is provided
+    for each core bqplot interaction type so that the frontend can use this
+    key regardless of the kernal language.
     """
     def wrap(interaction):
         l = key if key is not None else interaction.__module__ + interaction.__name__
@@ -142,23 +142,25 @@ class PanZoom(Interaction):
     ----------
 
     allow_pan: bool (default: True)
-        attribute to set the ability to pan the figure or not
+        Toggle the ability to pan.
     allow_zoom: bool (default: True)
-        attribute to set the ability to zoom the figure or not
+        Toggle the ability to zoom.
     scales: Dictionary of lists of Scales (default: {})
         Dictionary with keys such as 'x' and 'y' and values being the scales in
-        the corresponding direction (dimensions )which should be panned or
+        the corresponding direction (dimensions) which should be panned or
         zoomed.
     """
     allow_pan = Bool(True, sync=True)
     allow_zoom = Bool(True, sync=True)
-    scales = Dict(sync=True, **widget_serialization)
+    scales = Dict(trait=List(trait=Instance(Scale)),
+                  sync=True, **widget_serialization)
 
     def __init__(self, **kwargs):
         super(PanZoom, self).__init__(**kwargs)
-        self.snapshot()
         self.on_trait_change(self.snapshot, name='scales')
+        self.snapshot()
 
+    # TODO: napshot and reset should be done on the JS side.
     def snapshot(self):
         self.scales_states = {k: [s.get_state() for s in self.scales[k]]
                               for k in self.scales}
@@ -191,7 +193,7 @@ class Selector(Interaction):
 
     """Selector interaction. A selector can be used to select a subset of data
 
-    Base class for all the selectors
+    Base class for all the selectors.
 
     Attributes
     ----------
@@ -214,7 +216,7 @@ class OneDSelector(Selector):
     """One-dimensional selector interaction
 
     Base class for all selectors which select data in one dimension, i.e.,
-    either the x or the y direction. The 'scale' attribute should be provided.
+    either the x or the y direction. The ``scale`` attribute should be provided.
 
     Attributes
     ----------
@@ -242,11 +244,11 @@ class TwoDSelector(Selector):
     x_scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
         co-ordinates in the x-direction. This scale is used for setting the
-        selected attribute for the selector along with y_scale.
+        selected attribute for the selector along with ``y_scale``.
     y_scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
         co-ordinates in the y-direction. This scale is used for setting the
-        selected attribute for the selector along with x_scale.
+        selected attribute for the selector along with ``x_scale``.
     """
     x_scale = Instance(Scale, allow_none=True, sync=True, dimension='x',
                        **widget_serialization)
@@ -323,9 +325,9 @@ class IndexSelector(OneDSelector):
         x-position of the mouse. This attribute is updated as you move the
         mouse along the x-direction on the figure.
     color: Color or None (default: None)
-        color of the line representing the index selector
+        Color of the line representing the index selector.
     line_width: nonnegative integer (default: 0)
-        width of the line represetning the index selector
+        Width of the line represetning the index selector.
     """
     selected = NdArray(sync=True)
     line_width = Int(2, sync=True)
@@ -358,16 +360,15 @@ class BrushIntervalSelector(OneDSelector):
         Two element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
         This attribute changes while the selection is being made with the
-        BrushIntervalSelectorinteraction
+        ``BrushIntervalSelector``.
     brushing: bool
-        boolean attribute to indicate if the selector is being dragged right
-        now.
-        It is True when the selector is being moved and false when it is not.
+        Boolean attribute to indicate if the selector is being dragged.
+        It is True when the selector is being moved and False when it is not.
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
     color: Color or None (default: None)
-        color of the rectangle representing the brush selector
+        Color of the rectangle representing the brush selector.
     """
     brushing = Bool(False, sync=True)
     selected = NdArray(sync=True)
@@ -400,16 +401,15 @@ class BrushSelector(TwoDSelector):
         Two element array containing the start and end of the interval selected
         in terms of the scales of the selector. This is a read-only attribute.
         This attribute changes while the selection is being made with the
-        BrushIntervalSelectorinteraction
+        ``BrushIntervalSelector``.
     brushing: bool (default: False)
-        boolean attribute to indicate if the selector is being dragged right
-        now.
-        It is True when the selector is being moved and false when it is not.
+        boolean attribute to indicate if the selector is being dragged.
+        It is True when the selector is being moved and False when it is not.
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
     color: Color or None (default: None)
-        color of the rectangle representing the brush selector
+        Color of the rectangle representing the brush selector.
     """
     clear = Bool(False, sync=True)
     brushing = Bool(False, sync=True)
@@ -486,8 +486,7 @@ class MultiSelector(OneDSelector):
         This attribute changes while the selection is being made with the
         MultiSelectorinteraction.
     brushing: bool (default: False)
-        A boolean attribute to indicate if the selector is being dragged right
-        now.
+        A boolean attribute to indicate if the selector is being dragged.
         It is True when the selector is being moved and false when it is not.
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
@@ -542,19 +541,18 @@ class LassoSelector(TwoDSelector):
     for Lines and Scatter marks. A mouse-down starts drawing the lasso and
     after the mouse-up the lasso is closed and the `selected` attribute of each
     mark gets updated with the data in the lasso. A lasso which doesn't
-    encompass any mark data will be automatically deleted
+    encompass any mark data will be automatically deleted.
 
     The user can select (de-select) by clicking on lassos and can delete them
-    (and their associated data) by pressing the 'Delete' button
+    (and their associated data) by pressing the 'Delete' button.
 
     Attributes
     ----------
 
-    marks: List of marks which are instances of {Lines, Scatter}
-           (default: [])
+    marks: List of marks which are instances of {Lines, Scatter} (default: [])
         List of marks on which lasso selector will be applied.
     color: Color (default: None)
-        Color of the lasso
+        Color of the lasso.
 
     """
     marks = List(Instance(Lines) | Instance(Scatter), sync=True,

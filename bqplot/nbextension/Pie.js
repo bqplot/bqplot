@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Mark", "./utils"], function(d3, MarkViewModule, utils) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
+       function(d3, MarkViewModule, utils, _) {
     "use strict";
 
     var Pie = MarkViewModule.Mark.extend({

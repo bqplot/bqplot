@@ -51,6 +51,7 @@ Each plot starts with a `Figure` object.  A `Figure` has a number of `Axis` obje
 .. automodule:: bqplot.market_map
 .. automodule:: bqplot.interacts
 .. automodule:: bqplot.traits
+.. automodule:: bqplot.toolbar
 
 .. automodule:: bqplot.pyplot
 
@@ -60,5 +61,6 @@ from .figure import *
 from .axes import *
 from .marks import *
 from .scales import *
+from .toolbar import *
 from .default_tooltip import *
 from ._version import version_info, __version__

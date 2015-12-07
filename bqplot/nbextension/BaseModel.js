@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget"], function(Widget) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["nbextensions/widgets/widgets/js/widget", "underscore"], function(Widget, _) {
     "use strict";
 
     var BaseModel = Widget.WidgetModel.extend({

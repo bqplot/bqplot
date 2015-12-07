@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "base/js/utils"], function(Widget, MarkModel, utils) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "underscore"],
+       function(Widget, MarkModel, _) {
     "use strict";
 
     var MapModel = MarkModel.MarkModel.extend({

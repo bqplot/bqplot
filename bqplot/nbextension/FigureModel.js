@@ -13,16 +13,26 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel"], function(Widget, BaseModel) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], function(Widget, BaseModel, _) {
     "use strict";
 
-    var FigureModel = BaseModel.BaseModel.extend({}, {
+    var FigureModel = BaseModel.BaseModel.extend({
+        save_png: function() {
+            // TODO: Any view of this Figure model will pick up this event
+            // and render a png. Remove this eventually.
+            this.trigger("save_png");
+        }
+    }, {
         serializers: _.extend({
             marks: {deserialize: Widget.unpack_models},
             axes:  {deserialize: Widget.unpack_models},
             interaction: {deserialize: Widget.unpack_models},
             scale_x:  {deserialize: Widget.unpack_models},
             scale_y:  {deserialize: Widget.unpack_models},
+            style:  {deserialize: Widget.unpack_models},
         }, BaseModel.BaseModel.prototype.serializers),
     });
 

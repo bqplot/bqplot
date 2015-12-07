@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Selector", "./utils"], function(d3, BaseSelectors, utils) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d3, BaseSelectors, utils, _) {
     "use strict";
 
     var BrushSelector = BaseSelectors.BaseXYSelector.extend({

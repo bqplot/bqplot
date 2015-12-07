@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Interaction" ], function(d3, InteractionViewModule) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./Interaction", "underscore"],
+       function(d3, InteractionViewModule, _) {
     "use strict";
 
     var BaseSelector = InteractionViewModule.Interaction.extend({

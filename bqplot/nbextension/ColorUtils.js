@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./colorbrewer", "./utils"], function(d3, colorbrewer, utils) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./colorbrewer", "./utils", "underscore"], function(d3, colorbrewer, utils, _) {
     "use strict";
     var color_schemes = ["Paired", "Set3", "Pastel1", "Set1", "Greys", "Greens", "Reds", "Purples", "Oranges", "YlOrRd", "YlOrBr", "YlGnBu", "YlGn", "RdPu",
                          "PuRd", "PuBuGn", "PuBu", "OrRd", "GnBu", "BuPu", "BuGn", "BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral"];

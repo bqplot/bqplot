@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./ScaleModel"], function(d3, ScaleModelModule) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleModelModule, _) {
     "use strict";
 
     var LinearScaleModel = ScaleModelModule.ScaleModel.extend({

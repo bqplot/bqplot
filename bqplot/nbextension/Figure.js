@@ -13,14 +13,19 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js/utils", "./components/require-less/less!./bqplot"], function(Widget, d3, utils) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/js/utils", 
+        "./components/d3/d3", "underscore", "./components/require-less/less!./bqplot.less"],
+       function(Widget, utils, d3, _) {
     "use strict";
 
     var Figure = Widget.DOMWidgetView.extend({
 
         initialize : function() {
             this.setElement(document.createElementNS(d3.ns.prefix.svg, "svg"));
-            this.el.classList.add("bqplot");
+            this.el.classList.add("bqplot", "figure");
             Figure.__super__.initialize.apply(this, arguments);
         },
 
@@ -113,6 +118,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
               .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
               .text(this.model.get("title"));
 
+            // TODO: remove the save png event mechanism.
+            this.model.on("save_png", this.save_png, this);
+
             var figure_scale_promise = this.create_figure_scales();
             var that = this;
             figure_scale_promise.then(function() {
@@ -168,7 +176,6 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                     that.el.parentNode.appendChild(that.tooltip_div.node());
                     that.create_listeners();
                     that.update_layout();
-                    that.model.on("msg:custom", that.dispatch_custom_messages, that);
                 });
             });
         },
@@ -183,11 +190,6 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js
                     });
                 }
             }, this);
-        },
-        dispatch_custom_messages: function(msg) {
-            if (msg.type === "save") {
-                this.save_png();
-            }
         },
         create_listeners: function() {
             this.listenTo(this.model, "change:fig_color", this.change_color, this);

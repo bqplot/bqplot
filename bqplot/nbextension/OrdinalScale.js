@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Scale"], function(d3, ScaleViewModule) {
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["./components/d3/d3", "./Scale", "underscore"], function(d3, ScaleViewModule, _) {
     "use strict";
 
     var OrdinalScale = ScaleViewModule.Scale.extend({

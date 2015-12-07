@@ -31,6 +31,9 @@
  * SOFTWARE.
  */
 
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define([], function() {
     // checks if a point is in lasso
     function point_in_lasso(point, vertices) {

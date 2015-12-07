@@ -47,5 +47,8 @@ _templates/
 # Bower components
 bqplot/nbextension/components/
 
+# Node modules
+node_modules
+
 # OS X
 .DS_Store
