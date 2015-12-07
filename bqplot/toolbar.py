@@ -39,16 +39,25 @@ class Toolbar(DOMWidget):
 
     The default toolbar provides three buttons:
 
-    - A *Panzoom* toggle button whih enables panning and zooming the figure.
+    - A *Panzoom* toggle button which enables panning and zooming the figure.
     - A *Save* button to save the figure as a png image.
     - A *Reset* button, which resets the figure position to its original
       state.
 
-    When the *Panzoom* button is toggled, a new instance of the ``Panzoom``
-    widget is created with the marks that are part of the figure at this.
+    When the *Panzoom* button is toggled to True for the first time, a new
+    instance of ``Panzoom`` widget is created.
+    The created ``Panzoom`` widget uses the scales of all the marks that are on the
+    figure at this point.
+    When the *Panzoom* widget is toggled to False, the figure retrieves its
+    previous interaction.
+    When the *Reset* button is pressed, the ``Panzoom`` widget is deleted and the
+    figure scales reset to their initial state. We are back to the case where
+    the Panzoom widget has never been set.
+
+
     If new marks are created after it is toggled, and these use new scales,
-    those scales will not be panned or zoomed, unless the toggle is released
-    and pressed again.
+    those scales will not be panned or zoomed, unless the reset button is
+    clicked.
 
     Attributes
     ----------
