@@ -152,24 +152,8 @@ class PanZoom(Interaction):
     """
     allow_pan = Bool(True, sync=True)
     allow_zoom = Bool(True, sync=True)
-    scales = Dict(trait=List(trait=Instance(Scale)),
-                  sync=True, **widget_serialization)
-
-    def __init__(self, **kwargs):
-        super(PanZoom, self).__init__(**kwargs)
-        self.on_trait_change(self.snapshot, name='scales')
-        self.snapshot()
-
-    # TODO: napshot and reset should be done on the JS side.
-    def snapshot(self):
-        self.scales_states = {k: [s.get_state() for s in self.scales[k]]
-                              for k in self.scales}
-
-    def reset(self):
-        for k in self.scales:
-            for i in range(len(self.scales[k])):
-                self.scales[k][i].set_state(self.scales_states[k][i])
-                self.scales[k][i].send_state()
+    scales = Dict(trait=List(trait=Instance(Scale)), sync=True,
+                  **widget_serialization)
 
     _view_name = Unicode('PanZoom', sync=True)
     _view_module = Unicode('nbextensions/bqplot/PanZoom', sync=True)
