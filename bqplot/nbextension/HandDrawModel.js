@@ -19,7 +19,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], 
     var HandDrawModel = BaseModel.BaseModel.extend({}, {
         serializers: _.extend({
             lines:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {
