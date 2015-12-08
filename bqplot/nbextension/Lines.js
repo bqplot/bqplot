@@ -535,10 +535,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             if (marker) {
                 this.draw_dots();
                 this.update_dots_xy();
-                this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
+                if (this.legend_el) {
+                    this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
+                }
             } else {
                 this.el.selectAll(".dot").remove();
-                this.legend_el.select(".dot").attr("d", this.dot.size(0));
+                if (this.legend_el) {
+                    this.legend_el.select(".dot").attr("d", this.dot.size(0));
+                }
             }
         },
         update_marker_size: function(model, marker_size) {
