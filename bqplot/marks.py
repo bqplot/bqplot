@@ -493,7 +493,8 @@ class Scatter(Mark):
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
                             'y': {'orientation': 'vertical', 'dimension': 'y'},
-                            'color': {'dimension': 'color'}, 'size': {'dimension': 'size'},
+                            'color': {'dimension': 'color'},
+                            'size': {'dimension': 'size'},
                             'opacity': {'dimension': 'opacity'}}, sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
@@ -589,21 +590,22 @@ class Hist(Mark):
     name = 'Histogram'
 
     # Scaled attributes
-    sample = NdArray(sync=True, min_dim=1, max_dim=1,
-                     display_name='Sample', scaled=True, rtype='Number', atype='bqplot.Axis')
-    count = NdArray(sync=True, display_name='Count', scaled=True, rtype='Number',
-                    read_only=True, atype='bqplot.Axis')
+    sample = NdArray(sync=True, min_dim=1, max_dim=1, display_name='Sample',
+                     scaled=True, rtype='Number', atype='bqplot.Axis')
+    count = NdArray(sync=True, display_name='Count', scaled=True,
+                    rtype='Number', read_only=True, atype='bqplot.Axis')
     # FIXME: Should we allow None for count?
     # count is a read-only attribute that is set when the mark is drawn
 
     # Other attributes
     scales_metadata = Dict({'sample': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'count': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
+                            'count': {'orientation': 'vertical', 'dimension': 'y'}},
+                            sync=True)
     bins = Int(10, sync=True, display_name='Number of bins')
     midpoints = List(sync=True, read_only=True, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
-                  sync=True, display_name='Colors')
+    colors = List(trait=Color(default_value=None, allow_none=True),
+                  default_value=CATEGORY10, sync=True, display_name='Colors')
     stroke = Color(None, allow_none=True, sync=True)
     opacities = List(trait=Float(default_value=1.0, min=0, max=1,
                                  allow_none=True), sync=True, display_name='Opacities')
@@ -649,7 +651,8 @@ class Boxplot(Mark):
     # Scaled attributestop
     x = NdArray(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
 
-    # second dimension must contain ohlc data, otherwise there will be undefined behaviour.
+    # Second dimension must contain OHLC data, otherwise the behavior is
+    # undefined.
     y = NdArray(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
 
     # Other attributes
@@ -879,7 +882,8 @@ class OHLC(Mark):
 
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
+                            'y': {'orientation': 'vertical', 'dimension': 'y'}},
+                            sync=True)
     marker = Enum(['candle', 'bar'], default_value='candle', display_name='Marker', sync=True)
     stroke = Color(None, sync=True, display_name='Stroke color', allow_none=True)
     stroke_width = Float(1.0, sync=True, display_name='Stroke Width')
@@ -956,13 +960,11 @@ class Pie(Mark):
     color = NdArray(sync=True, allow_none=True, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
+    # Other attributes
     x = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
     y = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
 
-    # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'},
-                            'color': {'dimension': 'color'}}, sync=True)
+    scales_metadata = Dict({'color': {'dimension': 'color'}}, sync=True)
     sort = Bool(False, sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True),
                   default_value=CATEGORY10, sync=True, display_name='Colors')
@@ -1025,6 +1027,12 @@ class Map(Mark):
     icon = 'fa-globe'
     name = 'Map'
 
+    # Scaled attributes
+    color = Dict(sync=True, allow_none=True, scaled=True, rtype='Color',
+                 atype='bqplot.ColorAxis')
+
+    # Other attributes
+    scales_metadata = Dict({'color': {'dimension': 'color'}}, sync=True)
     hover_highlight = Bool(True, sync=True)
     hovered_styles = Dict({'hovered_fill': 'Orange', 'hovered_stroke': None,
                            'hovered_stroke_width': 2.0}, allow_none=True,
@@ -1032,9 +1040,10 @@ class Map(Mark):
 
     stroke_color = Color(default_value=None, sync=True, allow_none=True)
     default_color = Color(default_value=None, sync=True, allow_none=True)
-    color = Dict(sync=True, allow_none=True, scaled=True, rtype='Color',
-                 atype='bqplot.ColorAxis')
-
+    scales_metadata = Dict({
+        'color': {'dimension': 'color'},
+        'projection': {'dimension': 'geo'}
+    }, sync=True)
     selected = List(sync=True)
     selected_styles = Dict({'selected_fill': 'Red', 'selected_stroke': None,
                             'selected_stroke_width': 2.0},
@@ -1108,15 +1117,17 @@ class GridHeatMap(Mark):
                   rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
     column = NdArray(sync=True, scaled=True, allow_none=True,
                      rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True,  sync=True, scaled=True, rtype='Color',
+    color = NdArray(None, allow_none=True, sync=True, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=2)
-    row_align = Enum(['start', 'end'], default_value='start', sync=True)
-    column_align = Enum(['start', 'end'], default_value='start', sync=True)
 
     # Other attributes
     scales_metadata = Dict({'row': {'orientation': 'vertical', 'dimension': 'y'},
                             'column': {'orientation': 'horizontal', 'dimension': 'x'},
                             'color': {'dimension': 'color'}}, sync=True)
+
+    row_align = Enum(['start', 'end'], default_value='start', sync=True)
+    column_align = Enum(['start', 'end'], default_value='start', sync=True)
+
     stroke = Color('black', allow_none=True, sync=True)
     opacity = Float(default_value=1.0, min=0.2, max=1, sync=True, display_name='Opacity')
 

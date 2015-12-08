@@ -13,7 +13,9 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "base/js/utils"], function(Widget, d3, utils) {
+define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
+        "base/js/utils", "underscore"],
+       function(Widget, d3, utils, _) {
     "use strict";
 
     var Mark = Widget.WidgetView.extend({

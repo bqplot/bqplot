@@ -13,10 +13,16 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel"], function(Widget, BaseModel) {
+define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], function(Widget, BaseModel, _) {
     "use strict";
 
-    var FigureModel = BaseModel.BaseModel.extend({}, {
+    var FigureModel = BaseModel.BaseModel.extend({
+        save_png: function() {
+            // TODO: Any view of this Figure model will pick up this event
+            // and render a png. Remove this eventually.
+            this.trigger("save_png");
+        }
+    }, {
         serializers: _.extend({
             marks: {deserialize: Widget.unpack_models},
             axes:  {deserialize: Widget.unpack_models},

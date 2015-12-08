@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Scale"], function(d3, ScaleViewModule) {
+define(["./components/d3/d3", "./Scale", "underscore"], function(d3, ScaleViewModule, _) {
     "use strict";
 
     var OrdinalScale = ScaleViewModule.Scale.extend({
