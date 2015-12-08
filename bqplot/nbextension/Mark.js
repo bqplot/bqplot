@@ -11,11 +11,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
-        "base/js/utils", "underscore"],
-        function(Widget, d3, utils, _) {
+        "nbextensions/widgets/widgets/js/utils", "underscore"],
+       function(Widget, d3, utils, _) {
     "use strict";
 
     var Mark = Widget.WidgetView.extend({
@@ -38,7 +38,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             this.tooltip_div = d3.select(document.createElement("div"))
                 .attr("class", "mark_tooltip")
-                .attr("id", "tooltip_"+this.uuid)
+                .attr("id", "tooltip_" + this.uuid)
                 .style("display", "none")
                 .style("opacity", 0);
 
@@ -87,7 +87,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
-            return utils.resolve_promises_dict(scale_promises).then(function(scales) {
+            return utils.resolvePromisesDict(scale_promises).then(function(scales) {
                 that.scales = scales;
                 that.set_positional_scales();
                 that.initialize_additional_scales();
