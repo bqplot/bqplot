@@ -94,6 +94,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers"], function(d3, Ma
             }, this);
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
             this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
+            this.listenTo(this.model, "change:curves_subset", this.update_curves_subset, this);
             this.listenTo(this.model, "change:line_style", this.update_line_style, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.parent, "bg_clicked", function() {
