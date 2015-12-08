@@ -14,7 +14,7 @@
  */
 
 define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
-        "base/js/utils", "underscore"],
+        "nbextensions/widgets/widgets/js/utils", "underscore"],
        function(Widget, d3, utils, _) {
     "use strict";
 
@@ -85,7 +85,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
-            return utils.resolve_promises_dict(scale_promises).then(function(scales) {
+            return utils.resolvePromisesDict(scale_promises).then(function(scales) {
                 that.scales = scales;
                 that.set_positional_scales();
                 that.initialize_additional_scales();

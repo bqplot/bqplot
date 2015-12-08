@@ -14,7 +14,7 @@
  */
 
 define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
-        "./Figure", "base/js/utils", "underscore"], function(Widget, d3, FigureViewModule, utils, _) {
+        "./Figure", "nbextensions/widgets/widgets/js/utils", "underscore"], function(Widget, d3, FigureViewModule, utils, _) {
     "use strict";
 
     var MarketMap = FigureViewModule.Figure.extend({
@@ -314,7 +314,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
-            return utils.resolve_promises_dict(scale_promises).then(function(d) {
+            return utils.resolvePromisesDict(scale_promises).then(function(d) {
                 that.scales = d;
                 that.set_scales();
             });
