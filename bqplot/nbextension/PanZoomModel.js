@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "base/js/utils", "./BaseModel", "underscore"],
+define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/js/utils", "./BaseModel", "underscore"],
        function(Widget, utils, BaseModel, _) {
     "use strict";
 
@@ -23,7 +23,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils", "./BaseModel"
         },
         reset_scales: function() {
             var that = this;
-            utils.resolve_promises_dict(this.get("scales")).then(function(scales) {
+            utils.resolvePromisesDict(this.get("scales")).then(function(scales) {
                 _.each(Object.keys(scales), function(k) {
                     _.each(scales[k], function(s, i) {
                         s.set_state(that.scales_states[k][i]);
@@ -34,7 +34,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils", "./BaseModel"
         snapshot_scales: function() {
             // Save the state of the scales.
             var that = this;
-            utils.resolve_promises_dict(this.get("scales")).then(function(scales) {
+            utils.resolvePromisesDict(this.get("scales")).then(function(scales) {
                 that.scales_states = Object.keys(scales).reduce(function(obj, key) {
                     obj[key] = scales[key].map(function(s) {
                         return s.get_state()
@@ -46,7 +46,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils", "./BaseModel"
     }, {
         serializers: _.extend({
             scales:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

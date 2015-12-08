@@ -14,7 +14,7 @@
  */
 
 define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
-        "base/js/utils", "./Mark", "underscore"],
+        "nbextensions/widgets/widgets/js/utils", "./Mark", "underscore"],
        function(d3, topojson, FigureViewModule, utils, Mark, _) {
     "use strict";
 
