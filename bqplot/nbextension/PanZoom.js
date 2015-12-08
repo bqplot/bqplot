@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
+define(["./components/d3/d3", "nbextensions/widgets/widgets/js/utils", "./Interaction", "underscore"],
        function(d3, utils, InteractionViewModule, _) {
     "use strict";
 
@@ -43,7 +43,7 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
         update_scales: function() {
             var scales = this.model.get("scales");
             var that = this;
-            this.scale_promises = utils.resolve_promises_dict({
+            this.scale_promises = utils.resolvePromisesDict({
                 "x": Promise.all((scales.x || []).map(function(model) {
                         return that.create_child_view(model);
                      })),
@@ -51,7 +51,7 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
                         return that.create_child_view(model);
                      })),
             });
-            utils.resolve_promises_dict(this.scale_promises)
+            utils.resolvePromisesDict(this.scale_promises)
                 .then(_.bind(this.set_ranges, this));
         },
         set_ranges: function() {

@@ -24,7 +24,7 @@ define([
 ], function(widget, PanZoomModel, $, _) {
     "use strict";
 
-    var ToolbarModel = widget.WidgetModel.extend({
+    var ToolbarModel = widget.DOMWidgetModel.extend({
         // Backbone attributes:
         // - _panning: Bool
         //       Whether one is currently panning - zooming the specified figure.
@@ -133,7 +133,7 @@ define([
         serializers: _.extend({
             figure: {deserialize: widget.unpack_models},
             _panzoom: {deserialize: widget.unpack_models},
-        }, widget.WidgetModel.prototype.serializers)
+        }, widget.DOMWidgetModel.prototype.serializers)
     });
 
     var Toolbar = widget.DOMWidgetView.extend({
