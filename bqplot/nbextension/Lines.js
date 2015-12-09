@@ -374,11 +374,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.el.select(path).style("opacity", opacity);
         },
         update_curves_subset: function() {
-            // TODO: Some of this should move to the model
             var that = this;
-            // Show subset of curves
+            // Show a subset of the curves
             var curves_subset = this.model.get("curves_subset");
-            if (curves_subset.length > 1) {
+            if (curves_subset.length > 0) {
                 this.el.selectAll(".curve")
                   .select("path")
                   .attr("display", function(d, i) {
