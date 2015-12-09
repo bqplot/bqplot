@@ -58,7 +58,8 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
         },
         update_stroke: function() {
             var stroke = this.model.get("stroke");
-            this.el.selectAll(".boxplot").style("stroke", stroke);
+            this.el.selectAll(".boxplot").selectAll("path, rect")
+                .style("stroke", stroke);
 
             if (this.legend_el) {
                 this.legend_el.selectAll("path").attr("stroke", stroke);
@@ -313,34 +314,33 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             var new_boxplots = boxplot.enter()
                 .append("g")
                 .attr ("class", "boxplot")
-                .attr ("id", function(d, i) { return "boxplot"+i; });
+                .attr ("id", function(d, i) { return "boxplot" + i; });
 
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////
             //
-            //            The following diagram explains the parts of the svg visual elements
-            //            We translate the whole element of 'boxplot' to the x location and
-            //            then scale each of these elements with Y scale
+            //  We translate the whole element of 'boxplot' to the x location
+            //  and then scale each of these elements with Y scale.
             //
-            //                                 ( )    <--- outliers (as circles)
-            //                                 ( )
+            //       ( )    <--- outliers (as circles)
+            //       ( )
             //
-            //                               -------  <--- whisker_max_end (path as the max)
-            //                                  |
-            //                                  |     <--- whisker_max (path from top of the box to max)
-            //                                  |
-            //                              ---------
-            //                              |       |
-            //                              |       |
-            //                              |       | <--- box (as a rect)
-            //                              |       |
-            //                              |       |
-            //                              ---------
-            //                                  |
-            //                                  |     <--- whisker_min (path from bottom of the box to min)
-            //                                  |
-            //                               -------  <--- whisker_min_end (path at min value)
+            //     -------  <--- whisker_max_end (path as the max)
+            //        |
+            //        |     <--- whisker_max (path from top of the box to max)
+            //        |
+            //    ---------
+            //    |       |
+            //    |       |
+            //    |       | <--- box (as a rect)
+            //    |       |
+            //    |       |
+            //    ---------
+            //        |
+            //        |     <--- whisker_min (path from bottom of the box to min)
+            //        |
+            //     -------  <--- whisker_min_end (path at min value)
             //
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////
 
             new_boxplots.append("path").attr("class", "whisker_max");
             new_boxplots.append("path").attr("class", "whisker_max_end");
@@ -378,7 +378,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 var x = 0;
                 var medianY = d.boxMedian;
 
-                return  "M"  + (x - width /2) + "," +
+                return  "M"  + (x - width/2) + "," +
                         medianY +  " L" + (x + width /2)  + "," +  medianY;
               });
 
