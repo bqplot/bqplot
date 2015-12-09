@@ -315,11 +315,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             // if(this.model.get("select_slices")) {
                 var idx = this.model.get("selected");
                 var selected = idx ? utils.deepCopy(idx) : [];
+                // index of slice i. Checking if it is already present in the list.
                 var elem_index = selected.indexOf(index);
-                // index of slice i. Checking if it is already present in the
-                // list
-                if(elem_index > -1 && d3.event.ctrlKey) {
-                    // if the index is already selected and if ctrl key is
+                // Replacement for "Accel" modifier.
+                var accelKey = d3.event.ctrlKey || d3.event.metaKey
+                if(elem_index > -1 && accelKey) {
+                    // if the index is already selected and if accel key is
                     // pressed, remove the element from the list
                     selected.splice(elem_index, 1);
                 } else {
@@ -344,7 +345,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                                 selected.push(i);
                             });
                         }
-                    } else if(!(d3.event.ctrlKey)) {
+                    } else if(!accelKey) {
                         selected = [];
                     }
                     // updating the array containing the slice indexes selected
