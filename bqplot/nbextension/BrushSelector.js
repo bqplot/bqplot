@@ -416,12 +416,13 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             new_brush_g.on("mousedown.brush", function() {
                 add_remove_classes(that.el.selectAll(".selector"), ["inactive"], ["visible"]);
                 add_remove_classes(d3.select(this), ["active"], ["inactive"]);
-
                 old_handler.call(this);
+                // Replacement for "Accel" modifier.
+                var accelKey = d3.event.ctrlKey || d3.event.metaKey;
                 d3.select(this).on("mousedown.brush", function() {
-                    if(d3.event.shiftKey && d3.event.ctrlKey && d3.event.altKey) {
+                    if(d3.event.shiftKey && accelKey && d3.event.altKey) {
                         that.reset();
-                    } else if(d3.event.ctrlKey) {
+                    } else if(accelKey) {
                         add_remove_classes(d3.select(this), ["inactive"], ["active"]);
                         that.create_brush(d3.event);
                     } else if(d3.event.shiftKey && that.selecting_brush === false) {

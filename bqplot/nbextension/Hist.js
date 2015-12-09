@@ -241,11 +241,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             if(this.model.get("select_bars")) {
                 var idx = this.bars_selected;
                 var selected = idx ? utils.deepCopy(idx) : [];
+                // index of bar i. Checking if it is already present in the list.
                 var elem_index = selected.indexOf(index);
-                // index of bar i. Checking if it is already present in the
-                // list
-                if(elem_index > -1 && d3.event.ctrlKey) {
-                    // if the index is already selected and if ctrl key is
+                // Replacement for "Accel" modifier.
+                var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+                if(elem_index > -1 && accelKey) {
+                    // if the index is already selected and if accel key is
                     // pressed, remove the element from the list
                     selected.splice(elem_index, 1);
                 } else {
@@ -270,15 +271,15 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                                 selected.push(i);
                             });
                         }
-                    } else if(d3.event.ctrlKey) {
-                        //If ctrl is pressed and the bar is not already selcted
+                    } else if(accelKey) {
+                        //If accel is pressed and the bar is not already selcted
                         //add the bar to the list of selected bars.
                         selected.push(index);
                     }
                     // updating the array containing the bar indexes selected
                     // and updating the style
                     else {
-                        //if ctrl is not pressed, then clear the selected ones
+                        //if accel is not pressed, then clear the selected ones
                         //and set the current element to the selected
                         selected = [];
                         selected.push(index);

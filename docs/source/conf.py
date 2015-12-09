@@ -42,19 +42,14 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-#    'numpydoc',
 ]
 
 autosummary_generate = True
-# numpydoc_show_class_members = False
-#autodoc_default_flags = ['members', 'no-inherited-members', 'show-inheritance']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-# source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
 
 # Add dev disclaimer.
@@ -76,7 +71,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'bqplot'
 copyright = u'2015, Bloomberg LP'
-author= u'The BQplot Development Team'
+author = u'The BQplot Development Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
