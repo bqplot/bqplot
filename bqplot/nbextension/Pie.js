@@ -312,64 +312,63 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             var data = args.data;
             var index = args.index;
             var that = this;
-            // if(this.model.get("select_slices")) {
-                var idx = this.model.get("selected");
-                var selected = idx ? utils.deepCopy(idx) : [];
+            var idx = this.model.get("selected");
+            var selected = idx ? utils.deepCopy(idx) : [];
                 // index of slice i. Checking if it is already present in the list.
-                var elem_index = selected.indexOf(index);
-                // Replacement for "Accel" modifier.
-                var accelKey = d3.event.ctrlKey || d3.event.metaKey
-                if(elem_index > -1 && accelKey) {
-                    // if the index is already selected and if accel key is
-                    // pressed, remove the element from the list
-                    selected.splice(elem_index, 1);
-                } else {
-                    if(d3.event.shiftKey) {
-                        //If shift is pressed and the element is already
-                        //selected, do not do anything
-                        if(elem_index > -1) {
-                            return;
-                        }
-                        //Add elements before or after the index of the current
-                        //slice which has been clicked
-                        var min_index = (selected.length !== 0) ?
-                            d3.min(selected) : -1;
-                        var max_index = (selected.length !== 0) ?
-                            d3.max(selected) : that.model.mark_data.length;
-                        if(index > max_index){
-                            _.range(max_index+1, index).forEach(function(i) {
-                                selected.push(i);
-                            });
-                        } else if(index < min_index){
-                            _.range(index+1, min_index).forEach(function(i) {
-                                selected.push(i);
-                            });
-                        }
-                    } else if(!accelKey) {
-                        selected = [];
+            var elem_index = selected.indexOf(index);
+            // Replacement for "Accel" modifier.
+            var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+            if(elem_index > -1 && accelKey) {
+                // if the index is already selected and if accel key is
+                // pressed, remove the element from the list
+                selected.splice(elem_index, 1);
+            } else {
+                if(d3.event.shiftKey) {
+                    //If shift is pressed and the element is already
+                    //selected, do not do anything
+                    if(elem_index > -1) {
+                        return;
                     }
-                    // updating the array containing the slice indexes selected
-                    // and updating the style
-                    selected.push(index);
+                    //Add elements before or after the index of the current
+                    //slice which has been clicked
+                    var min_index = (selected.length !== 0) ?
+                        d3.min(selected) : -1;
+                    var max_index = (selected.length !== 0) ?
+                        d3.max(selected) : that.model.mark_data.length;
+                    if(index > max_index){
+                        _.range(max_index+1, index).forEach(function(i) {
+                            selected.push(i);
+                        });
+                    } else if(index < min_index){
+                        _.range(index+1, min_index).forEach(function(i) {
+                            selected.push(i);
+                        });
+                    }
+                    } else if(!accelKey) {
+                    selected = [];
                 }
-                this.model.set("selected",
-                               ((selected.length === 0) ? null : selected),
-                               {updated_view: this});
-                this.touch();
-                if(!d3.event) {
-                    d3.event = window.event;
-                }
-                var e = d3.event;
-                if(e.cancelBubble !== undefined) { // IE
-                    e.cancelBubble = true;
-                }
-                if(e.stopPropagation) {
-                    e.stopPropagation();
-                }
-                e.preventDefault();
-                this.selected_indices = selected;
-                this.apply_styles();
-            // }
+                // updating the array containing the slice indexes selected
+                // and updating the style
+                selected.push(index);
+            }
+            this.model.set("selected",
+                ((selected.length === 0) ? null : selected),
+                {updated_view: this});
+            this.touch();
+            if(!d3.event) {
+                d3.event = window.event;
+            }
+            var e = d3.event;
+            if(e.cancelBubble !== undefined) { // IE
+                e.cancelBubble = true;
+            }
+            if(e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+            this.selected_indices = selected;
+            this.apply_styles();
+
         },
         reset_selection: function() {
             this.model.set("selected", null);

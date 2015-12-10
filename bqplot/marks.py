@@ -1088,8 +1088,12 @@ class GridHeatMap(Mark):
         number of columns in `color` and the `column_scale` is not `OrdinalScale`.
         `start` aligns the column values passed to be aligned with the start of the
         tiles and `end` aligns the column values to the end of the tiles.
+    anchor_style: dict (default: {'fill': 'white', 'stroke': 'blue'})
+        Controls the style for the element which serves as the anchor duringi
+        selection.
 
     Data Attributes
+    ---------------
 
     color: numpy.ndarray
         color of the data points (2d array). The number of elements in this array
@@ -1129,6 +1133,7 @@ class GridHeatMap(Mark):
 
     stroke = Color('black', allow_none=True, sync=True)
     opacity = Float(default_value=1.0, min=0.2, max=1, sync=True, display_name='Opacity')
+    anchor_style = Dict({'fill': 'white', 'stroke': 'blue'}, sync=True)
 
     def __init__(self, **kwargs):
         data = kwargs['color']
