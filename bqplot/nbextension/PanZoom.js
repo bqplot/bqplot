@@ -28,7 +28,10 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction"],
               .on("mousedown", function() { that.mousedown(); })
               .on("mousemove", function() { that.mousemove(); })
               .on("mouseup", function() { that.mouseup(); })
-              .on("mousewheel", function() { that.mousewheel(); });
+              .on("mousewheel", function() { that.mousewheel(); })
+              .on("DOMMouseScroll.zoom", function() { that.mousewheel(); })
+              .on("mousewheel.zoom", null)
+              .on("wheel.zoom", null);
             this.active = false;
 
             this.update_scales();
@@ -142,7 +145,8 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction"],
         mousewheel: function() {
             if (this.model.get("allow_zoom")) {
                 d3.event.preventDefault();
-                var delta = d3.event.wheelDelta;
+                // With Firefox, wheelDelta is undefined.
+                var delta = d3.event.wheelDelta || d3.event.detail * (-40);
                 var mouse_pos = d3.mouse(this.el.node());
                 if (delta) {
                     if (delta > 0) {
