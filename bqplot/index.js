@@ -82,6 +82,7 @@ require('underscore');
     require("./nbextension/MarketMap.js"),
     require("./nbextension/GridHeatMap.js"),
     require("./nbextension/MarketMapModel.js"),
+    require("./nbextension/Toolbar.js"),
 
     require("./nbextension/components/d3/d3.js"),
     require("./nbextension/components/topojson/topojson.js")

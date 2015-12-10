@@ -26,7 +26,7 @@
     "bootstrap": "^3.3.5",
     "jquery": "^2.1.4",
     "require-less": "*",
-    "ipywidgets": "../../ipython/ipywidgets",
+    "jupyter-js-widgets": "../../ipython/ipywidgets/ipywidgets",
     "underscore": "^1.8.3"
   }
 }

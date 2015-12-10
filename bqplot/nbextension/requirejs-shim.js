@@ -1,4 +1,4 @@
-// TODO: Remove this ugliest hack of all hacks once ipywidgets moves to commonjs
+// TODO: Remove this ugliest hack of all hacks once jupyter-js-widgets moves to commonjs
 // Hack: Trick browserify (and other static analysis based compilers) that these
 // files will be imported.  Related, browserify doesn't support dynamically
 // required files: https://github.com/substack/node-browserify/issues/377
@@ -6,10 +6,10 @@ function requireLocalFiles() {
     require('underscore');
     require('backbone');
     require('jquery');
-    require('../../../ipywidgets/ipywidgets/static/widgets/js/utils');
-    require('../../../ipywidgets/ipywidgets/static/widgets/js/widget');
-    require('../../../ipywidgets/ipywidgets/static/widgets/js/widget_int');
-    require('../../../ipywidgets/ipywidgets/static/widgets/js/manager-base');
+    require('../../../jupyter-js-widgets/static/widgets/js/utils');
+    require('../../../jupyter-js-widgets/static/widgets/js/widget');
+    require('../../../jupyter-js-widgets/static/widgets/js/widget_int');
+    require('../../../jupyter-js-widgets/static/widgets/js/manager-base');
     require('../../../bqplot/bqplot/nbextension/components/d3/d3');
     require('../../../bqplot/bqplot/nbextension/components/topojson/topojson');
 
@@ -84,7 +84,7 @@ function requireLocalFiles() {
 
 module.exports = function createDefine(targetModule) {
     var amdefine = require('amdefine')(targetModule, require);
-    
+
     return function define() {
         var args = Array.prototype.slice.call(arguments);
         if (args.length > 1) {
@@ -93,7 +93,7 @@ module.exports = function createDefine(targetModule) {
                     arg = 'jquery';
                 }
                 arg = arg.replace('nbextensions/', '');
-                arg = arg.replace('widgets/widgets/js/', '../../../ipywidgets/ipywidgets/static/widgets/js/');
+                arg = arg.replace('widgets/widgets/js/', '../../../jupyter-js-widgets/static/widgets/js/');
                 arg = arg.replace('./components/require-less/less!', '');
                 arg = arg.replace('./components/', '../../../bqplot/bqplot/nbextension/components/');
                 return arg;
