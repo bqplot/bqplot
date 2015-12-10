@@ -88,11 +88,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             // FIXME: multiple calls to update_style. Use on_some_change.
             this.listenTo(this.model, "change:colors", this.update_style, this);
             this.listenTo(this.model, "change:opacities", this.update_style, this);
+            this.listenTo(this.model, "change:fill_opacities", this.update_style, this);
+            this.listenTo(this.model, "change:fill_colors", this.update_style, this);
 
-            // FIXME: multiple calls to update_fill. Use on_some_change.
             this.listenTo(this.model, "change:fill", this.update_fill, this);
-            this.listenTo(this.model, "change:fill_opacities", this.update_fill, this);
-            this.listenTo(this.model, "change:fill_colors", this.update_fill, this);
 
             this.listenTo(this.model, "data_updated", function() {
                 var animate = true;
@@ -414,8 +413,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
         update_fill: function() {
             var fill = this.model.get("fill"),
-                area = (fill === "top" || fill === "bottom"),
-                fill_opacities = this.model.get("fill_opacities");
+                area = (fill === "top" || fill === "bottom");
 
             this.area.y0(fill === "bottom" ? this.parent.plotarea_height : 0)
               .defined(function(d) { return area && d.y !== null; });
@@ -501,11 +499,6 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
               .on("click", _.bind(function() {
                   this.event_dispatcher("element_clicked");
               }, this));
-            // Fill in the areas above/below the lines
-            curves_sel.select(".area")
-              .attr("display", function(d) {
-                  return (fill === "none" || fill === "inside" ? "none" : "inline");
-              })
 
             this.draw_dots();
 
