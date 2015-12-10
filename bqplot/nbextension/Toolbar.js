@@ -18,12 +18,10 @@ if (typeof define !== 'function') { var define = require('./requirejs-shim')(mod
 
 define([
     "nbextensions/widgets/widgets/js/widget",
-    "base/js/utils",
     "./PanZoomModel",
     "jquery",
-    "underscore",
-    "bootstrap",
-], function(widget, utils, PanZoomModel, $, _) {
+    "underscore"
+], function(widget, PanZoomModel, $, _) {
     "use strict";
 
     var ToolbarModel = widget.WidgetModel.extend({
