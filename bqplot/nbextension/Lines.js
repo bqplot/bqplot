@@ -87,8 +87,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
 
             // FIXME: multiple calls to update_style. Use on_some_change.
             this.listenTo(this.model, "change:colors", this.update_style, this);
-            this.listenTo(this.model, "change:fill", this.update_style, this);
             this.listenTo(this.model, "change:opacities", this.update_style, this);
+            this.listenTo(this.model, "change:fill_opacities", this.update_style, this);
+            this.listenTo(this.model, "change:fill_colors", this.update_style, this);
+
+            this.listenTo(this.model, "change:fill", this.update_fill, this);
+
             this.listenTo(this.model, "data_updated", function() {
                 var animate = true;
                 this.draw(animate);
@@ -139,7 +143,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
         // Could be fused in a single function for increased readability
         // and to avoid code repetition
         update_line_style: function() {
-            this.el.selectAll(".curve").selectAll("path")
+            this.el.selectAll(".curve").select(".line")
               .style("stroke-dasharray", _.bind(this.get_line_style, this));
             if (this.legend_el) {
                 this.legend_el.select("path")
@@ -148,7 +152,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
         update_stroke_width: function(model, stroke_width) {
             this.compute_view_padding();
-            this.el.selectAll(".curve").selectAll("path")
+            this.el.selectAll(".curve").select(".line")
               .style("stroke-width", stroke_width);
             if (this.legend_el) {
                 this.legend_el.select("path")
@@ -157,18 +161,23 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
         update_style: function() {
             var that = this,
-                fill_color = this.model.get("fill"),
-                opacities = this.model.get("opacities");
+                fill_color = this.model.get("fill_colors"),
+                opacities = this.model.get("opacities"),
+                fill_opacities = this.model.get("fill_opacities");
             // update curve colors
             this.el.selectAll(".curve")
                 .each(function(d, i) {
                     var curve = d3.select(this);
-                    curve.selectAll("path")
-                        .style("stroke", that.get_element_color(d, i) || fill_color[i])
-                        .style("opacity", opacities[i]);
                     curve.select(".line")
-                        .style("fill", fill_color[i]);
+                        .style("opacity", opacities[i])
+                        .style("stroke", that.get_element_color(d, i) || fill_color[i])
+                        .style("fill", that.model.get("fill") === "inside" ?
+                                       that.get_fill_color(d, i) : "");
+                    curve.select(".area")
+                        .style("fill", that.get_fill_color(d, i))
+                        .style("opacity", fill_opacities[i]);
                     curve.selectAll(".dot")
+                        .style("opacity", opacities[i])
                         .style("fill", that.get_element_color(d, i) || fill_color[i]);
                 });
             // update legend style
@@ -178,7 +187,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                         return that.get_element_color(d, i) || fill_color[i];
                     })
                     .style("opacity", function(d, i) { return opacities[i]; })
-                    .style("fill", function(d, i) { return fill_color[i]; });
+                    .style("fill", function(d, i) { return that.get_fill_color(d, i); });
                 this.legend_el.select(".dot")
                     .style("stroke", function(d, i) {
                         return that.get_element_color(d, i) || fill_color[i];
@@ -204,11 +213,15 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
         update_path_style: function() {
             var interpolation = this.model.get("interpolation");
             this.line.interpolate(interpolation);
+            this.area.interpolate(interpolation);
             var that = this;
             this.el.selectAll(".curve").selectAll("path")
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
+            this.el.selectAll(".curve").select(".area")
+              .transition().duration(0) //FIXME
+              .attr("d", function(d) { return that.area(d.values); });
             if (this.legend_el) {
                 this.legend_line.interpolate(interpolation);
                 this.legend_el.selectAll("path")
@@ -226,7 +239,6 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.touch();
                 return [];
             }
-
             var x_scale = this.scales.x;
 
             var indices = _.range(this.x_pixels.length);
@@ -272,13 +284,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                         opacity: d.opacity};
             });
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-              .data(legend_data, function(d, i) {
-                  return d.name;
-              });
+              .data(legend_data, function(d, i) { return d.name; });
 
             var that = this,
                 rect_dim = inter_y_disp * 0.8,
-                fill_color = this.model.get("fill"),
+                fill_colors = this.model.get("fill_colors"),
                 opacities = this.model.get("opacities");
 
             this.legend_line = d3.svg.line()
@@ -311,10 +321,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 .attr("fill", "none")
                 .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
                 .style("stroke", function(d, i) {
-                    return that.get_element_color(d, i) || fill_color[i];
+                    return that.get_element_color(d, i) || fill_colors[i];
                 })
                 .style("fill", function(d, i) {
-                    return fill_color[i];
+                    return that.model.get("fill") === "none" ?
+                        "" : that.get_fill_color(d, i);
                 })
                 .style("opacity", function(d, i) { return opacities[i]; })
                 .style("stroke-width", this.model.get("stroke_width"))
@@ -335,7 +346,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
               .attr("dy", "0.35em")
               .text(function(d, i) { return curve_labels[i]; })
               .style("fill", function(d, i) {
-                  return that.get_element_color(d, i) || fill_color[i];
+                  return that.get_element_color(d, i) || fill_colors[i];
               })
               .style("opacity", function(d, i) { return opacities[i]; });
 
@@ -400,6 +411,30 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   });
             }
         },
+        update_fill: function() {
+            var fill = this.model.get("fill"),
+                area = (fill === "top" || fill === "bottom");
+
+            this.area.y0(fill === "bottom" ? this.parent.plotarea_height : 0)
+              .defined(function(d) { return area && d.y !== null; });
+
+            var that = this;
+            this.el.selectAll(".curve").select(".area")
+              .attr("d", function(d) {
+                  return that.area(d.values);
+              })
+            this.el.selectAll(".curve").select(".line")
+              .style("fill", function(d, i) {
+                  return fill === "inside" ? that.get_fill_color(d, i) : "";
+              })
+            // update legend fill
+            if (this.legend_el) {
+               this.legend_el.select("path")
+                 .style("fill", function(d, i) {
+                     return fill === "none" ? "" : that.get_fill_color(d, i);
+                 })
+            }
+        },
         get_element_color: function(data, index) {
             var color_scale = this.scales.color;
             if(color_scale && data.color !== undefined && data.color !== null) {
@@ -407,19 +442,25 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             return this.get_colors(index);
         },
+        get_fill_color: function(data, index) {
+            var fill_colors = this.model.get("fill_colors");
+            var that = this;
+            return fill_colors.length === 0 ?
+                that.get_element_color(data, index) : fill_colors[index];
+        },
         update_line_xy: function(animate) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-            this.line = d3.svg.line()
-              .interpolate(this.model.get("interpolation"))
-              .x(function(d) {
-                  return x_scale.scale(d.x) + x_scale.offset;
-              })
-              .y(function(d) {
-                  return y_scale.scale(d.y) + y_scale.offset;
-              })
-              .defined(function(d) { return d.y !== null; });
+            this.line
+              .x(function(d) { return x_scale.scale(d.x) + x_scale.offset; })
+              .y(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
+
+            var fill = this.model.get("fill");
+            this.area
+              .x(function(d) { return x_scale.scale(d.x) + x_scale.offset; })
+              .y0(fill === "bottom" ? this.parent.plotarea_height : 0)
+              .y1(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
 
             var that = this;
             this.el.selectAll(".curve").select(".line")
@@ -427,6 +468,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
+
+            this.el.selectAll(".curve").select(".area")
+              .transition().duration(animation_duration)
+              .attr("d", function(d) { return that.area(d.values); });
 
             this.update_dots_xy(animate);
             this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
@@ -443,9 +488,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             new_curves.append("path")
               .attr("class", "line")
               .attr("fill", "none");
+            new_curves.append("path")
+              .attr("class", "area");
 
-            var fill_color = this.model.get("fill");
-            var opacities = this.model.get("opacities");
+            var fill = this.model.get("fill"),
+                area = (fill === "top" || fill === "bottom");
             var that = this;
             curves_sel.select(".line")
               .attr("id", function(d, i) { return "curve" + (i+1); })
@@ -454,6 +501,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
               }, this));
 
             this.draw_dots();
+
+            this.line = d3.svg.line()
+              .interpolate(this.model.get("interpolation"))
+              .defined(function(d) { return d.y !== null; });
+
+            this.area = d3.svg.area()
+              .interpolate(this.model.get("interpolation"))
+              .defined(function(d) { return area && d.y !== null; });
 
             // Having a transition on exit is complicated. Please refer to
             // Scatter.js for detailed explanation.
