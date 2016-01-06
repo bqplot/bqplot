@@ -141,6 +141,8 @@ class Bower(Command):
                     cwd=here,
                     env=os.environ.copy(),
                 )
+            else:
+                raise RuntimeError("developer installation: Could not find 'bower' in path.")
 
         except OSError as e:
             print("Failed to run bower: %s" % e, file=sys.stderr)
