@@ -26,35 +26,38 @@ define([
 
     var ToolbarModel = widget.WidgetModel.extend({
         // Backbone attributes:
-        // - panning: Bool
+        // - _panning: Bool
         //       Whether one is currently panning - zooming the specified figure.
-        // - panzoom: Instance of Panzoom or undefined:
+        // - _panzoom: Instance of Panzoom or undefined:
         //       The created panzoom interaction. It is undefined at first.
-        // Attribute
+        // Attributes:
         // - cached_interaction: Instance of Interaction or null or undefined.
         //   The cached interaction of the Figure. It is undefined at first
         //   and can take the value of the figure interaction, which can be
         //   null.
         panzoom: function() {
             var figure = this.get("figure");
-            if (this.get("panning")) {
+            if (this.get("_panning")) {
                 if (figure) {
                     figure.set("interaction", this.cached_interaction);
                     figure.save_changes();
                 }
-                this.set("panning", false);
+                this.set("_panning", false);
+                this.save_changes();
             } else {
                 if (figure) {
                     this.cached_interaction = figure.get("interaction");
-                    var panzoom_promise = this.get("panzoom") ||
+                    var panzoom_promise = this.get("_panzoom") ||
                                           this._create_panzoom_model(figure);
-                    this.set("panzoom", panzoom_promise);
+                    this.set("_panzoom", panzoom_promise);
+                    this.save_changes();
                     panzoom_promise.then(function(model) {
                         figure.set("interaction", model);
                         figure.save_changes();
                     });
                 }
-                this.set("panning", true);
+                this.set("_panning", true);
+                this.save_changes();
             }
         },
         reset: function() {
@@ -63,21 +66,22 @@ define([
              * interaction back to its previous value.
              */
             var figure = this.get("figure");
-            var panning = this.get("panning");
+            var panning = this.get("_panning");
             var that = this;
             if (figure) {
                 figure.set("interaction", this.cached_interaction);
                 figure.save_changes();
-                this.get("panzoom").then(function (model) {
+                this.get("_panzoom").then(function (model) {
                     // Should reset_scales be part of PanZoomModel.close()?
                     model.reset_scales();
                     model.close();
-                    that.set("panzoom", undefined);
-                    that.set("panning", false);
+                    that.set("_panzoom", null);
+                    that.set("_panning", false);
+                    that.save_changes();
                 });
             }
         },
-        save: function() {
+        save_png: function() {
             /**
              * Triggers the saving for all the views of that figure.
              */
