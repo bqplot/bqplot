@@ -70,7 +70,7 @@ class Toolbar(DOMWidget):
 
     _panning = Bool(read_only=True, sync=True)
     _panzoom = Instance(PanZoom, default_value=None, allow_none=True,
-                        read_only=True, sync=True)
+                        read_only=True, sync=True, **widget_serialization)
 
     _view_name = Unicode('Toolbar', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Toolbar', sync=True)

@@ -47,14 +47,19 @@ define([
             } else {
                 if (figure) {
                     this.cached_interaction = figure.get("interaction");
-                    var panzoom_promise = this.get("_panzoom") ||
-                                          this._create_panzoom_model(figure);
-                    this.set("_panzoom", panzoom_promise);
-                    this.save_changes();
-                    panzoom_promise.then(function(model) {
-                        figure.set("interaction", model);
+                    var that = this;
+                    var panzoom = this.get("_panzoom");
+                    if (panzoom) {
+                        figure.set("interaction", panzoom);
                         figure.save_changes();
-                    });
+                    } else {
+                        this._create_panzoom_model(figure).then(function (model) {
+                            that.set("_panzoom", model);
+                            that.save_changes();
+                            figure.set("interaction", model);
+                            figure.save_changes();
+                        })
+                    }
                 }
                 this.set("_panning", true);
                 this.save_changes();
@@ -67,18 +72,16 @@ define([
              */
             var figure = this.get("figure");
             var panning = this.get("_panning");
-            var that = this;
             if (figure) {
                 figure.set("interaction", this.cached_interaction);
                 figure.save_changes();
-                this.get("_panzoom").then(function (model) {
-                    // Should reset_scales be part of PanZoomModel.close()?
-                    model.reset_scales();
-                    model.close();
-                    that.set("_panzoom", null);
-                    that.set("_panning", false);
-                    that.save_changes();
-                });
+                var panzoom = this.get("_panzoom");
+                // Should reset_scales be part of PanZoomModel.close()?
+                panzoom.reset_scales()
+                panzoom.close();
+                this.set("_panzoom", null);
+                this.set("_panning", false);
+                this.save_changes();
             }
         },
         save_png: function() {
@@ -129,6 +132,7 @@ define([
     }, {
         serializers: _.extend({
             figure: {deserialize: widget.unpack_models},
+            _panzoom: {deserialize: widget.unpack_models},
         }, widget.WidgetModel.prototype.serializers)
     });
 
@@ -174,17 +178,20 @@ define([
                 .attr("title", "Save")
                 .on("click", function (e) {
                     e.preventDefault();
-                    that.model.save();
+                    that.model.save_png();
                 });
 
             // Font Awesome icons.
             $("<i />").addClass("fa fa-arrows").prependTo(this.$Panzoom);
             $("<i />").addClass("fa fa-refresh").prependTo(this.$Reset);
             $("<i />").addClass("fa fa-save").prependTo(this.$Save);
+
+            // Handle initial state
+            this.update();
         },
 
         update: function() {
-            if (this.model.get("panning")) {
+            if (this.model.get("_panning")) {
                 this.$Panzoom.addClass("active");
             } else {
                 this.$Panzoom.removeClass("active");

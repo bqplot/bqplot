@@ -49,8 +49,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
                 this.save_changes();
             }
         }
-    },
-    {
+    }, {
         serializers: _.extend({
              scale: {deserialize: Widget.unpack_models},
              offset: {deserialize: Widget.unpack_models}
