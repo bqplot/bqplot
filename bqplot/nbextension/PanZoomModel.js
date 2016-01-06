@@ -46,7 +46,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
     }, {
         serializers: _.extend({
             scales:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

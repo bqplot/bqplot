@@ -22,7 +22,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"],
             x_scale:  {deserialize: Widget.unpack_models},
             y_scale:  {deserialize: Widget.unpack_models},
             marks:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

@@ -133,7 +133,7 @@ define([
         serializers: _.extend({
             figure: {deserialize: widget.unpack_models},
             _panzoom: {deserialize: widget.unpack_models},
-        }, widget.DOMWidgetModel.prototype.serializers)
+        }, widget.DOMWidgetModel.serializers)
     });
 
     var Toolbar = widget.DOMWidgetView.extend({
