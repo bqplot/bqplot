@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "base/js/utils", "./Interaction"],
-       function(d3, utils, InteractionViewModule) {
+define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
+       function(d3, utils, InteractionViewModule, _) {
     "use strict";
 
     // TODO avoid code duplication of 'x' and 'y'
