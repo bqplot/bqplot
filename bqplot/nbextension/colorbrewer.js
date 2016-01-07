@@ -37,6 +37,10 @@
  * may "ColorBrewer" appear in their name, without prior written permission of
  * Cynthia Brewer.
  */
+
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define([], function() {
 // This product includes color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/).
 // JavaScript specs as packaged in the D3 library (d3js.org). Please see license at http://colorbrewer.org/export/LICENSE.txt

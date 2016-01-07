@@ -13,7 +13,9 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
+define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/js/utils", 
         "./components/d3/d3", "underscore", "./components/require-less/less!./bqplot.less"],
        function(Widget, utils, d3, _) {
     "use strict";

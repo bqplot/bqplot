@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], function(Widget, BaseModel, _) {
     "use strict";
 
@@ -29,7 +32,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], 
             interaction: {deserialize: Widget.unpack_models},
             scale_x:  {deserialize: Widget.unpack_models},
             scale_y:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+            layout:  {deserialize: Widget.unpack_models},
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

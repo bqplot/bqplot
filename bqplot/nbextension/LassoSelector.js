@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// npm compatibility
+if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
+
 define(["./components/d3/d3", "./Selector", "./utils", "./lasso_test", "underscore"], function(d3, Selectors, utils, point_in_lasso, _) {
     "use strict";
 
