@@ -1,0 +1,31 @@
+{
+  "name": "bqplot",
+  "version": "0.5.0dev",
+  "description": "bqplot javascript",
+  "author": "BQPlot Development team",
+  "license": "Apache",
+  "main": "bqplot/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloomberg/bqplot.git"
+  },
+  "scripts": {
+    "bower": "bower install --config.interactive=false",
+    "prepublish": "npm run bower",
+    "preinstall": "npm run bower",
+    "publish": "npm run publish:pypi",
+    "publish:pypi": "python setup.py sdist upload && python setup.py bdist_wheel upload"
+  },
+  "devDependencies": {
+    "bower": "^1.5.3",
+    "rimraf": "^2.4.1"
+ },
+  "dependencies": {
+    "backbone": "^1.2.3",
+    "bootstrap": "^3.3.5",
+    "jquery": "^2.1.4",
+    "require-less": "*",
+    "jupyter-js-widgets": "../../ipython/ipywidgets/ipywidgets",
+    "underscore": "^1.8.3"
+  }
+}
