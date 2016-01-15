@@ -17,6 +17,7 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
     "use strict";
 
     var FlexLine = LinesViewModule.Lines.extend({
+
         render: function() {
             var base_render_promise = LinesViewModule.Lines.__super__.render.apply(this);
             var that = this;
@@ -27,6 +28,7 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
                 that.draw();
             });
         },
+
         set_ranges: function() {
             FlexLine.__super__.set_ranges.apply(this);
             var width_scale = this.scales.width;
@@ -34,12 +36,14 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
                 width_scale.set_range([0.5, this.model.get("stroke_width")]);
             }
         },
+
         create_listeners: function() {
             FlexLine.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:colors", this.update_colors, this);
             this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
             this.listenTo(this.model, "change:color change:width", this.update_and_draw, this);
         },
+
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var g_elements = elem.selectAll(".legend" + this.uuid)
               .data(this.model.mark_data, function(d, i) { return d.name; });
@@ -70,6 +74,7 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
             g_elements.exit().remove();
             return [this.model.mark_data.length, max_length];
         },
+
         draw: function() {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
@@ -101,6 +106,7 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
                   });
             });
         },
+
         get_element_color: function(d) {
             var color_scale = this.scales.color;
             if(color_scale !== undefined && d.color !== undefined) {
@@ -108,6 +114,7 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
             }
             return this.model.get("colors")[0];
         },
+
         get_element_width: function(d) {
             var width_scale = this.scales.width;
             if(width_scale !== undefined && d.size !== undefined) {
@@ -115,6 +122,7 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
             }
             return this.model.get("stroke_width");
         },
+
         relayout: function() {
             LinesViewModule.Lines.__super__.relayout.apply(this);
             this.set_ranges();
@@ -130,6 +138,7 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
                      "y2": function(d) { return y_scale.scale(d.y2); },
               });
         },
+
         create_labels: function() {
             //do nothing
         },

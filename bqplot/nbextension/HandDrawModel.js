@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], function(Widget, BaseModel, _) {
+define(["jupyter-js-widgets", "./BaseModel", "underscore"], function(widgets, BaseModel, _) {
     "use strict";
 
     var HandDrawModel = BaseModel.BaseModel.extend({}, {
         serializers: _.extend({
-            lines:  {deserialize: Widget.unpack_models},
+            lines:  { deserialize: widgets.unpack_models },
         }, BaseModel.BaseModel.serializers),
     });
 

@@ -17,6 +17,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
     "use strict";
 
     var GridHeatMapModel = MarkModelModule.MarkModel.extend({
+
         initialize: function() {
             GridHeatMapModel.__super__.initialize.apply(this);
             this.on_some_change(["row", "column", "color"], this.update_data, this);
@@ -26,6 +27,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
         },
+
         update_data: function() {
             this.dirty = true;
             // Handling data updates
@@ -57,6 +59,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.dirty = false;
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;
@@ -86,9 +89,11 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 }
             }
         },
+
         get_data_dict: function(data, index) {
             return data;
         },
+
         identify_modes: function() {
             //based on the data, identify the mode in which the heatmap should
             //be plotted.
@@ -110,7 +115,6 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                     modes.row = "expand_two";
                 }
             }
-
             if(column_scale.type === "ordinal") {
                 modes.column = "middle";
             } else {

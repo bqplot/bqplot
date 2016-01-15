@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseModel", "underscore"],
-       function(Widget, d3, BaseModel, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"],
+       function(widgets, d3, BaseModel, _) {
     "use strict";
 
     var MarkModel = BaseModel.BaseModel.extend({
@@ -32,21 +32,25 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
             this.display_el_classes = ["mark"]; //classes on the element which
             //trigger the tooltip to be displayed when they are hovered over
         },
+
         update_data : function() {
             // Update_data is typically overloaded in each mark
             // it triggers the "data_updated" event
             this.update_domains();
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             // update_domains is typically overloaded in each mark to update
             // the domains related to it's scales
         },
+
         update_scales: function() {
             this.unregister_all_scales(this.previous("scales"));
             this.trigger("scales_updated");
             this.update_domains();
         },
+
         unregister_all_scales: function(scales) {
             // disassociates the mark with the scale
             this.dirty = true;
@@ -56,9 +60,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
             this.dirty = false;
             //TODO: Check if the views are being removed
         },
+
         handle_destroy: function() {
             this.unregister_all_scales(this.get("scales"));
         },
+
         get_key_for_dimension: function(dimension) {
             var scales_metadata = this.get("scales_metadata");
             for (var scale in scales_metadata) {
@@ -70,8 +76,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
         },
     }, {
         serializers: _.extend({
-            scales: {deserialize: Widget.unpack_models},
-            tooltip:  {deserialize: Widget.unpack_models},
+            scales: { deserialize: widgets.unpack_models },
+            tooltip: { deserialize: widgets.unpack_models },
         }, BaseModel.BaseModel.serializers),
     });
 

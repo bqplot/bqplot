@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "underscore"], function(Widget, _) {
+define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
     "use strict";
 
-    var BaseModel = Widget.WidgetModel.extend({
+    var BaseModel = widgets.WidgetModel.extend({
+
         get_typed_field: function(param) {
             // function that reads in an array of a field that is typed. It
             // performs tpe conversions that you may require and returns you
@@ -46,6 +47,7 @@ define(["nbextensions/widgets/widgets/js/widget", "underscore"], function(Widget
             }
             return return_value;
         },
+
         set_typed_field: function(param, value, options) {
             // function takes a value which has to be set for a typed field and
             // performs the conversion needed before sending it across to
@@ -76,12 +78,15 @@ define(["nbextensions/widgets/widgets/js/widget", "underscore"], function(Widget
             return_object.values = saved_value;
             this.set(param, return_object, options);
         },
+
         get_date_elem: function(param) {
             return this.convert_to_date(this.get(param));
         },
+
         set_date_elem: function(param, value) {
             this.set(param, this.convert_to_json(value));
         },
+
         convert_to_date: function(elem) {
             // Function to convert the string to a date element
             if(elem === undefined || elem === null) {
@@ -89,6 +94,7 @@ define(["nbextensions/widgets/widgets/js/widget", "underscore"], function(Widget
             }
             return new Date(elem);
         },
+
         convert_to_json: function(elem) {
             // converts the date to a json compliant format
             if(elem === undefined || elem === null) {
@@ -96,7 +102,6 @@ define(["nbextensions/widgets/widgets/js/widget", "underscore"], function(Widget
             }
             return (elem.toJSON === undefined) ? elem : elem.toJSON();
         },
-
     });
 
     return {

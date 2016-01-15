@@ -17,6 +17,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
     "use strict";
 
     var OHLC = MarkViewModule.Mark.extend({
+
         render: function() {
             var base_creation_promise = OHLC.__super__.render.apply(this);
 
@@ -31,6 +32,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 that.draw(); },
             null);
         },
+
         set_ranges: function() {
             var x_scale = this.scales.x;
             if(x_scale) {
@@ -41,6 +43,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
         },
+
         set_positional_scales: function() {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             this.listenTo(x_scale, "domain_changed", function() {
@@ -50,6 +53,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 if(!this.model.dirty) { this.draw(); }
             });
         },
+
         create_listeners: function() {
             OHLC.__super__.create_listeners.apply(this);
              this.el.on("mouseover", _.bind(this.mouse_over, this))
@@ -64,6 +68,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             this.listenTo(this.model, "format_updated", this.draw, this);
             this.listenTo(this.model, "data_updated", this.draw);
         },
+
         update_stroke: function() {
             var stroke = this.model.get("stroke");
             this.el.selectAll(".stick").style("stroke", stroke);
@@ -73,10 +78,12 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 this.legend_el.selectAll("text").style("fill", stroke);
             }
         },
+
         update_stroke_width: function() {
             var stroke_width = this.model.get("stroke_width");
             this.el.selectAll(".stick").attr("stroke-width", stroke_width);
         },
+
         update_colors: function() {
             var that = this;
             var colors = this.model.get("colors");
@@ -93,17 +100,19 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 this.legend_el.selectAll("path").style("fill", up_color);
             }
         },
+
         update_opacities: function() {
             var opacities = this.model.get("opacities");
             this.el.selectAll(".stick").style("opacity", function(d, i) {
-                                                    return opacities[i];
-                                             });
+                return opacities[i];
+            });
 
             if(this.legend_el) {
                 this.legend_el.selectAll("path")
                     .attr("opacity", function(d, i) { return opacities[i]; });
             }
         },
+
         update_marker: function() {
             var marker = this.model.get("marker");
 
@@ -117,6 +126,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                     return d[1];
                 }));
         },
+
         update_selected_colors: function(idx_start, idx_end) {
             var stick_sel = this.el.selectAll(".stick");
             var current_range = _.range(idx_start, idx_end + 1);
@@ -143,6 +153,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                     });
             });
         },
+
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined ||
                this.model.mark_data.length === 0)
@@ -174,6 +185,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             this.touch();
             return selected;
         },
+
         invert_point: function(pixel) {
             var x_scale = this.scales.x;
             var point = 0;
@@ -184,6 +196,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             this.touch();
             return sel_index;
         },
+
         draw: function() {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             this.set_ranges();
@@ -253,6 +266,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
 
             this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
         },
+
         draw_mark_paths: function(type, selector, dat) {
             /* Calculate some values so that we can draw the marks
              *      | <----- high (0,0)
@@ -410,33 +424,40 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                     });
             }
         },
+
         /* SVG path for head of candle */
         head_path_candle: function(height) {
             return "m0,0 l0," + height;
         },
+
         /* SVG path for tail of candle */
         tail_path_candle: function(y_offset, height) {
             return "m0," + y_offset + " l0," + height;
         },
+
         /* SVG path for body of candle */
         body_path_candle: function(x_offset, y_offset, width, height) {
             return "m" + x_offset + "," + y_offset + " l" + width + ",0" +
                 " l0," + height + " l" + (-1*width) + ",0" + " z";
         },
+
         /* SVG path for head of bar */
         head_path_bar: function(x_offset, y_offset, width) {
             return "m" + x_offset + "," + y_offset +
                   " l" + width + ",0";
         },
+
         /* SVG path for tail of bar */
         tail_path_bar: function(y_offset, width) {
             return "m0," + y_offset +
                     " l" + width + ",0";
         },
+
         /* SVG path for body of bar */
         body_path_bar: function(height) {
             return "m0,0 l0," + height;
         },
+
         calculate_mark_width: function() {
             /*
              * Calculate the mark width for this data set based on the minimum
@@ -464,6 +485,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             }
             return min_distance;
         },
+
         relayout: function() {
             OHLC.__super__.relayout.apply(this);
             this.set_ranges();
@@ -474,6 +496,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             // We have to redraw every time that we relayout
             this.draw();
         },
+
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var stroke = this.model.get("stroke");
             var colors = this.model.get("colors");
@@ -522,6 +545,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             this.legend_el.exit().remove();
             return [1, max_length];
         },
+
         draw_legend_icon: function(size, selector) {
             /*
              * Draw OHLC icon next to legend text

@@ -13,17 +13,18 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/js/utils", "./BaseModel", "underscore"],
-       function(Widget, utils, BaseModel, _) {
+define(["jupyter-js-widgets", "./BaseModel", "underscore"],
+       function(widgets, BaseModel, _) {
     "use strict";
 
     var PanZoomModel = BaseModel.BaseModel.extend({
         initialize: function() {
             this.on("change:scales", this.snapshot_scales, this);
         },
+
         reset_scales: function() {
             var that = this;
-            utils.resolvePromisesDict(this.get("scales")).then(function(scales) {
+            widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
                 _.each(Object.keys(scales), function(k) {
                     _.each(scales[k], function(s, i) {
                         s.set_state(that.scales_states[k][i]);
@@ -31,10 +32,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 }, that);
             });
         },
+
         snapshot_scales: function() {
             // Save the state of the scales.
             var that = this;
-            utils.resolvePromisesDict(this.get("scales")).then(function(scales) {
+            widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
                 that.scales_states = Object.keys(scales).reduce(function(obj, key) {
                     obj[key] = scales[key].map(function(s) {
                         return s.get_state()
@@ -45,7 +47,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
         }
     }, {
         serializers: _.extend({
-            scales:  {deserialize: Widget.unpack_models},
+            scales: { deserialize: widgets.unpack_models },
         }, BaseModel.BaseModel.serializers),
     });
 

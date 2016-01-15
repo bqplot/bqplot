@@ -18,6 +18,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
     "use strict";
 
     var ScatterModel = MarkModelModule.MarkModel.extend({
+
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
@@ -32,6 +33,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
         },
+
         update_data: function() {
             this.dirty = true;
             var x_data = this.get_typed_field("x"),
@@ -81,6 +83,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
             this.dirty = false;
             this.trigger("data_updated");
         },
+
         update_unique_ids: function() {
             var names = this.get_typed_field("names");
             var show_labels = (names.length !== 0);
@@ -99,9 +102,11 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
                                        data.unique_id = unique_ids[index];
             });
         },
+
         get_data_dict: function(data, index) {
             return data;
         },
+
         update_domains: function() {
             if (!this.mark_data) {
                 return;
