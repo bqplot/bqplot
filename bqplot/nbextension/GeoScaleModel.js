@@ -13,16 +13,18 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], function(Widget, d3) {
+define(["jupyter-js-widgets", "./components/d3/d3"], function(widgets, d3) {
     "use strict";
 
-    var GeoScaleModel = Widget.WidgetModel.extend({
+    var GeoScaleModel = widgets.WidgetModel.extend({
     });
 
     var MercatorModel = GeoScaleModel.extend({
+
         initialize: function(range) {
             this.on_some_change(['scale_factor', 'center', 'rotate'], this.create_projection, this);
         },
+
         create_projection: function() {
             this.projection = d3.geo.mercator()
                 .center(this.get("center"))
@@ -36,9 +38,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], functio
     });
 
     var AlbersModel = GeoScaleModel.extend({
+
         initialize: function(range) {
             this.on_some_change(['rotate', 'center', 'parallels', 'scale_factor', 'precision'], this.create_projection, this);
         },
+
         create_projection: function() {
             this.projection = d3.geo.albers()
                 .rotate(this.get("rotate"))
@@ -48,44 +52,53 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], functio
                 .precision(this.get("precision"));
             this.attribute_changed();
         },
+
         attribute_changed: function() {
             this.trigger("attribute_changed");
         }
     });
 
     var AlbersUSAModel = GeoScaleModel.extend({
+
         initialize: function(range) {
             this.on_some_change(['scale_factor'], this.create_projection, this);
         },
+
         create_projection: function() {
             this.projection = d3.geo.albersUsa()
                 .scale(this.get("scale_factor"));
             this.attribute_changed();
         },
+
         attribute_changed: function() {
             this.trigger("attribute_changed");
         }
     });
 
     var EquiRectangularModel = GeoScaleModel.extend({
+
         initialize: function(range) {
             this.on_some_change(['scale_factor', 'center'], this.create_projection, this);
         },
+
         create_projection: function() {
             this.projection = d3.geo.equirectangular()
                 .center(this.get("center"))
                 .scale(this.get("scale_factor"));
             this.attribute_changed();
         },
+
         attribute_changed: function() {
             this.trigger("attribute_changed");
         }
     });
 
     var OrthographicModel = GeoScaleModel.extend({
+
         initialize: function(range) {
             this.on_some_change(['scale_factor', 'center', 'clip_angle', 'rotate', 'precision'], this.create_projection, this);
         },
+
         create_projection: function() {
             this.projection = d3.geo.orthographic()
                 .center(this.get("center"))
@@ -95,15 +108,18 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], functio
                 .precision(this.get("precision"));
             this.attribute_changed();
         },
+
         attribute_changed: function() {
             this.trigger("attribute_changed");
         }
     });
 
     var GnomonicModel = GeoScaleModel.extend({
+
         initialize: function(range) {
             this.on_some_change(['scale_factor', 'precision', 'clip_angle'], this.create_projection, this);
         },
+
         create_projection: function() {
             this.projection = d3.geo.gnomonic()
                 .clipAngle(this.get("clip_angle"))
@@ -111,15 +127,18 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], functio
                 .precision(this.get("precision"));
             this.attribute_changed();
         },
+
         attribute_changed: function() {
             this.trigger("attribute_changed");
         }
     });
 
     var StereographicModel = GeoScaleModel.extend({
+
         initialize: function(range) {
             this.on_some_change(['rotate', 'scale_factor', 'center', 'precision', 'clip_angle'], this.create_projection, this);
         },
+
         create_projection: function() {
             this.projection = d3.geo.stereographic()
                 .scale(this.get("scale_factor"))
@@ -129,6 +148,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], functio
                 .precision(this.get("precision"));
             this.attribute_changed();
         },
+
         attribute_changed: function() {
             this.trigger("attribute_changed");
         }

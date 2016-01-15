@@ -17,6 +17,7 @@ define(["./components/d3/d3", "./Selector", "underscore"], function(d3, BaseSele
     "use strict";
 
     var IndexSelector = BaseSelectors.BaseXSelector.extend({
+
         render : function() {
             IndexSelector.__super__.render.apply(this);
             this.active = false;
@@ -49,23 +50,28 @@ define(["./components/d3/d3", "./Selector", "underscore"], function(d3, BaseSele
                 that.create_listeners();
             });
         },
+
         create_listeners: function() {
             IndexSelector.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:color", this.color_change, this);
         },
+
         color_change: function() {
             if(this.model.get("color") !== null){
                 this.line.style("stroke", this.model.get("color"));
             }
         },
+
         initial_click: function() {
             this.line.attr("visibility", "visible");
             this.click();
             this.background.on("click", _.bind(this.click, this));
         },
+
         click: function () {
             this.active = !this.active;
         },
+
         mousemove: function() {
             if (!this.active) {
                 return;
@@ -82,9 +88,11 @@ define(["./components/d3/d3", "./Selector", "underscore"], function(d3, BaseSele
             });
             this.touch();
         },
+
         invert_pixel: function(pixel) {
             return this.scale.invert(pixel);
         },
+
         reset: function() {
             this.active = false;
             if(this.line !== undefined && this.line !== null) {
@@ -101,6 +109,7 @@ define(["./components/d3/d3", "./Selector", "underscore"], function(d3, BaseSele
             });
             this.touch();
         },
+
         update_scale_domain: function(ignore_gui_update) {
             // Call the base class function to update the scale.
             IndexSelector.__super__.update_scale_domain.apply(this);
@@ -108,6 +117,7 @@ define(["./components/d3/d3", "./Selector", "underscore"], function(d3, BaseSele
                 this.selected_changed();
             }
         },
+
         selected_changed: function(model, value, options) {
             if(options && options.js_ignore) {
                 //this change was most probably triggered from the js side and
@@ -134,11 +144,13 @@ define(["./components/d3/d3", "./Selector", "underscore"], function(d3, BaseSele
                 });
             }
         },
+
         remove: function() {
             this.line.remove();
             this.background.remove();
             IndexSelector.__super__.remove.apply(this);
         },
+
         relayout: function() {
             IndexSelector.__super__.relayout.apply(this);
             this.line.attr("y1", 0)
@@ -147,10 +159,12 @@ define(["./components/d3/d3", "./Selector", "underscore"], function(d3, BaseSele
                 .attr("height", this.height);
             this.set_range([this.scale]);
         },
+
         scale_changed: function() {
             this.reset();
             this.scale = this.parent.x_scale;
         },
+
         set_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {
                 array[iter].set_range([0, this.width]);

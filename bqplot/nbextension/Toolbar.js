@@ -17,14 +17,14 @@
 if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
 
 define([
-    "nbextensions/widgets/widgets/js/widget",
+    "jupyter-js-widgets",
     "./PanZoomModel",
     "jquery",
     "underscore"
-], function(widget, PanZoomModel, $, _) {
+], function(widgets, PanZoomModel, $, _) {
     "use strict";
 
-    var ToolbarModel = widget.DOMWidgetModel.extend({
+    var ToolbarModel = widgets.DOMWidgetModel.extend({
         // Backbone attributes:
         // - _panning: Bool
         //       Whether one is currently panning - zooming the specified figure.
@@ -65,6 +65,7 @@ define([
                 this.save_changes();
             }
         },
+
         reset: function() {
             /**
              * Reset the scales, delete the PanZoom widget, set the figure
@@ -84,6 +85,7 @@ define([
                 this.save_changes();
             }
         },
+
         save_png: function() {
             /**
              * Triggers the saving for all the views of that figure.
@@ -95,6 +97,7 @@ define([
                 figure.save_png();
             }
          },
+
         _create_panzoom_model: function(figure) {
             /**
              * Creates a panzoom interaction widget for the specified figure.
@@ -131,26 +134,26 @@ define([
         },
     }, {
         serializers: _.extend({
-            figure: {deserialize: widget.unpack_models},
-            _panzoom: {deserialize: widget.unpack_models},
-        }, widget.DOMWidgetModel.serializers)
+            figure: { deserialize: widgets.unpack_models },
+            _panzoom: { deserialize: widgets.unpack_models },
+        }, widgets.DOMWidgetModel.serializers)
     });
 
-    var Toolbar = widget.DOMWidgetView.extend({
+    var Toolbar = widgets.DOMWidgetView.extend({
 
         render: function() {
             var that = this;
             this.el.classList.add("bqplot", "widget-hbox");
 
-            // We use ipywidget css classes (ipywidget and widget-*-*) to
+            // We use jupyter-js-widgets css classes (ipywidget and widget-*-*) to
             // benefit from default width, shadows.
-            // We do not use btn-group to not break alignment with ipywidget
+            // We do not use btn-group to not break alignment with jupyter
             // buttons.
 
             // Create the buttons
             this.$Panzoom = $("<button />")
                 .addClass("btn btn-default")
-                .addClass("ipy-widget widget-toggle-button") // ipywidgets css
+                .addClass("ipy-widget widget-toggle-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "PanZoom")
@@ -161,7 +164,7 @@ define([
 
             this.$Reset = $("<button />")
                 .addClass("btn btn-default")
-                .addClass("ipy-widget widget-button") // ipywidgets css
+                .addClass("ipy-widget widget-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "Reset")
@@ -172,7 +175,7 @@ define([
 
             this.$Save = $("<button />")
                 .addClass("btn btn-default")
-                .addClass("ipy-widget widget-button") // ipywidgets css
+                .addClass("ipy-widget widget-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "Save")
