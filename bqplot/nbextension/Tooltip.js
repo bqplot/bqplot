@@ -17,7 +17,7 @@ define([
     "jupyter-js-widgets",
     "./components/d3/d3",
     "./utils",
-    "./components/require-less/less!./bqplot.less"
+    "./LoadStyle"
 ], function(widgets, d3, utils) {
     "use strict";
 
