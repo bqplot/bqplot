@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "underscore"],
-       function(Widget, d3, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "underscore"],
+       function(widgets, d3, _) {
     "use strict"
 
-    var Interaction = Widget.WidgetView.extend({
+    var Interaction = widgets.WidgetView.extend({
+
         render: function() {
             this.parent = this.options.parent;
 
@@ -35,6 +36,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "undersc
                 .attr("visibility", "hidden");
             this.parent.on("margin_updated", this.relayout, this);
         },
+
         relayout: function() {
             // Called when the figure margins are updated.
             this.el
@@ -45,6 +47,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "undersc
                                 this.parent.margin.top -
                                 this.parent.margin.bottom);
         },
+
         remove: function() {
             _.each(this.mark_views, function(mark) { mark.invert_range(); });
             this.el.remove();

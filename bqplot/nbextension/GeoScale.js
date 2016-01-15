@@ -13,18 +13,21 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], function(Widget, d3) {
+define(["jupyter-js-widgets", "./components/d3/d3"], function(widgets, d3) {
      "use strict";
 
-    var GeoScale = Widget.WidgetView.extend({
+    var GeoScale = widgets.WidgetView.extend({
+
         render: function() {
             this.set_projection();
             this.listenTo(this.model, "attribute_changed", this.reset_scale);
         },
+
         set_projection: function() {
             this.path = d3.geo.path().projection(this.model.projection);
             this.scale = this.model.projection;
         },
+
         reset_scale: function() {
             this.set_projection();
             this.trigger("domain_changed", null);

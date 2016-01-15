@@ -18,6 +18,7 @@ define(["./components/d3/d3", "./Interaction", "underscore"],
     "use strict";
 
     var BaseSelector = InteractionViewModule.Interaction.extend({
+
         render: function() {
             this.parent = this.options.parent;
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"));
@@ -26,19 +27,23 @@ define(["./components/d3/d3", "./Interaction", "underscore"],
             this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
             this.mark_views_promise = this.populate_mark_views();
         },
+
         create_listeners: function() {
             this.parent.on("margin_updated", this.relayout, this);
             this.listenTo(this.model, "change:selected", this.selected_changed);
             this.listenTo(this.model, "msg:custom", this.handle_custom_messages);
         },
+
         relayout: function() {
             this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
             this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
         },
+
         remove: function() {
             this.el.remove();
             BaseSelector.__super__.remove.apply(this);
         },
+
         populate_mark_views: function() {
             var fig = this.parent;
             var that = this;
@@ -57,20 +62,24 @@ define(["./components/d3/d3", "./Interaction", "underscore"],
                 });
             });
         },
+
         handle_custom_messages: function(msg) {
             if (msg.type === "reset") {
                 this.reset();
             }
         },
+
         reset: function() {
             //inherited classes should implement this function
         },
+
         selected_changed: function() {
             //inherited classes should implement this function
         },
     });
 
     var BaseXSelector = BaseSelector.extend({
+
         create_scales: function() {
             if(this.scale) {
                 this.scale.remove();
@@ -87,6 +96,7 @@ define(["./components/d3/d3", "./Interaction", "underscore"],
                 });
             }
         },
+
         update_scale_domain: function() {
             // When the domain of the scale is updated, the domain of the scale
             // for the selector must be expanded to account for the padding.
@@ -94,6 +104,7 @@ define(["./components/d3/d3", "./Interaction", "underscore"],
             var target_range = this.parent.range("x");
             this.scale.expand_domain(initial_range, target_range);
         },
+
         set_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {
                 array[iter].set_range(this.parent.range("x"));
@@ -102,6 +113,7 @@ define(["./components/d3/d3", "./Interaction", "underscore"],
     });
 
     var BaseXYSelector = BaseSelector.extend({
+
         create_scales: function() {
             var that = this;
             if(this.x_scale) {
@@ -132,16 +144,19 @@ define(["./components/d3/d3", "./Interaction", "underscore"],
 
             return Promise.all(scale_promises);
         },
+
         set_x_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {
                 array[iter].set_range(this.parent.range("x"));
             }
         },
+
         set_y_range: function(array) {
             for(var iter = 0; iter < array.length; iter++) {
                 array[iter].set_range(this.parent.range("y"));
             }
         },
+
         update_xscale_domain: function() {
             // When the domain of the scale is updated, the domain of the scale
             // for the selector must be expanded to account for the padding.
@@ -149,6 +164,7 @@ define(["./components/d3/d3", "./Interaction", "underscore"],
             var target_range = this.parent.range("x");
             this.x_scale.expand_domain(initial_range, target_range);
         },
+
         update_yscale_domain: function() {
             // When the domain of the scale is updated, the domain of the scale
             // for the selector must be expanded to account for the padding.

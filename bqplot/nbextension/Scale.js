@@ -13,37 +13,46 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3"], function(Widget, d3) {
+define(["jupyter-js-widgets", "./components/d3/d3"], function(widgets, d3) {
      "use strict";
 
-    var Scale = Widget.WidgetView.extend({
+    var Scale = widgets.WidgetView.extend({
+
         render: function(){
             this.offset = 0;
         },
+
         create_event_listeners: function() {
             this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
             this.listenTo(this.model, "highlight_axis", this.highlight_axis, this);
             this.listenTo(this.model, "unhighlight_axis", this.unhighlight_axis, this);
         },
+
         set_range: function(range, padding) {
             this.scale.range(range);
         },
+
         compute_and_set_domain: function(array, id) {
             this.model.compute_and_set_domain(array, id);
         },
+
         set_domain: function(array, id) {
             this.model.set_domain(array, id);
         },
+
         model_domain_changed: function() {
             this.scale.domain(this.model.domain);
             this.trigger("domain_changed");
         },
+
         highlight_axis: function() {
             this.trigger("highlight_axis");
         },
+
         unhighlight_axis: function() {
             this.trigger("unhighlight_axis");
         },
+
         expand_domain: function(old_range, new_range) {
             // Base class function. No implementation.
             // Implementation is particular to the child class

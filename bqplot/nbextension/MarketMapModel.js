@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"],
-       function(Widget, BaseModel, _) {
+define(["jupyter-js-widgets", "./BaseModel", "underscore"],
+       function(widgets, BaseModel, _) {
     "use strict";
 
     var MarketMapModel = BaseModel.BaseModel.extend({}, {
         serializers: _.extend({
-            scales:  {deserialize: Widget.unpack_models},
-            axes:  {deserialize: Widget.unpack_models},
-            tooltip_widget:  {deserialize: Widget.unpack_models},
-            style:  {deserialize: Widget.unpack_models},
+            scales: { deserialize: widgets.unpack_models },
+            axes: { deserialize: widgets.unpack_models },
+            tooltip_widget: { deserialize: widgets.unpack_models },
+            style: { deserialize: widgets.unpack_models },
         }, BaseModel.BaseModel.serializers),
     });
 

@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"],
-       function(Widget, BaseModel, _) {
+define(["jupyter-js-widgets", "./BaseModel", "underscore"],
+       function(widgets, BaseModel, _) {
     "use strict";
 
     var OneDSelectorModel = BaseModel.BaseModel.extend({}, {
         serializers: _.extend({
-            scale:  {deserialize: Widget.unpack_models},
-            marks:  {deserialize: Widget.unpack_models},
+            scale: { deserialize: widgets.unpack_models },
+            marks: { deserialize: widgets.unpack_models },
         }, BaseModel.BaseModel.serializers),
     });
 
