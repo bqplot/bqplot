@@ -155,5 +155,8 @@ define(["./components/d3/d3"], function(d3) {
         return symbol;
     };
 
-    return {symbol: bqSymbol, types: bqSymbolTypes.keys()};
+    return {
+        symbol: bqSymbol,
+        types: bqSymbolTypes.keys()
+    };
 });

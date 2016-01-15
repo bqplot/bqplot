@@ -17,11 +17,13 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
     "use strict";
 
     var ScaleModel = MarkModelModule.MarkModel.extend({
+
         initialize: function(range) {
             this.type = "base";
             this.domains = {};
             this.domain = [];
         },
+
         set_domain: function(domain, id) {
             // Call function only if you have computed the domain yourself. If
             // you want the scale to compute the domain based on the data for
@@ -29,6 +31,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.domains[id] = domain;
             this.update_domain();
         },
+
         del_domain: function(domain, id) {
             if(this.domains[id] !== undefined) {
                 delete this.domains[id];

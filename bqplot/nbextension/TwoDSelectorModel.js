@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], 
-       function(Widget, BaseModel, _) {
+define(["jupyter-js-widgets", "./BaseModel", "underscore"],
+       function(widgets, BaseModel, _) {
     "use strict";
 
     var TwoDSelectorModel = BaseModel.BaseModel.extend({}, {
         serializers: _.extend({
-            x_scale:  {deserialize: Widget.unpack_models},
-            y_scale:  {deserialize: Widget.unpack_models},
-            marks:  {deserialize: Widget.unpack_models},
+            x_scale: { deserialize: widgets.unpack_models },
+            y_scale: { deserialize: widgets.unpack_models },
+            marks: { deserialize: widgets.unpack_models },
         }, BaseModel.BaseModel.serializers),
     });
 

@@ -17,14 +17,15 @@
 
 Math.log10 = Math.log10 || function (x) { return Math.log(x) / Math.LN10; };
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils", "underscore"],
-       function(Widget, d3, bqutils, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "./utils", "underscore"],
+       function(widgets, d3, bqutils, _) {
     "use strict";
 
      var units_array = ["em", "ex", "px"];
-     var Axis = Widget.WidgetView.extend({
-         render: function() {
 
+     var Axis = widgets.WidgetView.extend({
+
+         render: function() {
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
               .style("display", this.model.get("visible") ? "inline" : "none");
 
@@ -50,6 +51,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 that.append_axis();
             });
         },
+
         create_listeners: function() {
             this.listenTo(this.model, "change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
@@ -83,6 +85,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }, this);
             this.parent.on("margin_updated", this.parent_margin_updated, this);
         },
+
         update_display: function() {
             this.side = this.model.get("side");
             this.vertical = this.model.get("orientation") === "vertical";
@@ -94,6 +97,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
             this.rescale_axis();
         },
+
         set_tick_values: function(animate) {
             var tick_values = this.model.get_typed_field("tick_values");
             var useticks = [];
@@ -153,6 +157,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                     .call(this.axis);
             }
         },
+
         tickformat_changed: function() {
             this.tick_format = this.generate_tick_formatter();
             this.axis.tickFormat(this.tick_format);
@@ -160,6 +165,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 this.g_axisline.call(this.axis);
             }
         },
+
         update_axis_domain: function() {
             var initial_range = (this.vertical) ?
                 this.parent.padded_range("y", this.axis_scale.model) : this.parent.padded_range("x", this.axis_scale.model);
@@ -168,6 +174,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.axis_scale.expand_domain(initial_range, target_range);
             this.axis.scale(this.axis_scale.scale);
         },
+
         update_offset_scale_domain: function() {
             if (this.offset_scale) {
                 var initial_range = (!this.vertical) ?
@@ -179,6 +186,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 this.offset_scale.expand_domain(initial_range, target_range);
             }
         },
+
         generate_tick_formatter: function() {
             if(this.axis_scale.model.type === "date" ||
                this.axis_scale.model.type === "date_color_linear") {
@@ -208,6 +216,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return this.guess_tick_format();
             }
         },
+
         set_scales_range: function() {
             this.axis_scale.set_range((this.vertical) ?
                 [this.height, 0] : [0, this.width]);
@@ -216,6 +225,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                     [0, this.width] : [this.height, 0]);
             }
         },
+
         create_axis_line: function() {
             if (this.vertical) {
                 this.axis = d3.svg.axis().scale(this.axis_scale.scale)
@@ -225,6 +235,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                   .orient(this.side === "top" ? "top" : "bottom");
             }
         },
+
         append_axis: function() {
             this.create_axis_line();
             this.update_axis_domain();
@@ -246,6 +257,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.update_color();
             this.update_label();
         },
+
         get_offset: function() {
             /*
              * The offset may require the creation of a Scale, which is async
@@ -284,12 +296,15 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }
             return return_promise;
         },
+
         highlight: function() {
             this.g_axisline.classed("axisbold", true);
         },
+
         unhighlight: function() {
             this.g_axisline.classed("axisbold", false);
         },
+
         get_basic_transform: function() {
             if(this.vertical){
                 return (this.side === "right") ? this.width : 0;
@@ -297,6 +312,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return (this.side === "top") ? 0 : this.height;
             }
         },
+
         get_axis_transform: function() {
             if(this.vertical){
                 return "translate(" + this.process_offset() + ", 0)";
@@ -304,6 +320,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return "translate(0, " + this.process_offset() + ")";
             }
         },
+
         process_offset: function() {
             if(this.offset_scale === undefined || this.offset_scale === null) {
                 return this.get_basic_transform();
@@ -317,6 +334,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return this.offset_scale.offset + value;
             }
         },
+
         get_label_attributes: function() {
             var label_x = 0;
              if(this.vertical){
@@ -364,6 +382,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 }
             }
         },
+
         get_text_styling: function() {
             // This function returns the text styling based on the attributes
             // of the axis. As of now, only the text-anchor attribute is set.
@@ -375,6 +394,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             else
                 return {"text-anchor" : "middle"};
         },
+
         update_label: function() {
             this.g_axisline.select("text.axislabel")
                 .text(this.model.get("label"));
@@ -386,19 +406,21 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 this.el.selectAll(".axislabel").selectAll("text")
                   .style("fill", this.model.get("label_color"));
             }
-
         },
+
         update_label_location: function(model, value) {
             this.label_loc = value;
             this.g_axisline.select("text.axislabel")
                 .attr(this.get_label_attributes())
                 .style(this.get_text_styling());
         },
+
         update_label_offset: function(model, offset) {
             this.label_offset = this.extract_label_offset(offset);
             this.g_axisline.select("text.axislabel")
               .attr("y", this.label_offset);
         },
+
         extract_label_offset: function(label_offset) {
             // If the label offset is not defined, depending on the orientation
             // of the axis, an offset is set.
@@ -426,11 +448,13 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }
             return label_offset;
         },
+
         remove: function() {
             this.model.off(null, null, this);
             this.el.remove();
             Axis.__super__.remove.apply(this);
         },
+
         update_grid_lines: function(animate) {
             var grid_type = this.model.get("grid_lines");
             var side = this.model.get("side");
@@ -475,6 +499,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                     .style("stroke", this.model.get("grid_color"));
             }
         },
+
         update_color: function() {
             if (this.model.get("color")) {
                 this.el.selectAll(".tick")
@@ -484,6 +509,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                     .style("stroke", this.model.get("color"));
             }
         },
+
         redraw_axisline: function() {
             // TODO: This call might not be necessary
             // TODO: Doesn't do what it states.
@@ -496,6 +522,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.set_tick_values(animate);
             this.update_grid_lines(animate);
         },
+
         rescale_axis: function() {
             //function to be called when the range of the axis has been updated
             //or the axis has to be repositioned.
@@ -516,6 +543,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.set_tick_values();
             this.update_grid_lines();
         },
+
         parent_margin_updated: function() {
             // sets the new dimensions of the g element for the axis.
             this.margin = this.parent.margin;
@@ -523,9 +551,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             this.height = this.parent.height - this.margin.top - this.margin.bottom;
             this.rescale_axis();
         },
+
         update_visibility: function(model, visible) {
             this.el.style("display", visible ? "inline" : "none");
         },
+
         get_ticks: function(data_array) {
             // Have to do different things based on the type of the scale.
             // If an array is passed, then just scale and return equally spaced
@@ -567,6 +597,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return _.range(scale_range[0], max, step);
             }
         },
+
         set_scale: function(model) {
             // Sets the child scale
             var that = this;
@@ -582,14 +613,17 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 that.axis_scale.on("unhighlight_axis", that.unhighlight, that);
             });
         },
+
         update_scale: function(old, value) {
             // Called when the child scale changes
             this.axis_scale.off();
             this.set_scale(value);
         },
+
         _get_digits: function(number) {
             return (number === 0) ? 1 : (Math.floor(Math.log10(Math.abs(number))) + 1);
         },
+
         _replace_trailing_zeros: function(str) {
             //regex to replace the trailing
             //zeros after the decimal point.
@@ -603,6 +637,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return str.replace(/(\.[0-9]*?)0+$/gi, "$1").replace(/\.$/, "");
             }
         },
+
         get_format_func: function(prec) {
             if(prec === 0) {
             // format this as an integer
@@ -635,6 +670,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 }
             };
         },
+
         _linear_scale_precision: function(ticks) {
             ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
             var diff = Math.abs(ticks[1] - ticks[0]);
@@ -666,9 +702,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return Math.min((Math.abs(diff_digits) + max_digits), 6) + 1;
             }
         },
+
         linear_sc_format: function(ticks) {
             return this.get_format_func(this._linear_scale_precision(ticks));
         },
+
         date_sc_format: function(ticks) {
             // assumes that scale is a linear date scale
             ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
@@ -708,9 +746,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                          ["%Y", function() { return true; }]];
             }
         },
+
         log_sc_format: function(ticks) {
             return this.get_format_func(this._log_sc_precision(ticks));
         },
+
         _log_sc_precision: function(ticks) {
             ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
             var ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
@@ -723,6 +763,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
                 return 3;
             }
         },
+
         guess_tick_format: function(ticks) {
             if(this.axis_scale.model.type == "linear" ||
                this.axis_scale.model.type == "color_linear") {
@@ -735,6 +776,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }
         },
      });
+
     return {
         Axis: Axis,
     };

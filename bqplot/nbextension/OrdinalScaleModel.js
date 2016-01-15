@@ -18,6 +18,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"],
     "use strict";
 
     var OrdinalScaleModel = ScaleModelModule.ScaleModel.extend({
+
         initialize: function(range) {
             OrdinalScaleModel.__super__.initialize.apply(this);
             this.type = "ordinal";
@@ -27,6 +28,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"],
             this.on("change:ticks", this.ticks_changed, this);
             this.on("change:reverse", this.reverse_changed, this);
         },
+
         domain_changed: function() {
             this.ord_domain = this.get("domain");
             if(this.ord_domain !== null && this.ord_domain.length !== 0) {
@@ -41,12 +43,14 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"],
                 this.update_domain();
             }
         },
+
         reverse_changed: function() {
             if(this.domain.length > 0) {
                 this.domain.reverse();
                 this.trigger("domain_changed", this.domain);
             }
         },
+
         update_domain: function() {
             var domain = [];
             // TODO: check for hasOwnProperty
@@ -59,6 +63,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"],
                 this.trigger("domain_changed", domain);
             }
         },
+
         compute_and_set_domain: function(data_array, id) {
             // Takes an array and calculates the domain for the particular
             // view. If you have the domain already calculated on your side,

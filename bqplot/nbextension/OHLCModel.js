@@ -17,6 +17,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
     "use strict";
 
     var OHLCModel = MarkModelModule.MarkModel.extend({
+
         initialize: function() {
             OHLCModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
@@ -26,10 +27,12 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.mark_data = [];
             this.display_el_classes = ["stick_body"] ;
         },
+
         update_format: function() {
             this.update_data();
             this.trigger("format_updated");
         },
+
         update_data: function() {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
@@ -90,6 +93,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.update_domains();
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;
@@ -162,6 +166,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 y_scale.del_domain([], this.id + "_y");
             }
         },
+
         get_data_dict: function(data, index) {
             var that = this;
             var return_val ={};

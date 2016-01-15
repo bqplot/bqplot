@@ -13,16 +13,18 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseModel", "underscore"],
-       function(Widget, d3, BaseModel, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"],
+       function(widgets, d3, BaseModel, _) {
     "use strict";
 
     var AxisModel = BaseModel.BaseModel.extend({
+
         initialize: function() {
             AxisModel.__super__.initialize.apply(this, arguments);
             this.on("change:side", this.validate_orientation, this);
             this.on("change:orientation", this.validate_side, this);
         },
+
         validate_side: function() {
             var orientation = this.get("orientation"),
                 side = this.get("side");
@@ -37,6 +39,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
             }
             this.save_changes();
         },
+
         validate_orientation: function() {
             var orientation = this.get("orientation"),
                 side = this.get("side");
@@ -51,9 +54,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
         }
     }, {
         serializers: _.extend({
-             scale: {deserialize: Widget.unpack_models},
-             offset: {deserialize: Widget.unpack_models}
-        }, Widget.WidgetModel.serializers),
+             scale: { deserialize: widgets.unpack_models },
+             offset: { deserialize: widgets.unpack_models }
+        }, widgets.WidgetModel.serializers),
     });
 
     return {

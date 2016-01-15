@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], function(Widget, BaseModel, _) {
+define(["jupyter-js-widgets", "./BaseModel", "underscore"], function(widgets, BaseModel, _) {
     "use strict";
 
     var FigureModel = BaseModel.BaseModel.extend({
+
         save_png: function() {
             // TODO: Any view of this Figure model will pick up this event
             // and render a png. Remove this eventually.
@@ -24,12 +25,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], 
         }
     }, {
         serializers: _.extend({
-            marks: {deserialize: Widget.unpack_models},
-            axes:  {deserialize: Widget.unpack_models},
-            interaction: {deserialize: Widget.unpack_models},
-            scale_x:  {deserialize: Widget.unpack_models},
-            scale_y:  {deserialize: Widget.unpack_models},
-            layout:  {deserialize: Widget.unpack_models},
+            marks: { deserialize: widgets.unpack_models },
+            axes:  { deserialize: widgets.unpack_models },
+            interaction: { deserialize: widgets.unpack_models },
+            scale_x: { deserialize: widgets.unpack_models },
+            scale_y: { deserialize: widgets.unpack_models },
+            layout:  { deserialize: widgets.unpack_models },
         }, BaseModel.BaseModel.serializers),
     });
 

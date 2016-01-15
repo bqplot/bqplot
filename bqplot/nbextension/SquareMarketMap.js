@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "underscore"],
-       function(Widget, d3, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "underscore"],
+       function(widgets, d3, _) {
     "use strict";
 
-    var SquareMarketMap = Widget.DOMWidgetView.extend({
+    var SquareMarketMap = widgets.DOMWidgetView.extend({
+
         render: function() {
             this.width = this.model.get("width");
             this.height = this.model.get("height");
@@ -71,6 +72,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "undersc
                 });
 
         },
+
         position: function(){
             this.style("left", function(d) { return d.x + "px"; })
                 .style("top", function(d) { return d.y + "px"; })

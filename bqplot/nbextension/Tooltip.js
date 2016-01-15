@@ -14,14 +14,15 @@
  */
 
 define([
-    "nbextensions/widgets/widgets/js/widget", 
-    "./components/d3/d3", 
+    "jupyter-js-widgets",
+    "./components/d3/d3",
     "./utils",
     "./components/require-less/less!./bqplot.less"
-], function(Widget, d3, utils) {
+], function(widgets, d3, utils) {
     "use strict";
 
-    var Tooltip = Widget.DOMWidgetView.extend({
+    var Tooltip = widgets.DOMWidgetView.extend({
+
         render: function() {
             // var base_creation_promise = Tooltip.__super__.render.apply(this);
             this.setElement(document.createElement("div"));
@@ -31,11 +32,13 @@ define([
             this.create_listeners();
             this.create_table();
         },
+
         create_listeners: function() {
             this.listenTo(this.parent, "update_tooltip", this.update_tooltip);
             this.model.on_some_change(["fields", "show_labels", "labels"], this.create_table, this);
             this.listenTo(this.model, "change:formats", this.update_formats);
         },
+
         update_formats: function() {
             var fields = this.model.get("fields");
             var formats = this.model.get("formats");
@@ -52,6 +55,7 @@ define([
                 }
             });
         },
+
         update_tooltip: function(data) {
             //data is a dictionary passed by the parent along with the update_
             //tooltip event. Responsibility of the mark to pass the data
@@ -61,6 +65,7 @@ define([
                 .select(".datavalue")
                 .text(function(datum, index) { return that.tooltip_formats[index](data[datum]);});
         },
+
         create_table: function() {
             var fields = this.model.get("fields");
             var labels = this.model.get("labels");
@@ -85,12 +90,14 @@ define([
                 .attr("class", "tooltiptext datavalue");
             this.update_formats();
         },
+
         remove: function() {
             this.model.off(null, null, this);
             this.d3_el.remove();
             Tooltip.__super__.remove.apply(this);
         },
     });
+
     return {
         Tooltip: Tooltip,
     };
