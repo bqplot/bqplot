@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// requirejs.config noop shim
+requirejs = { config: function() {} };
+
 require('underscore');
 [
     require("./nbextension/Axis.js"),

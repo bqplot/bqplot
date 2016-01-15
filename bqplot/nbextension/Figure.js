@@ -13,8 +13,7 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "./components/d3/d3", "underscore",
-        "./components/require-less/less!./bqplot.less"],
+define(["jupyter-js-widgets", "./components/d3/d3", "underscore", "./LoadStyle"],
        function(widgets, d3, _) {
     "use strict";
 
