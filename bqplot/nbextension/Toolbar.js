@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-// npm compatibility
-if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
-
 define([
     "jupyter-js-widgets",
     "./PanZoomModel",
@@ -143,7 +140,7 @@ define([
 
         render: function() {
             var that = this;
-            this.el.classList.add("bqplot", "widget-hbox");
+            this.el.classList.add("bqplot", "widget-hbox"); // jupyter-js-widgets css
 
             // We use jupyter-js-widgets css classes (ipywidget and widget-*-*) to
             // benefit from default width, shadows.
@@ -152,8 +149,8 @@ define([
 
             // Create the buttons
             this.$Panzoom = $("<button />")
-                .addClass("btn btn-default")
-                .addClass("ipy-widget widget-toggle-button") // jupyter-js-widgets css
+                .addClass("btn btn-default") // bootstrap css
+                .addClass("jupyter-widgets widget-toggle-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "PanZoom")
@@ -163,8 +160,8 @@ define([
                 });
 
             this.$Reset = $("<button />")
-                .addClass("btn btn-default")
-                .addClass("ipy-widget widget-button") // jupyter-js-widgets css
+                .addClass("btn btn-default") // bootstrap css
+                .addClass("jupyter-widgets widget-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "Reset")
@@ -174,8 +171,8 @@ define([
                 });
 
             this.$Save = $("<button />")
-                .addClass("btn btn-default")
-                .addClass("ipy-widget widget-button") // jupyter-js-widgets css
+                .addClass("btn btn-default") // bootstrap css
+                .addClass("jupyter-widgets widget-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "Save")
