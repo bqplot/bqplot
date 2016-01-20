@@ -220,7 +220,6 @@ def scales(key=None, scales={}):
 
     Parameters
     ----------
-
     key: hashable, optional
         Any variable that can be used as a key for a dictionary
     scales: dictionary
@@ -242,7 +241,6 @@ def scales(key=None, scales={}):
 
     Notes
     -----
-
     Every call to the function figure triggers a call to scales.
 
     The `scales` parameter is ignored if the `key` argument is not Keep and
@@ -278,13 +276,11 @@ def set_lim(min, max, name):
 
     Parameters
     ----------
-
     name: hashable
         Any variable that can be used as a key for a dictionary
 
     Raises
     ------
-
     KeyError
         When no context figure is associated with the provided key.
 
@@ -303,7 +299,6 @@ def axes(mark=None, options={}, **kwargs):
 
     Parameters
     ----------
-
     mark: Mark or None (default: None)
         The mark to inspect to create axes. If None, the last mark drawn is
         used instead.
@@ -356,7 +351,6 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
 
     Parameters
     ----------
-
     mark_type: type
         The type of mark to be drawn
     options: dict (default: {})
@@ -421,7 +415,6 @@ def plot(*args, **kwargs):
 
     Parameters
     ----------
-
     x: numpy.ndarray or list, 1d or 2d (optional)
         The x-coordinates of the plotted line. When not provided, the function
         defaults to `numpy.arange(len(y))`
@@ -490,7 +483,6 @@ def ohlc(*args, **kwargs):
 
     Parameters
     ----------
-
     x: numpy.ndarray or list, 1d (optional)
         The x-coordinates of the plotted line. When not provided, the function
         defaults to `numpy.arange(len(y))`.
@@ -545,7 +537,6 @@ def hist(sample, options={}, **kwargs):
 
     Parameters
     ----------
-
     sample: numpy.ndarray, 1d
         The sample for which the histogram must be generated.
     options: dict (default: {})
@@ -599,7 +590,6 @@ def pie(sizes, **kwargs):
 
     Parameters
     ----------
-
     sizes: numpy.ndarray, 1d
         The proportions to be represented by the Pie.
     options: dict (default: {})
@@ -641,7 +631,6 @@ def geo(map_data, **kwargs):
 
     Parameters
     ----------
-
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -671,7 +660,6 @@ def _add_interaction(int_type, **kwargs):
 
     Parameters
     ----------
-
     int_type: type
         The type of interaction to be added.
     """

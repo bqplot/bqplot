@@ -35,7 +35,6 @@ class Tooltip(DOMWidget):
 
     Attributes
     ----------
-
     fields: list (default: [])
         list of names of fields to be displayed in the tooltip
         All the attributes  of the mark are accesible in the tooltip
@@ -51,10 +50,10 @@ class Tooltip(DOMWidget):
         as the first column along with the value
     """
 
-    fields = List(sync=True)
-    formats = List(sync=True)
-    show_labels = Bool(True, sync=True)
-    labels = List(sync=True)
+    fields = List().tag(sync=True)
+    formats = List().tag(sync=True)
+    show_labels = Bool(True).tag(sync=True)
+    labels = List().tag(sync=True)
 
-    _view_name = Unicode('Tooltip', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Tooltip', sync=True)
+    _view_name = Unicode('Tooltip').tag(sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Tooltip').tag(sync=True)
