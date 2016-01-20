@@ -50,7 +50,6 @@ class Figure(DOMWidget):
 
     Attributes
     ----------
-
     title: string (default: '')
         title of the figure
     axes: List of Axes (default: [])
@@ -76,7 +75,6 @@ class Figure(DOMWidget):
     animation_duration: nonnegative int (default: 0)
         Duration of transition on change of data attributes, in milliseconds.
 
-
     Layout Attributes
 
     min_width: CFloat (default: 800.0)
@@ -94,27 +92,26 @@ class Figure(DOMWidget):
         than the sum of the margins.
 
     """
-    title = Unicode(sync=True, display_name='Title')
-    axes = List(Instance(Axis), sync=True, **widget_serialization)
-    marks = List(Instance(Mark), sync=True, **widget_serialization)
-    interaction = Instance(Interaction, allow_none=True, sync=True,
+    title = Unicode().tag(sync=True, display_name='Title')
+    axes = List(Instance(Axis)).tag(sync=True, **widget_serialization)
+    marks = List(Instance(Mark)).tag(sync=True, **widget_serialization)
+    interaction = Instance(Interaction, allow_none=True).tag(sync=True,
                            **widget_serialization)
-    scale_x = Instance(Scale, sync=True, **widget_serialization)
-    scale_y = Instance(Scale, sync=True, **widget_serialization)
-    fig_color = Color(None, allow_none=True, sync=True)
+    scale_x = Instance(Scale).tag(sync=True, **widget_serialization)
+    scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
+    fig_color = Color(None, allow_none=True).tag(sync=True)
 
-    min_width = CFloat(800.0, sync=True)
-    min_height = CFloat(500.0, sync=True)
-    preserve_aspect = Bool(False, sync=True, display_name='Preserve aspect ratio')
+    min_width = CFloat(800.0).tag(sync=True)
+    min_height = CFloat(500.0).tag(sync=True)
+    preserve_aspect = Bool().tag(sync=True, display_name='Preserve aspect ratio')
 
-    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60), sync=True)
-    padding_x = Float(default_value=0.0, min=0.0, max=1.0, sync=True)
-    padding_y = Float(default_value=0.025, min=0.0, max=1.0, sync=True)
+    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60)).tag(sync=True)
+    padding_x = Float(0.0, min=0.0, max=1.0).tag(sync=True)
+    padding_y = Float(0.025, min=0.0, max=1.0).tag(sync=True)
     legend_location = Enum(['top-right', 'top', 'top-left', 'left',
                             'bottom-left', 'bottom', 'bottom-right', 'right'],
-                           default_value='top-right', sync=True,
-                           display_name='Legend position')
-    animation_duration = Int(0, sync=True, display_name='Animation duration')
+                           default_value='top-right').tag(sync=True, display_name='Legend position')
+    animation_duration = Int().tag(sync=True, display_name='Animation duration')
 
     def _scale_x_default(self):
         return LinearScale(min=0, max=1)
@@ -122,7 +119,7 @@ class Figure(DOMWidget):
     def _scale_y_default(self):
         return LinearScale(min=0, max=1)
 
-    _view_name = Unicode('Figure', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Figure', sync=True)
-    _model_name = Unicode('FigureModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/FigureModel', sync=True)
+    _view_name = Unicode('Figure').tag(sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Figure').tag(sync=True)
+    _model_name = Unicode('FigureModel').tag(sync=True)
+    _model_module = Unicode('nbextensions/bqplot/FigureModel').tag(sync=True)

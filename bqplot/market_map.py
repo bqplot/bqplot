@@ -28,7 +28,7 @@ Market Map
 """
 
 from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance
-from ipywidgets import DOMWidget, CallbackDispatcher, widget_serialization
+from ipywidgets import DOMWidget, CallbackDispatcher, Color, widget_serialization
 
 from .traits import NdArray, PandasDataFrame
 from .marks import CATEGORY10
@@ -40,7 +40,6 @@ class MarketMap(DOMWidget):
 
     Attributes
     ----------
-
     names: numpy.ndarray of strings or objects convertible to strings (default: [])
         primary key for the data of the map. One rectangle is created for each
         unique entry in this array
@@ -57,7 +56,7 @@ class MarketMap(DOMWidget):
         Data to represent the color for each of the cells. If the value of the
         data is NaN for a cell, then the color of the cell is the color of the
         group it belongs to in absence of data for color
-    scales: Dictionary of , scales holding a scale for each data attribute
+    scales: Dictionary of scales holding a scale for each data attribute
         If the map has data being passed as color, then a corresponding color
         scale is required
     axes: List of axes
@@ -130,42 +129,38 @@ class MarketMap(DOMWidget):
         boolean to control if the map should be aware of which cell is being
         hovered on. If it is set to False, tooltip will not be displayed
     """
-    map_width = Int(1080, sync=True)
-    map_height = Int(800, sync=True)
+    map_width = Int(1080).tag(sync=True)
+    map_height = Int(800).tag(sync=True)
 
-    names = NdArray(sync=True)
-    groups = NdArray(sync=True)
-    display_text = NdArray(sync=True)
-    ref_data = PandasDataFrame(sync=True)
+    names = NdArray().tag(sync=True)
+    groups = NdArray().tag(sync=True)
+    display_text = NdArray().tag(sync=True)
+    ref_data = PandasDataFrame().tag(sync=True)
 
-    tooltip_fields = List(sync=True)
-    tooltip_formats = List(sync=True)
-    show_groups = Bool(False, sync=True)
+    tooltip_fields = List().tag(sync=True)
+    tooltip_formats = List().tag(sync=True)
+    show_groups = Bool().tag(sync=True)
 
-    cols = Int(sync=True, allow_none=True)
-    rows = Int(sync=True, allow_none=True)
+    cols = Int(allow_none=True).tag(sync=True)
+    rows = Int(allow_none=True).tag(sync=True)
 
-    row_groups = Int(1, sync=True)
-    colors = List(CATEGORY10, sync=True)
-    scales = Dict(sync=True, allow_none=True,
-                  **widget_serialization)
-    axes = List(sync=True, allow_none=True,
-                **widget_serialization)
-    color = NdArray(sync=True)
-    map_margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
-    preserve_aspect = Bool(False, sync=True,
-                           display_name='Preserve aspect ratio')
+    row_groups = Int(1).tag(sync=True)
+    colors = List(CATEGORY10).tag(sync=True)
+    scales = Dict().tag(sync=True, **widget_serialization)
+    axes = List().tag(sync=True, **widget_serialization)
+    color = NdArray().tag(sync=True)
+    map_margin = Dict(dict(top=50, right=50, left=50, bottom=50)).tag(sync=True)
+    preserve_aspect = Bool().tag(sync=True, display_name='Preserve aspect ratio')
 
-    stroke = Unicode('white', sync=True)
-    group_stroke = Unicode('black', sync=True)
-    selected_stroke = Unicode('dodgerblue', sync=True)
-    hovered_stroke = Unicode('orangered', sync=True)
+    stroke = Color('white').tag(sync=True)
+    group_stroke = Color('black').tag(sync=True)
+    selected_stroke = Color('dodgerblue').tag(sync=True)
+    hovered_stroke = Color('orangered').tag(sync=True)
 
-    selected = List(sync=True)
-    enable_hover = Bool(True, sync=True)
-    enable_select = Bool(True, sync=True)
-    tooltip_widget = Instance(DOMWidget, allow_none=True, sync=True,
-                              **widget_serialization)
+    selected = List().tag(sync=True)
+    enable_hover = Bool(True).tag(sync=True)
+    enable_select = Bool(True).tag(sync=True)
+    tooltip_widget = Instance(DOMWidget, allow_none=True).tag(sync=True, **widget_serialization)
 
     def __init__(self, **kwargs):
         super(MarketMap, self).__init__(**kwargs)
@@ -179,17 +174,16 @@ class MarketMap(DOMWidget):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
 
-    _view_name = Unicode('MarketMap', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/MarketMap', sync=True)
-    _model_name = Unicode('MarketMapModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MarketMapModel', sync=True)
+    _view_name = Unicode('MarketMap').tag(sync=True)
+    _view_module = Unicode('nbextensions/bqplot/MarketMap').tag(sync=True)
+    _model_name = Unicode('MarketMapModel').tag(sync=True)
+    _model_module = Unicode('nbextensions/bqplot/MarketMapModel').tag(sync=True)
 
 
 class SquareMarketMap(MarketMap):
-    margin = Dict(dict(top=50, right=50, left=50, bottom=50), sync=True)
-    data = Dict(sync=True)
-    mode = Enum(['squarify', 'slice', 'dice', 'slice-dice'],
-                default_value='squarify', sync=True)
+    margin = Dict(dict(top=50, right=50, left=50, bottom=50)).tag(sync=True)
+    data = Dict().tag(sync=True)
+    mode = Enum(['squarify', 'slice', 'dice', 'slice-dice'], default_value='squarify').tag(sync=True)
 
-    _view_name = Unicode('SquareMarketMap', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/SquareMarketMap', sync=True)
+    _view_name = Unicode('SquareMarketMap').tag(sync=True)
+    _view_module = Unicode('nbextensions/bqplot/SquareMarketMap').tag(sync=True)
