@@ -61,7 +61,6 @@ class Axis(BaseAxis):
 
     Attributes
     ----------
-
     icon: string (class-level attribute)
         The font-awesome icon name for this object.
     axis_types: dict (class-level attribute)
@@ -103,31 +102,27 @@ class Axis(BaseAxis):
         A visibility toggle for the axis
     """
     icon = 'fa-arrows'
-    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
-                       sync=True)
-    side = Enum(['bottom', 'top', 'left', 'right'], allow_none=True, default_value=None,
-                sync=True)
-    label = Unicode(sync=True)
-    grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none',
-                      sync=True)
-    tick_format = Unicode(None, allow_none=True, sync=True)
-    scale = Instance(Scale, sync=True, **widget_serialization)
-    num_ticks = Int(default_value=None, sync=True, allow_none=True)
-    tick_values = NdArray(sync=True, allow_none=True)
-    offset = Dict(sync=True, **widget_serialization)
-    label_location = Enum(['middle', 'start', 'end'], default_value='middle',
-                          sync=True)
-    label_color = Color(None, sync=True, allow_none=True)
-    grid_color = Color(None, sync=True, allow_none=True)
-    color = Color(None, sync=True, allow_none=True)
-    label_offset = Unicode(default_value=None, sync=True, allow_none=True)
+    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
+    side = Enum(['bottom', 'top', 'left', 'right'], allow_none=True, default_value=None).tag(sync=True)
+    label = Unicode().tag(sync=True)
+    grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none').tag(sync=True)
+    tick_format = Unicode(None, allow_none=True).tag(sync=True)
+    scale = Instance(Scale).tag(sync=True, **widget_serialization)
+    num_ticks = Int(default_value=None, allow_none=True).tag(sync=True)
+    tick_values = NdArray(allow_none=True).tag(sync=True)
+    offset = Dict().tag(sync=True, **widget_serialization)
+    label_location = Enum(['middle', 'start', 'end'], default_value='middle').tag(sync=True)
+    label_color = Color(None, allow_none=True).tag(sync=True)
+    grid_color = Color(None, allow_none=True).tag(sync=True)
+    color = Color(None, allow_none=True).tag(sync=True)
+    label_offset = Unicode(default_value=None, allow_none=True).tag(sync=True)
 
-    visible = Bool(True, sync=True)
+    visible = Bool(True).tag(sync=True)
 
-    _view_name = Unicode('Axis', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Axis', sync=True)
-    _model_name = Unicode('AxisModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/AxisModel', sync=True)
+    _view_name = Unicode('Axis').tag(sync=True)
+    _view_module = Unicode('nbextensions/bqplot/Axis').tag(sync=True)
+    _model_name = Unicode('AxisModel').tag(sync=True)
+    _model_module = Unicode('nbextensions/bqplot/AxisModel').tag(sync=True)
     _ipython_display_ = None  # We cannot display an axis outside of a figure.
 
 
@@ -140,7 +135,6 @@ class ColorAxis(Axis):
 
     Attributes
     ----------
-
     orientation: {'horizontal', 'vertical'}
         Orientation of the color axis
     side: {'bottom', 'top', 'left', right}
@@ -152,13 +146,11 @@ class ColorAxis(Axis):
     tick_format: string (default: '')
         The axis tick format
     """
-    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal',
-                       sync=True)
-    side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom',
-                sync=True)
-    label = Unicode(sync=True)
-    scale = Instance(ColorScale, sync=True, **widget_serialization)
-    _view_name = Unicode('ColorAxis', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/ColorAxis', sync=True)
-    _model_name = Unicode('AxisModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/AxisModel', sync=True)
+    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
+    side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom').tag(sync=True)
+    label = Unicode().tag(sync=True)
+    scale = Instance(ColorScale).tag(sync=True, **widget_serialization)
+    _view_name = Unicode('ColorAxis').tag(sync=True)
+    _view_module = Unicode('nbextensions/bqplot/ColorAxis').tag(sync=True)
+    _model_name = Unicode('AxisModel').tag(sync=True)
+    _model_module = Unicode('nbextensions/bqplot/AxisModel').tag(sync=True)
