@@ -187,7 +187,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                         return that.get_element_color(d, i) || fill_color[i];
                     })
                     .style("opacity", function(d, i) { return opacities[i]; })
-                    .style("fill", function(d, i) { return that.get_fill_color(d, i); });
+                    .style("fill", function(d, i) {
+                        return that.model.get("fill") === "none" ?
+                            "" : that.get_fill_color(d, i);
+                    })
                 this.legend_el.select(".dot")
                     .style("stroke", function(d, i) {
                         return that.get_element_color(d, i) || fill_color[i];
@@ -375,14 +378,6 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   return (that.model.get("labels_visibility") !== "label") ?
                     "none" : "inline";
               }).text(function(d) { return d.name; });
-        },
-        legend_click: function(index) {
-            var path = "#curve" + (index + 1);
-            var opacity = this.model.mark_data[index].opacity = (this.model.mark_data[index].opacity === 1) ?
-                0.1 : 1;
-            this.el.select("#legend" + (index + 1))
-              .style("opacity", opacity + 0.4);
-            this.el.select(path).style("opacity", opacity);
         },
         update_curves_subset: function() {
             var that = this;
