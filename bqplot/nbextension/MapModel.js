@@ -19,6 +19,36 @@ define(["./MarkModel", "underscore"],
 
     var MapModel = MarkModel.MarkModel.extend({
 
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "MapModel",
+            _model_module: "nbextensions/bqplot/MapModel",
+            _view_name: "Map",
+            _view_module: "nbextensions/bqplot/Map",
+
+            color: {},
+            scales_metadata: {},
+            hover_highlight: true,
+            hovered_styles: {
+                hovered_fill: "Orange",
+                hovered_stroke: null,
+                hovered_stroke_width: 2.0
+            },
+
+            stroke_color: null,
+            default_color: null,
+            scales_metadata: {
+                color: { dimension: "color" },
+                projection: { dimension: "geo" }
+            },
+            selected: [],
+            selected_styles: {
+                selected_fill: "Red",
+                selected_stroke: null,
+                selected_stroke_width: 2.0
+            },
+            map_data: undefined,
+        }),
+
         initialize: function() {
             MapModel.__super__.initialize.apply(this);
             this.on("change:map_data", this.update_data, this);

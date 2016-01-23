@@ -31,7 +31,7 @@ from traitlets import Unicode, List, Bool
 
 class Tooltip(DOMWidget):
 
-    """Default tooltip widget for any mark.
+    """Default tooltip widget for marks.
 
     Attributes
     ----------
@@ -57,3 +57,5 @@ class Tooltip(DOMWidget):
 
     _view_name = Unicode('Tooltip').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/Tooltip').tag(sync=True)
+    _model_name = Unicode('TooltipModel').tag(sync=True)
+    _model_module = Unicode('nbextensions/bqplot/TooltipModel').tag(sync=True)

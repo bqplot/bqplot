@@ -18,6 +18,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
     "use strict";
 
     var GridHeatMap = MarkViewModule.Mark.extend({
+
         render: function() {
             var base_render_promise = GridHeatMap.__super__.render.apply(this);
             var that = this;
@@ -44,6 +45,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 that.draw();
             });
         },
+
         set_ranges: function() {
             var row_scale = this.scales.row;
             if(row_scale) {
@@ -58,6 +60,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 col_scale.set_range(this.parent.padded_range("x", col_scale.model));
             }
         },
+
         set_positional_scales: function() {
             var x_scale = this.scales.column, y_scale = this.scales.row;
             this.listenTo(x_scale, "domain_changed", function() {
@@ -67,6 +70,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 if (!this.model.dirty) { this.draw(); }
             });
         },
+
         expand_scale_domain: function(scale, data, mode, start) {
             // This function expands the domain so that the heatmap has the
             // minimum area needed to draw itself.
@@ -96,18 +100,18 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                     return [scale.invert(new_pixel), data[current_pixels.length - 1]];
                 }
             } else if(mode === "expand_two") {
-                current_pixels = data.map(function(el)
-                                        {
-                                            return scale.scale(el);
-                                        });
+                current_pixels = data.map(function(el) {
+                    return scale.scale(el);
+                });
                 min_diff = d3.min(current_pixels.slice(1).map(function(el, index) {
-                                            return el - current_pixels[index];
-                                        }));
+                    return el - current_pixels[index];
+                }));
                 var new_end = current_pixels[current_pixels.length - 1] + min_diff;
                 var new_start = current_pixels[0] - min_diff;
                 return [scale.invert(new_start), scale.invert(new_end)];
             }
         },
+
         create_listeners: function() {
             GridHeatMap.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:stroke", this.update_stroke, this);
@@ -124,6 +128,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
         },
+
         click_handler: function (args) {
             var data = args.data;
             var num_cols = this.model.colors[0].length;
@@ -195,10 +200,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.apply_styles();
 
         },
+
         update_selected: function(model, value) {
             this.selected_indices = value;
             this.apply_styles();
         },
+
         set_style_on_elements: function(style, indices, elements) {
             // If the index array is undefined or of length=0, exit the
             // function without doing anything
@@ -212,6 +219,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             elements = (!elements || elements.length === 0) ? this._filter_cells_by_index(indices) : elements;
             elements.style(style);
         },
+
         set_default_style: function(indices, elements) {
             // For all the elements with index in the list indices, the default
             // style is applied.
@@ -231,6 +239,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
               .style("opacity", opacity)
               .style("stroke", stroke);
         },
+
         clear_style: function(style_dict, indices, elements) {
             // Function to clear the style of a dict on some or all the elements of the
             // chart.If indices is null, clears the style on all elements. If
@@ -261,20 +270,24 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             }
             elements.style(clearing_style);
         },
+
         _filter_cells_by_cell_num: function(cell_numbers) {
             return this.display_cells.filter(function(el) {
                return (cell_numbers.indexOf(el._cell_num) !== -1);});
         },
+
         selected_style_updated: function(model, style) {
             this.selected_style = style;
             this.clear_style(model.previous("selected_style"), this.selected_indices, this.selected_elements);
             this.style_updated(style, this.selected_indices, this.selected_elements);
         },
+
         unselected_style_updated: function(model, style) {
             this.unselected_style = style;
             this.clear_style(model.previous("unselected_style"), [], this.unselected_elements);
             this.style_updated(style, [], this.unselected_elements);
         },
+
         apply_styles: function() {
             var num_rows = this.model.colors.length;
             var num_cols = this.model.colors[0].length;
@@ -299,11 +312,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.anchor_element = this._filter_cells_by_cell_num(anchor_num);
             this.set_style_on_elements(this.anchor_style, [], this.anchor_element);
         },
+
         style_updated: function(new_style, indices, elements) {
             // reset the style of the elements and apply the new style
             this.set_default_style(indices, elements);
             this.set_style_on_elements(new_style, indices, elements);
         },
+
         reset_selection: function() {
             this.model.set("selected", null);
             this.touch();
@@ -312,6 +327,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.clear_style(this.unselected_style);
             this.set_default_style();
         },
+
         relayout: function() {
             this.set_ranges();
             this.compute_view_padding();
@@ -319,6 +335,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             //expensive.
             this.draw();
         },
+
         _cell_nums_from_indices: function(indices) {
             if(indices === null || indices === undefined) {
                 return null;
@@ -326,9 +343,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             var num_cols = this.model.colors[0].length;
             return indices.map(function(i) { return i[0] * num_cols + i[1];});
         },
+
         invert_point: function(pixel) {
             // For now, an index selector is not supported for the heatmap
         },
+
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined) {
                 this.model.set("selected", null);
@@ -360,6 +379,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.model.set("selected", selected);
             this.touch();
         },
+
         invert_2d_range: function(x_start, x_end, y_start, y_end) {
             //y_start is usually greater than y_end as the y_scale is invert
             //by default
@@ -391,6 +411,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.touch();
             return selected;
         },
+
         draw: function() {
             this.set_ranges();
 
@@ -432,19 +453,22 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.display_rows.enter().append("g")
                 .attr("class", "heatmaprow");
             this.display_rows
-                .attr("transform", function(d)
-                                    {
-                                        return "translate(0, " + row_plot_data.start[d] + ")";
-                                    });
+                .attr("transform", function(d) {
+                    return "translate(0, " + row_plot_data.start[d] + ")";
+                });
 
             var col_nums = _.range(num_cols);
             var row_nums = _.range(num_rows);
 
-            var data_array = row_nums.map(function(row) { return col_nums.map( function(col) {
-                                                            return that.model.mark_data[row*num_cols + col];})
-                                                        });
+            var data_array = row_nums.map(function(row) { 
+                return col_nums.map(function(col) {
+                    return that.model.mark_data[row * num_cols + col];
+                });
+            });
 
-            this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) { return data_array[i]; });
+            this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
+                return data_array[i];
+            });
             this.display_cells.enter()
                 .append("rect")
                 .attr("class", "heatmapcell")
@@ -455,16 +479,18 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             var stroke = this.model.get("stroke");
             var opacity = this.model.get("opacity");
             this.display_cells
-                .attr({"x": function(d, i)
-                             {
-                                return column_plot_data.start[i];
-                             },
-                       "y": 0})
-                .attr("width", function(d, i) { return column_plot_data.widths[i];})
-                .attr("height",function(d) { return row_plot_data.widths[d.row_num];})
+                .attr({
+                    "x": function(d, i) {
+                        return column_plot_data.start[i];
+                    }, "y": 0
+                })
+                .attr("width", function(d, i) { return column_plot_data.widths[i]; })
+                .attr("height",function(d) { return row_plot_data.widths[d.row_num]; })
                 .style("fill", function(d) { return that.get_element_fill(d); })
-                .style({"stroke" : stroke,
-                        "opacity" : opacity});
+                .style({
+                    "stroke": stroke,
+                    "opacity": opacity
+                });
 
             this.display_cells.on("click", function(d, i) {
                 return that.event_dispatcher("element_clicked", {
@@ -475,12 +501,15 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 });
             });
         },
+
         update_stroke: function(model, value) {
             this.display_cells.style("stroke", value);
         },
+
         update_opacity: function(model, value) {
             this.display_cells.style("opacity", value);
         },
+
         get_tile_plotting_data: function(scale, data, mode, start) {
             // This function returns the starting points and widths of the
             // cells based on the parameters passed.
@@ -508,7 +537,10 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 }
                 start_points = pixel_points[1] > pixel_points[0] ?
                     pixel_points.slice(0, -1) : pixel_points.slice(1);
-                return {"start": start_points, "widths": widths};
+                return {
+                    "start": start_points,
+                    "widths": widths
+                };
             }
             if(mode === "expand_one") {
                 var bounds;
@@ -577,9 +609,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 return {"start": start_points, "widths": widths};
             }
         },
+
         get_element_fill: function(dat) {
             return this.scales.color.scale(dat.color);
         },
+
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {

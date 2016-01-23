@@ -13,10 +13,34 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var GridHeatMapModel = MarkModelModule.MarkModel.extend({
+    var GridHeatMapModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "GridHeatMapModel",
+            _model_module: "nbextensions/bqplot/GridHeatMapModel",
+            _view_name: "GridHeatMap",
+            _view_module: "nbextensions/bqplot/GridHeatMap",
+
+            row: [],
+            column: [],
+            color: null,
+            scales_metadata: {
+                row: { orientation: "vertical", dimension: "y" },
+                column: { orientation: "horizontal", dimension: "x" },
+                color: { dimension: "color" }
+            },
+            row_align: "start",
+            column_align: "start",
+            stroke: "black",
+            opacity: 1.0,
+            anchor_style: {
+                fill: "white",
+                stroke: "blue"
+            }
+        }),
 
         initialize: function() {
             GridHeatMapModel.__super__.initialize.apply(this);
