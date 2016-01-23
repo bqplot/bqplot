@@ -14,10 +14,49 @@
  */
 
 define(["./components/d3/d3", "./MarkModel", "underscore"],
-       function(d3, MarkModelModule, _) {
+       function(d3, MarkModel, _) {
     "use strict";
 
-    var ScatterModel = MarkModelModule.MarkModel.extend({
+    var ScatterModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "ScatterModel",
+            _model_module: "nbextensions/bqplot/ScatterModel",
+            _view_name: "Scatter",
+            _view_module: "nbextensions/bqplot/Scatter",
+
+            x: [], 
+            y: [],
+            color: null,
+            opacity: null,
+            size: null,
+            skew: null,
+            rotation: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" },
+                size: { dimension: "size" },
+                opacity: { dimension: "opacity" }
+            },
+            marker: "circle",
+            default_colors: [],
+            stroke: null,
+            stroke_width: 1.5,
+            default_opacities: [],
+            default_skew: 0.5,
+            default_size: 64,
+            names: [],
+            display_names: true,
+            fill: true,
+            drag_color: null,
+            names_unique: true,
+            enable_move: false,
+            enable_delete: false,
+            restrict_x: false,
+            restrict_y: false,
+            update_on_move: false
+        }),
 
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw

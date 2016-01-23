@@ -13,10 +13,40 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var LinesModel = MarkModelModule.MarkModel.extend({
+    var LinesModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "LinesModel",
+            _model_module: "nbextensions/bqplot/LinesModel",
+            _view_name: "Lines",
+            _view_module: "nbextensions/bqplot/Lines",
+
+            x: [],
+            y: [],
+            color: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" }
+            },
+            colors: [],
+            fill_colors: [],
+            stroke_width: 2.0,
+            labels_visibility: "none",
+            curves_subset: [],
+            line_style: "solid",
+            interpolation: "linear",
+            close_path: false,
+            fill: "none",
+            marker: null,
+            marker_size: 64,
+            opacities: [],
+            fill_opacities: [],
+        }),
+
         initialize: function() {
             LinesModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y", "color"], this.update_data, this);
@@ -26,6 +56,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
         },
+
         update_data: function() {
             this.dirty = true;
             // Handling data updates
@@ -78,6 +109,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.dirty = false;
             this.trigger("data_updated");
         },
+
         update_labels: function() {
             // Function to set the labels appropriately.
             // Setting the labels to the value sent and filling in the
@@ -95,6 +127,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             }
             return curve_labels;
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;
@@ -128,12 +161,14 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 }
             }
         },
+
         get_data_dict: function(data, index) {
             return data;
         },
     });
 
     var FlexLineModel = LinesModel.extend({
+
         update_data:function() {
             this.dirty = true;
             // Handling data updates
@@ -157,23 +192,26 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 var width_data = this.get_typed_field("width");
                 this.data_len = Math.min(this.x_data[0].length, this.y_data[0].length);
 
-                this.mark_data = [{ name: curve_labels[0],
-                            values: _.range(this.data_len - 1)
-                                .map(function(val, index) {
-                                return {x1: that.x_data[0][index],
-                                        y1: that.y_data[0][index],
-                                        x2: that.x_data[0][index+1],
-                                        y2: that.y_data[0][index+1],
-                                        color: color_data[index],
-                                        size: width_data[index]};
-                            })
-                        }];
+                this.mark_data = [{ 
+                    name: curve_labels[0],
+                    values: _.range(this.data_len - 1).map(function(val, index) {
+                        return {
+                            x1: that.x_data[0][index],
+                            y1: that.y_data[0][index],
+                            x2: that.x_data[0][index + 1],
+                            y2: that.y_data[0][index + 1],
+                            color: color_data[index],
+                            size: width_data[index]
+                        };
+                    })
+                }];
             }
 
             this.update_domains();
             this.dirty = false;
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;

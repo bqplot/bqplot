@@ -13,10 +13,34 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var PieModel = MarkModelModule.MarkModel.extend({
+    var PieModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "PieModel",
+            _model_module: "nbextensions/bqplot/PieModel",
+            _view_name: "Pie",
+            _view_module: "nbextensions/bqplot/Pie",
+
+            sizes: [],
+            color: null,
+            x: 0.5,
+            y: 0.5,
+            scales_metadata: {
+                color: { dimension: "color"}
+            },
+            sort: false,
+            colors: [],
+            stroke: null,
+            opacities: [],
+            radius: 180,
+            inner_radius: 0.1,
+            start_angle: 0.0,
+            end_angle: 360.0
+        }),
+
         initialize: function() {
             PieModel.__super__.initialize.apply(this);
             this.on("change:sizes", this.update_data, this);
