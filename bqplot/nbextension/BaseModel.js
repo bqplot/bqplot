@@ -18,10 +18,15 @@ define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
 
     var BaseModel = widgets.WidgetModel.extend({
 
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_name: "BaseModel",
+            _model_module: "nbextensions/bqplot/BaseModel",
+        }),
+
         get_typed_field: function(param) {
-            // function that reads in an array of a field that is typed. It
+            // Function that reads in an array of a field that is typed. It
             // performs tpe conversions that you may require and returns you
-            // the appropriate array
+            // the appropriate array.
             var value = this.get(param);
             var return_value = [];
             var that = this;
