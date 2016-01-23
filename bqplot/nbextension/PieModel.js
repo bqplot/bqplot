@@ -29,7 +29,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             x: 0.5,
             y: 0.5,
             scales_metadata: {
-                color: { dimension: "color"}
+                color: { dimension: "color" }
             },
             sort: false,
             colors: [],
@@ -57,10 +57,12 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             var color = this.get_typed_field("color");
             var labels = this.get("labels");
             this.mark_data = sizes.map(function(d, i) {
-                return {size: d,
-                        color: color[i],
-                        label: labels[i],
-                        index: i};
+                return {
+                    size: d,
+                    color: color[i],
+                    label: labels[i],
+                    index: i
+                };
             });
             this.update_color();
             this.update_domains();
