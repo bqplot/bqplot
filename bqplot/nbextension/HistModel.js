@@ -13,10 +13,30 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var HistModel = MarkModelModule.MarkModel.extend({
+    var HistModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "HistModel",
+            _model_module: "nbextensions/bqplot/HistModel",
+            _view_name: "Hist",
+            _view_module: "nbextensions/bqplot/Hist",
+
+            sample: [],
+            count: [],
+            scales_metadata: {
+                sample: { orientation: "horizontal", dimension: "x" },
+                count: { orientation: "vertical", dimension: "y" }
+            },
+            bins: 10,
+            midpoints: [],
+            colors: [],
+            stroke: null,
+            opacities: []
+        }),
+
         initialize: function() {
             // TODO: should not need to set this.data
             HistModel.__super__.initialize.apply(this);

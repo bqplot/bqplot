@@ -796,14 +796,14 @@ class Label(Mark):
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     """
-    x = Date().tag(sync=True) | Float().tag(sync=True) | Unicode().tag(sync=True)  # TODO: check validation order, and default value
-    y = Date().tag(sync=True) | Float().tag(sync=True) | Unicode().tag(sync=True)
+    x = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)  # TODO: Why could it be Unicode
+    y = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
     x_offset = Int().tag(sync=True)
     y_offset = Int().tag(sync=True)
     scales_metadata = Dict({
-        'x': {'orientation': 'horizontal', 'dimension': 'x'},
-        'y': {'orientation': 'vertical', 'dimension': 'y'},
-        'color': {'dimension': 'color'}
+        'x': { 'orientation': 'horizontal', 'dimension': 'x' },
+        'y': { 'orientation': 'vertical', 'dimension': 'y' },
+        'color': { 'dimension': 'color' }
     }).tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
     rotate_angle = Float().tag(sync=True)
@@ -814,6 +814,8 @@ class Label(Mark):
 
     _view_name = Unicode('Label').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/Label').tag(sync=True)
+    _model_name = Unicode('LabelModel').tag(sync=True)
+    _model_module = Unicode('nbextensions/bqplot/LabelModel').tag(sync=True)
 
 
 @register_mark('bqplot.OHLC')

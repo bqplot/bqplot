@@ -13,10 +13,28 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var OHLCModel = MarkModelModule.MarkModel.extend({
+    var OHLCModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "OHLCModel",
+            _model_module: "nbextensions/bqplot/OHLCModel",
+            _view_name: "OHLC",
+            _view_module: "nbextensions/bqplot/OHLC",
+
+            x: [],
+            y: [],
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" }
+            },
+            stroke: null,
+            box_fill_color: "dodgerblue",
+            outlier_fill_color: "gray",
+            opacities: []
+        }),
 
         initialize: function() {
             OHLCModel.__super__.initialize.apply(this);

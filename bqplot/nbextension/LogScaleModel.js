@@ -17,6 +17,7 @@ define(["./components/d3/d3", "./LinearScaleModel"], function(d3, LinearScaleMod
     "use strict";
 
     var LogScaleModel = LinearScaleModelModule.LinearScaleModel.extend({
+
         initialize: function(range) {
             LogScaleModel.__super__.initialize.apply(this);
             this.type = "log";

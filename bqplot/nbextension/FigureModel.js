@@ -18,6 +18,37 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"], function(widgets, Ba
 
     var FigureModel = BaseModel.BaseModel.extend({
 
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "FigureModel",
+            _model_module: "nbextensions/bqplot/FigureModel",
+            _view_name: "Figure",
+            _view_module: "nbextensions/bqplot/Figure",
+
+            title: "",
+            axes: [],
+            marks: [],
+            interaction: null,
+            scale_x: undefined,
+            scale_y: undefined,
+            fig_color: null,
+
+            min_width: 800.0,
+            min_height: 500.0,
+            preserve_aspect: false,
+
+            fig_margin: {
+                top: 60,
+                bottom: 60,
+                left: 60,
+                right: 60
+            },
+
+            padding_x: 0.0,
+            padding_y: 0.025,
+            legend_location: "top-right",
+            animation_duration: 0,
+        }),
+
         save_png: function() {
             // TODO: Any view of this Figure model will pick up this event
             // and render a png. Remove this eventually.
