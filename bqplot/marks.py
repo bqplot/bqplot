@@ -647,7 +647,7 @@ class Boxplot(Mark):
     icon = 'fa-birthday-cake'
     name = 'Boxplot chart'
 
-    # Scaled attributestop
+    # Scaled attributes
     x = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
 
     # Second dimension must contain OHLC data, otherwise the behavior is
@@ -655,7 +655,6 @@ class Boxplot(Mark):
     y = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
 
     # Other attributes
-    # marker = Enum([boxplottype], sync=True, default_value='candle', display_name='Marker')
     scales_metadata = Dict({
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'}
@@ -1027,8 +1026,8 @@ class Map(Mark):
     stroke_color = Color(default_value=None, allow_none=True).tag(sync=True)
     default_color = Color(default_value=None, allow_none=True).tag(sync=True)
     scales_metadata = Dict({
-        'color': {'dimension': 'color'},
-        'projection': {'dimension': 'geo'}
+        'color': { 'dimension': 'color' },
+        'projection': { 'dimension': 'geo' }
     }).tag(sync=True)
     selected = List(sync=True)  # TODO: Overloaded to prevent None.
     selected_styles = Dict({
