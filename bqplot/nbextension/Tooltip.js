@@ -63,7 +63,9 @@ define([
             this.d3_el.select("table")
                 .selectAll("tr")
                 .select(".datavalue")
-                .text(function(datum, index) { return that.tooltip_formats[index](data[datum]);});
+                .text(function(datum, index) {
+                    return that.tooltip_formats[index](data[datum]);
+                });
         },
 
         create_table: function() {

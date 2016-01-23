@@ -22,6 +22,18 @@ define([
     "use strict";
 
     var ToolbarModel = widgets.DOMWidgetModel.extend({
+
+        defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
+            _model_name: "ToolbarModel",
+            _model_module: "nbextensions/bqplot/Toolbar",
+            _model_name: "Toolbar",
+            _model_module: "nbextensions/bqplot/Toolbar",
+
+            figure: undefined,
+            _panning: false,
+            _panzoom: null,
+        }),
+
         // Backbone attributes:
         // - _panning: Bool
         //       Whether one is currently panning - zooming the specified figure.
