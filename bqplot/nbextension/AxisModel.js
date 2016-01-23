@@ -19,6 +19,29 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
 
     var AxisModel = BaseModel.BaseModel.extend({
 
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_name: "AxisModel",
+            _model_module: "nbextensions/bqplot/AxisModel",
+            _view_name: "Axis",
+            _view_module: "nbextensions/bqplot/Axis",
+
+            orientation: "horizontal",
+            side: null,
+            label: "",
+            grid_lines: "none",
+            tick_format: null,
+            scale: undefined,
+            num_ticks: null,
+            tick_values: [],
+            offset: {},
+            label_location: "middle",
+            label_color: null,
+            grid_color: null,
+            color: null,
+            label_offset: null,
+            visible: true
+        }),
+
         initialize: function() {
             AxisModel.__super__.initialize.apply(this, arguments);
             this.on("change:side", this.validate_orientation, this);
@@ -59,7 +82,17 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
         }, widgets.WidgetModel.serializers),
     });
 
+    var ColorAxisModel = AxisModel.extend({
+
+        defaults: _.extend({}, AxisModel.prototype.defaults, {
+            _model_name: "ColorAxisModel",
+            _view_name: "ColorAxis",
+            _view_module: "nbextensions/bqplot/ColorAxis",
+        }),
+    });
+
     return {
         AxisModel: AxisModel,
+        ColorAxisModel: ColorAxisModel,
     };
 });

@@ -18,6 +18,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
     "use strict";
 
     var ColorBar = AxisViewModule.Axis.extend({
+
         render: function() {
             this.parent = this.options.parent;
             this.margin = this.parent.margin;
@@ -45,6 +46,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
                 that.append_axis();
             });
         },
+
         create_listeners: function() {
             this.listenTo(this.model, "change:scale", function(model, value) {
                 this.update_scale(model.previous("scale"), value);
@@ -64,6 +66,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
             this.listenTo(this.model, "change:label", this.update_label, this);
             this.model.on_some_change(["side", "orientation"], this.update_display, this);
         },
+
         update_display: function() {
             this.side = this.model.get("side");
             this.vertical = this.model.get("orientation") === "vertical";
@@ -75,6 +78,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
                 .attr("transform", this.vertical ? "rotate(-90)" : "");
             this.redraw_axisline();
         },
+
         set_scale: function(model) {
             // Sets the child scale
             var that = this;
@@ -96,6 +100,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
                 }
             });
         },
+
         append_axis: function() {
             // The label is allocated a space of 100px. If the label
             // occupies more than 100px then you are out of luck.
@@ -125,6 +130,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
                 .tickFormat(this.tick_format);
             this.redraw_axisline();
         },
+
         draw_color_bar: function() {
             var colorBar = this.el.select("#colorBarG" + this.cid);
             colorBar.attr("transform", this.get_colorbar_transform());
@@ -201,6 +207,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
                     .attr("transform", "rotate(-90)");
             }
         },
+
         get_topg_transform: function() {
             if(this.vertical){
                 if(this.side === "right") {
@@ -224,6 +231,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
                       " translate(0px, -2em)";
             }
         },
+
         get_label_transform: function() {
             if(this.vertical) {
                 return "translate(" + ((this.side === "right") ?
@@ -231,12 +239,14 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
             }
             return "translate(" + (this.x_offset - 5) + ", " + (this.bar_height / 2)+ ")";
         },
+
         get_colorbar_transform: function() {
             if(this.vertical) {
                 return "translate(0, " + (this.x_offset) + ")" ;
             }
             return "translate(" + this.x_offset + ", 0)";
         },
+
         set_axisline_scale_range: function() {
             var range = (this.vertical) ?
                 [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
@@ -250,18 +260,22 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
                 }
             }
         },
+
         set_scales_range: function() {
             //Setting the range of the color scale
             this.axis_scale.set_range();
             this.set_axisline_scale_range();
         },
+
         get_color_bar_width: function() {
             return (this.vertical) ? (this.height - (2 * this.x_offset)) : (this.width - 2 * this.x_offset);
         },
+
         update_label: function(model, value) {
             this.el.select("#text_elem")
                 .text(this.model.get("label"));
         },
+
         rescale_axis: function() {
             // rescale the axis
             this.set_axisline_scale_range();
@@ -298,6 +312,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
             }
             this.g_axisline.call(this.axis);
         },
+
         redraw_axisline: function() {
             if (this.axis) {
                 this.axis_line_scale.domain(this.axis_scale.scale.domain());
@@ -322,6 +337,7 @@ define(["./components/d3/d3", "./utils", "./ColorUtils", "./Axis", "underscore"]
                     .call(this.axis);
             }
         },
+
         redraw_axis: function() {
             this.draw_color_bar();
             this.redraw_axisline();

@@ -19,6 +19,27 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
 
     var MarkModel = BaseModel.BaseModel.extend({
 
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "MarkModel",
+            _model_module: "nbextensions/bqplot/MarkModel",
+
+            scales: {},
+            scales_metadata: {},
+            preserve_domain: {},
+            display_legend: true,
+            labels: [],
+            apply_clip: true,
+            visible: true,
+            selected_style: {},
+            unselected_style: {},
+            selected: [],
+            enable_hover: true,
+            tooltip: null,
+            tooltip_style: { opacity: 0.9 },
+            interactions: { hover: "tooltip" },
+            tooltip_location: "mouse",
+        }),
+
         // These two attributes are the pixel values which should be appended
         // to the area of the plot to make sure that the entire mark is visible
         initialize: function() {

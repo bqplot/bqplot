@@ -135,16 +135,8 @@ class ColorAxis(Axis):
 
     Attributes
     ----------
-    orientation: {'horizontal', 'vertical'}
-        Orientation of the color axis
-    side: {'bottom', 'top', 'left', right}
-        Position of the color axis
-    label: string (default: '')
-        Label of the color axis
     scale: ColorScale
         The scale represented by the axis
-    tick_format: string (default: '')
-        The axis tick format
     """
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
     side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom').tag(sync=True)
@@ -152,5 +144,4 @@ class ColorAxis(Axis):
     scale = Instance(ColorScale).tag(sync=True, **widget_serialization)
     _view_name = Unicode('ColorAxis').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/ColorAxis').tag(sync=True)
-    _model_name = Unicode('AxisModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/AxisModel').tag(sync=True)
+    _model_name = Unicode('ColorAxisModel').tag(sync=True)
