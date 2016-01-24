@@ -95,7 +95,7 @@ class Figure(DOMWidget):
     title = Unicode().tag(sync=True, display_name='Title')
     axes = List(Instance(Axis)).tag(sync=True, **widget_serialization)
     marks = List(Instance(Mark)).tag(sync=True, **widget_serialization)
-    interaction = Instance(Interaction, allow_none=True).tag(sync=True,
+    interaction = Instance(Interaction, default_value=None, allow_none=True).tag(sync=True,
                            **widget_serialization)
     scale_x = Instance(Scale).tag(sync=True, **widget_serialization)
     scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
