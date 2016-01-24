@@ -160,7 +160,7 @@ class MarketMap(DOMWidget):
     selected = List().tag(sync=True)
     enable_hover = Bool(True).tag(sync=True)
     enable_select = Bool(True).tag(sync=True)
-    tooltip_widget = Instance(DOMWidget, allow_none=True).tag(sync=True, **widget_serialization)
+    tooltip_widget = Instance(DOMWidget, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
 
     def __init__(self, **kwargs):
         super(MarketMap, self).__init__(**kwargs)

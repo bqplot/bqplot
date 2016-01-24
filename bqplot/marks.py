@@ -150,7 +150,7 @@ class Mark(Widget):
     selected = List(None, allow_none=True).tag(sync=True)
 
     enable_hover = Bool(True).tag(sync=True)
-    tooltip = Instance(DOMWidget, allow_none=True).tag(sync=True, **widget_serialization)
+    tooltip = Instance(DOMWidget, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
     tooltip_style = Dict({'opacity': 0.9}).tag(sync=True)
     interactions = Dict({'hover': 'tooltip'}).tag(sync=True)
     tooltip_location = Enum(['mouse', 'center'], default_value='mouse').tag(sync=True)
