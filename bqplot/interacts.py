@@ -203,7 +203,7 @@ class OneDSelector(Selector):
         co-ordinates. This scale is used for setting the selected attribute for
         the selector.
     """
-    scale = Instance(Scale, allow_none=True).tag(sync=True, dimension='x', **widget_serialization)
+    scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='x', **widget_serialization)
     _model_name = Unicode('OneDSelectorModel').tag(sync=True)
     _model_module = Unicode('nbextensions/bqplot/OneDSelectorModel').tag(sync=True)
 
