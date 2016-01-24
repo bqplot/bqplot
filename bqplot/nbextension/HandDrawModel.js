@@ -16,7 +16,19 @@
 define(["jupyter-js-widgets", "./BaseModel", "underscore"], function(widgets, BaseModel, _) {
     "use strict";
 
-    var HandDrawModel = BaseModel.BaseModel.extend({}, {
+    var HandDrawModel = BaseModel.BaseModel.extend({
+
+    	defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_name: "HandDrawModel",
+            _model_module: "nbextensions/bqplot/HandDrawModel",
+            _view_name: "HandDraw",
+            _view_module: "nbextensions/bqplot/HandDraw",
+		    lines: undefined,
+		    line_index: 0,
+		    min_x: null,
+		    max_x: null
+        }),
+    }, {
         serializers: _.extend({
             lines:  { deserialize: widgets.unpack_models },
         }, BaseModel.BaseModel.serializers),
