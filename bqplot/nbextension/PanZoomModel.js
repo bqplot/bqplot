@@ -18,14 +18,17 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
     "use strict";
 
     var PanZoomModel = BaseModel.BaseModel.extend({
-        defaults: function() {
-            return {
-                allow_pan: true,
-                allow_zoom: true,
-                _view_name: 'PanZoom',
-                _view_module: 'nbextensions/bqplot/PanZoom'
-            };
-        },
+
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_name: "PanZoomModel",
+            _model_module: "nbextensions/bqplot/PanZoomModel",
+            _view_name: "PanZoom",
+            _view_module: "nbextensions/bqplot/PanZoom",
+            scales: {},
+            allow_pan: true,
+            allow_zoom: true,
+        }),
+
         initialize: function() {
             this.on("change:scales", this.snapshot_scales, this);
         },
