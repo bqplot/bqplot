@@ -16,17 +16,20 @@
 define(["./components/d3/d3", "./LinearScaleModel", "underscore"], function(d3, LinearScaleModel, _) {
     "use strict";
 
-    var LinearColorScaleModel = LinearScaleModel.LinearScaleModel.extend({
+    var ColorScaleModel = LinearScaleModel.LinearScaleModel.extend({
+
         initialize: function(range) {
-            LinearColorScaleModel.__super__.initialize.apply(this);
+            ColorScaleModel.__super__.initialize.apply(this);
             this.type = "color_linear";
             this.divergent = false;
             this.on("change:mid", this.mid_changed, this);
         },
+
         mid_changed: function() {
             this.mid = this.get("mid");
             this.update_domain();
         },
+
         update_domain: function() {
             var that = this;
             var max_index = (this.divergent) ? 2 : 1;
@@ -56,6 +59,6 @@ define(["./components/d3/d3", "./LinearScaleModel", "underscore"], function(d3, 
     });
 
     return {
-        LinearColorScaleModel: LinearColorScaleModel,
+        ColorScaleModel: ColorScaleModel,
     };
 });

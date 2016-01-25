@@ -475,10 +475,10 @@ class ColorScale(Scale):
     mid = Float(None, allow_none=True).tag(sync=True)
     scheme = Unicode('RdYlGn').tag(sync=True)
 
-    _view_name = Unicode('LinearColorScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/LinearColorScale').tag(sync=True)
-    _model_name = Unicode('LinearColorScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LinearColorScaleModel').tag(sync=True)
+    _view_name = Unicode('ColorScale').tag(sync=True)
+    _view_module = Unicode('nbextensions/bqplot/ColorScale').tag(sync=True)
+    _model_name = Unicode('ColorScaleModel').tag(sync=True)
+    _model_module = Unicode('nbextensions/bqplot/ColorScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.DateColorScale')
@@ -504,9 +504,6 @@ class DateColorScale(ColorScale):
     """
     rtype = 'Color'
     dtype = np.datetime64
-    min = Date(default_value=None, allow_none=True).tag(sync=True)
-    max = Date(default_value=None, allow_none=True).tag(sync=True)
-    mid = Unicode(default_value=None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('DateColorScale').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/DateColorScale').tag(sync=True)

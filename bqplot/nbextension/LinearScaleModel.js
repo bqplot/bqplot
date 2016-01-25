@@ -13,10 +13,22 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleModelModule, _) {
+define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleModel, _) {
     "use strict";
 
-    var LinearScaleModel = ScaleModelModule.ScaleModel.extend({
+    var LinearScaleModel = ScaleModel.ScaleModel.extend({
+
+        defaults: _.extend({}, ScaleModel.ScaleModel.prototype.defaults, {
+            _model_name: "LinearScaleModel",
+            _model_module: "nbextensions/bqplot/LinearScaleModel",
+             _view_name: "LinearScale",
+            _view_module: "nbextensions/bqplot/LinearScale",
+
+            // min: null, // TODO: setting this to null seems to break
+                          // automatic domain computation.
+            // max: null,
+        }),
+
         initialize: function(range) {
             LinearScaleModel.__super__.initialize.apply(this);
             this.type = "linear";
@@ -26,6 +38,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
             this.on("change:ticks", this.ticks_changed, this);
             this.on("change:reverse", this.reverse_changed, this);
         },
+
         min_max_changed: function() {
             this.min = this.get("min");
             this.max = this.get("max");
@@ -33,6 +46,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
             this.max_from_data = (this.max === null);
             this.update_domain();
         },
+
         reverse_changed: function() {
             this.reverse = this.get("reverse");
             if(this.domain.length > 0) {
@@ -40,6 +54,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
                 this.trigger("domain_changed", this.domain);
             }
         },
+
         update_domain: function() {
             var that = this;
             var min = (!this.min_from_data) ?

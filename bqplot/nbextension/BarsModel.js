@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var BarsModel = MarkModelModule.MarkModel.extend({
+    var BarsModel = MarkModel.MarkModel.extend({
 
-        defaults: _.extend({}, MarkModelModule.MarkModel.prototype.defaults, {
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "BarsModel",
             _model_module: "nbextensions/bqplot/BarsModel",
             _view_name: "Bars",

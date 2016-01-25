@@ -13,10 +13,19 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
+define(["./components/d3/d3", "./BaseModel", "underscore"], function(d3, BaseModel, _) {
     "use strict";
 
-    var ScaleModel = MarkModelModule.MarkModel.extend({
+    var ScaleModel = BaseModel.BaseModel.extend({
+
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "ScaleModel",
+            _model_module: "nbextensions/bqplot/ScaleModel",
+             _view_name: "Scale",
+            _view_module: "nbextensions/bqplot/Scale",
+            reverse: false,
+            allow_padding: true,
+        }),
 
         initialize: function(range) {
             this.type = "base";
