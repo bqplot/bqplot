@@ -14,10 +14,10 @@
  */
 
 define(["./components/d3/d3", "./LinearScale", "underscore"],
-       function(d3, LinearScaleViewModule, _) {
+       function(d3, LinearScale, _) {
     "use strict";
 
-    var DateScale = LinearScaleViewModule.LinearScale.extend({
+    var DateScale = LinearScale.LinearScale.extend({
         render: function() {
             this.scale = d3.time.scale();
             if(this.model.domain.length > 0)
