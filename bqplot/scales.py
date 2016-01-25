@@ -74,10 +74,10 @@ class Scale(Widget):
     domain_class: type (default: Float)
         traitlet type used to validate values in of the domain of the scale.
     reverse: bool (default: False)
-        whether the scale should be reversed
+        whether the scale should be reversed.
     allow_padding: bool (default: True)
         indicates whether figures are allowed to add data padding to this scale
-        or not
+        or not.
     """
     scale_types = {}
     domain_class = Type(Float)
@@ -98,6 +98,7 @@ class GeoScale(Scale):
     The GeoScale represents a mapping between topographic data and a
     2d visual representation.
     """
+    _view_name = Unicode('GeoScale').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/GeoScale').tag(sync=True)
     _model_name = Unicode('GeoScaleModel').tag(sync=True)
     _model_module = Unicode('nbextensions/bqplot/GeoScaleModel').tag(sync=True)
@@ -138,7 +139,7 @@ class Mercator(GeoScale):
 @register_scale('bqplot.Albers')
 class Albers(GeoScale):
 
-    """A georaphical scale which is an alias for a conic equal area projection.
+    """A geographical scale which is an alias for a conic equal area projection.
 
     The Albers projection is a conic equal area map. It does not preserve scale
     or shape, though it is recommended for chloropleths since it preserves the

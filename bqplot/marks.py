@@ -1014,7 +1014,7 @@ class Map(Mark):
 
     # Scaled attributes
     color = Dict(allow_none=True).tag(sync=True, scaled=True, rtype='Color',
-                 atype='bqplot.ColorAxis')
+                                      atype='bqplot.ColorAxis')
 
     # Other attributes
     scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
