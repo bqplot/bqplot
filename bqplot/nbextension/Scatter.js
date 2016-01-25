@@ -228,16 +228,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                     .style("fill", function(d, i) {
                         return new_colors[i % len];
                     })
-                    .style("stroke", stroke ? stroke :
-                           function(d, i)
-                           {
-                              return new_colors[i % len];
-                           }
+                    .style("stroke", stroke ? stroke : function(d, i) {
+                            return new_colors[i % len];
+                        }
                     );
                     this.legend_el.select("text")
                     .style("fill", this.model.get("fill") ? function(d, i) {
                         return new_colors[i % len];
-                        } : "none");
+                    } : "none");
                 }
             }
         },
@@ -251,8 +249,8 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             } : "none");
             if (this.legend_el) {
                 this.legend_el.selectAll("path")
-                  .style("fill", fill  ? function(d, i) {
-                      return default_colors[i % len];
+                    .style("fill", fill  ? function(d, i) {
+                        return default_colors[i % len];
                     } : "none");
             }
         },
@@ -273,13 +271,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             var that = this,
                 stroke = this.model.get("stroke");
             this.el.selectAll(".dot")
-              .style("stroke", stroke ? stroke : function(d, i) {
-                  return that.get_element_color(d, i);
-              });
+                .style("stroke", stroke ? stroke : function(d, i) {
+                    return that.get_element_color(d, i);
+                });
 
             if (this.legend_el) {
                 this.legend_el.selectAll("path")
-                  .style("stroke", stroke);
+                    .style("stroke", stroke);
             }
         },
 
