@@ -56,6 +56,7 @@ define(["jupyter-js-widgets", "./components/d3/d3"], function(widgets, d3) {
     });
 
     return {
+        GeoScale: GeoScale,
         Mercator: Mercator,
         Albers: Albers,
         AlbersUSA: AlbersUSA,
