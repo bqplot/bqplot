@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./LinearScaleModel"], function(d3, LinearScaleModelModule) {
+define(["./components/d3/d3", "./LinearScaleModel"], function(d3, LinearScaleModel) {
     "use strict";
 
-    var LogScaleModel = LinearScaleModelModule.LinearScaleModel.extend({
+    var LogScaleModel = LinearScaleModel.LinearScaleModel.extend({
 
         initialize: function(range) {
             LogScaleModel.__super__.initialize.apply(this);

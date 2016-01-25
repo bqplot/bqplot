@@ -17,7 +17,7 @@ define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"],
         function(d3, ScaleViewModule, ColorUtils, _) {
     "use strict";
 
-    var LinearColorScale = ScaleViewModule.Scale.extend({
+    var ColorScale = ScaleViewModule.Scale.extend({
 
         render: function(){
             this.scale = d3.scale.linear();
@@ -35,7 +35,7 @@ define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"],
         },
 
         create_event_listeners: function() {
-            LinearColorScale.__super__.create_event_listeners.apply(this);
+            ColorScale.__super__.create_event_listeners.apply(this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
         },
 
@@ -68,6 +68,6 @@ define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"],
     });
 
     return {
-        LinearColorScale: LinearColorScale,
+        ColorScale: ColorScale,
     };
 });

@@ -14,10 +14,10 @@
  */
 
 define(["./components/d3/d3", "./ScaleModel", "underscore"],
-       function(d3, ScaleModelModule, _) {
+       function(d3, ScaleModel, _) {
     "use strict";
 
-    var OrdinalScaleModel = ScaleModelModule.ScaleModel.extend({
+    var OrdinalScaleModel = ScaleModel.ScaleModel.extend({
 
         initialize: function(range) {
             OrdinalScaleModel.__super__.initialize.apply(this);
