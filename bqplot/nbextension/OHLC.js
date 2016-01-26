@@ -175,7 +175,7 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             var idx_end = -1;
             if(selected.length > 0 &&
                 (start_pxl !== x_scale.scale.range()[0] ||
-                    end_pxl !== x_scale.scale.range()[1]))
+                   end_pxl !== x_scale.scale.range()[1]))
             {
                 idx_start = selected[0];
                 idx_end = selected[selected.length - 1];
@@ -217,8 +217,8 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 .attr("id", function(d, i) { return "stick"+i; })
                 .style("stroke", this.model.get("stroke"))
                 .style("opacity", function(d, i) {
-                            return opacities[i];
-                      });
+                    return opacities[i];
+                });
 
             new_sticks.append("path").attr("class", "stick_head");
             new_sticks.append("path").attr("class", "stick_tail");
@@ -402,26 +402,26 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 if(px.o !== -1) {
                     selector.selectAll(".stick_head")
                         .attr("d", function(d, i) {
-                            return that.head_path_bar(to_left_side[i],
-                                                      open[i] - high[i],
-                                                      to_left_side[i]*-1);
-                        });
+                        return that.head_path_bar(to_left_side[i],
+                                                  open[i] - high[i],
+                                                  to_left_side[i]*-1);
+                    });
                 } else {
                     selector.selectAll(".stick_head").attr("d", "");
                 }
                 if(px.c !== -1) {
                     selector.selectAll(".stick_tail")
                         .attr("d", function(d, i) {
-                            return that.tail_path_bar(close[i] - high[i],
-                                                      to_left_side[i]*-1);
-                        });
+                        return that.tail_path_bar(close[i] - high[i],
+                                                  to_left_side[i]*-1);
+                    });
                 } else {
                     selector.selectAll(".stick_tail").attr("d", "");
                 }
                 selector.selectAll(".stick_body")
                     .attr("d", function(d, i) {
-                        return that.body_path_bar(low[i]-high[i]);
-                    });
+                    return that.body_path_bar(low[i]-high[i]);
+                 });
             }
         },
 
@@ -505,8 +505,8 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
             this.rect_dim = inter_y_disp * 0.8;
             var that = this;
 
-            this.legend_el  = elem.selectAll("#legend" + this.uuid)
-                                  .data([this.model.mark_data]);
+            this.legend_el = elem.selectAll("#legend" + this.uuid)
+                                 .data([this.model.mark_data]);
 
             var leg = this.legend_el.enter().append("g")
                 .attr("transform", function(d, i) {
@@ -562,11 +562,11 @@ define(["./components/d3/d3", "./Mark", "underscore"], function(d3, MarkViewModu
                 selector.selectAll(".stick_tail").attr("d",
                     this.tail_path_candle(bottom_y_offset, width/2));
                 selector.selectAll(".stick_body").attr("d",
-                    this.body_path_candle(width*-1/2, top_y_offset, width,
-                                          height/2));
+                    this.body_path_candle(width * -1/2, top_y_offset, width,
+                                          height / 2));
             } else { // bar
                 selector.selectAll(".stick_head").attr("d",
-                    this.head_path_bar(width*-1/2, bottom_y_offset, width/2));
+                    this.head_path_bar(width * -1/2, bottom_y_offset, width/2));
                 selector.selectAll(".stick_tail").attr("d",
                     this.tail_path_bar(top_y_offset, width/2));
                 selector.selectAll(".stick_body").attr("d",

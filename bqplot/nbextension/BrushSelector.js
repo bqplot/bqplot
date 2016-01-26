@@ -17,7 +17,8 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
     "use strict";
 
     var BrushSelector = BaseSelectors.BaseXYSelector.extend({
-        render : function() {
+
+        render: function() {
             BrushSelector.__super__.render.apply(this);
             var that = this;
             var scale_creation_promise = this.create_scales();
@@ -46,28 +47,34 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 that.create_listeners();
             });
         },
+
         create_listeners: function() {
             BrushSelector.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:color", this.color_change, this);
         },
+
         color_change: function() {
              if (this.model.get("color") !== null) {
                 this.brushsel.style("fill", this.model.get("color"));
             }
         },
+
         brush_start: function () {
             this.model.set("brushing", true);
             this.touch();
         },
+
         brush_move: function () {
             var extent = this.brush.empty() ? [] : this.brush.extent();
             this.convert_and_save(extent);
         },
+
         brush_end: function () {
             var extent = this.brush.empty() ? [] : this.brush.extent();
             this.model.set("brushing", false);
             this.convert_and_save(extent);
         },
+
         convert_and_save: function(extent) {
             if(extent.length === 0) {
                 this.model.set("selected", [], {js_ignore: true});
@@ -103,6 +110,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                             {js_ignore: true});
             this.touch();
         },
+
         get_typed_selected: function(extent) {
             if(this.is_x_date) {
                 extent[0][0] = this.x_scale.model.convert_to_json(extent[0][0]);
@@ -114,13 +122,16 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             }
             return extent;
         },
+
         scale_changed: function() {
             this.brush.clear();
             this.create_scales();
         },
+
         remove: function() {
             BrushSelector.__super__.remove.apply(this);
         },
+
         relayout: function() {
             BrushSelector.__super__.relayout.apply(this);
             this.el.select(".background")
@@ -130,6 +141,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             this.set_x_range([this.x_scale]);
             this.set_y_range([this.y_scale]);
         },
+
         reset: function() {
             this.brush.clear();
             this._update_brush();
@@ -140,6 +152,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             });
             this.touch();
         },
+
         update_xscale_domain: function() {
             // Call the base class function to update the scale.
             BrushSelector.__super__.update_xscale_domain.apply(this);
@@ -149,13 +162,15 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             // TODO:If there is a selection, update the visual element.
 
         },
-         update_yscale_domain: function() {
+
+        update_yscale_domain: function() {
             // Call the base class function to update the scale.
             BrushSelector.__super__.update_yscale_domain.apply(this);
             if(this.brush !== undefined && this.brush !== null) {
                 this.brush.y(this.y_scale.scale);
             }
         },
+
         _update_brush: function() {
             //programmatically setting the brush does not redraw it. It is
             //being redrawn below
@@ -165,7 +180,8 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
     });
 
     var BrushIntervalSelector = BaseSelectors.BaseXSelector.extend({
-        render : function() {
+
+        render: function() {
             BrushIntervalSelector.__super__.render.apply(this);
             var that = this;
             var scale_creation_promise = this.create_scales();
@@ -191,28 +207,34 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 that.selected_changed();
             });
         },
+
         create_listeners: function() {
             BrushSelector.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:color", this.change_color, this);
         },
+
         change_color: function() {
             if (this.model.get("color") !== null) {
                 this.brushsel.style("fill", this.model.get("color"));
             }
         },
+
         brush_start: function () {
             this.model.set("brushing", true);
             this.touch();
         },
+
         brush_move: function () {
             var extent = this.brush.empty() ? [] : this.brush.extent();
             this.convert_and_save(extent);
         },
+
         brush_end: function () {
             var extent = this.brush.empty() ? [] : this.brush.extent();
             this.model.set("brushing", false);
             this.convert_and_save(extent);
         },
+
         convert_and_save: function(extent) {
             var that = this;
             if(extent.length === 0) {
@@ -227,7 +249,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 } else {
                     _.each(this.mark_views, function(mark_view) {
                         mark_view.invert_range(that.scale.scale(extent[0]),
-                                            that.scale.scale(extent[1]));
+                                               that.scale.scale(extent[1]));
                     });
                 }
             }
@@ -238,11 +260,13 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             this.model.set_typed_field("selected", extent, {js_ignore: true});
             this.touch();
         },
+
         scale_changed: function() {
             this.brush.clear();
             this.create_scale();
             this.brush.x(this.scale.scale);
         },
+
         reset: function() {
             this.brush.clear();
             this._update_brush();
@@ -253,6 +277,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             });
             this.touch();
         },
+
         update_scale_domain: function(ignore_gui_update) {
             // Call the base class function to update the scale.
             BrushIntervalSelector.__super__.update_scale_domain.apply(this);
@@ -263,6 +288,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 this.selected_changed();
             }
         },
+
         selected_changed: function(model, value, options) {
             if(options && options.js_ignore) {
                 //this change was most probably triggered from the js side and
@@ -289,16 +315,19 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 }, this);
             }
         },
+
         _update_brush: function() {
             //programmatically setting the brush does not redraw it. It is
             //being redrawn below
             this.brushsel = this.el.call(this.brush);
             this.el.call(this.brush.event);
         },
+
         remove: function() {
             this.brush.clear();
             BrushIntervalSelector.__super__.remove.apply(this);
         },
+
         relayout: function() {
             BrushIntervalSelector.__super__.relayout.apply(this);
             this.el.selectAll("rect")
@@ -330,7 +359,8 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
     };
 
     var MultiSelector = BaseSelectors.BaseXSelector.extend({
-        render : function() {
+
+        render: function() {
             MultiSelector.__super__.render.apply(this);
 
             var that = this;
@@ -359,6 +389,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 that.create_listeners();
             });
         },
+
         labels_change: function(model, value) {
             var prev_names = model.previous("names");
             this.names = value;
@@ -379,6 +410,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             this.model.set("_selected", selected);
             this.touch();
         },
+
         create_brush: function(event) {
             // Function to add new brushes.
             var that = this;
@@ -446,6 +478,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 new_brush_g.node().dispatchEvent(duplicate_event);
             } */
         },
+
         get_label: function(index, arr) {
             //arr is optional. If you do not pass anything, this.names is
             //considered arr.
@@ -454,10 +487,12 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             }
             return (arr.length > index) ? arr[index] : index;
         },
+
         brush_start: function () {
             this.model.set("brushing", true);
             this.touch();
         },
+
         brush_move: function (item, brush_g) {
             var brush = d3.event.target;
             var extent = brush.empty() ? this.scale.scale.domain() : brush.extent();
@@ -467,6 +502,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 .style("display", ((brush.empty() || hide_names) ? "none" : "inline"));
             this.convert_and_save(extent, item);
         },
+
         get_text_location: function(extent) {
             var mid = (extent[0] + extent[1]) / 2;
             if(this.scale.model.type === "date") {
@@ -474,6 +510,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             }
             return this.scale.scale(mid);
         },
+
         brush_end: function (item, brush_g) {
             var brush = d3.event.target;
             var extent = brush.empty() ?
@@ -481,6 +518,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             this.model.set("brushing", false);
             this.convert_and_save(extent, item);
         },
+
         reset: function() {
             this.el.selectAll(".selector")
                 .remove();
@@ -489,6 +527,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             this.touch();
             this.create_brush();
         },
+
         convert_and_save: function(extent, item) {
             var selected = utils.deepCopy(this.model.get("_selected"));
             var that = this;
@@ -504,6 +543,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             this.model.set("_selected", selected);
             this.touch();
         },
+
         scale_changed: function() {
             this.el.selectAll(".selector")
                 .remove();
@@ -511,6 +551,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
             this.create_scale();
             this.create_brush();
         },
+
         relayout: function() {
             MultiSelector.__super__.relayout.apply(this);
             this.el.selectAll(".brushintsel")
@@ -524,6 +565,7 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
 
             this.set_range([this.scale]);
         },
+
         remove: function() {
             this.model.off("change:names", null, this);
             MultiSelector.__super__.remove.apply(this);

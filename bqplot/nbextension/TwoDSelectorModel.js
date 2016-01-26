@@ -18,6 +18,14 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
     "use strict";
 
     var TwoDSelectorModel = BaseModel.BaseModel.extend({}, {
+
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "TwoDSelectorModel",
+            _model_module: "nbextensions/bqplot/TwoDSelectorModel",
+            x_scale: null,
+            y_scale: null,
+        }),
+
         serializers: _.extend({
             x_scale: { deserialize: widgets.unpack_models },
             y_scale: { deserialize: widgets.unpack_models },

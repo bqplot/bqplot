@@ -32,7 +32,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             },
             bins: 10,
             midpoints: [],
-            colors: [],
+            colors: d3.scale.category10().range(),
             stroke: null,
             opacities: []
         }),
@@ -47,6 +47,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
             this.on("change:normalized", function() { this.normalize_data(true); }, this);
         },
+
         update_data: function() {
             var x_data = this.get_typed_field("sample");
             var scales = this.get("scales");
@@ -91,6 +92,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.save_changes();
             this.trigger("data_updated");
         },
+
         normalize_data: function(save_and_update) {
             this.count = this.mark_data.map(function(d) { return d.length; });
             if (this.get("normalized")) {
@@ -110,6 +112,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 this.trigger("data_updated");
             }
         },
+
         get_data_dict: function(data, index) {
             var return_dict = {};
             return_dict.midpoint = this.x_mid[index];
@@ -119,6 +122,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             return_dict.count = this.count[index];
             return return_dict;
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;
@@ -134,6 +138,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 }) * 1.05], this.id + "_count");
             }
         },
+
         create_uniform_bins: function(min_val, max_val, num_bins) {
             var diff = max_val - min_val;
             var step_size = (diff) / num_bins;

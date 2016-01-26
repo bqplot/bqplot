@@ -27,6 +27,7 @@ define(["./components/d3/d3"], function(d3) {
             "A" + r + "," + r + " 0 1,1 0," + r +
             "Z";
     };
+
     var bqSymbolTypes = d3.map({
         "circle": circleSymbol,
         "cross": function(size,e) {
@@ -120,7 +121,6 @@ define(["./components/d3/d3"], function(d3) {
     function symbolSkew() {
         return 0.5;
     }
-
 
     var bqSymbol = function() {
         var type = symbolType,
