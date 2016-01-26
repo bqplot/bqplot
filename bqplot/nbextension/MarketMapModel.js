@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "./BaseModel", "underscore"],
-       function(widgets, BaseModel, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"],
+       function(widgets, d3, BaseModel, _) {
     "use strict";
 
     var MarketMapModel = BaseModel.BaseModel.extend({}, {
@@ -41,7 +41,7 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
             rows: 0,
 
             row_groups: 1,
-            colors: [], ///////////////// = List(CATEGORY10).tag(sync=True)
+            colors: d3.scale.category20().range(),
             scales: {},
             axes: [],
             color: [],

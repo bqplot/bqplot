@@ -32,7 +32,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 color: { dimension: "color" }
             },
             sort: false,
-            colors: [],
+            colors: d3.scale.category10().range(),
             stroke: null,
             opacities: [],
             radius: 180,
