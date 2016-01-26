@@ -32,8 +32,8 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 y: { orientation: "vertical", dimension: "y" },
                 color: { dimension: "color" }
             },
-            colors: [],
-            fill_colors: [],
+            colors: d3.scale.category10().range(),
+            fill_colors: d3.scale.category10().range(),
             stroke_width: 2.0,
             labels_visibility: "none",
             curves_subset: [],
@@ -169,7 +169,34 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
 
     var FlexLineModel = LinesModel.extend({
 
-        update_data:function() {
+        defaults: _.extend({}, LinesModel.prototype.defaults, {
+            _model_name: "FlexLineModel",
+            _view_name: "FlexLine",
+            _view_module: "nbextensions/bqplot/FlexLine",
+            x: [],
+            y: [],
+            color: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" }
+            },
+            colors: d3.scale.category10().range(),
+            fill_colors: d3.scale.category10().range(),
+            stroke_width: 2.0,
+            labels_visibility: "none",
+            curves_subset: [],
+            line_style: "solid",
+            interpolation: "linear",
+            close_path: false,
+            fill: "none",
+            marker: null,
+            marker_size: 64,
+            opacities: [],
+            fill_opacities: [],
+        }),
+
+        update_data: function() {
             this.dirty = true;
             // Handling data updates
             var that = this;

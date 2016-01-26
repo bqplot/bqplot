@@ -34,7 +34,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             },
             color_mode: "auto",
             type: "stacked",
-            colors: [],
+            colors: d3.scale.category10().range(),
             padding: 0.05,
             stroke: null,
             base: 0.0,

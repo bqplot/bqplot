@@ -18,6 +18,13 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
     "use strict";
 
     var OneDSelectorModel = BaseModel.BaseModel.extend({}, {
+
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "OneDSelectorModel",
+            _model_module: "nbextensions/bqplot/OneDSelectorModel",
+            scale: null
+        }),
+
         serializers: _.extend({
             scale: { deserialize: widgets.unpack_models },
             marks: { deserialize: widgets.unpack_models },

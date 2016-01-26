@@ -226,9 +226,9 @@ class TwoDSelector(Selector):
         co-ordinates in the y-direction. This scale is used for setting the
         selected attribute for the selector along with ``x_scale``.
     """
-    x_scale = Instance(Scale, allow_none=True).tag(sync=True, dimension='x',
+    x_scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='x',
                        **widget_serialization)
-    y_scale = Instance(Scale, allow_none=True).tag(sync=True, dimension='y',
+    y_scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='y',
                        **widget_serialization)
 
     _model_name = Unicode('TwoDSelectorModel').tag(sync=True)
@@ -523,7 +523,6 @@ class LassoSelector(TwoDSelector):
         List of marks on which lasso selector will be applied.
     color: Color (default: None)
         Color of the lasso.
-
     """
     marks = List(Instance(Lines) | Instance(Scatter)).tag(sync=True,
                  **widget_serialization)
