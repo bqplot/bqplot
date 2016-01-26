@@ -595,27 +595,29 @@ define(["jupyter-js-widgets", "./components/d3/d3", "underscore", "./LoadStyle"]
                 var selector;
                 for (var i = 0; i < sheets.length; i++) {
                     var rules = sheets[i].cssRules;
-                    for (var j = 0; j < rules.length; j++) {
-                        var rule = rules[j];
-                        if (typeof(rule.style) !== "undefined") {
-                            var match = null;
-                            try {
-                                match = node.querySelectorAll(rule.selectorText);
-                            } catch (err) {
-                                console.warn("Invalid CSS selector '" +
-                                             rule.selectorText + "'", err);
-                            }
-                            if (match) {
-                                var elems = node.querySelectorAll(rule.selectorText);
-                                if (elems.length > 0) {
-                                    selector = rule.selectorText;
-                                    for (var r = 0; r < regs.length; r++) {
-                                        selector = replaceAll(regs[r], "", selector);
-                                    }
-                                    css += selector + " { " + rule.style.cssText + " }\n";
+                    if (rules) {
+                        for (var j = 0; j < rules.length; j++) {
+                            var rule = rules[j];
+                            if (typeof(rule.style) !== "undefined") {
+                                var match = null;
+                                try {
+                                    match = node.querySelectorAll(rule.selectorText);
+                                } catch (err) {
+                                    console.warn("Invalid CSS selector '" +
+                                                 rule.selectorText + "'", err);
                                 }
-                            } else if (rule.cssText.match(/^@font-face/)) {
-                                css += rule.cssText + "\n";
+                                if (match) {
+                                    var elems = node.querySelectorAll(rule.selectorText);
+                                    if (elems.length > 0) {
+                                        selector = rule.selectorText;
+                                        for (var r = 0; r < regs.length; r++) {
+                                            selector = replaceAll(regs[r], "", selector);
+                                        }
+                                        css += selector + " { " + rule.style.cssText + " }\n";
+                                    }
+                                } else if (rule.cssText.match(/^@font-face/)) {
+                                    css += rule.cssText + "\n";
+                                }
                             }
                         }
                     }
