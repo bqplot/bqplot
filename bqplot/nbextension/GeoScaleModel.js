@@ -33,11 +33,12 @@ define(["./ScaleModel", "./components/d3/d3", "underscore"], function(ScaleModel
             _view_name: "Mercator",
             scale_factor: 190.0,
             center: [0, 60],
-            /*rotate: [0, 0],*/
+            rotate: [0, 0],
         }),
 
         initialize: function(range) {
             this.on_some_change(["scale_factor", "center", "rotate"], this.create_projection, this);
+            this.create_projection();
         },
 
         create_projection: function() {
@@ -67,6 +68,7 @@ define(["./ScaleModel", "./components/d3/d3", "underscore"], function(ScaleModel
         initialize: function(range) {
             this.on_some_change(["rotate", "center", "parallels", "scale_factor", "precision"],
                 this.create_projection, this);
+            this.create_projection();
         },
 
         create_projection: function() {
@@ -89,11 +91,12 @@ define(["./ScaleModel", "./components/d3/d3", "underscore"], function(ScaleModel
         defaults: _.extend({}, GeoScaleModel.prototype.defaults, {
             _model_name: "AlbersUSAModel",
             _view_name: "AlbersUSA",
-            /* scale_factor: 1200*/
+            scale_factor: 1200
         }),
 
         initialize: function(range) {
             this.on_some_change(["scale_factor"], this.create_projection, this);
+            this.create_projection();
         },
 
         create_projection: function() {
@@ -117,6 +120,7 @@ define(["./ScaleModel", "./components/d3/d3", "underscore"], function(ScaleModel
 
         initialize: function(range) {
             this.on_some_change(["scale_factor", "center"], this.create_projection, this);
+            this.create_projection();
         },
 
         create_projection: function() {
@@ -138,13 +142,14 @@ define(["./ScaleModel", "./components/d3/d3", "underscore"], function(ScaleModel
             _view_name: "Orthographic",
             scale_factor: 145.0,
             center: [0, 60],
-            /*rotate: [0, 0],*/
+            rotate: [0, 0],
             clip_angle: 90.0,
             precision: 0.1
         }),
 
         initialize: function(range) {
             this.on_some_change(["scale_factor", "center", "clip_angle", "rotate", "precision"], this.create_projection, this);
+            this.create_projection();
         },
 
         create_projection: function() {
@@ -175,6 +180,7 @@ define(["./ScaleModel", "./components/d3/d3", "underscore"], function(ScaleModel
 
         initialize: function(range) {
             this.on_some_change(["scale_factor", "precision", "clip_angle"], this.create_projection, this);
+            this.create_projection();
         },
 
         create_projection: function() {
@@ -198,12 +204,13 @@ define(["./ScaleModel", "./components/d3/d3", "underscore"], function(ScaleModel
             scale_factor: 245,
             center: [0, 60],
             precision: 0.1,
-            /*rotate: [96, 0],*/
+            rotate: [96, 0],
             clip_angle: 179.9999
         }),
 
         initialize: function(range) {
             this.on_some_change(["scale_factor", "center", "clip_angle", "rotate", "precision"], this.create_projection, this);
+            this.create_projection();
         },
 
         create_projection: function() {
