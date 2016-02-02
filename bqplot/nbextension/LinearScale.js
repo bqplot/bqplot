@@ -18,7 +18,7 @@ define(["./components/d3/d3", "./Scale"], function(d3, ScaleViewModule) {
 
     var LinearScale = ScaleViewModule.Scale.extend({
 
-        render: function(){
+        render: function() {
             this.scale = d3.scale.linear();
             if(this.model.domain.length > 0)
                 this.scale.domain(this.model.domain);
