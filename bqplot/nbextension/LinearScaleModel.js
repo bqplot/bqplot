@@ -23,10 +23,8 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
             _model_module: "nbextensions/bqplot/LinearScaleModel",
              _view_name: "LinearScale",
             _view_module: "nbextensions/bqplot/LinearScale",
-
-            // min: null, // TODO: setting this to null seems to break
-                          // automatic domain computation.
-            // max: null,
+            min: null,
+            max: null,
         }),
 
         initialize: function(range) {
@@ -35,6 +33,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
             this.global_min = Number.NEGATIVE_INFINITY;
             this.global_max = Number.POSITIVE_INFINITY;
             this.on_some_change(["min", "max"], this.min_max_changed, this);
+            this.min_max_changed();
             this.on("change:ticks", this.ticks_changed, this);
             this.on("change:reverse", this.reverse_changed, this);
         },
