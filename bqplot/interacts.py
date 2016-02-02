@@ -184,6 +184,7 @@ class Selector(Interaction):
 
     _view_name = Unicode('Selector').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/Selector').tag(sync=True)
+    _model_module = Unicode('nbextensions/bqplot/SelectorModel').tag(sync=True)
 
     def reset(self):
         self.send({"type": "reset"})
@@ -205,7 +206,6 @@ class OneDSelector(Selector):
     """
     scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='x', **widget_serialization)
     _model_name = Unicode('OneDSelectorModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/OneDSelectorModel').tag(sync=True)
 
 
 class TwoDSelector(Selector):
@@ -230,10 +230,7 @@ class TwoDSelector(Selector):
                        **widget_serialization)
     y_scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='y',
                        **widget_serialization)
-
     _model_name = Unicode('TwoDSelectorModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/TwoDSelectorModel').tag(sync=True)
-
 
 @register_interaction('bqplot.FastIntervalSelector')
 class FastIntervalSelector(OneDSelector):
@@ -275,6 +272,7 @@ class FastIntervalSelector(OneDSelector):
 
     _view_name = Unicode('FastIntervalSelector').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/FastIntervalSelector').tag(sync=True)
+    _model_name = Unicode('FastIntervalSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.IndexSelector')
@@ -309,6 +307,7 @@ class IndexSelector(OneDSelector):
 
     _view_name = Unicode('IndexSelector').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/IndexSelector').tag(sync=True)
+    _model_name = Unicode('IndexSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.BrushIntervalSelector')
@@ -349,6 +348,7 @@ class BrushIntervalSelector(OneDSelector):
 
     _view_name = Unicode('BrushIntervalSelector').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/BrushSelector').tag(sync=True)
+    _model_name = Unicode('BrushIntervalSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.BrushSelector')
@@ -413,6 +413,7 @@ class BrushSelector(TwoDSelector):
 
     _view_name = Unicode('BrushSelector').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/BrushSelector').tag(sync=True)
+    _model_name = Unicode('BrushSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.MultiSelector')
@@ -500,6 +501,7 @@ class MultiSelector(OneDSelector):
 
     _view_name = Unicode('MultiSelector').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/BrushSelector').tag(sync=True)
+    _model_name = Unicode('MultiSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.LassoSelector')
@@ -543,3 +545,4 @@ class LassoSelector(TwoDSelector):
 
     _view_name = Unicode('LassoSelector').tag(sync=True)
     _view_module = Unicode('nbextensions/bqplot/LassoSelector').tag(sync=True)
+    _model_name = Unicode('LassoSelectorModel').tag(sync=True)
