@@ -120,51 +120,51 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
             if(!this.get("preserve_domain").x) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.x;
-                }), this.id);
+                }), this.id + "_x");
             } else {
-                x_scale.del_domain([], this.id);
+                x_scale.del_domain([], this.id + "_x");
             }
             if(!this.get("preserve_domain").y) {
                 y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.y;
-                }), this.id);
+                }), this.id + "_y");
             } else {
-                y_scale.del_domain([], this.id);
+                y_scale.del_domain([], this.id + "_y");
             }
             if(size_scale) {
                 if(!this.get("preserve_domain").size) {
                     size_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.size;
-                    }), this.id);
+                    }), this.id + "_size");
                 } else {
-                    size_scale.del_domain([], this.id);
+                    size_scale.del_domain([], this.id + "_size");
                 }
             }
             if(opacity_scale) {
                 if(!this.get("preserve_domain").opacity) {
                     opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.opacity;
-                    }), this.id);
+                    }), this.id + "_opacity");
                 } else {
-                    opacity_scale.del_domain([], this.id);
+                    opacity_scale.del_domain([], this.id + "_opacity");
                 }
             }
             if(skew_scale) {
                 if(!this.get("preserve_domain").skew) {
                     skew_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.skew;
-                    }), this.id);
+                    }), this.id + "_skew");
                 } else {
-                    skew_scale.del_domain([], this.id);
+                    skew_scale.del_domain([], this.id + "_skew");
                 }
             }
             if(rotation_scale) {
                 if(!this.get("preserve_domain").rotation) {
                     rotation_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.rotation;
-                    }), this.id);
+                    }), this.id + "_rotation");
                 } else {
-                    rotation_scale.del_domain([], this.id);
+                    rotation_scale.del_domain([], this.id + "_rotation");
                 }
             }
 
