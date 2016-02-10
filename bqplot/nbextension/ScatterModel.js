@@ -57,9 +57,9 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
 
                 if(color_scale) {
                     if(!this.get("preserve_domain").color) {
-                        color_scale.compute_and_set_domain(color, this.id);
+                        color_scale.compute_and_set_domain(color, this.id + "_color");
                     } else {
-                        color_scale.del_domain([], this.id);
+                        color_scale.del_domain([], this.id + "_color");
                     }
                 }
 
