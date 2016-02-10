@@ -122,9 +122,9 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             });
             if(color_scale && color.length > 0) {
                     if(!this.get("preserve_domain").color) {
-                        color_scale.compute_and_set_domain(color, this.id);
+                        color_scale.compute_and_set_domain(color, this.id + "_color");
                     } else {
-                        color_scale.del_domain([], this.id);
+                        color_scale.del_domain([], this.id + "_color");
                     }
             }
         },
@@ -139,17 +139,17 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             if(!this.get("preserve_domain").x) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.key;
-                }), this.id);
+                }), this.id + "_x");
             }
             else {
-                x_scale.del_domain([], this.id);
+                x_scale.del_domain([], this.id + "_x");
             }
 
             if(!this.get("preserve_domain").y) {
                 if(this.get("type") === "stacked") {
                     y_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
                                                     d3.max(this.mark_data, function(c) { return c.pos_max; }), this.base_value],
-                                                    this.id);
+                                                    this.id + "_y");
                 } else {
                     var min = d3.min(this.mark_data,
                         function(c) {
@@ -162,10 +162,10 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                             return val.y;
                         });
                     });
-                    y_scale.compute_and_set_domain([min, max, this.base_value], this.id);
+                    y_scale.compute_and_set_domain([min, max, this.base_value], this.id + "_y");
                 }
             } else {
-                y_scale.del_domain([], this.id);
+                y_scale.del_domain([], this.id + "_y");
             }
         },
     });

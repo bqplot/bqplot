@@ -35,9 +35,9 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             // Draw, while update_data is generally followed by a Draw.
 
             if(!this.get("preserve_domain").sample) {
-                x_scale.compute_and_set_domain(x_data, this.id);
+                x_scale.compute_and_set_domain(x_data, this.id + "_sample");
             } else {
-                x_scale.del_domain([], this.id);
+                x_scale.del_domain([], this.id + "_sample");
             }
 
             this.min_x = x_scale.domain[0];
@@ -91,7 +91,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             if(!this.get("preserve_domain").count) {
                 y_scale.set_domain([0, d3.max(this.mark_data, function(d) {
                     return d.y;
-                }) * 1.05], this.id);
+                }) * 1.05], this.id + "_count");
             }
         },
         create_uniform_bins: function(min_val, max_val, num_bins) {

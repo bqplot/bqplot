@@ -60,9 +60,9 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             var color_scale = this.get("scales").color;
             if(color_scale) {
                 if(!this.get("preserve_domain").color) {
-                    color_scale.compute_and_set_domain(color, this.id);
+                    color_scale.compute_and_set_domain(color, this.id + "_color");
                 } else {
-                    color_scale.del_domain([], this.id);
+                    color_scale.del_domain([], this.id + "_color");
                 }
             }
         },
@@ -78,16 +78,16 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 var x = (x_scale.type === "date") ?
                     this.get_date_elem("x") : this.get("x");
                 if(!this.get("preserve_domain").x) {
-                    x_scale.compute_and_set_domain([x], this.id);
+                    x_scale.compute_and_set_domain([x], this.id + "_x");
                 } else {
-                    x_scale.del_domain([], this.id);
+                    x_scale.del_domain([], this.id + "_x");
                 }
             }
             if(y_scale) {
                 if(!this.get("preserve_domain").y) {
-                    y_scale.compute_and_set_domain([this.get("y")], this.id);
+                    y_scale.compute_and_set_domain([this.get("y")], this.id + "_y");
                 } else {
-                    y_scale.del_domain([], this.id);
+                    y_scale.del_domain([], this.id + "_y");
                 }
             }
         },

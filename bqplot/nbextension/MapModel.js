@@ -41,9 +41,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "underscore"],
                     color_scale.compute_and_set_domain(
                         Object.keys(color_data).map(function (d) {
                             return color_data[d];
-                        }), this.id);
+                        }), this.id + "_color");
                 } else {
-                    color_scale.del_domain([], this.id);
+                    color_scale.del_domain([], this.id + "_color");
                 }
             }
         },
