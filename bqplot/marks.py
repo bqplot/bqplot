@@ -602,6 +602,7 @@ class Hist(Mark):
                      scaled=True, rtype='Number', atype='bqplot.Axis')
     count = NdArray(sync=True, display_name='Count', scaled=True,
                     rtype='Number', read_only=True, atype='bqplot.Axis')
+    normalize = Bool(sync=True, default_value=False)
     # FIXME: Should we allow None for count?
     # count is a read-only attribute that is set when the mark is drawn
 
@@ -890,7 +891,7 @@ class OHLC(Mark):
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
                             'y': {'orientation': 'vertical', 'dimension': 'y'}},
-                            sync=True)
+                           sync=True)
     marker = Enum(['candle', 'bar'], default_value='candle', display_name='Marker', sync=True)
     stroke = Color(None, sync=True, display_name='Stroke color', allow_none=True)
     stroke_width = Float(1.0, sync=True, display_name='Stroke Width')
