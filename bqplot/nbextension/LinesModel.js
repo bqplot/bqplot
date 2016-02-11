@@ -184,7 +184,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             var width_scale = scales.width;
 
             if(!this.get("preserve_domain").x) {
-                x_scale.compute_and_set_domain(this.x_data[0].slice(0, this.data_len), this.id + "_x" + );
+                x_scale.compute_and_set_domain(this.x_data[0].slice(0, this.data_len), this.id + "_x");
             } else {
                 x_scale.del_domain([], this.id + "_x");
             }
