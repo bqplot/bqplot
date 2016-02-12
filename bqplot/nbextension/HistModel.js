@@ -25,7 +25,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"
             // function, and not merely "update_domains".
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
-            this.on("change:normalize", function() { this.normalize_data(true); }, this);
+            this.on("change:normalized", function() { this.normalize_data(true); }, this);
         },
         update_data: function() {
             var x_data = this.get_typed_field("sample");
@@ -73,7 +73,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
         },
         normalize_data: function(save_and_update) {
             this.count = this.mark_data.map(function(d) { return d.length; });
-            if (this.get("normalize")) {
+            if (this.get("normalized")) {
                 var sum = this.count.reduce((a, b) => a + b, 0);
                 if (sum != 0) {
                     this.count = this.count.map(function(a) { return a / sum; });
