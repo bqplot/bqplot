@@ -218,6 +218,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             //mouse_events is a boolean to enable mouse_events or not.
             //If this property has never been set, it will default to false.
             if(this.tooltip_view) {
+                var ref_el = d3.select(document.body).select("#notebook").node();
+                var ref_mouse_pos = d3.mouse(ref_el);
+
                 var mouse_pos = d3.mouse(this.parent.el);
                 if(mouse_events === undefined || mouse_events === null ||
                    (!(mouse_events))) {
@@ -239,8 +242,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                                                     tooltip_div_rect.height * 0.5) + "px");
                 }
                 else {
-                    this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
-                        .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
+                    this.tooltip_div.style("left", (ref_mouse_pos[0] + ref_el.offsetLeft + 5) + "px")
+                        .style("top", (ref_mouse_pos[1] + ref_el.offsetTop + 5) + "px");
                 }
             }
         },
