@@ -11,11 +11,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 
 define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
         "base/js/utils", "underscore"],
-       function(Widget, d3, utils, _) {
+        function(Widget, d3, utils, _) {
     "use strict";
 
     var Mark = Widget.WidgetView.extend({
@@ -38,6 +38,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             this.tooltip_div = d3.select(document.createElement("div"))
                 .attr("class", "mark_tooltip")
+                .attr("id", "tooltip_"+this.uuid)
                 .style("opacity", 0);
 
             this.bisect = d3.bisector(function(d) { return d; }).left;
@@ -137,12 +138,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
         },
         highlight_axes: function() {
             _.each(this.model.get("scales"), function(model) {
-               model.trigger("highlight_axis");
+                model.trigger("highlight_axis");
             });
         },
         unhighlight_axes: function() {
             _.each(this.model.get("scales"), function(model) {
-               model.trigger("unhighlight_axis");
+                model.trigger("unhighlight_axis");
             });
         },
         relayout: function() {

@@ -551,8 +551,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             var ref_el = d3.select(document.body).select("#notebook").node();
             var ref_mouse_pos = d3.mouse(ref_el);
             var that = this;
-            var tooltip_div = d3.select(this.el.parentNode)
-                .select(".mark_tooltip");
+            var tooltip_div = this.tooltip_div;
             tooltip_div.transition()
                 .style("opacity", 0.9);
 
@@ -579,9 +578,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.send({event: "hover", data: data.name, ref_data: data.ref_data});
         },
         hide_tooltip: function() {
-            var tooltip_div = d3.select(this.el.parentNode)
-                .select(".mark_tooltip");
-            tooltip_div.transition()
+             this.tooltip_div.style("pointer-events", "none");
+             this.tooltip_div.transition()
                 .style("opacity", 0);
         },
         create_tooltip_widget: function() {
