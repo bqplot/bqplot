@@ -325,6 +325,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 this.listenTo(this.scales.color, "domain_changed", function() {
                     that.update_map_colors();
                 });
+                this.update_map_colors();
             }
         },
         show_groups: function(model, value) {
