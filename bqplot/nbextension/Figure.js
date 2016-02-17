@@ -22,7 +22,8 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
 
         initialize : function() {
             this.setElement(document.createElementNS(d3.ns.prefix.svg, "svg"));
-            this.el.classList.add("bqplot", "figure");
+            // Internet Explorer does not support classList for svg elements
+            this.el.setAttribute("class", "bqplot figure");
             Figure.__super__.initialize.apply(this, arguments);
         },
 
