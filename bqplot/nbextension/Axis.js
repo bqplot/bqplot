@@ -724,7 +724,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils
             }
         },
         guess_tick_format: function(ticks) {
-            if(this.axis_scale.model.type == "linear") {
+            if(this.axis_scale.model.type == "linear" ||
+               this.axis_scale.model.type == "color_linear") {
                 return this.linear_sc_format(ticks);
             } else if (this.axis_scale.model.type == "date" ||
                        this.axis_scale.model.type == "date_color_linear") {
