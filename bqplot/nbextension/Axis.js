@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
+// Polyfill for Math.log10 in IE11
+
+Math.log10 = Math.log10 || function (x) { return Math.log(x) / Math.LN10; };
+
 define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./utils", "underscore"],
        function(Widget, d3, bqutils, _) {
     "use strict";
