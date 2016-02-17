@@ -39,6 +39,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.tooltip_div = d3.select(document.createElement("div"))
                 .attr("class", "mark_tooltip")
                 .attr("id", "tooltip_"+this.uuid)
+                .style("display", "none")
                 .style("opacity", 0);
 
             this.bisect = d3.bisector(function(d) { return d; }).left;
@@ -230,7 +231,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                     this.tooltip_div.style("pointer-events", "all");
                 }
                 this.tooltip_div.transition()
-                    .style(this.model.get("tooltip_style"));
+                    .style(this.model.get("tooltip_style"))
+                    .style("display", null);
 
                 if(this.model.get("tooltip_location") === "center") {
                     //Assumption that parent.el is not a selection and is a div
@@ -253,7 +255,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             //is the last location set by a call to show_tooltip.
             this.tooltip_div.style("pointer-events", "none");
             this.tooltip_div.transition()
-                .style("opacity", 0);
+                .style("opacity", 0)
+                .style("display", "none");
         },
         refresh_tooltip: function(tooltip_interactions) {
             //the argument controls pointer interactions with the tooltip. a

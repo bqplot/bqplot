@@ -166,6 +166,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 this.compute_dimensions_and_draw();
             }, this);
             this.listenTo(this.model, "change:tooltip_widget", this.create_tooltip_widget, this);
+            this.listenTo(this.model, "change:tooltip_fields", this.update_default_tooltip, this);
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -294,6 +295,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.set_area_dimensions(this.data.length);
             this.update_plotarea_dimensions();
             this.draw_map();
+
+            this.clear_selected();
+            this.apply_selected();
+
+            // when data is changed
+            this.fig_hover.selectAll("rect")
+                .remove();
+            this.hide_tooltip();
         },
         update_default_tooltip: function() {
             this.tooltip_fields = this.model.get("tooltip_fields");
@@ -554,7 +563,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             var that = this;
             var tooltip_div = this.tooltip_div;
             tooltip_div.transition()
-                .style("opacity", 0.9);
+                .style("opacity", 0.9)
+                .style("display", null);
 
             // the +5s are for breathing room for the tool tip
             tooltip_div.style("left", (ref_mouse_pos[0] + ref_el.offsetLeft + 5) + "px")
@@ -581,7 +591,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
         hide_tooltip: function() {
              this.tooltip_div.style("pointer-events", "none");
              this.tooltip_div.transition()
-                .style("opacity", 0);
+                .style("opacity", 0)
+                .style("display", "none");
         },
         create_tooltip_widget: function() {
             var tooltip_model = this.model.get("tooltip_widget");
