@@ -70,6 +70,24 @@ define(["./components/d3/d3", "./Lines", "underscore"], function(d3, LinesViewMo
             g_elements.exit().remove();
             return [this.model.mark_data.length, max_length];
         },
+        set_positional_scales: function() {
+            var x_scale = this.scales.x, y_scale = this.scales.y;
+            this.listenTo(x_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
+            });
+            this.listenTo(y_scale, "domain_changed", function() {
+                if (!this.model.dirty) { this.draw(); }
+            });
+        },
+        initialize_additional_scales: function() {
+            var color_scale = this.scales.color;
+            if(color_scale) {
+                this.listenTo(color_scale, "domain_changed", function() {
+                    this.draw();
+                });
+                color_scale.on("color_scale_range_changed", this.draw, this);
+            }
+        },
         draw: function() {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
