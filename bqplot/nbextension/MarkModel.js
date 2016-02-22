@@ -52,6 +52,7 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
             this.dirty = false;
             this.display_el_classes = ["mark"]; //classes on the element which
             //trigger the tooltip to be displayed when they are hovered over
+            this.update_scales();
         },
 
         update_data : function() {

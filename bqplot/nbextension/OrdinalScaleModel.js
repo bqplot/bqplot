@@ -25,8 +25,9 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"],
             this.min_from_data = true;
             this.max_from_data = true;
             this.on("change:domain", this.domain_changed, this);
-            this.on("change:ticks", this.ticks_changed, this);
+            this.domain_changed();
             this.on("change:reverse", this.reverse_changed, this);
+            this.reverse_changed();
         },
 
         domain_changed: function() {

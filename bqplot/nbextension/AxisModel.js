@@ -46,6 +46,8 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
             AxisModel.__super__.initialize.apply(this, arguments);
             this.on("change:side", this.validate_orientation, this);
             this.on("change:orientation", this.validate_side, this);
+            this.validate_orientation();
+            this.validate_side();
         },
 
         validate_side: function() {

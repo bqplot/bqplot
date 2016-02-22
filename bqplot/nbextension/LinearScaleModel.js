@@ -34,8 +34,8 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
             this.global_max = Number.POSITIVE_INFINITY;
             this.on_some_change(["min", "max"], this.min_max_changed, this);
             this.min_max_changed();
-            this.on("change:ticks", this.ticks_changed, this);
             this.on("change:reverse", this.reverse_changed, this);
+            this.reverse_changed();
         },
 
         min_max_changed: function() {
@@ -71,6 +71,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
                 this.trigger("domain_changed", this.domain);
             }
         },
+
         compute_and_set_domain: function(data_array, id) {
             // Takes an array and calculates the domain for the particular
             // view. If you have the domain already calculated on your side,

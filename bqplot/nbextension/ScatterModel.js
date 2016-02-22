@@ -71,6 +71,9 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.update_data();
+            this.update_unique_ids();
+            this.update_domains();
         },
 
         update_data: function() {
