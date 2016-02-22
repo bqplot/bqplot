@@ -23,6 +23,7 @@ define(["./components/d3/d3", "./LinearScaleModel", "underscore"], function(d3, 
             this.type = "color_linear";
             this.divergent = false;
             this.on("change:mid", this.mid_changed, this);
+            this.mid_changed();
         },
 
         mid_changed: function() {

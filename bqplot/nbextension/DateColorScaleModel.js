@@ -30,6 +30,7 @@ define(["./components/d3/d3", "./DateScaleModel", "underscore"], function(d3, Da
             this.type = "date_color_linear";
             this.divergent = false;
             this.on("change:mid", this.mid_changed, this);
+            this.mid_changed();
         },
 
         mid_changed: function() {

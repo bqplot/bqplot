@@ -31,6 +31,7 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
 
         initialize: function() {
             this.on("change:scales", this.snapshot_scales, this);
+            this.snapshot_scales();
         },
 
         reset_scales: function() {

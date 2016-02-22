@@ -45,7 +45,9 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"
             // function, and not merely "update_domains".
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
+            this.update_data();
             this.on("change:normalized", function() { this.normalize_data(true); }, this);
+            this.normalize_data(true);
         },
 
         update_data: function() {

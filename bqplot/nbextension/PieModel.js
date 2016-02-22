@@ -51,6 +51,10 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.on("change:labels", this.update_labels, this);
 
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.update_data();
+            this.update_color();
+            this.update_labels();
+            this.update_domains();
         },
         update_data: function() {
             var sizes = this.get_typed_field("sizes");
