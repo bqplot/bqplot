@@ -183,14 +183,14 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
             # out if it is date castable or not.
         if(len(np.shape(array)) == 2):
             for elem in array:
-                temp_val = pd.to_datetime(elem, coerce=True, box=False, infer_datetime_format=True)
+                temp_val = pd.to_datetime(elem, errors='coerce', box=False, infer_datetime_format=True)
                 temp_val = elem if (temp_val[0] == np.datetime64('NaT')) else temp_val
                 return_value.append(temp_val)
         elif(isinstance(array, list)):
-            temp_val = pd.to_datetime(array, coerce=True, box=False, infer_datetime_format=True)
+            temp_val = pd.to_datetime(array, errors='coerce', box=False, infer_datetime_format=True)
             return_value = array if (temp_val[0] == np.datetime64('NaT')) else temp_val
         else:
-            temp_val = pd.to_datetime(array, coerce=True, box=False, infer_datetime_format=True)
+            temp_val = pd.to_datetime(array, errors='coerce', box=False, infer_datetime_format=True)
             temp_val = array if (temp_val[0] == np.datetime64('NaT')) else temp_val
             return_value = temp_val
         return return_value
