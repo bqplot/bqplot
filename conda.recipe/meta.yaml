@@ -1,6 +1,6 @@
 package:
   name: bqplot
-  version: {{ environ.get('GIT_DESCRIBE_TAG', '') }}
+  version: 0.5.3
 
 build:
   number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
@@ -8,7 +8,7 @@ build:
   {% else %}string: py{{ environ.get('PY_VER').replace('.', '') }}_{{ environ.get('GIT_BUILD_STR', 'GIT_STUB') }}{% endif %}
 
 source:
-  git_url: ../
+  path: ../
 
 requirements:
   build:
