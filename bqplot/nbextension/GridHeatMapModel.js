@@ -66,23 +66,23 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             var color_scale = scales.color;
 
             if(!this.get("preserve_domain").row) {
-                y_scale.compute_and_set_domain(this.rows, this.id);
+                y_scale.compute_and_set_domain(this.rows, this.id + "_row");
             } else {
-                y_scale.del_domain([], this.id);
+                y_scale.del_domain([], this.id + "_row");
             }
 
             if(!this.get("preserve_domain").column) {
-                x_scale.compute_and_set_domain(this.columns, this.id);
+                x_scale.compute_and_set_domain(this.columns, this.id + "_column");
             } else {
-                x_scale.del_domain([], this.id);
+                x_scale.del_domain([], this.id + "_column");
             }
             if(color_scale !== null && color_scale !== undefined) {
                 if(!this.get("preserve_domain").color) {
                     color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem.color;
-                    }), this.id);
+                    }), this.id + "_color");
                 } else {
-                    color_scale.del_domain([], this.id);
+                    color_scale.del_domain([], this.id + "_color");
                 }
             }
         },

@@ -58,9 +58,9 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             if(!this.get("preserve_domain").x && this.mark_data) {
                 x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem[0];
-                }), this.id);
+                }), this.id + "_x");
             } else {
-                x_scale.del_domain([], this.id);
+                x_scale.del_domain([], this.id + "_x");
             }
             if(!this.get("preserve_domain").y && this.mark_data) {
                //The values are sorted, so we are using that to calculate the min/max
@@ -73,10 +73,10 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                     return values[values.length-1];
                 }));
 
-                y_scale.set_domain([min,max], this.id);
+                y_scale.set_domain([min,max], this.id + "_y");
 
             } else {
-                y_scale.del_domain([], this.id);
+                y_scale.del_domain([], this.id + "_y");
             }
         },
     });

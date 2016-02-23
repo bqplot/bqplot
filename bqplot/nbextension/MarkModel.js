@@ -51,7 +51,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
             // disassociates the mark with the scale
             this.dirty = true;
             for (var key in scales) {
-                scales[key].del_domain([], this.id);
+                scales[key].del_domain([], this.id + "_" + key);
             }
             this.dirty = false;
             //TODO: Check if the views are being removed
