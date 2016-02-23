@@ -34,7 +34,8 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             midpoints: [],
             colors: d3.scale.category10().range(),
             stroke: null,
-            opacities: []
+            opacities: [],
+            normalized: false
         }),
 
         initialize: function() {
