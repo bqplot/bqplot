@@ -8,7 +8,7 @@ build:
   {% else %}string: py{{ environ.get('PY_VER').replace('.', '') }}_{{ environ.get('GIT_BUILD_STR', 'GIT_STUB') }}{% endif %}
 
 source:
-  git_url: ../
+  path: ../
 
 requirements:
   build:
