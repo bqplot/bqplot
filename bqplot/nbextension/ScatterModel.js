@@ -109,64 +109,19 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
             // color scale needs an issue in DateScaleModel to be fixed. It
             // should be moved here as soon as that is fixed.
 
-            var scales = this.get("scales"),
-                x_scale = scales.x,
-                y_scale = scales.y,
-                size_scale = scales.size,
-                opacity_scale = scales.opacity,
-                skew_scale = scales.skew,
-                rotation_scale = scales.rotation;
-
-            if(!this.get("preserve_domain").x) {
-                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                    return elem.x;
-                }), this.id + "_x");
-            } else {
-                x_scale.del_domain([], this.id + "_x");
-            }
-            if(!this.get("preserve_domain").y) {
-                y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                    return elem.y;
-                }), this.id + "_y");
-            } else {
-                y_scale.del_domain([], this.id + "_y");
-            }
-            if(size_scale) {
-                if(!this.get("preserve_domain").size) {
-                    size_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                        return elem.size;
-                    }), this.id + "_size");
-                } else {
-                    size_scale.del_domain([], this.id + "_size");
+           var scales = this.get("scales");
+           for (var key in scales) {
+                if(scales.hasOwnProperty(key) && key != "color") {
+                    var scale = scales[key];
+                    if(!this.get("preserve_domain")[key]) {
+                        scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                            return elem[key];
+                        }), this.id + key);
+                    } else {
+                        scale.del_domain([], this.id + key);
+                    }
                 }
-            }
-            if(opacity_scale) {
-                if(!this.get("preserve_domain").opacity) {
-                    opacity_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                        return elem.opacity;
-                    }), this.id + "_opacity");
-                } else {
-                    opacity_scale.del_domain([], this.id + "_opacity");
-                }
-            }
-            if(skew_scale) {
-                if(!this.get("preserve_domain").skew) {
-                    skew_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                        return elem.skew;
-                    }), this.id + "_skew");
-                } else {
-                    skew_scale.del_domain([], this.id + "_skew");
-                }
-            }
-            if(rotation_scale) {
-                if(!this.get("preserve_domain").rotation) {
-                    rotation_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                        return elem.rotation;
-                    }), this.id + "_rotation");
-                } else {
-                    rotation_scale.del_domain([], this.id + "_rotation");
-                }
-            }
+           }
 
         },
     });
