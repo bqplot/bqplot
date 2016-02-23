@@ -11,11 +11,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 
 define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
         "base/js/utils", "underscore"],
-       function(Widget, d3, utils, _) {
+        function(Widget, d3, utils, _) {
     "use strict";
 
     var Mark = Widget.WidgetView.extend({
@@ -38,6 +38,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             this.tooltip_div = d3.select(document.createElement("div"))
                 .attr("class", "mark_tooltip")
+                .attr("id", "tooltip_"+this.uuid)
+                .style("display", "none")
                 .style("opacity", 0);
 
             this.bisect = d3.bisector(function(d) { return d; }).left;
@@ -137,12 +139,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
         },
         highlight_axes: function() {
             _.each(this.model.get("scales"), function(model) {
-               model.trigger("highlight_axis");
+                model.trigger("highlight_axis");
             });
         },
         unhighlight_axes: function() {
             _.each(this.model.get("scales"), function(model) {
-               model.trigger("unhighlight_axis");
+                model.trigger("unhighlight_axis");
             });
         },
         relayout: function() {
@@ -218,6 +220,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             //mouse_events is a boolean to enable mouse_events or not.
             //If this property has never been set, it will default to false.
             if(this.tooltip_view) {
+                var ref_el = d3.select(document.body).select("#notebook").node();
+                var ref_mouse_pos = d3.mouse(ref_el);
+
                 var mouse_pos = d3.mouse(this.parent.el);
                 if(mouse_events === undefined || mouse_events === null ||
                    (!(mouse_events))) {
@@ -226,7 +231,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                     this.tooltip_div.style("pointer-events", "all");
                 }
                 this.tooltip_div.transition()
-                    .style(this.model.get("tooltip_style"));
+                    .style(this.model.get("tooltip_style"))
+                    .style("display", null);
 
                 if(this.model.get("tooltip_location") === "center") {
                     //Assumption that parent.el is not a selection and is a div
@@ -239,8 +245,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                                                     tooltip_div_rect.height * 0.5) + "px");
                 }
                 else {
-                    this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
-                        .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
+                    this.tooltip_div.style("left", (ref_mouse_pos[0] + ref_el.offsetLeft + 5) + "px")
+                        .style("top", (ref_mouse_pos[1] + ref_el.offsetTop + 5) + "px");
                 }
             }
         },
@@ -249,7 +255,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             //is the last location set by a call to show_tooltip.
             this.tooltip_div.style("pointer-events", "none");
             this.tooltip_div.transition()
-                .style("opacity", 0);
+                .style("opacity", 0)
+                .style("display", "none");
         },
         refresh_tooltip: function(tooltip_interactions) {
             //the argument controls pointer interactions with the tooltip. a

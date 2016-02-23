@@ -25,6 +25,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"
             // function, and not merely "update_domains".
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
+            this.on("change:normalized", function() { this.normalize_data(true); }, this);
         },
         update_data: function() {
             var x_data = this.get_typed_field("sample");
@@ -61,14 +62,33 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             })(x_data_ind);
             //adding index attribute to mark_data of the model
             this.mark_data.forEach(function(data, index) { data.index = index; });
+            this.normalize_data(false);
 
-            this.count = this.mark_data.map(function(d) { return d.length; });
             this.set("midpoints", this.x_mid);
             this.set_typed_field("count", this.count);
 
             this.update_domains();
             this.save_changes();
             this.trigger("data_updated");
+        },
+        normalize_data: function(save_and_update) {
+            this.count = this.mark_data.map(function(d) { return d.length; });
+            if (this.get("normalized")) {
+                var sum = this.count.reduce((a, b) => a + b, 0);
+                if (sum != 0) {
+                    this.count = this.count.map(function(a) { return a / sum; });
+                }
+            }
+
+            var that = this;
+            this.mark_data.forEach(function(el, it) { el['y'] = that.count[it]; });
+
+            if (save_and_update) {
+                this.set_typed_field("count", this.count);
+                this.update_domains();
+                this.save_changes();
+                this.trigger("data_updated");
+            }
         },
         get_data_dict: function(data, index) {
             var return_dict = {};

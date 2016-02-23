@@ -50,7 +50,7 @@ define(["./components/d3/d3", "./LinearScaleModel", "underscore"], function(d3, 
                     this.domain = (this.reverse) ?
                         [max, min] : [min, max];
                 }
-                this.trigger("domain_changed", [min, max]);
+                this.trigger("domain_changed", this.domain);
             }
         },
     });

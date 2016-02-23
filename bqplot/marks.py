@@ -565,6 +565,10 @@ class Hist(Mark):
         user-friendly name of the mark
     bins: nonnegative int (default: 10)
         number of bins in the histogram
+    normalized: bool (default: False)
+        Boolean attribute to return normalized values which
+        sum to 1 or direct counts for the `count` attribute. The scale of
+        `count` attribute is determined by the value of this flag.
     colors: list of colors (default: CATEGORY10)
         List of colors of the Histogram. If the list is shorter than the number
         of bins, the colors are reused.
@@ -602,6 +606,7 @@ class Hist(Mark):
                      scaled=True, rtype='Number', atype='bqplot.Axis')
     count = NdArray(sync=True, display_name='Count', scaled=True,
                     rtype='Number', read_only=True, atype='bqplot.Axis')
+    normalized = Bool(sync=True, default_value=False)
     # FIXME: Should we allow None for count?
     # count is a read-only attribute that is set when the mark is drawn
 
@@ -890,7 +895,7 @@ class OHLC(Mark):
     # Other attributes
     scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
                             'y': {'orientation': 'vertical', 'dimension': 'y'}},
-                            sync=True)
+                           sync=True)
     marker = Enum(['candle', 'bar'], default_value='candle', display_name='Marker', sync=True)
     stroke = Color(None, sync=True, display_name='Stroke color', allow_none=True)
     stroke_width = Float(1.0, sync=True, display_name='Stroke Width')
