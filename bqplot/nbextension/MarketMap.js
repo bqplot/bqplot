@@ -167,6 +167,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }, this);
             this.listenTo(this.model, "change:tooltip_widget", this.create_tooltip_widget, this);
             this.listenTo(this.model, "change:tooltip_fields", this.update_default_tooltip, this);
+            this.listenTo(this.model, "change:tooltip_formats", this.update_default_tooltip, this);
         },
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
@@ -560,6 +561,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
         show_tooltip: function(event, data) {
             var ref_el = d3.select(document.body).select("#notebook").node();
             var ref_mouse_pos = d3.mouse(ref_el);
+
+            var mouse_pos = d3.mouse(this.el);
             var that = this;
             var tooltip_div = this.tooltip_div;
             tooltip_div.transition()
@@ -567,8 +570,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 .style("display", null);
 
             // the +5s are for breathing room for the tool tip
-            tooltip_div.style("left", (ref_mouse_pos[0] + ref_el.offsetLeft + 5) + "px")
-                .style("top", (ref_mouse_pos[1] + ref_el.offsetTop + 5) + "px");
+            tooltip_div.style("left", (mouse_pos[0] + this.el.offsetLeft + 5) + "px")
+                .style("top", (mouse_pos[1] + this.el.offsetTop + 5) + "px");
 
             tooltip_div.select("table").remove();
             if(! this.tooltip_view) {
