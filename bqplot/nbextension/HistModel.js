@@ -74,7 +74,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
         normalize_data: function(save_and_update) {
             this.count = this.mark_data.map(function(d) { return d.length; });
             if (this.get("normalized")) {
-                var sum = this.count.reduce((a, b) => a + b, 0);
+                var sum = this.count.reduce(function(a, b) { return a + b; }, 0);
                 if (sum != 0) {
                     this.count = this.count.map(function(a) { return a / sum; });
                 }
