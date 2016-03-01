@@ -570,8 +570,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 .style("display", null);
 
             // the +5s are for breathing room for the tool tip
-            tooltip_div.style("left", (mouse_pos[0] + this.el.offsetLeft + 5) + "px")
-                .style("top", (mouse_pos[1] + this.el.offsetTop + 5) + "px");
+            tooltip_div.style("left", (mouse_pos[0] + this.el.offsetLeft - ref_el.scrollLeft + 5) + "px")
+                .style("top", (mouse_pos[1] + this.el.offsetTop - ref_el.scrollTop + 5) + "px");
 
             tooltip_div.select("table").remove();
             if(! this.tooltip_view) {

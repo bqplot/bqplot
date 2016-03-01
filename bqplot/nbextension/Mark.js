@@ -245,8 +245,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                                                     tooltip_div_rect.height * 0.5) + "px");
                 }
                 else {
-                    this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
-                        .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
+                    this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft - ref_el.scrollLeft + 5) + "px")
+                        .style("top", (mouse_pos[1] + this.parent.el.offsetTop - ref_el.scrollTop + 5) + "px");
                 }
             }
         },
