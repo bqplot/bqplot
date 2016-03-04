@@ -19,13 +19,13 @@
   "devDependencies": {
     "bower": "^1.5.3",
     "rimraf": "^2.4.1"
- },
+  },
   "dependencies": {
     "backbone": "^1.2.3",
     "bootstrap": "^3.3.5",
     "jquery": "^2.1.4",
+    "jupyter-js-widgets": "0.0.15",
     "require-less": "*",
-    "jupyter-js-widgets": "../../ipython/ipywidgets/ipywidgets",
     "underscore": "^1.8.3"
   }
 }
