@@ -45,14 +45,14 @@ Pyplot
 """
 from collections import OrderedDict
 from IPython.display import display
-from ipywidgets import VBox, HBox, Button, ToggleButton
+from ipywidgets import VBox
 from numpy import arange, issubdtype
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
 from .toolbar import Toolbar
-from .interacts import (panzoom, BrushIntervalSelector, FastIntervalSelector,
+from .interacts import (BrushIntervalSelector, FastIntervalSelector,
                         BrushSelector, IndexSelector, MultiSelector,
                         LassoSelector)
 from traitlets.utils.sentinel import Sentinel
@@ -61,13 +61,24 @@ Keep = Sentinel('Keep', 'bqplot.pyplot', '''
         Used in bqplot.pyplot to specify that the same scale should be used for
         a certain dimension.
         ''')
-
+# `_context` object contains the global information for pyplot.
+# `figure`: refers to the current figure to which marks will be added.
+# `scales`: The current set of scales which will be used for drawing a mark. if
+# the scale for an attribute is not present, it is created based on the range
+# type.
+# `scale_registry`: This is a dictionary where the keys are the context names and
+# the values are the set of scales which were used on the last plot in that
+# context. This is useful when switching context.
+# `last_mark`: refers to the last mark that has been plotted.
+# `current_key`: The key for the current context figure. If there is no key,
+# then the value is `None`.
 _context = {
     'figure': None,
     'figure_registry': {},
     'scales': {},
     'scale_registry': {},
-    'last_mark': None
+    'last_mark': None,
+    'current_key': None
 }
 
 LINE_STYLE_CODES = OrderedDict([(':', 'dotted'), ('-.', 'dash_dotted'),
@@ -78,6 +89,7 @@ COLOR_CODES = {'b': 'blue', 'g': 'green', 'r': 'red', 'c': 'cyan',
 
 MARKER_CODES = {'o': 'circle', 'v': 'triangle-down', '^': 'triangle-up',
                 's': 'square', 'd': 'diamond', '+': 'cross'}
+
 
 def show(key=None, display_toolbar=True):
     """Shows the current context figure in the output area.
@@ -145,6 +157,7 @@ def figure(key=None, fig=None, **kwargs):
         A bqplot Figure
     """
     scales_arg = kwargs.pop('scales', {})
+    _context['current_key'] = key
     if fig is not None:                                     # fig provided
         _context['figure'] = fig
         if key is not None:
@@ -191,6 +204,7 @@ def close(key):
         fig.pyplot.close()
     fig.close()
     del figure_registry[key]
+    del _context['scale_registry'][key]
 
 
 def scales(key=None, scales={}):
@@ -428,7 +442,6 @@ def plot(*args, **kwargs):
         for the constructor of the corresponding axis type.
     """
     marker_str = None
-    mark_type = None
 
     if len(args) == 1:
         kwargs['y'] = args[0]
@@ -832,6 +845,11 @@ def clear():
     if fig is not None:
         fig.marks = []
         fig.axes = []
+        setattr(fig, 'axis_registry', {})
+        _context['scales'] = {}
+        key = _context['current_key']
+        if key is not None:
+            _context['scale_registry'][key] = {}
 
 
 def current_figure():
@@ -897,17 +915,17 @@ def _apply_properties(widget, properties={}):
 
 def _get_line_styles(marker_str):
     """Return line style, color and marker type from specified marker string.
-       
+
     For example, if ``marker_str`` is 'g-o' then the method returns
     ``('solid', 'green', 'circle')``.
     """
     def _extract_marker_value(marker_str, code_dict):
         """Extracts the marker value from a given marker string.
-        
+
         Looks up the `code_dict` and returns the corresponding marker for a
         specific code.
 
-        For example if `marker_str` is 'g-o' then the method extracts 
+        For example if `marker_str` is 'g-o' then the method extracts
         - 'green' if the code_dict is color_codes,
         - 'circle' if the code_dict is marker_codes etc.
         """
