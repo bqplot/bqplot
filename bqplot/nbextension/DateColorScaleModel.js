@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./DateScaleModel", "underscore"], function(d3, Da
 
         defaults: _.extend({}, DateScaleModel.DateScaleModel.prototype.defaults, {
             _model_name: "DateColorScaleModel",
-            _model_module: "nbextensions/bqplot/DateColorScaleModel",
             _view_name: "DateColorScale",
-            _view_module: "nbextensions/bqplot/DateColorScale",
         }),
 
         initialize: function(range) {

@@ -120,6 +120,6 @@ class Figure(DOMWidget):
         return LinearScale(min=0, max=1)
 
     _view_name = Unicode('Figure').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Figure').tag(sync=True)
     _model_name = Unicode('FigureModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/FigureModel').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)

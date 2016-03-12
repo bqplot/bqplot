@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "PieModel",
-            _model_module: "nbextensions/bqplot/PieModel",
             _view_name: "Pie",
-            _view_module: "nbextensions/bqplot/Pie",
 
             sizes: [],
             color: null,

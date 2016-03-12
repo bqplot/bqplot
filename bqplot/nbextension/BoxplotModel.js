@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "BoxplotModel",
-            _model_module: "nbextensions/bqplot/BoxplotModel",
             _view_name: "Boxplot",
-            _view_module: "nbextensions/bqplot/Boxplot",
 
             x: [],
             y: [],

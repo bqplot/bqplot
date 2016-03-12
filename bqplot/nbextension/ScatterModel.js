@@ -21,9 +21,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "ScatterModel",
-            _model_module: "nbextensions/bqplot/ScatterModel",
             _view_name: "Scatter",
-            _view_module: "nbextensions/bqplot/Scatter",
 
             x: [], 
             y: [],

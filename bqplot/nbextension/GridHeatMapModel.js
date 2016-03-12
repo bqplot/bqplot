@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "GridHeatMapModel",
-            _model_module: "nbextensions/bqplot/GridHeatMapModel",
             _view_name: "GridHeatMap",
-            _view_module: "nbextensions/bqplot/GridHeatMap",
 
             row: [],
             column: [],

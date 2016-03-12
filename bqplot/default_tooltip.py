@@ -56,6 +56,6 @@ class Tooltip(DOMWidget):
     labels = List().tag(sync=True)
 
     _view_name = Unicode('Tooltip').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Tooltip').tag(sync=True)
     _model_name = Unicode('TooltipModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/TooltipModel').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)

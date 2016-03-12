@@ -80,9 +80,10 @@ class Interaction(Widget):
     types = {}
 
     _view_name = Unicode('Interaction').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Interaction').tag(sync=True)
     _model_name = Unicode('BaseModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/BaseModel').tag(sync=True)
+
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
     _ipython_display_ = None  # We cannot display an interaction outside of a
                               # figure
 
@@ -115,7 +116,7 @@ class HandDraw(Interaction):
     max_x: float or Date or None (default: None)
         The maximum value of 'x' which should be edited via the handdraw.
     """
-    lines = Instance(Lines).tag(sync=True, **widget_serialization)
+    lines = Instance(Lines, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
     line_index = Int().tag(sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
     min_x = (Float(None, allow_none=True).tag(sync=True) |
@@ -124,9 +125,7 @@ class HandDraw(Interaction):
              Date(None, allow_none=True).tag(sync=True))
 
     _view_name = Unicode('HandDraw').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/HandDraw').tag(sync=True)
     _model_name = Unicode('HandDrawModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/HandDrawModel').tag(sync=True)
 
 
 @register_interaction('bqplot.PanZoom')
@@ -151,9 +150,7 @@ class PanZoom(Interaction):
                   **widget_serialization)
 
     _view_name = Unicode('PanZoom').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/PanZoom').tag(sync=True)
     _model_name = Unicode('PanZoomModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/PanZoomModel').tag(sync=True)
 
 
 def panzoom(marks):
@@ -183,8 +180,6 @@ class Selector(Interaction):
     marks = List().tag(sync=True, **widget_serialization)
 
     _view_name = Unicode('Selector').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Selector').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/SelectorModel').tag(sync=True)
 
     def reset(self):
         self.send({"type": "reset"})
@@ -271,7 +266,6 @@ class FastIntervalSelector(OneDSelector):
     size = Float(None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('FastIntervalSelector').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/FastIntervalSelector').tag(sync=True)
     _model_name = Unicode('FastIntervalSelectorModel').tag(sync=True)
 
 
@@ -306,7 +300,6 @@ class IndexSelector(OneDSelector):
     color = Color(None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('IndexSelector').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/IndexSelector').tag(sync=True)
     _model_name = Unicode('IndexSelectorModel').tag(sync=True)
 
 
@@ -347,7 +340,6 @@ class BrushIntervalSelector(OneDSelector):
     color = Color(None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('BrushIntervalSelector').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/BrushSelector').tag(sync=True)
     _model_name = Unicode('BrushIntervalSelectorModel').tag(sync=True)
 
 
@@ -412,7 +404,6 @@ class BrushSelector(TwoDSelector):
                 self.selected[1][1] = self.read_json_y(self.selected[1][1])
 
     _view_name = Unicode('BrushSelector').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/BrushSelector').tag(sync=True)
     _model_name = Unicode('BrushSelectorModel').tag(sync=True)
 
 
@@ -500,7 +491,6 @@ class MultiSelector(OneDSelector):
             self.selected = actual_selected
 
     _view_name = Unicode('MultiSelector').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/BrushSelector').tag(sync=True)
     _model_name = Unicode('MultiSelectorModel').tag(sync=True)
 
 
@@ -544,5 +534,4 @@ class LassoSelector(TwoDSelector):
         super(LassoSelector, self).__init__(**kwargs)
 
     _view_name = Unicode('LassoSelector').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/LassoSelector').tag(sync=True)
     _model_name = Unicode('LassoSelectorModel').tag(sync=True)

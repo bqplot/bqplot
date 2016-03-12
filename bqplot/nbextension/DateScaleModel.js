@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./LinearScaleModel", "underscore"], function(d3, 
 
         defaults: _.extend({}, LinearScaleModel.LinearScaleModel.prototype.defaults, {
             _model_name: "DateScaleModel",
-            _model_module: "nbextensions/bqplot/DateScaleModel",
             _view_name: "DateScale",
-            _view_module: "nbextensions/bqplot/DateScale",
 
             // min: null,
             // max: null,
