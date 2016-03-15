@@ -20,9 +20,9 @@ define(["./components/d3/d3", "./BaseModel", "underscore"], function(d3, BaseMod
 
         defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
             _model_name: "ScaleModel",
-            _model_module: "nbextensions/bqplot/ScaleModel",
              _view_name: "Scale",
-            _view_module: "nbextensions/bqplot/Scale",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
             reverse: false,
             allow_padding: true,
         }),

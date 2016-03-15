@@ -20,9 +20,9 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"], function(widgets, Ba
 
         defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
             _model_name: "FigureModel",
-            _model_module: "nbextensions/bqplot/FigureModel",
             _view_name: "Figure",
-            _view_module: "nbextensions/bqplot/Figure",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
             title: "",
             axes: [],

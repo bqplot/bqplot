@@ -156,7 +156,8 @@ class Mark(Widget):
     tooltip_location = Enum(['mouse', 'center'], default_value='mouse').tag(sync=True)
 
     _model_name = Unicode('MarkModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MarkModel').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
     _ipython_display_ = None
 
     def _scales_validate(self, scales, scales_trait):
@@ -337,9 +338,7 @@ class Lines(Mark):
     opacities = List().tag(sync=True, display_name='Opacity')
     fill_opacities = List().tag(sync=True, display_name='Fill Opacity')
     _view_name = Unicode('Lines').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Lines').tag(sync=True)
     _model_name = Unicode('LinesModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LinesModel').tag(sync=True)
 
 
 @register_mark('bqplot.FlexLine')
@@ -391,9 +390,7 @@ class FlexLine(Mark):
     stroke_width = Float(1.5).tag(sync=True, display_name='Stroke width')
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True)
     _view_name = Unicode('FlexLine').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/FlexLine').tag(sync=True)
     _model_name = Unicode('FlexLineModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LinesModel').tag(sync=True)
 
 
 @register_mark('bqplot.Scatter')
@@ -536,9 +533,7 @@ class Scatter(Mark):
         super(Scatter, self)._handle_custom_msgs(self, content)
 
     _view_name = Unicode('Scatter').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Scatter').tag(sync=True)
     _model_name = Unicode('ScatterModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/ScatterModel').tag(sync=True)
 
 
 @register_mark('bqplot.Hist')
@@ -616,9 +611,7 @@ class Hist(Mark):
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
 
     _view_name = Unicode('Hist').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Hist').tag(sync=True)
     _model_name = Unicode('HistModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/HistModel').tag(sync=True)
 
 
 @register_mark('bqplot.Boxplot')
@@ -671,9 +664,7 @@ class Boxplot(Mark):
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
 
     _view_name = Unicode('Boxplot').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Boxplot').tag(sync=True)
     _model_name = Unicode('BoxplotModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/BoxplotModel').tag(sync=True)
 
 
 @register_mark('bqplot.Bars')
@@ -761,9 +752,7 @@ class Bars(Mark):
     align = Enum(['center', 'left', 'right'], default_value='center').tag(sync=True)
 
     _view_name = Unicode('Bars').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Bars').tag(sync=True)
     _model_name = Unicode('BarsModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/BarsModel').tag(sync=True)
 
 
 @register_mark('bqplot.Label')
@@ -813,9 +802,7 @@ class Label(Mark):
     align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)
 
     _view_name = Unicode('Label').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Label').tag(sync=True)
     _model_name = Unicode('LabelModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LabelModel').tag(sync=True)
 
 
 @register_mark('bqplot.OHLC')
@@ -890,9 +877,7 @@ class OHLC(Mark):
     format = Unicode('ohlc').tag(sync=True, display_name='Format')
 
     _view_name = Unicode('OHLC').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/OHLC').tag(sync=True)
     _model_name = Unicode('OHLCModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/OHLCModel').tag(sync=True)
 
 
 @register_mark('bqplot.Pie')
@@ -969,9 +954,7 @@ class Pie(Mark):
     end_angle = Float(360.0).tag(sync=True)
 
     _view_name = Unicode('Pie').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Pie').tag(sync=True)
     _model_name = Unicode('PieModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/PieModel').tag(sync=True)
 
 
 import os
@@ -1003,7 +986,7 @@ class Map(Mark):
     hover_highlight: bool (default: True)
         boolean to control if the map should be aware of which country is being
         hovered on.
-    map_data: tuple (default: ("worldmap", "nbextensions/bqplot/WorldMapData")
+    map_data: tuple (default: topoload("WorldMapData.json"))
         tuple containing which map is to be displayed
 
     Data Attributes
@@ -1046,9 +1029,7 @@ class Map(Mark):
     map_data = Tuple(topo_load('WorldMapData.json')).tag(sync=True)
 
     _view_name = Unicode('Map').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Map').tag(sync=True)
     _model_name = Unicode('MapModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MapModel').tag(sync=True)
 
 
 @register_mark('bqplot.GridHeatMap')
@@ -1152,6 +1133,4 @@ class GridHeatMap(Mark):
         super(GridHeatMap, self).__init__(**kwargs)
 
     _view_name = Unicode('GridHeatMap').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/GridHeatMap').tag(sync=True)
     _model_name = Unicode('GridHeatMapModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/GridHeatMapModel').tag(sync=True)

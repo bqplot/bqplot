@@ -20,9 +20,7 @@ define(["./ScaleModel", "./components/d3/d3", "underscore"], function(ScaleModel
 
         defaults: _.extend({}, ScaleModel.ScaleModel.prototype.defaults, {
             _model_name: "GeoScaleModel",
-            _model_module: "nbextensions/bqplot/GeoScaleModel",
             _view_name: "GeoScale",
-            _view_module: "nbextensions/bqplot/GeoScale",
         }),
     });
 

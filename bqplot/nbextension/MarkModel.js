@@ -21,7 +21,8 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
 
         defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
             _model_name: "MarkModel",
-            _model_module: "nbextensions/bqplot/MarkModel",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
             scales: {},
             scales_metadata: {},

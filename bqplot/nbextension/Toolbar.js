@@ -25,9 +25,9 @@ define([
 
         defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
             _model_name: "ToolbarModel",
-            _model_module: "nbextensions/bqplot/Toolbar",
             _model_name: "Toolbar",
-            _model_module: "nbextensions/bqplot/Toolbar",
+            _model_module: "bqplot",
+            _model_module: "bqplot",
 
             figure: undefined,
             _panning: false,
@@ -115,7 +115,7 @@ define([
              */
             return this.widget_manager.new_widget({
                 model_name: "PanZoomModel",
-                model_module: "nbextensions/bqplot/PanZoomModel",
+                model_module: "bqplot",
                 widget_class: "bqplot.interacts.PanZoom"
             }).then(function(model) {
                 return Promise.all(figure.get("marks")).then(function(marks) {

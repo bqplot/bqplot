@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "./components/d3/d3", "underscore", "./LoadStyle"],
+define(["jupyter-js-widgets", "./components/d3/d3", "underscore"],
        function(widgets, d3, _) {
     "use strict";
 

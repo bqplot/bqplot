@@ -21,9 +21,7 @@ define(["./MarkModel", "underscore"],
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "MapModel",
-            _model_module: "nbextensions/bqplot/MapModel",
             _view_name: "Map",
-            _view_module: "nbextensions/bqplot/Map",
 
             color: {},
             scales_metadata: {},

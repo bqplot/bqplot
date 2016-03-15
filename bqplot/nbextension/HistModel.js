@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "HistModel",
-            _model_module: "nbextensions/bqplot/HistModel",
             _view_name: "Hist",
-            _view_module: "nbextensions/bqplot/Hist",
 
             sample: [],
             count: [],

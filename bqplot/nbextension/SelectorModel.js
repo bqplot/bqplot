@@ -20,8 +20,9 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
     var SelectorModel = BaseModel.BaseModel.extend({
 
         defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
-            _model_name: "electorModel",
-            _model_module: "nbextensions/bqplot/SelectorModel",
+            _model_name: "SelectorModel",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
             marks: [],
         }),
 
@@ -62,7 +63,6 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
         defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
             _model_name: "FastIntervalSelectorModel",
             _view_name: "FastIntervalSelector",
-            _view_module: "nbextensions/bqplot/FastIntervalSelector",
             selected: [],
             color: null,
             size: null
@@ -74,7 +74,6 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
         defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
             _model_name: "IndexSelectorModel",
             _view_name: "IndexSelector",
-            _view_module: "nbextensions/bqplot/IndexSelector",
             selected: [],
             line_width: 2,
             color: null
@@ -86,7 +85,6 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
         defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
             _model_name: "BrushIntervalSelectorModel",
             _view_name: "BrushIntervalSelector",
-            _view_module: "nbextensions/bqplot/BrushSelector",
             brushing: false,
             selected: [],
             color: null,
@@ -98,7 +96,6 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
         defaults: _.extend({}, TwoDSelectorModel.prototype.defaults, {
             _model_name: "BrushSelectorModel",
             _view_name: "BrushSelector",
-            _view_module: "nbextensions/bqplot/BrushSelector",
             clear: false,
             brushing: false,
             selected: [],
@@ -111,7 +108,6 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
         defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
             _model_name: "MultiSelectorModel",
             _view_name: "MultiSelector",
-            _view_module: "nbextensions/bqplot/BrushSelector",
             names: [],
             brushing: false,
             selected: {},
@@ -125,7 +121,6 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
         defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
             _model_name: "LassoSelectorModel",
             _view_name: "LassoSelector",
-            _view_module: "nbextensions/bqplot/LassoSelector",
             color: null,
         }),
     });

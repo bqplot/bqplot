@@ -20,7 +20,7 @@ define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
 
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
             _model_name: "BaseModel",
-            _model_module: "nbextensions/bqplot/BaseModel",
+            _model_module: "bqplot",
         }),
 
         get_typed_field: function(param) {

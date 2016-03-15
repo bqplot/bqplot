@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "LinesModel",
-            _model_module: "nbextensions/bqplot/LinesModel",
             _view_name: "Lines",
-            _view_module: "nbextensions/bqplot/Lines",
 
             x: [],
             y: [],
@@ -174,7 +172,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
         defaults: _.extend({}, LinesModel.prototype.defaults, {
             _model_name: "FlexLineModel",
             _view_name: "FlexLine",
-            _view_module: "nbextensions/bqplot/FlexLine",
+
             x: [],
             y: [],
             color: null,

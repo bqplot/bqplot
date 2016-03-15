@@ -21,9 +21,9 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
 
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
             _model_name: "AxisModel",
-            _model_module: "nbextensions/bqplot/AxisModel",
             _view_name: "Axis",
-            _view_module: "nbextensions/bqplot/Axis",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
             orientation: "horizontal",
             side: null,
@@ -89,7 +89,6 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
         defaults: _.extend({}, AxisModel.prototype.defaults, {
             _model_name: "ColorAxisModel",
             _view_name: "ColorAxis",
-            _view_module: "nbextensions/bqplot/ColorAxis",
         }),
     });
 

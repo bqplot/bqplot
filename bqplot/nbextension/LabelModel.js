@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "LabelModel",
-            _model_module: "nbextensions/bqplot/LabelModel",
             _view_name: "Label",
-            _view_module: "nbextensions/bqplot/Label",
 
             x: 0.0,
             y: 0.0,

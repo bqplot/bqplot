@@ -72,6 +72,6 @@ class Toolbar(DOMWidget):
                         read_only=True).tag(sync=True, **widget_serialization)
 
     _view_name = Unicode('Toolbar').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Toolbar').tag(sync=True)
     _model_name = Unicode('ToolbarModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/Toolbar').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)

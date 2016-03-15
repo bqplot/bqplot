@@ -21,9 +21,9 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
 
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
             _model_name: "PanZoomModel",
-            _model_module: "nbextensions/bqplot/PanZoomModel",
             _view_name: "PanZoom",
-            _view_module: "nbextensions/bqplot/PanZoom",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
             scales: {},
             allow_pan: true,
             allow_zoom: true,

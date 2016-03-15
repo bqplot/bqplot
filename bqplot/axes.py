@@ -50,6 +50,8 @@ def register_axis(key=None):
 
 class BaseAxis(Widget):
     axis_types = {}
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
 
 
 @register_axis('bqplot.Axis')
@@ -120,9 +122,7 @@ class Axis(BaseAxis):
     visible = Bool(True).tag(sync=True)
 
     _view_name = Unicode('Axis').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Axis').tag(sync=True)
     _model_name = Unicode('AxisModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/AxisModel').tag(sync=True)
     _ipython_display_ = None  # We cannot display an axis outside of a figure.
 
 
@@ -143,5 +143,4 @@ class ColorAxis(Axis):
     label = Unicode().tag(sync=True)
     scale = Instance(ColorScale).tag(sync=True, **widget_serialization)
     _view_name = Unicode('ColorAxis').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/ColorAxis').tag(sync=True)
     _model_name = Unicode('ColorAxisModel').tag(sync=True)

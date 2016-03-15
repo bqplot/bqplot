@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
 
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "OHLCModel",
-            _model_module: "nbextensions/bqplot/OHLCModel",
             _view_name: "OHLC",
-            _view_module: "nbextensions/bqplot/OHLC",
 
             x: [],
             y: [],

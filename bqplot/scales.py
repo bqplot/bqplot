@@ -85,9 +85,9 @@ class Scale(Widget):
     allow_padding = Bool(True).tag(sync=True)
 
     _view_name = Unicode('Scale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Scale').tag(sync=True)
     _model_name = Unicode('ScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/ScaleModel').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
     _ipython_display_ = None  # We cannot display a scale outside of a figure
 
 
@@ -99,9 +99,7 @@ class GeoScale(Scale):
     2d visual representation.
     """
     _view_name = Unicode('GeoScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/GeoScale').tag(sync=True)
     _model_name = Unicode('GeoScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/GeoScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.Mercator')
@@ -346,9 +344,7 @@ class LinearScale(Scale):
     max = Float(None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('LinearScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/LinearScale').tag(sync=True)
     _model_name = Unicode('LinearScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LinearScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.LogScale')
@@ -376,9 +372,7 @@ class LogScale(Scale):
     max = Float(None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('LogScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/LogScale').tag(sync=True)
     _model_name = Unicode('LogScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LogScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.DateScale')
@@ -409,9 +403,7 @@ class DateScale(Scale):
     max = Date(default_value=None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('DateScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/DateScale').tag(sync=True)
     _model_name = Unicode('DateScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/DateScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.OrdinalScale')
@@ -436,9 +428,7 @@ class OrdinalScale(Scale):
     domain = List().tag(sync=True)
 
     _view_name = Unicode('OrdinalScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/OrdinalScale').tag(sync=True)
     _model_name = Unicode('OrdinalScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/OrdinalScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.ColorScale')
@@ -477,9 +467,7 @@ class ColorScale(Scale):
     scheme = Unicode('RdYlGn').tag(sync=True)
 
     _view_name = Unicode('ColorScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/ColorScale').tag(sync=True)
     _model_name = Unicode('ColorScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/ColorScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.DateColorScale')
@@ -507,9 +495,7 @@ class DateColorScale(ColorScale):
     dtype = np.datetime64
 
     _view_name = Unicode('DateColorScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/DateColorScale').tag(sync=True)
     _model_name = Unicode('DateColorScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/DateColorScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.OrdinalColorScale')
@@ -534,6 +520,4 @@ class OrdinalColorScale(ColorScale):
     domain = List().tag(sync=True)
 
     _view_name = Unicode('OrdinalColorScale').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/OrdinalColorScale').tag(sync=True)
     _model_name = Unicode('OrdinalScaleModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/OrdinalScaleModel').tag(sync=True)

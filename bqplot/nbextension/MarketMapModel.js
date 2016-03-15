@@ -21,9 +21,9 @@ define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"]
 
         defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
             _model_name: "MarketMapModel",
-            _model_module: "nbextensions/bqplot/MarketMapModel",
             _view_name: "MarketMap",
-            _view_module: "nbextensions/bqplot/MarketMap",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
             map_width: 1080,
             map_height: 800,

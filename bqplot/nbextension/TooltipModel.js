@@ -20,9 +20,9 @@ define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
 
         defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
             _model_name: "TooltipModel",
-            _model_module: "nbextensions/bqplot/TooltipModel",
             _model_name: "Tooltip",
-            _model_module: "nbextensions/bqplot/Tooltip",
+            _model_module: "bqplot",
+            _model_module: "bqplot",
 
             fields: [],
             formats: [],

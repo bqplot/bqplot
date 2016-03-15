@@ -20,9 +20,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
 
         defaults: _.extend({}, ScaleModel.ScaleModel.prototype.defaults, {
             _model_name: "LinearScaleModel",
-            _model_module: "nbextensions/bqplot/LinearScaleModel",
              _view_name: "LinearScale",
-            _view_module: "nbextensions/bqplot/LinearScale",
             min: null,
             max: null,
         }),

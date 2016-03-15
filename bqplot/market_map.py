@@ -175,9 +175,9 @@ class MarketMap(DOMWidget):
             self._hover_handlers(self, content)
 
     _view_name = Unicode('MarketMap').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/MarketMap').tag(sync=True)
     _model_name = Unicode('MarketMapModel').tag(sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MarketMapModel').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
 
 
 class SquareMarketMap(MarketMap):
@@ -186,4 +186,3 @@ class SquareMarketMap(MarketMap):
     mode = Enum(['squarify', 'slice', 'dice', 'slice-dice'], default_value='squarify').tag(sync=True)
 
     _view_name = Unicode('SquareMarketMap').tag(sync=True)
-    _view_module = Unicode('nbextensions/bqplot/SquareMarketMap').tag(sync=True)

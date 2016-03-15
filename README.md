@@ -28,7 +28,7 @@ Getting Started
 This package depends on the following packages:
 
 -   `numpy`
--   `ipywidgets` (version >=4.0)
+-   `ipywidgets` (version >=5.0)
 
 ### Installation
 
@@ -53,12 +53,14 @@ This package depends on the following packages:
 
     ```
     $ python -m bqplot.install --symlink --user --force
+    $ jupyter nbextension activate bqplot/index
     ```
 
     - Windows users:
 
     ```
     $ python -m bqplot.install --user --force
+    $ jupyter nbextension activate bqplot/index
     ```
 
 3. Note for developers: the `--symlink` argument in Linux allows one to
