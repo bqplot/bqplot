@@ -13,17 +13,20 @@
  * limitations under the License.
  */
 
+
 requirejs.config({
     map: {
         '*' : {
             "bqplot": "nbextensions/bqplot/index",
             "jupyter-js-widgets": "nbextensions/widgets/extension",
+            "less": "nbextensions/bqplot/components/require-less/less"
         }
     }
 });
 
 define([
     "underscore",
+    "less!./bqplot.less",
     "./Axis",
     "./GridHeatMapModel",
     "./Mark",
@@ -93,7 +96,11 @@ define([
     "./components/d3/d3",
     "./components/topojson/topojson"
 ], function() {
-    return Array.prototype.slice.call(arguments, 1).reduce(function(obj, e) {
+    var exports = Array.prototype.slice.call(arguments, 2).reduce(function(obj, e) {
         return _.extend(obj, e);
     });
+
+    exports['load_ipython_extension'] = function() {};
+
+    return exports;
 });

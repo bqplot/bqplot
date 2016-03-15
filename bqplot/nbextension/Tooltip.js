@@ -16,8 +16,7 @@
 define([
     "jupyter-js-widgets",
     "./components/d3/d3",
-    "./utils",
-    "./LoadStyle"
+    "./utils"
 ], function(widgets, d3, utils) {
     "use strict";
 
