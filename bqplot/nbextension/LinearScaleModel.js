@@ -13,19 +13,29 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleModelModule, _) {
+define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleModel, _) {
     "use strict";
 
-    var LinearScaleModel = ScaleModelModule.ScaleModel.extend({
+    var LinearScaleModel = ScaleModel.ScaleModel.extend({
+
+        defaults: _.extend({}, ScaleModel.ScaleModel.prototype.defaults, {
+            _model_name: "LinearScaleModel",
+             _view_name: "LinearScale",
+            min: null,
+            max: null,
+        }),
+
         initialize: function(range) {
             LinearScaleModel.__super__.initialize.apply(this);
             this.type = "linear";
             this.global_min = Number.NEGATIVE_INFINITY;
             this.global_max = Number.POSITIVE_INFINITY;
             this.on_some_change(["min", "max"], this.min_max_changed, this);
-            this.on("change:ticks", this.ticks_changed, this);
+            this.min_max_changed();
             this.on("change:reverse", this.reverse_changed, this);
+            this.reverse_changed();
         },
+
         min_max_changed: function() {
             this.min = this.get("min");
             this.max = this.get("max");
@@ -33,6 +43,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
             this.max_from_data = (this.max === null);
             this.update_domain();
         },
+
         reverse_changed: function() {
             this.reverse = this.get("reverse");
             if(this.domain.length > 0) {
@@ -40,6 +51,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
                 this.trigger("domain_changed", this.domain);
             }
         },
+
         update_domain: function() {
             var that = this;
             var min = (!this.min_from_data) ?
@@ -57,6 +69,7 @@ define(["./components/d3/d3", "./ScaleModel", "underscore"], function(d3, ScaleM
                 this.trigger("domain_changed", this.domain);
             }
         },
+
         compute_and_set_domain: function(data_array, id) {
             // Takes an array and calculates the domain for the particular
             // view. If you have the domain already calculated on your side,

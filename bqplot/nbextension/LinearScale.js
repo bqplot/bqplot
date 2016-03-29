@@ -17,13 +17,15 @@ define(["./components/d3/d3", "./Scale"], function(d3, ScaleViewModule) {
     "use strict";
 
     var LinearScale = ScaleViewModule.Scale.extend({
-        render: function(){
+
+        render: function() {
             this.scale = d3.scale.linear();
             if(this.model.domain.length > 0)
                 this.scale.domain(this.model.domain);
             this.offset = 0;
             this.create_event_listeners();
         },
+
         expand_domain: function(old_range, new_range) {
             // If you have a current range and then a new range and want to
             // expand the domain to expand to the new range but keep it
@@ -43,9 +45,11 @@ define(["./components/d3/d3", "./Scale"], function(d3, ScaleViewModule) {
                 return unpadded_scale.invert(limit);
             }));
         },
+
         invert: function(pixel) {
             return this.scale.invert(pixel);
         },
+
         invert_range: function(pixels) {
             //Pixels is a non-decreasing array of pixel values
             var that = this;

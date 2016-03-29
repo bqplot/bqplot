@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
-        "./components/d3/d3", "underscore", "./components/require-less/less!./bqplot.less"],
-       function(Widget, utils, d3, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "underscore"],
+       function(widgets, d3, _) {
     "use strict";
 
-    var Figure = Widget.DOMWidgetView.extend({
+    var Figure = widgets.DOMWidgetView.extend({
 
         initialize : function() {
             this.setElement(document.createElementNS(d3.ns.prefix.svg, "svg"));
@@ -30,7 +29,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
         render : function() {
             this.width = this.model.get("min_width");
             this.height = this.model.get("min_height");
-            this.id = utils.uuid();
+            this.id = widgets.uuid();
 
             // Dictionary which contains the mapping for each of the marks id
             // to it's padding. Dictionary is required to not recompute
@@ -122,7 +121,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
             var figure_scale_promise = this.create_figure_scales();
             var that = this;
             figure_scale_promise.then(function() {
-                that.mark_views = new Widget.ViewList(that.add_mark, that.remove_mark, that);
+                that.mark_views = new widgets.ViewList(that.add_mark, that.remove_mark, that);
                 that.mark_views.update(that.model.get("marks"));
                 Promise.all(that.mark_views.views).then(function(views) {
                     that.replace_dummy_nodes(views);
@@ -133,7 +132,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                     that.set_interaction(that.model.get("interaction"));
                 });
 
-                that.axis_views = new Widget.ViewList(that.add_axis, null, that);
+                that.axis_views = new widgets.ViewList(that.add_axis, null, that);
                 that.axis_views.update(that.model.get("axes"));
 
                 // TODO: move to the model
@@ -177,6 +176,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 });
             });
         },
+
         replace_dummy_nodes: function(views) {
             _.each(views, function(view) {
                 if (view.dummy_node !== null) {
@@ -189,17 +189,21 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 }
             }, this);
         },
+
         create_listeners: function() {
             this.listenTo(this.model, "change:fig_color", this.change_color, this);
         },
+
         change_color: function() {
             this.bg.style("fill", this.model.get("fig_color"));
         },
+
         remove: function() {
             this.svg.remove();
             $(this.options.cell).off("output_area_resize."+this.id);
             Figure.__super__.remove.apply(this);
         },
+
         create_figure_scales: function() {
             // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
             // See the scale_x and scale_y attributes of the python Figure
@@ -219,6 +223,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 });
             return Promise.all([x_scale_promise, y_scale_promise]);
         },
+
         padded_range: function(direction, scale_model) {
             // Functions to be called by mark which respects padding.
             // Typically all marks do this. Axis do not do this.
@@ -242,6 +247,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 return [this.plotarea_height - scale_padding - fig_padding, scale_padding + fig_padding];
             }
         },
+
         range: function(direction) {
             if(direction==="x") {
                 return [0, this.plotarea_width];
@@ -249,6 +255,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 return [this.plotarea_height, 0];
             }
         },
+
         get_mark_plotarea_height: function(scale_model) {
             if(!(scale_model.get("allow_padding"))) {
                 return this.plotarea_height;
@@ -258,6 +265,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 this.y_padding_arr[scale_id] : 0;
             return (this.plotarea_height) * (1 - this.figure_padding_y) - scale_padding - scale_padding;
         },
+
         get_mark_plotarea_width: function (scale_model) {
             if(!(scale_model.get("allow_padding"))) {
                 return this.plotarea_width;
@@ -268,6 +276,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 this.x_padding_arr[scale_id] : 0;
             return (this.plotarea_width) * (1 - this.figure_padding_x) - scale_padding - scale_padding;
         },
+
         add_axis: function(model) {
             // Called when an axis is added to the axes list.
             var that = this;
@@ -280,6 +289,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 return view;
             });
         },
+
         remove_from_padding_dict: function(dict, mark_view, scale_model) {
             if(scale_model === undefined || scale_model === null) {
                 return;
@@ -292,6 +302,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 }
             }
         },
+
         update_padding_dict: function(dict, mark_view, scale_model, value) {
             var scale_id = scale_model.id;
             if(!(dict[scale_id])) {
@@ -299,6 +310,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
             }
             dict[scale_id][mark_view.model.id + "_" + mark_view.cid] = value;
         },
+
         mark_scales_updated: function(view) {
             var model = view.model;
             var prev_scale_models = model.previous("scales");
@@ -311,6 +323,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
 
             this.update_paddings();
         },
+
         mark_padding_updated: function(view) {
             var model = view.model;
             var scale_models = model.get("scales");
@@ -320,9 +333,11 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
 
             this.update_paddings();
         },
+
         update_marks: function(mark_views) {
             this.update_paddings();
         },
+
         remove_mark: function(view) {
            // Called when a mark is removed from the mark list.
             var model = view.model;
@@ -336,6 +351,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
             this.remove_from_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("y")]);
             view.remove();
         },
+
         add_mark: function(model) {
             var that = this;
             model.state_change.then(function() {
@@ -366,6 +382,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 return view;
             });
         },
+
         update_paddings: function() {
             // Iterate over the paddings of the marks for each scale and store
             // the maximum padding for each scale on the X and Y in
@@ -396,10 +413,12 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
             this.trigger("margin_updated");
 
         },
+
         update_plotarea_dimensions: function() {
             this.plotarea_width = this.width - this.margin.left - this.margin.right;
             this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
         },
+
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
             this.svg.attr("width", null);
@@ -443,6 +462,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
             this.trigger("margin_updated");
             this.update_legend();
         },
+
         update_legend: function() {
             this.fig_marks.selectAll(".g_legend").remove();
 
@@ -487,6 +507,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                                            " translateX(" + (max_label_len) + "em)"});
             });
         },
+
         get_legend_coords: function(legend_location, width, height, disp) {
             var x_start = 0;
             var y_start = 0;
@@ -528,6 +549,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
             }
             return [x_start, y_start];
         },
+
         set_interaction: function(model) {
             if (model) {
                 // Sets the child interaction
@@ -552,13 +574,17 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 }
             }
         },
+
         update_title: function(model, title) {
             this.title.text(this.model.get("title"));
         },
+
         save_png: function() {
+
             var  replaceAll = function (find, replace, str) {
                 return str.replace(new RegExp(find, "g"), replace);
             };
+
             var get_css = function(node, regs) {
                 /**
                  * Gathers all the css rules applied to elements of the svg
@@ -570,27 +596,29 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 var selector;
                 for (var i = 0; i < sheets.length; i++) {
                     var rules = sheets[i].cssRules;
-                    for (var j = 0; j < rules.length; j++) {
-                        var rule = rules[j];
-                        if (typeof(rule.style) !== "undefined") {
-                            var match = null;
-                            try {
-                                match = node.querySelectorAll(rule.selectorText);
-                            } catch (err) {
-                                console.warn("Invalid CSS selector '" +
-                                             rule.selectorText + "'", err);
-                            }
-                            if (match) {
-                                var elems = node.querySelectorAll(rule.selectorText);
-                                if (elems.length > 0) {
-                                    selector = rule.selectorText;
-                                    for (var r = 0; r < regs.length; r++) {
-                                        selector = replaceAll(regs[r], "", selector);
-                                    }
-                                    css += selector + " { " + rule.style.cssText + " }\n";
+                    if (rules) {
+                        for (var j = 0; j < rules.length; j++) {
+                            var rule = rules[j];
+                            if (typeof(rule.style) !== "undefined") {
+                                var match = null;
+                                try {
+                                    match = node.querySelectorAll(rule.selectorText);
+                                } catch (err) {
+                                    console.warn("Invalid CSS selector '" +
+                                                 rule.selectorText + "'", err);
                                 }
-                            } else if (rule.cssText.match(/^@font-face/)) {
-                                css += rule.cssText + "\n";
+                                if (match) {
+                                    var elems = node.querySelectorAll(rule.selectorText);
+                                    if (elems.length > 0) {
+                                        selector = rule.selectorText;
+                                        for (var r = 0; r < regs.length; r++) {
+                                            selector = replaceAll(regs[r], "", selector);
+                                        }
+                                        css += selector + " { " + rule.style.cssText + " }\n";
+                                    }
+                                } else if (rule.cssText.match(/^@font-face/)) {
+                                    css += rule.cssText + "\n";
+                                }
                             }
                         }
                     }
@@ -599,7 +627,8 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 // does not catch document's top-level properties.
                 css += "svg { font-size: 10px; }\n";
                 return css;
-            };
+           };
+
            var svg2svg = function(node) {
                // Creates a standalone SVG string from an inline SVG element
                // containing all the computed style attributes.
@@ -618,6 +647,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                // Getting the outer HTML
                return svg.outerHTML;
            };
+
            var svg2png = function(xml) {
                 // Render a SVG data into a canvas and download as PNG.
                 var image = new Image();
@@ -635,6 +665,7 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils",
                 };
                 image.src = "data:image/svg+xml;base64," + btoa(xml);
             };
+
             // Create standalone SVG string
             var svg = svg2svg(this.svg.node());
             // Save to PNG

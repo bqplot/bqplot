@@ -18,7 +18,9 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
     "use strict";
 
     var bqSymbol = markers.symbol;
+
     var Lines = MarkViewModule.Mark.extend({
+
         render: function() {
             var base_render_promise = Lines.__super__.render.apply(this);
             var that = this;
@@ -45,6 +47,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 that.draw();
             });
         },
+
         set_ranges: function() {
             var x_scale = this.scales.x;
             if(x_scale) {
@@ -55,6 +58,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             }
         },
+
         set_positional_scales: function() {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             this.listenTo(x_scale, "domain_changed", function() {
@@ -64,6 +68,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 if (!this.model.dirty) { this.update_line_xy(); }
             });
         },
+
         initialize_additional_scales: function() {
             var color_scale = this.scales.color;
             if(color_scale) {
@@ -73,6 +78,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 color_scale.on("color_scale_range_changed", this.update_style, this);
             }
         },
+
         create_listeners: function() {
             Lines.__super__.create_listeners.apply(this);
             this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
@@ -109,6 +115,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.listenTo(this.model, "change:marker", this.update_marker, this);
             this.listenTo(this.model, "change:marker_size", this.update_marker_size, this);
         },
+
         update_legend_labels: function() {
             if(this.model.get("labels_visibility") === "none") {
                 this.el.selectAll(".legend")
@@ -127,6 +134,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   .attr("display", "none");
             }
         },
+
         get_line_style: function() {
             switch (this.model.get("line_style")) {
                 case "solid":
@@ -139,6 +147,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                     return "10,5,2,5";
             }
         },
+
         // Updating the style of the curve, stroke, colors, dashed etc...
         // Could be fused in a single function for increased readability
         // and to avoid code repetition
@@ -150,6 +159,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   .style("stroke-dasharray", _.bind(this.get_line_style, this));
             }
         },
+
         update_stroke_width: function(model, stroke_width) {
             this.compute_view_padding();
             this.el.selectAll(".curve").select(".line")
@@ -159,6 +169,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   .style("stroke-width", stroke_width);
             }
         },
+
         update_style: function() {
             var that = this,
                 fill_color = this.model.get("fill_colors"),
@@ -210,9 +221,11 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.update_stroke_width(this.model, this.model.get("stroke_width"));
             this.update_line_style();
         },
+
         path_closure: function() {
             return this.model.get("close_path") ? "Z" : "";
         },
+
         update_path_style: function() {
             var interpolation = this.model.get("interpolation");
             this.line.interpolate(interpolation);
@@ -231,11 +244,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   .attr("d", this.legend_line(this.legend_path_data) + this.path_closure());
             }
         },
+
         relayout: function() {
             this.set_ranges();
             this.update_line_xy();
             this.create_labels();
         },
+
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined) {
                 this.model.set("selected", null);
@@ -253,6 +268,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.model.set("selected", selected);
             this.touch();
         },
+
         invert_point: function(pixel) {
             if(pixel === undefined) {
                 this.model.set("selected", null);
@@ -266,6 +282,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.model.set("selected", [index]);
             this.touch();
         },
+
         update_multi_range: function(brush_extent) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var x_start = brush_extent[0];
@@ -280,6 +297,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.selector_model.set("selected", [idx_start, idx_end]);
             this.selector.touch();
         },
+
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var curve_labels = this.model.update_labels();
             var legend_data = this.model.mark_data.map(function(d) {
@@ -359,6 +377,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.legend_el.exit().remove();
             return [this.model.mark_data.length, max_length];
         },
+
         create_labels: function() {
             var x_scale = this.scales.x, y_scale = this.scales.y,
                 that = this;
@@ -379,6 +398,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                     "none" : "inline";
               }).text(function(d) { return d.name; });
         },
+
         update_curves_subset: function() {
             var that = this;
             // Show a subset of the curves
@@ -406,6 +426,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   });
             }
         },
+
         update_fill: function() {
             var fill = this.model.get("fill"),
                 area = (fill === "top" || fill === "bottom");
@@ -430,6 +451,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                  })
             }
         },
+
         get_element_color: function(data, index) {
             var color_scale = this.scales.color;
             if(color_scale && data.color !== undefined && data.color !== null) {
@@ -437,12 +459,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             return this.get_colors(index);
         },
+
         get_fill_color: function(data, index) {
             var fill_colors = this.model.get("fill_colors");
             var that = this;
             return fill_colors.length === 0 ?
                 that.get_element_color(data, index) : fill_colors[index];
         },
+
         update_line_xy: function(animate) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
@@ -473,6 +497,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                                                                         { return x_scale.scale(el.x) + x_scale.offset; })
                                                               : [];
         },
+
         draw: function(animate) {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
@@ -534,6 +559,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             this.create_labels();
         },
+
         draw_dots: function() {
             if (this.model.get("marker")) {
                 var that = this;
@@ -547,6 +573,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 dots.exit().remove();
             }
         },
+
         update_dots_xy: function(animate) {
             if (this.model.get("marker")) {
                 var that = this;
@@ -562,6 +589,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                                    .type(this.model.get("marker")));
             }
         },
+
         compute_view_padding: function() {
             //This function sets the padding for the view through the variables
             //x_padding and y_padding which are view specific paddings in pixel
@@ -581,6 +609,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.trigger("mark_padding_updated");
             }
         },
+
         update_marker: function(model, marker) {
             if (marker) {
                 this.draw_dots();
@@ -595,10 +624,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 }
             }
         },
+
         update_marker_size: function(model, marker_size) {
             this.compute_view_padding();
             this.el.selectAll(".dot").attr("d", this.dot.size(marker_size));
         },
+
         update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                            point_in_lasso_func)
         {
@@ -640,6 +671,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             //return true if there are any mark data inside lasso
             return data_in_lasso;
         },
+
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {

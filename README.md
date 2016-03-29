@@ -28,7 +28,7 @@ Getting Started
 This package depends on the following packages:
 
 -   `numpy`
--   `ipywidgets` (version >=4.0)
+-   `ipywidgets` (version >=5.0)
 
 ### Installation
 
@@ -52,13 +52,15 @@ This package depends on the following packages:
     - Linux users:
 
     ```
-    $ python -m bqplot.install --symlink --user --force
+    $ jupyter nbextension install --py --symlink bqplot
+    $ jupyter nbextension enable --py bqplot
     ```
 
     - Windows users:
 
     ```
-    $ python -m bqplot.install --user --force
+    $ jupyter nbextension install --py bqplot
+    $ jupyter nbextension enable --py bqplot
     ```
 
 3. Note for developers: the `--symlink` argument in Linux allows one to

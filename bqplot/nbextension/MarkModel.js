@@ -13,11 +13,33 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseModel", "underscore"],
-       function(Widget, d3, BaseModel, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"],
+       function(widgets, d3, BaseModel, _) {
     "use strict";
 
     var MarkModel = BaseModel.BaseModel.extend({
+
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "MarkModel",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+
+            scales: {},
+            scales_metadata: {},
+            preserve_domain: {},
+            display_legend: true,
+            labels: [],
+            apply_clip: true,
+            visible: true,
+            selected_style: {},
+            unselected_style: {},
+            selected: [],
+            enable_hover: true,
+            tooltip: null,
+            tooltip_style: { opacity: 0.9 },
+            interactions: { hover: "tooltip" },
+            tooltip_location: "mouse",
+        }),
 
         // These two attributes are the pixel values which should be appended
         // to the area of the plot to make sure that the entire mark is visible
@@ -31,22 +53,27 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
             this.dirty = false;
             this.display_el_classes = ["mark"]; //classes on the element which
             //trigger the tooltip to be displayed when they are hovered over
+            this.update_scales();
         },
+
         update_data : function() {
             // Update_data is typically overloaded in each mark
             // it triggers the "data_updated" event
             this.update_domains();
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             // update_domains is typically overloaded in each mark to update
             // the domains related to it's scales
         },
+
         update_scales: function() {
             this.unregister_all_scales(this.previous("scales"));
             this.trigger("scales_updated");
             this.update_domains();
         },
+
         unregister_all_scales: function(scales) {
             // disassociates the mark with the scale
             this.dirty = true;
@@ -56,9 +83,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
             this.dirty = false;
             //TODO: Check if the views are being removed
         },
+
         handle_destroy: function() {
             this.unregister_all_scales(this.get("scales"));
         },
+
         get_key_for_dimension: function(dimension) {
             var scales_metadata = this.get("scales_metadata");
             for (var scale in scales_metadata) {
@@ -70,9 +99,9 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
         },
     }, {
         serializers: _.extend({
-            scales: {deserialize: Widget.unpack_models},
-            tooltip:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+            scales: { deserialize: widgets.unpack_models },
+            tooltip: { deserialize: widgets.unpack_models },
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

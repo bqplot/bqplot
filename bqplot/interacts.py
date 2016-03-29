@@ -74,16 +74,16 @@ class Interaction(Widget):
 
     Attributes
     ----------
-
     types: dict (class-level attribute) representing interaction types
         A registry of existing interaction types.
     """
     types = {}
 
-    _view_name = Unicode('Interaction', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Interaction', sync=True)
-    _model_name = Unicode('BaseModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/BaseModel', sync=True)
+    _view_name = Unicode('Interaction').tag(sync=True)
+    _model_name = Unicode('BaseModel').tag(sync=True)
+
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
     _ipython_display_ = None  # We cannot display an interaction outside of a
                               # figure
 
@@ -103,7 +103,6 @@ class HandDraw(Interaction):
 
     Attributes
     ----------
-
     lines: an instance Lines mark or None (default: None)
         The instance of Lines which is edited using the hand-draw interaction.
         The 'y' values of the line are changed according to the path of the
@@ -117,20 +116,16 @@ class HandDraw(Interaction):
     max_x: float or Date or None (default: None)
         The maximum value of 'x' which should be edited via the handdraw.
     """
-    lines = Instance(Lines, sync=True, **widget_serialization)
-    line_index = Int(0, sync=True)
+    lines = Instance(Lines, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
+    line_index = Int().tag(sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
-    # TODO: Once the new Union is merged in IPython, the sync on the whole
-    # trait can be removed
-    min_x = (Float(allow_none=True, default_value=None, sync=True) |
-             Date(allow_none=True, default_value=None, sync=True))
-    max_x = (Float(allow_none=True, default_value=None, sync=True) |
-             Date(default_value=None, allow_none=True, sync=True))
+    min_x = (Float(None, allow_none=True).tag(sync=True) |
+             Date(None, allow_none=True).tag(sync=True))
+    max_x = (Float(None, allow_none=True).tag(sync=True) |
+             Date(None, allow_none=True).tag(sync=True))
 
-    _view_name = Unicode('HandDraw', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/HandDraw', sync=True)
-    _model_name = Unicode('HandDrawModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/HandDrawModel', sync=True)
+    _view_name = Unicode('HandDraw').tag(sync=True)
+    _model_name = Unicode('HandDrawModel').tag(sync=True)
 
 
 @register_interaction('bqplot.PanZoom')
@@ -140,7 +135,6 @@ class PanZoom(Interaction):
 
     Attributes
     ----------
-
     allow_pan: bool (default: True)
         Toggle the ability to pan.
     allow_zoom: bool (default: True)
@@ -150,15 +144,13 @@ class PanZoom(Interaction):
         the corresponding direction (dimensions) which should be panned or
         zoomed.
     """
-    allow_pan = Bool(True, sync=True)
-    allow_zoom = Bool(True, sync=True)
-    scales = Dict(trait=List(trait=Instance(Scale)), sync=True,
+    allow_pan = Bool(True).tag(sync=True)
+    allow_zoom = Bool(True).tag(sync=True)
+    scales = Dict(trait=List(trait=Instance(Scale))).tag(sync=True,
                   **widget_serialization)
 
-    _view_name = Unicode('PanZoom', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/PanZoom', sync=True)
-    _model_name = Unicode('PanZoomModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/PanZoomModel', sync=True)
+    _view_name = Unicode('PanZoom').tag(sync=True)
+    _model_name = Unicode('PanZoomModel').tag(sync=True)
 
 
 def panzoom(marks):
@@ -181,15 +173,13 @@ class Selector(Interaction):
 
     Attributes
     ----------
-
     marks: list (default: [])
         list of marks for which the `selected` attribute is updated based on
         the data selected by the selector.
     """
-    marks = List(sync=True, **widget_serialization)
+    marks = List().tag(sync=True, **widget_serialization)
 
-    _view_name = Unicode('Selector', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Selector', sync=True)
+    _view_name = Unicode('Selector').tag(sync=True)
 
     def reset(self):
         self.send({"type": "reset"})
@@ -204,15 +194,13 @@ class OneDSelector(Selector):
 
     Attributes
     ----------
-
     scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
         co-ordinates. This scale is used for setting the selected attribute for
         the selector.
     """
-    scale = Instance(Scale, allow_none=True, sync=True, dimension='x', **widget_serialization)
-    _model_name = Unicode('OneDSelectorModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/OneDSelectorModel', sync=True)
+    scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='x', **widget_serialization)
+    _model_name = Unicode('OneDSelectorModel').tag(sync=True)
 
 
 class TwoDSelector(Selector):
@@ -224,7 +212,6 @@ class TwoDSelector(Selector):
 
     Attributes
     ----------
-
     x_scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
         co-ordinates in the x-direction. This scale is used for setting the
@@ -234,14 +221,11 @@ class TwoDSelector(Selector):
         co-ordinates in the y-direction. This scale is used for setting the
         selected attribute for the selector along with ``x_scale``.
     """
-    x_scale = Instance(Scale, allow_none=True, sync=True, dimension='x',
+    x_scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='x',
                        **widget_serialization)
-    y_scale = Instance(Scale, allow_none=True, sync=True, dimension='y',
+    y_scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='y',
                        **widget_serialization)
-
-    _model_name = Unicode('TwoDSelectorModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/TwoDSelectorModel', sync=True)
-
+    _model_name = Unicode('TwoDSelectorModel').tag(sync=True)
 
 @register_interaction('bqplot.FastIntervalSelector')
 class FastIntervalSelector(OneDSelector):
@@ -269,7 +253,6 @@ class FastIntervalSelector(OneDSelector):
 
     Attributes
     ----------
-
     selected: numpy.ndarray
         Two-element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
@@ -278,12 +261,12 @@ class FastIntervalSelector(OneDSelector):
     size: Float or None (default: None)
         if not None, this is the fixed pixel-width of the interval selector
     """
-    selected = NdArray(sync=True)
-    color = Color(None, sync=True, allow_none=True)
-    size = Float(None, allow_none=True, sync=True)
+    selected = NdArray().tag(sync=True)
+    color = Color(None, allow_none=True).tag(sync=True)
+    size = Float(None, allow_none=True).tag(sync=True)
 
-    _view_name = Unicode('FastIntervalSelector', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/FastIntervalSelector', sync=True)
+    _view_name = Unicode('FastIntervalSelector').tag(sync=True)
+    _model_name = Unicode('FastIntervalSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.IndexSelector')
@@ -303,7 +286,6 @@ class IndexSelector(OneDSelector):
 
     Attributes
     ----------
-
     selected: numpy.ndarray
         A single element array containing the point corresponding the
         x-position of the mouse. This attribute is updated as you move the
@@ -313,12 +295,12 @@ class IndexSelector(OneDSelector):
     line_width: nonnegative integer (default: 0)
         Width of the line represetning the index selector.
     """
-    selected = NdArray(sync=True)
-    line_width = Int(2, sync=True)
-    color = Color(None, sync=True, allow_none=True)
+    selected = NdArray().tag(sync=True)
+    line_width = Int(2).tag(sync=True)
+    color = Color(None, allow_none=True).tag(sync=True)
 
-    _view_name = Unicode('IndexSelector', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/IndexSelector', sync=True)
+    _view_name = Unicode('IndexSelector').tag(sync=True)
+    _model_name = Unicode('IndexSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.BrushIntervalSelector')
@@ -339,7 +321,6 @@ class BrushIntervalSelector(OneDSelector):
 
     Attributes
     ----------
-
     selected: numpy.ndarray
         Two element array containing the start and end of the interval selected
         in terms of the scale of the selector. This is a read-only attribute.
@@ -354,12 +335,12 @@ class BrushIntervalSelector(OneDSelector):
     color: Color or None (default: None)
         Color of the rectangle representing the brush selector.
     """
-    brushing = Bool(False, sync=True)
-    selected = NdArray(sync=True)
-    color = Color(None, sync=True, allow_none=True)
+    brushing = Bool().tag(sync=True)
+    selected = NdArray().tag(sync=True)
+    color = Color(None, allow_none=True).tag(sync=True)
 
-    _view_name = Unicode('BrushIntervalSelector', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/BrushSelector', sync=True)
+    _view_name = Unicode('BrushIntervalSelector').tag(sync=True)
+    _model_name = Unicode('BrushIntervalSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.BrushSelector')
@@ -380,7 +361,6 @@ class BrushSelector(TwoDSelector):
 
     Attributes
     ----------
-
     selected: numpy.ndarray
         Two element array containing the start and end of the interval selected
         in terms of the scales of the selector. This is a read-only attribute.
@@ -395,10 +375,10 @@ class BrushSelector(TwoDSelector):
     color: Color or None (default: None)
         Color of the rectangle representing the brush selector.
     """
-    clear = Bool(False, sync=True)
-    brushing = Bool(False, sync=True)
-    selected = List(sync=True)
-    color = Color(None, sync=True, allow_none=True)
+    clear = Bool().tag(sync=True)
+    brushing = Bool().tag(sync=True)
+    selected = List().tag(sync=True)
+    color = Color(None, allow_none=True).tag(sync=True)
 
     def __init__(self, **kwargs):
         # Stores information regarding the scales. The date scaled values have
@@ -423,8 +403,8 @@ class BrushSelector(TwoDSelector):
                 self.selected[0][1] = self.read_json_y(self.selected[0][1])
                 self.selected[1][1] = self.read_json_y(self.selected[1][1])
 
-    _view_name = Unicode('BrushSelector', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/BrushSelector', sync=True)
+    _view_name = Unicode('BrushSelector').tag(sync=True)
+    _model_name = Unicode('BrushSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.MultiSelector')
@@ -460,7 +440,6 @@ class MultiSelector(OneDSelector):
 
     Attributes
     ----------
-
     selected: dict
         A dictionary with keys being the names of the intervals and values
         being the two element arrays containing the start and end of the
@@ -482,14 +461,14 @@ class MultiSelector(OneDSelector):
         Attribute to indicate if the names of the intervals are to be displayed
         along with the interval.
     """
-    names = List(sync=True)
-    brushing = Bool(False, sync=True)
-    selected = Dict(sync=True)
-    _selected = Dict(sync=True)  # TODO: UglyHack. Hidden variable to get
+    names = List().tag(sync=True)
+    brushing = Bool().tag(sync=True)
+    selected = Dict().tag(sync=True)
+    _selected = Dict().tag(sync=True)  # TODO: UglyHack. Hidden variable to get
     # around the even more ugly hack to have a trait which converts dates,
     # if present, into strings and send it across. It means writing a trait
     # which does that on top of a dictionary. I don't like that
-    show_names = Bool(True, sync=True)  # TODO: Not a trait. The value has to
+    show_names = Bool(True).tag(sync=True)  # TODO: Not a trait. The value has to
                                         # be set at declaration time.
 
     def __init__(self, **kwargs):
@@ -511,8 +490,8 @@ class MultiSelector(OneDSelector):
                                         for elem in self._selected[key]]
             self.selected = actual_selected
 
-    _view_name = Unicode('MultiSelector', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/BrushSelector', sync=True)
+    _view_name = Unicode('MultiSelector').tag(sync=True)
+    _model_name = Unicode('MultiSelectorModel').tag(sync=True)
 
 
 @register_interaction('bqplot.LassoSelector')
@@ -532,16 +511,14 @@ class LassoSelector(TwoDSelector):
 
     Attributes
     ----------
-
     marks: List of marks which are instances of {Lines, Scatter} (default: [])
         List of marks on which lasso selector will be applied.
     color: Color (default: None)
         Color of the lasso.
-
     """
-    marks = List(Instance(Lines) | Instance(Scatter), sync=True,
+    marks = List(Instance(Lines) | Instance(Scatter)).tag(sync=True,
                  **widget_serialization)
-    color = Color(None, sync=True, allow_none=True)
+    color = Color(None, allow_none=True).tag(sync=True)
 
     def __init__(self, marks=None, **kwargs):
         _marks = []
@@ -556,5 +533,5 @@ class LassoSelector(TwoDSelector):
         kwargs['marks'] = _marks
         super(LassoSelector, self).__init__(**kwargs)
 
-    _view_name = Unicode('LassoSelector', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/LassoSelector', sync=True)
+    _view_name = Unicode('LassoSelector').tag(sync=True)
+    _model_name = Unicode('LassoSelectorModel').tag(sync=True)

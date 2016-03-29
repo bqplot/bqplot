@@ -13,20 +13,29 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./DateScaleModel", "underscore"], function(d3, DateScaleModelModule, _) {
+define(["./components/d3/d3", "./DateScaleModel", "underscore"], function(d3, DateScaleModel, _) {
     "use strict";
 
-    var DateColorScaleModel = DateScaleModelModule.DateScaleModel.extend({
+    var DateColorScaleModel = DateScaleModel.DateScaleModel.extend({
+
+        defaults: _.extend({}, DateScaleModel.DateScaleModel.prototype.defaults, {
+            _model_name: "DateColorScaleModel",
+            _view_name: "DateColorScale",
+        }),
+
         initialize: function(range) {
             DateColorScaleModel.__super__.initialize.apply(this);
             this.type = "date_color_linear";
             this.divergent = false;
             this.on("change:mid", this.mid_changed, this);
+            this.mid_changed();
         },
+
         mid_changed: function() {
             this.mid = this.get("mid");
             this.update_domain();
         },
+
         update_domain: function() {
             var that = this;
             var max_index = (this.divergent) ? 2 : 1;

@@ -11,19 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
-        "base/js/utils", "underscore"],
-        function(Widget, d3, utils, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "underscore"],
+       function(widgets, d3, _) {
     "use strict";
 
-    var Mark = Widget.WidgetView.extend({
+    var Mark = widgets.WidgetView.extend({
+
         render: function() {
             this.x_padding = 0;
             this.y_padding = 0;
             this.parent = this.options.parent;
-            this.uuid = utils.uuid();
+            this.uuid = widgets.uuid();
             var scale_creation_promise = this.set_scale_views();
             var that = this;
             this.listenTo(this.model, "scales_updated", function() {
@@ -38,7 +38,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             this.tooltip_div = d3.select(document.createElement("div"))
                 .attr("class", "mark_tooltip")
-                .attr("id", "tooltip_"+this.uuid)
+                .attr("id", "tooltip_" + this.uuid)
                 .style("display", "none")
                 .style("opacity", 0);
 
@@ -72,6 +72,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
 
             return scale_creation_promise;
         },
+
         set_scale_views: function() {
             // first, if this.scales was already defined, unregister from the
             // old ones.
@@ -87,7 +88,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
-            return utils.resolve_promises_dict(scale_promises).then(function(scales) {
+            return widgets.resolvePromisesDict(scale_promises).then(function(scales) {
                 that.scales = scales;
                 that.set_positional_scales();
                 that.initialize_additional_scales();
@@ -95,21 +96,25 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 that.trigger("mark_scales_updated");
             });
         },
+
         set_positional_scales: function() {
             // Positional scales are special in that they trigger a full redraw
             // when their domain is changed.
             // This should be overloaded in specific mark implementation.
         },
+
         initialize_additional_scales: function() {
             // This function is for the extra scales that are required for
             // rendering mark. The scale listeners are set up in this function.
             // This should be overloaded in the specific mark implementation.
         },
+
         set_internal_scales: function() {
             // Some marks such as Bars need to create additional scales
             // to draw themselves. In this case, the set_internal_scales
             // is overloaded.
         },
+
         create_listeners: function() {
             this.listenTo(this.model, "change:visible", this.update_visibility, this);
             this.listenTo(this.model, "change:selected_style", this.selected_style_updated, this);
@@ -120,12 +125,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 this.model.trigger("redraw_legend");
             }, this);
         },
+
         remove: function() {
             this.model.off(null, null, this);
             this.el.transition().duration(0).remove();
             this.tooltip_div.remove();
             Mark.__super__.remove.apply(this);
         },
+
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             elem.selectAll(".legend" + this.uuid).remove();
             elem.append("g")
@@ -137,45 +144,55 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
               .text(this.model.get("labels")[0]);
             return [1, 1];
         },
+
         highlight_axes: function() {
             _.each(this.model.get("scales"), function(model) {
                 model.trigger("highlight_axis");
             });
         },
+
         unhighlight_axes: function() {
             _.each(this.model.get("scales"), function(model) {
                 model.trigger("unhighlight_axis");
             });
         },
+
         relayout: function() {
             // Called when the figure margins are updated. To be overloaded in
             // specific mark implementation.
         },
+
         invert_range: function(start_pxl, end_pxl) {
             return [start_pxl, end_pxl];
         },
+
         invert_point: function(pxl) {
             return [pxl];
         },
-        // is the following function really required?
+
+        // TODO: is the following function really required?
         invert_multi_range: function(array_pixels) {
             return array_pixels;
         },
+
         update_visibility: function(model, visible) {
             this.el.style("display", visible ? "inline" : "none");
         },
+
         get_colors: function(index) {
             // cycles over the list of colors when too many items
             this.colors = this.model.get("colors");
             var len = this.colors.length;
             return this.colors[index % len];
         },
+
         // Style related functions
         selected_style_updated: function(model, style) {
             this.selected_style = style;
             this.clear_style(model.previous("selected_style"), this.selected_indices);
             this.style_updated(style, this.selected_indices);
         },
+
         unselected_style_updated: function(model, style) {
             this.unselected_style = style;
             var sel_indices = this.selected_indices;
@@ -186,11 +203,13 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.clear_style(model.previous("unselected_style"), unselected_indices);
             this.style_updated(style, unselected_indices);
         },
+
         style_updated: function(new_style, indices) {
             // reset the style of the elements and apply the new style
             this.set_default_style(indices);
             this.set_style_on_elements(new_style, indices);
         },
+
         apply_styles: function() {
             var all_indices = _.range(this.model.mark_data.length);
             this.clear_style(this.selected_style);
@@ -203,17 +222,22 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 [] : _.difference(all_indices, this.selected_indices);
             this.set_style_on_elements(this.unselected_style, unselected_indices);
         },
+
         // Abstract functions which have to be overridden by the specific mark
         clear_style: function(style_dict, indices) {
         },
+
         set_default_style:function(indices) {
         },
+
         set_style_on_elements: function(style, indices) {
         },
+
         compute_view_padding: function() {
             //This function sets the x and y view paddings for the mark using
             //the variables x_padding and y_padding
         },
+
         show_tooltip: function(mouse_events) {
             //this function displays the tooltip at the location of the mouse
             //event is the d3 event for the data.
@@ -250,6 +274,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 }
             }
         },
+
         hide_tooltip: function() {
             //this function hides the tooltip. But the location of the tooltip
             //is the last location set by a call to show_tooltip.
@@ -258,6 +283,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 .style("opacity", 0)
                 .style("display", "none");
         },
+
         refresh_tooltip: function(tooltip_interactions) {
             //the argument controls pointer interactions with the tooltip. a
             //true value enables pointer interactions while a false value
@@ -270,6 +296,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 this.show_tooltip(tooltip_interactions);
             }
         },
+
         create_tooltip: function() {
             //create tooltip widget. To be called after mark has been displayed
             //and whenever the tooltip object changes
@@ -292,6 +319,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 }
             }
         },
+
         event_dispatcher: function(event_name, data) {
             //sends a custom mssg to the python side if required
             this.custom_msg_sender(event_name);
@@ -299,6 +327,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 _.bind(this.event_listeners[event_name], this, data)();
             }
         },
+
         custom_msg_sender: function(event_name) {
             var event_data = this.event_metadata[event_name];
             if(event_data !== undefined) {
@@ -319,25 +348,30 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 this.send({event: event_data.msg_name, data: data});
             }
         },
+
         reset_interactions: function() {
             this.reset_click();
             this.reset_hover();
             this.reset_legend_hover();
             this.event_listeners.legend_clicked = function() {};
         },
+
         reset_click: function() {
             this.event_listeners.element_clicked = function() {};
             this.event_listeners.parent_clicked = function() {};
         },
+
         reset_hover: function() {
             this.event_listeners.mouse_over = function() {};
             this.event_listeners.mouse_move = function() {};
             this.event_listeners.mouse_out = function() {};
         },
+
         reset_legend_hover: function() {
             this.event_listeners.legend_mouse_over = function() {};
             this.event_listeners.legend_mouse_out = function() {};
         },
+
         mouse_over: function() {
             if(this.model.get("enable_hover")) {
                 var el = d3.select(d3.event.target);
@@ -354,6 +388,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 }
             }
         },
+
         mouse_out: function() {
             if(this.model.get("enable_hover")) {
                 var el = d3.select(d3.event.target);
@@ -369,12 +404,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 }
             }
         },
+
         mouse_move: function() {
             if(this.model.get("enable_hover") &&
                 this.is_hover_element(d3.select(d3.event.target))) {
                 this.show_tooltip();
             }
         },
+
         //TODO: Rename function
         is_hover_element: function(elem) {
             var hit_check = this.display_el_classes.map(function(class_name) {

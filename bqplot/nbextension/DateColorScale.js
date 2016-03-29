@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./LinearColorScale", "./ColorUtils", "underscore"], function(d3, LinearColorScaleViewModule, ColorUtils, _) {
+define(["./components/d3/d3", "./ColorScale", "./ColorUtils", "underscore"], function(d3, ColorScaleView, ColorUtils, _) {
     "use strict";
 
-    var DateColorScale = LinearColorScaleViewModule.LinearColorScale.extend({
-        render: function(){
+    var DateColorScale = ColorScaleView.ColorScale.extend({
+
+        render: function() {
             this.scale = d3.time.scale();
             if(this.model.domain.length > 0) {
                 this.scale.domain(this.model.domain);

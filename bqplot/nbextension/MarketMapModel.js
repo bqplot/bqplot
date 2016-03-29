@@ -13,16 +13,62 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"],
-       function(Widget, BaseModel, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"],
+       function(widgets, d3, BaseModel, _) {
     "use strict";
 
     var MarketMapModel = BaseModel.BaseModel.extend({}, {
+
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "MarketMapModel",
+            _view_name: "MarketMap",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+
+            map_width: 1080,
+            map_height: 800,
+
+            names: [],
+            groups: [],
+            display_text: [],
+            ref_data: undefined,
+
+            tooltip_fields: [],
+            tooltip_formats: [],
+            show_groups: false,
+
+            cols: 0,
+            rows: 0,
+
+            row_groups: 1,
+            colors: d3.scale.category20().range(),
+            scales: {},
+            axes: [],
+            color: [],
+            map_margin: {
+                top: 50,
+                right: 50,
+                left: 50,
+                bottom: 50
+            },
+            preserve_aspect: false,
+            stroke: "white",
+            group_stroke: "black",
+            selected_stroke: "dodgerblue",
+            hovered_stroke: "orangered",
+
+            selected: [],
+            enable_hover: true,
+            enable_select: true,
+            tooltip_widget: null
+        }),
+
         serializers: _.extend({
-            scales:  {deserialize: Widget.unpack_models},
-            axes:  {deserialize: Widget.unpack_models},
-            tooltip_widget:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+            scales: { deserialize: widgets.unpack_models },
+            axes: { deserialize: widgets.unpack_models },
+            tooltip_widget: { deserialize: widgets.unpack_models },
+            style: { deserialize: widgets.unpack_models },
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

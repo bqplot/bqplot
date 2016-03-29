@@ -13,16 +13,48 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "underscore"],
-       function(Widget, MarkModel, _) {
+define(["./MarkModel", "underscore"],
+       function(MarkModel, _) {
     "use strict";
 
     var MapModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "MapModel",
+            _view_name: "Map",
+
+            color: {},
+            scales_metadata: {},
+            hover_highlight: true,
+            hovered_styles: {
+                hovered_fill: "Orange",
+                hovered_stroke: null,
+                hovered_stroke_width: 2.0
+            },
+
+            stroke_color: null,
+            default_color: null,
+            scales_metadata: {
+                color: { dimension: "color" },
+                projection: { dimension: "geo" }
+            },
+            selected: [],
+            selected_styles: {
+                selected_fill: "Red",
+                selected_stroke: null,
+                selected_stroke_width: 2.0
+            },
+            map_data: undefined,
+        }),
+
         initialize: function() {
             MapModel.__super__.initialize.apply(this);
             this.on("change:map_data", this.update_data, this);
             this.on("change:color", this.update_domains, this);
+            this.update_data();
+            this.update_domains();
         },
+
         update_data: function() {
             this.dirty = true;
             var mapdata = this.get("map_data");
@@ -32,6 +64,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "underscore"],
             this.dirty = false;
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             var scales = this.get("scales");
             var color_scale = scales.color;
@@ -47,6 +80,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "underscore"],
                 }
             }
         },
+
         get_subunit_name: function(id) {
             for(var i = 0; i< this.subunits.length; i++) {
                 if(id == this.subunits[i].id){
@@ -55,10 +89,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./MarkModel", "underscore"],
             }
             return name;
         },
+
         get_data_dict: function(data, index) {
             return {
-                'id': data.id,
-                'name': this.get_subunit_name(data.id),
+                id: data.id,
+                name: this.get_subunit_name(data.id),
             };
         },
     });

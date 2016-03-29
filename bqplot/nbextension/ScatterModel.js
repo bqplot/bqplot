@@ -14,10 +14,48 @@
  */
 
 define(["./components/d3/d3", "./MarkModel", "underscore"],
-       function(d3, MarkModelModule, _) {
+       function(d3, MarkModel, _) {
     "use strict";
 
-    var ScatterModel = MarkModelModule.MarkModel.extend({
+    var ScatterModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "ScatterModel",
+            _view_name: "Scatter",
+
+            x: [], 
+            y: [],
+            color: null,
+            opacity: null,
+            size: null,
+            skew: null,
+            rotation: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" },
+                size: { dimension: "size" },
+                opacity: { dimension: "opacity" }
+            },
+            marker: "circle",
+            default_colors: [],
+            stroke: null,
+            stroke_width: 1.5,
+            default_opacities: [],
+            default_skew: 0.5,
+            default_size: 64,
+            names: [],
+            display_names: true,
+            fill: true,
+            drag_color: null,
+            names_unique: true,
+            enable_move: false,
+            enable_delete: false,
+            restrict_x: false,
+            restrict_y: false,
+            update_on_move: false
+        }),
+
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw
             ScatterModel.__super__.initialize.apply(this);
@@ -31,7 +69,11 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.update_data();
+            this.update_unique_ids();
+            this.update_domains();
         },
+
         update_data: function() {
             this.dirty = true;
             var x_data = this.get_typed_field("x"),
@@ -81,6 +123,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
             this.dirty = false;
             this.trigger("data_updated");
         },
+
         update_unique_ids: function() {
             var names = this.get_typed_field("names");
             var show_labels = (names.length !== 0);
@@ -99,9 +142,11 @@ define(["./components/d3/d3", "./MarkModel", "underscore"],
                                        data.unique_id = unique_ids[index];
             });
         },
+
         get_data_dict: function(data, index) {
             return data;
         },
+
         update_domains: function() {
             if (!this.mark_data) {
                 return;

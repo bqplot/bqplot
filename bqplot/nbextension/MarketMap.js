@@ -13,22 +13,25 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
-        "./Figure", "base/js/utils", "underscore"], function(Widget, d3, FigureViewModule, utils, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "./Figure", "underscore"],
+        function(widgets, d3, FigureViewModule, _) {
     "use strict";
 
     var MarketMap = FigureViewModule.Figure.extend({
+
         initialize: function() {
             MarketMap.__super__.initialize.apply(this, arguments);
         },
+
         remove: function() {
             this.model.off(null, null, this);
             this.svg.remove();
             $(this.options.cell).off("output_area_resize." + this.id);
             this.tooltip_div.remove();
         },
+
         render: function(options) {
-            this.id = utils.uuid();
+            this.id = widgets.uuid();
             this.width = this.model.get("map_width");
             this.height = this.model.get("map_height");
 
@@ -93,7 +96,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 }
                 that.create_listeners();
 
-                that.axis_views = new Widget.ViewList(that.add_axis, null, that);
+                that.axis_views = new widgets.ViewList(that.add_axis, null, that);
                 that.axis_views.update(that.model.get("axes"));
                 that.model.on("change:axes", function(model, value, options) {
                     that.axis_views.update(value);
@@ -112,6 +115,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 that.update_layout();
             });
         },
+
         set_top_el_style: function() {
             this.$el.css({
                 "user-select": "none",
@@ -126,12 +130,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                           "min-width": this.width,
                           "min-height": this.height});
         },
+
         update_plotarea_dimensions: function() {
             this.rect_width = this.width - this.margin.left - this.margin.right;
             this.rect_height = this.height - this.margin.top - this.margin.bottom;
             this.column_width = parseFloat((this.rect_width / this.num_cols).toFixed(2));
             this.row_height = parseFloat((this.rect_height / this.num_rows).toFixed(2));
         },
+
         reset_drawing_controls: function() {
             // Properties useful in drawing the map
             this.prev_x = 0;
@@ -140,6 +146,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.x_direction = 1;  // for x direction 1 means going down
             this.group_iter = 1;
         },
+
         create_listeners: function() {
             this.listenTo(this.model, "change:color", this.recolor_chart, this);
             this.listenTo(this.model, "change:show_groups", this.show_groups, this);
@@ -169,18 +176,21 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.listenTo(this.model, "change:tooltip_fields", this.update_default_tooltip, this);
             this.listenTo(this.model, "change:tooltip_formats", this.update_default_tooltip, this);
         },
+
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
             this.svg.attr("width", null);
             this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
             setTimeout(_.bind(this.update_layout2, this), 0);
         },
+
         update_layout2: function() {
             var rect = this.el.getBoundingClientRect();
             this.width = rect.width > 0 ? rect.width : this.model.get("map_width");
             this.height = rect.height > 0 ? rect.height : this.model.get("map_height");
             setTimeout(_.bind(this.update_layout3, this), 0);
         },
+
         update_layout3: function() {
             var preserve_aspect = this.model.get("preserve_aspect");
             if (preserve_aspect === true) {
@@ -212,6 +222,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.hide_tooltip();
             this.trigger("margin_updated");
         },
+
         update_data: function() {
             var that = this;
             this.data = this.model.get_typed_field("names");
@@ -226,8 +237,13 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.colors_map = function(d) { return that.get_color(d, num_colors);};
             var color_data = this.model.get_typed_field("color");
             var mapped_data = this.data.map(function(d, i) {
-                return {'display': display_text[i], 'name': d, 'color': color_data[i],
-                        'group': that.group_data[i], 'ref_data': that.ref_data[i]};
+                return {
+                    display: display_text[i],
+                    name: d,
+                    color: color_data[i],
+                    group: that.group_data[i],
+                    ref_data: that.ref_data[i]
+                };
             });
 
             this.update_domains();
@@ -243,6 +259,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             this.running_sums.pop();
         },
+
         update_domains: function() {
             var color_scale_model = this.model.get("scales").color;
             var color_data = this.model.get_typed_field("color");
@@ -250,6 +267,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 color_scale_model.compute_and_set_domain(color_data, this.model.id);
             }
         },
+
         set_area_dimensions: function(num_items) {
             this.num_rows = this.model.get("rows");
             this.num_cols = this.model.get("cols");
@@ -292,6 +310,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             // direction.
             this.set_row_limits();
         },
+
         compute_dimensions_and_draw: function() {
             this.set_area_dimensions(this.data.length);
             this.update_plotarea_dimensions();
@@ -305,6 +324,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 .remove();
             this.hide_tooltip();
         },
+
         update_default_tooltip: function() {
             this.tooltip_fields = this.model.get("tooltip_fields");
             var formats = this.model.get("tooltip_formats");
@@ -314,6 +334,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 else return d3.format(fmt);
             });
         },
+
         create_scale_views: function() {
             for (var key in this.scales) {
                 this.stopListening(this.scales[key]);
@@ -324,11 +345,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             _.each(scale_models, function(model, key) {
                 scale_promises[key] = that.create_child_view(model);
             });
-            return utils.resolve_promises_dict(scale_promises).then(function(d) {
+            return widgets.resolvePromisesDict(scale_promises).then(function(d) {
                 that.scales = d;
                 that.set_scales();
             });
         },
+
         set_scales: function() {
             var that = this;
             if(this.scales.color) {
@@ -338,11 +360,13 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 this.update_map_colors();
             }
         },
+
         show_groups: function(model, value) {
             this.fig_names.style("display", (value ? "inline" : "none"));
             this.fig_map.selectAll(".market_map_text").style("opacity", (value ? 0.2 : 1));
             this.fig_map.selectAll(".market_map_rect").style("stroke-opacity", (value ? 0.2 : 1));
         },
+
         draw_map: function() {
             this.reset_drawing_controls();
             // Removing pre existing elements from the map
@@ -428,6 +452,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             });
             this.draw_group_names();
         },
+
         draw_group_names: function() {
             // Get all the bounding rects of the paths around each of the
             // sectors. Get their client bounding rect.
@@ -437,6 +462,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             text_elements.attr("width", function(d) { return d.width;})
                 .attr("height", function(d) { return d.height;});
         },
+
         recolor_chart: function() {
             var that = this;
             this.update_data();
@@ -457,6 +483,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                                that.colors_map(i);}});
             });
         },
+
         update_map_colors: function() {
             var that = this;
             var color_scale = this.scales.color;
@@ -476,6 +503,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 });
             }
         },
+
         cell_click_handler: function(data, id, cell) {
             if(this.model.get("enable_select")) {
                 var selected = this.model.get("selected").slice();
@@ -497,6 +525,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 this.touch();
             }
         },
+
         apply_selected: function() {
             var selected = this.model.get("selected");
             var that = this;
@@ -514,10 +543,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                });
             }
         },
+
         clear_selected: function() {
             this.fig_click.selectAll("rect")
                 .remove();
         },
+
         add_selected_cell: function(id, transform) {
             this.fig_click.append("rect")
                 .attr("id", "click_" + id)
@@ -528,6 +559,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 .attr("height", this.row_height)
                 .style({'stroke': this.selected_stroke, 'stroke-width': '4px', 'fill': 'none'});
         },
+
         mouseover_handler: function(data, id, cell) {
             var transform = d3.select(cell).attr("transform");
             if(this.model.get("enable_hover")) {
@@ -542,22 +574,26 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 this.show_tooltip(d3.event, data);
             }
         },
+
         update_selected_stroke: function(model, value) {
             this.selected_stroke = value;
             var that = this;
             this.fig_click.selectAll("rect")
                 .style({'stroke': value});
         },
+
         update_hovered_stroke: function(model, value) {
             this.hovered_stroke = value;
             // I do not need to update anything else because when hovered color
             // is being updated you are not hovering over anything.
         },
+
         mouseout_handler: function(data, id, cell) {
             this.fig_hover.select(".hover_" + id)
                 .remove();
             this.hide_tooltip();
         },
+
         show_tooltip: function(event, data) {
             var ref_el = d3.select(document.body).select("#notebook").node();
             var ref_mouse_pos = d3.mouse(ref_el);
@@ -591,12 +627,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             this.send({event: "hover", data: data.name, ref_data: data.ref_data});
         },
+
         hide_tooltip: function() {
              this.tooltip_div.style("pointer-events", "none");
              this.tooltip_div.transition()
                 .style("opacity", 0)
                 .style("display", "none");
         },
+
         create_tooltip_widget: function() {
             var tooltip_model = this.model.get("tooltip_widget");
             if((this.tooltip_view !== null && this.tooltip_view !== undefined)) {
@@ -613,9 +651,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 });
             }
         },
+
         get_group_transform: function(index) {
             return "translate(" + '0' + ", 0)";
         },
+
         get_cell_transform: function(index) {
             if(!this.past_border_y()){
                 if(this.past_border_x()) {
@@ -631,6 +671,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             return "translate(" + (this.prev_x * this.column_width) + ", " + (this.prev_y * this.row_height) + ")";
         },
+
         get_new_cords: function() {
             var new_x = this.prev_x;
             var new_y = this.prev_y;
@@ -651,6 +692,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             return [new_x, new_y, group_iter, x_direction, y_direction, new_x * this.column_width, new_y * this.row_height];
         },
+
         past_border_y: function() {
             if(this.y_direction == 1) {
                 return (this.prev_y + 1) < this.row_limits[this.group_iter];
@@ -658,6 +700,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 return (this.prev_y - 1) > this.row_limits[this.group_iter -1] - 1;
             }
         },
+
         past_border_x: function() {
             if(this.x_direction == 1) {
                 return (this.prev_x + 1) < this.num_cols;
@@ -665,9 +708,11 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 return (this.prev_x - 1) > -1;
             }
         },
+
         get_color: function(index, length) {
             return this.colors[index % length];
         },
+
         set_row_limits: function() {
             var step = Math.floor(this.num_rows / this.row_groups);
             this.row_limits = [];
@@ -676,6 +721,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             }
             this.row_limits[this.row_groups] = this.num_rows;
         },
+
         get_end_points: function(group_iter, num_cells, start_col, start_row, x_direction, y_direction) {
             //start_row is the 0-based index and not a 1-based index, i.e., it
             //is not the column number in the truest sense
@@ -866,6 +912,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
 
             return end_points;
         },
+
         create_bounding_path: function(elem, end_points) {
             var start_x = end_points[0].x;
             var start_y = end_points[0].y;
@@ -958,11 +1005,13 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 .style('stroke-width', 3);
             return bounding_path;
         },
+
         calc_end_point_source: function(curr_x, curr_y, x_direction, y_direction) {
             curr_y = (y_direction == 1) ? curr_y : curr_y + 1;
             curr_x = (x_direction == 1) ? curr_x : curr_x + 1;
             return[{'x': curr_x * this.column_width, 'y': curr_y * this.row_height}];
         },
+
         calc_end_point_dest: function(curr_x, curr_y, x_direction, y_direction) {
             curr_y = (y_direction == -1) ? curr_y : curr_y + 1;
             curr_x = (x_direction == -1) ? curr_x : curr_x + 1;

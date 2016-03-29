@@ -17,7 +17,8 @@ define(["./components/d3/d3", "./Scale", "underscore"], function(d3, ScaleViewMo
     "use strict";
 
     var OrdinalScale = ScaleViewModule.Scale.extend({
-        render: function(){
+
+        render: function() {
             this.scale = d3.scale.ordinal();
             //forcefully setting the domain
             this.model.domain_changed();
@@ -25,11 +26,13 @@ define(["./components/d3/d3", "./Scale", "underscore"], function(d3, ScaleViewMo
             this.offset = 0;
             this.create_event_listeners();
         },
+
         set_range: function(range, padding) {
            padding = (padding === undefined) ? 0 : padding;
            this.scale.rangeBands(range, padding, padding / 2.0);
            this.offset = (this.scale.domain().length === 0) ? 0 : this.scale.rangeBand() / 2.0;
         },
+
         expand_domain: function(old_range, new_range) {
             // If you have a current range and then a new range and want to
             // expand the domain to expand to the new range but keep it
@@ -46,24 +49,34 @@ define(["./components/d3/d3", "./Scale", "underscore"], function(d3, ScaleViewMo
                 Math.abs((new_range[1] - old_range[1]) / unpadded_scale.rangeBand()) : 0;
             this.scale.rangeBands(new_range, 0.0, outer_padding);
         },
+
         invert: function(pixel) {
             // returns the element in the domain which is closest to pixel
             // value passed. If the pixel is outside the range of the scale,
             var that = this;
             var domain = this.scale.domain();
-            var pixel_vals = domain.map(function(d) { return that.scale(d) + that.scale.rangeBand() / 2; });
-            var abs_diff = pixel_vals.map(function(d) { return Math.abs(pixel - d); });
+            var pixel_vals = domain.map(function(d) { 
+                return that.scale(d) + that.scale.rangeBand() / 2;
+            });
+            var abs_diff = pixel_vals.map(function(d) {
+                return Math.abs(pixel - d);
+            });
             return domain[abs_diff.indexOf(d3.min(abs_diff))];
         },
+
         invert_range: function(pixels) {
             //return all the indices between a range
             //pixels should be a non-decreasing two element array
             var that = this;
             var domain = this.scale.domain();
-            var pixel_vals = domain.map(function(d) { return that.scale(d) + that.scale.rangeBand() / 2; });
+            var pixel_vals = domain.map(function(d) {
+                return that.scale(d) + that.scale.rangeBand() / 2;
+            });
             var indices = _.range(pixel_vals.length);
-            var filtered_ind = indices.filter(function(ind) { return (pixel_vals[ind] >= pixels[0] &&
-                                                                      pixel_vals[ind] <= pixels[1]);});
+            var filtered_ind = indices.filter(function(ind) { 
+                return (pixel_vals[ind] >= pixels[0] &&
+                        pixel_vals[ind] <= pixels[1]);
+            });
             return filtered_ind.map(function(ind) { return domain[ind]; });
         },
     });
