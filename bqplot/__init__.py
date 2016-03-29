@@ -64,3 +64,12 @@ from .scales import *
 from .toolbar import *
 from .default_tooltip import *
 from ._version import version_info, __version__
+
+
+def _jupyter_nbextension_paths():
+    return [{
+        'section': 'notebook',
+        'src': 'nbextension',
+        'dest': 'bqplot',
+        'require': 'bqplot/index'
+    }]
