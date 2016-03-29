@@ -18,6 +18,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
     "use strict";
 
     var Bars = MarkViewModule.Mark.extend({
+
         render: function() {
             this.padding = this.model.get("padding");
             var base_creation_promise = Bars.__super__.render.apply(this);
@@ -42,6 +43,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 that.draw();
             });
         },
+
         set_ranges: function() {
             var x_scale = this.scales.x,
                 y_scale = this.scales.y;
@@ -57,6 +59,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.x_offset = 0;
             this.y_offset = y_scale.offset;
         },
+
         set_positional_scales: function() {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             this.listenTo(x_scale, "domain_changed", function() {
@@ -70,11 +73,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 }
             });
         },
+
         set_internal_scales: function() {
             // Two scales to draw the bars.
             this.x = d3.scale.ordinal();
             this.x1 = d3.scale.ordinal();
         },
+
         adjust_offset: function() {
             // In the case of a linear scale, and when plotting ordinal data,
             // the value have to be negatively offset by half of the width of
@@ -99,6 +104,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 }
             }
         },
+
         create_listeners: function() {
             Bars.__super__.create_listeners.apply(this);
             this.el
@@ -129,6 +135,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 this.event_dispatcher("parent_clicked");
             });
         },
+
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {
@@ -182,11 +189,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 }
             }
         },
+
         realign: function() {
             //TODO: Relayout is an expensive call on realigning. Need to change
             //this.
             this.relayout();
         },
+
         relayout: function() {
             var y_scale = this.scales.y;
             this.set_ranges();
@@ -203,6 +212,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
             this.draw_bars();
         },
+
         invert_point: function(pixel) {
             if(pixel === undefined) {
                 this.model.set("selected", null);
@@ -215,6 +225,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
             this.touch();
         },
+
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined) {
                 this.model.set("selected", null);
@@ -231,10 +242,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.model.set("selected", filtered_indices);
             this.touch();
         },
+
         update_selected: function(model, value) {
             this.selected_indices = value;
             this.apply_styles();
         },
+
         draw: function(animate) {
             this.set_ranges();
             var colors = this.model.get("colors");
@@ -304,6 +317,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
               .attr("y1", y_scale.scale(this.model.base_value))
               .attr("y2", y_scale.scale(this.model.base_value));
         },
+
         draw_bars: function(animate) {
             var bar_groups = this.el.selectAll(".bargroup");
             var bars_sel = bar_groups.selectAll(".bar");
@@ -344,23 +358,27 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             }
 
             this.x_pixels = this.model.mark_data.map(function(el) {
-                                                        return x_scale.scale(el.key) + x_scale.offset; });
+                return x_scale.scale(el.key) + x_scale.offset;
+            });
         },
+
         update_type: function(model, value) {
             // We need to update domains here as the y_domain needs to be
             // changed when we switch from stacked to grouped.
             this.model.update_domains();
             this.draw();
         },
+
         update_stroke_and_opacities: function() {
             var stroke = this.model.get("stroke");
             var opacities = this.model.get("opacities");
             this.el.selectAll(".bar")
                 .style("stroke", stroke)
                 .style("opacity", function(d, i) {
-                            return opacities[i];
-                      });
+                return opacities[i];
+            });
         },
+
         update_colors: function() {
             //the following if condition is to handle the case of single
             //dimensional data.
@@ -398,6 +416,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                 });
             }
         },
+
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             if(!(this.model.is_y_2d) &&
                (this.model.get("colors").length !== 1 &&
@@ -463,6 +482,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             this.legend_el.exit().remove();
             return [this.model.mark_data[0].values.length, max_length];
         },
+
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
             // chart. If indices is null, clears the style on all elements. If
@@ -483,6 +503,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             }
             elements.selectAll(".bar").style(clearing_style);
         },
+
         set_style_on_elements: function(style, indices) {
             // If the index array is undefined or of length=0, exit the
             // function without doing anything
@@ -499,12 +520,14 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             });
             elements.selectAll(".bar").style(style);
         },
+
         set_default_style: function(indices) {
             // For all the elements with index in the list indices, the default
             // style is applied.
             this.update_colors();
             this.update_stroke_and_opacities();
         },
+
         set_x_range: function() {
             var x_scale = this.scales.x;
             if(x_scale.model.type === "ordinal") {
@@ -514,6 +537,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
                         x_scale.scale(d3.max(this.x.domain()))];
             }
         },
+
         bar_click_handler: function (args) {
             var data = args.data;
             var index = args.index;
@@ -580,11 +604,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "underscore"],
             }
             e.preventDefault();
         },
+
         reset_selection: function() {
             this.model.set("selected", null);
             this.selected_indices = null;
             this.touch();
         },
+
         compute_view_padding: function() {
             //This function returns a dictionary with keys as the scales and
             //value as the pixel padding required for the rendering of the

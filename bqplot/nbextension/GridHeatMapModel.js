@@ -13,10 +13,33 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var GridHeatMapModel = MarkModelModule.MarkModel.extend({
+    var GridHeatMapModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "GridHeatMapModel",
+            _view_name: "GridHeatMap",
+
+            row: [],
+            column: [],
+            color: null,
+            scales_metadata: {
+                row: { orientation: "vertical", dimension: "y" },
+                column: { orientation: "horizontal", dimension: "x" },
+                color: { dimension: "color" }
+            },
+            row_align: "start",
+            column_align: "start",
+            stroke: "black",
+            opacity: 1.0,
+            anchor_style: {
+                fill: "white",
+                stroke: "blue"
+            }
+        }),
+
         initialize: function() {
             GridHeatMapModel.__super__.initialize.apply(this);
             this.on_some_change(["row", "column", "color"], this.update_data, this);
@@ -25,7 +48,10 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.update_data();
+            this.update_domains();
         },
+
         update_data: function() {
             this.dirty = true;
             // Handling data updates
@@ -57,6 +83,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.dirty = false;
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;
@@ -86,9 +113,11 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 }
             }
         },
+
         get_data_dict: function(data, index) {
             return data;
         },
+
         identify_modes: function() {
             //based on the data, identify the mode in which the heatmap should
             //be plotted.
@@ -110,7 +139,6 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                     modes.row = "expand_two";
                 }
             }
-
             if(column_scale.type === "ordinal") {
                 modes.column = "middle";
             } else {

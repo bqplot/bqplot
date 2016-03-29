@@ -13,10 +13,27 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var OHLCModel = MarkModelModule.MarkModel.extend({
+    var OHLCModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "OHLCModel",
+            _view_name: "OHLC",
+
+            x: [],
+            y: [],
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" }
+            },
+            stroke: null,
+            box_fill_color: "dodgerblue",
+            outlier_fill_color: "gray",
+            opacities: []
+        }),
+
         initialize: function() {
             OHLCModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
@@ -25,11 +42,16 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.px = { o: -1, h: -1, l: -1, c: -1 };
             this.mark_data = [];
             this.display_el_classes = ["stick_body"] ;
+            this.update_data();
+            this.update_domains();
+            this.update_format();
         },
+
         update_format: function() {
             this.update_data();
             this.trigger("format_updated");
         },
+
         update_data: function() {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
@@ -90,6 +112,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.update_domains();
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;
@@ -162,6 +185,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                 y_scale.del_domain([], this.id + "_y");
             }
         },
+
         get_data_dict: function(data, index) {
             var that = this;
             var return_val ={};

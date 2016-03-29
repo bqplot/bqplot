@@ -69,26 +69,25 @@ class Scale(Widget):
 
     Attributes
     ----------
-
     scale_types: dict (class-level attribute)
         A registry of existing scale types.
     domain_class: type (default: Float)
         traitlet type used to validate values in of the domain of the scale.
     reverse: bool (default: False)
-        whether the scale should be reversed
+        whether the scale should be reversed.
     allow_padding: bool (default: True)
         indicates whether figures are allowed to add data padding to this scale
-        or not
+        or not.
     """
     scale_types = {}
-    domain_class = Type(Float, sync=False)
-    reverse = Bool(False, sync=True)
-    allow_padding = Bool(True, sync=True)
+    domain_class = Type(Float)
+    reverse = Bool().tag(sync=True)
+    allow_padding = Bool(True).tag(sync=True)
 
-    _view_name = Unicode('Scale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Scale', sync=True)
-    _model_name = Unicode('ScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/ScaleModel', sync=True)
+    _view_name = Unicode('Scale').tag(sync=True)
+    _model_name = Unicode('ScaleModel').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
     _ipython_display_ = None  # We cannot display a scale outside of a figure
 
 
@@ -99,9 +98,8 @@ class GeoScale(Scale):
     The GeoScale represents a mapping between topographic data and a
     2d visual representation.
     """
-    _view_module = Unicode('nbextensions/bqplot/GeoScale', sync=True)
-    _model_name = Unicode('GeoScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/GeoScaleModel', sync=True)
+    _view_name = Unicode('GeoScale').tag(sync=True)
+    _model_name = Unicode('GeoScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.Mercator')
@@ -114,7 +112,6 @@ class Mercator(GeoScale):
 
     Attributes
     ----------
-
     scale_factor: float (default: 190)
         Specifies the scale value for the projection
     center: list (default: (0, 60))
@@ -128,19 +125,19 @@ class Mercator(GeoScale):
         the associated data type / domain type
     """
 
-    scale_factor = Float(190., sync=True)
-    center = Tuple((0, 60), sync=True)
-    rotate = Tuple((0, 0), sync=True)
+    scale_factor = Float(190).tag(sync=True)
+    center = Tuple((0, 60)).tag(sync=True)
+    rotate = Tuple((0, 0)).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
-    _view_name = Unicode('Mercator', sync=True)
-    _model_name = Unicode('MercatorModel', sync=True)
+    _view_name = Unicode('Mercator').tag(sync=True)
+    _model_name = Unicode('MercatorModel').tag(sync=True)
 
 
 @register_scale('bqplot.Albers')
 class Albers(GeoScale):
 
-    """A georaphical scale which is an alias for a conic equal area projection.
+    """A geographical scale which is an alias for a conic equal area projection.
 
     The Albers projection is a conic equal area map. It does not preserve scale
     or shape, though it is recommended for chloropleths since it preserves the
@@ -148,7 +145,6 @@ class Albers(GeoScale):
 
     Attributes
     ----------
-
     scale_factor: float (default: 250)
         Specifies the scale value for the projection
     rotate: tuple (default: (96, 0))
@@ -167,15 +163,15 @@ class Albers(GeoScale):
         the associated data type / domain type
     """
 
-    scale_factor = Float(250., sync=True)
-    rotate = Tuple((96, 0), sync=True)
-    center = Tuple((0, 60), sync=True)
-    parallels = Tuple((29.5, 45.5), sync=True)
-    precision = Float(0.1, sync=True)
+    scale_factor = Float(250).tag(sync=True)
+    rotate = Tuple((96, 0)).tag(sync=True)
+    center = Tuple((0, 60)).tag(sync=True)
+    parallels = Tuple((29.5, 45.5)).tag(sync=True)
+    precision = Float(0.1).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
-    _view_name = Unicode('Albers', sync=True)
-    _model_name = Unicode('AlbersModel', sync=True)
+    _view_name = Unicode('Albers').tag(sync=True)
+    _model_name = Unicode('AlbersModel').tag(sync=True)
 
 
 @register_scale('bqplot.AlbersUSA')
@@ -186,7 +182,6 @@ class AlbersUSA(GeoScale):
 
     Attributes
     ----------
-
     scale_factor: float (default: 1200)
         Specifies the scale value for the projection
     rtype: (Number, Number) (class-level attribute)
@@ -196,11 +191,11 @@ class AlbersUSA(GeoScale):
         the associated data type / domain type
     """
 
-    scale_factor = Float(1200., sync=True)
+    scale_factor = Float(1200).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
-    _view_name = Unicode('AlbersUSA', sync=True)
-    _model_name = Unicode('AlbersUSAModel', sync=True)
+    _view_name = Unicode('AlbersUSA').tag(sync=True)
+    _model_name = Unicode('AlbersUSAModel').tag(sync=True)
 
 
 @register_scale('bqplot.EquiRectangular')
@@ -212,19 +207,18 @@ class EquiRectangular(GeoScale):
 
     Attributes
     ----------
-
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     """
 
-    scale_factor = Float(145., sync=True)
-    center = Tuple((0, 60), sync=True)
+    scale_factor = Float(145.0).tag(sync=True)
+    center = Tuple((0, 60)).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
-    _view_name = Unicode('EquiRectangular', sync=True)
-    _model_name = Unicode('EquiRectangularModel', sync=True)
+    _view_name = Unicode('EquiRectangular').tag(sync=True)
+    _model_name = Unicode('EquiRectangularModel').tag(sync=True)
 
 
 @register_scale('bqplot.Orthographic')
@@ -237,7 +231,6 @@ class Orthographic(GeoScale):
 
     Attributes
     ----------
-
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
@@ -251,15 +244,15 @@ class Orthographic(GeoScale):
         specified value in pixels.
     """
 
-    scale_factor = Float(145., sync=True)
-    center = Tuple((0, 60), sync=True)
-    rotate = Tuple((0, 0), sync=True)
-    clip_angle = Float(default_value=90., min=0., max=360., sync=True)
-    precision = Float(0.1, sync=True)
+    scale_factor = Float(145.0).tag(sync=True)
+    center = Tuple((0, 60)).tag(sync=True)
+    rotate = Tuple((0, 0)).tag(sync=True)
+    clip_angle = Float(90.0, min=0.0, max=360.0).tag(sync=True)
+    precision = Float(0.1).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
-    _view_name = Unicode('Orthographic', sync=True)
-    _model_name = Unicode('OrthographicModel', sync=True)
+    _view_name = Unicode('Orthographic').tag(sync=True)
+    _model_name = Unicode('OrthographicModel').tag(sync=True)
 
 
 @register_scale('bqplot.Gnomonic')
@@ -271,7 +264,6 @@ class Gnomonic(GeoScale):
 
     Attributes
     ----------
-
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
     center: list (default: (0, 60))
@@ -283,14 +275,14 @@ class Gnomonic(GeoScale):
         Specifies the clipping circle radius to the specified angle in degrees.
     """
 
-    scale_factor = Float(145., sync=True)
-    center = Tuple((0, 60), sync=True)
-    precision = Float(0.1, sync=True)
-    clip_angle = Float(default_value=89.999, min=0., max=360., sync=True)
+    scale_factor = Float(145.0).tag(sync=True)
+    center = Tuple((0, 60)).tag(sync=True)
+    precision = Float(0.1).tag(sync=True)
+    clip_angle = Float(89.999, min=0.0, max=360.0).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
-    _view_name = Unicode('Gnomonic', sync=True)
-    _model_name = Unicode('GnomonicModel', sync=True)
+    _view_name = Unicode('Gnomonic').tag(sync=True)
+    _model_name = Unicode('GnomonicModel').tag(sync=True)
 
 
 @register_scale('bqplot.Stereographic')
@@ -303,7 +295,6 @@ class Stereographic(GeoScale):
 
     Attributes
     ----------
-
     scale_factor: float (default: 250)
         Specifies the scale value for the projection
     rotate: tuple (default: (96, 0))
@@ -317,15 +308,15 @@ class Stereographic(GeoScale):
         Specifies the clipping circle radius to the specified angle in degrees.
     """
 
-    scale_factor = Float(145., sync=True)
-    center = Tuple((0, 60), sync=True)
-    precision = Float(0.1, sync=True)
-    rotate = Tuple((96, 0), sync=True)
-    clip_angle = Float(default_value=179.9999, min=0., max=360., sync=True)
+    scale_factor = Float(145.0).tag(sync=True)
+    center = Tuple((0, 60)).tag(sync=True)
+    precision = Float(0.1).tag(sync=True)
+    rotate = Tuple((96, 0)).tag(sync=True)
+    clip_angle = Float(179.9999, min=0.0, max=360.0).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
-    _view_name = Unicode('Stereographic', sync=True)
-    _model_name = Unicode('StereographicModel', sync=True)
+    _view_name = Unicode('Stereographic').tag(sync=True)
+    _model_name = Unicode('StereographicModel').tag(sync=True)
 
 
 @register_scale('bqplot.LinearScale')
@@ -337,7 +328,6 @@ class LinearScale(Scale):
 
     Attributes
     ----------
-
     min: float or None (default: None)
         if not None, min is the minimal value of the domain
     max: float or None (default: None)
@@ -350,13 +340,11 @@ class LinearScale(Scale):
     """
     rtype = 'Number'
     dtype = np.number
-    min = Float(default_value=None, sync=True, allow_none=True)
-    max = Float(default_value=None, sync=True, allow_none=True)
+    min = Float(None, allow_none=True).tag(sync=True)
+    max = Float(None, allow_none=True).tag(sync=True)
 
-    _view_name = Unicode('LinearScale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/LinearScale', sync=True)
-    _model_name = Unicode('LinearScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LinearScaleModel', sync=True)
+    _view_name = Unicode('LinearScale').tag(sync=True)
+    _model_name = Unicode('LinearScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.LogScale')
@@ -368,7 +356,6 @@ class LogScale(Scale):
 
     Attributes
     ----------
-
     min: float or None (default: None)
         if not None, min is the minimal value of the domain
     max: float or None (default: None)
@@ -381,13 +368,11 @@ class LogScale(Scale):
     """
     rtype = 'Number'
     dtype = np.number
-    min = Float(default_value=None, sync=True, allow_none=True)
-    max = Float(default_value=None, sync=True, allow_none=True)
+    min = Float(None, allow_none=True).tag(sync=True)
+    max = Float(None, allow_none=True).tag(sync=True)
 
-    _view_name = Unicode('LogScale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/LogScale', sync=True)
-    _model_name = Unicode('LogScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LogScaleModel', sync=True)
+    _view_name = Unicode('LogScale').tag(sync=True)
+    _model_name = Unicode('LogScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.DateScale')
@@ -399,7 +384,6 @@ class DateScale(Scale):
 
     Attributes
     ----------
-
     min: Date or None (default: None)
         if not None, min is the minimal value of the domain
     max: Date (default: None)
@@ -414,14 +398,12 @@ class DateScale(Scale):
     """
     rtype = 'Number'
     dtype = np.datetime64
-    domain_class = Type(Date, sync=False)
-    min = Date(default_value=None, sync=True, allow_none=True)
-    max = Date(default_value=None, sync=True, allow_none=True)
+    domain_class = Type(Date)
+    min = Date(default_value=None, allow_none=True).tag(sync=True)
+    max = Date(default_value=None, allow_none=True).tag(sync=True)
 
-    _view_name = Unicode('DateScale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/DateScale', sync=True)
-    _model_name = Unicode('DateScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/DateScaleModel', sync=True)
+    _view_name = Unicode('DateScale').tag(sync=True)
+    _model_name = Unicode('DateScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.OrdinalScale')
@@ -433,7 +415,6 @@ class OrdinalScale(Scale):
 
     Attributes
     ----------
-
     domain: list (default: [])
         The discrete values mapped by the ordinal scale
     rtype: string (class-level attribute)
@@ -444,12 +425,10 @@ class OrdinalScale(Scale):
     """
     rtype = 'Number'
     dtype = np.str
-    domain = List(sync=True)
+    domain = List().tag(sync=True)
 
-    _view_name = Unicode('OrdinalScale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/OrdinalScale', sync=True)
-    _model_name = Unicode('OrdinalScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/OrdinalScaleModel', sync=True)
+    _view_name = Unicode('OrdinalScale').tag(sync=True)
+    _model_name = Unicode('OrdinalScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.ColorScale')
@@ -461,7 +440,6 @@ class ColorScale(Scale):
 
     Attributes
     ----------
-
     scale_type: {'linear'}
         scale type
     colors: list of colors (default: [])
@@ -481,17 +459,15 @@ class ColorScale(Scale):
     """
     rtype = 'Color'
     dtype = np.number
-    scale_type = Enum(['linear'], default_value='linear', sync=True)
-    colors = List(trait=Color(default_value=None, allow_none=True), sync=True)
-    min = Float(default_value=None, sync=True, allow_none=True)
-    max = Float(default_value=None, sync=True, allow_none=True)
-    mid = Float(default_value=None, sync=True, allow_none=True)
-    scheme = Unicode('RdYlGn', sync=True)
+    scale_type = Enum(['linear'], default_value='linear').tag(sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True)).tag(sync=True)
+    min = Float(None, allow_none=True).tag(sync=True)
+    max = Float(None, allow_none=True).tag(sync=True)
+    mid = Float(None, allow_none=True).tag(sync=True)
+    scheme = Unicode('RdYlGn').tag(sync=True)
 
-    _view_name = Unicode('LinearColorScale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/LinearColorScale', sync=True)
-    _model_name = Unicode('LinearColorScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LinearColorScaleModel', sync=True)
+    _view_name = Unicode('ColorScale').tag(sync=True)
+    _model_name = Unicode('ColorScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.DateColorScale')
@@ -503,7 +479,6 @@ class DateColorScale(ColorScale):
 
     Attributes
     ----------
-
     min: Date or None (default: None)
         if not None, min is the minimal value of the domain
     max: Date or None (default: None)
@@ -518,14 +493,9 @@ class DateColorScale(ColorScale):
     """
     rtype = 'Color'
     dtype = np.datetime64
-    min = Date(default_value=None, sync=True, allow_none=True)
-    max = Date(default_value=None, sync=True, allow_none=True)
-    mid = Unicode(default_value=None, sync=True, allow_none=True)
 
-    _view_name = Unicode('DateColorScale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/DateColorScale', sync=True)
-    _model_name = Unicode('DateColorScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/DateColorScaleModel', sync=True)
+    _view_name = Unicode('DateColorScale').tag(sync=True)
+    _model_name = Unicode('DateColorScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.OrdinalColorScale')
@@ -537,7 +507,6 @@ class OrdinalColorScale(ColorScale):
 
     Attributes
     ----------
-
     domain: list (default: [])
         The discrete values mapped by the ordinal scales.
     rtype: string (class-level attribute)
@@ -548,9 +517,7 @@ class OrdinalColorScale(ColorScale):
     """
     rtype = 'Color'
     dtype = np.str
-    domain = List(sync=True)
+    domain = List().tag(sync=True)
 
-    _view_name = Unicode('OrdinalColorScale', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/OrdinalColorScale', sync=True)
-    _model_name = Unicode('OrdinalScaleModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/OrdinalScaleModel', sync=True)
+    _view_name = Unicode('OrdinalColorScale').tag(sync=True)
+    _model_name = Unicode('OrdinalScaleModel').tag(sync=True)

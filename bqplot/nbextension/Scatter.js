@@ -16,9 +16,13 @@
 define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
        function(d3, MarkViewModule, utils, markers, _) {
     "use strict";
+
     var min_size = 10;
+
     var bqSymbol = markers.symbol;
+
     var Scatter = MarkViewModule.Mark.extend({
+
         render: function() {
             var base_creation_promise = Scatter.__super__.render.apply(this);
 
@@ -71,6 +75,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 that.draw();
             });
         },
+
         set_ranges: function() {
             var x_scale = this.scales.x,
                 y_scale = this.scales.y,
@@ -107,6 +112,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 rotation_scale.set_range([0, 180]);
             }
         },
+
         set_positional_scales: function() {
             var x_scale = this.scales.x,
                 y_scale = this.scales.y;
@@ -122,6 +128,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 }
             });
         },
+
         initialize_additional_scales: function() {
             // function to create the additional scales and create the
             // listeners for the additional scales
@@ -165,6 +172,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 });
             }
         },
+
         create_listeners: function() {
             Scatter.__super__.create_listeners.apply(this);
             this.el.on("mouseover", _.bind(function() {
@@ -200,6 +208,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.event_dispatcher("parent_clicked");
             });
         },
+
         update_default_colors: function(model, new_colors) {
             if(!this.model.dirty) {
                 var that = this,
@@ -219,19 +228,18 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                     .style("fill", function(d, i) {
                         return new_colors[i % len];
                     })
-                    .style("stroke", stroke ? stroke :
-                           function(d, i)
-                           {
-                              return new_colors[i % len];
-                           }
+                    .style("stroke", stroke ? stroke : function(d, i) {
+                            return new_colors[i % len];
+                        }
                     );
                     this.legend_el.select("text")
                     .style("fill", this.model.get("fill") ? function(d, i) {
                         return new_colors[i % len];
-                        } : "none");
+                    } : "none");
                 }
             }
         },
+
         update_fill: function(model, fill) {
             var that = this,
                 default_colors = this.model.get("default_colors"),
@@ -241,11 +249,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             } : "none");
             if (this.legend_el) {
                 this.legend_el.selectAll("path")
-                  .style("fill", fill  ? function(d, i) {
-                      return default_colors[i % len];
+                    .style("fill", fill  ? function(d, i) {
+                        return default_colors[i % len];
                     } : "none");
             }
         },
+
         update_stroke_width: function() {
             var stroke_width = this.model.get("stroke_width");
 
@@ -257,19 +266,21 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   .style("stroke-width", stroke_width);
             }
         },
+
         update_stroke: function(model, fill) {
             var that = this,
                 stroke = this.model.get("stroke");
             this.el.selectAll(".dot")
-              .style("stroke", stroke ? stroke : function(d, i) {
-                  return that.get_element_color(d, i);
-              });
+                .style("stroke", stroke ? stroke : function(d, i) {
+                    return that.get_element_color(d, i);
+                });
 
             if (this.legend_el) {
                 this.legend_el.selectAll("path")
-                  .style("stroke", stroke);
+                    .style("stroke", stroke);
             }
         },
+
         update_default_opacities: function(animate) {
             if (!this.model.dirty) {
                 var default_opacities = this.model.get("default_opacities");
@@ -297,6 +308,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 }
             }
         },
+
         update_marker: function(model, marker) {
             if (!this.model.dirty) {
                 this.el.selectAll(".dot")
@@ -307,6 +319,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                     .attr("d", this.dot.type(marker));
             }
         },
+
         update_default_skew: function(animate) {
             if (!this.model.dirty) {
                 var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
@@ -333,6 +346,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                     }));
             }
         },
+
         // The following three functions are convenience functions to get
         // the fill color / opacity / size of an element given the data.
         // In fact they are more than convenience functions as they limit the
@@ -347,6 +361,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             return default_colors[index % len];
         },
+
         get_element_size: function(data) {
             var size_scale = this.scales.size;
             if(size_scale && data.size !== undefined) {
@@ -354,6 +369,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             return this.model.get("default_size");
         },
+
         get_element_opacity: function(data, index) {
             var opacity_scale = this.scales.opacity;
             var default_opacities = this.model.get("default_opacities");
@@ -363,6 +379,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             return default_opacities[index % len];
         },
+
         get_element_skew: function(data) {
             var skew_scale = this.scales.skew;
             if(skew_scale && data.skew !== undefined) {
@@ -370,11 +387,13 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             return this.model.get("default_skew");
         },
+
         get_element_rotation: function(d) {
             var rotation_scale = this.scales.rotation;
             return (!rotation_scale || !d.rotation) ? "" :
                 "rotate(" + rotation_scale.scale(d.rotation) + ")";
         },
+
         color_scale_updated: function(animate) {
             var that = this,
                 fill = this.model.get("fill"),
@@ -393,10 +412,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                       return that.get_element_color(d, i);
                   });
         },
+
         relayout: function() {
             this.set_ranges();
             this.update_xy_position();
         },
+
         update_xy_position: function(animate) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var that = this;
@@ -412,6 +433,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
             this.y_pixels = this.model.mark_data.map(function(el) { return y_scale.scale(el.y) + y_scale.offset; });
         },
+
         draw: function(animate) {
             this.set_ranges();
             var x_scale = this.scales.x, y_scale = this.scales.y;
@@ -462,6 +484,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             elements.exit().remove();
             this.apply_styles();
         },
+
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {
@@ -515,6 +538,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 }
             }
         },
+
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
               .data([this.model.mark_data[0]]);
@@ -574,6 +598,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.legend_el.exit().remove();
             return [1, max_length];
         },
+
         update_display_names: function(model, value) {
             var names = this.model.get_typed_field("names"),
                 show_names = (value && names.length !== 0);
@@ -582,6 +607,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                     return (show_names) ? "inline": "none";
                 });
         },
+
         invert_point: function(pixel) {
             if(pixel === undefined) {
                 this.model.set("selected", null);
@@ -596,6 +622,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.model.set("selected", [sel_index]);
             this.touch();
         },
+
         invert_range: function(start_pxl, end_pxl) {
             if(start_pxl === undefined || end_pxl === undefined) {
                 this.model.set("selected", null);
@@ -614,6 +641,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.model.set("selected", selected);
             this.touch();
         },
+
         invert_2d_range: function(x_start, x_end, y_start, y_end) {
             //y_start is usually greater than y_end as the y_scale is invert
             //by default
@@ -636,10 +664,12 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.touch();
             return selected;
         },
+
         update_selected: function(model, value) {
             this.selected_indices = value;
             this.apply_styles();
         },
+
         set_style_on_elements: function(style, indices) {
             // If the index array is undefined or of length=0, exit the
             // function without doing anything
@@ -656,6 +686,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             });
             elements.style(style);
         },
+
         set_default_style: function(indices) {
             // For all the elements with index in the list indices, the default
             // style is applied.
@@ -679,6 +710,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   return that.get_element_opacity(d, i);
               }).style("stroke-width", stroke_width);
         },
+
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
             // chart.If indices is null, clears the style on all elements. If
@@ -699,6 +731,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             elements.style(clearing_style);
         },
+
         compute_view_padding: function() {
             //This function computes the padding along the x and y directions.
             //The value is in pixels.
@@ -710,6 +743,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.trigger("mark_padding_updated");
             }
         },
+
         update_selected_in_lasso: function(lasso_name, lasso_vertices,
                                            point_in_lasso_func)
         {
@@ -747,6 +781,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             //return true if there are any mark data inside lasso
             return data_in_lasso;
         },
+
         update_array: function(d, i) {
             var x_scale = this.scales.x,
                 y_scale = this.scales.y;
@@ -769,6 +804,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             this.touch();
         },
+
         drag_start: function(d, dragged_node) {
             if (!this.model.get("enable_move")) {
                 return;
@@ -791,6 +827,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                   .style("stroke", drag_color);
             }
         },
+
         on_drag: function(d, i, dragged_node) {
             if(!this.drag_started){
                 return;
@@ -823,6 +860,7 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.update_array(d, i);
             }
         },
+
         drag_ended: function(d, i, dragged_node) {
             if (!this.model.get("enable_move")) {
                 return;
@@ -868,14 +906,18 @@ define(["./components/d3/d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
 
             this.update_array(d, i);
-            this.send({event: "drag_end",
-                       point: {"x": d.x, "y": d.y},
-                       index: i});
+            this.send({
+                event: "drag_end",
+                point: { x : d.x, y: d.y},
+                index: i
+            });
         },
+
         selected_deleter: function() {
             d3.event.stopPropagation();
             return;
         },
+
         add_element: function() {
             var mouse_pos = d3.mouse(this.el.node());
             var curr_pos = [mouse_pos[0], mouse_pos[1]];

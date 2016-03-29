@@ -79,7 +79,6 @@ class Mark(Widget):
 
     Attributes
     ----------
-
     display_name: string
         Holds a user-friendly name for the trait attribute.
     mark_types: dict (class-level attribute)
@@ -115,7 +114,7 @@ class Mark(Widget):
     unselected_style: dict (default: {})
         CSS style to be applied to items that are not selected in the mark,
         when a selection exists.
-    selected: list (default: [])
+    selected: list of integers or None (default: None)
         Indices of the selected items in the mark.
     tooltip: DOMWidget or None (default: None)
         Widget to be displayed as tooltip when elements of the scatter are
@@ -139,31 +138,32 @@ class Mark(Widget):
         that triggered the tooltip to be visible.
     """
     mark_types = {}
-    scales = Dict(trait=Instance(Scale), sync=True, **widget_serialization)
-    scales_metadata = Dict(sync=True)
-    preserve_domain = Dict(sync=True)
-    display_legend = Bool(False, sync=True, display_name='Display legend')
-    labels = List(trait=Unicode(), sync=True, display_name='Labels')
-    apply_clip = Bool(True, sync=True)
-    visible = Bool(True, sync=True)
-    selected_style = Dict(sync=True)
-    unselected_style = Dict(sync=True)
-    selected = List(sync=True, allow_none=True)
+    scales = Dict(trait=Instance(Scale)).tag(sync=True, **widget_serialization)
+    scales_metadata = Dict().tag(sync=True)
+    preserve_domain = Dict().tag(sync=True)
+    display_legend = Bool().tag(sync=True, display_name='Display legend')
+    labels = List(trait=Unicode()).tag(sync=True, display_name='Labels')
+    apply_clip = Bool(True).tag(sync=True)
+    visible = Bool(True).tag(sync=True)
+    selected_style = Dict().tag(sync=True)
+    unselected_style = Dict().tag(sync=True)
+    selected = List(None, allow_none=True).tag(sync=True)
 
-    enable_hover = Bool(True, sync=True)
-    tooltip = Instance(DOMWidget, allow_none=True, sync=True, **widget_serialization)
-    tooltip_style = Dict({'opacity': 0.9}, sync=True)
-    interactions = Dict({'hover': 'tooltip'}, sync=True)
-    tooltip_location = Enum(['mouse', 'center'], default_value='mouse', sync=True)
+    enable_hover = Bool(True).tag(sync=True)
+    tooltip = Instance(DOMWidget, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
+    tooltip_style = Dict({'opacity': 0.9}).tag(sync=True)
+    interactions = Dict({'hover': 'tooltip'}).tag(sync=True)
+    tooltip_location = Enum(['mouse', 'center'], default_value='mouse').tag(sync=True)
 
-    _model_name = Unicode('MarkModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MarkModel', sync=True)
+    _model_name = Unicode('MarkModel').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
     _ipython_display_ = None
 
     def _scales_validate(self, scales, scales_trait):
         """validates the dictionary of scales based on the mark's scaled
         attributes metadata. First checks for missing scale and then for
-        'rtype' compatibility """
+        'rtype' compatibility."""
         # Validate scales' 'rtype' versus data attribute 'rtype' decoration
         # At this stage it is already validated that all values in self.scales
         # are instances of Scale.
@@ -236,7 +236,6 @@ class Lines(Mark):
 
     Attributes
     ----------
-
     icon: string (class-level attribute)
         Font-awesome icon for the respective mark
     name: string (class-level attribute)
@@ -289,7 +288,6 @@ class Lines(Mark):
 
     Notes
     -----
-
     The fields which can be passed to the default tooltip are:
         name: label of the line
         index: index of the line being hovered on
@@ -305,48 +303,42 @@ class Lines(Mark):
     name = 'Lines'
 
     # Scaled attributes
-    x = NdArray(sync=True, min_dim=1, max_dim=2,
+    x = NdArray().tag(sync=True, min_dim=1, max_dim=2,
                 scaled=True, rtype='Number', atype='bqplot.Axis')
-    y = NdArray(sync=True, min_dim=1, max_dim=2,
+    y = NdArray().tag(sync=True, min_dim=1, max_dim=2,
                 scaled=True, rtype='Number', atype='bqplot.Axis')
-    color = NdArray(None, sync=True, allow_none=True,
-                    scaled=True, rtype='Color', atype='bqplot.ColorAxis',
-                    min_dim=1, max_dim=1)
+    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+                    rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'},
-                            'color': {'dimension': 'color'}}, sync=True)
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'},
+        'color': {'dimension': 'color'}
+    }).tag(sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10, sync=True, display_name='Colors')
+                  default_value=CATEGORY10).tag(sync=True, display_name='Colors')
     fill_colors = List(trait=Color(default_value=None, allow_none=True),
-                       default_value=CATEGORY10, sync=True,
-                       display_name='Fill colors')
-    stroke_width = Float(2.0, sync=True, display_name='Stroke width')
-    labels_visibility = Enum(['none', 'label'], default_value='none',
-                             sync=True, display_name='Labels visibility')
-    curves_subset = List(sync=True)
+                       default_value=CATEGORY10).tag(sync=True, display_name='Fill colors')
+    stroke_width = Float(2.0).tag(sync=True, display_name='Stroke width')
+    labels_visibility = Enum(['none', 'label'], default_value='none').tag(sync=True, display_name='Labels visibility')
+    curves_subset = List().tag(sync=True)
     line_style = Enum(['solid', 'dashed', 'dotted', 'dash_dotted'],
-                      default_value='solid', sync=True,
-                      display_name='Line style')
-    interpolation = Enum(['linear', 'basis', 'cardinal', 'monotone'],
-                         default_value='linear', sync=True,
+                      default_value='solid').tag(sync=True, display_name='Line style')
+    interpolation = Enum(['linear', 'basis', 'cardinal', 'monotone'], default_value='linear').tag(sync=True,
                          display_name='Interpolation')
-    close_path = Bool(sync=True, display_name='Close path')
-    fill = Enum(['none', 'bottom', 'top', 'inside'], default_value='none',
-                sync=True, display_name='Fill')
+    close_path = Bool().tag(sync=True, display_name='Close path')
+    fill = Enum(['none', 'bottom', 'top', 'inside'], default_value='none').tag(sync=True, display_name='Fill')
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                    'triangle-up', 'arrow', 'rectangle', 'ellipse'],
-                  default_value=None, allow_none=True, sync=True,
+                  default_value=None, allow_none=True).tag(sync=True,
                   display_name='Marker')
-    marker_size = Int(64, sync=True, display_name='Default size')
+    marker_size = Int(64).tag(sync=True, display_name='Default size')
 
-    opacities = List(sync=True, display_name='Opacity')
-    fill_opacities = List(sync=True, display_name='Fill Opacity')
-    _view_name = Unicode('Lines', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Lines', sync=True)
-    _model_name = Unicode('LinesModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LinesModel', sync=True)
+    opacities = List().tag(sync=True, display_name='Opacity')
+    fill_opacities = List().tag(sync=True, display_name='Fill Opacity')
+    _view_name = Unicode('Lines').tag(sync=True)
+    _model_name = Unicode('LinesModel').tag(sync=True)
 
 
 @register_mark('bqplot.FlexLine')
@@ -361,7 +353,6 @@ class FlexLine(Mark):
 
     Attributes
     ----------
-
     name: string (class-level attributes)
         user-friendly name of the mark
     colors: list of colors (default: CATEGORY10)
@@ -385,21 +376,21 @@ class FlexLine(Mark):
     name = 'Flexible lines'
 
     # Scaled attributes
-    x = NdArray(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
-    y = NdArray(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True, sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis')
-    width = NdArray(None, allow_none=True, sync=True, scaled=True, rtype='Number')
+    x = NdArray().tag(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
+    y = NdArray().tag(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis')
+    width = NdArray(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number')
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'},
-                            'color': {'dimension': 'color'}}, sync=True)
-    stroke_width = Float(1.5, sync=True, exposed=True, display_name='Stroke width')
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10, sync=True)
-    _view_name = Unicode('FlexLine', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/FlexLine', sync=True)
-    _model_name = Unicode('FlexLineModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/LinesModel', sync=True)
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'},
+        'color': {'dimension': 'color'}
+    }).tag(sync=True)
+    stroke_width = Float(1.5).tag(sync=True, display_name='Stroke width')
+    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True)
+    _view_name = Unicode('FlexLine').tag(sync=True)
+    _model_name = Unicode('FlexLineModel').tag(sync=True)
 
 
 @register_mark('bqplot.Scatter')
@@ -414,7 +405,6 @@ class Scatter(Mark):
 
     Attributes
     ----------
-
     icon: string (class-level attribute)
         Font-awesome icon for that mark
     name: string (class-level attribute)
@@ -468,7 +458,6 @@ class Scatter(Mark):
 
     Notes
     -----
-
     The fields which can be passed to the default tooltip are:
         All the data attributes
         index: index of the marker being hovered on
@@ -484,51 +473,52 @@ class Scatter(Mark):
     name = 'Scatter'
 
     # Scaled attribtes
-    x = NdArray(sync=True, min_dim=1, max_dim=1, scaled=True,
+    x = NdArray().tag(sync=True, min_dim=1, max_dim=1, scaled=True,
                 rtype='Number', atype='bqplot.Axis')
-    y = NdArray(sync=True, min_dim=1, max_dim=1,
+    y = NdArray().tag(sync=True, min_dim=1, max_dim=1,
                 scaled=True, rtype='Number', atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True, sync=True, scaled=True,
+    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
                     rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
-    opacity = NdArray(None, allow_none=True, sync=True, scaled=True,
+    opacity = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
                       rtype='Number', min_dim=1, max_dim=1)
-    size = NdArray(None, allow_none=True, sync=True, scaled=True,
+    size = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
                    rtype='Number', min_dim=1, max_dim=1)
-    skew = NdArray(None, allow_none=True, sync=True, scaled=True, rtype='Number',
+    skew = NdArray(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number',
                    min_dim=1, max_dim=1)
-    rotation = NdArray(None, allow_none=True, sync=True, scaled=True,
+    rotation = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
                        rtype='Number', min_dim=1, max_dim=1)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'},
-                            'color': {'dimension': 'color'},
-                            'size': {'dimension': 'size'},
-                            'opacity': {'dimension': 'opacity'}}, sync=True)
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'},
+        'color': {'dimension': 'color'},
+        'size': {'dimension': 'size'},
+        'opacity': {'dimension': 'opacity'}
+    }).tag(sync=True)
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
-                  'triangle-up', 'arrow', 'rectangle', 'ellipse'],
-                  default_value='circle', sync=True, display_name='Marker')
+                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
+                  default_value='circle').tag(sync=True, display_name='Marker')
     default_colors = List(trait=Color(default_value=None, allow_none=True),
-                          default_value=['DeepSkyBlue'], sync=True,
+                          default_value=['DeepSkyBlue']).tag(sync=True,
                           display_name='Colors')
-    stroke = Color(None, allow_none=True, sync=True, display_name='Stroke color')
-    stroke_width = Float(1.5, sync=True, display_name='Stroke width')
-    default_opacities = List(trait=Float(default_value=1.0, min=0, max=1,
-                             allow_none=True), sync=True, display_name='Opacities')
-    default_skew = Float(default_value=0.5, min=0, max=1, sync=True)
-    default_size = Int(64, sync=True, display_name='Default size')
+    stroke = Color(None, allow_none=True).tag(sync=True, display_name='Stroke color')
+    stroke_width = Float(1.5).tag(sync=True, display_name='Stroke width')
+    default_opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    default_skew = Float(0.5, min=0, max=1).tag(sync=True)
+    default_size = Int(64).tag(sync=True, display_name='Default size')
 
-    names = NdArray(sync=True)
-    display_names = Bool(True, sync=True, display_name='Display names')
-    fill = Bool(True, sync=True)
-    drag_color = Color(None, allow_none=True, sync=True)
-    names_unique = Bool(True, sync=True)
+    names = NdArray().tag(sync=True)
+    display_names = Bool(True).tag(sync=True, display_name='Display names')
+    fill = Bool(True).tag(sync=True)
+    drag_color = Color(None, allow_none=True).tag(sync=True)
+    names_unique = Bool(True).tag(sync=True)
 
-    enable_move = Bool(False, sync=True)
-    enable_delete = Bool(False, sync=True)
-    restrict_x = Bool(False, sync=True)
-    restrict_y = Bool(False, sync=True)
-    update_on_move = Bool(False, sync=True)
+    enable_move = Bool().tag(sync=True)
+    enable_delete = Bool().tag(sync=True)
+    restrict_x = Bool().tag(sync=True)
+    restrict_y = Bool().tag(sync=True)
+    update_on_move = Bool().tag(sync=True)
 
     def __init__(self, **kwargs):
         self._drag_end_handlers = CallbackDispatcher()
@@ -542,10 +532,8 @@ class Scatter(Mark):
             self._drag_end_handlers(self, content)
         super(Scatter, self)._handle_custom_msgs(self, content)
 
-    _view_name = Unicode('Scatter', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Scatter', sync=True)
-    _model_name = Unicode('ScatterModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/ScatterModel', sync=True)
+    _view_name = Unicode('Scatter').tag(sync=True)
+    _model_name = Unicode('ScatterModel').tag(sync=True)
 
 
 @register_mark('bqplot.Hist')
@@ -558,7 +546,6 @@ class Hist(Mark):
 
     Attributes
     ----------
-
     icon: string (class-level attribute)
         font-awesome icon for that mark
     name: string (class-level attribute)
@@ -588,8 +575,7 @@ class Hist(Mark):
         number of sample points per bin. It is a read-only attribute.
 
     Notes
-    ----
-
+    -----
     The fields which can be passed to the default tooltip are:
         midpoint: mid-point of the bin related to the rectangle hovered on
         count: number of elements in the bin hovered on
@@ -602,30 +588,30 @@ class Hist(Mark):
     name = 'Histogram'
 
     # Scaled attributes
-    sample = NdArray(sync=True, min_dim=1, max_dim=1, display_name='Sample',
-                     scaled=True, rtype='Number', atype='bqplot.Axis')
-    count = NdArray(sync=True, display_name='Count', scaled=True,
-                    rtype='Number', read_only=True, atype='bqplot.Axis')
-    normalized = Bool(sync=True, default_value=False)
+    sample = NdArray().tag(sync=True, min_dim=1, max_dim=1, display_name='Sample',
+                           scaled=True, rtype='Number', atype='bqplot.Axis')
+    count = NdArray(read_only=True).tag(sync=True, display_name='Count', scaled=True,
+                                        rtype='Number', atype='bqplot.Axis')
+    normalized = Bool(default_value=False).tag(sync=True)
     # FIXME: Should we allow None for count?
     # count is a read-only attribute that is set when the mark is drawn
 
     # Other attributes
-    scales_metadata = Dict({'sample': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'count': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
-    bins = Int(10, sync=True, display_name='Number of bins')
-    midpoints = List(sync=True, read_only=True, display_name='Mid points')
+    scales_metadata = Dict({
+        'sample': {'orientation': 'horizontal', 'dimension': 'x'},
+        'count': {'orientation': 'vertical', 'dimension': 'y'}
+    }).tag(sync=True)
+
+    bins = Int(10).tag(sync=True, display_name='Number of bins')
+    midpoints = List(read_only=True).tag(sync=True, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10, sync=True, display_name='Colors')
-    stroke = Color(None, allow_none=True, sync=True)
-    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
-                                 allow_none=True), sync=True, display_name='Opacities')
+                  default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+    stroke = Color(None, allow_none=True).tag(sync=True)
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
 
-    _view_name = Unicode('Hist', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Hist', sync=True)
-    _model_name = Unicode('HistModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/HistModel', sync=True)
+    _view_name = Unicode('Hist').tag(sync=True)
+    _model_name = Unicode('HistModel').tag(sync=True)
 
 
 @register_mark('bqplot.Boxplot')
@@ -635,7 +621,6 @@ class Boxplot(Mark):
 
     Attributes
     ----------
-
     stroke: Color or None
         stroke color of the marker
     color: Color
@@ -660,29 +645,26 @@ class Boxplot(Mark):
     icon = 'fa-birthday-cake'
     name = 'Boxplot chart'
 
-    # Scaled attributestop
-    x = NdArray(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    # Scaled attributes
+    x = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
 
     # Second dimension must contain OHLC data, otherwise the behavior is
     # undefined.
-    y = NdArray(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
+    y = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
 
     # Other attributes
-    # marker = Enum([boxplottype], sync=True, default_value='candle', display_name='Marker')
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'}}, sync=True)
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'}
+    }).tag(sync=True)
 
-    stroke = Color(None, allow_none=True, sync=True, display_name='Stroke color')
+    stroke = Color(None, allow_none=True).tag(sync=True, display_name='Stroke color')
     box_fill_color = Color('dodgerblue', sync=True, display_name='Fill color for the box')
-    outlier_fill_color = Color('gray', sync=True, display_name='Outlier fill color')
-    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
-                     allow_none=True), sync=True,
-                     display_name='Opacities')
+    outlier_fill_color = Color('gray').tag(sync=True, display_name='Outlier fill color')
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
 
-    _view_name = Unicode('Boxplot', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Boxplot', sync=True)
-    _model_name = Unicode('BoxplotModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/BoxplotModel', sync=True)
+    _view_name = Unicode('Boxplot').tag(sync=True)
+    _model_name = Unicode('BoxplotModel').tag(sync=True)
 
 
 @register_mark('bqplot.Bars')
@@ -697,7 +679,6 @@ class Bars(Mark):
 
     Attributes
     ----------
-
     icon: string (class-level attribute)
         font-awesome icon for that mark
     name: string (class-level attribute)
@@ -737,8 +718,7 @@ class Bars(Mark):
         provided or when a value is NaN
 
     Notes
-    ----
-
+    -----
     The fields which can be passed to the default tooltip are:
         All the data attributes
         index: index of the bar being hovered on
@@ -749,36 +729,30 @@ class Bars(Mark):
     name = 'Bar chart'
 
     # Scaled attributes
-    x = NdArray(sync=True, scaled=True,
-                rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    y = NdArray(sync=True, scaled=True,
-                rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True,  sync=True,
+    x = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    y = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True).tag(sync=True,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=1)
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'},
-                            'color': {'dimension': 'color'}}, sync=True)
-    color_mode = Enum(['auto', 'group', 'element'], default_value='auto',
-                      sync=True)
-    type = Enum(['stacked', 'grouped'], default_value='stacked', sync=True,
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'},
+        'color': {'dimension': 'color'}
+    }).tag(sync=True)
+    color_mode = Enum(['auto', 'group', 'element'], default_value='auto').tag(sync=True)
+    type = Enum(['stacked', 'grouped'], default_value='stacked').tag(sync=True,
                 display_name='Type')
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10,
-                  sync=True, display_name='Colors')
-    padding = Float(0.05, sync=True)
-    stroke = Color(None, allow_none=True, sync=True)
-    base = Float(default_value=0.0, sync=True)
-    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
-                     allow_none=True), sync=True, display_name='Opacities')
-    align = Enum(['center', 'left', 'right'], default_value='center',
-                 sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+    padding = Float(0.05).tag(sync=True)
+    stroke = Color(None, allow_none=True).tag(sync=True)
+    base = Float().tag(sync=True)
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    align = Enum(['center', 'left', 'right'], default_value='center').tag(sync=True)
 
-    _view_name = Unicode('Bars', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Bars', sync=True)
-    _model_name = Unicode('BarsModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/BarsModel', sync=True)
+    _view_name = Unicode('Bars').tag(sync=True)
+    _model_name = Unicode('BarsModel').tag(sync=True)
 
 
 @register_mark('bqplot.Label')
@@ -788,7 +762,6 @@ class Label(Mark):
 
     Attributes
     ----------
-
     x: Date or float
         horizontal position of the label, in data coordinates or in figure
         coordinates
@@ -812,24 +785,24 @@ class Label(Mark):
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     """
-    x = Date(sync=True) | Float(sync=True) | Unicode(sync=True)  # TODO: check validation order, and default value
-    y = Date(sync=True) | Float(sync=True) | Unicode(sync=True)
-    x_offset = Int(sync=True)
-    y_offset = Int(sync=True)
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'},
-                            'color': {'dimension': 'color'}}, sync=True)
-    color = Color(None, allow_none=True, sync=True)
-    rotate_angle = Float(sync=True)
-    text = Unicode(sync=True)
-    font_size = Unicode(default_value='14px', sync=True)
-    font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold',
-                       sync=True)
-    align = Enum(['start', 'middle', 'end'], default_value='start',
-                 sync=True)
+    x = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)  # TODO: Why could it be Unicode
+    y = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
+    x_offset = Int().tag(sync=True)
+    y_offset = Int().tag(sync=True)
+    scales_metadata = Dict({
+        'x': { 'orientation': 'horizontal', 'dimension': 'x' },
+        'y': { 'orientation': 'vertical', 'dimension': 'y' },
+        'color': { 'dimension': 'color' }
+    }).tag(sync=True)
+    color = Color(None, allow_none=True).tag(sync=True)
+    rotate_angle = Float().tag(sync=True)
+    text = Unicode().tag(sync=True)
+    font_size = Unicode(default_value='14px').tag(sync=True)
+    font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
+    align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)
 
-    _view_name = Unicode('Label', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Label', sync=True)
+    _view_name = Unicode('Label').tag(sync=True)
+    _model_name = Unicode('LabelModel').tag(sync=True)
 
 
 @register_mark('bqplot.OHLC')
@@ -839,7 +812,6 @@ class OHLC(Mark):
 
     Attributes
     ----------
-
     icon: string (class-level attribute)
         font-awesome icon for that mark
     name: string (class-level attribute)
@@ -868,9 +840,8 @@ class OHLC(Mark):
     y: numpy.ndarray
         Open/High/Low/Close ordinates of the data points (2d array)
 
-    Note
-    ----
-
+    Notes
+    -----
     The fields which can be passed to the default tooltip are:
         x: the x value associated with the bar/candle
         open: open value for the bar/candle
@@ -885,31 +856,28 @@ class OHLC(Mark):
     name = 'OHLC chart'
 
     # Scaled attributes
-    x = NdArray(sync=True, scaled=True,
+    x = NdArray().tag(sync=True, scaled=True,
                 rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    y = NdArray(sync=True, scaled=True,
+    y = NdArray().tag(sync=True, scaled=True,
                 rtype='Number', min_dim=2, max_dim=2, atype='bqplot.Axis')
     # FIXME Future warnings
     _y_default = None
 
     # Other attributes
-    scales_metadata = Dict({'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'y': {'orientation': 'vertical', 'dimension': 'y'}},
-                           sync=True)
-    marker = Enum(['candle', 'bar'], default_value='candle', display_name='Marker', sync=True)
-    stroke = Color(None, sync=True, display_name='Stroke color', allow_none=True)
-    stroke_width = Float(1.0, sync=True, display_name='Stroke Width')
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=['limegreen', 'red'],
-                  sync=True, display_name='Colors')
-    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
-                     allow_none=True), sync=True,
-                     display_name='Opacities')
-    format = Unicode(default_value='ohlc', display_name='Format', sync=True)
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'}
+    }).tag(sync=True)
+    marker = Enum(['candle', 'bar'], default_value='candle', display_name='Marker').tag(sync=True)
+    stroke = Color(None, display_name='Stroke color', allow_none=True).tag(sync=True)
+    stroke_width = Float(1.0).tag(sync=True, display_name='Stroke Width')
+    colors = List(trait=Color(default_value=None, allow_none=True),
+                  default_value=['limegreen', 'red']).tag(sync=True, display_name='Colors')
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    format = Unicode('ohlc').tag(sync=True, display_name='Format')
 
-    _view_name = Unicode('OHLC', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/OHLC', sync=True)
-    _model_name = Unicode('OHLCModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/OHLCModel', sync=True)
+    _view_name = Unicode('OHLC').tag(sync=True)
+    _model_name = Unicode('OHLCModel').tag(sync=True)
 
 
 @register_mark('bqplot.Pie')
@@ -919,7 +887,6 @@ class Pie(Mark):
 
     Attributes
     ----------
-
     colors: list of colors (default: CATEGORY10)
         list of colors for the slices.
     stroke: color (default: 'white')
@@ -952,9 +919,8 @@ class Pie(Mark):
         color of the data points (1d array). Defaults to colors when not
         provided
 
-    Note
-    ----
-
+    Notes
+    -----
     The fields which can be passed to the default tooltip are:
         : the x value associated with the bar/candle
         open: open value for the bar/candle
@@ -968,31 +934,27 @@ class Pie(Mark):
     name = 'Pie chart'
 
     # Scaled attributes
-    sizes = NdArray(sync=True, rtype='Number', min_dim=1, max_dim=1)
-    color = NdArray(sync=True, allow_none=True, scaled=True, rtype='Color',
-                    atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+    sizes = NdArray().tag(sync=True, rtype='Number', min_dim=1, max_dim=1)
+    color = NdArray(allow_none=True).tag(sync=True, scaled=True, rtype='Color',
+                          atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     # Other attributes
-    x = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
-    y = Float(default_value=0.5, sync=True) | Date(sync=True) | Unicode(sync=True)
+    x = Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
+    y = Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
 
-    scales_metadata = Dict({'color': {'dimension': 'color'}}, sync=True)
-    sort = Bool(False, sync=True)
+    scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
+    sort = Bool().tag(sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10, sync=True, display_name='Colors')
-    stroke = Color(None, allow_none=True, sync=True)
-    opacities = List(trait=Float(default_value=1.0, min=0, max=1,
-                     allow_none=True), sync=True,
-                     display_name='Opacities')
-    radius = Float(default_value=180.0, min=0.0, max=float('inf'), sync=True)
-    inner_radius = Float(default_value=0.1, min=0.0, max=float('inf'), sync=True)
-    start_angle = Float(default_value=0.0, sync=True)
-    end_angle = Float(default_value=360.0, sync=True)
+                  default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+    stroke = Color(None, allow_none=True).tag(sync=True)
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    radius = Float(180.0, min=0.0, max=float('inf')).tag(sync=True)
+    inner_radius = Float(0.1, min=0.0, max=float('inf')).tag(sync=True)
+    start_angle = Float().tag(sync=True)
+    end_angle = Float(360.0).tag(sync=True)
 
-    _view_name = Unicode('Pie', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Pie', sync=True)
-    _model_name = Unicode('PieModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/PieModel', sync=True)
+    _view_name = Unicode('Pie').tag(sync=True)
+    _model_name = Unicode('PieModel').tag(sync=True)
 
 
 import os
@@ -1013,7 +975,6 @@ class Map(Mark):
 
     Attributes
     ----------
-
     default_color: Color or None (default: None)
         default color for items of the map when no color data is passed
     selected_styles: Dict (default: {'selected_fill': 'Red', 'selected_stroke': None, 'selected_stroke_width': 2.0})
@@ -1025,7 +986,7 @@ class Map(Mark):
     hover_highlight: bool (default: True)
         boolean to control if the map should be aware of which country is being
         hovered on.
-    map_data: tuple (default: ("worldmap", "nbextensions/bqplot/WorldMapData")
+    map_data: tuple (default: topoload("WorldMapData.json"))
         tuple containing which map is to be displayed
 
     Data Attributes
@@ -1040,39 +1001,42 @@ class Map(Mark):
     name = 'Map'
 
     # Scaled attributes
-    color = Dict(sync=True, allow_none=True, scaled=True, rtype='Color',
-                 atype='bqplot.ColorAxis')
+    color = Dict(allow_none=True).tag(sync=True, scaled=True, rtype='Color',
+                                      atype='bqplot.ColorAxis')
 
     # Other attributes
-    scales_metadata = Dict({'color': {'dimension': 'color'}}, sync=True)
-    hover_highlight = Bool(True, sync=True)
-    hovered_styles = Dict({'hovered_fill': 'Orange', 'hovered_stroke': None,
-                           'hovered_stroke_width': 2.0}, allow_none=True,
-                          sync=True)
+    scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
+    hover_highlight = Bool(True).tag(sync=True)
+    hovered_styles = Dict({
+        'hovered_fill': 'Orange',
+        'hovered_stroke': None,
+        'hovered_stroke_width': 2.0},
+    allow_none=True).tag(sync=True)
 
-    stroke_color = Color(default_value=None, sync=True, allow_none=True)
-    default_color = Color(default_value=None, sync=True, allow_none=True)
+    stroke_color = Color(default_value=None, allow_none=True).tag(sync=True)
+    default_color = Color(default_value=None, allow_none=True).tag(sync=True)
     scales_metadata = Dict({
-        'color': {'dimension': 'color'},
-        'projection': {'dimension': 'geo'}
-    }, sync=True)
-    selected = List(sync=True)
-    selected_styles = Dict({'selected_fill': 'Red', 'selected_stroke': None,
-                            'selected_stroke_width': 2.0},
-                           allow_none=True, sync=True)
+        'color': { 'dimension': 'color' },
+        'projection': { 'dimension': 'geo' }
+    }).tag(sync=True)
+    selected = List(sync=True)  # TODO: Overloaded to prevent None.
+    selected_styles = Dict({
+        'selected_fill': 'Red',
+        'selected_stroke': None,
+        'selected_stroke_width': 2.0
+    }).tag(sync=True)
 
-    map_data = Tuple(topo_load('WorldMapData.json'), sync=True)
+    map_data = Tuple(topo_load('WorldMapData.json')).tag(sync=True)
 
-    _view_name = Unicode('Map', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Map', sync=True)
-    _model_name = Unicode('MapModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/MapModel', sync=True)
+    _view_name = Unicode('Map').tag(sync=True)
+    _model_name = Unicode('MapModel').tag(sync=True)
 
 
 @register_mark('bqplot.GridHeatMap')
 class GridHeatMap(Mark):
 
     """GridHeatMap mark.
+
     Alignment: The tiles can be aligned so that the data matches either the
     start, the end or the midpoints of the tiles. This is controlled by the
     align attribute.
@@ -1090,7 +1054,6 @@ class GridHeatMap(Mark):
 
     Attributes
     ----------
-
     row_align: Enum(['start', 'end'])
         This is only valid if the number of entries in `row` exactly match the
         number of rows in `color` and the `row_scale` is not `OrdinalScale`.
@@ -1106,7 +1069,6 @@ class GridHeatMap(Mark):
         selection.
 
     Data Attributes
-    ---------------
 
     color: numpy.ndarray
         color of the data points (2d array). The number of elements in this array
@@ -1129,24 +1091,26 @@ class GridHeatMap(Mark):
         the column direction.
     """
     # Scaled attributes
-    row = NdArray(sync=True, scaled=True, allow_none=True,
+    row = NdArray(allow_none=True).tag(sync=True, scaled=True,
                   rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    column = NdArray(sync=True, scaled=True, allow_none=True,
+    column = NdArray(allow_none=True).tag(sync=True, scaled=True,
                      rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True, sync=True, scaled=True, rtype='Color',
+    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=2)
 
     # Other attributes
-    scales_metadata = Dict({'row': {'orientation': 'vertical', 'dimension': 'y'},
-                            'column': {'orientation': 'horizontal', 'dimension': 'x'},
-                            'color': {'dimension': 'color'}}, sync=True)
+    scales_metadata = Dict({
+        'row': {'orientation': 'vertical', 'dimension': 'y'},
+        'column': {'orientation': 'horizontal', 'dimension': 'x'},
+        'color': {'dimension': 'color'}
+    }).tag(sync=True)
 
-    row_align = Enum(['start', 'end'], default_value='start', sync=True)
-    column_align = Enum(['start', 'end'], default_value='start', sync=True)
+    row_align = Enum(['start', 'end'], default_value='start').tag(sync=True)
+    column_align = Enum(['start', 'end'], default_value='start').tag(sync=True)
 
-    stroke = Color('black', allow_none=True, sync=True)
-    opacity = Float(default_value=1.0, min=0.2, max=1, sync=True, display_name='Opacity')
-    anchor_style = Dict({'fill': 'white', 'stroke': 'blue'}, sync=True)
+    stroke = Color('black', allow_none=True).tag(sync=True)
+    opacity = Float(1.0, min=0.2, max=1).tag(sync=True, display_name='Opacity')
+    anchor_style = Dict({'fill': 'white', 'stroke': 'blue'}).tag(sync=True)
 
     def __init__(self, **kwargs):
         data = kwargs['color']
@@ -1168,7 +1132,5 @@ class GridHeatMap(Mark):
         kwargs['scales'] = scales
         super(GridHeatMap, self).__init__(**kwargs)
 
-    _view_name = Unicode('GridHeatMap', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/GridHeatMap', sync=True)
-    _model_name = Unicode('GridHeatMapModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/GridHeatMapModel', sync=True)
+    _view_name = Unicode('GridHeatMap').tag(sync=True)
+    _model_name = Unicode('GridHeatMapModel').tag(sync=True)

@@ -13,10 +13,32 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var PieModel = MarkModelModule.MarkModel.extend({
+    var PieModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "PieModel",
+            _view_name: "Pie",
+
+            sizes: [],
+            color: null,
+            x: 0.5,
+            y: 0.5,
+            scales_metadata: {
+                color: { dimension: "color" }
+            },
+            sort: false,
+            colors: d3.scale.category10().range(),
+            stroke: null,
+            opacities: [],
+            radius: 180,
+            inner_radius: 0.1,
+            start_angle: 0.0,
+            end_angle: 360.0
+        }),
+
         initialize: function() {
             PieModel.__super__.initialize.apply(this);
             this.on("change:sizes", this.update_data, this);
@@ -27,16 +49,22 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.on("change:labels", this.update_labels, this);
 
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.update_data();
+            this.update_color();
+            this.update_labels();
+            this.update_domains();
         },
         update_data: function() {
             var sizes = this.get_typed_field("sizes");
             var color = this.get_typed_field("color");
             var labels = this.get("labels");
             this.mark_data = sizes.map(function(d, i) {
-                return {size: d,
-                        color: color[i],
-                        label: labels[i],
-                        index: i};
+                return {
+                    size: d,
+                    color: color[i],
+                    label: labels[i],
+                    index: i
+                };
             });
             this.update_color();
             this.update_domains();

@@ -13,19 +13,26 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], 
-       function(Widget, BaseModel, _) {
+define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
     "use strict";
 
-    var TwoDSelectorModel = BaseModel.BaseModel.extend({}, {
-        serializers: _.extend({
-            x_scale:  {deserialize: Widget.unpack_models},
-            y_scale:  {deserialize: Widget.unpack_models},
-            marks:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+    var TooltipModel = widgets.DOMWidgetModel.extend({
+
+        defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
+            _model_name: "TooltipModel",
+            _model_name: "Tooltip",
+            _model_module: "bqplot",
+            _model_module: "bqplot",
+
+            fields: [],
+            formats: [],
+            show_labels: true,
+            labels: [],
+        }),
     });
 
     return {
-        TwoDSelectorModel: TwoDSelectorModel,
+        TooltipModel: TooltipModel,
     };
 });
+

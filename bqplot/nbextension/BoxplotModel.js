@@ -13,21 +13,42 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
         "use strict";
 
-        var BoxplotModel = MarkModelModule.MarkModel.extend({
+    var BoxplotModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "BoxplotModel",
+            _view_name: "Boxplot",
+
+            x: [],
+            y: [],
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" }
+            },
+            stroke: null,
+            box_fill_color: "dodgerblue",
+            outlier_fill_color: "gray",
+            opacities: [],
+        }),
+
         initialize: function() {
             BoxplotModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.update_data();
+            this.update_domains();
         },
+
         update_bounding_box: function(model, value) {
             // TODO: Actually add some padding.
             var pad = 0;
             this.x_padding = this.y_padding = pad;
             this.trigger("mark_padding_updated");
         },
+
         update_data: function() {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
@@ -45,6 +66,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.update_domains();
             this.trigger("data_updated");
         },
+
         update_domains: function() {
             // color scale needs an issue in DateScaleModel to be fixed. It
             // should be moved here as soon as that is fixed.
@@ -80,7 +102,8 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             }
         },
     });
-   return {
+
+    return {
         BoxplotModel: BoxplotModel,
     };
 });

@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, InteractionViewModule) {
+define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, Interaction) {
     "use strict";
 
-    var HandDraw = InteractionViewModule.Interaction.extend({
+    var HandDraw = Interaction.Interaction.extend({
 
         render: function() {
             HandDraw.__super__.render.apply(this);
@@ -39,6 +39,7 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
             this.model.on_some_change(["min_x", "max_x"], this.set_limits,
                                       this);
         },
+
         set_lines_view: function() {
             var fig = this.parent;
             var lines_model = this.model.get("lines");
@@ -51,6 +52,7 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
                 that.lines_view = views[mark_index];
             });
         },
+
         mousedown: function () {
             this.active = true;
             this.mouse_entry(false);
@@ -59,6 +61,7 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
             this.el.on("mouseleave", function() { that.mouseup(); });
             this.el.on("mouseup", function() { that.mouseup(); });
         },
+
         mouseup: function () {
             if (this.active) {
                 this.mouse_entry(true);
@@ -71,9 +74,11 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
                 this.el.on("mouseup", null);
             }
         },
+
         mousemove: function() {
             this.mouse_entry(true);
         },
+
         mouse_entry: function(memory) {
             // If memory is set to true, itermediate positions between the last
             // position of the mouse and the current one will be interpolated.
@@ -116,12 +121,14 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
                 this.previous_pos = mouse_pos;
             }
         },
+
         capnfloor: function(val) {
             // Not taking into account the position of the mouse beyond min_x
             // and max_x
             return Math.max(Math.min(val,this.model.get("max_x")),
                             this.model.get("min_x"));
         },
+
         set_limits: function() {
             var is_date = (this.lines_view.scales.x.model.type == "date");
             if(is_date) {
@@ -142,6 +149,7 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
                                    this.max_x === undefined);
             }
         },
+
         nns: function(x_data, x) {
             // Nearest neighbor search
             var idx = this.lines_view.bisect(x_data, x);
@@ -151,6 +159,7 @@ define(["./components/d3/d3", "./utils", "./Interaction"], function(d3, utils, I
                 return idx-1;
             }
         },
+        
         update_line_index: function() {
             // Called when the line index is changed in the model
             this.line_index = this.model.get("line_index");

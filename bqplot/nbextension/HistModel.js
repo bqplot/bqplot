@@ -13,10 +13,29 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var HistModel = MarkModelModule.MarkModel.extend({
+    var HistModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "HistModel",
+            _view_name: "Hist",
+
+            sample: [],
+            count: [],
+            scales_metadata: {
+                sample: { orientation: "horizontal", dimension: "x" },
+                count: { orientation: "vertical", dimension: "y" }
+            },
+            bins: 10,
+            midpoints: [],
+            colors: d3.scale.category10().range(),
+            stroke: null,
+            opacities: [],
+            normalized: false
+        }),
+
         initialize: function() {
             // TODO: should not need to set this.data
             HistModel.__super__.initialize.apply(this);
@@ -25,8 +44,11 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"
             // function, and not merely "update_domains".
             this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
+            this.update_data();
             this.on("change:normalized", function() { this.normalize_data(true); }, this);
+            this.normalize_data(true);
         },
+
         update_data: function() {
             var x_data = this.get_typed_field("sample");
             var scales = this.get("scales");
@@ -71,6 +93,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.save_changes();
             this.trigger("data_updated");
         },
+
         normalize_data: function(save_and_update) {
             this.count = this.mark_data.map(function(d) { return d.length; });
             if (this.get("normalized")) {
@@ -90,6 +113,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 this.trigger("data_updated");
             }
         },
+
         get_data_dict: function(data, index) {
             var return_dict = {};
             return_dict.midpoint = this.x_mid[index];
@@ -99,6 +123,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             return_dict.count = this.count[index];
             return return_dict;
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;
@@ -114,6 +139,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
                 }) * 1.05], this.id + "_count");
             }
         },
+
         create_uniform_bins: function(min_val, max_val, num_bins) {
             var diff = max_val - min_val;
             var step_size = (diff) / num_bins;

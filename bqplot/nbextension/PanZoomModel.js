@@ -13,17 +13,30 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "base/js/utils", "./BaseModel", "underscore"],
-       function(Widget, utils, BaseModel, _) {
+define(["jupyter-js-widgets", "./BaseModel", "underscore"],
+       function(widgets, BaseModel, _) {
     "use strict";
 
     var PanZoomModel = BaseModel.BaseModel.extend({
+
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_name: "PanZoomModel",
+            _view_name: "PanZoom",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+            scales: {},
+            allow_pan: true,
+            allow_zoom: true,
+        }),
+
         initialize: function() {
             this.on("change:scales", this.snapshot_scales, this);
+            this.snapshot_scales();
         },
+
         reset_scales: function() {
             var that = this;
-            utils.resolve_promises_dict(this.get("scales")).then(function(scales) {
+            widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
                 _.each(Object.keys(scales), function(k) {
                     _.each(scales[k], function(s, i) {
                         s.set_state(that.scales_states[k][i]);
@@ -31,10 +44,11 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils", "./BaseModel"
                 }, that);
             });
         },
+
         snapshot_scales: function() {
             // Save the state of the scales.
             var that = this;
-            utils.resolve_promises_dict(this.get("scales")).then(function(scales) {
+            widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
                 that.scales_states = Object.keys(scales).reduce(function(obj, key) {
                     obj[key] = scales[key].map(function(s) {
                         return s.get_state()
@@ -45,8 +59,8 @@ define(["nbextensions/widgets/widgets/js/widget", "base/js/utils", "./BaseModel"
         }
     }, {
         serializers: _.extend({
-            scales:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+            scales: { deserialize: widgets.unpack_models },
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

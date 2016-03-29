@@ -13,15 +13,26 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
+define(["./components/d3/d3", "./BaseModel", "underscore"], function(d3, BaseModel, _) {
     "use strict";
 
-    var ScaleModel = MarkModelModule.MarkModel.extend({
+    var ScaleModel = BaseModel.BaseModel.extend({
+
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "ScaleModel",
+             _view_name: "Scale",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+            reverse: false,
+            allow_padding: true,
+        }),
+
         initialize: function(range) {
             this.type = "base";
             this.domains = {};
             this.domain = [];
         },
+
         set_domain: function(domain, id) {
             // Call function only if you have computed the domain yourself. If
             // you want the scale to compute the domain based on the data for
@@ -29,6 +40,7 @@ define(["./components/d3/d3", "./MarkModel"], function(d3, MarkModelModule) {
             this.domains[id] = domain;
             this.update_domain();
         },
+
         del_domain: function(domain, id) {
             if(this.domains[id] !== undefined) {
                 delete this.domains[id];

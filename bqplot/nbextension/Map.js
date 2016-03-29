@@ -14,8 +14,8 @@
  */
 
 define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
-        "base/js/utils", "./Mark", "underscore"],
-       function(d3, topojson, FigureViewModule, utils, Mark, _) {
+        "jupyter-js-widgets", "./Mark", "underscore"],
+       function(d3, topojson, FigureViewModule, widgets, Mark, _) {
     "use strict";
 
     var Map = Mark.Mark.extend({
@@ -26,7 +26,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 .attr("viewBox", "0 0 1200 980");
             this.width = this.parent.plotarea_width;
             this.height = this.parent.plotarea_height;
-            this.map_id = utils.uuid();
+            this.map_id = widgets.uuid();
             this.enable_hover = this.model.get("enable_hover");
             this.display_el_classes = ["event_layer"];
             var that = this;
@@ -41,14 +41,17 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 that.draw();
             });
         },
+
         set_ranges: function() {
         },
+
         set_positional_scales: function() {
             var geo_scale = this.scales.projection;
             this.listenTo(geo_scale, "domain_changed", function() {
                 if (!this.model.dirty) { this.draw(); }
             });
         },
+
         initialize_additional_scales: function() {
             var color_scale = this.scales.color;
             if(color_scale) {
@@ -59,9 +62,11 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                                this.update_style, this);
             }
         },
+
         remove_map: function() {
             d3.selectAll(".world_map.map" + this.map_id).remove();
         },
+
         draw: function() {
             this.set_ranges();
             var that = this;
@@ -107,9 +112,11 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 that.zoomed(that, true);
             });
         },
+
         validate_color: function(color) {
             return color !== "";
         },
+
         mouseover_handler: function() {
             if (!this.model.get("hover_highlight")) {
                 return;
@@ -139,6 +146,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 }
             }
         },
+
         mouseout_handler: function() {
             if (!this.model.get("hover_highlight")) {
                 return;
@@ -155,6 +163,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 that.highlight_g.selectAll(".hovered").remove();
             }
         },
+
         click_handler: function() {
             var el = d3.select(d3.event.target);
             if(this.is_hover_element(el)) {
@@ -196,6 +205,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 }
             }
         },
+
         zoomed: function(that, reset) {
             var t = reset ? [0, 0] : d3.event.translate;
             var s = reset ? 1 : d3.event.scale;
@@ -212,6 +222,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
             that.transformed_g.style("stroke-width", 1 / s)
                 .attr("transform", "translate(" + t + ")scale(" + s + ")");
         },
+
         create_listeners: function() {
             var that = this;
             this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
@@ -235,6 +246,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 that.update_layout();
             });
         },
+
         process_interactions: function() {
             var interactions = this.model.get("interactions");
             if(_.isEmpty(interactions)) {
@@ -285,11 +297,13 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 }
             }
         },
+
         update_layout: function() {
             this.remove_map();
             this.draw();
             this.change_selected();
         },
+
         change_selected_fill: function() {
             if (!this.validate_color(this.model.get("selected_styles").selected_fill)) {
                 this.highlight_g.selectAll(".selected")
@@ -300,6 +314,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                     .style("fill", this.model.get("selected_styles").selected_fill);
             }
         },
+
         change_selected_stroke: function() {
             if (!this.validate_color(this.model.get("selected_styles").selected_stroke)) {
                 this.highlight_g.selectAll(".selected")
@@ -310,6 +325,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                     .style("stroke", this.model.get("selected_styles").selected_stroke);
             }
         },
+
         change_selected: function() {
             this.highlight_g.selectAll("path").remove();
             var that = this;
@@ -345,6 +361,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 }
             }
         },
+
         reset_selection: function() {
             this.model.set("selected", []);
             this.touch();
@@ -365,10 +382,12 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                     return that.fill_g_colorfill(d,i);
                 });
         },
+
         change_stroke_color: function(){
             this.stroke_g.selectAll("path")
                 .style("stroke", this.model.get("stroke_color"));
         },
+
         change_map_color: function(){
             if (!this.is_object_empty(this.model.get("color"))){
                 return;
@@ -376,6 +395,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
             this.fill_g.selectAll("path")
                 .style("fill", this.model.get("default_color"));
         },
+
         update_style: function() {
             var color_data = this.model.get("color");
             var that = this;
@@ -385,6 +405,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 });
             }
         },
+
         is_object_empty: function(object){
             var is_empty = true;
             for(var keys in object) {
@@ -393,6 +414,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
             }
             return is_empty;
         },
+
         hoverfill: function(d, j) {
             var select = this.model.get("selected").slice();
             if (select.indexOf(d.id) > -1 &&
@@ -402,6 +424,7 @@ define(["./components/d3/d3", "./components/topojson/topojson", "./Figure",
                 return this.model.get("stroke_color");
             }
         },
+
         fill_g_colorfill: function(d, j) {
             var color_scale = this.scales.color;
             var selection = this.model.get("selected");

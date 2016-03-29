@@ -13,10 +13,42 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], function(Widget, BaseModel, _) {
+define(["jupyter-js-widgets", "./BaseModel", "underscore"], function(widgets, BaseModel, _) {
     "use strict";
 
     var FigureModel = BaseModel.BaseModel.extend({
+
+        defaults: _.extend({}, BaseModel.BaseModel.prototype.defaults, {
+            _model_name: "FigureModel",
+            _view_name: "Figure",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+
+            title: "",
+            axes: [],
+            marks: [],
+            interaction: null,
+            scale_x: undefined,
+            scale_y: undefined,
+            fig_color: null,
+
+            min_width: 800.0,
+            min_height: 500.0,
+            preserve_aspect: false,
+
+            fig_margin: {
+                top: 60,
+                bottom: 60,
+                left: 60,
+                right: 60
+            },
+
+            padding_x: 0.0,
+            padding_y: 0.025,
+            legend_location: "top-right",
+            animation_duration: 0,
+        }),
+
         save_png: function() {
             // TODO: Any view of this Figure model will pick up this event
             // and render a png. Remove this eventually.
@@ -24,12 +56,13 @@ define(["nbextensions/widgets/widgets/js/widget", "./BaseModel", "underscore"], 
         }
     }, {
         serializers: _.extend({
-            marks: {deserialize: Widget.unpack_models},
-            axes:  {deserialize: Widget.unpack_models},
-            interaction: {deserialize: Widget.unpack_models},
-            scale_x:  {deserialize: Widget.unpack_models},
-            scale_y:  {deserialize: Widget.unpack_models},
-        }, BaseModel.BaseModel.prototype.serializers),
+            marks: { deserialize: widgets.unpack_models },
+            axes:  { deserialize: widgets.unpack_models },
+            interaction: { deserialize: widgets.unpack_models },
+            scale_x: { deserialize: widgets.unpack_models },
+            scale_y: { deserialize: widgets.unpack_models },
+            layout:  { deserialize: widgets.unpack_models },
+        }, BaseModel.BaseModel.serializers),
     });
 
     return {

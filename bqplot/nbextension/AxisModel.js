@@ -13,16 +13,43 @@
  * limitations under the License.
  */
 
-define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseModel", "underscore"],
-       function(Widget, d3, BaseModel, _) {
+define(["jupyter-js-widgets", "./components/d3/d3", "./BaseModel", "underscore"],
+       function(widgets, d3, BaseModel, _) {
     "use strict";
 
     var AxisModel = BaseModel.BaseModel.extend({
+
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_name: "AxisModel",
+            _view_name: "Axis",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+
+            orientation: "horizontal",
+            side: null,
+            label: "",
+            grid_lines: "none",
+            tick_format: null,
+            scale: undefined,
+            num_ticks: null,
+            tick_values: [],
+            offset: {},
+            label_location: "middle",
+            label_color: null,
+            grid_color: null,
+            color: null,
+            label_offset: null,
+            visible: true
+        }),
+
         initialize: function() {
             AxisModel.__super__.initialize.apply(this, arguments);
             this.on("change:side", this.validate_orientation, this);
             this.on("change:orientation", this.validate_side, this);
+            this.validate_orientation();
+            this.validate_side();
         },
+
         validate_side: function() {
             var orientation = this.get("orientation"),
                 side = this.get("side");
@@ -37,6 +64,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
             }
             this.save_changes();
         },
+
         validate_orientation: function() {
             var orientation = this.get("orientation"),
                 side = this.get("side");
@@ -51,12 +79,21 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3", "./BaseM
         }
     }, {
         serializers: _.extend({
-             scale: {deserialize: Widget.unpack_models},
-             offset: {deserialize: Widget.unpack_models}
-        }, Widget.WidgetModel.prototype.serializers),
+             scale: { deserialize: widgets.unpack_models },
+             offset: { deserialize: widgets.unpack_models }
+        }, widgets.WidgetModel.serializers),
+    });
+
+    var ColorAxisModel = AxisModel.extend({
+
+        defaults: _.extend({}, AxisModel.prototype.defaults, {
+            _model_name: "ColorAxisModel",
+            _view_name: "ColorAxis",
+        }),
     });
 
     return {
         AxisModel: AxisModel,
+        ColorAxisModel: ColorAxisModel,
     };
 });

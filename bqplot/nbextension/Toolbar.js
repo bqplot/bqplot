@@ -13,18 +13,27 @@
  * limitations under the License.
  */
 
-// npm compatibility
-if (typeof define !== 'function') { var define = require('./requirejs-shim')(module); }
-
 define([
-    "nbextensions/widgets/widgets/js/widget",
+    "jupyter-js-widgets",
     "./PanZoomModel",
     "jquery",
     "underscore"
-], function(widget, PanZoomModel, $, _) {
+], function(widgets, PanZoomModel, $, _) {
     "use strict";
 
-    var ToolbarModel = widget.WidgetModel.extend({
+    var ToolbarModel = widgets.DOMWidgetModel.extend({
+
+        defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
+            _model_name: "ToolbarModel",
+            _model_name: "Toolbar",
+            _model_module: "bqplot",
+            _model_module: "bqplot",
+
+            figure: undefined,
+            _panning: false,
+            _panzoom: null,
+        }),
+
         // Backbone attributes:
         // - _panning: Bool
         //       Whether one is currently panning - zooming the specified figure.
@@ -65,6 +74,7 @@ define([
                 this.save_changes();
             }
         },
+
         reset: function() {
             /**
              * Reset the scales, delete the PanZoom widget, set the figure
@@ -84,6 +94,7 @@ define([
                 this.save_changes();
             }
         },
+
         save_png: function() {
             /**
              * Triggers the saving for all the views of that figure.
@@ -95,6 +106,7 @@ define([
                 figure.save_png();
             }
          },
+
         _create_panzoom_model: function(figure) {
             /**
              * Creates a panzoom interaction widget for the specified figure.
@@ -103,7 +115,7 @@ define([
              */
             return this.widget_manager.new_widget({
                 model_name: "PanZoomModel",
-                model_module: "nbextensions/bqplot/PanZoomModel",
+                model_module: "bqplot",
                 widget_class: "bqplot.interacts.PanZoom"
             }).then(function(model) {
                 return Promise.all(figure.get("marks")).then(function(marks) {
@@ -131,26 +143,26 @@ define([
         },
     }, {
         serializers: _.extend({
-            figure: {deserialize: widget.unpack_models},
-            _panzoom: {deserialize: widget.unpack_models},
-        }, widget.WidgetModel.prototype.serializers)
+            figure: { deserialize: widgets.unpack_models },
+            _panzoom: { deserialize: widgets.unpack_models },
+        }, widgets.DOMWidgetModel.serializers)
     });
 
-    var Toolbar = widget.DOMWidgetView.extend({
+    var Toolbar = widgets.DOMWidgetView.extend({
 
         render: function() {
             var that = this;
-            this.el.classList.add("bqplot", "widget-hbox");
+            this.el.classList.add("bqplot", "widget-hbox"); // jupyter-js-widgets css
 
-            // We use ipywidget css classes (ipywidget and widget-*-*) to
+            // We use jupyter-js-widgets css classes (ipywidget and widget-*-*) to
             // benefit from default width, shadows.
-            // We do not use btn-group to not break alignment with ipywidget
+            // We do not use btn-group to not break alignment with jupyter
             // buttons.
 
             // Create the buttons
             this.$Panzoom = $("<button />")
-                .addClass("btn btn-default")
-                .addClass("ipy-widget widget-toggle-button") // ipywidgets css
+                .addClass("btn btn-default") // bootstrap css
+                .addClass("jupyter-widgets widget-toggle-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "PanZoom")
@@ -160,8 +172,8 @@ define([
                 });
 
             this.$Reset = $("<button />")
-                .addClass("btn btn-default")
-                .addClass("ipy-widget widget-button") // ipywidgets css
+                .addClass("btn btn-default") // bootstrap css
+                .addClass("jupyter-widgets widget-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "Reset")
@@ -171,8 +183,8 @@ define([
                 });
 
             this.$Save = $("<button />")
-                .addClass("btn btn-default")
-                .addClass("ipy-widget widget-button") // ipywidgets css
+                .addClass("btn btn-default") // bootstrap css
+                .addClass("jupyter-widgets widget-button") // jupyter-js-widgets css
                 .appendTo(this.$el)
                 .attr("data-toggle", "tooltip")
                 .attr("title", "Save")

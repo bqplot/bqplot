@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"], function(d3, ScaleViewModule, ColorUtils, _) {
+define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"],
+        function(d3, ScaleViewModule, ColorUtils, _) {
     "use strict";
 
-    var LinearColorScale = ScaleViewModule.Scale.extend({
+    var ColorScale = ScaleViewModule.Scale.extend({
+
         render: function(){
             this.scale = d3.scale.linear();
             if(this.model.domain.length > 0) {
@@ -31,10 +33,12 @@ define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"], function
             this.create_event_listeners();
             this.set_range();
         },
+
         create_event_listeners: function() {
-            LinearColorScale.__super__.create_event_listeners.apply(this);
+            ColorScale.__super__.create_event_listeners.apply(this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
         },
+
         set_range: function() {
             if(this.model.get("colors").length > 0) {
                 var colors = this.model.get("colors");
@@ -51,6 +55,7 @@ define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"], function
             //to 2 element or vice-versa
             this.model.update_domain();
         },
+
         colors_changed: function() {
             if(this.model.get("colors").length === 0) {
                 this.divergent = this.model.divergent = ColorUtils.is_divergent(this.model.get("scheme"));
@@ -63,6 +68,6 @@ define(["./components/d3/d3", "./Scale", "./ColorUtils", "underscore"], function
     });
 
     return {
-        LinearColorScale: LinearColorScale,
+        ColorScale: ColorScale,
     };
 });

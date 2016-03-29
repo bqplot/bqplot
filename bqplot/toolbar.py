@@ -61,18 +61,17 @@ class Toolbar(DOMWidget):
 
     Attributes
     ----------
-
     figure: instance of Figure
         The figure to which the toolbar will apply.
     """
 
-    figure = Instance(Figure, sync=True, **widget_serialization)
+    figure = Instance(Figure).tag(sync=True, **widget_serialization)
 
-    _panning = Bool(read_only=True, sync=True)
+    _panning = Bool(read_only=True).tag(sync=True)
     _panzoom = Instance(PanZoom, default_value=None, allow_none=True,
-                        read_only=True, sync=True, **widget_serialization)
+                        read_only=True).tag(sync=True, **widget_serialization)
 
-    _view_name = Unicode('Toolbar', sync=True)
-    _view_module = Unicode('nbextensions/bqplot/Toolbar', sync=True)
-    _model_name = Unicode('ToolbarModel', sync=True)
-    _model_module = Unicode('nbextensions/bqplot/Toolbar', sync=True)
+    _view_name = Unicode('Toolbar').tag(sync=True)
+    _model_name = Unicode('ToolbarModel').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)

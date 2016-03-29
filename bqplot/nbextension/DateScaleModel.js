@@ -13,16 +13,27 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./LinearScaleModel", "underscore"], function(d3, LinearScaleModelModule, _) {
+define(["./components/d3/d3", "./LinearScaleModel", "underscore"], function(d3, LinearScaleModel, _) {
     "use strict";
 
-    var DateScaleModel = LinearScaleModelModule.LinearScaleModel.extend({
+    var DateScaleModel = LinearScaleModel.LinearScaleModel.extend({
+
+        defaults: _.extend({}, LinearScaleModel.LinearScaleModel.prototype.defaults, {
+            _model_name: "DateScaleModel",
+            _view_name: "DateScale",
+
+            // min: null,
+            // max: null,
+            // mid: null,
+        }),
+
         initialize: function(range) {
             DateScaleModel.__super__.initialize.apply(this);
             this.type = "date";
             this.global_min = (new Date()).setTime(0);
             this.global_max = new Date();
         },
+
         min_max_changed: function() {
             this.min = this.get_date_elem("min");
             this.max = this.get_date_elem("max");

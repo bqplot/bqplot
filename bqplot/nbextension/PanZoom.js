@@ -13,13 +13,14 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
-       function(d3, utils, InteractionViewModule, _) {
+define(["./components/d3/d3", "jupyter-js-widgets", "./Interaction", "underscore"],
+       function(d3, widgets, InteractionViewModule, _) {
     "use strict";
 
     // TODO avoid code duplication of 'x' and 'y'
 
     var PanZoom = InteractionViewModule.Interaction.extend({
+
         render: function() {
             PanZoom.__super__.render.apply(this);
             var that = this;
@@ -40,10 +41,11 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
             this.set_ranges();
             this.listenTo(this.parent, "margin_updated", this.set_ranges, this);
         },
+
         update_scales: function() {
             var scales = this.model.get("scales");
             var that = this;
-            this.scale_promises = utils.resolve_promises_dict({
+            this.scale_promises = widgets.resolvePromisesDict({
                 "x": Promise.all((scales.x || []).map(function(model) {
                         return that.create_child_view(model);
                      })),
@@ -51,9 +53,10 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
                         return that.create_child_view(model);
                      })),
             });
-            utils.resolve_promises_dict(this.scale_promises)
+            widgets.resolvePromisesDict(this.scale_promises)
                 .then(_.bind(this.set_ranges, this));
         },
+
         set_ranges: function() {
            var that = this;
            var i;
@@ -70,6 +73,7 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
                }
            });
         },
+
         mousedown: function () {
             var scales = this.model.get("scales");
             this.active = true;
@@ -86,9 +90,11 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
                 }),
             };
         },
+
         mouseup: function () {
             this.active = false;
         },
+
         mousemove: function() {
             if (this.active && this.model.get("allow_pan")) {
                 // If memory is set to true, intermediate positions between the
@@ -142,6 +148,7 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
                 });
             }
         },
+
         mousewheel: function() {
             if (this.model.get("allow_zoom")) {
                 d3.event.preventDefault();
@@ -194,6 +201,7 @@ define(["./components/d3/d3", "base/js/utils", "./Interaction", "underscore"],
                 }
             }
         },
+
         set_scale_attribute: function(scale, attribute_name, value) {
             // The difference of two dates is an int. So we want to cast it to
             // a date when setting the attribute for the date scale

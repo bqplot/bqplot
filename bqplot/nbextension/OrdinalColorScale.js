@@ -17,6 +17,7 @@ define(["./components/d3/d3", "./OrdinalScale", "./ColorUtils"], function(d3, Or
     "use strict";
 
     var OrdinalColorScale = OrdinalScaleViewModule.OrdinalScale.extend({
+
         render: function(){
             OrdinalColorScale.__super__.render.apply(this);
             this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
@@ -24,6 +25,7 @@ define(["./components/d3/d3", "./OrdinalScale", "./ColorUtils"], function(d3, Or
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
             this.set_range();
         },
+
         set_range: function() {
             if (this.model.get("colors").length > 0) {
                 this.scale.range(ColorUtils.cycle_colors(this.model.get("colors"), this.scale.domain().length));
@@ -32,10 +34,12 @@ define(["./components/d3/d3", "./OrdinalScale", "./ColorUtils"], function(d3, Or
             }
             this.trigger("color_scale_range_changed");
         },
+
         model_domain_changed: function() {
             OrdinalColorScale.__super__.model_domain_changed.apply(this);
             this.set_range();
         },
+
         colors_changed: function() {
             this.set_range();
         },

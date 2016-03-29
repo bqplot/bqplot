@@ -13,10 +13,33 @@
  * limitations under the License.
  */
 
-define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModelModule, _) {
+define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
     "use strict";
 
-    var BarsModel = MarkModelModule.MarkModel.extend({
+    var BarsModel = MarkModel.MarkModel.extend({
+
+        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
+            _model_name: "BarsModel",
+            _view_name: "Bars",
+
+            x: [],
+            y: [],
+            color: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" }
+            },
+            color_mode: "auto",
+            type: "stacked",
+            colors: d3.scale.category10().range(),
+            padding: 0.05,
+            stroke: null,
+            base: 0.0,
+            opacities: [],
+            align: "center",
+        }),
+
         initialize: function() {
             BarsModel.__super__.initialize.apply(this);
             this.is_y_2d = false;
@@ -30,7 +53,11 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             // is called AFTER the specific handlers on("change:foobar") and we make that
             // assumption.
             this.on_some_change(["preserve_domain"], this.update_domains, this);
+            this.update_data();
+            this.update_color();
+            this.update_domains();
         },
+
         update_data: function() {
             var x_data = this.get_typed_field("x");
             var y_data = this.get_typed_field("y");
@@ -98,9 +125,11 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             this.update_domains();
             this.trigger("data_updated");
         },
+
         get_data_dict: function(data, index, sub_index) {
             return data;
         },
+
         update_color: function() {
             //Function to update the color attribute for the data. In scatter,
             //this is taken care of by the update_data itself. This is separate
@@ -128,6 +157,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
                     }
             }
         },
+
         update_domains: function() {
             if(!this.mark_data || this.mark_data.length === 0) {
                 return;
@@ -169,6 +199,7 @@ define(["./components/d3/d3", "./MarkModel", "underscore"], function(d3, MarkMod
             }
         },
     });
+
     return {
         BarsModel: BarsModel,
     };
