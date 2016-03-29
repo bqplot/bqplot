@@ -52,15 +52,15 @@ This package depends on the following packages:
     - Linux users:
 
     ```
-    $ python -m bqplot.install --symlink --user --force
-    $ jupyter nbextension activate bqplot/index
+    $ jupyter nbextension install --py --symlink bqplot
+    $ jupyter nbextension enable --py bqplot
     ```
 
     - Windows users:
 
     ```
-    $ python -m bqplot.install --user --force
-    $ jupyter nbextension activate bqplot/index
+    $ jupyter nbextension install --py bqplot
+    $ jupyter nbextension enable --py bqplot
     ```
 
 3. Note for developers: the `--symlink` argument in Linux allows one to
