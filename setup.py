@@ -112,47 +112,11 @@ except ImportError:
         return None
 
 
-class Bower(Command):
-    description = "fetch static components with bower"
-
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def get_inputs(self):
-        return []
-
-    def get_outputs(self):
-        return []
-
-    def run(self):
-        try:
-            if which('bower'):
-                if platform.system() == 'Windows':
-                    cmd = 'bower.cmd'
-                else:
-                    cmd = 'bower'
-                check_call(
-                    [cmd, 'install', '--allow-root', '--config.interactive=false'],
-                    cwd=here,
-                    env=os.environ.copy(),
-                )
-            else:
-                raise RuntimeError("developer installation: Could not find 'bower' in path.")
-
-        except OSError as e:
-            print("Failed to run bower: %s" % e, file=sys.stderr)
-            raise
-
 class custom_egg_info(egg_info):
     """Customize egg_info to get js files before building the manifest."""
-    def run(self):
-        self.run_command('js')
-        return egg_info.run(self)
+    #def run(self):
+    #    self.run_command('js')
+    #    return egg_info.run(self)
 
 version_ns = {}
 with open(os.path.join(here, 'bqplot', '_version.py')) as f:
@@ -172,7 +136,6 @@ setup_args = {
     'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': {
-        'js': Bower,
         'egg_info': custom_egg_info,
     },
     'author': 'The BQplot Development Team',
