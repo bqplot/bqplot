@@ -1,4 +1,2 @@
-recursive-include bqplot/nbextension *.*
-recursive-exclude bqplot/nbextension .git
+recursive-include bqplot/static *.*
 include bqplot/*.json
-include bower.json

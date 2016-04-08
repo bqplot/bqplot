@@ -44,8 +44,8 @@ _templates/
 # Jupyter notebook checkpoints
 .ipynb_checkpoints/
 
-# Bower components
-bqplot/nbextension/components/
+# Compiled javascript
+bqplot/static/
 
 # Node modules
 node_modules

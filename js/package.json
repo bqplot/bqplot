@@ -1,0 +1,35 @@
+{
+  "name": "bqplot",
+  "version": "0.5.0dev",
+  "description": "bqplot",
+  "author": "BQPlot Development team",
+  "license": "Apache-2.0",
+  "main": "bqplot/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloomberg/bqplot.git"
+  },
+  "scripts": {
+    "prepublish": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "css-loader": "^0.23.1",
+    "file-loader": "^0.8.5",
+    "imports-loader": "^0.6.5",
+    "json-loader": "^0.5.4",
+    "less": "^2.6.1",
+    "less-loader": "^2.2.3",
+    "rimraf": "^2.4.1",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.12.14"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.5",
+    "d3": "^3.5.16",
+    "jquery": "^2.1.4",
+    "jupyter-js-widgets": "0.0.19",
+    "topojson": "^1.6.24",
+    "underscore": "^1.8.3"
+  }
+}
