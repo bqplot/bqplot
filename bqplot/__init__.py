@@ -71,5 +71,5 @@ def _jupyter_nbextension_paths():
         'section': 'notebook',
         'src': 'static',
         'dest': 'bqplot',
-        'require': 'bqplot/index'
+        'require': 'bqplot/extension'
     }]
