@@ -14,8 +14,8 @@
  */
 
 
-if (window["requirejs"]) {
-    window["requirejs"].config({
+if (window.require) {
+    window.require.config({
         map: {
             "*" : {
                 "bqplot": "nbextensions/bqplot/index",
@@ -25,11 +25,11 @@ if (window["requirejs"]) {
     });
 }
 
+require("./bqplot.less");
+
+var _ = require("underscore");
+
 define([
-    "underscore",
-    "d3",
-    "topojson",
-    "./bqplot.less",
     "./Axis",
     "./GridHeatMapModel",
     "./Mark",
@@ -96,12 +96,12 @@ define([
     "./GridHeatMap",
     "./MarketMapModel",
     "./Toolbar"
-], function(_) {
-    var exports = Array.prototype.slice.call(arguments, 4).reduce(function(obj, e) {
+], function() {
+    var exports = Array.prototype.slice.call(arguments).reduce(function(obj, e) {
         return _.extend(obj, e);
     });
 
-    exports['load_ipython_extension'] = function() {};
+    exports["load_ipython_extension"] = function() {};
 
     return exports;
 });
