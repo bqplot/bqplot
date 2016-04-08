@@ -28,7 +28,7 @@
     "bootstrap": "^3.3.5",
     "d3": "^3.5.16",
     "jquery": "^2.1.4",
-    "jupyter-js-widgets": "0.0.15",
+    "jupyter-js-widgets": "0.0.19",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   }

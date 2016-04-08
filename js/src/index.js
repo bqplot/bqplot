@@ -19,7 +19,7 @@ if (window.require) {
         map: {
             "*" : {
                 "bqplot": "nbextensions/bqplot/index",
-                "jupyter-js-widgets": "nbextensions/widgets/extension"
+                "jupyter-js-widgets": "nbextensions/jupyter-js-widgets/extension"
             }
         }
     });
