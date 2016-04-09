@@ -1,7 +1,7 @@
 module.exports = {
-    entry: './src/index.js',
+    entry: './src/extension.js',
     output: {
-        filename: 'index.js',
+        filename: 'extension.js',
         path: '../bqplot/static',
         libraryTarget: 'amd'
     },
