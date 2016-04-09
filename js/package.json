@@ -4,7 +4,7 @@
   "description": "bqplot",
   "author": "BQPlot Development team",
   "license": "Apache-2.0",
-  "main": "bqplot/index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/bloomberg/bqplot.git"
