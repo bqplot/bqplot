@@ -100,7 +100,7 @@ class NPM(Command):
     node_modules = os.path.join(node_root, 'node_modules')
 
     targets = [
-        os.path.join(here, 'bqplot', 'static', 'index.js')
+        os.path.join(here, 'bqplot', 'static', 'extension.js')
     ]
 
     def initialize_options(self):
