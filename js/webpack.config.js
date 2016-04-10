@@ -1,8 +1,11 @@
 module.exports = {
-    entry: './src/extension.js',
+    entry: {
+        '../bqplot/static/extension': './src/extension', // nbextension
+        './dist/embed': ['./src/index'] // embeddable bundle
+    },
     output: {
-        filename: 'extension.js',
-        path: '../bqplot/static',
+        filename: '[name].js',
+        path: './',
         libraryTarget: 'amd'
     },
     devtool: 'source-map',
