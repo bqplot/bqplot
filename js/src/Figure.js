@@ -17,6 +17,91 @@ define(["jupyter-js-widgets", "d3", "underscore"],
        function(widgets, d3, _) {
     "use strict";
 
+    var replaceAll = function (find, replace, str) {
+        return str.replace(new RegExp(find, "g"), replace);
+    };
+
+    var get_css = function(node, regs) {
+        /**
+         * Gathers all the css rules applied to elements of the svg
+         * node. Removes the parent element selectors specified in
+         * argument `regs`.
+         */
+        var css = "";
+        var sheets = document.styleSheets;
+        var selector;
+        for (var i = 0; i < sheets.length; i++) {
+            var rules = sheets[i].cssRules;
+            if (rules) {
+                for (var j = 0; j < rules.length; j++) {
+                    var rule = rules[j];
+                    if (typeof(rule.style) !== "undefined") {
+                        var match = null;
+                        try {
+                            match = node.querySelectorAll(rule.selectorText);
+                        } catch (err) {
+                            console.warn("Invalid CSS selector '" +
+                                         rule.selectorText + "'", err);
+                        }
+                        if (match) {
+                            var elems = node.querySelectorAll(rule.selectorText);
+                            if (elems.length > 0) {
+                                selector = rule.selectorText;
+                                for (var r = 0; r < regs.length; r++) {
+                                    selector = replaceAll(regs[r], "", selector);
+                                }
+                                css += selector + " { " + rule.style.cssText + " }\n";
+                            }
+                        } else if (rule.cssText.match(/^@font-face/)) {
+                            css += rule.cssText + "\n";
+                        }
+                    }
+                }
+            }
+        }
+        // TODO: this is terrible. The previous loop over style sheets
+        // does not catch document's top-level properties.
+        css += "svg { font-size: 10px; }\n";
+        return css;
+   };
+
+   var svg2svg = function(node) {
+       // Creates a standalone SVG string from an inline SVG element
+       // containing all the computed style attributes.
+       var svg = node.cloneNode(true);
+       svg.setAttribute("version", "1.1");
+       svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+       svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+       svg.style.background = window.getComputedStyle(document.body).background;
+       var s = document.createElement("style");
+       s.setAttribute("type", "text/css");
+       s.innerHTML = "<![CDATA[\n" +
+           get_css(node, ["\.theme-dark", "\.theme-light"]) + "\n]]>";
+       var defs = document.createElement("defs");
+       defs.appendChild(s);
+       svg.insertBefore(defs, svg.firstChild);
+       // Getting the outer HTML
+       return svg.outerHTML;
+   };
+
+   var svg2png = function(xml) {
+        // Render a SVG data into a canvas and download as PNG.
+        var image = new Image();
+        image.onload = function() {
+            var canvas = document.createElement("canvas");
+            canvas.width = image.width;
+            canvas.height = image.height;
+            var context = canvas.getContext("2d");
+            context.drawImage(image, 0, 0);
+            var a = document.createElement("a");
+            a.download = "figure.png";
+            a.href = canvas.toDataURL("image/png");
+            document.body.appendChild(a);
+            a.click();
+        };
+        image.src = "data:image/svg+xml;base64," + btoa(xml);
+    };
+
     var Figure = widgets.DOMWidgetView.extend({
 
         initialize : function() {
@@ -116,7 +201,8 @@ define(["jupyter-js-widgets", "d3", "underscore"],
               .text(this.model.get("title"));
 
             // TODO: remove the save png event mechanism.
-            this.model.on("save_png", this.save_png, this);
+            this.model.on("save_png", this.save_svg, this);
+            // this.model.on("save_svg", this.save_svg, this);
 
             var figure_scale_promise = this.create_figure_scales();
             var that = this;
@@ -580,97 +666,25 @@ define(["jupyter-js-widgets", "d3", "underscore"],
         },
 
         save_png: function() {
-
-            var  replaceAll = function (find, replace, str) {
-                return str.replace(new RegExp(find, "g"), replace);
-            };
-
-            var get_css = function(node, regs) {
-                /**
-                 * Gathers all the css rules applied to elements of the svg
-                 * node. Removes the parent element selectors specified in
-                 * argument `regs`.
-                 */
-                var css = "";
-                var sheets = document.styleSheets;
-                var selector;
-                for (var i = 0; i < sheets.length; i++) {
-                    var rules = sheets[i].cssRules;
-                    if (rules) {
-                        for (var j = 0; j < rules.length; j++) {
-                            var rule = rules[j];
-                            if (typeof(rule.style) !== "undefined") {
-                                var match = null;
-                                try {
-                                    match = node.querySelectorAll(rule.selectorText);
-                                } catch (err) {
-                                    console.warn("Invalid CSS selector '" +
-                                                 rule.selectorText + "'", err);
-                                }
-                                if (match) {
-                                    var elems = node.querySelectorAll(rule.selectorText);
-                                    if (elems.length > 0) {
-                                        selector = rule.selectorText;
-                                        for (var r = 0; r < regs.length; r++) {
-                                            selector = replaceAll(regs[r], "", selector);
-                                        }
-                                        css += selector + " { " + rule.style.cssText + " }\n";
-                                    }
-                                } else if (rule.cssText.match(/^@font-face/)) {
-                                    css += rule.cssText + "\n";
-                                }
-                            }
-                        }
-                    }
-                }
-                // TODO: this is terrible. The previous loop over style sheets
-                // does not catch document's top-level properties.
-                css += "svg { font-size: 10px; }\n";
-                return css;
-           };
-
-           var svg2svg = function(node) {
-               // Creates a standalone SVG string from an inline SVG element
-               // containing all the computed style attributes.
-               var svg = node.cloneNode(true);
-               svg.setAttribute("version", "1.1");
-               svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-               svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-               svg.style.background = window.getComputedStyle(document.body).background;
-               var s = document.createElement("style");
-               s.setAttribute("type", "text/css");
-               s.innerHTML = "<![CDATA[\n" +
-                   get_css(node, ["\.theme-dark", "\.theme-light"]) + "\n]]>";
-               var defs = document.createElement("defs");
-               defs.appendChild(s);
-               svg.insertBefore(defs, svg.firstChild);
-               // Getting the outer HTML
-               return svg.outerHTML;
-           };
-
-           var svg2png = function(xml) {
-                // Render a SVG data into a canvas and download as PNG.
-                var image = new Image();
-                image.onload = function() {
-                    var canvas = document.createElement("canvas");
-                    canvas.width = image.width;
-                    canvas.height = image.height;
-                    var context = canvas.getContext("2d");
-                    context.drawImage(image, 0, 0);
-                    var a = document.createElement("a");
-                    a.download = "image.png";
-                    a.href = canvas.toDataURL("image/png");
-                    document.body.appendChild(a);
-                    a.click();
-                };
-                image.src = "data:image/svg+xml;base64," + btoa(xml);
-            };
-
             // Create standalone SVG string
             var svg = svg2svg(this.svg.node());
             // Save to PNG
             svg2png(svg);
         },
+
+        save_svg: function() {
+            // Create standalone SVG string
+            var svg = svg2svg(this.svg.node());
+            // Save to PNG
+            var a = document.createElement("a");
+            a.download = "figure.svg";
+            a.type = "image/svg+xml";
+            var blob = new Blob([svg], {
+                type: "image/svg+xml"
+            });
+            a.href = window.URL.createObjectURL(blob);
+            a.click();
+        }
     });
 
     return {
