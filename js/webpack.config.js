@@ -37,7 +37,7 @@ module.exports = [
     {// embeddable bqplot bundle
         entry: './src/index.js',
         output: {
-            filename: 'embed.js',
+            filename: 'index.js',
             path: './dist/',
             libraryTarget: 'amd'
         },
