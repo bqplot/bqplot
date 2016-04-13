@@ -24,7 +24,6 @@ define(["./MarkModel", "underscore"],
             _view_name: "Map",
 
             color: {},
-            scales_metadata: {},
             hover_highlight: true,
             hovered_styles: {
                 hovered_fill: "Orange",
