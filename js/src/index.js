@@ -40,6 +40,7 @@ var loadedModules = [
     require("./Interaction"),
     require("./OrdinalScale"),
     require("./Label"),
+    require("./LabelModel"),
     require("./OrdinalScaleModel"),
     require("./BrushSelector"),
     require("./LassoSelector"),
