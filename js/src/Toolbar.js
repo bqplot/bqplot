@@ -25,9 +25,9 @@ define([
 
         defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
             _model_name: "ToolbarModel",
-            _model_name: "Toolbar",
+            _view_name: "Toolbar",
             _model_module: "bqplot",
-            _model_module: "bqplot",
+            _view_module: "bqplot",
 
             figure: undefined,
             _panning: false,
