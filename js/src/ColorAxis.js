@@ -34,7 +34,7 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
             this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
                 .attr("class", "ColorBar")
                 .attr("display", (this.model.get("visible") ? "inline" : "none"))
-                .style("transform", this.get_topg_transform());
+                .attr("transform", this.get_topg_transform());
 
             this.ordinal = false;
             this.num_ticks = this.model.get("num_ticks");
@@ -209,26 +209,17 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
         },
 
         get_topg_transform: function() {
+            var em = 16;
             if(this.vertical){
                 if(this.side === "right") {
-                    return "translate(" + this.get_basic_transform() + "px, 0px)" +
-                          " translate(" + (this.margin.right/2) + "px, 0px)" +
-                          " translate(" + (-this.bar_height) + "px, 0px)";
+                    return "translate(" + String(this.get_basic_transform() + this.margin.right / 2 - this.bar_height) + ", 0)";
                 }
-                    return "translate(" + this.get_basic_transform() + "px, 0px)" +
-                          " translate(" + -(this.margin.left/2) + "px, 0px)" +
-                          " translate(" + (this.bar_height) + "px, 0px)";
+                    return "translate(" + String(this.get_basic_transform() - this.margin.left / 2 + this.bar_height) + ", 0)";
             } else {
                 if(this.side === "top") {
-                    return "translate(0px, " + this.get_basic_transform() + "px)" +
-                          " translate(0px, " + -(this.margin.top) + "px)" +
-                          " translate(0px, " + (this.bar_height) + "px)" +
-                          " translate(0px, 2em)";
+                    return "translate(0, " + String(this.get_basic_transform() - this.margin.top + this.bar_height + 2 * em) + ")";
                 }
-                return "translate(0px, " + this.get_basic_transform() + "px)" +
-                      " translate(0px, " + this.margin.bottom + "px)" +
-                      " translate(0px, " + (-this.bar_height) + "px)" +
-                      " translate(0px, -2em)";
+                return "translate(0, " + String(this.get_basic_transform() + this.margin.bottom - this.bar_height - 2 * em) + ")";
             }
         },
 
@@ -242,9 +233,9 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
 
         get_colorbar_transform: function() {
             if(this.vertical) {
-                return "translate(0, " + (this.x_offset) + ")" ;
+                return "translate(0, " + String(this.x_offset) + ")" ;
             }
-            return "translate(" + this.x_offset + ", 0)";
+            return "translate(" + String(this.x_offset) + ", 0)";
         },
 
         set_axisline_scale_range: function() {
@@ -280,7 +271,7 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
             // rescale the axis
             this.set_axisline_scale_range();
             // shifting the entire g of the color bar first.
-            this.el.style("transform", this.get_topg_transform());
+            this.el.attr("transform", this.get_topg_transform());
             var that = this;
             var bar_width = this.get_color_bar_width() / this.colors.length;
             if(this.ordinal) {

@@ -495,16 +495,16 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                     .append("rect")
                       .attr({"y": (legend_height + 2) / 2.0,
                              "x": (-0.5 * (legend_height + 2))})
-                      .attr("width", (max_label_len+2) + "em")
+                      .attr("width", (max_label_len + 2) + "em")
                       .attr("height", (count * (legend_height + 2)))
                       .style({"fill": "none"});
                 }
                 max_label_len = (legend_location === "top-right" ||
                                  legend_location === "right" ||
                                  legend_location === "bottom-right") ? -(max_label_len + 2) : 1;
-                legend_g.style({"transform": "translate(" + (coords[0]) + "px, " +
-                                                            (coords[1]) + "px) " +
-                                           " translateX(" + (max_label_len) + "em)"});
+                var em = 16;
+                legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
+                                                          String(coords[1]) + ") ");
             });
         },
 
