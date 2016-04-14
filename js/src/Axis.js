@@ -280,12 +280,11 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
                             if(that.offset_scale.model.type !== "ordinal") {
                                 that.offset_scale.scale.clamp(true);
                             }
-                            that.offset_scale.on("domain_changed",
-                                                 function() {
-                                                    this.update_offset_scale_domain();
-                                                    this.g_axisline.attr("transform", this.get_axis_transform());
-                                                    this.update_grid_lines();
-                                                 }, that);
+                            that.offset_scale.on("domain_changed", function() {
+                                this.update_offset_scale_domain();
+                                this.g_axisline.attr("transform", this.get_axis_transform());
+                                this.update_grid_lines();
+                            }, that);
                         });
                 }
                 this.offset_value = offset.value;
