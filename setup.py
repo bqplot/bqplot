@@ -157,7 +157,7 @@ setup_args = {
     'License': 'Apache',
     'include_package_data': True,
     'install_requires': [
-        'ipywidgets>=4.2.0dev',
+        'ipywidgets>=5.0.0b4',
         'numpy',
         'pandas'],
     'packages': find_packages(),
