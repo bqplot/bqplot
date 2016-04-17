@@ -1,10 +1,12 @@
 bqplot
 ======
 
-What is it?
------------
-
 bqplot is a plotting system for the Jupyter notebook.
+
+Note
+----
+
+This README concerns bqplot version 0.6.0 beta 1.
 
 Goals
 -----
@@ -28,14 +30,14 @@ Getting Started
 This package depends on the following packages:
 
 -   `numpy`
--   `ipywidgets` (version >=5.0)
+-   `ipywidgets` (version >=5.0b4)
 
 ### Installation
 
 1. Installing `bqplot`:
 
     ```
-    $ pip install bqplot
+    $ pip install --pre bqplot
     ```
 
     or for a development installation,
