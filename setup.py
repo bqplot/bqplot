@@ -156,6 +156,14 @@ setup_args = {
     'long_description': LONG_DESCRIPTION,
     'License': 'Apache',
     'include_package_data': True,
+    'data_files': [
+        ('share/jupyter/nbextensions/bqplot', [
+            'bqplot/static/extension.js',
+            'bqplot/static/extension.js.map',
+            'bqplot/static/index.js',
+            'bqplot/static/index.js.map',
+        ]),
+    ],
     'install_requires': [
         'ipywidgets>=5.0.0',
         'numpy',

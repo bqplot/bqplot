@@ -6,7 +6,7 @@ bqplot is a plotting system for the Jupyter notebook.
 Note
 ----
 
-This README concerns bqplot version 0.6.0 beta 1.
+This README concerns bqplot version 0.6.0 beta 2.
 
 Goals
 -----
@@ -30,43 +30,28 @@ Getting Started
 This package depends on the following packages:
 
 -   `numpy`
--   `ipywidgets` (version >=5.0b4)
+-   `ipywidgets` (version >=5.0.0)
 
 ### Installation
 
-1. Installing `bqplot`:
+```
+$ pip install --pre bqplot
+$ jupyter nbextension enable --py bqplot
+```
 
-    ```
-    $ pip install --pre bqplot
-    ```
+or for a development installation (requires npm),
 
-    or for a development installation,
+```
+$ git clone https://github.com/bloomberg/bqplot.git
+$ cd bqplot
+$ pip install -e .
+$ jupyter nbextension install --py --symlink --user bqplot
+$ jupyter nbextension enable --py --user bqplot
+```
 
-    ```
-    $ git clone https://github.com/bloomberg/bqplot.git
-    $ cd bqplot
-    $ pip install -e .
-    $ bower install
-    ```
-
-2. Next, we need to install the JavaScript code.
-
-    - Linux users:
-
-    ```
-    $ jupyter nbextension install --py --symlink bqplot
-    $ jupyter nbextension enable --py bqplot
-    ```
-
-    - Windows users:
-
-    ```
-    $ jupyter nbextension install --py bqplot
-    $ jupyter nbextension enable --py bqplot
-    ```
-
-3. Note for developers: the `--symlink` argument in Linux allows one to
-   modify the JavaScript code in-place. This feature is not available with Windows.
+Note for developers: the `--symlink` argument on Linux or OS X allows one to
+modify the JavaScript code in-place. This feature is not available
+with Windows.
 
 
 ### Loading `bqplot`
