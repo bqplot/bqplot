@@ -55,7 +55,7 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
         serializers: _.extend({
             x_scale: { deserialize: widgets.unpack_models },
             y_scale: { deserialize: widgets.unpack_models },
-        }, BaseModel.BaseModel.serializers),
+        }, SelectorModel.serializers),
     });
 
     var FastIntervalSelectorModel = OneDSelectorModel.extend({
