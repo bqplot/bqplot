@@ -159,7 +159,6 @@ setup_args = {
     'data_files': [
         ('share/jupyter/nbextensions/bqplot', [
             'bqplot/static/extension.js',
-            'bqplot/static/extension.js.map',
             'bqplot/static/index.js',
             'bqplot/static/index.js.map',
         ]),
