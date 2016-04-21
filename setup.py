@@ -40,7 +40,7 @@ LONG_DESCRIPTION = """
 BQPlot
 ======
 
-Plotting system for the Jupyter notebook based on the interactive HTML.
+Plotting system for the Jupyter notebook based on the interactive Jupyter widgets.
 
 Installation
 ============
