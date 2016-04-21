@@ -3,11 +3,6 @@ bqplot
 
 bqplot is a plotting system for the Jupyter notebook.
 
-Note
-----
-
-This README concerns bqplot version 0.6.0 beta 2.
-
 Goals
 -----
 
@@ -35,7 +30,7 @@ This package depends on the following packages:
 ### Installation
 
 ```
-$ pip install --pre bqplot
+$ pip install bqplot
 $ jupyter nbextension enable --py bqplot
 ```
 

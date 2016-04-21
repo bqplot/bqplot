@@ -42,6 +42,15 @@ BQPlot
 
 Plotting system for the Jupyter notebook based on the interactive HTML.
 
+Installation
+============
+
+.. code-bock:: bash
+
+    pip install bqplot
+    jupyter nbextension enable --py bqplot
+
+
 Usage
 =====
 
