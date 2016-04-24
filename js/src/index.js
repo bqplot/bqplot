@@ -75,6 +75,7 @@ var loadedModules = [
     require("./FigureModel"),
     require("./Map"),
     require("./Tooltip"),
+    require("./TooltipModel"),
     require("./FlexLine"),
     require("./MapModel"),
     require("./GeoScale"),
