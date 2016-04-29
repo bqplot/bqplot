@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 
+var resizeDetector = require("element-resize-detector")({
+      strategy: "scroll" //<- For ultra performance.
+});
+
+
 define(["jupyter-js-widgets", "d3", "underscore"],
        function(widgets, d3, _) {
     "use strict";
@@ -27,8 +32,6 @@ define(["jupyter-js-widgets", "d3", "underscore"],
         },
 
         render : function() {
-            this.width = this.model.get("min_width");
-            this.height = this.model.get("min_height");
             this.id = widgets.uuid();
 
             // Dictionary which contains the mapping for each of the marks id
@@ -53,17 +56,12 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                 "ms-user-select": "none",
                 "moz-user-select": "none",
                 "khtml-user-select": "none",
-                "webkit-user-select": "none"});
+                "webkit-user-select": "none"
+            });
 
-            this.$el.css({"flex-grow": "1",
-                          "flex-shrink": "1",
-                          "align-self": "stretch",
-                          "min-width": this.width,
-                          "min-height": this.height});
             this.margin = this.model.get("fig_margin");
 
-            this.svg = d3.select(this.el)
-                .attr("viewBox", "0 0 " + this.width + " " + this.height);
+            this.svg = d3.select(this.el);
             this.update_plotarea_dimensions();
             // this.fig is the top <g> element to be impacted by a rescaling / change of margins
             this.fig = this.svg.append("g")
@@ -80,6 +78,7 @@ define(["jupyter-js-widgets", "d3", "underscore"],
               .style("pointer-events", "all");
 
             this.change_color();
+            //this.change_layout();
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
@@ -136,7 +135,7 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                 that.axis_views.update(that.model.get("axes"));
 
                 // TODO: move to the model
-                that.model.on_some_change(["fig_margin", "min_width", "min_height", "preserve_aspect"], that.update_layout, that);
+                that.model.on_some_change(["fig_margin", "aspect_ratio"], that.re_layout, that);
                 that.model.on_some_change(["padding_x", "padding_y"], function() {
                     this.figure_padding_x = this.model.get("padding_x");
                     this.figure_padding_y = this.model.get("padding_y");
@@ -160,19 +159,11 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                     this.set_interaction(value);
                 }, that);
 
-                // that.id is added to namespace the event to this particular
-                // view. This is required because we are adding the event on
-                // the output cell and hence we need to unbind it when this
-                // view is being removed. To identify the event listener
-                // corresponding to this view, we need the id.
-                $(that.options.cell).on("output_area_resize."+that.id, function() {
-                    that.update_layout();
-                });
+                resizeDetector.listenTo(that.el, _.bind(that.re_layout, that));
 
                 that.displayed.then(function() {
                     that.el.parentNode.appendChild(that.tooltip_div.node());
                     that.create_listeners();
-                    that.update_layout();
                 });
             });
         },
@@ -408,10 +399,10 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                 });
                 that.y_padding_arr[scale_id] = max;
             });
+
             // This is for the figure to relayout everything to account for the
             // updated margins.
             this.trigger("margin_updated");
-
         },
 
         update_plotarea_dimensions: function() {
@@ -419,26 +410,12 @@ define(["jupyter-js-widgets", "d3", "underscore"],
             this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
         },
 
-        update_layout: function() {
-            // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
-            this.svg.attr("width", null);
-            this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") +
-                                        " " + this.model.get("min_height"));
-            var rect = this.el.getBoundingClientRect();
-            this.width = rect.width > 0 ? rect.width : this.model.get("min_width");
-            this.height = rect.height > 0 ? rect.height : this.model.get("min_height");
-            var preserve_aspect = this.model.get("preserve_aspect");
-            if (preserve_aspect === true) {
-                var aspect_ratio = this.model.get("min_width") / this.model.get("min_height");
-                if (this.width/this.height > aspect_ratio) {
-                    this.width = this.height * aspect_ratio;
-                } else {
-                    this.height = this.width / aspect_ratio;
-                }
-            }
-            this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
-            this.svg.attr("width", this.width);
-
+        re_layout: function() {
+            this.svg.attr("viewBox", "");
+            this.width = this.el.clientWidth;
+            this.height = this.width / this.model.get("aspect_ratio");
+            this.svg.attr("viewBox", "0 0 " + this.width +
+                                        " " + this.height);
             // update ranges
             this.margin = this.model.get("fig_margin");
             this.update_plotarea_dimensions();
@@ -448,9 +425,11 @@ define(["jupyter-js-widgets", "d3", "underscore"],
             // transform figure
             this.fig.attr("transform", "translate(" + this.margin.left + "," +
                                                       this.margin.top + ")");
-            this.title.attr({x: (0.5 * (this.plotarea_width)),
-                             y: -(this.margin.top / 2.0),
-                             dy: "1em"});
+            this.title.attr({
+                x: (0.5 * (this.plotarea_width)),
+                y: -(this.margin.top / 2.0),
+                dy: "1em"
+            });
 
             this.bg
               .attr("width", this.plotarea_width)
