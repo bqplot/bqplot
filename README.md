@@ -29,12 +29,20 @@ This package depends on the following packages:
 
 ### Installation
 
+Using pip:
+
 ```
 $ pip install bqplot
 $ jupyter nbextension enable --py bqplot
 ```
 
-or for a development installation (requires npm),
+Using conda
+
+```
+$ conda install -c conda-forge bqplot
+```
+
+For a development installation (requires npm):
 
 ```
 $ git clone https://github.com/bloomberg/bqplot.git
