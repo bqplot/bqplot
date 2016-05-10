@@ -351,6 +351,35 @@ def axes(mark=None, options={}, **kwargs):
     return axes
 
 
+def add_grids(fig=None):
+    if fig is None:
+        fig = current_figure()
+    for a in fig.axes:
+        a.grid_lines = 'solid'
+
+
+def hline(level=0., fig=None, **kwargs):
+    default_colors = kwargs.pop('colors', ['white'])
+    default_width = kwargs.pop('stroke_width', 1)
+    if fig is None:
+        fig = current_figure()
+    sc_x = fig.scale_x
+    plot([0., 1.], [level, level], scales={'x': sc_x}, preserve_domain={'x': True,
+         'y': True}, axes=False, colors=default_colors,
+         stroke_width=default_width, update_context=False)
+
+
+def vline(level=0., fig=None, **kwargs):
+    default_colors = kwargs.pop('colors', ['white'])
+    default_width = kwargs.pop('stroke_width', 1)
+    if fig is None:
+        fig = current_figure()
+    sc_y = fig.scale_y
+    plot([level, level], [0., 1.], scales={'y': sc_y}, preserve_domain={'x': True,
+         'y': True}, axes=False, colors=default_colors,
+         stroke_width=default_width, update_context=False)
+
+
 def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     """Draw the mark of specified mark type.
 
@@ -370,6 +399,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     """
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', {})
+    update_context = kwargs.pop('update_context', True)
 
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
@@ -381,7 +411,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
             # create a scale for this.
             continue
         elif name in scales:
-            _context['scales'][dimension] = scales[name]
+            if update_context:
+                _context['scales'][dimension] = scales[name]
         # Scale has to be fetched from the conext or created as it has not
         # been passed.
         elif dimension not in _context['scales']:
@@ -400,7 +431,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
             # scale type.
             scales[name] = compat_scale_types[0](**options.get(name, {}))
             # Adding the scale to the conext scales
-            _context['scales'][dimension] = scales[name]
+            if update_context:
+                _context['scales'][dimension] = scales[name]
         else:
             scales[name] = _context['scales'][dimension]
 
@@ -862,8 +894,15 @@ def current_figure():
 
 
 def get_context():
-    """Used for debug only. Return the current global context dictionary."""
-    return _context
+    """Used for debug only. Return a copy of the current global context dictionary."""
+    return {k: v for k, v in _context.items()}
+
+
+def set_context(context):
+    """Sets the current global context dictionary. All the attributes to be set
+    should be set. Otherwise, it will result in unpredictable behavior."""
+    global _context
+    _context = {k: v for k, v in context.items()}
 
 
 def _fetch_axis(fig, dimension, scale):

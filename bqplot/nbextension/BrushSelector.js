@@ -418,8 +418,8 @@ define(["./components/d3/d3", "./Selector", "./utils", "underscore"], function(d
                 add_remove_classes(d3.select(this), ["active"], ["inactive"]);
                 old_handler.call(this);
                 // Replacement for "Accel" modifier.
-                var accelKey = d3.event.ctrlKey || d3.event.metaKey;
                 d3.select(this).on("mousedown.brush", function() {
+                    var accelKey = d3.event.ctrlKey || d3.event.metaKey;
                     if(d3.event.shiftKey && accelKey && d3.event.altKey) {
                         that.reset();
                     } else if(accelKey) {
