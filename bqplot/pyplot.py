@@ -351,31 +351,69 @@ def axes(mark=None, options={}, **kwargs):
     return axes
 
 
-def add_grids(fig=None):
+def grids(fig=None, value='solid'):
+    """Sets the value of the grid_lines for the axis to the passed value.
+    The default value is `solid`.
+
+    Parameters
+    ----------
+    fig: Figure or None(default: None)
+        The figure for which the axes should be edited. If the value is None,
+        the current figure is used.
+    value: {'none', 'solid', 'dashed'}
+        The display of the grid_lines
+    """
+
     if fig is None:
         fig = current_figure()
     for a in fig.axes:
-        a.grid_lines = 'solid'
+        a.grid_lines = value
 
 
-def hline(level=0., fig=None, **kwargs):
+def hline(level=0., fig=None, preserve_domain=True, **kwargs):
+    """Draws a horizontal line at the given level. By default, draws a line at
+    y=0.
+
+    Parameters
+    ----------
+    level: float (default: 0)
+        The level at which to draw the horizontal line
+    fig: Figure or None
+        The figure for which the axes should be edited. If the value is None,
+        the current figure is used.
+    preserve_domain: boolean (default: True)
+        If true, the line does not affect the domain of the 'y' scale.
+    """
     default_colors = kwargs.pop('colors', ['white'])
     default_width = kwargs.pop('stroke_width', 1)
     if fig is None:
         fig = current_figure()
     sc_x = fig.scale_x
     plot([0., 1.], [level, level], scales={'x': sc_x}, preserve_domain={'x': True,
-         'y': True}, axes=False, colors=default_colors,
+         'y': preserve_domain}, axes=False, colors=default_colors,
          stroke_width=default_width, update_context=False)
 
 
-def vline(level=0., fig=None, **kwargs):
+def vline(level=0., fig=None, preserve_domain=True, **kwargs):
+    """Draws a vertical line at the given level. By default, draws a line at
+    x=0.
+
+    Parameters
+    ----------
+    level: float(default: 0)
+        The level at which to draw the vertical line
+    fig: Figure or None
+        The figure for which the axes should be edited. If the value is None,
+        the current figure is used.
+    preserve_domain: boolean (default: True)
+        If true, the line does not affect the domain of the 'x' scale.
+    """
     default_colors = kwargs.pop('colors', ['white'])
     default_width = kwargs.pop('stroke_width', 1)
     if fig is None:
         fig = current_figure()
     sc_y = fig.scale_y
-    plot([level, level], [0., 1.], scales={'y': sc_y}, preserve_domain={'x': True,
+    plot([level, level], [0., 1.], scales={'y': sc_y}, preserve_domain={'x': preserve_domain,
          'y': True}, axes=False, colors=default_colors,
          stroke_width=default_width, update_context=False)
 
