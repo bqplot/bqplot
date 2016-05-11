@@ -239,14 +239,16 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                     //node
                     var parent_rect = this.parent.el.getBoundingClientRect();
                     var tooltip_div_rect = this.tooltip_div.node().getBoundingClientRect();
-                    this.tooltip_div.style("left", (this.parent.el.offsetLeft + 5 + parent_rect.width * 0.5 -
+                    var parent_node = this.parent.el.parentElement;
+                    this.tooltip_div.style("left", (parent_node.offsetLeft + 5 + parent_rect.width * 0.5 -
                                                     tooltip_div_rect.width * 0.5) + "px")
-                        .style("top", (this.parent.el.offsetTop + 5 + parent_rect.height * 0.5 -
+                        .style("top", (parent_node.offsetTop + 5 + parent_rect.height * 0.5 -
                                                     tooltip_div_rect.height * 0.5) + "px");
                 }
                 else {
-                    this.tooltip_div.style("left", (mouse_pos[0] + this.parent.el.offsetLeft + 5) + "px")
-                        .style("top", (mouse_pos[1] + this.parent.el.offsetTop + 5) + "px");
+                    var parent_node = this.parent.el.parentElement;
+                    this.tooltip_div.style("left", (mouse_pos[0] + parent_node.offsetLeft + 5) + "px")
+                        .style("top", (mouse_pos[1] + parent_node.offsetTop + 5) + "px");
                 }
             }
         },
