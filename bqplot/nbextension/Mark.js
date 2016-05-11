@@ -223,7 +223,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                 var ref_el = d3.select(document.body).select("#notebook").node();
                 var ref_mouse_pos = d3.mouse(ref_el);
 
-                var mouse_pos = d3.mouse(this.parent.el);
+                var parent_node = this.parent.el.parentElement;
+                var mouse_pos = d3.mouse(parent_node);
                 if(mouse_events === undefined || mouse_events === null ||
                    (!(mouse_events))) {
                         this.tooltip_div.style("pointer-events", "none");
@@ -239,16 +240,14 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
                     //node
                     var parent_rect = this.parent.el.getBoundingClientRect();
                     var tooltip_div_rect = this.tooltip_div.node().getBoundingClientRect();
-                    var parent_node = this.parent.el.parentElement;
                     this.tooltip_div.style("left", (parent_node.offsetLeft + 5 + parent_rect.width * 0.5 -
-                                                    tooltip_div_rect.width * 0.5) + "px")
+                                                    tooltip_div_rect.width * 0.5 - ref_el.scrollLeft) + "px")
                         .style("top", (parent_node.offsetTop + 5 + parent_rect.height * 0.5 -
-                                                    tooltip_div_rect.height * 0.5) + "px");
+                                                    tooltip_div_rect.height * 0.5 - ref_el.scrollTop) + "px");
                 }
                 else {
-                    var parent_node = this.parent.el.parentElement;
-                    this.tooltip_div.style("left", (mouse_pos[0] + parent_node.offsetLeft + 5) + "px")
-                        .style("top", (mouse_pos[1] + parent_node.offsetTop + 5) + "px");
+                    this.tooltip_div.style("left", (mouse_pos[0] + parent_node.offsetLeft - ref_el.scrollLeft + 5) + "px")
+                        .style("top", (mouse_pos[1] + parent_node.offsetTop - ref_el.scrollTop + 5) + "px");
                 }
             }
         },
