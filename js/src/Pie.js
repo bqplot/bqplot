@@ -229,7 +229,8 @@ define(["d3", "./Mark", "./utils", "underscore"],
                         .attr("class", "pie_text")
                         .attr("dy", ".35em")
                         .attr("pointer-events", "none")
-                        .style("text-anchor", "middle");
+                        .style("text-anchor", "middle")
+                        .style("stroke", "none");
                 });
 
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
@@ -273,7 +274,7 @@ define(["d3", "./Mark", "./utils", "underscore"],
               });
         },
         update_labels: function() {
-            var labels = this.el.select(".pielayout").selectAll(".slice").select("text")
+            var labels = this.el.select(".pielayout").selectAll(".pie_text")
                 .text(function(d) { return d.data.label; })
                 .style("visibility", this.model.get("display_labels") ? "visible" : "hidden")
                 .style("font-weight", this.model.get("font_weight"))

@@ -916,7 +916,7 @@ class Pie(Mark):
         color of the labels
     font_size: string (default: '14px')
         label font size in px, em or ex
-    font_weight: {'bold', 'normal', 'bolder'}
+    font_weight: {'bold', 'normal', 'bolder'} (default: 'normal')
         label font weight
 
     Data Attributes
@@ -962,9 +962,9 @@ class Pie(Mark):
     end_angle = Float(360.0).tag(sync=True)
     display_labels = Bool(True).tag(sync=True)
     label_color = Color(None, allow_none=True).tag(sync=True)
-    font_size = Unicode(default_value='14px').tag(sync=True)
+    font_size = Unicode(default_value='10px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], 
-                       default_value='bold').tag(sync=True)
+                       default_value='normal').tag(sync=True)
 
     _view_name = Unicode('Pie').tag(sync=True)
     _model_name = Unicode('PieModel').tag(sync=True)
