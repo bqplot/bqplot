@@ -32,7 +32,8 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"], function(widgets, Ba
             scale_y: undefined,
             fig_color: null,
             layout: undefined,
-            aspect_ratio: 16 / 9,
+            min_aspect_ratio: 16 / 9,
+            max_aspect_ratio: 16 / 9,
 
             fig_margin: {
                 top: 60,

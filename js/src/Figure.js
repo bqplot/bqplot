@@ -135,7 +135,7 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                 that.axis_views.update(that.model.get("axes"));
 
                 // TODO: move to the model
-                that.model.on_some_change(["fig_margin", "aspect_ratio"], that.re_layout, that);
+                that.model.on_some_change(["fig_margin", "min_aspect_ratio", "max_aspect_ratio"], that.relayout, that);
                 that.model.on_some_change(["padding_x", "padding_y"], function() {
                     this.figure_padding_x = this.model.get("padding_x");
                     this.figure_padding_y = this.model.get("padding_y");
@@ -159,7 +159,7 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                     this.set_interaction(value);
                 }, that);
 
-                resizeDetector.listenTo(that.el, _.bind(that.re_layout, that));
+                resizeDetector.listenTo(that.el, _.bind(that.relayout, that));
 
                 that.displayed.then(function() {
                     that.el.parentNode.appendChild(that.tooltip_div.node());
@@ -410,12 +410,35 @@ define(["jupyter-js-widgets", "d3", "underscore"],
             this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
         },
 
-        re_layout: function() {
-            this.svg.attr("viewBox", "");
-            this.width = this.el.clientWidth;
-            this.height = this.width / this.model.get("aspect_ratio");
+        relayout: function() {
+            this.svg.attr("viewBox", "0 0 1 1");
+
+            var ratio = this.el.clientWidth / this.el.clientHeight;
+            var max_ratio = this.model.get("max_aspect_ratio");
+            var min_ratio = this.model.get("min_aspect_ratio");
+
+            if (ratio <= max_ratio && ratio >= min_ratio) {
+                // If the available width and height are within bounds in terms
+                // of aspect ration, use all the space available.
+                this.width = this.el.clientWidth;
+                this.height = this.el.clientHeight;
+            } else if (ratio > max_ratio) {
+                // The available space is too oblong horizontally.
+                // Use all vertical space and compute width based on maximum
+                // aspect ratio.
+                this.height = this.el.clientHeight;
+                this.width = this.height * max_ratio;
+             } else { // ratio < min_ratio
+                // The available space is too oblong vertically.
+                // Use all horizontal space and compute height based on minimum
+                // aspect ratio.
+                this.width = this.el.clientWidth;
+                this.height = this.width / min_ratio;
+            }
+
             this.svg.attr("viewBox", "0 0 " + this.width +
                                         " " + this.height);
+
             // update ranges
             this.margin = this.model.get("fig_margin");
             this.update_plotarea_dimensions();
@@ -432,11 +455,11 @@ define(["jupyter-js-widgets", "d3", "underscore"],
             });
 
             this.bg
-              .attr("width", this.plotarea_width)
-              .attr("height", this.plotarea_height);
+                .attr("width", this.plotarea_width)
+                .attr("height", this.plotarea_height);
 
             this.clip_path.attr("width", this.plotarea_width)
-              .attr("height", this.plotarea_height);
+                .attr("height", this.plotarea_height);
 
             this.trigger("margin_updated");
             this.update_legend();

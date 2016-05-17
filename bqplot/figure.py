@@ -27,7 +27,7 @@ Figure
 """
 
 from traitlets import (Unicode, Instance, List, Dict, CFloat, Bool, Enum,
-                       Float, Int)
+                       Float, Int, TraitError, default, validate)
 from ipywidgets import DOMWidget, register, Color, widget_serialization, Layout
 
 from .scales import Scale, LinearScale
@@ -82,8 +82,10 @@ class Figure(DOMWidget):
         is responsible for making sure that the width and height are greater
         than the sum of the margins.
 
-    aspect_ratio: float
-         natural width / height ratio of the figure
+    min_aspect_ratio: float
+         minimum width / height ratio of the figure
+    max_aspect_ratio: float
+         maximum width / height ratio of the figure
 
     """
     title = Unicode().tag(sync=True, display_name='Title')
@@ -93,13 +95,23 @@ class Figure(DOMWidget):
                            **widget_serialization)
     scale_x = Instance(Scale).tag(sync=True, **widget_serialization)
     scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
+
+    @default('scale_x')
+    def _default_scale_x(self):
+        return LinearScale(min=0, max=1)
+
+    @default('scale_y')
+    def _default_scale_y(self):
+        return LinearScale(min=0, max=1)
+
     fig_color = Color(None, allow_none=True).tag(sync=True)
 
     layout = Instance(Layout, kw={
             'flex': '1',
             'align_self': 'stretch'
         }, allow_none=True).tag(sync=True, **widget_serialization)
-    aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
+    min_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
+    max_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60)).tag(sync=True)
     padding_x = Float(0.0, min=0.0, max=1.0).tag(sync=True)
@@ -109,11 +121,14 @@ class Figure(DOMWidget):
                            default_value='top-right').tag(sync=True, display_name='Legend position')
     animation_duration = Int().tag(sync=True, display_name='Animation duration')
 
-    def _scale_x_default(self):
-        return LinearScale(min=0, max=1)
-
-    def _scale_y_default(self):
-        return LinearScale(min=0, max=1)
+    @validate('min_aspect_ratio', 'max_aspect_ratio')
+    def _validate_aspect_ratio(self, proposal):
+        value = proposal['value']
+        if proposal['trait'].name == 'min_aspect_ratio' and value > self.max_aspect_ratio:
+            raise TraitError('setting min_aspect_ratio > max_aspect_ratio')
+        if proposal['trait'].name == 'max_aspect_ratio' and value < self.min_aspect_ratio:
+            raise TraitError('setting max_aspect_ratio < min_aspect_ratio')
+        return value
 
     _view_name = Unicode('Figure').tag(sync=True)
     _model_name = Unicode('FigureModel').tag(sync=True)
