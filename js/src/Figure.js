@@ -78,7 +78,7 @@ define(["jupyter-js-widgets", "d3", "underscore"],
               .style("pointer-events", "all");
 
             this.change_color();
-            //this.change_layout();
+            this.change_layout();
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
@@ -134,7 +134,6 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                 that.axis_views = new widgets.ViewList(that.add_axis, null, that);
                 that.axis_views.update(that.model.get("axes"));
 
-                // TODO: move to the model
                 that.model.on_some_change(["fig_margin", "min_aspect_ratio", "max_aspect_ratio"], that.relayout, that);
                 that.model.on_some_change(["padding_x", "padding_y"], function() {
                     this.figure_padding_x = this.model.get("padding_x");
@@ -183,10 +182,16 @@ define(["jupyter-js-widgets", "d3", "underscore"],
 
         create_listeners: function() {
             this.listenTo(this.model, "change:fig_color", this.change_color, this);
+            this.listenTo(this.model, "change:layout", this.change_layout, this);
         },
 
         change_color: function() {
             this.bg.style("fill", this.model.get("fig_color"));
+        },
+
+        change_layout: function() {
+            this.stopListening(this.model.previous("layout"));
+            this.listenTo(this.model.get("layout"), "change", this.relayout, this);
         },
 
         remove: function() {
@@ -412,57 +417,60 @@ define(["jupyter-js-widgets", "d3", "underscore"],
 
         relayout: function() {
             this.svg.attr("viewBox", "0 0 1 1");
+            var that = this;
+            window.requestAnimationFrame(function () {
+                var ratio = that.el.clientWidth / that.el.clientHeight;
+                var max_ratio = that.model.get("max_aspect_ratio");
+                var min_ratio = that.model.get("min_aspect_ratio");
 
-            var ratio = this.el.clientWidth / this.el.clientHeight;
-            var max_ratio = this.model.get("max_aspect_ratio");
-            var min_ratio = this.model.get("min_aspect_ratio");
+                if (ratio <= max_ratio && ratio >= min_ratio) {
+                    // If the available width and height are within bounds in terms
+                    // of aspect ration, use all the space available.
+                    that.width = that.el.clientWidth;
+                    that.height = that.el.clientHeight;
+                } else if (ratio > max_ratio) {
+                    // The available space is too oblong horizontally.
+                    // Use all vertical space and compute width based on maximum
+                    // aspect ratio.
+                    that.height = that.el.clientHeight;
+                    that.width = that.height * max_ratio;
+                 } else { // ratio < min_ratio
+                    // The available space is too oblong vertically.
+                    // Use all horizontal space and compute height based on minimum
+                    // aspect ratio.
+                    that.width = that.el.clientWidth;
+                    that.height = that.width / min_ratio;
+                }
 
-            if (ratio <= max_ratio && ratio >= min_ratio) {
-                // If the available width and height are within bounds in terms
-                // of aspect ration, use all the space available.
-                this.width = this.el.clientWidth;
-                this.height = this.el.clientHeight;
-            } else if (ratio > max_ratio) {
-                // The available space is too oblong horizontally.
-                // Use all vertical space and compute width based on maximum
-                // aspect ratio.
-                this.height = this.el.clientHeight;
-                this.width = this.height * max_ratio;
-             } else { // ratio < min_ratio
-                // The available space is too oblong vertically.
-                // Use all horizontal space and compute height based on minimum
-                // aspect ratio.
-                this.width = this.el.clientWidth;
-                this.height = this.width / min_ratio;
-            }
+                that.svg.attr("viewBox", "0 0 " + that.width +
+                                            " " + that.height);
+                window.requestAnimationFrame(function () {
+                    // update ranges
+                    that.margin = that.model.get("fig_margin");
+                    that.update_plotarea_dimensions();
 
-            this.svg.attr("viewBox", "0 0 " + this.width +
-                                        " " + this.height);
+                    that.scale_x.set_range([0, that.plotarea_width]);
+                    that.scale_y.set_range([that.plotarea_height, 0]);
+                    // transform figure
+                    that.fig.attr("transform", "translate(" + that.margin.left + "," +
+                                                              that.margin.top + ")");
+                    that.title.attr({
+                        x: (0.5 * (that.plotarea_width)),
+                        y: -(that.margin.top / 2.0),
+                        dy: "1em"
+                    });
 
-            // update ranges
-            this.margin = this.model.get("fig_margin");
-            this.update_plotarea_dimensions();
+                    that.bg
+                        .attr("width", that.plotarea_width)
+                        .attr("height", that.plotarea_height);
 
-            this.scale_x.set_range([0, this.plotarea_width]);
-            this.scale_y.set_range([this.plotarea_height, 0]);
-            // transform figure
-            this.fig.attr("transform", "translate(" + this.margin.left + "," +
-                                                      this.margin.top + ")");
-            this.title.attr({
-                x: (0.5 * (this.plotarea_width)),
-                y: -(this.margin.top / 2.0),
-                dy: "1em"
+                    that.clip_path.attr("width", that.plotarea_width)
+                        .attr("height", that.plotarea_height);
+
+                    that.trigger("margin_updated");
+                    that.update_legend();
+                });
             });
-
-            this.bg
-                .attr("width", this.plotarea_width)
-                .attr("height", this.plotarea_height);
-
-            this.clip_path.attr("width", this.plotarea_width)
-                .attr("height", this.plotarea_height);
-
-            this.trigger("margin_updated");
-            this.update_legend();
         },
 
         update_legend: function() {

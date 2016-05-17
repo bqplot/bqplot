@@ -108,7 +108,8 @@ class Figure(DOMWidget):
 
     layout = Instance(Layout, kw={
             'flex': '1',
-            'align_self': 'stretch'
+            'align_self': 'stretch',
+            'min_height': '350px'
         }, allow_none=True).tag(sync=True, **widget_serialization)
     min_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
     max_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
