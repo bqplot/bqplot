@@ -1138,6 +1138,7 @@ class GridHeatMap(Mark):
 
 @register_mark('bqplot.Image')
 class Image(Mark):
+    data = Unicode().tag(sync=True)
 
     _view_name = Unicode('Image').tag(sync=True)
     _model_name = Unicode('ImageModel').tag(sync=True)

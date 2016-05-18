@@ -20,9 +20,14 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
     var Image = Mark.Mark.extend({
 
         render: function() {
+          console.log("Image::render");
+            var image_src = 'data:image/png;base64,' + this.model.get('data');
+
             var base_render_promise = Image.__super__.render.apply(this);
-            this.map = this.el.append("svg")
-                .attr("viewBox", "0 0 1200 980");
+            this.map = this.el.append("image")
+              .attr("height", "250px")
+              .attr("width", "250px")
+              .attr("xlink:href", image_src);
             this.width = this.parent.plotarea_width;
             this.height = this.parent.plotarea_height;
             this.map_id = widgets.uuid();
@@ -38,6 +43,9 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
         },
 
         draw: function() {
+            console.log("Image::draw");
+            console.log("Image::draw 2");
+
             this.set_ranges();
         },
 
