@@ -22,79 +22,12 @@ define(["./MarkModel", "underscore"],
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "ImageModel",
             _view_name: "Image",
-
-            color: {},
-            hover_highlight: true,
-            hovered_styles: {
-                hovered_fill: "Orange",
-                hovered_stroke: null,
-                hovered_stroke_width: 2.0
-            },
-
-            stroke_color: null,
-            default_color: null,
-            scales_metadata: {
-                color: { dimension: "color" },
-                projection: { dimension: "geo" }
-            },
-            selected: [],
-            selected_styles: {
-                selected_fill: "Red",
-                selected_stroke: null,
-                selected_stroke_width: 2.0
-            },
-            map_data: undefined,
         }),
 
         initialize: function() {
             ImageModel.__super__.initialize.apply(this);
-            this.on("change:map_data", this.update_data, this);
-            this.on("change:color", this.update_domains, this);
-            this.update_data();
-            this.update_domains();
         },
 
-        update_data: function() {
-            this.dirty = true;
-            var mapdata = this.get("map_data");
-            this.geodata = mapdata[0];
-            this.subunits = mapdata[1];
-            this.update_domains();
-            this.dirty = false;
-            this.trigger("data_updated");
-        },
-
-        update_domains: function() {
-            var scales = this.get("scales");
-            var color_scale = scales.color;
-            var color_data = this.get("color");
-            if(color_scale !== null && color_scale !== undefined) {
-                if(!this.get("preserve_domain").color) {
-                    color_scale.compute_and_set_domain(
-                        Object.keys(color_data).map(function (d) {
-                            return color_data[d];
-                        }), this.id + "_color");
-                } else {
-                    color_scale.del_domain([], this.id + "_color");
-                }
-            }
-        },
-
-        get_subunit_name: function(id) {
-            for(var i = 0; i< this.subunits.length; i++) {
-                if(id == this.subunits[i].id){
-                    name = this.subunits[i].Name;
-                }
-            }
-            return name;
-        },
-
-        get_data_dict: function(data, index) {
-            return {
-                id: data.id,
-                name: this.get_subunit_name(data.id),
-            };
-        },
     });
 
     return {
