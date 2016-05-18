@@ -1134,3 +1134,42 @@ class GridHeatMap(Mark):
 
     _view_name = Unicode('GridHeatMap').tag(sync=True)
     _model_name = Unicode('GridHeatMapModel').tag(sync=True)
+
+
+@register_mark('bqplot.Image')
+class Image(Mark):
+
+    # Mark decoration
+    icon = 'fa-globe'
+    name = 'Image'
+
+    # Scaled attributes
+    color = Dict(allow_none=True).tag(sync=True, scaled=True, rtype='Color',
+                                      atype='bqplot.ColorAxis')
+
+    # Other attributes
+    scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
+    hover_highlight = Bool(True).tag(sync=True)
+    hovered_styles = Dict({
+        'hovered_fill': 'Orange',
+        'hovered_stroke': None,
+        'hovered_stroke_width': 2.0},
+    allow_none=True).tag(sync=True)
+
+    stroke_color = Color(default_value=None, allow_none=True).tag(sync=True)
+    default_color = Color(default_value=None, allow_none=True).tag(sync=True)
+    scales_metadata = Dict({
+        'color': { 'dimension': 'color' },
+        'projection': { 'dimension': 'geo' }
+    }).tag(sync=True)
+    selected = List(sync=True)  # TODO: Overloaded to prevent None.
+    selected_styles = Dict({
+        'selected_fill': 'Red',
+        'selected_stroke': None,
+        'selected_stroke_width': 2.0
+    }).tag(sync=True)
+
+    map_data = Tuple(topo_load('WorldMapData.json')).tag(sync=True)
+
+    _view_name = Unicode('Image').tag(sync=True)
+    _model_name = Unicode('ImageModel').tag(sync=True)
