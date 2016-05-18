@@ -231,7 +231,7 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
             this.listenTo(this.model, "data_updated", this.draw, this);
             this.listenTo(this.model, "change:color", this.update_style, this);
             this.listenTo(this.model, "change:stroke_color", this.change_stroke_color, this);
-            this.listenTo(this.model, "change:default_color", this.change_map_color, this);
+            this.listenTo(this.model, "change:colors", this.change_map_color, this);
             this.listenTo(this.model, "change:selected", this.change_selected, this);
             this.listenTo(this.model, "change:selected_styles", function() {
                 that.change_selected_fill();
@@ -378,7 +378,7 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
             });
             this.fill_g.selectAll("path").classed("selected", false)
                 .style("fill", function(d, i) {
-                    return that.fill_g_colorfill(d,i);
+                    return that.fill_g_colorfill(d, i);
                 });
         },
 
@@ -388,11 +388,14 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
         },
 
         change_map_color: function(){
+		var that = this;
             if (!this.is_object_empty(this.model.get("color"))){
                 return;
             }
             this.fill_g.selectAll("path")
-                .style("fill", this.model.get("default_color"));
+                .style("fill", function(d, i) {
+			return that.fill_g_colorfill(d, i)
+		});
         },
 
         update_style: function() {
@@ -425,18 +428,20 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
         },
 
         fill_g_colorfill: function(d, j) {
-            var color_scale = this.scales.color;
-            var selection = this.model.get("selected");
-            var color_data = this.model.get("color");
-            if (selection.indexOf(d.id) > -1) {
-                return this.model.get("selected_styles").selected_fill;
-            } else if (this.is_object_empty(color_data)) {
-                return this.model.get("default_color");
-            } else if (color_data[d.id] === undefined ||
+	    var color_scale = this.scales.color;
+	    var selection = this.model.get("selected");
+	    var color_data = this.model.get("color");
+	    var colors = this.model.get("colors");
+
+	    if (selection.indexOf(d.id) > -1) {
+		    return this.model.get("selected_styles").selected_fill;
+	    } else if (this.is_object_empty(color_data)) {
+		   return colors[d.id] || colors["default_color"];
+	    } else if (color_data[d.id] === undefined ||
                        color_data[d.id] === null ||
                        color_data[d.id] === "nan" ||
                        color_scale === undefined) {
-                return "Grey";
+                return colors["default_color"]; 
             } else {
                 return color_scale.scale(color_data[d.id]);
             }
