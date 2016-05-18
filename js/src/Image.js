@@ -13,21 +13,23 @@
  * limitations under the License.
  */
 
-define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscore"],
-       function(d3, topojson, FigureViewModule, widgets, Mark, _) {
+define(["d3", "./Figure", "jupyter-js-widgets", "./Mark", "underscore"],
+       function(d3, FigureViewModule, widgets, Mark, _) {
     "use strict";
 
     var Image = Mark.Mark.extend({
 
         render: function() {
-          console.log("Image::render");
-            var image_src = 'data:image/png;base64,' + this.model.get('data');
-
             var base_render_promise = Image.__super__.render.apply(this);
-            this.map = this.el.append("image")
-              .attr("height", "250px")
-              .attr("width", "250px")
-              .attr("xlink:href", image_src);
+
+            this.im = this.el.append("image")
+                .attr("xlink:href", this.model.get('src'))
+                .attr("x", this.model.get('x'))
+                .attr("y", this.model.get('y'))
+                .attr("width", this.model.get('width'))
+                .attr("height", this.model.get('height'))
+                .attr("preserveAspectRatio", this.model.get('preserve_aspect_ratio'));
+
             this.width = this.parent.plotarea_width;
             this.height = this.parent.plotarea_height;
             this.map_id = widgets.uuid();
@@ -35,6 +37,7 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
             var that = this;
             return base_render_promise.then(function() {
                 that.event_listeners = {};
+                that.create_listeners();
                 that.draw();
             });
         },
@@ -42,10 +45,37 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
         set_ranges: function() {
         },
 
-        draw: function() {
-            console.log("Image::draw");
-            console.log("Image::draw 2");
+        create_listeners: function() {
+            Image.__super__.create_listeners.apply(this);
 
+            this.listenTo(this.model, "change:x", this.update_x, this);
+            this.listenTo(this.model, "change:y", this.update_y, this);
+            this.listenTo(this.model, "change:width", this.update_width, this);
+            this.listenTo(this.model, "change:height", this.update_height, this);
+            this.listenTo(this.model, "change:preserve_aspect_ratio", this.update_preserve_aspect_ratio, this);
+        },
+
+        update_x: function(model, new_x) {
+          this.im.attr('x', new_x);
+        },
+
+        update_y: function(model, new_y) {
+          this.im.attr('y', new_y);
+        },
+
+        update_width: function(model, new_width) {
+          this.im.attr('width', new_width);
+        },
+
+        update_height: function(model, new_height) {
+          this.im.attr('height', new_height);
+        },
+
+        update_preserve_aspect_ratio: function(model, new_preserve_aspect_ratio) {
+          this.im.attr('preserveAspectRatio', new_preserve_aspect_ratio);
+        },
+
+        draw: function() {
             this.set_ranges();
         },
 

@@ -22,6 +22,12 @@ define(["./MarkModel", "underscore"],
         defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
             _model_name: "ImageModel",
             _view_name: "Image",
+
+            x: 0,
+            y: 0,
+//            width: 250,
+  //          height: "250",
+//            preserve_aspect_ratio: true,
         }),
 
         initialize: function() {
