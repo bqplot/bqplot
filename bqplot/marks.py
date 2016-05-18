@@ -1136,3 +1136,16 @@ class GridHeatMap(Mark):
 
     _view_name = Unicode('GridHeatMap').tag(sync=True)
     _model_name = Unicode('GridHeatMapModel').tag(sync=True)
+
+
+@register_mark('bqplot.Image')
+class Image(Mark):
+    src = Unicode().tag(sync=True)
+    x = Int().tag(sync=True)
+    y = Int().tag(sync=True)
+    width = Unicode('250px').tag(sync=True)
+    height = Unicode('250px').tag(sync=True)
+    preserve_aspect_ratio = Unicode('').tag(sync=True)
+
+    _view_name = Unicode('Image').tag(sync=True)
+    _model_name = Unicode('ImageModel').tag(sync=True)

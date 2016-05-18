@@ -460,7 +460,7 @@ define(["d3", "./Mark", "./utils", "underscore"],
             var col_nums = _.range(num_cols);
             var row_nums = _.range(num_rows);
 
-            var data_array = row_nums.map(function(row) { 
+            var data_array = row_nums.map(function(row) {
                 return col_nums.map(function(col) {
                     return that.model.mark_data[row * num_cols + col];
                 });
@@ -652,4 +652,3 @@ define(["d3", "./Mark", "./utils", "underscore"],
         GridHeatMap: GridHeatMap,
     };
 });
-
