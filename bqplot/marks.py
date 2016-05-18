@@ -36,7 +36,7 @@ Marks
 """
 from ipywidgets import Widget, DOMWidget, CallbackDispatcher, Color, widget_serialization
 from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float, TraitError,
-                       Instance, Tuple, Union)
+                       Instance, Tuple)
 
 from .scales import Scale, OrdinalScale
 from .traits import NdArray, Date
@@ -975,9 +975,10 @@ class Map(Mark):
 
     Attributes
     ----------
-    colors: Dict (default: {'default_color': 'MediumSeaGreen'})
+    colors: Dict (default: {})
         default colors for items of the map when no color data is passed. The dictionary should be indexed by the
-        id of the element and have the corresponding colors as values.
+        id of the element and have the corresponding colors as values. The key `default_color` controls the items
+        for which no color is specified.
     selected_styles: Dict (default: {'selected_fill': 'Red', 'selected_stroke': None, 'selected_stroke_width': 2.0})
         Dictionary containing the styles for selected subunits
     hovered_styles: Dict (default: {'hovered_fill': 'Orange', 'hovered_stroke': None, 'hovered_stroke_width': 2.0})
@@ -1015,7 +1016,7 @@ class Map(Mark):
     allow_none=True).tag(sync=True)
 
     stroke_color = Color(default_value=None, allow_none=True).tag(sync=True)
-    colors = Dict({'default_color': 'MediumSeaGreen'}).tag(sync=True, display_name='Colors')
+    colors = Dict().tag(sync=True, display_name='Colors')
     scales_metadata = Dict({
         'color': { 'dimension': 'color' },
         'projection': { 'dimension': 'geo' }
