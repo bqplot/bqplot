@@ -87,6 +87,23 @@ class Figure(DOMWidget):
     max_aspect_ratio: float
          maximum width / height ratio of the figure
 
+    Note
+    ----
+
+    The aspect ratios stand for width / height ratios.
+
+     - If the available space is within bounds in terms of min and max aspect
+       ratio, we use the entire available space.
+     - If the available space is too oblong horizontally, we use the client
+       height and the width that corresponds max_aspect_ratio (maximize width
+       under the constraints).
+     - If the available space is too oblong vertically, we use the client width
+       and the height that corresponds to min_aspect_ratio (maximize height
+       under the constraint).
+       This corresponds to maximizing the area under the constraints.
+
+    Default min and max aspect ratio are both equal to 16 / 9.
+
     """
     title = Unicode().tag(sync=True, display_name='Title')
     axes = List(Instance(Axis)).tag(sync=True, **widget_serialization)
