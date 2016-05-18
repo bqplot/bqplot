@@ -33,7 +33,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
 
             var that = this;
             this.drag_listener = d3.behavior.drag()
-              .on("dragstart", function(d) { return that.drag_start(d, this); })
+              .on("dragstart", function(d, i) { return that.drag_start(d, i, this); })
               .on("drag", function(d, i) { return that.on_drag(d, i, this); })
               .on("dragend", function(d, i) { return that.drag_ended(d, i, this); });
 
@@ -805,7 +805,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.touch();
         },
 
-        drag_start: function(d, dragged_node) {
+        drag_start: function(d, i, dragged_node) {
             if (!this.model.get("enable_move")) {
                 return;
             }
@@ -826,6 +826,11 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                   .style("fill", drag_color)
                   .style("stroke", drag_color);
             }
+            this.send({
+                event: "drag_start",
+                point: {x : d.x, y: d.y},
+                index: i
+            });
         },
 
         on_drag: function(d, i, dragged_node) {
@@ -855,6 +860,12 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
               .attr("transform", function() {
                   return "translate(" + d[0] + "," + d[1] + ")";
               });
+            this.send({
+                event: "drag",
+                origin: {x: d.x, y: d.y},
+		point: {x: x_scale.invert(d3.event.x), y: y_scale.invert(d3.event.y)},
+                index: i
+            });
             if(this.model.get("update_on_move")) {
                 // saving on move if flag is set
                 this.update_array(d, i);
@@ -908,7 +919,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.update_array(d, i);
             this.send({
                 event: "drag_end",
-                point: { x : d.x, y: d.y},
+                point: {x : d.x, y: d.y},
                 index: i
             });
         },
