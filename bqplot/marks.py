@@ -794,7 +794,7 @@ class Label(Mark):
     text: string (default: '')
         text to be displayed
     font_size: string (default: '14px')
-        front size in px, em or ex
+        font size in px, em or ex
     font_weight: {'bold', 'normal', 'bolder'}
         font weight of the caption
     align: {'start', 'middle', 'end'}
@@ -925,6 +925,14 @@ class Pie(Mark):
         start angle of the pie (from top), in degrees
     end_angle: Float (default: 360.0)
         end angle of the pie (from top), in degrees
+    display_labels: bool (default: True)
+        display the labels on the pie
+    label_color: Color or None (default: None)
+        color of the labels
+    font_size: string (default: '14px')
+        label font size in px, em or ex
+    font_weight: {'bold', 'normal', 'bolder'} (default: 'normal')
+        label font weight
 
     Data Attributes
 
@@ -967,6 +975,11 @@ class Pie(Mark):
     inner_radius = Float(0.1, min=0.0, max=float('inf')).tag(sync=True)
     start_angle = Float().tag(sync=True)
     end_angle = Float(360.0).tag(sync=True)
+    display_labels = Bool(True).tag(sync=True)
+    label_color = Color(None, allow_none=True).tag(sync=True)
+    font_size = Unicode(default_value='10px').tag(sync=True)
+    font_weight = Enum(['bold', 'normal', 'bolder'], 
+                       default_value='normal').tag(sync=True)
 
     _view_name = Unicode('Pie').tag(sync=True)
     _model_name = Unicode('PieModel').tag(sync=True)

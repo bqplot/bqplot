@@ -97,6 +97,8 @@ define(["d3", "./Mark", "./utils", "underscore"],
             }, this);
             this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
             this.model.on_some_change(["x", "y"], this.position_center, this);
+            this.model.on_some_change(["display_labels", "label_color", "font_size", "font_weight"],
+                                      this.update_labels, this);
             this.model.on_some_change(["start_angle", "end_angle", "sort"], function() {
                 var animate = true;
                 this.draw(animate);
@@ -227,7 +229,8 @@ define(["d3", "./Mark", "./utils", "underscore"],
                         .attr("class", "pie_text")
                         .attr("dy", ".35em")
                         .attr("pointer-events", "none")
-                        .style("text-anchor", "middle");
+                        .style("text-anchor", "middle")
+                        .style("stroke", "none");
                 });
 
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
@@ -271,8 +274,16 @@ define(["d3", "./Mark", "./utils", "underscore"],
               });
         },
         update_labels: function() {
-            this.el.select(".pielayout").selectAll(".slice").select("text")
-              .text(function(d) { return d.data.label; });
+            var labels = this.el.select(".pielayout").selectAll(".pie_text")
+                .text(function(d) { return d.data.label; })
+                .style("visibility", this.model.get("display_labels") ? "visible" : "hidden")
+                .style("font-weight", this.model.get("font_weight"))
+                .style("font-size", this.model.get("font_size"));
+
+            var color = this.model.get("label_color");
+            if(color !== undefined) {
+                labels.style("fill", color);
+            }
         },
         clear_style: function(style_dict, indices) {
             // Function to clear the style of a dict on some or all the elements of the
