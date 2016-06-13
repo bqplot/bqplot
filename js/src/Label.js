@@ -30,6 +30,10 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
             this.y_offset = this.model.get("y_offset");
             this.color = this.model.get("color");
             this.text = this.model.get("text");
+            this.drag_listener = d3.behavior.drag()
+              .on("dragstart", function(d) { return that.drag_start(); })
+              .on("drag", function(d, i) { return that.on_drag(); })
+              .on("dragend", function(d, i) { return that.drag_ended(); });
             return base_render_promise.then(function() {
                 that.create_listeners();
                 that.draw();
@@ -89,7 +93,8 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
 
             this.el.append("text")
                 .text(this.text)
-                .classed("label", true);
+                .classed("label", true)
+                .call(this.drag_listener);
             this.update_style();
             this.apply_net_transform();
         },
@@ -137,6 +142,41 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
                 this.el.select(".label")
                     .style("fill", this.color);
             }
+        },
+        drag_start: function() {
+            if (!this.model.get("enable_move")) {
+                return;
+            }
+            this.drag_started = true;
+            this.drag_start_position = d3.mouse(this.el.node());
+        },
+
+        on_drag: function() {
+            if(!this.drag_started){
+                return;
+            }
+            if(!this.model.get("enable_move")) {
+                return;
+            }
+        },
+
+        drag_ended: function() {
+            if (!this.model.get("enable_move")) {
+                return;
+            }
+            if (!this.drag_started) {
+                return;
+            }
+
+            var move_x = d3.mouse(this.el.node())[0] - this.drag_start_position[0],
+                move_y = d3.mouse(this.el.node())[1] - this.drag_start_position[1];
+  
+            var new_x = this.x_scale.invert(this.x_scale.scale(this.model.get("x")) + move_x),
+                new_y = this.y_scale.invert(this.y_scale.scale(this.model.get("y")) + move_y);
+                
+            this.model.set("x", new_x);
+            this.model.set("y", new_y);
+            this.model.touch()
         },
     });
 
