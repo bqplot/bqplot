@@ -25,15 +25,11 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
             //because some of the functions depend on child scales being
             //created. Make sure none of the event handler functions make that
             //assumption.
-            this.rotate_angle = this.model.get("rotate_angle");
-            this.x_offset = this.model.get("x_offset");
-            this.y_offset = this.model.get("y_offset");
-            this.color = this.model.get("color");
-            this.text = this.model.get("text");
             this.drag_listener = d3.behavior.drag()
-              .on("dragstart", function(d) { return that.drag_start(); })
-              .on("drag", function(d, i) { return that.on_drag(); })
-              .on("dragend", function(d, i) { return that.drag_ended(); });
+              //.origin(function() { return that.drag_origin(); })
+              .on("dragstart", function() { return that.drag_start(); })
+              .on("drag", function() { return that.on_drag(); })
+              .on("dragend", function() { return that.drag_ended(); });
             return base_render_promise.then(function() {
                 that.create_listeners();
                 that.draw();
@@ -71,20 +67,12 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
             this.listenTo(this.model, "change:text", this.update_text, this);
             this.model.on_some_change(["font_weight", "font_size", "color",
                                        "align"], this.update_style, this);
-            this.listenTo(this.model, "change:rotate_angle", function(model, value) {
-                this.rotate_angle = value; this.apply_net_transform();
-            }, this);
-            this.listenTo(this.model, "change:y_offset", function(model, value) {
-                this.y_offset = value; this.apply_net_transform();
-            }, this);
-            this.listenTo(this.model, "change:x_offset", function(model, value) {
-                this.x_offset = value; this.apply_net_transform();
-            }, this);
-            this.model.on_some_change(["x", "y"], this.apply_net_transform, this);
+            this.model.on_some_change(["x", "y", "x_offset", "y_offset",
+                                       "rotate_angle"], this.update_position, this);
         },
         relayout: function() {
             this.set_ranges();
-            this.apply_net_transform();
+            this.update_position();
         },
         draw: function() {
             this.set_ranges();
@@ -92,57 +80,52 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
                 .remove();
 
             this.el.append("text")
-                .text(this.text)
+                .text(this.model.get("text"))
                 .classed("label", true)
                 .call(this.drag_listener);
             this.update_style();
-            this.apply_net_transform();
+            this.update_position();
         },
-        get_extra_transform: function() {
-            var total_transform = "";
-            // The translate is applied first and then the rotate is applied
-            if(this.x_offset !== undefined || this.y_offset !== undefined) {
-                total_transform += " translate(" + this.x_offset + ", " +
-                    this.y_offset + ")";
+        get_rotation: function() {
+            var rotate_angle = this.model.get("rotate_angle");
+            var transform = "";
+            if(rotate_angle !== undefined) {
+                transform += " rotate(" + rotate_angle + ")";
             }
-
-            if(this.rotate_angle !== undefined) {
-                total_transform += " rotate(" + this.rotate_angle + ")";
-            }
-
-            return total_transform;
+            return transform;
         },
-        apply_net_transform: function() {
-            // this function gets the net transform after applying both the
-            // rotate and x, y trasnforms
+        update_position: function() {
             var x = (this.x_scale.model.type === "date") ?
                 this.model.get_date_elem("x") : this.model.get("x");
             var y = (this.y_scale.model.type === "date") ?
                 this.model.get_date_elem("y") : this.model.get("y");
-            var net_transform = "translate(" + (this.x_scale.scale(x) + this.x_scale.offset) +
-                ", " + (this.y_scale.scale(y) + this.y_scale.offset) +
-                ")";
-            net_transform += this.get_extra_transform();
-            this.el.selectAll(".label")
-                .attr("transform", net_transform);
+            var x_offset = this.model.get("x_offset"),
+                y_offset = this.model.get("y_offset");
+            this.el.select(".label")
+                .attr("transform", "translate(" + 
+                    (this.x_scale.scale(x) + this.x_scale.offset + x_offset) + "," +
+                    (this.y_scale.scale(y) + this.y_scale.offset + y_offset) + ")" +
+                    this.get_rotation());
         },
         update_text: function(model, value) {
-            this.text = value;
             this.el.select(".label")
-                .text(this.text);
+                .text(value);
         },
         update_style: function() {
-            this.color = this.model.get("color");
             this.el.select(".label")
                 .style("font-size", this.model.get("font_size"))
                 .style("font-weight", this.model.get("font_weight"))
                 .style("text-anchor", this.model.get("align"));
-
-            if(this.color !== undefined) {
+            
+            var color = this.model.get("color");
+            if(color !== undefined) {
                 this.el.select(".label")
-                    .style("fill", this.color);
+                    .style("fill", color);
             }
         },
+        //drag_origin: function() {
+          //  return;
+        //},
         drag_start: function() {
             if (!this.model.get("enable_move")) {
                 return;
@@ -158,6 +141,8 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
             if(!this.model.get("enable_move")) {
                 return;
             }
+            //var label = this.el.select(".label");
+            //label.attr("x", d3.event.x).attr("y", d3.event.y);
         },
 
         drag_ended: function() {
@@ -167,7 +152,6 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
             if (!this.drag_started) {
                 return;
             }
-
             var move_x = d3.mouse(this.el.node())[0] - this.drag_start_position[0],
                 move_y = d3.mouse(this.el.node())[1] - this.drag_start_position[1];
   
@@ -176,7 +160,7 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
                 
             this.model.set("x", new_x);
             this.model.set("y", new_y);
-            this.model.touch()
+            this.touch()
         },
     });
 
