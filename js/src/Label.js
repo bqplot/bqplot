@@ -26,8 +26,7 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
             //created. Make sure none of the event handler functions make that
             //assumption.
             this.drag_listener = d3.behavior.drag()
-              //.origin(function() { return that.drag_origin(); })
-              .on("dragstart", function() { return that.drag_start(); })
+              .origin(function() { return that.drag_origin(); })
               .on("drag", function() { return that.on_drag(); })
               .on("dragend", function() { return that.drag_ended(); });
             return base_render_promise.then(function() {
@@ -65,6 +64,7 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
         create_listeners: function() {
             Label.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:text", this.update_text, this);
+            this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
             this.model.on_some_change(["font_weight", "font_size", "color",
                                        "align"], this.update_style, this);
             this.model.on_some_change(["x", "y", "x_offset", "y_offset",
@@ -81,8 +81,9 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
 
             this.el.append("text")
                 .text(this.model.get("text"))
-                .classed("label", true)
-                .call(this.drag_listener);
+                .classed("label", true);
+                
+            this.set_drag_behavior();    
             this.update_style();
             this.update_position();
         },
@@ -123,40 +124,30 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
                     .style("fill", color);
             }
         },
-        //drag_origin: function() {
-          //  return;
-        //},
-        drag_start: function() {
-            if (!this.model.get("enable_move")) {
-                return;
+        set_drag_behavior: function() {
+            var label = this.el.select(".label");
+            if (this.model.get("enable_move")) {
+                label.call(this.drag_listener)
+                    .style("cursor", "move");
             }
-            this.drag_started = true;
-            this.drag_start_position = d3.mouse(this.el.node());
+            else { 
+                label.on(".drag", null).style("cursor", "default"); 
+            }
         },
-
+        drag_origin: function() {
+            var transform = d3.transform(this.el.select(".label").attr("transform"));
+            return {x: transform.translate[0], y: transform.translate[1]};
+        },
         on_drag: function() {
-            if(!this.drag_started){
-                return;
-            }
-            if(!this.model.get("enable_move")) {
-                return;
-            }
-            //var label = this.el.select(".label");
-            //label.attr("x", d3.event.x).attr("y", d3.event.y);
+            var transform = d3.transform(this.el.select(".label").attr("transform"));
+            transform.translate = [d3.event.x, d3.event.y];
+            this.el.select(".label")
+                .attr("transform", transform.toString());
         },
-
         drag_ended: function() {
-            if (!this.model.get("enable_move")) {
-                return;
-            }
-            if (!this.drag_started) {
-                return;
-            }
-            var move_x = d3.mouse(this.el.node())[0] - this.drag_start_position[0],
-                move_y = d3.mouse(this.el.node())[1] - this.drag_start_position[1];
-  
-            var new_x = this.x_scale.invert(this.x_scale.scale(this.model.get("x")) + move_x),
-                new_y = this.y_scale.invert(this.y_scale.scale(this.model.get("y")) + move_y);
+            var transform = d3.transform(this.el.select(".label").attr("transform"));
+            var new_x = this.x_scale.invert(transform.translate[0] - this.model.get("x_offset")),
+                new_y = this.y_scale.invert(transform.translate[1] - this.model.get("y_offset"));
                 
             this.model.set("x", new_x);
             this.model.set("y", new_y);
