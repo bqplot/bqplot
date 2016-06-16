@@ -462,8 +462,9 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.update_xy_position(animate);
 
             elements.call(this.drag_listener);
-            elements.on("click", _.bind(function() {
-                this.event_dispatcher("element_clicked");
+            elements.on("click", _.bind(function(d, i) {
+                this.event_dispatcher("element_clicked",
+				      {"data": d, "index": i});
             }, this));
 
             var names = this.model.get_typed_field("names"),
@@ -503,6 +504,10 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                         this.event_listeners.parent_clicked = this.add_element;
                         this.event_listeners.element_clicked = function() {};
                     }
+		    else if (interactions.click == 'select') {
+       		        this.event_listeners.parent_clicked = this.reset_selection;
+			this.event_listeners.element_clicked = this.scatter_click_handler;
+		    }
                 } else {
                     this.reset_click();
                 }
@@ -538,6 +543,60 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 }
             }
         },
+
+        reset_selection: function() {
+            this.model.set("selected", null);
+            this.selected_indices = null;
+            this.touch();
+        },
+
+	scatter_click_handler: function(args) {
+            var data = args.data;
+            var index = args.index;
+            var that = this;
+            var idx = this.model.get("selected");
+            var selected = idx ? utils.deepCopy(idx) : [];
+            // index of bar i. Checking if it is already present in the list.
+            var elem_index = selected.indexOf(index);
+            // Replacement for "Accel" modifier.
+            var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+
+	    if(elem_index > -1 && accelKey) {
+                // if the index is already selected and if accel key is
+                // pressed, remove the element from the list
+                selected.splice(elem_index, 1);
+            } else {
+		if(accelKey) {
+                    //If accel is pressed and the bar is not already selcted
+                    //add the bar to the list of selected bars.
+                    selected.push(index);
+                }
+                // updating the array containing the bar indexes selected
+                // and updating the style
+                else {
+                    //if accel is not pressed, then clear the selected ones
+                    //and set the current element to the selected
+                    selected = [];
+                    selected.push(index);
+                }
+            }
+            this.model.set("selected",
+                           ((selected.length === 0) ? null : selected),
+                           {updated_view: this});
+            this.touch();
+            if(!d3.event) {
+                d3.event = window.event;
+            }
+            var e = d3.event;
+            if(e.cancelBubble !== undefined) { // IE
+                e.cancelBubble = true;
+            }
+            if(e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+	},
+	
 
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             this.legend_el = elem.selectAll(".legend" + this.uuid)
