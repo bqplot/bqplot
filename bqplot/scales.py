@@ -43,6 +43,7 @@ from traitlets import Unicode, List, Enum, Float, Bool, Type, Tuple
 
 import numpy as np
 from .traits import Date
+import warnings
 
 
 def register_scale(key=None):
@@ -431,6 +432,12 @@ class CategoricalScale(Scale):
     _model_name = Unicode('CategoricalScaleModel').tag(sync=True)
 
 
+def OrdinalScale(*args, **kwargs):
+    warnings.warn("OrdinalScale is deprecated, use CategoricalScale instead",
+                  DeprecationWarning)
+    return CategoricalScale(*args, **kwargs) 
+
+
 @register_scale('bqplot.ColorScale')
 class ColorScale(Scale):
 
@@ -521,3 +528,10 @@ class CategoricalColorScale(ColorScale):
 
     _view_name = Unicode('CategoricalColorScale').tag(sync=True)
     _model_name = Unicode('CategoricalScaleModel').tag(sync=True)
+    
+    
+def OrdinalColorScale(*args, **kwargs):
+    warnings.warn(("OrdinalColorScale is deprecated, use "
+                   "CategoricalColorScale instead"),
+                  DeprecationWarning)
+    return CategoricalColorScale(*args, **kwargs)  
