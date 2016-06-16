@@ -36,7 +36,7 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
                 .attr("display", (this.model.get("visible") ? "inline" : "none"))
                 .attr("transform", this.get_topg_transform());
 
-            this.ordinal = false;
+            this.categorical = false;
             this.num_ticks = this.model.get("num_ticks");
             var that = this;
             scale_promise.then(function() {
@@ -92,9 +92,9 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
                 // TODO: eventually removes what follows
                 if(that.axis_scale.model.type === "date_color_linear") {
                     that.axis_line_scale = d3.time.scale().nice();
-                } else if(that.axis_scale.model.type === "ordinal") {
+                } else if(that.axis_scale.model.type === "categorical") {
                     that.axis_line_scale = d3.scale.ordinal();
-                    that.ordinal = true;
+                    that.categorical = true;
                 } else {
                     that.axis_line_scale = d3.scale.linear();
                 }
@@ -143,7 +143,7 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
             this.colors = this.axis_scale.scale.range();
             var colorSpacing = 100 / (this.colors.length - 1);
 
-            if(this.ordinal) {
+            if(this.categorical) {
                 var bar_width = this.get_color_bar_width() / this.colors.length;
                 var rects = colorBar.append("g")
                     .attr("class", "g-rect axis")
@@ -241,7 +241,7 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
         set_axisline_scale_range: function() {
             var range = (this.vertical) ?
                 [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
-            if(this.ordinal) {
+            if(this.categorical) {
                 this.axis_line_scale.rangeRoundBands(range, 0.05);
             } else {
                 if(this.axis_scale.divergent) {
@@ -274,7 +274,7 @@ define(["d3", "./utils", "./ColorUtils", "./Axis", "underscore"],
             this.el.attr("transform", this.get_topg_transform());
             var that = this;
             var bar_width = this.get_color_bar_width() / this.colors.length;
-            if(this.ordinal) {
+            if(this.categorical) {
                 var rectangles = this.el.select("#colorBarG" + this.cid)
                     .select(".g-rect")
                     .selectAll("rect")

@@ -109,7 +109,7 @@ define(["d3", "./colorbrewer", "./utils", "underscore"], function(d3, colorbrewe
             }
             return scale;
         },
-        get_ordinal_scale: function(scheme, num_steps) {
+        get_categorical_scale: function(scheme, num_steps) {
             var scale = d3.scale.ordinal();
             scale.range(this.cycle_colors_from_scheme(scheme, num_steps));
             return scale;
@@ -117,8 +117,8 @@ define(["d3", "./colorbrewer", "./utils", "underscore"], function(d3, colorbrewe
         get_linear_scale_range: function(scheme) {
             return this.get_linear_scale(scheme).range();
         },
-        get_ordinal_scale_range: function(scheme, num_steps) {
-            return this.get_ordinal_scale(scheme, num_steps).range();
+        get_categorical_scale_range: function(scheme, num_steps) {
+            return this.get_categorical_scale(scheme, num_steps).range();
         },
         is_divergent: function(scheme) {
             var index = color_schemes.indexOf(scheme);

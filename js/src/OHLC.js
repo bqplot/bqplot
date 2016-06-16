@@ -239,7 +239,7 @@ define(["d3", "./Mark", "underscore"], function(d3, MarkViewModule, _) {
                     return (d.y[px.o] > d.y[px.c]) ? down_color : up_color;
                 })
                 .attr("stroke-width", this.model.get("stroke_width"));
-            if(x_scale.model.type === "ordinal") {
+            if(x_scale.model.type === "categorical") {
                 // If we are out of range, we just set the mark in the final
                 // bucket's range band. FIXME?
                 var x_max = d3.max(this.parent.range("x"));
@@ -344,7 +344,7 @@ define(["d3", "./Mark", "underscore"], function(d3, MarkViewModule, _) {
                 }
                 offset_in_x_units = data_point + min_x_difference;
 
-                if(x_scale.model.type === "ordinal") {
+                if(x_scale.model.type === "categorical") {
                     scaled_mark_widths[i] = x_scale.scale.rangeBand() * 0.75;
                 } else {
                     scaled_mark_widths[i] = (x_scale.scale(offset_in_x_units) -

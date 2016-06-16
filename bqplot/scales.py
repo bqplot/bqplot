@@ -27,10 +27,10 @@ Scales
    LinearScale
    LogScale
    DateScale
-   OrdinalScale
+   CategoricalScale
    ColorScale
    DateColorScale
-   OrdinalColorScale
+   CategoricalColorScale
    GeoScale
    Mercator
    AlbersUSA
@@ -406,17 +406,17 @@ class DateScale(Scale):
     _model_name = Unicode('DateScaleModel').tag(sync=True)
 
 
-@register_scale('bqplot.OrdinalScale')
-class OrdinalScale(Scale):
+@register_scale('bqplot.CategoricalScale')
+class CategoricalScale(Scale):
 
-    """An ordinal scale.
+    """An categorical scale.
 
     A mapping from a discrete set of values to a numerical range.
 
     Attributes
     ----------
     domain: list (default: [])
-        The discrete values mapped by the ordinal scale
+        The discrete values mapped by the categorical scale
     rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
         The range type of a linear scale is numerical.
@@ -427,8 +427,8 @@ class OrdinalScale(Scale):
     dtype = np.str
     domain = List().tag(sync=True)
 
-    _view_name = Unicode('OrdinalScale').tag(sync=True)
-    _model_name = Unicode('OrdinalScaleModel').tag(sync=True)
+    _view_name = Unicode('CategoricalScale').tag(sync=True)
+    _model_name = Unicode('CategoricalScaleModel').tag(sync=True)
 
 
 @register_scale('bqplot.ColorScale')
@@ -498,17 +498,17 @@ class DateColorScale(ColorScale):
     _model_name = Unicode('DateColorScaleModel').tag(sync=True)
 
 
-@register_scale('bqplot.OrdinalColorScale')
-class OrdinalColorScale(ColorScale):
+@register_scale('bqplot.CategoricalColorScale')
+class CategoricalColorScale(ColorScale):
 
-    """An ordinal color scale.
+    """A categorical color scale.
 
     A mapping from a discrete set of values to colors.
 
     Attributes
     ----------
     domain: list (default: [])
-        The discrete values mapped by the ordinal scales.
+        The discrete values mapped by the categorical scales.
     rtype: string (class-level attribute)
         This attribute should not be modifed by the user.
         The range type of a color scale is 'color'.
@@ -519,5 +519,5 @@ class OrdinalColorScale(ColorScale):
     dtype = np.str
     domain = List().tag(sync=True)
 
-    _view_name = Unicode('OrdinalColorScale').tag(sync=True)
-    _model_name = Unicode('OrdinalScaleModel').tag(sync=True)
+    _view_name = Unicode('CategoricalColorScale').tag(sync=True)
+    _model_name = Unicode('CategoricalScaleModel').tag(sync=True)

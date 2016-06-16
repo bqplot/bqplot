@@ -145,7 +145,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
             var min, max;
             // X Scale
             if((!this.get("preserve_domain").x) && this.mark_data.length !== 0) {
-                if(x_scale.type === "ordinal") {
+                if(x_scale.type === "categorical") {
                     x_scale.compute_and_set_domain(
                         this.mark_data.map(function(d) { return d[0]; })
                     );

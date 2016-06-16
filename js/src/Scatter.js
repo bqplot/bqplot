@@ -96,7 +96,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 // value. But I also want to set a lower bound of 10px area on
                 // the size. This is what I do in the step below.
 
-                // I don't know how to handle for ordinal scale.
+                // I don't know how to handle this for a categorical scale.
                 var size_domain = size_scale.scale.domain();
                 var ratio = d3.min(size_domain) / d3.max(size_domain);
                 size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]),
