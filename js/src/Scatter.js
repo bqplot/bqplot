@@ -41,6 +41,10 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.unselected_style = this.model.get("unselected_style");
             this.selected_indices = this.model.get("selected");
 
+            this.hovered_style = this.model.get("hovered_style");
+            this.unhovered_style = this.model.get("unhovered_style");
+            this.hovered_index = this.model.get("hovered_point");
+
             this.display_el_classes = ["dot", "legendtext"];
             this.event_metadata = {
                 "mouse_over": {
@@ -57,6 +61,16 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                     "lookup_data": false,
                     "hit_test": true
                 },
+		"element_hover_over": {
+		    "msg_name": "element_hover_over",
+		    "lookup_data": false,
+		    "hit_test": true
+		},
+                "element_hover_out": {
+	            "msg_name": "element_hover_out",
+                    "lookup_data": false,
+                    "hit_test": true
+		},
                 "parent_clicked": {
                     "msg_name": "background_click",
                     "hit_test": false
@@ -205,6 +219,9 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
             this.listenTo(this.model, "change:selected", this.update_selected);
+	    this.listenTo(this.model, "change:hovered_point", this.update_hovered);
+            this.listenTo(this.model, "change:hovered_style", this.hovered_style_updated, this);
+            this.listenTo(this.model, "change:unhovered_style", this.unhovered_style_updated, this);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
             });
@@ -467,7 +484,14 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.event_dispatcher("element_clicked",
 				      {"data": d, "index": i});
             }, this));
-
+	    elements.on("mouseover", _.bind(function(d, i) {
+		this.event_dispatcher("element_hover_over",
+			              {"data": d, "index": i});
+	    }, this));
+	    elements.on("mouseout", _.bind(function(d, i) {
+		this.event_dispatcher("element_hover_out",
+			              {"data": d, "index": i});
+	    }, this));	
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
                 show_names = (this.model.get("display_names") && names.length !== 0);
@@ -507,7 +531,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                     }
 		    else if (interactions.click == 'select') {
        		        this.event_listeners.parent_clicked = this.reset_selection;
-			this.event_listeners.element_clicked = this.scatter_click_handler;
+			this.event_listeners.element_clicked = this.scatter_select_handler;
 		    }
                 } else {
                     this.reset_click();
@@ -519,6 +543,10 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                         this.event_listeners.mouse_move = this.show_tooltip;
                         this.event_listeners.mouse_out = this.hide_tooltip;
                     }
+		    else if (interactions.hover === 'focus') {
+		        this.event_listeners.element_hover_over = this.scatter_hover_handler;
+			this.event_listeners.element_hover_out = this.reset_hover;
+		    }	    
                 } else {
                     this.reset_hover();
                 }
@@ -545,13 +573,29 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
         },
 
+	reset_hover: function() {
+	    this.model.set("hovered_point", null);
+	    this.hovered_index = null;
+	    this.touch();
+	},
+
+	scatter_hover_handler: function(args) {
+	    var data = args.data;
+            var index = args.index;
+
+            var point = [index];
+            this.model.set("hovered_point",
+                           point, {updated_view: this});
+	    this.touch();
+        },
+	
         reset_selection: function() {
             this.model.set("selected", null);
             this.selected_indices = null;
             this.touch();
         },
 
-	scatter_click_handler: function(args) {
+	scatter_select_handler: function(args) {
             var data = args.data;
             var index = args.index;
             var that = this;
@@ -597,6 +641,24 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             e.preventDefault();
 	},
+
+        // Hovered Style related functions
+        hovered_style_updated: function(model, style) {
+            this.hovered_style = style;
+            this.clear_style(model.previous("hovered_style"), this.hovered_index);
+            this.style_updated(style, this.hovered_index);
+        },
+
+        unhovered_style_updated: function(model, style) {
+            this.unhovered_style = style;
+            var hov_indices = this.hovered_index;
+            var unhovered_indices = (hov_indices) ?
+                _.range(this.model.mark_data.length).filter(function(index){
+                    return hov_indices.indexOf(index) === -1;
+                }) : [];
+            this.clear_style(model.previous("unhovered_style"), unhovered_indices);
+            this.style_updated(style, unhovered_indices);
+        },
 	
 
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
@@ -728,6 +790,31 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         update_selected: function(model, value) {
             this.selected_indices = value;
             this.apply_styles();
+        },
+
+        update_hovered: function(model, value) {
+            this.hovered_index = value;
+            this.apply_styles();
+        },
+
+        apply_styles: function() {
+            var all_indices = _.range(this.model.mark_data.length);
+            this.clear_style(this.selected_style);
+            this.clear_style(this.unselected_style);
+            this.clear_style(this.hovered_style);
+	    this.clear_style(this.unhovered_style);
+
+            this.set_default_style(all_indices);
+
+            this.set_style_on_elements(this.selected_style, this.selected_indices);
+            var unselected_indices = (!this.selected_indices) ?
+                [] : _.difference(all_indices, this.selected_indices);
+            this.set_style_on_elements(this.unselected_style, unselected_indices);
+
+            this.set_style_on_elements(this.hovered_style, this.hovered_index);
+            var unhovered_indices = (!this.hovered_index) ?
+                [] : _.difference(all_indices, this.hovered_index);
+            this.set_style_on_elements(this.unhovered_style, unhovered_indices);
         },
 
         set_style_on_elements: function(style, indices) {
