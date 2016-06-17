@@ -127,11 +127,10 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
         set_drag_behavior: function() {
             var label = this.el.select(".label");
             if (this.model.get("enable_move")) {
-                label.call(this.drag_listener)
-                    .style("cursor", "move");
+                label.call(this.drag_listener);
             }
             else { 
-                label.on(".drag", null).style("cursor", "default"); 
+                label.on(".drag", null); 
             }
         },
         drag_origin: function() {
