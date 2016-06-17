@@ -203,6 +203,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.listenTo(this.model, "change:enable_hover", function() { this.hide_tooltip(); }, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
+            this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
@@ -461,7 +462,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                     .skew(function(d) { return that.get_element_skew(d); }));
             this.update_xy_position(animate);
 
-            elements.call(this.drag_listener);
+            this.set_drag_behavior();
             elements.on("click", _.bind(function(d, i) {
                 this.event_dispatcher("element_clicked",
 				      {"data": d, "index": i});
@@ -864,11 +865,17 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.touch();
         },
 
-        drag_start: function(d, i, dragged_node) {
-            if (!this.model.get("enable_move")) {
-                return;
+        set_drag_behavior: function() {
+            var elements = this.el.selectAll(".dot_grp");
+            if (this.model.get("enable_move")) {
+                elements.call(this.drag_listener);
             }
-            this.drag_started = true;
+            else { 
+                elements.on(".drag", null); 
+            }
+        },
+        
+        drag_start: function(d, i, dragged_node) {
             var dot = this.dot;
             var drag_color = this.model.get("drag_color");
             dot.size(5 * this.model.get("default_size"));
@@ -893,12 +900,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
 
         on_drag: function(d, i, dragged_node) {
-            if(!this.drag_started){
-                return;
-            }
-            if(!this.model.get("enable_move")) {
-                return;
-            }
             var x_scale = this.scales.x, y_scale = this.scales.y;
             // If restrict_x is true, then the move is restricted only to the X
             // direction.
@@ -932,12 +933,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
 
         drag_ended: function(d, i, dragged_node) {
-            if (!this.model.get("enable_move")) {
-                return;
-            }
-            if (!this.drag_started) {
-                return;
-            }
             var dot = this.dot,
                 default_colors = this.model.get("default_colors"),
                 len = default_colors.length,
@@ -993,7 +988,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             var curr_pos = [mouse_pos[0], mouse_pos[1]];
 
             var x_scale = this.scales.x, y_scale = this.scales.y;
-            //add the new point to dat
+            //add the new point to data
             var x_data = [];
             this.model.get_typed_field("x").forEach(function(d) {
                 x_data.push(d);
