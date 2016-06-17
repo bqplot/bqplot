@@ -91,6 +91,11 @@ class Figure(DOMWidget):
         is responsible for making sure that the width and height are greater
         than the sum of the margins.
 
+    Methods
+    -------
+
+    save_png:
+       Saves the figure as a png file
     """
     title = Unicode().tag(sync=True, display_name='Title')
     axes = List(Instance(Axis)).tag(sync=True, **widget_serialization)
@@ -118,6 +123,9 @@ class Figure(DOMWidget):
 
     def _scale_y_default(self):
         return LinearScale(min=0, max=1)
+
+    def save_png(self):
+        self.send({"type": "save_png"})
 
     _view_name = Unicode('Figure').tag(sync=True)
     _model_name = Unicode('FigureModel').tag(sync=True)
