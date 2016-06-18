@@ -799,6 +799,8 @@ class Label(Mark):
         font weight of the caption
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
+    enable_move: Bool
+        Enable the label to be moved by dragging
     """
     x = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)  # TODO: Why could it be Unicode
     y = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
@@ -815,7 +817,8 @@ class Label(Mark):
     font_size = Unicode(default_value='14px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
     align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)
-
+    enable_move = Bool().tag(sync=True)
+    
     _view_name = Unicode('Label').tag(sync=True)
     _model_name = Unicode('LabelModel').tag(sync=True)
 

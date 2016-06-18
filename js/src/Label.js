@@ -25,11 +25,10 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
             //because some of the functions depend on child scales being
             //created. Make sure none of the event handler functions make that
             //assumption.
-            this.rotate_angle = this.model.get("rotate_angle");
-            this.x_offset = this.model.get("x_offset");
-            this.y_offset = this.model.get("y_offset");
-            this.color = this.model.get("color");
-            this.text = this.model.get("text");
+            this.drag_listener = d3.behavior.drag()
+              .origin(function() { return that.drag_origin(); })
+              .on("drag", function() { return that.on_drag(); })
+              .on("dragend", function() { return that.drag_ended(); });
             return base_render_promise.then(function() {
                 that.create_listeners();
                 that.draw();
@@ -65,22 +64,15 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
         create_listeners: function() {
             Label.__super__.create_listeners.apply(this);
             this.listenTo(this.model, "change:text", this.update_text, this);
+            this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
             this.model.on_some_change(["font_weight", "font_size", "color",
                                        "align"], this.update_style, this);
-            this.listenTo(this.model, "change:rotate_angle", function(model, value) {
-                this.rotate_angle = value; this.apply_net_transform();
-            }, this);
-            this.listenTo(this.model, "change:y_offset", function(model, value) {
-                this.y_offset = value; this.apply_net_transform();
-            }, this);
-            this.listenTo(this.model, "change:x_offset", function(model, value) {
-                this.x_offset = value; this.apply_net_transform();
-            }, this);
-            this.model.on_some_change(["x", "y"], this.apply_net_transform, this);
+            this.model.on_some_change(["x", "y", "x_offset", "y_offset",
+                                       "rotate_angle"], this.update_position, this);
         },
         relayout: function() {
             this.set_ranges();
-            this.apply_net_transform();
+            this.update_position();
         },
         draw: function() {
             this.set_ranges();
@@ -88,55 +80,77 @@ define(["d3", "./Mark"], function(d3, MarkViewModule) {
                 .remove();
 
             this.el.append("text")
-                .text(this.text)
+                .text(this.model.get("text"))
                 .classed("label", true);
+                
+            this.set_drag_behavior();    
             this.update_style();
-            this.apply_net_transform();
+            this.update_position();
         },
-        get_extra_transform: function() {
-            var total_transform = "";
-            // The translate is applied first and then the rotate is applied
-            if(this.x_offset !== undefined || this.y_offset !== undefined) {
-                total_transform += " translate(" + this.x_offset + ", " +
-                    this.y_offset + ")";
+        get_rotation: function() {
+            var rotate_angle = this.model.get("rotate_angle");
+            var transform = "";
+            if(rotate_angle !== undefined) {
+                transform += " rotate(" + rotate_angle + ")";
             }
-
-            if(this.rotate_angle !== undefined) {
-                total_transform += " rotate(" + this.rotate_angle + ")";
-            }
-
-            return total_transform;
+            return transform;
         },
-        apply_net_transform: function() {
-            // this function gets the net transform after applying both the
-            // rotate and x, y trasnforms
+        update_position: function() {
             var x = (this.x_scale.model.type === "date") ?
                 this.model.get_date_elem("x") : this.model.get("x");
             var y = (this.y_scale.model.type === "date") ?
                 this.model.get_date_elem("y") : this.model.get("y");
-            var net_transform = "translate(" + (this.x_scale.scale(x) + this.x_scale.offset) +
-                ", " + (this.y_scale.scale(y) + this.y_scale.offset) +
-                ")";
-            net_transform += this.get_extra_transform();
-            this.el.selectAll(".label")
-                .attr("transform", net_transform);
+            var x_offset = this.model.get("x_offset"),
+                y_offset = this.model.get("y_offset");
+            this.el.select(".label")
+                .attr("transform", "translate(" + 
+                    (this.x_scale.scale(x) + this.x_scale.offset + x_offset) + "," +
+                    (this.y_scale.scale(y) + this.y_scale.offset + y_offset) + ")" +
+                    this.get_rotation());
         },
         update_text: function(model, value) {
-            this.text = value;
             this.el.select(".label")
-                .text(this.text);
+                .text(value);
         },
         update_style: function() {
-            this.color = this.model.get("color");
             this.el.select(".label")
                 .style("font-size", this.model.get("font_size"))
                 .style("font-weight", this.model.get("font_weight"))
                 .style("text-anchor", this.model.get("align"));
-
-            if(this.color !== undefined) {
+            
+            var color = this.model.get("color");
+            if(color !== undefined) {
                 this.el.select(".label")
-                    .style("fill", this.color);
+                    .style("fill", color);
             }
+        },
+        set_drag_behavior: function() {
+            var label = this.el.select(".label");
+            if (this.model.get("enable_move")) {
+                label.call(this.drag_listener);
+            }
+            else { 
+                label.on(".drag", null); 
+            }
+        },
+        drag_origin: function() {
+            var transform = d3.transform(this.el.select(".label").attr("transform"));
+            return {x: transform.translate[0], y: transform.translate[1]};
+        },
+        on_drag: function() {
+            var transform = d3.transform(this.el.select(".label").attr("transform"));
+            transform.translate = [d3.event.x, d3.event.y];
+            this.el.select(".label")
+                .attr("transform", transform.toString());
+        },
+        drag_ended: function() {
+            var transform = d3.transform(this.el.select(".label").attr("transform"));
+            var new_x = this.x_scale.invert(transform.translate[0] - this.model.get("x_offset")),
+                new_y = this.y_scale.invert(transform.translate[1] - this.model.get("y_offset"));
+                
+            this.model.set("x", new_x);
+            this.model.set("y", new_y);
+            this.touch()
         },
     });
 
