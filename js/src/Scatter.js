@@ -203,6 +203,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
             this.listenTo(this.model, "change:enable_hover", function() { this.hide_tooltip(); }, this);
             this.listenTo(this.model, "change:interactions", this.process_interactions);
+            this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
             this.listenTo(this.model, "change:selected", this.update_selected);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
@@ -461,7 +462,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                     .skew(function(d) { return that.get_element_skew(d); }));
             this.update_xy_position(animate);
 
-            elements.call(this.drag_listener);
+            this.set_drag_behavior();
             elements.on("click", _.bind(function(d, i) {
                 this.event_dispatcher("element_clicked",
 				      {"data": d, "index": i});
@@ -864,21 +865,30 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.touch();
         },
 
-        drag_start: function(d, i, dragged_node) {
-            if (!this.model.get("enable_move")) {
-                return;
+        set_drag_behavior: function() {
+            var elements = this.el.selectAll(".dot_grp");
+            if (this.model.get("enable_move")) {
+                elements.call(this.drag_listener);
             }
-            this.drag_started = true;
-            var dot = this.dot;
-            var drag_color = this.model.get("drag_color");
-            dot.size(5 * this.model.get("default_size"));
+            else { 
+                elements.on(".drag", null); 
+            }
+        },
+        
+        drag_start: function(d, i, dragged_node) {
+            // d[0] and d[1] will contain the previous position (in pixels)
+            // of the dragged point, for the length of the drag event
+            var x_scale = this.scales.x, y_scale = this.scales.y;
+            d[0] = x_scale.scale(d.x) + x_scale.offset;
+            d[1] = y_scale.scale(d.y) + y_scale.offset;
 
             d3.select(dragged_node)
               .select("path")
               .classed("drag_scatter", true)
               .transition()
-              .attr("d", dot);
+              .attr("d", this.dot.size(5 * this.model.get("default_size")));
 
+            var drag_color = this.model.get("drag_color");
             if (drag_color) {
                 d3.select(dragged_node)
                   .select("path")
@@ -893,27 +903,14 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
 
         on_drag: function(d, i, dragged_node) {
-            if(!this.drag_started){
-                return;
-            }
-            if(!this.model.get("enable_move")) {
-                return;
-            }
             var x_scale = this.scales.x, y_scale = this.scales.y;
             // If restrict_x is true, then the move is restricted only to the X
             // direction.
-            if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {
-                d[0] = d3.event.x;
-                d[1] = (y_scale.scale(d.y) + y_scale.offset);
-            } else if (!(this.model.get("restrict_x")) && this.model.get("restrict_y")) {
-                d[0] = (x_scale.scale(d.x) + x_scale.offset);
-                d[1] = d3.event.y;
-            } else if (this.model.get("restrict_x") && this.model.get("restrict_y")) {
-                return;
-            } else  {
-                d[0] = d3.event.x;
-                d[1] = d3.event.y;
-            }
+            var restrict_x = this.model.get("restrict_x"),
+                restrict_y = this.model.get("restrict_y");
+            if (restrict_x && restrict_y) { return; }
+            if (!restrict_x) { d[0] = d3.event.x; }
+            if (!restrict_y) { d[1] = d3.event.y; }
 
             d3.select(dragged_node)
               .attr("transform", function() {
@@ -922,7 +919,8 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.send({
                 event: "drag",
                 origin: {x: d.x, y: d.y},
-		point: {x: x_scale.invert(d3.event.x), y: y_scale.invert(d3.event.y)},
+		        point: {x: x_scale.invert(d[0]), 
+                        y: y_scale.invert(d[1])},
                 index: i
             });
             if(this.model.get("update_on_move")) {
@@ -932,53 +930,28 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
 
         drag_ended: function(d, i, dragged_node) {
-            if (!this.model.get("enable_move")) {
-                return;
-            }
-            if (!this.drag_started) {
-                return;
-            }
-            var dot = this.dot,
-                default_colors = this.model.get("default_colors"),
-                len = default_colors.length,
+            var stroke = this.model.get("stroke"),
+                original_color = this.get_element_color(d, i),
                 x_scale = this.scales.x,
                 y_scale = this.scales.y;
-            dot.size(this.model.get("default_size"));
 
             d3.select(dragged_node)
               .select("path")
               .classed("drag_scatter", false)
               .transition()
-              .attr("d", dot);
+              .attr("d", this.dot.size(this.get_element_size(d)));
 
             if (this.model.get("drag_color")) {
                 d3.select(dragged_node)
                   .select("path")
-                  .style("fill",  function(d, i) {
-                      return default_colors[i % len];
-                  })
-                  .style("stroke", function(d, i) {
-                      return default_colors[i % len];
-                  });
+                  .style("fill", original_color)
+                  .style("stroke", stroke ? stroke : original_color)
             }
-
-            if (!(this.model.get("restrict_y")) && this.model.get("restrict_x")) {
-                d[0] = d3.mouse(this.el.node())[0];
-                d[1] = (y_scale.scale(d.y) + y_scale.offset);
-            } else if (!(this.model.get("restrict_x")) && this.model.get("restrict_y")) {
-                d[0] = (x_scale.scale(d.x) + x_scale.offset);
-                d[1] = d3.mouse(this.el.node())[1];
-            } else if (this.model.get("restrict_x") && this.model.get("restrict_y")) {
-                return;
-            } else  {
-                d[0] = d3.mouse(this.el.node())[0];
-                d[1] = d3.mouse(this.el.node())[1];
-            }
-
             this.update_array(d, i);
             this.send({
                 event: "drag_end",
-                point: {x : d.x, y: d.y},
+                point: {x: x_scale.invert(d[0]), 
+                        y: y_scale.invert(d[1])},
                 index: i
             });
         },
@@ -993,7 +966,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             var curr_pos = [mouse_pos[0], mouse_pos[1]];
 
             var x_scale = this.scales.x, y_scale = this.scales.y;
-            //add the new point to dat
+            //add the new point to data
             var x_data = [];
             this.model.get_typed_field("x").forEach(function(d) {
                 x_data.push(d);
