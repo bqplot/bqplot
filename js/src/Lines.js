@@ -172,25 +172,24 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
 
         update_style: function() {
             var that = this,
+                fill = this.model.get("fill"),
                 fill_color = this.model.get("fill_colors"),
                 opacities = this.model.get("opacities"),
                 fill_opacities = this.model.get("fill_opacities");
             // update curve colors
-            this.el.selectAll(".curve")
-                .each(function(d, i) {
-                    var curve = d3.select(this);
-                    curve.select(".line")
-                        .style("opacity", opacities[i])
-                        .style("stroke", that.get_element_color(d, i) || fill_color[i])
-                        .style("fill", that.model.get("fill") === "inside" ?
-                                       that.get_fill_color(d, i) : "");
-                    curve.select(".area")
-                        .style("fill", that.get_fill_color(d, i))
-                        .style("opacity", fill_opacities[i]);
-                    curve.selectAll(".dot")
-                        .style("opacity", opacities[i])
-                        .style("fill", that.get_element_color(d, i) || fill_color[i]);
+            var curves = this.el.selectAll(".curve")
+            curves.select(".line")
+                .style("opacity", function(d, i) { return opacities[i]; })
+                .style("stroke", function(d, i) { 
+                    return that.get_element_color(d, i) || fill_color[i]; 
+                })
+                .style("fill", function(d, i) {
+                    return fill === "inside" ? that.get_fill_color(d, i) : ""; 
                 });
+            curves.select(".area")
+                .style("fill", function(d, i) { return that.get_fill_color(d, i); })
+                .style("opacity", function(d, i) { return fill_opacities[i]; });
+            this.update_marker_style();
             // update legend style
             if (this.legend_el){
                 this.legend_el.select(".line")
@@ -566,9 +565,8 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 var dots = this.el.selectAll(".curve").selectAll(".dot")
                     .data(function(d, i) {
                         return d.values.map(function(e) {
-                            return {x: e.x, y: e.y, color: that.get_element_color(d, i)}; });
+                            return {x: e.x, y: e.y}; });
                     });
-
                 dots.enter().append("path").attr("class", "dot");
                 dots.exit().remove();
             }
@@ -610,10 +608,24 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
         },
 
+	update_marker_style: function() {
+            var that = this,
+                fill_color = this.model.get("fill_colors"),
+                opacities = this.model.get("opacities");
+	    this.el.selectAll(".curve")
+		.each(function(d, i) {
+		    var curve = d3.select(this);	
+                    curve.selectAll(".dot")
+                        .style("opacity", opacities[i])
+                        .style("fill", that.get_element_color(d, i) || fill_color[i]);
+		});
+	},
+
         update_marker: function(model, marker) {
             if (marker) {
                 this.draw_dots();
                 this.update_dots_xy();
+		this.update_marker_style();
                 if (this.legend_el) {
                     this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
                 }
