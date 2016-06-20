@@ -319,7 +319,7 @@ class Lines(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True),
                   default_value=CATEGORY10).tag(sync=True, display_name='Colors')
     fill_colors = List(trait=Color(default_value=None, allow_none=True),
-                       default_value=CATEGORY10).tag(sync=True, display_name='Fill colors')
+                       default_value=[]).tag(sync=True, display_name='Fill colors')
     stroke_width = Float(2.0).tag(sync=True, display_name='Stroke width')
     labels_visibility = Enum(['none', 'label'], default_value='none').tag(sync=True, display_name='Labels visibility')
     curves_subset = List().tag(sync=True)
