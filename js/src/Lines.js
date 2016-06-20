@@ -610,10 +610,24 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
         },
 
+	update_marker_style: function() {
+            var that = this,
+                fill_color = this.model.get("fill_colors"),
+                opacities = this.model.get("opacities");
+	    this.el.selectAll(".curve")
+		.each(function(d, i) {
+		    var curve = d3.select(this);	
+                    curve.selectAll(".dot")
+                        .style("opacity", opacities[i])
+                        .style("fill", that.get_element_color(d, i) || fill_color[i]);
+		});
+	},
+
         update_marker: function(model, marker) {
             if (marker) {
                 this.draw_dots();
                 this.update_dots_xy();
+		this.update_marker_style();
                 if (this.legend_el) {
                     this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
                 }
