@@ -625,7 +625,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             if (marker) {
                 this.draw_dots();
                 this.update_dots_xy();
-		        this.update_marker_style();
+		this.update_marker_style();
                 if (this.legend_el) {
                     this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
                 }
