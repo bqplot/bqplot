@@ -431,7 +431,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 area = (fill === "top" || fill === "bottom");
 
             this.area.y0(fill === "bottom" ? this.parent.plotarea_height : 0)
-              .defined(function(d) { return area && d.y !== null; });
+              .defined(function(d) { return area && d.y !== null && isFinite(d.y); });
 
             var that = this;
             this.el.selectAll(".curve").select(".area")
@@ -523,11 +523,11 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
 
             this.line = d3.svg.line()
               .interpolate(this.model.get("interpolation"))
-              .defined(function(d) { return d.y !== null; });
+              .defined(function(d) { return d.y !== null && isFinite(d.y); });
 
             this.area = d3.svg.area()
               .interpolate(this.model.get("interpolation"))
-              .defined(function(d) { return area && d.y !== null; });
+              .defined(function(d) { return area && d.y !== null && isFinite(d.y); });
 
             // Having a transition on exit is complicated. Please refer to
             // Scatter.js for detailed explanation.
