@@ -421,7 +421,8 @@ define(["jupyter-js-widgets", "d3", "underscore"],
 
         update_layout: function() {
             // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
-            this.svg.attr("width", null);
+            this.svg.attr("width", this.model.get("min_width"));
+            this.svg.attr("height", this.model.get("min_height"));
             this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") +
                                         " " + this.model.get("min_height"));
             var rect = this.el.getBoundingClientRect();
