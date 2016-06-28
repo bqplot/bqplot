@@ -43,7 +43,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
 
             this.hovered_style = this.model.get("hovered_style");
             this.unhovered_style = this.model.get("unhovered_style");
-            this.hovered_index = this.model.get("hovered_point");
+            this.hovered_index = (!this.model.get("hovered_point")) ? null: [this.model.get("hovered_point")];
 
             this.display_el_classes = ["dot", "legendtext"];
             this.event_metadata = {
@@ -61,16 +61,16 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                     "lookup_data": false,
                     "hit_test": true
                 },
-		"element_hover_over": {
-		    "msg_name": "element_hover_over",
-		    "lookup_data": false,
-		    "hit_test": true
-		},
+		        "element_hover_over": {
+		            "msg_name": "element_hover_over",
+		            "lookup_data": false,
+		            "hit_test": true
+		        },
                 "element_hover_out": {
 	            "msg_name": "element_hover_out",
                     "lookup_data": false,
                     "hit_test": true
-		},
+		        },
                 "parent_clicked": {
                     "msg_name": "background_click",
                     "hit_test": false
@@ -219,7 +219,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
             this.listenTo(this.model, "change:selected", this.update_selected);
-	    this.listenTo(this.model, "change:hovered_point", this.update_hovered);
+	        this.listenTo(this.model, "change:hovered_point", this.update_hovered);
             this.listenTo(this.model, "change:hovered_style", this.hovered_style_updated, this);
             this.listenTo(this.model, "change:unhovered_style", this.unhovered_style_updated, this);
             this.listenTo(this.parent, "bg_clicked", function() {
@@ -484,14 +484,14 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.event_dispatcher("element_clicked",
 				      {"data": d, "index": i});
             }, this));
-	    elements.on("mouseover", _.bind(function(d, i) {
-		this.event_dispatcher("element_hover_over",
-			              {"data": d, "index": i});
-	    }, this));
-	    elements.on("mouseout", _.bind(function(d, i) {
-		this.event_dispatcher("element_hover_out",
-			              {"data": d, "index": i});
-	    }, this));	
+    	    elements.on("mouseover", _.bind(function(d, i) {
+    		    this.scatter_hover_handler({"data": d, "index": i});
+                this.apply_styles();
+    	    }, this));
+    	    elements.on("mouseout", _.bind(function() {
+    		    this.reset_hover();
+                this.apply_styles();
+    	    }, this));	
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
                 show_names = (this.model.get("display_names") && names.length !== 0);
@@ -543,10 +543,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                         this.event_listeners.mouse_move = this.show_tooltip;
                         this.event_listeners.mouse_out = this.hide_tooltip;
                     }
-		    else if (interactions.hover === 'focus') {
-		        this.event_listeners.element_hover_over = this.scatter_hover_handler;
-			this.event_listeners.element_hover_out = this.reset_hover;
-		    }	    
                 } else {
                     this.reset_hover();
                 }
@@ -581,19 +577,18 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
 
 	scatter_hover_handler: function(args) {
 	    var data = args.data;
-            var index = args.index;
+        var index = args.index;
 
-            var point = [index];
-            this.model.set("hovered_point",
-                           point, {updated_view: this});
+        this.model.set("hovered_point",
+                       index, {updated_view: this});
 	    this.touch();
-        },
+    },
 	
-        reset_selection: function() {
+    reset_selection: function() {
             this.model.set("selected", null);
             this.selected_indices = null;
             this.touch();
-        },
+    },
 
 	scatter_click_handler: function(args) {
             var data = args.data;
@@ -847,7 +842,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
 
         update_hovered: function(model, value) {
-            this.hovered_index = value;
+            this.hovered_index = [value];
             this.apply_styles();
         },
 

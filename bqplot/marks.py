@@ -489,7 +489,7 @@ class Scatter(Mark):
                        rtype='Number', min_dim=1, max_dim=1)
     hovered_style = Dict().tag(sync=True)
     unhovered_style = Dict().tag(sync=True)
-    hovered_point = List(None, allow_none=True).tag(sync=True)
+    hovered_point = Int(None, allow_none=True).tag(sync=True)
 
     # Other attributes
     scales_metadata = Dict({
