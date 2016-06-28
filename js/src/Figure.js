@@ -173,9 +173,17 @@ define(["jupyter-js-widgets", "d3", "underscore"],
                     that.el.parentNode.appendChild(that.tooltip_div.node());
                     that.create_listeners();
                     that.update_layout();
+                    that.model.on("msg:custom", that.handle_custom_messages,
+				  that);
                 });
             });
         },
+
+	handle_custom_messages: function(msg) {
+            if (msg.type === 'save_png') {
+		    this.save_png();
+	    }
+	},
 
         replace_dummy_nodes: function(views) {
             _.each(views, function(view) {
