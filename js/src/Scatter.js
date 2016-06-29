@@ -636,13 +636,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
             e.preventDefault();
 	},
-	
-
-    reset_selection: function() {
-            this.model.set("selected", null);
-            this.selected_indices = null;
-            this.touch();
-    },
 
 	scatter_select_handler: function(args) {
             var data = args.data;
@@ -1072,7 +1065,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 d3.select(dragged_node)
                   .select("path")
                   .style("fill", original_color)
-                  .style("stroke", stroke ? stroke : original_color)           
+                  .style("stroke", stroke ? stroke : original_color);          
             }
             this.update_array(d, i);
             this.send({
