@@ -116,7 +116,7 @@ fig = bq.Figure(marks=[bar, line], axes=[ax_x, ax_y])
 display(fig)
 ```
 
-[![Bqplot Screenshot](/bqplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Basic%20Plotting.ipynb)
+[![Bqplot Screenshot](/bqplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Advanced%20Plotting.ipynb)
 
 
 Help / Documentation
