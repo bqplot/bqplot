@@ -61,16 +61,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                     "lookup_data": false,
                     "hit_test": true
                 },
-		        "element_hover_over": {
-		            "msg_name": "element_hover_over",
-		            "lookup_data": false,
-		            "hit_test": true
-		        },
-                "element_hover_out": {
-	            "msg_name": "element_hover_out",
-                    "lookup_data": false,
-                    "hit_test": true
-		        },
                 "parent_clicked": {
                     "msg_name": "background_click",
                     "hit_test": false
@@ -531,7 +521,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                     }
 		    else if (interactions.click == 'select') {
        		        this.event_listeners.parent_clicked = this.reset_selection;
-			this.event_listeners.element_clicked = this.scatter_select_handler;
+			this.event_listeners.element_clicked = this.scatter_click_handler;
 		    }
                 } else {
                     this.reset_click();
@@ -569,28 +559,28 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
         },
 
-	reset_hover: function() {
-	    this.model.set("hovered_point", null);
-	    this.hovered_index = null;
-	    this.touch();
-	},
+    	reset_hover: function() {
+    	    this.model.set("hovered_point", null);
+    	    this.hovered_index = null;
+    	    this.touch();
+    	},
 
-	scatter_hover_handler: function(args) {
-	    var data = args.data;
-        var index = args.index;
+    	scatter_hover_handler: function(args) {
+    	    var data = args.data;
+            var index = args.index;
 
-        this.model.set("hovered_point",
-                       index, {updated_view: this});
-	    this.touch();
-    },
-	
-    reset_selection: function() {
+            this.model.set("hovered_point",
+                           index, {updated_view: this});
+    	    this.touch();
+        },
+    	
+        reset_selection: function() {
             this.model.set("selected", null);
             this.selected_indices = null;
             this.touch();
-    },
+        },
 
-	scatter_click_handler: function(args) {
+        scatter_click_handler: function(args) {
             var data = args.data;
             var index = args.index;
             var that = this;
@@ -601,12 +591,12 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             // Replacement for "Accel" modifier.
             var accelKey = d3.event.ctrlKey || d3.event.metaKey;
 
-	    if(elem_index > -1 && accelKey) {
+            if(elem_index > -1 && accelKey) {
                 // if the index is already selected and if accel key is
                 // pressed, remove the element from the list
                 selected.splice(elem_index, 1);
             } else {
-		if(accelKey) {
+                if(accelKey) {
                     //If accel is pressed and the bar is not already selcted
                     //add the bar to the list of selected bars.
                     selected.push(index);
@@ -635,54 +625,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 e.stopPropagation();
             }
             e.preventDefault();
-	},
-
-	scatter_select_handler: function(args) {
-            var data = args.data;
-            var index = args.index;
-            var that = this;
-            var idx = this.model.get("selected");
-            var selected = idx ? utils.deepCopy(idx) : [];
-            // index of bar i. Checking if it is already present in the list.
-            var elem_index = selected.indexOf(index);
-            // Replacement for "Accel" modifier.
-            var accelKey = d3.event.ctrlKey || d3.event.metaKey;
-
-	    if(elem_index > -1 && accelKey) {
-                // if the index is already selected and if accel key is
-                // pressed, remove the element from the list
-                selected.splice(elem_index, 1);
-            } else {
-		if(accelKey) {
-                    //If accel is pressed and the bar is not already selcted
-                    //add the bar to the list of selected bars.
-                    selected.push(index);
-                }
-                // updating the array containing the bar indexes selected
-                // and updating the style
-                else {
-                    //if accel is not pressed, then clear the selected ones
-                    //and set the current element to the selected
-                    selected = [];
-                    selected.push(index);
-                }
-            }
-            this.model.set("selected",
-                           ((selected.length === 0) ? null : selected),
-                           {updated_view: this});
-            this.touch();
-            if(!d3.event) {
-                d3.event = window.event;
-            }
-            var e = d3.event;
-            if(e.cancelBubble !== undefined) { // IE
-                e.cancelBubble = true;
-            }
-            if(e.stopPropagation) {
-                e.stopPropagation();
-            }
-            e.preventDefault();
-	},
+    	},
 
         // Hovered Style related functions
         hovered_style_updated: function(model, style) {
