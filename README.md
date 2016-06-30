@@ -86,7 +86,7 @@ plt.plot(x,y, axes_options={'y': {'grid_lines': 'dashed'}})
 plt.show()
 ```
 
-![Pyplot Screenshot](/pyplot-screenshot.png)
+[![Pyplot Screenshot](/pyplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Pyplot.ipynb)
 
 ### Using the `bqplot` internal object model
 
@@ -116,7 +116,7 @@ fig = bq.Figure(marks=[bar, line], axes=[ax_x, ax_y])
 display(fig)
 ```
 
-![Bqplot Screenshot](/bqplot-screenshot.png)
+[![Bqplot Screenshot](/bqplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Basic%20Plotting.ipynb)
 
 
 Help / Documentation
