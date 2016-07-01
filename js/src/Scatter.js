@@ -41,6 +41,10 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.unselected_style = this.model.get("unselected_style");
             this.selected_indices = this.model.get("selected");
 
+            this.hovered_style = this.model.get("hovered_style");
+            this.unhovered_style = this.model.get("unhovered_style");
+            this.hovered_index = (!this.model.get("hovered_point")) ? null: [this.model.get("hovered_point")];
+
             this.display_el_classes = ["dot", "legendtext"];
             this.event_metadata = {
                 "mouse_over": {
@@ -205,6 +209,9 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.listenTo(this.model, "change:interactions", this.process_interactions);
             this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
             this.listenTo(this.model, "change:selected", this.update_selected);
+	        this.listenTo(this.model, "change:hovered_point", this.update_hovered);
+            this.listenTo(this.model, "change:hovered_style", this.hovered_style_updated, this);
+            this.listenTo(this.model, "change:unhovered_style", this.unhovered_style_updated, this);
             this.listenTo(this.parent, "bg_clicked", function() {
                 this.event_dispatcher("parent_clicked");
             });
@@ -467,7 +474,14 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.event_dispatcher("element_clicked",
 				      {"data": d, "index": i});
             }, this));
-
+    	    elements.on("mouseover", _.bind(function(d, i) {
+    		    this.scatter_hover_handler({"data": d, "index": i});
+                this.apply_styles();
+    	    }, this));
+    	    elements.on("mouseout", _.bind(function() {
+    		    this.reset_hover();
+                this.apply_styles();
+    	    }, this));	
             var names = this.model.get_typed_field("names"),
                 text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
                 show_names = (this.model.get("display_names") && names.length !== 0);
@@ -545,13 +559,28 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             }
         },
 
+    	reset_hover: function() {
+    	    this.model.set("hovered_point", null);
+    	    this.hovered_index = null;
+    	    this.touch();
+    	},
+
+    	scatter_hover_handler: function(args) {
+    	    var data = args.data;
+            var index = args.index;
+
+            this.model.set("hovered_point",
+                           index, {updated_view: this});
+    	    this.touch();
+        },
+    	
         reset_selection: function() {
             this.model.set("selected", null);
             this.selected_indices = null;
             this.touch();
         },
 
-	scatter_click_handler: function(args) {
+        scatter_click_handler: function(args) {
             var data = args.data;
             var index = args.index;
             var that = this;
@@ -562,12 +591,12 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             // Replacement for "Accel" modifier.
             var accelKey = d3.event.ctrlKey || d3.event.metaKey;
 
-	    if(elem_index > -1 && accelKey) {
+            if(elem_index > -1 && accelKey) {
                 // if the index is already selected and if accel key is
                 // pressed, remove the element from the list
                 selected.splice(elem_index, 1);
             } else {
-		if(accelKey) {
+                if(accelKey) {
                     //If accel is pressed and the bar is not already selcted
                     //add the bar to the list of selected bars.
                     selected.push(index);
@@ -596,7 +625,25 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 e.stopPropagation();
             }
             e.preventDefault();
-	},
+    	},
+
+        // Hovered Style related functions
+        hovered_style_updated: function(model, style) {
+            this.hovered_style = style;
+            this.clear_style(model.previous("hovered_style"), this.hovered_index);
+            this.style_updated(style, this.hovered_index);
+        },
+
+        unhovered_style_updated: function(model, style) {
+            this.unhovered_style = style;
+            var hov_indices = this.hovered_index;
+            var unhovered_indices = (hov_indices) ?
+                _.range(this.model.mark_data.length).filter(function(index){
+                    return hov_indices.indexOf(index) === -1;
+                }) : [];
+            this.clear_style(model.previous("unhovered_style"), unhovered_indices);
+            this.style_updated(style, unhovered_indices);
+        },
 	
 
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
@@ -728,6 +775,22 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         update_selected: function(model, value) {
             this.selected_indices = value;
             this.apply_styles();
+        },
+
+        update_hovered: function(model, value) {
+            this.hovered_index = [value];
+            this.apply_styles();
+        },
+
+        apply_styles: function() {
+            Scatter.__super__.apply_styles.apply(this);
+
+            var all_indices = _.range(this.model.mark_data.length);
+
+            this.set_style_on_elements(this.hovered_style, this.hovered_index);
+            var unhovered_indices = (!this.hovered_index) ?
+                [] : _.difference(all_indices, this.hovered_index);
+            this.set_style_on_elements(this.unhovered_style, unhovered_indices);
         },
 
         set_style_on_elements: function(style, indices) {
@@ -945,7 +1008,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 d3.select(dragged_node)
                   .select("path")
                   .style("fill", original_color)
-                  .style("stroke", stroke ? stroke : original_color)
+                  .style("stroke", stroke ? stroke : original_color);          
             }
             this.update_array(d, i);
             this.send({
