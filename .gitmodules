@@ -1,3 +1,0 @@
-[submodule "bqplot/nbextension/bqplot/require-less"]
-	path = bqplot/nbextension/require-less
-	url = https://github.com/guybedford/require-less.git
