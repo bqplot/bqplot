@@ -113,7 +113,8 @@ define(["jupyter-js-widgets", "d3", "underscore"],
             this.title = this.fig.append("text")
               .attr("class", "mainheading")
               .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
-              .text(this.model.get("title"));
+              .text(this.model.get("title"))
+              .style("fill", this.model.get("title_color"));
 
             // TODO: remove the save png event mechanism.
             this.model.on("save_png", this.save_png, this);
@@ -179,11 +180,11 @@ define(["jupyter-js-widgets", "d3", "underscore"],
             });
         },
 
-	handle_custom_messages: function(msg) {
-            if (msg.type === 'save_png') {
-		    this.save_png();
-	    }
-	},
+		handle_custom_messages: function(msg) {
+	        if (msg.type === 'save_png') {
+			    this.save_png();
+		    }
+		},
 
         replace_dummy_nodes: function(views) {
             _.each(views, function(view) {
@@ -200,6 +201,7 @@ define(["jupyter-js-widgets", "d3", "underscore"],
 
         create_listeners: function() {
             this.listenTo(this.model, "change:fig_color", this.change_color, this);
+          	this.listenTo(this.model, "change:title_color", this.update_title_color, this);
         },
 
         change_color: function() {
@@ -586,6 +588,10 @@ define(["jupyter-js-widgets", "d3", "underscore"],
 
         update_title: function(model, title) {
             this.title.text(this.model.get("title"));
+        },
+
+        update_title_color: function() {
+        	this.title.style("fill", this.model.get("title_color"));
         },
 
         save_png: function() {

@@ -105,6 +105,7 @@ class Figure(DOMWidget):
     scale_x = Instance(Scale).tag(sync=True, **widget_serialization)
     scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
     fig_color = Color(None, allow_none=True).tag(sync=True)
+    title_color = Color(None, allow_none=True).tag(sync=True)
 
     min_width = CFloat(800.0).tag(sync=True)
     min_height = CFloat(500.0).tag(sync=True)
