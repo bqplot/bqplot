@@ -78,8 +78,12 @@ class Scale(Widget):
     allow_padding: bool (default: True)
         indicates whether figures are allowed to add data padding to this scale
         or not.
+    preference_order: int (class-level attribute)
+        attribute used to determine which scale takes precedence in cases when
+        two or more scales have the same rtype and dtype.
     """
     scale_types = {}
+    preference_order = 0
     domain_class = Type(Float)
     reverse = Bool().tag(sync=True)
     allow_padding = Bool(True).tag(sync=True)
@@ -365,9 +369,15 @@ class LogScale(Scale):
         The range type of a linear scale is numerical.
     dtype: type (class-level attribute)
         the associated data type / domain type
+    preference_order: int (class-level attribute, default_value=1)
+        attribute used to determine which scale takes precedence in cases when
+        two or more scales have the same rtype and dtype.
+        default_value is 1 because for the same range and domain types,
+        LinearScale should take preference.
     """
     rtype = 'Number'
     dtype = np.number
+    preference_order = 1
     min = Float(None, allow_none=True).tag(sync=True)
     max = Float(None, allow_none=True).tag(sync=True)
 
