@@ -46,7 +46,6 @@ from .traits import Date
 
 
 def register_scale(key=None):
-
     """Returns a decorator to register a scale type in the scale type registry.
 
     If no key is provided, the class name is used as a key. A key is
@@ -79,8 +78,12 @@ class Scale(Widget):
     allow_padding: bool (default: True)
         indicates whether figures are allowed to add data padding to this scale
         or not
+    preference_order: int (class-level attribute)
+        attribute used to determine which scale takes precedence in cases when
+        two or more scales have the same rtype and dtype
     """
     scale_types = {}
+    preference_order = 0
     domain_class = Type(Float, sync=False)
     reverse = Bool(False, sync=True)
     allow_padding = Bool(True, sync=True)
@@ -378,9 +381,15 @@ class LogScale(Scale):
         The range type of a linear scale is numerical.
     dtype: type (class-level attribute)
         the associated data type / domain type
+    preference_order: int (class-level attribute, default_value=1)
+        attribute used to determine which scale takes precedence in cases when
+        two or more scales have the same rtype and dtype
+        default_value is 1 because for the same range and domain types,
+        LinearScale should take preference.
     """
     rtype = 'Number'
     dtype = np.number
+    preference_order = 1
     min = Float(default_value=None, sync=True, allow_none=True)
     max = Float(default_value=None, sync=True, allow_none=True)
 
