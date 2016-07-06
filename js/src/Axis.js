@@ -489,8 +489,7 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
                 .selectAll(".tick line")
                 .attr(is_x ? "y1" : "x1",
                       (this.offset_scale && grid_type !== "none")? tickOffset : null)
-                .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null)
-                .style("opacity", grid_type === "none" ? 1.0 : 0.2);
+                .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null);
 
             if (this.model.get("grid_color")) {
                 this.g_axisline
