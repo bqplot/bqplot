@@ -181,8 +181,8 @@ define(["jupyter-js-widgets", "d3", "underscore"],
         },
 
 		handle_custom_messages: function(msg) {
-	        if (msg.type === 'save_png') {
-			    this.save_png();
+            if (msg.type === 'save_png') {
+                this.save_png();
 		    }
 		},
 
