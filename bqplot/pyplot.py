@@ -349,6 +349,7 @@ def axes(mark=None, options={}, **kwargs):
 def grids(fig=None, value='solid'):
     """Sets the value of the grid_lines for the axis to the passed value.
     The default value is `solid`.
+
     Parameters
     ----------
     fig: Figure or None(default: None)
@@ -364,20 +365,20 @@ def grids(fig=None, value='solid'):
         a.grid_lines = value
 
 
-def hline(level=0., fig=None, preserve_domain=True, **kwargs):
-    """Draws a horizontal line at the given level. By default, draws a line at
-    y=0.
+def hline(level, fig=None, preserve_domain=False, **kwargs):
+    """Draws a horizontal line at the given level.
+    
     Parameters
     ----------
-    level: float (default: 0)
-        The level at which to draw the horizontal line
+    level: float
+        The level at which to draw the horizontal line.
     fig: Figure or None
-        The figure for which the axes should be edited. If the value is None,
-        the current figure is used.
-    preserve_domain: boolean (default: True)
+        The figure to which the horizontal line is to be added.
+        If the value is None, the current figure is used.
+    preserve_domain: boolean (default: False)
         If true, the line does not affect the domain of the 'y' scale.
     """
-    default_colors = kwargs.pop('colors', ['white'])
+    default_colors = kwargs.pop('colors', ['dodgerblue'])
     default_width = kwargs.pop('stroke_width', 1)
     if fig is None:
         fig = current_figure()
@@ -387,20 +388,20 @@ def hline(level=0., fig=None, preserve_domain=True, **kwargs):
          stroke_width=default_width, update_context=False)
 
 
-def vline(level=0., fig=None, preserve_domain=True, **kwargs):
-    """Draws a vertical line at the given level. By default, draws a line at
-    x=0.
+def vline(level, fig=None, preserve_domain=False, **kwargs):
+    """Draws a vertical line at the given level.
+
     Parameters
     ----------
-    level: float(default: 0)
-        The level at which to draw the vertical line
+    level: float
+        The level at which to draw the vertical line.
     fig: Figure or None
-        The figure for which the axes should be edited. If the value is None,
-        the current figure is used.
-    preserve_domain: boolean (default: True)
+        The figure to which the vertical line is to be added.
+        If the value is None, the current figure is used.
+    preserve_domain: boolean (default: False)
         If true, the line does not affect the domain of the 'x' scale.
     """
-    default_colors = kwargs.pop('colors', ['white'])
+    default_colors = kwargs.pop('colors', ['dodgerblue'])
     default_width = kwargs.pop('stroke_width', 1)
     if fig is None:
         fig = current_figure()
