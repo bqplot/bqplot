@@ -598,7 +598,8 @@ define(["jupyter-js-widgets", "d3", "./Figure", "underscore"],
             var ref_el = d3.select(document.body).select("#notebook").node();
             var ref_mouse_pos = d3.mouse(ref_el);
 
-            var mouse_pos = d3.mouse(this.el);
+            var parent_node = this.el.parentElement;
+            var mouse_pos = d3.mouse(parent_node);
             var that = this;
             var tooltip_div = this.tooltip_div;
             tooltip_div.transition()
@@ -606,8 +607,8 @@ define(["jupyter-js-widgets", "d3", "./Figure", "underscore"],
                 .style("display", null);
 
             // the +5s are for breathing room for the tool tip
-            tooltip_div.style("left", (mouse_pos[0] + this.el.offsetLeft + 5) + "px")
-                .style("top", (mouse_pos[1] + this.el.offsetTop + 5) + "px");
+            tooltip_div.style("left", (mouse_pos[0] + parent_node.offsetLeft - ref_el.scrollLeft + 5) + "px")
+                .style("top", (mouse_pos[1] + parent_node.offsetTop - ref_el.scrollTop + 5) + "px");
 
             tooltip_div.select("table").remove();
             if(! this.tooltip_view) {
