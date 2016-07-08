@@ -200,15 +200,15 @@ define(["jupyter-js-widgets", "d3", "underscore"],
 
         create_listeners: function() {
             this.listenTo(this.model, "change:title_style", this.title_style_updated, this);
-          	this.listenTo(this.model, "change:background_style", this.background_style_updated, this);
+            this.listenTo(this.model, "change:background_style", this.background_style_updated, this);
         },
 
         title_style_updated: function() {
-        	this.title.style(this.model.get("title_style"));
+            this.title.style(this.model.get("title_style"));
         },
 
         background_style_updated: function() {
-        	this.bg.style(this.model.get("background_style"));
+            this.bg.style(this.model.get("background_style"));
         },
 
         remove: function() {
