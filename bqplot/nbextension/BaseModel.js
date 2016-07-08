@@ -94,7 +94,14 @@ define(["nbextensions/widgets/widgets/js/widget", "underscore"], function(Widget
             if(elem === undefined || elem === null) {
                 return null;
             }
-            return (elem.toJSON === undefined) ? elem : elem.toJSON();
+            if (elem.toJSON === undefined) {
+                return elem;
+            } else {
+                // by default, toJSON returns '%Y-%m-%dT%H:%M:%S.%uZ'
+                // %u is milliseconds. The numpy to str does not have the Z
+                // at the end.
+                return elem.toJSON().slice(0, -1);
+            }
         },
 
     });
