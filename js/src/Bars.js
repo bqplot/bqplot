@@ -47,7 +47,7 @@ define(["d3", "./Mark", "./utils", "underscore"],
         set_ranges: function() {
             var x_scale = this.scales.x,
                 y_scale = this.scales.y;
-            if(x_scale.model.type !== "ordinal") {
+            if(x_scale.model.type !== "categorical") {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model));
             } else {
                 x_scale.set_range(this.parent.padded_range("x", x_scale.model), this.padding);
@@ -86,7 +86,7 @@ define(["d3", "./Mark", "./utils", "underscore"],
             // the bars, because ordinal scales give the values corresponding
             // to the start of the bin but linear scale gives the actual value.
             var x_scale = this.scales.x;
-            if(x_scale.model.type !== "ordinal") {
+            if(x_scale.model.type !== "categorical") {
                 if (this.model.get("align")==="center") {
                     this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
                 } else if (this.model.get("align") === "left") {
@@ -261,7 +261,7 @@ define(["d3", "./Mark", "./utils", "underscore"],
             // this.x is the ordinal scale used to draw the bars. If a linear
             // scale is given, then the ordinal scale is created from the
             // linear scale.
-            if(x_scale.model.type !== "ordinal") {
+            if(x_scale.model.type !== "categorical") {
                 var model_domain = this.model.mark_data.map(function(elem) {
                     return elem.key;
                 });
@@ -325,7 +325,7 @@ define(["d3", "./Mark", "./utils", "underscore"],
             var that = this;
 
             var x_scale = this.scales.x, y_scale = this.scales.y;
-            if (x_scale.model.type === "ordinal") {
+            if (x_scale.model.type === "categorical") {
                 var x_max = d3.max(this.parent.range("x"));
                 bar_groups.attr("transform", function(d) {
                     return "translate(" + ((x_scale.scale(d.key) !== undefined ?
@@ -530,7 +530,7 @@ define(["d3", "./Mark", "./utils", "underscore"],
 
         set_x_range: function() {
             var x_scale = this.scales.x;
-            if(x_scale.model.type === "ordinal") {
+            if(x_scale.model.type === "categorical") {
                 return x_scale.scale.rangeExtent();
             } else {
                 return [x_scale.scale(d3.min(this.x.domain())),

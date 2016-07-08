@@ -16,7 +16,7 @@
 define(["d3", "./Scale", "underscore"], function(d3, ScaleViewModule, _) {
     "use strict";
 
-    var OrdinalScale = ScaleViewModule.Scale.extend({
+    var CategoricalScale = ScaleViewModule.Scale.extend({
 
         render: function() {
             this.scale = d3.scale.ordinal();
@@ -38,8 +38,8 @@ define(["d3", "./Scale", "underscore"], function(d3, ScaleViewModule, _) {
             // expand the domain to expand to the new range but keep it
             // consistent with the previous one, this is the function you use.
 
-            // I am trying to expand the ordinal scale by setting an
-            // appropriate value for the outer padding of the ordinal scale so
+            // I am trying to expand the categorical scale by setting an
+            // appropriate value for the outer padding of the categorical scale so
             // that the starting point of each of the bins match. once that
             // happens, the labels are placed at the center of the bins
 
@@ -82,6 +82,6 @@ define(["d3", "./Scale", "underscore"], function(d3, ScaleViewModule, _) {
     });
 
     return {
-        OrdinalScale: OrdinalScale,
+        CategoricalScale: CategoricalScale,
     };
 });

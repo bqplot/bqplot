@@ -17,11 +17,11 @@ define(["d3", "./ScaleModel", "underscore"],
        function(d3, ScaleModel, _) {
     "use strict";
 
-    var OrdinalScaleModel = ScaleModel.ScaleModel.extend({
+    var CategoricalScaleModel = ScaleModel.ScaleModel.extend({
 
         initialize: function(range) {
-            OrdinalScaleModel.__super__.initialize.apply(this);
-            this.type = "ordinal";
+            CategoricalScaleModel.__super__.initialize.apply(this);
+            this.type = "categorical";
             this.min_from_data = true;
             this.max_from_data = true;
             this.on("change:domain", this.domain_changed, this);
@@ -85,6 +85,6 @@ define(["d3", "./ScaleModel", "underscore"],
     });
 
     return {
-        OrdinalScaleModel: OrdinalScaleModel,
+        CategoricalScaleModel: CategoricalScaleModel,
     };
 });

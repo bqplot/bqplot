@@ -106,7 +106,7 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
             } else if (this.num_ticks !== undefined && this.num_ticks !== null) {
                 this.axis.tickValues(this.get_ticks());
             } else {
-                if (this.axis_scale.model.type === "ordinal") {
+                if (this.axis_scale.model.type === "categorical") {
                     this.axis.tickValues(this.axis_scale.scale.domain());
                 } else if (this.axis_scale.model.type === "log") {
                     var i, r;
@@ -143,7 +143,7 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
             }
             if(this.model.get("tick_format") === null ||
                 this.model.get("tick_format") === undefined) {
-                    if(this.axis_scale.type !== "ordinal") {
+                    if(this.axis_scale.type !== "categorical") {
                         // TODO: can be avoided if num_ticks and tickValues are
                         // not mentioned
                         this.tick_format = this.guess_tick_format(this.axis.tickValues());
@@ -195,7 +195,7 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
                 } else {
                     return this.guess_tick_format();
                 }
-            } else if (this.axis_scale.model.type === "ordinal") {
+            } else if (this.axis_scale.model.type === "categorical") {
                 var tick_format = this.model.get("tick_format");
                 if(tick_format) {
                     //TODO: This may not be the best way to do this. We can
@@ -277,7 +277,7 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
                     return_promise = this.create_child_view(offset_scale_model)
                         .then(function(view) {
                             that.offset_scale = view;
-                            if(that.offset_scale.model.type !== "ordinal") {
+                            if(that.offset_scale.model.type !== "categorical") {
                                 that.offset_scale.scale.clamp(true);
                             }
                             that.offset_scale.on("domain_changed", function() {
@@ -326,7 +326,7 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
             } else {
                 var value = this.offset_scale.scale(this.offset_value);
                 //The null check is required for two reasons. Value may be null
-                //or the scale is ordinal which does not include the value in
+                //or the scale is categorical which does not include the value in
                 //its domain.
                 value = (value === undefined) ? this.get_basic_transform()
                                               : value;
@@ -558,10 +558,10 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
         get_ticks: function(data_array) {
             // Have to do different things based on the type of the scale.
             // If an array is passed, then just scale and return equally spaced
-            // points in the array. This is the way it is done for ordinal
+            // points in the array. This is the way it is done for categorical
             // scales.
             var step, max;
-            if(this.axis_scale.model.type === "ordinal") {
+            if(this.axis_scale.model.type === "categorical") {
                 data_array = this.axis_scale.scale.domain();
             }
             if(this.num_ticks < 2)

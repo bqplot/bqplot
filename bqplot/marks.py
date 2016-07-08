@@ -38,7 +38,7 @@ from ipywidgets import Widget, DOMWidget, CallbackDispatcher, Color, widget_seri
 from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float, TraitError,
                        Instance, Tuple)
 
-from .scales import Scale, OrdinalScale
+from .scales import Scale, CategoricalScale
 from .traits import NdArray, Date
 
 from .colorschemes import CATEGORY10
@@ -1078,26 +1078,26 @@ class GridHeatMap(Mark):
     align attribute.
 
     Suppose the data passed is a m-by-n matrix. If the scale for the rows is
-    Ordinal, then alignment is by default the mid points. For a non-ordinal
+    Categorical, then alignment is by default the mid points. For a non-categorical
     scale, the data cannot be aligned to the mid points of the rectangles.
 
-    If it is not ordinal, then two cases arise. If the number of rows passed
+    If it is not categorical, then two cases arise. If the number of rows passed
     is m, then align attribute can be used. If the number of rows passed is m+1,
     then the data are the boundaries of the m rectangles.
 
     If rows and columns are not passed, and scales for them are also not passed,
-    then ordinal scales are generated for the rows and columns.
+    then categorical scales are generated for the rows and columns.
 
     Attributes
     ----------
     row_align: Enum(['start', 'end'])
         This is only valid if the number of entries in `row` exactly match the
-        number of rows in `color` and the `row_scale` is not `OrdinalScale`.
+        number of rows in `color` and the `row_scale` is not `CategoricalScale`.
         `start` aligns the row values passed to be aligned with the start of the
         tiles and `end` aligns the row values to the end of the tiles.
     column_align: Enum(['start', end'])
         This is only valid if the number of entries in `column` exactly match the
-        number of columns in `color` and the `column_scale` is not `OrdinalScale`.
+        number of columns in `color` and the `column_scale` is not `CategoricalScale`.
         `start` aligns the column values passed to be aligned with the start of the
         tiles and `end` aligns the column values to the end of the tiles.
     anchor_style: dict (default: {'fill': 'white', 'stroke': 'blue'})
@@ -1158,12 +1158,12 @@ class GridHeatMap(Mark):
 
         kwargs['row'] = row
         if(scales.get('row', None) is None):
-            row_scale = OrdinalScale(reverse=True)
+            row_scale = CategoricalScale(reverse=True)
             scales['row'] = row_scale
 
         kwargs['column'] = column
         if(scales.get('column', None) is None):
-            column_scale = OrdinalScale()
+            column_scale = CategoricalScale()
             scales['column'] = column_scale
         kwargs['scales'] = scales
         super(GridHeatMap, self).__init__(**kwargs)

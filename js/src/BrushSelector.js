@@ -87,10 +87,10 @@ define(["d3", "./Selector", "./utils", "underscore"], function(d3, BaseSelectors
             var extent_x = [extent[0][0], extent[1][0]];
             var extent_y = [extent[0][1], extent[1][1]];
 
-            if(this.x_scale.model.type == "ordinal") {
+            if(this.x_scale.model.type == "categorical") {
                 extent_x = this.x_scale.invert_range(extent_x);
             }
-            if(this.y_scale.model.type == "ordinal") {
+            if(this.y_scale.model.type == "categorical") {
                 extent_y = this.y_scale.invert_range(extent_y);
             }
 
@@ -242,7 +242,7 @@ define(["d3", "./Selector", "./utils", "underscore"], function(d3, BaseSelectors
                     return mark_view.invert_range(extent);
                 });
             } else {
-                if(this.scale.model.type === "ordinal") {
+                if(this.scale.model.type === "categorical") {
                     _.each(this.mark_views, function(mark_view) {
                         mark_view.invert_range(extent[0], extent[1]);
                     });
@@ -254,7 +254,7 @@ define(["d3", "./Selector", "./utils", "underscore"], function(d3, BaseSelectors
                 }
             }
 
-            if(this.scale.model.type == "ordinal") {
+            if(this.scale.model.type == "categorical") {
                 extent = this.scale.invert_range(extent);
             }
             this.model.set_typed_field("selected", extent, {js_ignore: true});

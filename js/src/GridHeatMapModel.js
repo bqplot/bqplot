@@ -128,7 +128,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
             var data_nrow = this.colors.length;
             var data_ncol = this.colors[0].length;
 
-            if(row_scale.type === "ordinal") {
+            if(row_scale.type === "categorical") {
                 modes.row = "middle";
             } else {
                 if(data_nrow === this.rows.length - 1) {
@@ -139,7 +139,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
                     modes.row = "expand_two";
                 }
             }
-            if(column_scale.type === "ordinal") {
+            if(column_scale.type === "categorical") {
                 modes.column = "middle";
             } else {
                 if(data_ncol === this.columns.length - 1) {

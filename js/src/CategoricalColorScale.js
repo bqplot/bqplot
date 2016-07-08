@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-define(["d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleViewModule, ColorUtils) {
+define(["d3", "./CategoricalScale", "./ColorUtils"], function(d3, CategoricalScaleViewModule, ColorUtils) {
     "use strict";
 
-    var OrdinalColorScale = OrdinalScaleViewModule.OrdinalScale.extend({
+    var CategoricalColorScale = CategoricalScaleViewModule.CategoricalScale.extend({
 
         render: function(){
-            OrdinalColorScale.__super__.render.apply(this);
+            CategoricalColorScale.__super__.render.apply(this);
             this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
             this.listenTo(this.model, "set_ticks", this.model_ticks_changed, this);
             this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
@@ -30,13 +30,13 @@ define(["d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleViewMo
             if (this.model.get("colors").length > 0) {
                 this.scale.range(ColorUtils.cycle_colors(this.model.get("colors"), this.scale.domain().length));
             } else {
-                this.scale.range(ColorUtils.get_ordinal_scale_range(this.model.get("scheme"), this.scale.domain().length));
+                this.scale.range(ColorUtils.get_categorical_scale_range(this.model.get("scheme"), this.scale.domain().length));
             }
             this.trigger("color_scale_range_changed");
         },
 
         model_domain_changed: function() {
-            OrdinalColorScale.__super__.model_domain_changed.apply(this);
+            CategoricalColorScale.__super__.model_domain_changed.apply(this);
             this.set_range();
         },
 
@@ -46,6 +46,6 @@ define(["d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleViewMo
     });
 
     return {
-        OrdinalColorScale: OrdinalColorScale,
+        CategoricalColorScale: CategoricalColorScale,
     };
 });
