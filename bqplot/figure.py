@@ -70,8 +70,10 @@ class Figure(DOMWidget):
         around the data points, proportion of the vertical length
     legend_location: {'top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'}
         location of the legend relative to the center of the figure
-    fig_color: Color (default: None)
-        background color of the figure
+    background_style: Dict (default: {})
+        CSS style to be applied to the background of the figure
+    title_style: Dict (default: {})
+        CSS style to be applied to the title of the figure
     animation_duration: nonnegative int (default: 0)
         Duration of transition on change of data attributes, in milliseconds.
 
@@ -104,7 +106,8 @@ class Figure(DOMWidget):
                            **widget_serialization)
     scale_x = Instance(Scale).tag(sync=True, **widget_serialization)
     scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
-    fig_color = Color(None, allow_none=True).tag(sync=True)
+    title_style = Dict().tag(sync=True)
+    background_style = Dict().tag(sync=True)
 
     min_width = CFloat(800.0).tag(sync=True)
     min_height = CFloat(500.0).tag(sync=True)
