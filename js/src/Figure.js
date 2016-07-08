@@ -77,9 +77,8 @@ define(["jupyter-js-widgets", "d3", "underscore"],
               .attr("width", this.plotarea_width)
               .attr("height", this.plotarea_height)
               .on("click", function() { that.trigger("bg_clicked"); })
-              .style("pointer-events", "all");
-
-            this.change_color();
+              .style("pointer-events", "all")
+              .style(this.model.get("background_style"));
 
             this.fig_axes = this.fig.append("g");
             this.fig_marks = this.fig.append("g");
@@ -114,7 +113,7 @@ define(["jupyter-js-widgets", "d3", "underscore"],
               .attr("class", "mainheading")
               .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
               .text(this.model.get("title"))
-              .style("fill", this.model.get("title_color"));
+              .style(this.model.get("title_style"));
 
             // TODO: remove the save png event mechanism.
             this.model.on("save_png", this.save_png, this);
@@ -200,12 +199,16 @@ define(["jupyter-js-widgets", "d3", "underscore"],
         },
 
         create_listeners: function() {
-            this.listenTo(this.model, "change:fig_color", this.change_color, this);
-          	this.listenTo(this.model, "change:title_color", this.update_title_color, this);
+            this.listenTo(this.model, "change:title_style", this.title_style_updated, this);
+          	this.listenTo(this.model, "change:background_style", this.background_style_updated, this);
         },
 
-        change_color: function() {
-            this.bg.style("fill", this.model.get("fig_color"));
+        title_style_updated: function() {
+        	this.title.style(this.model.get("title_style"));
+        },
+
+        background_style_updated: function() {
+        	this.bg.style(this.model.get("background_style"));
         },
 
         remove: function() {
@@ -588,10 +591,6 @@ define(["jupyter-js-widgets", "d3", "underscore"],
 
         update_title: function(model, title) {
             this.title.text(this.model.get("title"));
-        },
-
-        update_title_color: function() {
-        	this.title.style("fill", this.model.get("title_color"));
         },
 
         save_png: function() {
