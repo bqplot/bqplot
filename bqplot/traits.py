@@ -119,6 +119,10 @@ class NdArray(CInstance):
             elif np.issubdtype(a.dtype, np.datetime64):
                 dtype = 'date'
                 a = a.astype(np.str)
+                for x in np.nditer(a, op_flags=['readwrite']):
+                    ## for every element in the nd array, forcing the conversion into
+                    ## the format specified here.
+                    x[...] = pd.to_datetime(x.flatten()[0]).to_pydatetime().strftime('%Y-%m-%dT%H:%M:%S.%f')
             else:
                 dtype = a.dtype
             return {'values': a.tolist(), 'type': str(dtype)}
