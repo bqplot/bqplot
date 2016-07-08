@@ -31,7 +31,8 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"], function(widgets, Ba
             scale_x: undefined,
             scale_y: undefined,
             fig_color: null,
-            title_color: null,
+            title_style: null,
+            background_style: null,
 
             min_width: 800.0,
             min_height: 500.0,
