@@ -3,7 +3,7 @@ bqplot
 
 bqplot is a Grammar of Graphics based interactive plotting framework for the Jupyter notebook.
 
-[![bqplot](./bqplot-screencast.gif)](https://github.com/bloomberg/bqplot/blob/master/examples/Wealth%20of%20Nations.ipynb)
+[![bqplot](./bqplot-screencast.gif)](https://github.com/bloomberg/bqplot/blob/master/examples/Applications/Wealth%20of%20Nations.ipynb)
 
 Goals
 -----
@@ -86,7 +86,7 @@ plt.plot(x,y, axes_options={'y': {'grid_lines': 'dashed'}})
 plt.show()
 ```
 
-[![Pyplot Screenshot](/pyplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Pyplot.ipynb)
+[![Pyplot Screenshot](/pyplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Basic%20Plotting/Pyplot.ipynb)
 
 ### Using the `bqplot` internal object model
 
@@ -117,7 +117,7 @@ fig = Figure(marks=[bar, line], axes=[ax_x, ax_y], title='API Example')
 display(fig)
 ```
 
-[![Bqplot Screenshot](/bqplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Advanced%20Plotting.ipynb)
+[![Bqplot Screenshot](/bqplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Advanced%20Plotting/Advanced%20Plotting.ipynb)
 
 
 Help / Documentation
