@@ -142,6 +142,7 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
         },
         create_listeners: function() {
             this.listenTo(this.model, "change:color", this.recolor_chart, this);
+	    this.listenTo(this.model, "change:colors", this.colors_updated,  this);
             this.listenTo(this.model, "change:show_groups", this.show_groups, this);
             this.listenTo(this.model, "change:selected_stroke", this.update_selected_stroke, this);
             this.listenTo(this.model, "change:hovered_stroke", this.update_hovered_stroke, this);
@@ -292,6 +293,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             // direction.
             this.set_row_limits();
         },
+	colors_updated: function() {
+	    this.colors = this.model.get("colors");
+	    this.recolor_chart();
+	},    
         compute_dimensions_and_draw: function() {
             this.set_area_dimensions(this.data.length);
             this.update_plotarea_dimensions();
