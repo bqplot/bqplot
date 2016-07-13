@@ -149,6 +149,7 @@ define(["jupyter-js-widgets", "d3", "./Figure", "underscore"],
 
         create_listeners: function() {
             this.listenTo(this.model, "change:color", this.recolor_chart, this);
+            this.listenTo(this.model, "change:colors", this.colors_updated, this);
             this.listenTo(this.model, "change:show_groups", this.show_groups, this);
             this.listenTo(this.model, "change:selected_stroke", this.update_selected_stroke, this);
             this.listenTo(this.model, "change:hovered_stroke", this.update_hovered_stroke, this);
@@ -707,6 +708,11 @@ define(["jupyter-js-widgets", "d3", "./Figure", "underscore"],
             } else {
                 return (this.prev_x - 1) > -1;
             }
+        },
+
+        colors_updated: function() {
+            this.colors = this.model.get("colors");
+            this.recolor_chart();
         },
 
         get_color: function(index, length) {
