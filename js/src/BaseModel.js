@@ -23,6 +23,47 @@ define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
             _model_module: "bqplot",
         }),
 
+       b64decode: function(base64) {
+            // lightly adapted from Niklas
+
+            /*
+             * base64-arraybuffer
+             * https://github.com/niklasvh/base64-arraybuffer
+             *
+             * Copyright (c) 2012 Niklas von Hertzen
+             * Licensed under the MIT license.
+             */
+            var chars =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            var bufferLength = base64.length * 0.75,
+                len = base64.length,
+                i, p = 0,
+                encoded1, encoded2, encoded3, encoded4;
+
+            if (base64[base64.length - 1] === "=") {
+                bufferLength--;
+                if (base64[base64.length - 2] === "=") {
+                    bufferLength--;
+                }
+            }
+
+            var arraybuffer = new ArrayBuffer(bufferLength),
+                bytes = new Uint8Array(arraybuffer);
+
+            for (i = 0; i < len; i += 4) {
+                encoded1 = chars.indexOf(base64[i]);
+                encoded2 = chars.indexOf(base64[i + 1]);
+                encoded3 = chars.indexOf(base64[i + 2]);
+                encoded4 = chars.indexOf(base64[i + 3]);
+
+                bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+                bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+                bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+            }
+
+            return arraybuffer;
+        },
+
         get_typed_field: function(param) {
             // Function that reads in an array of a field that is typed. It
             // performs tpe conversions that you may require and returns you
@@ -46,6 +87,8 @@ define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
                             return that.convert_to_date(val);
                         });
                     }
+                } else if (value.type === "float" || value.type === "float64") {
+                    return_value = new Float64Array(this.b64decode(value.data), 0, value.size);
                 } else {
                     return_value = this.get(param).values;
                 }

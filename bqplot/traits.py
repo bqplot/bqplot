@@ -37,6 +37,8 @@ import pandas as pd
 import warnings
 import datetime as dt
 
+from base64 import b64encode
+
 
 # Numpy and Pandas Traitlets
 class CInstance(Instance):
@@ -112,18 +114,20 @@ class NdArray(CInstance):
             if np.issubdtype(a.dtype, np.float):
                 # replace nan with None
                 dtype = a.dtype
-                a = np.where(np.isnan(a), None, a)
+                a = np.where(np.isnan(a), 0, a)
             elif a.dtype in (int, np.int64):
                 dtype = 'float'
                 a = a.astype(np.float64)
             elif np.issubdtype(a.dtype, np.datetime64):
                 dtype = 'date'
                 a = a.astype(np.str)
+            elif a.size == 0:
+                a = np.empty(0)
             else:
                 dtype = a.dtype
-            return {'values': a.tolist(), 'type': str(dtype)}
+            return {'values': a.tolist(), 'data': b64encode(a), 'type': str(a.dtype), 'shape': a.shape, 'size': a.size}
         else:
-            return {'values': a, 'type': None}
+            return {'values': a, 'data': '', 'type': str(np.float64), 'shape': [], 'size': 0}
 
     def _set_value(self, value):
         if value is None or len(value) == 0:
