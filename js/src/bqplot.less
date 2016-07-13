@@ -125,8 +125,21 @@
     .common();
     svg.bqplot {
         .axis {
-            rect, path, line {
-                stroke: black;
+            rect {
+                stroke: white;
+                opacity: 1.0;
+            }
+            .tick line {
+            	stroke: white;
+            	stroke-width: 1.4;
+                opacity: 1.0;
+            }
+            .tick.short line {
+            	stroke: #8B8B8B;
+            }
+            .tick text {
+                fill: #8B8B8B;
+                font: 12px sans-serif;
             }
         }
         .stick, .zeroLine {
@@ -147,11 +160,17 @@
         .grid-line {
             stroke: grey;
         }
-        text.axislabel, tspan.axislabel, text.mainheading {
+        text.axislabel, tspan.axislabel {
             fill: black;
+            font: serif;
+        }
+        text.mainheading {
+            fill: black;
+            font: serif;
+            font-size: large;
         }
         .plotarea_background {
-            fill: #F7F7F7;
+            fill: #EEEEEE;
         }
     }
     .mark_tooltip {
