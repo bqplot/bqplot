@@ -125,9 +125,6 @@
     .common();
     svg.bqplot {
         .axis {
-            path, line {
-                stroke: #EEEEEE;
-            }
             rect {
                 stroke: white;
                 opacity: 1.0;
@@ -137,8 +134,10 @@
             	stroke-width: 1.4;
                 opacity: 1.0;
             }
+            .tick.short line {
+            	stroke: black;
+            }
             .tick text {
-                fill: #7f7f7f;
                 font: 12px sans-serif;
             }
         }

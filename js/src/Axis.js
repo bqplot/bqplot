@@ -478,17 +478,21 @@ define(["jupyter-js-widgets", "d3", "./utils", "underscore"],
             }
 
             if (grid_type !== "none") {
-                this.axis.innerTickSize(tickSize).outerTickSize(6);
+                this.axis.innerTickSize(tickSize).outerTickSize(0);
             } else {
-                this.axis.tickSize(6);
+                this.axis.tickSize(5);
             }
+
+            this.g_axisline
+                .selectAll(".tick")
+                .classed("short", grid_type === "none");
 
             this.g_axisline
                 .transition().duration(animation_duration)
                 .call(this.axis)
                 .selectAll(".tick line")
                 .attr(is_x ? "y1" : "x1",
-                      (this.offset_scale && grid_type !== "none")? tickOffset : null)
+                      (this.offset_scale && grid_type !== "none") ? tickOffset : null)
                 .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null);
 
             if (this.model.get("grid_color")) {
