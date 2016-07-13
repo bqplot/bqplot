@@ -117,10 +117,10 @@ class Figure(DOMWidget):
     animation_duration = Int(0, sync=True, display_name='Animation duration')
 
     def _scale_x_default(self):
-        return LinearScale(min=0, max=1)
+        return LinearScale(min=0, max=1, allow_padding=False)
 
     def _scale_y_default(self):
-        return LinearScale(min=0, max=1)
+        return LinearScale(min=0, max=1, allow_padding=False)
 
     _view_name = Unicode('Figure', sync=True)
     _view_module = Unicode('nbextensions/bqplot/Figure', sync=True)
