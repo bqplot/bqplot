@@ -105,7 +105,19 @@ define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
             if(elem === undefined || elem === null) {
                 return null;
             }
-            return (elem.toJSON === undefined) ? elem : elem.toJSON();
+            else {
+                if (elem.toJSON === undefined) {
+                    return elem;
+                } else {
+                    // the format of the string to be sent across is
+                    // '%Y-%m-%dT%H:%M:%S.%f'
+                    // by default, toJSON returns '%Y-%m-%dT%H:%M:%S.%uZ'
+                    // %u is milliseconds. Hence adding 000 to convert it into
+                    // microseconds.
+                    return elem.toJSON().slice(0, -1) + '000';
+                }
+
+            }
         },
     });
 
