@@ -173,7 +173,7 @@ setup_args = {
         ]),
     ],
     'install_requires': [
-        'ipywidgets>=5.0.0',
+        'ipywidgets>=5.2.0',
         'numpy',
         'pandas'],
     'packages': find_packages(),
@@ -205,6 +205,7 @@ setup_args = {
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
     ],
 }
 
