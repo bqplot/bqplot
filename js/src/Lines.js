@@ -300,8 +300,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
             var curve_labels = this.model.update_labels();
             var legend_data = this.model.mark_data.map(function(d) {
-                return {index: d.index, name: d.name, color: d.color,
-                        opacity: d.opacity};
+                return {index: d.index, name: d.name, color: d.color};
             });
             this.legend_el = elem.selectAll(".legend" + this.uuid)
               .data(legend_data, function(d, i) { return d.name; });

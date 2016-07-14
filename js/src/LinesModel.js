@@ -85,7 +85,6 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
                             values: that.y_data[i].map(function(d, j) {
                                 return {x: that.x_data[0][j], y: d};
                             }),
-                            opacity: 1,
                             color: that.color_data[i],
                             index: i,
                         };
@@ -98,7 +97,6 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
                             values: xy_data.map(function(d, j) {
                                 return {x: d[0], y: d[1]};
                             }),
-                            opacity: 1,
                             color: that.color_data[i],
                             index: i,
                         };
