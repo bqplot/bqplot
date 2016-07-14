@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscore"],
-       function(d3, topojson, FigureViewModule, widgets, Mark, _) {
+define(["d3", "topojson", "jupyter-js-widgets", "./Mark", "./utils", "underscore"],
+       function(d3, topojson, widgets, Mark, utils, _) {
     "use strict";
 
     var Map = Mark.Mark.extend({
@@ -123,7 +123,8 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
             var el = d3.select(d3.event.target);
             if(this.is_hover_element(el)) {
                 var data = el.data()[0];
-                var select = this.model.get("selected").slice();
+                var idx = this.model.get("selected");
+                var select = idx ? utils.deepCopy(idx) : [];
                 var node = this.highlight_g.append(function() {
                     return el.node().cloneNode(true);
                 });
@@ -168,12 +169,11 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
             if(this.is_hover_element(el)) {
                 var data = el.data()[0];
                 var name = this.model.get_subunit_name(data.id);
-                var selected = this.model.get("selected").slice();
-                var index = selected.indexOf(data.id);
-                if(index > -1) {
-                    selected.splice(index, 1);
-                    this.model.set("selected", selected);
-                    this.touch();
+                var idx = this.model.get("selected");
+                var selected = idx ? utils.deepCopy(idx) : [];
+                var elem_index = selected.indexOf(data.id);
+                if(elem_index > -1) {
+                    selected.splice(elem_index, 1);
                     el.style("fill-opacity", 0.0).transition();
                     this.highlight_g.selectAll(".hovered").remove();
                     var choice = "#c".concat(data.id.toString());
@@ -202,6 +202,10 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
                     this.model.set("selected", selected);
                     this.touch();
                 }
+            this.model.set("selected",
+                ((selected.length === 0) ? null : selected),
+                {updated_view: this});
+            this.touch();
             }
         },
 
@@ -328,7 +332,8 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
         change_selected: function() {
             this.highlight_g.selectAll("path").remove();
             var that = this;
-            var select = this.model.get("selected").slice();
+            var idx = this.model.get("selected");
+            var select = idx ? idx : [];
             var temp = this.stroke_g.selectAll("path").data();
             this.stroke_g.selectAll("path").style("stroke", function(d, i) {
                 return that.hoverfill(d, i);
@@ -418,7 +423,8 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
         },
 
         hoverfill: function(d, j) {
-            var select = this.model.get("selected").slice();
+            var idx = this.model.get("selected");
+            var select = idx ? idx : [];
             if (select.indexOf(d.id) > -1 &&
                 this.validate_color(this.model.get("selected_styles").selected_stroke)) {
                 return this.model.get("selected_styles").selected_stroke;
@@ -428,19 +434,20 @@ define(["d3", "topojson", "./Figure", "jupyter-js-widgets", "./Mark", "underscor
         },
 
         fill_g_colorfill: function(d, j) {
-	    var color_scale = this.scales.color;
-	    var selection = this.model.get("selected");
-	    var color_data = this.model.get("color");
-	    var colors = this.model.get("colors");
+            var color_scale = this.scales.color;
+            var idx = this.model.get("selected");
+            var selection = idx ? idx : [];
+            var color_data = this.model.get("color");
+            var colors = this.model.get("colors");
 
-	    if (selection.indexOf(d.id) > -1) {
-		    return this.model.get("selected_styles").selected_fill;
-	    } else if (this.is_object_empty(color_data)) {
-		   return colors[d.id] || colors["default_color"];
-	    } else if (color_data[d.id] === undefined ||
-                       color_data[d.id] === null ||
-                       color_data[d.id] === "nan" ||
-                       color_scale === undefined) {
+    	    if (selection.indexOf(d.id) > -1) {
+    		    return this.model.get("selected_styles").selected_fill;
+    	    } else if (this.is_object_empty(color_data)) {
+    		    return colors[d.id] || colors["default_color"];
+    	    } else if (color_data[d.id] === undefined ||
+                           color_data[d.id] === null ||
+                           color_data[d.id] === "nan" ||
+                           color_scale === undefined) {
                 return colors["default_color"]; 
             } else {
                 return color_scale.scale(color_data[d.id]);
