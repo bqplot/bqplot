@@ -247,7 +247,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         relayout: function() {
             this.set_ranges();
             this.update_line_xy();
-            this.create_labels();
         },
 
         invert_range: function(start_pxl, end_pxl) {
@@ -377,27 +376,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             return [this.model.mark_data.length, max_length];
         },
 
-        create_labels: function() {
-            var x_scale = this.scales.x, y_scale = this.scales.y,
-                that = this;
-            var curves_sel = this.el.selectAll(".curve");
-
-            curves_sel.selectAll(".curve_label").remove();
-            curves_sel.append("text")
-              .attr("class", "curve_label")
-              .datum(function(d) {
-                  return {name: d.name, value: d.values[d.values.length - 1]};
-              }).attr("transform", function(d) {
-                  return "translate(" + x_scale.scale(d.value.x) +
-                                  "," + y_scale.scale(d.value.y) + ")";
-              }).attr("x", 3)
-              .attr("dy", ".35em")
-              .attr("display", function(d) {
-                  return (that.model.get("labels_visibility") !== "label") ?
-                    "none" : "inline";
-              }).text(function(d) { return d.name; });
-        },
-
         update_curves_subset: function() {
             var that = this;
             // Show a subset of the curves
@@ -481,15 +459,25 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
               .y1(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
 
             var that = this;
-            this.el.selectAll(".curve").select(".line")
+            var curves_sel = this.el.selectAll(".curve");
+
+            curves_sel.select(".line")
               .transition().duration(animation_duration)
               .attr("d", function(d) {
                   return that.line(d.values) + that.path_closure();
               });
 
-            this.el.selectAll(".curve").select(".area")
+            curves_sel.select(".area")
               .transition().duration(animation_duration)
               .attr("d", function(d) { return that.area(d.values); });
+
+            curves_sel.select("text")
+              .transition().duration(animation_duration)
+              .attr("transform", function(d) {
+                  var last_xy = d.values[d.values.length - 1];
+                  return "translate(" + x_scale.scale(last_xy.x) +
+                                  "," + y_scale.scale(last_xy.y) + ")";
+              });
 
             this.update_dots_xy(animate);
             this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
@@ -509,6 +497,13 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
               .attr("fill", "none");
             new_curves.append("path")
               .attr("class", "area");
+            new_curves.append("text")
+              .attr("class", "curve_label")
+              .attr("x", 3)
+              .attr("dy", ".35em")
+              .attr("display", this.model.get("labels_visibility") !== "label" ?
+                    "none" : "inline")
+              .text(function(d) { return d.name; });
 
             var fill = this.model.get("fill"),
                 area = (fill === "top" || fill === "bottom");
@@ -535,12 +530,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
             this.update_line_xy(animate);
             this.update_style();
 
-            curves_sel.select(".curve_label")
-              .attr("display", function(d) {
-                  return that.model.get("labels_visibility") === "label" ?
-                      "inline" : "none";
-              });
-
             // alter the display only if a few of the curves are visible
             var curves_subset = this.model.get("curves_subset");
             if(curves_subset.length > 0) {
@@ -556,7 +545,6 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                           "inline" : "none";
                   });
             }
-            this.create_labels();
         },
 
         draw_dots: function() {
