@@ -67,9 +67,9 @@ class Date(TraitType):
             if isinstance(value, dt.date):
                 return dt.datetime(value.year, value.month, value.day)
             if np.issubdtype(np.dtype(value), np.datetime64):
-                ##TODO: Fix this. Right now, we have to limit the precision
-                ## of time to microseconds because np.datetime64.astype(datetime)
-                ## returns date values only for precision <= 'us'
+                # TODO: Fix this. Right now, we have to limit the precision
+                # of time to microseconds because np.datetime64.astype(datetime)
+                # returns date values only for precision <= 'us'
                 value_truncated = np.datetime64(value, 'us')
                 return value_truncated.astype(dt.datetime)
         except Exception:
@@ -120,13 +120,14 @@ class NdArray(CInstance):
                 dtype = 'date'
                 a = a.astype(np.str).astype('object')
                 for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
-                    ## for every element in the nd array, forcing the conversion into
-                    ## the format specified here.
-		    temp_x = pd.to_datetime(x.flatten()[0])
-		    if pd.isnull(temp_x):
-		        x[...] = None
-		    else:
-	                x[...] = temp_x.to_pydatetime().strftime('%Y-%m-%dT%H:%M:%S.%f')
+                    # for every element in the nd array, forcing the conversion into
+                    # the format specified here.
+                    temp_x = pd.to_datetime(x.flatten()[0])
+                    if pd.isnull(temp_x):
+                        x[...] = None
+                    else:
+                        x[...] = temp_x.to_pydatetime().strftime(
+                            '%Y-%m-%dT%H:%M:%S.%f')
             else:
                 dtype = a.dtype
             return {'values': a.tolist(), 'type': str(dtype)}
@@ -142,7 +143,7 @@ class NdArray(CInstance):
             return np.asarray(value)
 
     def validate(self, obj, value):
-        ## If it is an object, I have to check if it can be cast into a date
+        # If it is an object, I have to check if it can be cast into a date
         if (not isinstance(value, self.klass) or value.dtype == 'object'):
             value = self._cast(value)
         min_dim = self.get_metadata('min_dim', 0)
@@ -174,32 +175,38 @@ class NdArray(CInstance):
 
 
 def convert_to_date(array, fmt='%m-%d-%Y'):
-    ## If array is a np.ndarray with type == np.datetime64, the array can be
-    ## returned as such. If it is an np.ndarray of dtype 'object' then conversion
-    ## to string is tried according to the fmt parameter.
+    # If array is a np.ndarray with type == np.datetime64, the array can be
+    # returned as such. If it is an np.ndarray of dtype 'object' then conversion
+    # to string is tried according to the fmt parameter.
 
     if(isinstance(array, np.ndarray) and np.issubdtype(array.dtype, np.datetime64)):
-        ## no need to perform any conversion in this case
+        # no need to perform any conversion in this case
         return array
     elif(isinstance(array, list) or (isinstance(array, np.ndarray) and array.dtype == 'object')):
         return_value = []
-            # Pandas to_datetime handles all the cases where the passed in
-            # data could be any of the combinations of
-            #            [list, nparray] X [python_datetime, np.datetime]
-            # Because of the coerce=True flag, any non-compatible datetime type
-            # will be converted to pd.NaT. By this comparision, we can figure
-            # out if it is date castable or not.
+        # Pandas to_datetime handles all the cases where the passed in
+        # data could be any of the combinations of
+        #            [list, nparray] X [python_datetime, np.datetime]
+        # Because of the coerce=True flag, any non-compatible datetime type
+        # will be converted to pd.NaT. By this comparision, we can figure
+        # out if it is date castable or not.
         if(len(np.shape(array)) == 2):
             for elem in array:
-                temp_val = pd.to_datetime(elem, errors='coerce', box=False, infer_datetime_format=True)
-                temp_val = elem if (temp_val[0] == np.datetime64('NaT')) else temp_val
+                temp_val = pd.to_datetime(
+                    elem, errors='coerce', box=False, infer_datetime_format=True)
+                temp_val = elem if (
+                    temp_val[0] == np.datetime64('NaT')) else temp_val
                 return_value.append(temp_val)
         elif(isinstance(array, list)):
-            temp_val = pd.to_datetime(array, errors='coerce', box=False, infer_datetime_format=True)
-            return_value = array if (temp_val[0] == np.datetime64('NaT')) else temp_val
+            temp_val = pd.to_datetime(
+                array, errors='coerce', box=False, infer_datetime_format=True)
+            return_value = array if (
+                temp_val[0] == np.datetime64('NaT')) else temp_val
         else:
-            temp_val = pd.to_datetime(array, errors='coerce', box=False, infer_datetime_format=True)
-            temp_val = array if (temp_val[0] == np.datetime64('NaT')) else temp_val
+            temp_val = pd.to_datetime(
+                array, errors='coerce', box=False, infer_datetime_format=True)
+            temp_val = array if (
+                temp_val[0] == np.datetime64('NaT')) else temp_val
             return_value = temp_val
         return return_value
     elif(isinstance(array, np.ndarray)):
