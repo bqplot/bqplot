@@ -48,6 +48,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
         initialize: function() {
             LinesModel.__super__.initialize.apply(this);
             this.on_some_change(["x", "y", "color"], this.update_data, this);
+            this.on("change:labels", this.update_labels, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which
             // is called AFTER the specific handlers on("change:foobar") and we make that
@@ -75,7 +76,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
                     this.x_data : [this.x_data];
                 this.y_data = this.y_data[0] instanceof Array ?
                     this.y_data : [this.y_data];
-                curve_labels = this.update_labels();
+                curve_labels = this.get_labels();
 
                 if (this.x_data.length == 1 && this.y_data.length > 1) {
                     // same x for all y
@@ -111,6 +112,15 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
         },
 
         update_labels: function() {
+            // update the names in mark_data
+            var labels = this.get_labels();
+            this.mark_data.forEach(function(element, i) {
+                element.name = labels[i];
+            });
+            this.trigger("labels_updated");
+        },
+
+        get_labels: function() {
             // Function to set the labels appropriately.
             // Setting the labels to the value sent and filling in the
             // remaining values.
@@ -214,7 +224,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
                     this.x_data : [this.x_data];
                 this.y_data = this.y_data[0] instanceof Array ?
                     this.y_data : [this.y_data];
-                curve_labels = this.update_labels();
+                curve_labels = this.get_labels();
                 var color_data = this.get_typed_field("color");
                 var width_data = this.get_typed_field("width");
                 this.data_len = Math.min(this.x_data[0].length, this.y_data[0].length);

@@ -103,6 +103,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 var animate = true;
                 this.draw(animate);
             }, this);
+            this.listenTo(this.model, "labels_updated", this.update_labels, this);
             this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
             this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
             this.listenTo(this.model, "change:curves_subset", this.update_curves_subset, this);
@@ -133,6 +134,13 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 this.el.selectAll(".curve_label")
                   .attr("display", "none");
             }
+        },
+
+        update_labels: function() {
+            var curves_sel = this.el.selectAll(".curve")
+              .data(this.model.mark_data)
+              .select(".curve_label")
+              .text(function(d) { return d.name; });
         },
 
         get_line_style: function() {
@@ -297,7 +305,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         },
 
         draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            var curve_labels = this.model.update_labels();
+            var curve_labels = this.model.get_labels();
             var legend_data = this.model.mark_data.map(function(d) {
                 return {index: d.index, name: d.name, color: d.color,
                         opacity: d.opacity};
@@ -471,7 +479,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
               .transition().duration(animation_duration)
               .attr("d", function(d) { return that.area(d.values); });
 
-            curves_sel.select("text")
+            curves_sel.select(".curve_label")
               .transition().duration(animation_duration)
               .attr("transform", function(d) {
                   var last_xy = d.values[d.values.length - 1];
