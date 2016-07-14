@@ -440,15 +440,15 @@ define(["d3", "topojson", "jupyter-js-widgets", "./Mark", "./utils", "underscore
             var color_data = this.model.get("color");
             var colors = this.model.get("colors");
 
-    	    if (selection.indexOf(d.id) > -1) {
+            if (selection.indexOf(d.id) > -1) {
     		    return this.model.get("selected_styles").selected_fill;
-    	    } else if (this.is_object_empty(color_data)) {
-    		    return colors[d.id] || colors["default_color"];
-    	    } else if (color_data[d.id] === undefined ||
-                           color_data[d.id] === null ||
-                           color_data[d.id] === "nan" ||
-                           color_scale === undefined) {
-                return colors["default_color"]; 
+            } else if (this.is_object_empty(color_data)) {
+    		    return colors[d.id] || colors.default_color;
+            } else if (color_data[d.id] === undefined ||
+                       color_data[d.id] === null ||
+                       color_data[d.id] === "nan" ||
+                       color_scale === undefined) {
+                return colors.default_color; 
             } else {
                 return color_scale.scale(color_data[d.id]);
             }
