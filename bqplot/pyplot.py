@@ -457,9 +457,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
                                   for key in Scale.scale_types
                                   if Scale.scale_types[key].rtype == rtype and
                                   issubdtype(dtype, Scale.scale_types[key].dtype)]
-            # TODO: something better than taking the FIRST compatible
-            # scale type.
-            scales[name] = compat_scale_types[0](**options.get(name, {}))
+            sorted_scales = sorted(compat_scale_types, key=lambda x: x.precedence)
+            scales[name] = sorted_scales[-1](**options.get(name, {}))
             # Adding the scale to the conext scales
             if update_context:
                 _context['scales'][dimension] = scales[name]

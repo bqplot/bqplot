@@ -78,8 +78,12 @@ class Scale(Widget):
     allow_padding: bool (default: True)
         indicates whether figures are allowed to add data padding to this scale
         or not.
+    precedence: int (class-level attribute)
+        attribute used to determine which scale takes precedence in cases when
+        two or more scales have the same rtype and dtype.
     """
     scale_types = {}
+    precedence = 1
     domain_class = Type(Float)
     reverse = Bool().tag(sync=True)
     allow_padding = Bool(True).tag(sync=True)
@@ -337,9 +341,15 @@ class LinearScale(Scale):
         scale is numerical.
     dtype: type (class-level attribute)
         the associated data type / domain type
+    precedence: int (class-level attribute, default_value=2)
+        attribute used to determine which scale takes precedence in cases when
+        two or more scales have the same rtype and dtype.
+        default_value is 2 because for the same range and domain types,
+        LinearScale should take precedence.
     """
     rtype = 'Number'
     dtype = np.number
+    precedence = 2
     min = Float(None, allow_none=True).tag(sync=True)
     max = Float(None, allow_none=True).tag(sync=True)
 
