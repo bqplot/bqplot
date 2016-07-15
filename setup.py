@@ -173,7 +173,7 @@ setup_args = {
         ]),
     ],
     'install_requires': [
-        'ipywidgets>=5.2.0',
+        'ipywidgets>=5.2.2',
         'numpy',
         'pandas'],
     'packages': find_packages(),
