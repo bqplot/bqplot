@@ -1055,7 +1055,7 @@ class Map(Mark):
         'color': { 'dimension': 'color' },
         'projection': { 'dimension': 'geo' }
     }).tag(sync=True)
-    selected = List(sync=True)  # TODO: Overloaded to prevent None.
+    selected = List(allow_none=True).tag(sync=True)
     selected_styles = Dict({
         'selected_fill': 'Red',
         'selected_stroke': None,
