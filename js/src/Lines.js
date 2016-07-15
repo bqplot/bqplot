@@ -303,7 +303,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
                 return {index: d.index, name: d.name, color: d.color};
             });
             this.legend_el = elem.selectAll(".legend" + this.uuid)
-              .data(legend_data, function(d, i) { return d.name; });
+              .data(legend_data);
 
             var that = this,
                 rect_dim = inter_y_disp * 0.8,
@@ -499,7 +499,7 @@ define(["d3", "./Mark", "./utils", "./Markers", "underscore"],
         draw: function(animate) {
             this.set_ranges();
             var curves_sel = this.el.selectAll(".curve")
-              .data(this.model.mark_data, function(d, i) { return d.name; });
+              .data(this.model.mark_data);
 
             var new_curves = curves_sel.enter().append("g")
               .attr("class", "curve");
