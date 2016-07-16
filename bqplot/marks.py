@@ -831,8 +831,8 @@ class Label(Mark):
     enable_move: Bool
         Enable the label to be moved by dragging
     """
-    x = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)  # TODO: Why could it be Unicode
-    y = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
+    x = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    y = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
     x_offset = Int().tag(sync=True)
     y_offset = Int().tag(sync=True)
     scales_metadata = Dict({
@@ -840,9 +840,9 @@ class Label(Mark):
         'y': { 'orientation': 'vertical', 'dimension': 'y' },
         'color': { 'dimension': 'color' }
     }).tag(sync=True)
-    color = Color(None, allow_none=True).tag(sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True, display_name='Colors')
     rotate_angle = Float().tag(sync=True)
-    text = Unicode().tag(sync=True)
+    text = NdArray().tag(sync=True)
     font_size = Unicode(default_value='14px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
     align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)

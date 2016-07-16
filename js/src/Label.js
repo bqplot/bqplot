@@ -26,9 +26,9 @@ var Label = mark.Mark.extend({
         //created. Make sure none of the event handler functions make that
         //assumption.
         this.drag_listener = d3.behavior.drag()
-          .origin(function() { return that.drag_origin(); })
-          .on("drag", function() { return that.on_drag(); })
-          .on("dragend", function() { return that.drag_ended(); });
+          .origin(function(d, i) { return that.drag_origin(d, i); })
+          .on("drag", function(d, i) { return that.on_drag(d, i); })
+          .on("dragend", function(d, i) { return that.drag_ended(d, i); });
         return base_render_promise.then(function() {
             that.create_listeners();
             that.draw();
@@ -68,7 +68,7 @@ var Label = mark.Mark.extend({
         Label.__super__.create_listeners.apply(this);
         this.listenTo(this.model, "change:text", this.update_text, this);
         this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
-        this.model.on_some_change(["font_weight", "font_size", "color",
+        this.model.on_some_change(["font_weight", "font_size", "colors",
                                    "align"], this.update_style, this);
         this.model.on_some_change(["x", "y", "x_offset", "y_offset",
                                    "rotate_angle"], this.update_position, this);
@@ -84,8 +84,15 @@ var Label = mark.Mark.extend({
         this.el.selectAll(".label")
             .remove();
 
-        this.el.append("text")
-            .text(this.model.get("text"))
+        var texts = this.model.get("text");
+
+        var elements = this.el.selectAll(".label")
+            .data(this.model.mark_data, function(d) { return d.unique_id; });
+
+        elements.enter().append("text")
+            .text(function(d, i) {
+                return d.text;
+            })
             .classed("label", true);
             
         this.set_drag_behavior();    
@@ -103,39 +110,49 @@ var Label = mark.Mark.extend({
     },
 
     update_position: function() {
+        var that = this;
+        var x_scale = this.scales.x;
+        var y_scale = this.scales.y;
         var x = (this.x_scale.model.type === "date") ?
             this.model.get_date_elem("x") : this.model.get("x");
         var y = (this.y_scale.model.type === "date") ?
             this.model.get_date_elem("y") : this.model.get("y");
         var x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");
-        this.el.select(".label")
-            .attr("transform", "translate(" + 
-                (this.x_scale.scale(x) + this.x_scale.offset + x_offset) + "," +
-                (this.y_scale.scale(y) + this.y_scale.offset + y_offset) + ")" +
-                this.get_rotation());
+        this.el.selectAll(".label")
+            .attr("transform", function(d) {
+                return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
+                                "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
+                       that.get_rotation();
+            });
     },
 
     update_text: function(model, value) {
-        this.el.select(".label")
-            .text(value);
+        var texts = value;
+        this.el.selectAll(".label")
+            .text(function(d, i) {
+                return texts[i];
+            });
     },
 
     update_style: function() {
-        this.el.select(".label")
+        this.el.selectAll(".label")
             .style("font-size", this.model.get("font_size"))
             .style("font-weight", this.model.get("font_weight"))
             .style("text-anchor", this.model.get("align"));
         
-        var color = this.model.get("color");
-        if(color !== undefined) {
-            this.el.select(".label")
-                .style("fill", color);
+        var colors = this.model.get("colors");
+        var len = colors.length;
+        if(colors !== undefined) {
+            this.el.selectAll(".label")
+                .style("fill", function(d, i) {
+                    return colors[i % len];
+                });
         }
     },
 
     set_drag_behavior: function() {
-        var label = this.el.select(".label");
+        var label = this.el.selectAll(".label");
         if (this.model.get("enable_move")) {
             label.call(this.drag_listener);
         }
@@ -144,26 +161,26 @@ var Label = mark.Mark.extend({
         }
     },
 
-    drag_origin: function() {
-        var transform = d3.transform(this.el.select(".label").attr("transform"));
+    drag_origin: function(d, i) {
+        var transform = d3.transform(this.el.selectAll(".label").attr("transform"));
         return {x: transform.translate[0], y: transform.translate[1]};
     },
 
-    on_drag: function() {
-        var transform = d3.transform(this.el.select(".label").attr("transform"));
+    on_drag: function(d, i) {
+        var transform = d3.transform(this.el.selectAll(".label").attr("transform"));
         transform.translate = [d3.event.x, d3.event.y];
         this.el.select(".label")
             .attr("transform", transform.toString());
     },
 
-    drag_ended: function() {
-        var transform = d3.transform(this.el.select(".label").attr("transform"));
+    drag_ended: function(d, i) {
+        var transform = d3.transform(this.el.selectAll(".label").attr("transform"));
         var new_x = this.x_scale.invert(transform.translate[0] - this.model.get("x_offset")),
             new_y = this.y_scale.invert(transform.translate[1] - this.model.get("y_offset"));
             
         this.model.set("x", new_x);
         this.model.set("y", new_y);
-        this.touch()
+        this.touch();
     }
 });
 
