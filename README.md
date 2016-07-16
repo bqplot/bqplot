@@ -112,8 +112,8 @@ bar = Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y': y_sc},
 line = Lines(x=x_data, y=np.random.randn(size), scales={'x': x_ord, 'y': y_sc},
                 stroke_width=3, colors=['red'], display_legend=True, labels=['Line chart'])
 
-ax_x = Axis(scale=x_ord)
-ax_y = Axis(scale=y_sc, orientation='vertical', tick_format='0.2f', grid_lines='solid')
+ax_x = Axis(scale=x_ord, label='X-Axis')
+ax_y = Axis(scale=y_sc, orientation='vertical', tick_format='0.2f', label='Y-Axis')
 
 fig = Figure(marks=[bar, line], axes=[ax_x, ax_y], title='API Example')
 display(fig)
