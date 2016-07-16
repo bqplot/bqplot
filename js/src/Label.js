@@ -155,8 +155,7 @@ var Label = mark.Mark.extend({
             });
     },
 
-    update_text: function(model, value) {
-        var texts = value;
+    update_text: function(model, texts) {
         this.el.selectAll(".label")
             .text(function(d, i) {
                 return texts[i];
@@ -215,23 +214,6 @@ var Label = mark.Mark.extend({
     },
 
     on_drag: function(d, i, dragged_node) {
-        var transform = d3.transform(this.el.selectAll(".label").attr("transform"));
-        transform.translate = [d3.event.x, d3.event.y];
-        this.el.select(".label")
-            .attr("transform", transform.toString());
-    },
-
-    drag_ended: function(d, i, dragged_node) {
-        var transform = d3.transform(this.el.selectAll(".label").attr("transform"));
-        var new_x = this.x_scale.invert(transform.translate[0] - this.model.get("x_offset")),
-            new_y = this.y_scale.invert(transform.translate[1] - this.model.get("y_offset"));
-            
-        this.model.set("x", new_x);
-        this.model.set("y", new_y);
-        this.touch();
-    },
-
-    on_drag: function(d, i, dragged_node) {
         var x_scale = this.scales.x, y_scale = this.scales.y;
 
         d[0] = d3.event.x; 
@@ -278,3 +260,4 @@ var Label = mark.Mark.extend({
 module.exports = {
     Label: Label
 };
+
