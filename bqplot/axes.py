@@ -107,7 +107,7 @@ class Axis(BaseAxis):
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
     side = Enum(['bottom', 'top', 'left', 'right'], allow_none=True, default_value=None).tag(sync=True)
     label = Unicode().tag(sync=True)
-    grid_lines = Enum(['none', 'solid', 'dashed'], default_value='none').tag(sync=True)
+    grid_lines = Enum(['none', 'solid', 'dashed'], default_value='solid').tag(sync=True)
     tick_format = Unicode(None, allow_none=True).tag(sync=True)
     scale = Instance(Scale).tag(sync=True, **widget_serialization)
     num_ticks = Int(default_value=None, allow_none=True).tag(sync=True)
