@@ -43,22 +43,22 @@ var LabelModel = markmodel.MarkModel.extend({
     initialize: function() {
         // TODO: Normally, color, opacity and size should not require a redraw
         LabelModel.__super__.initialize.apply(this);
-        this.on_some_change(["x", "y"], this.update_data, this);
-        this.on_some_change(["text"], function() {
-            this.trigger("data_updated");
-        }, this);
+        this.on_some_change(["x", "y", "text"], this.update_data, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
         // on_some_change depends on the GLOBAL backbone on("change") handler which
         // is called AFTER the specific handlers on("change:foobar") and we make that
         // assumption.
+        this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
+        this.update_unique_ids();
+        this.update_domains();
     },
 
     update_data: function() {
         this.dirty = true;
         var x_data = this.get_typed_field("x"),
             y_data = this.get_typed_field("y"),
-            text = this.get("text"),
+            text = this.get_typed_field("text"),
             scales = this.get("scales"),
             x_scale = scales.x,
             y_scale = scales.y;
@@ -81,6 +81,7 @@ var LabelModel = markmodel.MarkModel.extend({
             });
         }
         this.update_unique_ids();
+        this.update_domains();
         this.dirty = false;
         this.trigger("data_updated");
     },
@@ -89,7 +90,31 @@ var LabelModel = markmodel.MarkModel.extend({
         this.mark_data.forEach(function(data, index){
                                    data.unique_id = "Label" + index;
         });
-    }
+    },
+
+    update_domains: function() {
+        if (!this.mark_data) {
+            return;
+        }
+        // color scale needs an issue in DateScaleModel to be fixed. It
+        // should be moved here as soon as that is fixed.
+
+       var scales = this.get("scales");
+       for (var key in scales) {
+            if(scales.hasOwnProperty(key) && key != "color") {
+                var scale = scales[key];
+                if(!this.get("preserve_domain")[key]) {
+                    scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                        return elem[key];
+                    }), this.id + key);
+                } else {
+                    scale.del_domain([], this.id + key);
+                }
+            }
+       }
+
+    },
+
 });
 
 module.exports = {

@@ -80,20 +80,31 @@ var Label = mark.Mark.extend({
     },
 
     draw: function() {
+        var that = this;
+        var x_scale = this.scales.x;
+        var y_scale = this.scales.y;
         this.set_ranges();
         this.el.selectAll(".label")
             .remove();
 
-        var texts = this.model.get("text");
-
         var elements = this.el.selectAll(".label")
             .data(this.model.mark_data, function(d) { return d.unique_id; });
 
-        elements.enter().append("text")
-            .text(function(d, i) {
-                return d.text;
-            })
+        var elements_added = elements.enter().append("g")
+            .attr("class", "label_grp")
+            .attr("transform", function(d) {
+                return "translate(" + (x_scale.scale(d.x) + x_scale.offset + x_offset) +
+                                "," + (y_scale.scale(d.y) + y_scale.offset + y_offset) + ")" +
+                       that.get_rotation();
+            });
+
+        elements_added.append("text")
             .classed("label", true);
+
+        elements_added.selectAll(".label")
+            .text(function(d) {
+                return d.text;
+            });
             
         this.set_drag_behavior();    
         this.update_style();
@@ -119,10 +130,10 @@ var Label = mark.Mark.extend({
             this.model.get_date_elem("y") : this.model.get("y");
         var x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");
-        this.el.selectAll(".label")
+        this.el.selectAll(".label_grp")
             .attr("transform", function(d) {
-                return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
-                                "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
+                return "translate(" + (x_scale.scale(d.x) + x_scale.offset + x_offset) +
+                                "," + (y_scale.scale(d.y) + y_scale.offset + y_offset) + ")" +
                        that.get_rotation();
             });
     },
@@ -136,7 +147,7 @@ var Label = mark.Mark.extend({
     },
 
     update_style: function() {
-        this.el.selectAll(".label")
+        this.el.selectAll(".label_grp")
             .style("font-size", this.model.get("font_size"))
             .style("font-weight", this.model.get("font_weight"))
             .style("text-anchor", this.model.get("align"));
