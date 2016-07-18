@@ -410,7 +410,7 @@ var Scatter = mark.Mark.extend({
             stroke = this.model.get("stroke");
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        this.el.selectAll(".dot_grp")
+        this.el.selectAll(".object_grp")
           .select("path")
           .transition()
           .duration(animation_duration)
@@ -433,7 +433,7 @@ var Scatter = mark.Mark.extend({
         var that = this;
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        this.el.selectAll(".dot_grp").transition()
+        this.el.selectAll(".object_grp").transition()
             .duration(animation_duration)
             .attr("transform", function(d) {
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
@@ -452,10 +452,10 @@ var Scatter = mark.Mark.extend({
 
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        var elements = this.el.selectAll(".dot_grp")
+        var elements = this.el.selectAll(".object_grp")
             .data(this.model.mark_data, function(d) { return d.unique_id; });
         var elements_added = elements.enter().append("g")
-            .attr("class", "dot_grp")
+            .attr("class", "object_grp")
             .attr("transform", function(d) {
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                                 "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
@@ -708,7 +708,7 @@ var Scatter = mark.Mark.extend({
     update_display_names: function(model, value) {
         var names = this.model.get_typed_field("names"),
             show_names = (value && names.length !== 0);
-        this.el.selectAll(".dot_grp").select("text")
+        this.el.selectAll(".object_grp").select("text")
             .attr("display", function(d) {
                 return (show_names) ? "inline": "none";
             });
@@ -928,7 +928,7 @@ var Scatter = mark.Mark.extend({
     },
 
     set_drag_behavior: function() {
-        var elements = this.el.selectAll(".dot_grp");
+        var elements = this.el.selectAll(".object_grp");
         if (this.model.get("enable_move")) {
             elements.call(this.drag_listener);
         } else { 
