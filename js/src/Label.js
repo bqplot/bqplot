@@ -26,7 +26,7 @@ var Label = mark.Mark.extend({
         //created. Make sure none of the event handler functions make that
         //assumption.
         this.drag_listener = d3.behavior.drag()
-          .origin(function(d, i) { return that.drag_origin(d, i, this); })
+          .origin(function(d, i) { return that.drag_start(d, i, this); })
           .on("drag", function(d, i) { return that.on_drag(d, i, this); })
           .on("dragend", function(d, i) { return that.drag_ended(d, i, this); });
         return base_render_promise.then(function() {
@@ -180,14 +180,23 @@ var Label = mark.Mark.extend({
             .style("font-weight", this.model.get("font_weight"))
             .style("text-anchor", this.model.get("align"));
         
-        var colors = this.model.get("colors");
-        var len = colors.length;
-        if(colors !== undefined) {
-            this.el.selectAll(".label")
-                .style("fill", function(d, i) {
+        this.el.selectAll(".label")
+            .style("fill", function(d, i) {
                     return that.get_element_color(d,i);
-                });
-        }
+            });
+    },
+
+    color_scale_updated: function(animate) {
+        var that = this;
+        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+
+        this.el.selectAll(".object_grp")
+            .select("text")
+            .transition()
+            .duration(animation_duration)
+            .style("fill", function(d, i) {
+                  return that.get_element_color(d, i);
+            });
     },
 
     set_drag_behavior: function() {
@@ -200,19 +209,19 @@ var Label = mark.Mark.extend({
         }
     },
 
-    drag_origin: function(d, i) {
-        var transform = d3.transform(this.el.selectAll(".label").attr("transform"));
+    drag_start: function(d, i, dragged_node) {
+        var transform = d3.transform(dragged_node.attr("transform"));
         return {x: transform.translate[0], y: transform.translate[1]};
     },
 
-    on_drag: function(d, i) {
+    on_drag: function(d, i, dragged_node) {
         var transform = d3.transform(this.el.selectAll(".label").attr("transform"));
         transform.translate = [d3.event.x, d3.event.y];
         this.el.select(".label")
             .attr("transform", transform.toString());
     },
 
-    drag_ended: function(d, i) {
+    drag_ended: function(d, i, dragged_node) {
         var transform = d3.transform(this.el.selectAll(".label").attr("transform"));
         var new_x = this.x_scale.invert(transform.translate[0] - this.model.get("x_offset")),
             new_y = this.y_scale.invert(transform.translate[1] - this.model.get("y_offset"));
@@ -220,6 +229,49 @@ var Label = mark.Mark.extend({
         this.model.set("x", new_x);
         this.model.set("y", new_y);
         this.touch();
+    },
+
+    on_drag: function(d, i, dragged_node) {
+        var x_scale = this.scales.x, y_scale = this.scales.y;
+
+        d[0] = d3.event.x; 
+        d[1] = d3.event.y;
+
+        d3.select(dragged_node)
+          .attr("transform", function() {
+              return "translate(" + d[0] + "," + d[1] + ")";
+          });
+        if(this.model.get("update_on_move")) {
+            // saving on move if flag is set
+            this.update_array(d, i);
+        }
+    },
+
+    drag_ended: function(d, i, dragged_node) {
+        var stroke = this.model.get("stroke"),
+            original_color = this.get_element_color(d, i),
+            x_scale = this.scales.x,
+            y_scale = this.scales.y;
+
+        d3.select(dragged_node)
+          .select("path")
+          .classed("drag_scatter", false)
+          .transition()
+          .attr("d", this.dot.size(this.get_element_size(d)));
+
+        if (this.model.get("drag_color")) {
+            d3.select(dragged_node)
+              .select("path")
+              .style("fill", original_color)
+              .style("stroke", stroke ? stroke : original_color);          
+        }
+        this.update_array(d, i);
+        this.send({
+            event: "drag_end",
+            point: {x: x_scale.invert(d[0]), 
+                    y: y_scale.invert(d[1])},
+            index: i
+        });
     }
 });
 
