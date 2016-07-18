@@ -25,12 +25,13 @@ var LabelModel = markmodel.MarkModel.extend({
 
         x: [],
         y: [],
+        color: null,
         x_offset: 0,
         y_offset: 0,
         scales_metadata: {
             x: { orientation: "horizontal", dimension: "x" },
             y: { orientation: "vertical", dimension: "y" },
-            color: { dimension: "colors" }
+            color: { dimension: "color" }
         },
         colors: null,
         rotate_angle: 0.0,
@@ -43,7 +44,7 @@ var LabelModel = markmodel.MarkModel.extend({
     initialize: function() {
         // TODO: Normally, color, opacity and size should not require a redraw
         LabelModel.__super__.initialize.apply(this);
-        this.on_some_change(["x", "y", "text"], this.update_data, this);
+        this.on_some_change(["x", "y", "color"], this.update_data, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
         // on_some_change depends on the GLOBAL backbone on("change") handler which
         // is called AFTER the specific handlers on("change:foobar") and we make that
@@ -61,7 +62,8 @@ var LabelModel = markmodel.MarkModel.extend({
             text = this.get_typed_field("text"),
             scales = this.get("scales"),
             x_scale = scales.x,
-            y_scale = scales.y;
+            y_scale = scales.y,
+            color_scale = scales.color;
 
         if (x_data.length === 0 || y_data.length === 0) {
             this.mark_data = [];
@@ -72,11 +74,24 @@ var LabelModel = markmodel.MarkModel.extend({
             var min_len = Math.min(x_data.length, y_data.length);
             x_data = x_data.slice(0, min_len);
 
+            var color = this.get_typed_field("color");
+
+
+            if(color_scale) {
+                if(!this.get("preserve_domain").color) {
+                    color_scale.compute_and_set_domain(color, this.id + "_color");
+                } else {
+                    color_scale.del_domain([], this.id + "_color");
+                }
+            }
+
             this.mark_data = x_data.map(function(d, i) {
                 return {
                     x: d,
                     y: y_data[i],
                     text: text[i],
+                    color: color[i],
+                    index: i
                 };
             });
         }
@@ -113,8 +128,7 @@ var LabelModel = markmodel.MarkModel.extend({
             }
        }
 
-    },
-
+    }
 });
 
 module.exports = {
