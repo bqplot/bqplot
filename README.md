@@ -5,10 +5,12 @@ bqplot is a Grammar of Graphics based interactive plotting framework for the Jup
 
 [![bqplot](./bqplot-screencast.gif)](https://github.com/bloomberg/bqplot/blob/master/examples/Applications/Wealth%20of%20Nations.ipynb)
 
+In bqplot, every single attribute of the plot is an interactive widget. This allows the user to integrate any plot with iPython widgets to create a complex and feature rich GUI from just a few simple lines of Python code.
+
 Goals
 -----
 
--   provide a unified framework for 2d visualizations with a pythonic API.
+-   provide a unified framework for 2-D visualizations with a pythonic API.
 -   provide a sensible API for adding user interactions (panning, zooming, selection, etc)
 
 Two APIs are provided
@@ -82,7 +84,7 @@ np.random.seed(0)
 n = 200
 x = np.linspace(0.0, 10.0, n)
 y = np.cumsum(np.random.randn(n))
-plt.plot(x,y, axes_options={'y': {'grid_lines': 'dashed'}})
+plt.plot(x, y)
 plt.show()
 ```
 
@@ -110,8 +112,8 @@ bar = Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y': y_sc},
 line = Lines(x=x_data, y=np.random.randn(size), scales={'x': x_ord, 'y': y_sc},
                 stroke_width=3, colors=['red'], display_legend=True, labels=['Line chart'])
 
-ax_x = Axis(scale=x_ord)
-ax_y = Axis(scale=y_sc, orientation='vertical', tick_format='0.2f', grid_lines='solid')
+ax_x = Axis(scale=x_ord, label='X-Axis')
+ax_y = Axis(scale=y_sc, orientation='vertical', tick_format='0.2f', label='Y-Axis')
 
 fig = Figure(marks=[bar, line], axes=[ax_x, ax_y], title='API Example')
 display(fig)
