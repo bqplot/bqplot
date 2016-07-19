@@ -23,8 +23,8 @@ define(["d3", "./DateScaleModel", "underscore"], function(d3, DateScaleModel, _)
             _view_name: "DateColorScale",
         }),
 
-        initialize: function(range) {
-            DateColorScaleModel.__super__.initialize.apply(this);
+        initialize: function() {
+            DateColorScaleModel.__super__.initialize.apply(this, arguments);
             this.type = "date_color_linear";
             this.divergent = false;
             this.on("change:mid", this.mid_changed, this);

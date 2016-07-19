@@ -27,7 +27,8 @@ define(["d3", "./BaseModel", "underscore"], function(d3, BaseModel, _) {
             allow_padding: true,
         }),
 
-        initialize: function(range) {
+        initialize: function() {
+            ScaleModel.__super__.initialize.apply(this, arguments);
             this.type = "base";
             this.domains = {};
             this.domain = [];

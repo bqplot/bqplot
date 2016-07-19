@@ -40,7 +40,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
         }),
 
         initialize: function() {
-            PieModel.__super__.initialize.apply(this);
+            PieModel.__super__.initialize.apply(this, arguments);
             this.on("change:sizes", this.update_data, this);
             this.on("change:color", function() {
                 this.update_color();

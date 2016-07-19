@@ -27,8 +27,8 @@ define(["d3", "./LinearScaleModel", "underscore"], function(d3, LinearScaleModel
             // mid: null,
         }),
 
-        initialize: function(range) {
-            DateScaleModel.__super__.initialize.apply(this);
+        initialize: function() {
+            DateScaleModel.__super__.initialize.apply(this, arguments);
             this.type = "date";
             this.global_min = (new Date()).setTime(0);
             this.global_max = new Date();

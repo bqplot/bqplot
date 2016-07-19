@@ -19,8 +19,8 @@ define(["d3", "./ScaleModel", "underscore"],
 
     var OrdinalScaleModel = ScaleModel.ScaleModel.extend({
 
-        initialize: function(range) {
-            OrdinalScaleModel.__super__.initialize.apply(this);
+        initialize: function() {
+            OrdinalScaleModel.__super__.initialize.apply(this, arguments);
             this.type = "ordinal";
             this.min_from_data = true;
             this.max_from_data = true;

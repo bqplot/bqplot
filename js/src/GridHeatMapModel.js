@@ -41,7 +41,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
         }),
 
         initialize: function() {
-            GridHeatMapModel.__super__.initialize.apply(this);
+            GridHeatMapModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["row", "column", "color"], this.update_data, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
             // on_some_change depends on the GLOBAL backbone on("change") handler which

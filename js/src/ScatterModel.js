@@ -58,7 +58,7 @@ define(["d3", "./MarkModel", "underscore"],
 
         initialize: function() {
             // TODO: Normally, color, opacity and size should not require a redraw
-            ScatterModel.__super__.initialize.apply(this);
+            ScatterModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["x", "y", "color", "opacity", "size", "skew", "rotation"], this.update_data, this);
             this.on_some_change(["names", "names_unique"], function() {
                 this.update_unique_ids();

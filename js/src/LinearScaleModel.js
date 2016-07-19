@@ -25,8 +25,8 @@ define(["d3", "./ScaleModel", "underscore"], function(d3, ScaleModel, _) {
             max: null,
         }),
 
-        initialize: function(range) {
-            LinearScaleModel.__super__.initialize.apply(this);
+        initialize: function() {
+            LinearScaleModel.__super__.initialize.apply(this, arguments);
             this.type = "linear";
             this.global_min = Number.NEGATIVE_INFINITY;
             this.global_max = Number.POSITIVE_INFINITY;

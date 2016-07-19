@@ -47,7 +47,7 @@ define(["./MarkModel", "underscore"],
         }),
 
         initialize: function() {
-            MapModel.__super__.initialize.apply(this);
+            MapModel.__super__.initialize.apply(this, arguments);
             this.on("change:map_data", this.update_data, this);
             this.on("change:color", this.update_domains, this);
             this.update_data();

@@ -35,7 +35,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
         }),
 
         initialize: function() {
-            OHLCModel.__super__.initialize.apply(this);
+            OHLCModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["x", "y"], this.update_data, this);
             this.on_some_change(["preserve_domain"], this.update_domains, this);
             this.on("change:format", this.update_format, this);

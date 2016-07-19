@@ -46,7 +46,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
         }),
 
         initialize: function() {
-            LinesModel.__super__.initialize.apply(this);
+            LinesModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["x", "y", "color"], this.update_data, this);
             this.on("change:labels", this.update_labels, this);
             // FIXME: replace this with on("change:preserve_domain"). It is not done here because
