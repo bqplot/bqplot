@@ -44,6 +44,7 @@ define(["jupyter-js-widgets", "d3", "./BaseModel", "underscore"],
         // These two attributes are the pixel values which should be appended
         // to the area of the plot to make sure that the entire mark is visible
         initialize: function() {
+            MarkModel.__super__.initialize.apply(this, arguments);
             this.on("change:scales", this.update_scales, this);
             this.once("destroy", this.handle_destroy, this);
             // `this.dirty` is set to `true` before starting computations that

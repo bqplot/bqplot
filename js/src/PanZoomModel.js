@@ -30,6 +30,7 @@ define(["jupyter-js-widgets", "./BaseModel", "underscore"],
         }),
 
         initialize: function() {
+            PanZoomModel.__super__.initialize.apply(this, arguments);
             this.on("change:scales", this.snapshot_scales, this);
             this.snapshot_scales();
         },

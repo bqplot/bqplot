@@ -38,7 +38,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
 
         initialize: function() {
             // TODO: should not need to set this.data
-            HistModel.__super__.initialize.apply(this);
+            HistModel.__super__.initialize.apply(this, arguments);
             this.mark_data = [];
             // For the histogram, changing the "sample" scale changes the "count" values being plotted.
             // Hence, on change of the value of "preserve_domain", we must call the "update_data"

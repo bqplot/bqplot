@@ -18,8 +18,8 @@ define(["d3", "./LinearScaleModel", "underscore"], function(d3, LinearScaleModel
 
     var ColorScaleModel = LinearScaleModel.LinearScaleModel.extend({
 
-        initialize: function(range) {
-            ColorScaleModel.__super__.initialize.apply(this);
+        initialize: function() {
+            ColorScaleModel.__super__.initialize.apply(this, arguments);
             this.type = "color_linear";
             this.divergent = false;
             this.on("change:mid", this.mid_changed, this);

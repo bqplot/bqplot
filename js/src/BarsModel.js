@@ -41,7 +41,7 @@ define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
         }),
 
         initialize: function() {
-            BarsModel.__super__.initialize.apply(this);
+            BarsModel.__super__.initialize.apply(this, arguments);
             this.is_y_2d = false;
             this.on_some_change(["x", "y", "base"], this.update_data, this);
             this.on("change:color", function() {

@@ -34,7 +34,8 @@ define(["./ScaleModel", "d3", "underscore"], function(ScaleModel, d3, _) {
             rotate: [0, 0],
         }),
 
-        initialize: function(range) {
+        initialize: function() {
+            MercatorModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["scale_factor", "center", "rotate"], this.create_projection, this);
             this.create_projection();
         },
@@ -63,7 +64,8 @@ define(["./ScaleModel", "d3", "underscore"], function(ScaleModel, d3, _) {
             precision: 0.1,
         }),
 
-        initialize: function(range) {
+        initialize: function() {
+            AlbersModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["rotate", "center", "parallels", "scale_factor", "precision"],
                 this.create_projection, this);
             this.create_projection();
@@ -92,7 +94,8 @@ define(["./ScaleModel", "d3", "underscore"], function(ScaleModel, d3, _) {
             scale_factor: 1200
         }),
 
-        initialize: function(range) {
+        initialize: function() {
+            AlbersUSAModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["scale_factor"], this.create_projection, this);
             this.create_projection();
         },
@@ -116,7 +119,8 @@ define(["./ScaleModel", "d3", "underscore"], function(ScaleModel, d3, _) {
             scale_factor: 145.0
         }),
 
-        initialize: function(range) {
+        initialize: function() {
+            EquiRectangularModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["scale_factor", "center"], this.create_projection, this);
             this.create_projection();
         },
@@ -145,7 +149,8 @@ define(["./ScaleModel", "d3", "underscore"], function(ScaleModel, d3, _) {
             precision: 0.1
         }),
 
-        initialize: function(range) {
+        initialize: function() {
+            OrthographicModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["scale_factor", "center", "clip_angle", "rotate", "precision"], this.create_projection, this);
             this.create_projection();
         },
@@ -176,7 +181,8 @@ define(["./ScaleModel", "d3", "underscore"], function(ScaleModel, d3, _) {
             clip_angle: 89.999,
         }),
 
-        initialize: function(range) {
+        initialize: function() {
+            GnomonicModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["scale_factor", "precision", "clip_angle"], this.create_projection, this);
             this.create_projection();
         },
@@ -206,7 +212,8 @@ define(["./ScaleModel", "d3", "underscore"], function(ScaleModel, d3, _) {
             clip_angle: 179.9999
         }),
 
-        initialize: function(range) {
+        initialize: function() {
+            StereographicModel.__super__.initialize.apply(this, arguments);
             this.on_some_change(["scale_factor", "center", "clip_angle", "rotate", "precision"], this.create_projection, this);
             this.create_projection();
         },
