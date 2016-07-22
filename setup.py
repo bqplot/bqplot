@@ -121,7 +121,9 @@ class NPM(Command):
 
     def has_npm(self):
         try:
-            check_call(['npm', '--version'], shell=True)
+            ## shell=True needs to be passed for windows to look at non .exe files.
+            shell = (sys.platform == 'win32')
+            check_call(['npm', '--version'], shell=shell)
             return True
         except:
             return False
@@ -141,7 +143,9 @@ class NPM(Command):
 
         if self.should_run_npm_install():
             log.info("Installing build dependencies with npm.  This may take a while...")
-            check_call(['npm', 'install'], cwd=node_root, stdout=sys.stdout, stderr=sys.stderr, shell=True)
+            ## shell=True needs to be passed for windows to look at non .exe files.
+            shell = (sys.platform == 'win32')
+            check_call(['npm', 'install'], cwd=node_root, stdout=sys.stdout, stderr=sys.stderr, shell=shell)
             os.utime(self.node_modules, None)
 
         for t in self.targets:
