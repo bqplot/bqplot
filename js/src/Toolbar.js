@@ -121,13 +121,14 @@ define([
                 return Promise.all(figure.get("marks")).then(function(marks) {
                     var x_scales = [], y_scales = [];
                     for (var i=0; i<marks.length; ++i) {
+                        var preserve_domain = marks[i].get("preserve_domain");
                         var scales = marks[i].get("scales");
                         _.each(scales, function(v, k) {
                             var dimension = marks[i].get("scales_metadata")[k]["dimension"];
-                            if (dimension === "x") {
+                            if (dimension === "x" && !preserve_domain[k]) {
                                  x_scales.push(scales[k]);
                             }
-                            if (dimension === "y") {
+                            if (dimension === "y" && !preserve_domain[k]) {
                                  y_scales.push(scales[k]);
                             }
                         });

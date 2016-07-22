@@ -119,10 +119,14 @@ class HandDraw(Interaction):
     lines = Instance(Lines, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
     line_index = Int().tag(sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
-    min_x = (Float(None, allow_none=True).tag(sync=True) |
-             Date(None, allow_none=True).tag(sync=True))
-    max_x = (Float(None, allow_none=True).tag(sync=True) |
-             Date(None, allow_none=True).tag(sync=True))
+    min_x = (
+            Float(None, allow_none=True).tag(sync=True) |
+            Date(None, allow_none=True).tag(sync=True)
+        )
+    max_x = (
+            Float(None, allow_none=True).tag(sync=True) |
+            Date(None, allow_none=True).tag(sync=True)
+        )
 
     _view_name = Unicode('HandDraw').tag(sync=True)
     _model_name = Unicode('HandDrawModel').tag(sync=True)
@@ -156,13 +160,13 @@ class PanZoom(Interaction):
 def panzoom(marks):
     """Helper function for panning and zooming over a set of marks.
 
-    Creates and returns a panzoom interaction with the 'x' and 'y' scales
-    containing the scales of the marks passed.
+    Creates and returns a panzoom interaction with the 'x' and 'y' dimension
+    scales of the specified marks.
     """
     return PanZoom(scales={
-        'x': [mark.scales.get('x') for mark in marks if 'x' in mark.scales],
-        'y': [mark.scales.get('y') for mark in marks if 'y' in mark.scales],
-    })
+            'x': sum([mark._get_dimension_scales('x', preserve_domain=True) for mark in marks], []),
+            'y': sum([mark._get_dimension_scales('y', preserve_domain=True) for mark in marks], [])
+        })
 
 
 class Selector(Interaction):

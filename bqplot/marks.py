@@ -35,8 +35,9 @@ Marks
    Map
 """
 from ipywidgets import Widget, DOMWidget, CallbackDispatcher, Color, widget_serialization
-from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float, TraitError,
-                       Instance, Tuple)
+from traitlets import (
+        Int, Unicode, List, Enum, Dict, Bool, Float, TraitError, Instance, Tuple
+    )
 
 from .scales import Scale, OrdinalScale
 from .traits import NdArray, Date
@@ -160,10 +161,35 @@ class Mark(Widget):
     _view_module = Unicode('bqplot').tag(sync=True)
     _ipython_display_ = None
 
+    def _get_dimension_scales(self, dimension, preserve_domain=False):
+        """
+        Return the list of scales corresponding to a given dimension.
+
+        The preserve_domain optional argument specifies whether one should
+        filter out the scales for which preserve_domain is set to True.
+        """
+        if preserve_domain:
+            return [
+                self.scales[k] for k in self.scales if (
+                    k in self.scales_metadata
+                    and self.scales_metadata[k].get('dimension') == dimension
+                    and not self.preserve_domain.get(k)
+                )
+            ]
+        else:
+            return [
+                self.scales[k] for k in self.scales if (
+                    k in self.scales_metadata
+                    and self.scales_metadata[k].get('dimension') == dimension
+                )
+            ]
+
     def _scales_validate(self, scales, scales_trait):
-        """validates the dictionary of scales based on the mark's scaled
-        attributes metadata. First checks for missing scale and then for
-        'rtype' compatibility."""
+        """
+        Validates the `scales` based on the mark's scaled attributes metadata.
+
+        First checks for missing scale and then for 'rtype' compatibility.
+        """
         # Validate scales' 'rtype' versus data attribute 'rtype' decoration
         # At this stage it is already validated that all values in self.scales
         # are instances of Scale.
