@@ -19,7 +19,7 @@ define(["d3", "./LinearScaleModel"], function(d3, LinearScaleModel) {
     var LogScaleModel = LinearScaleModel.LinearScaleModel.extend({
 
         initialize: function() {
-            LogScaleModel.__super__.initialize.apply(this, range);
+            LogScaleModel.__super__.initialize.apply(this, arguments);
             this.type = "log";
             this.global_min = Number.MIN_VALUE;
             this.global_max = Number.POSITIVE_INFINITY;
