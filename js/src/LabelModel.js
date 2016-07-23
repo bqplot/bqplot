@@ -26,11 +26,14 @@ var LabelModel = markmodel.MarkModel.extend({
         x: [],
         y: [],
         color: null,
+        size: null,
+        rotation: null,
         x_offset: 0,
         y_offset: 0,
         scales_metadata: {
             x: { orientation: "horizontal", dimension: "x" },
             y: { orientation: "vertical", dimension: "y" },
+            size: { dimension: "size"},
             color: { dimension: "color" }
         },
         colors: null,
@@ -74,7 +77,9 @@ var LabelModel = markmodel.MarkModel.extend({
             var min_len = Math.min(x_data.length, y_data.length);
             x_data = x_data.slice(0, min_len);
 
-            var color = this.get_typed_field("color");
+            var color = this.get_typed_field("color"),
+                size = this.get_typed_field("size"),
+                rotation = this.get_typed_field("rotation");
 
 
             if(color_scale) {
@@ -91,6 +96,8 @@ var LabelModel = markmodel.MarkModel.extend({
                     y: y_data[i],
                     text: text[i],
                     color: color[i],
+                    size: size[i],
+                    rotation: rotation[i],
                     index: i
                 };
             });

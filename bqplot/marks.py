@@ -831,10 +831,14 @@ class Label(Mark):
     enable_move: Bool
         Enable the label to be moved by dragging
     """
-    x = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    y = NdArray().tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
+    x = NdArray().tag(sync=True, min_dim=1, max_dim=1, atype='bqplot.Axis')
+    y = NdArray().tag(sync=True, min_dim=1, max_dim=1, atype='bqplot.Axis')
     color = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
                 rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+    size = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+                   rtype='Number', min_dim=1, max_dim=1)
+    rotation = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+                       rtype='Number', min_dim=1, max_dim=1)
     x_offset = Int().tag(sync=True)
     y_offset = Int().tag(sync=True)
     scales_metadata = Dict({

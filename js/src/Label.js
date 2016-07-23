@@ -36,13 +36,32 @@ var Label = mark.Mark.extend({
     },
 
     set_ranges: function() {
-        var x_scale = this.scales.x;
+        var x_scale = this.scales.x,
+            y_scale = this.scales.y,
+            size_scale = this.scales.size,
+            opacity_scale = this.scales.opacity,
+            rotation_scale = this.scales.rotation;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
         }
-        var y_scale = this.scales.y;
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
+        }
+        if(size_scale) {
+            // I don't know how to set the lower bound on the range of the
+            // values that the size scale takes. I guess a reasonable
+            // approximation is that the area should be proportional to the
+            // value. But I also want to set a lower bound of 10px area on
+            // the size. This is what I do in the step below.
+
+            // I don't know how to handle for ordinal scale.
+            var size_domain = size_scale.scale.domain();
+            var ratio = d3.min(size_domain) / d3.max(size_domain);
+            size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]),
+                                 this.model.get("default_size")]);
+        }
+        if(rotation_scale) {
+            rotation_scale.set_range([0, 180]);
         }
     },
 
@@ -67,7 +86,11 @@ var Label = mark.Mark.extend({
     initialize_additional_scales: function() {
         // function to create the additional scales and create the
         // listeners for the additional scales
-        var color_scale = this.scales.color;
+        var color_scale = this.scales.color,
+            size_scale = this.scales.size,
+            rotation_scale = this.scales.rotation;
+        // the following handlers are for changes in data that does not
+        // impact the position of the elements
         if (color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
                 var animate = true;
@@ -76,12 +99,28 @@ var Label = mark.Mark.extend({
             color_scale.on("color_scale_range_changed",
                             this.color_scale_updated, this);
         }
+        if (size_scale) {
+            this.listenTo(size_scale, "domain_changed", function() {
+                var animate = true;
+                this.update_default_size(animate);
+            });
+        }
+        if (rotation_scale) {
+            this.listenTo(rotation_scale, "domain_changed", function() {
+                var animate = true;
+                this.update_xy_position(animate);
+            });
+        }
     },
 
     create_listeners: function() {
         Label.__super__.create_listeners.apply(this);
         this.listenTo(this.model, "change:text", this.update_text, this);
         this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
+        this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
+        this.listenTo(this.model, "change:default_rotation", this.update_xy_position, this);
+        this.listenTo(this.model, "change:default_size", this.update_default_size, this);
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
         this.model.on_some_change(["font_weight", "font_size", "colors",
                                    "align"], this.update_style, this);
         this.model.on_some_change(["x", "y", "x_offset", "y_offset",
@@ -95,8 +134,6 @@ var Label = mark.Mark.extend({
 
     draw: function() {
         var that = this;
-        var x_scale = this.scales.x;
-        var y_scale = this.scales.y;
         this.set_ranges();
         this.el.selectAll(".label")
             .remove();
@@ -108,12 +145,7 @@ var Label = mark.Mark.extend({
             .data(this.model.mark_data, function(d) { return d.unique_id; });
 
         var elements_added = elements.enter().append("g")
-            .attr("class", "object_grp")
-            .attr("transform", function(d) {
-                return "translate(" + (x_scale.scale(d.x) + x_scale.offset + x_offset) +
-                                "," + (y_scale.scale(d.y) + y_scale.offset + y_offset) + ")" +
-                       that.get_rotation();
-            });
+            .attr("class", "object_grp");
 
         elements_added.append("text")
             .classed("label", true);
@@ -128,13 +160,18 @@ var Label = mark.Mark.extend({
         this.update_position();
     },
 
-    get_rotation: function() {
-        var rotate_angle = this.model.get("rotate_angle");
-        var transform = "";
-        if(rotate_angle !== undefined) {
-            transform += " rotate(" + rotate_angle + ")";
+    get_element_size: function(data) {
+        var size_scale = this.scales.size;
+        if(size_scale && data.size !== undefined) {
+            return size_scale.scale(data.size);
         }
-        return transform;
+        return this.model.get("font_size");
+    },
+
+    get_element_rotation: function(data) {
+        var rotation_scale = this.scales.rotation;
+        return (!rotation_scale || !d.rotation) ? "rotate(" + this.model.get("rotate_angle") + ")" :
+            "rotate(" + rotation_scale.scale(data.rotation) + ")";
     },
 
     update_position: function() {
@@ -151,7 +188,7 @@ var Label = mark.Mark.extend({
             .attr("transform", function(d) {
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset + x_offset) +
                                 "," + (y_scale.scale(d.y) + y_scale.offset + y_offset) + ")" +
-                       that.get_rotation();
+                       that.get_element_rotation(d);
             });
     },
 
@@ -175,7 +212,9 @@ var Label = mark.Mark.extend({
     update_style: function() {
         var that = this;
         this.el.selectAll(".object_grp")
-            .style("font-size", this.model.get("font_size"))
+            .style("font-size", function(d, i) {
+                return that.get_element_size(d);
+            })
             .style("font-weight", this.model.get("font_weight"))
             .style("text-anchor", this.model.get("align"));
         
