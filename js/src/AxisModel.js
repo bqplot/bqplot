@@ -13,87 +13,88 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "d3", "./BaseModel", "underscore"],
-       function(widgets, d3, BaseModel, _) {
-    "use strict";
+var widgets = require("jupyter-js-widgets");
+var d3 = require("d3");
+var _ = require("underscore");
+var basemodel = require("./BaseModel");
 
-    var AxisModel = BaseModel.BaseModel.extend({
+var AxisModel = basemodel.BaseModel.extend({
 
-        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _model_name: "AxisModel",
-            _view_name: "Axis",
-            _model_module: "bqplot",
-            _view_module: "bqplot",
+    defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+        _model_name: "AxisModel",
+        _view_name: "Axis",
+        _model_module: "bqplot",
+        _view_module: "bqplot",
 
-            orientation: "horizontal",
-            side: null,
-            label: "",
-            grid_lines: "solid",
-            tick_format: null,
-            scale: undefined,
-            num_ticks: null,
-            tick_values: [],
-            offset: {},
-            label_location: "middle",
-            label_color: null,
-            grid_color: null,
-            color: null,
-            label_offset: null,
-            visible: true
-        }),
+        orientation: "horizontal",
+        side: null,
+        label: "",
+        grid_lines: "solid",
+        tick_format: null,
+        scale: undefined,
+        num_ticks: null,
+        tick_values: [],
+        offset: {},
+        label_location: "middle",
+        label_color: null,
+        grid_color: null,
+        color: null,
+        label_offset: null,
+        visible: true
+    }),
 
-        initialize: function() {
-            AxisModel.__super__.initialize.apply(this, arguments);
-            this.on("change:side", this.validate_orientation, this);
-            this.on("change:orientation", this.validate_side, this);
-            this.validate_orientation();
-            this.validate_side();
-        },
+    initialize: function() {
+        AxisModel.__super__.initialize.apply(this, arguments);
+        this.on("change:side", this.validate_orientation, this);
+        this.on("change:orientation", this.validate_side, this);
+        this.validate_orientation();
+        this.validate_side();
+    },
 
-        validate_side: function() {
-            var orientation = this.get("orientation"),
-                side = this.get("side");
-            if(orientation === "vertical") {
-                if (side !== "left" && side !== "right") {
-                    this.set("side", "left");
-                }
-            } else {
-                if (side !== "bottom" && side !== "top") {
-                    this.set("side", "bottom");
-                }
+    validate_side: function() {
+        var orientation = this.get("orientation"),
+            side = this.get("side");
+        if(orientation === "vertical") {
+            if (side !== "left" && side !== "right") {
+                this.set("side", "left");
             }
-            this.save_changes();
-        },
-
-        validate_orientation: function() {
-            var orientation = this.get("orientation"),
-                side = this.get("side");
-            if (side) {
-                if(side === "left" || side === "right") {
-                    this.set("orientation", "vertical");
-                } else {
-                    this.set("orientation", "horizontal");
-                }
-                this.save_changes();
+        } else {
+            if (side !== "bottom" && side !== "top") {
+                this.set("side", "bottom");
             }
         }
-    }, {
-        serializers: _.extend({
-             scale: { deserialize: widgets.unpack_models },
-             offset: { deserialize: widgets.unpack_models }
-        }, widgets.WidgetModel.serializers),
-    });
+        this.save_changes();
+    },
 
-    var ColorAxisModel = AxisModel.extend({
-
-        defaults: _.extend({}, AxisModel.prototype.defaults, {
-            _model_name: "ColorAxisModel",
-            _view_name: "ColorAxis",
-        }),
-    });
-
-    return {
-        AxisModel: AxisModel,
-        ColorAxisModel: ColorAxisModel,
-    };
+    validate_orientation: function() {
+        var orientation = this.get("orientation"),
+            side = this.get("side");
+        if (side) {
+            if(side === "left" || side === "right") {
+                this.set("orientation", "vertical");
+            } else {
+                this.set("orientation", "horizontal");
+            }
+            this.save_changes();
+        }
+    }
+}, {
+    serializers: _.extend({
+         scale: { deserialize: widgets.unpack_models },
+         offset: { deserialize: widgets.unpack_models }
+    }, widgets.WidgetModel.serializers)
 });
+
+var ColorAxisModel = AxisModel.extend({
+
+    defaults: _.extend({}, AxisModel.prototype.defaults, {
+        _model_name: "ColorAxisModel",
+        _view_name: "ColorAxis",
+    })
+});
+
+
+module.exports = {
+    AxisModel: AxisModel,
+    ColorAxisModel: ColorAxisModel
+};

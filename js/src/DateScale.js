@@ -13,21 +13,20 @@
  * limitations under the License.
  */
 
-define(["d3", "./LinearScale", "underscore"],
-       function(d3, LinearScale, _) {
-    "use strict";
+var d3 = require("d3");
+var _ = require("underscore");
+var linearscale = require("./LinearScale");
 
-    var DateScale = LinearScale.LinearScale.extend({
-        render: function() {
-            this.scale = d3.time.scale();
-            if(this.model.domain.length > 0)
-                this.scale.domain(this.model.domain);
-            this.offset = 0;
-            this.create_event_listeners();
-        },
-    });
-
-    return {
-        DateScale: DateScale,
-    };
+var DateScale = linearscale.LinearScale.extend({
+    render: function() {
+        this.scale = d3.time.scale();
+        if(this.model.domain.length > 0)
+            this.scale.domain(this.model.domain);
+        this.offset = 0;
+        this.create_event_listeners();
+    },
 });
+
+module.exports = {
+    DateScale: DateScale,
+};

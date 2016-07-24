@@ -37,7 +37,7 @@
  * may "ColorBrewer" appear in their name, without prior written permission of
  * Cynthia Brewer.
  */
-define([], function() {
+
 // This product includes color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/).
 // JavaScript specs as packaged in the D3 library (d3js.org). Please see license at http://colorbrewer.org/export/LICENSE.txt
 var colorbrewer = {YlGn: {
@@ -342,5 +342,4 @@ var colorbrewer = {YlGn: {
 12: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f"]
 }};
 
-return colorbrewer;
-});
+module.exports = colorbrewer;

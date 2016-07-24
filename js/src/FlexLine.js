@@ -13,158 +13,161 @@
  * limitations under the License.
  */
 
-define(["d3", "./Lines", "underscore"], function(d3, LinesViewModule, _) {
-    "use strict";
+var d3 = require("d3");
+var _ = require("underscore");
+var lines = require("./Lines");
 
-    var FlexLine = LinesViewModule.Lines.extend({
+var FlexLine = lines.Lines.extend({
 
-        render: function() {
-            var base_render_promise = LinesViewModule.Lines.__super__.render.apply(this);
-            var that = this;
+    render: function() {
+        var base_render_promise = lines.Lines.__super__.render.apply(this);
+        var that = this;
 
-            return base_render_promise.then(function() {
-                var x_scale = that.scales.x, y_scale = that.scales.y;
-                that.create_listeners();
-                that.draw();
+        return base_render_promise.then(function() {
+            var x_scale = that.scales.x, y_scale = that.scales.y;
+            that.create_listeners();
+            that.draw();
+        });
+    },
+
+    set_ranges: function() {
+        FlexLine.__super__.set_ranges.apply(this);
+        var width_scale = this.scales.width;
+        if(width_scale) {
+            width_scale.set_range([0.5, this.model.get("stroke_width")]);
+        }
+    },
+
+    create_listeners: function() {
+        FlexLine.__super__.create_listeners.apply(this);
+        this.listenTo(this.model, "change:colors", this.update_colors, this);
+        this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
+        this.listenTo(this.model, "change:color change:width", this.update_and_draw, this);
+    },
+
+    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+        var g_elements = elem.selectAll(".legend" + this.uuid)
+            .data(this.model.mark_data, function(d, i) { return d.name; });
+
+        var that = this;
+        var rect_dim = inter_y_disp * 0.8;
+        g_elements.enter().append("g")
+            .attr("class", "legend" + this.uuid)
+            .attr("transform", function(d, i) {
+                return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
+            }).on("mouseover", _.bind(this.make_axis_bold, this))
+            .on("mouseout", _.bind(this.make_axis_non_bold, this))
+        .append("line")
+            .style("stroke", function(d,i) { return that.get_colors(i); })
+            .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
+
+        g_elements.append("text")
+            .attr("class","legendtext")
+            .attr("x", rect_dim * 1.2)
+            .attr("y", rect_dim / 2)
+            .attr("dy", "0.35em")
+            .text(function(d, i) {return that.model.get("labels")[i]; })
+            .style("fill", function(d,i) { return that.get_colors(i); });
+        var max_length = d3.max(this.model.get("labels"), function(d) {
+            return d.length;
+        });
+
+        g_elements.exit().remove();
+        return [this.model.mark_data.length, max_length];
+    },
+
+    set_positional_scales: function() {
+        var x_scale = this.scales.x, y_scale = this.scales.y;
+        this.listenTo(x_scale, "domain_changed", function() {
+            if (!this.model.dirty) { this.draw(); }
+        });
+        this.listenTo(y_scale, "domain_changed", function() {
+            if (!this.model.dirty) { this.draw(); }
+        });
+    },
+
+    initialize_additional_scales: function() {
+        var color_scale = this.scales.color;
+        if(color_scale) {
+            this.listenTo(color_scale, "domain_changed", function() {
+                this.draw();
             });
-        },
+            color_scale.on("color_scale_range_changed", this.draw, this);
+        }
+    },
 
-        set_ranges: function() {
-            FlexLine.__super__.set_ranges.apply(this);
-            var width_scale = this.scales.width;
-            if(width_scale) {
-                width_scale.set_range([0.5, this.model.get("stroke_width")]);
-            }
-        },
+    draw: function() {
+        this.set_ranges();
+        var curves_sel = this.el.selectAll(".curve")
+            .data(this.model.mark_data, function(d, i) { return d.name; });
 
-        create_listeners: function() {
-            FlexLine.__super__.create_listeners.apply(this);
-            this.listenTo(this.model, "change:colors", this.update_colors, this);
-            this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
-            this.listenTo(this.model, "change:color change:width", this.update_and_draw, this);
-        },
+        curves_sel.enter().append("g")
+            .attr("class", "curve");
 
-        draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-            var g_elements = elem.selectAll(".legend" + this.uuid)
-              .data(this.model.mark_data, function(d, i) { return d.name; });
+        curves_sel.exit()
+            .transition().duration(this.parent.model.get("animation_duration"))
+            .remove();
 
-            var that = this;
-            var rect_dim = inter_y_disp * 0.8;
-            g_elements.enter().append("g")
-              .attr("class", "legend" + this.uuid)
-              .attr("transform", function(d, i) {
-                  return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
-              }).on("mouseover", _.bind(this.make_axis_bold, this))
-              .on("mouseout", _.bind(this.make_axis_non_bold, this))
-            .append("line")
-              .style("stroke", function(d,i) { return that.get_colors(i); })
-              .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
+        var x_scale = this.scales.x, y_scale = this.scales.y;
 
-            g_elements.append("text")
-              .attr("class","legendtext")
-              .attr("x", rect_dim * 1.2)
-              .attr("y", rect_dim / 2)
-              .attr("dy", "0.35em")
-              .text(function(d, i) {return that.model.get("labels")[i]; })
-              .style("fill", function(d,i) { return that.get_colors(i); });
-            var max_length = d3.max(this.model.get("labels"), function(d) {
-                return d.length;
-            });
-
-            g_elements.exit().remove();
-            return [this.model.mark_data.length, max_length];
-        },
-
-        set_positional_scales: function() {
-            var x_scale = this.scales.x, y_scale = this.scales.y;
-            this.listenTo(x_scale, "domain_changed", function() {
-                if (!this.model.dirty) { this.draw(); }
-            });
-            this.listenTo(y_scale, "domain_changed", function() {
-                if (!this.model.dirty) { this.draw(); }
-            });
-        },
-
-        initialize_additional_scales: function() {
-            var color_scale = this.scales.color;
-            if(color_scale) {
-                this.listenTo(color_scale, "domain_changed", function() {
-                    this.draw();
+        var that = this;
+        curves_sel[0].forEach(function(elem, index) {
+            var lines = d3.select(elem).selectAll("line")
+                .data(that.model.mark_data[index].values);
+            lines.enter().append("line");
+            lines.attr("class", "line-elem")
+                .attr({
+                    x1: function(d) { return x_scale.scale(d.x1); },
+                    x2: function(d) { return x_scale.scale(d.x2); },
+                    y1: function(d) { return y_scale.scale(d.y1); },
+                    y2: function(d) { return y_scale.scale(d.y2); }
+                })
+                .attr("stroke", function(d) {
+                    return that.get_element_color(d);
+                }).attr("stroke-width", function(d) {
+                    return that.get_element_width(d);
                 });
-                color_scale.on("color_scale_range_changed", this.draw, this);
-            }
-        },
+        });
+    },
 
-        draw: function() {
-            this.set_ranges();
-            var curves_sel = this.el.selectAll(".curve")
-              .data(this.model.mark_data, function(d, i) { return d.name; });
+    get_element_color: function(d) {
+        var color_scale = this.scales.color;
+        if(color_scale !== undefined && d.color !== undefined) {
+            return color_scale.scale(d.color);
+        }
+        return this.model.get("colors")[0];
+    },
 
-            curves_sel.enter().append("g")
-              .attr("class", "curve");
+    get_element_width: function(d) {
+        var width_scale = this.scales.width;
+        if(width_scale !== undefined && d.size !== undefined) {
+            return width_scale.scale(d.size);
+        }
+        return this.model.get("stroke_width");
+    },
 
-            curves_sel.exit()
-              .transition().duration(this.parent.model.get("animation_duration"))
-              .remove();
+    relayout: function() {
+        LinesViewModule.Lines.__super__.relayout.apply(this);
+        this.set_ranges();
 
-            var x_scale = this.scales.x, y_scale = this.scales.y;
+        var x_scale = this.scales.x, y_scale = this.scales.y;
 
-            var that = this;
-            curves_sel[0].forEach(function(elem, index) {
-                var lines = d3.select(elem).selectAll("line")
-                  .data(that.model.mark_data[index].values);
-                lines.enter().append("line");
-                lines.attr("class", "line-elem")
-                  .attr({"x1": function(d) { return x_scale.scale(d.x1); },
-                         "x2": function(d) { return x_scale.scale(d.x2); },
-                         "y1": function(d) { return y_scale.scale(d.y1); },
-                         "y2": function(d) { return y_scale.scale(d.y2); }})
-                  .attr("stroke", function(d) {
-                      return that.get_element_color(d);
-                  }).attr("stroke-width", function(d) {
-                      return that.get_element_width(d);
-                  });
-            });
-        },
+        var that = this;
+        this.el.selectAll(".curve").selectAll(".line-elem")
+            .transition().duration(this.parent.model.get("animation_duration"))
+            .attr({
+                x1: function(d) { return x_scale.scale(d.x1); },
+                x2: function(d) { return x_scale.scale(d.x2); },
+                y1: function(d) { return y_scale.scale(d.y1); },
+                y2: function(d) { return y_scale.scale(d.y2); },
+        });
+    },
 
-        get_element_color: function(d) {
-            var color_scale = this.scales.color;
-            if(color_scale !== undefined && d.color !== undefined) {
-                return color_scale.scale(d.color);
-            }
-            return this.model.get("colors")[0];
-        },
-
-        get_element_width: function(d) {
-            var width_scale = this.scales.width;
-            if(width_scale !== undefined && d.size !== undefined) {
-                return width_scale.scale(d.size);
-            }
-            return this.model.get("stroke_width");
-        },
-
-        relayout: function() {
-            LinesViewModule.Lines.__super__.relayout.apply(this);
-            this.set_ranges();
-
-            var x_scale = this.scales.x, y_scale = this.scales.y;
-
-            var that = this;
-            this.el.selectAll(".curve").selectAll(".line-elem")
-              .transition().duration(this.parent.model.get("animation_duration"))
-              .attr({"x1": function(d) { return x_scale.scale(d.x1); },
-                     "x2": function(d) { return x_scale.scale(d.x2); },
-                     "y1": function(d) { return y_scale.scale(d.y1); },
-                     "y2": function(d) { return y_scale.scale(d.y2); },
-              });
-        },
-
-        create_labels: function() {
-            //do nothing
-        },
-    });
-
-    return {
-        FlexLine: FlexLine,
-    };
+    create_labels: function() {
+        //do nothing
+    }
 });
+
+module.exports = {
+    FlexLine: FlexLine
+};

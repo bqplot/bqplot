@@ -31,24 +31,22 @@
  * SOFTWARE.
  */
 
-define([], function() {
-    // checks if a point is in lasso
-    function point_in_lasso(point, vertices) {
-        var xi, xj, yi, yj, intersect,
-            x = point[0], y = point[1], is_inside = false;
+// checks if a point is in lasso
+function point_in_lasso(point, vertices) {
+    var xi, xj, yi, yj, intersect,
+        x = point[0], y = point[1], is_inside = false;
 
-        for (var i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
-            xi = vertices[i][0],
-            yi = vertices[i][1],
-            xj = vertices[j][0],
-            yj = vertices[j][1],
-            intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-            if (intersect) is_inside = !is_inside;
-        }
-
-        return is_inside;
+    for (var i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+        xi = vertices[i][0],
+        yi = vertices[i][1],
+        xj = vertices[j][0],
+        yj = vertices[j][1],
+        intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) is_inside = !is_inside;
     }
+    return is_inside;
+}
 
-    return point_in_lasso;
-
-});
+module.exports = {
+    point_in_lasso: point_in_lasso
+}

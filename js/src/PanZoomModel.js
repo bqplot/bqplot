@@ -13,58 +13,57 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "./BaseModel", "underscore"],
-       function(widgets, BaseModel, _) {
-    "use strict";
+var widgets = require("jupyter-js-widgets");
+var _ = require("underscore");
+var basemodel = require("./BaseModel");
 
-    var PanZoomModel = BaseModel.BaseModel.extend({
+var PanZoomModel = basemodel.BaseModel.extend({
 
-        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _model_name: "PanZoomModel",
-            _view_name: "PanZoom",
-            _model_module: "bqplot",
-            _view_module: "bqplot",
-            scales: {},
-            allow_pan: true,
-            allow_zoom: true,
-        }),
+    defaults: _.extend({}, basemodel.BaseModel.prototype.defaults, {
+        _model_name: "PanZoomModel",
+        _view_name: "PanZoom",
+        _model_module: "bqplot",
+        _view_module: "bqplot",
+        scales: {},
+        allow_pan: true,
+        allow_zoom: true,
+    }),
 
-        initialize: function() {
-            PanZoomModel.__super__.initialize.apply(this, arguments);
-            this.on("change:scales", this.snapshot_scales, this);
-            this.snapshot_scales();
-        },
+    initialize: function() {
+        PanZoomModel.__super__.initialize.apply(this, arguments);
+        this.on("change:scales", this.snapshot_scales, this);
+        this.snapshot_scales();
+    },
 
-        reset_scales: function() {
-            var that = this;
-            widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
-                _.each(Object.keys(scales), function(k) {
-                    _.each(scales[k], function(s, i) {
-                        s.set_state(that.scales_states[k][i]);
-                    }, that);
+    reset_scales: function() {
+        var that = this;
+        widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
+            _.each(Object.keys(scales), function(k) {
+                _.each(scales[k], function(s, i) {
+                    s.set_state(that.scales_states[k][i]);
                 }, that);
-            });
-        },
+            }, that);
+        });
+    },
 
-        snapshot_scales: function() {
-            // Save the state of the scales.
-            var that = this;
-            widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
-                that.scales_states = Object.keys(scales).reduce(function(obj, key) {
-                    obj[key] = scales[key].map(function(s) {
-                        return s.get_state()
-                    });
-                    return obj;
-                }, {});
-            });
-        }
-    }, {
-        serializers: _.extend({
-            scales: { deserialize: widgets.unpack_models },
-        }, BaseModel.BaseModel.serializers),
-    });
-
-    return {
-        PanZoomModel: PanZoomModel,
-    };
+    snapshot_scales: function() {
+        // Save the state of the scales.
+        var that = this;
+        widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
+            that.scales_states = Object.keys(scales).reduce(function(obj, key) {
+                obj[key] = scales[key].map(function(s) {
+                    return s.get_state()
+                });
+                return obj;
+            }, {});
+        });
+    }
+}, {
+    serializers: _.extend({
+        scales: { deserialize: widgets.unpack_models },
+    }, basemodel.BaseModel.serializers)
 });
+
+module.exports = {
+    PanZoomModel: PanZoomModel
+};

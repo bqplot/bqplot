@@ -13,39 +13,39 @@
  * limitations under the License.
  */
 
-define(["d3", "./OrdinalScale", "./ColorUtils"], function(d3, OrdinalScaleViewModule, ColorUtils) {
-    "use strict";
+var d3 = require("d3");
+var ordinalscale = require("./OrdinalScale");
+var colurutils = require("./ColorUtils");
 
-    var OrdinalColorScale = OrdinalScaleViewModule.OrdinalScale.extend({
+var OrdinalColorScale = ordinalscale.OrdinalScale.extend({
 
-        render: function(){
-            OrdinalColorScale.__super__.render.apply(this);
-            this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
-            this.listenTo(this.model, "set_ticks", this.model_ticks_changed, this);
-            this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
-            this.set_range();
-        },
+    render: function(){
+        OrdinalColorScale.__super__.render.apply(this);
+        this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
+        this.listenTo(this.model, "set_ticks", this.model_ticks_changed, this);
+        this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
+        this.set_range();
+    },
 
-        set_range: function() {
-            if (this.model.get("colors").length > 0) {
-                this.scale.range(ColorUtils.cycle_colors(this.model.get("colors"), this.scale.domain().length));
-            } else {
-                this.scale.range(ColorUtils.get_ordinal_scale_range(this.model.get("scheme"), this.scale.domain().length));
-            }
-            this.trigger("color_scale_range_changed");
-        },
+    set_range: function() {
+        if (this.model.get("colors").length > 0) {
+            this.scale.range(colurutils.cycle_colors(this.model.get("colors"), this.scale.domain().length));
+        } else {
+            this.scale.range(colurutils.get_ordinal_scale_range(this.model.get("scheme"), this.scale.domain().length));
+        }
+        this.trigger("color_scale_range_changed");
+    },
 
-        model_domain_changed: function() {
-            OrdinalColorScale.__super__.model_domain_changed.apply(this);
-            this.set_range();
-        },
+    model_domain_changed: function() {
+        OrdinalColorScale.__super__.model_domain_changed.apply(this);
+        this.set_range();
+    },
 
-        colors_changed: function() {
-            this.set_range();
-        },
-    });
-
-    return {
-        OrdinalColorScale: OrdinalColorScale,
-    };
+    colors_changed: function() {
+        this.set_range();
+    }
 });
+
+module.exports = {
+    OrdinalColorScale: OrdinalColorScale
+};

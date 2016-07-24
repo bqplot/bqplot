@@ -13,91 +13,89 @@
  * limitations under the License.
  */
 
-define(["./MarkModel", "underscore"],
-       function(MarkModel, _) {
-    "use strict";
+var _ = require("underscore");
+var markmodel = require("./MarkModel");
 
-    var MapModel = MarkModel.MarkModel.extend({
+var MapModel = markmodel.MarkModel.extend({
 
-        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
-            _model_name: "MapModel",
-            _view_name: "Map",
+    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
+        _model_name: "MapModel",
+        _view_name: "Map",
 
-            color: {},
-            hover_highlight: true,
-            hovered_styles: {
-                hovered_fill: "Orange",
-                hovered_stroke: null,
-                hovered_stroke_width: 2.0
-            },
-
-            stroke_color: null,
-            default_color: null,
-            scales_metadata: {
-                color: { dimension: "color" },
-                projection: { dimension: "geo" }
-            },
-            selected: [],
-            selected_styles: {
-                selected_fill: "Red",
-                selected_stroke: null,
-                selected_stroke_width: 2.0
-            },
-            map_data: undefined,
-        }),
-
-        initialize: function() {
-            MapModel.__super__.initialize.apply(this, arguments);
-            this.on("change:map_data", this.update_data, this);
-            this.on("change:color", this.update_domains, this);
-            this.update_data();
-            this.update_domains();
+        color: {},
+        hover_highlight: true,
+        hovered_styles: {
+            hovered_fill: "Orange",
+            hovered_stroke: null,
+            hovered_stroke_width: 2.0
         },
 
-        update_data: function() {
-            this.dirty = true;
-            var mapdata = this.get("map_data");
-            this.geodata = mapdata[0];
-            this.subunits = mapdata[1];
-            this.update_domains();
-            this.dirty = false;
-            this.trigger("data_updated");
+        stroke_color: null,
+        default_color: null,
+        scales_metadata: {
+            color: { dimension: "color" },
+            projection: { dimension: "geo" }
         },
+        selected: [],
+        selected_styles: {
+            selected_fill: "Red",
+            selected_stroke: null,
+            selected_stroke_width: 2.0
+        },
+        map_data: undefined
+    }),
 
-        update_domains: function() {
-            var scales = this.get("scales");
-            var color_scale = scales.color;
-            var color_data = this.get("color");
-            if(color_scale !== null && color_scale !== undefined) {
-                if(!this.get("preserve_domain").color) {
-                    color_scale.compute_and_set_domain(
-                        Object.keys(color_data).map(function (d) {
-                            return color_data[d];
-                        }), this.id + "_color");
-                } else {
-                    color_scale.del_domain([], this.id + "_color");
-                }
+    initialize: function() {
+        MapModel.__super__.initialize.apply(this, arguments);
+        this.on("change:map_data", this.update_data, this);
+        this.on("change:color", this.update_domains, this);
+        this.update_data();
+        this.update_domains();
+    },
+
+    update_data: function() {
+        this.dirty = true;
+        var mapdata = this.get("map_data");
+        this.geodata = mapdata[0];
+        this.subunits = mapdata[1];
+        this.update_domains();
+        this.dirty = false;
+        this.trigger("data_updated");
+    },
+
+    update_domains: function() {
+        var scales = this.get("scales");
+        var color_scale = scales.color;
+        var color_data = this.get("color");
+        if(color_scale !== null && color_scale !== undefined) {
+            if(!this.get("preserve_domain").color) {
+                color_scale.compute_and_set_domain(
+                    Object.keys(color_data).map(function (d) {
+                        return color_data[d];
+                    }), this.id + "_color");
+            } else {
+                color_scale.del_domain([], this.id + "_color");
             }
-        },
+        }
+    },
 
-        get_subunit_name: function(id) {
-            for(var i = 0; i< this.subunits.length; i++) {
-                if(id == this.subunits[i].id){
-                    name = this.subunits[i].Name;
-                }
+    get_subunit_name: function(id) {
+        for(var i = 0; i< this.subunits.length; i++) {
+            if(id == this.subunits[i].id){
+                name = this.subunits[i].Name;
             }
-            return name;
-        },
+        }
+        return name;
+    },
 
-        get_data_dict: function(data, index) {
-            return {
-                id: data.id,
-                name: this.get_subunit_name(data.id),
-            };
-        },
-    });
-
-    return {
-        MapModel: MapModel,
-    };
+    get_data_dict: function(data, index) {
+        return {
+            id: data.id,
+            name: this.get_subunit_name(data.id),
+        };
+    }
 });
+
+module.exports = {
+    MapModel: MapModel
+};
