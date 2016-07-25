@@ -13,49 +13,48 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "d3", "underscore"],
-       function(widgets, d3, _) {
-    "use strict"
+var widgets = require("jupyter-js-widgets");
+var d3 = require("d3");
+var _ = require("underscore");
 
-    var Interaction = widgets.WidgetView.extend({
+var Interaction = widgets.WidgetView.extend({
 
-        render: function() {
-            this.parent = this.options.parent;
+    render: function() {
+        this.parent = this.options.parent;
 
-            // Opaque interation layer
-            this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "rect"))
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", this.parent.width -
-                               this.parent.margin.left -
-                               this.parent.margin.right)
-                .attr("height", this.parent.height -
-                                this.parent.margin.top -
-                                this.parent.margin.bottom)
-                .attr("pointer-events", "all")
-                .attr("visibility", "hidden");
-            this.parent.on("margin_updated", this.relayout, this);
-        },
+        // Opaque interation layer
+        this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "rect"))
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", this.parent.width -
+                           this.parent.margin.left -
+                           this.parent.margin.right)
+            .attr("height", this.parent.height -
+                            this.parent.margin.top -
+                            this.parent.margin.bottom)
+            .attr("pointer-events", "all")
+            .attr("visibility", "hidden");
+        this.parent.on("margin_updated", this.relayout, this);
+    },
 
-        relayout: function() {
-            // Called when the figure margins are updated.
-            this.el
-                .attr("width", this.parent.width -
-                               this.parent.margin.left -
-                               this.parent.margin.right)
-                .attr("height", this.parent.height -
-                                this.parent.margin.top -
-                                this.parent.margin.bottom);
-        },
+    relayout: function() {
+        // Called when the figure margins are updated.
+        this.el
+            .attr("width", this.parent.width -
+                           this.parent.margin.left -
+                           this.parent.margin.right)
+            .attr("height", this.parent.height -
+                            this.parent.margin.top -
+                            this.parent.margin.bottom);
+    },
 
-        remove: function() {
-            _.each(this.mark_views, function(mark) { mark.invert_range(); });
-            this.el.remove();
-            Interaction.__super__.remove.apply(this);
-        }
-    });
-
-    return {
-        Interaction: Interaction,
-    };
+    remove: function() {
+        _.each(this.mark_views, function(mark) { mark.invert_range(); });
+        this.el.remove();
+        Interaction.__super__.remove.apply(this);
+    }
 });
+
+module.exports = {
+    Interaction: Interaction
+};

@@ -13,21 +13,20 @@
  * limitations under the License.
  */
 
-define(["d3", "./Scale"], function(d3, ScaleViewModule) {
-    "use strict";
+var d3 = require("d3");
+var scale = require("./Scale");
 
-    var LogScale = ScaleViewModule.Scale.extend({
-        render: function() {
-            this.scale = d3.scale.log();
-            if(this.model.domain.length > 0) {
-                this.scale.domain(this.model.domain);
-            }
-            this.offset = 0;
-            this.create_event_listeners();
-        },
-    });
-
-    return {
-        LogScale: LogScale,
-    };
+var LogScale = scale.Scale.extend({
+    render: function() {
+        this.scale = d3.scale.log();
+        if(this.model.domain.length > 0) {
+            this.scale.domain(this.model.domain);
+        }
+        this.offset = 0;
+        this.create_event_listeners();
+    }
 });
+
+module.exports = {
+    LogScale: LogScale
+};

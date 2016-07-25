@@ -13,24 +13,23 @@
  * limitations under the License.
  */
 
-define(["d3", "./LinearScaleModel"], function(d3, LinearScaleModel) {
-    "use strict";
+var d3 = require("d3");
+var linearscalemodel = require("./LinearScaleModel");
 
-    var LogScaleModel = LinearScaleModel.LinearScaleModel.extend({
+var LogScaleModel = linearscalemodel.LinearScaleModel.extend({
 
-        initialize: function() {
-            LogScaleModel.__super__.initialize.apply(this, arguments);
-            this.type = "log";
-            this.global_min = Number.MIN_VALUE;
-            this.global_max = Number.POSITIVE_INFINITY;
-            this.on_some_change(["min", "max"], this.min_max_changed, this);
-            this.on("change:reverse", this.reverse_changed, this);
-            this.min_max_changed();
-            this.reverse_changed();
-        },
-    });
-
-    return {
-        LogScaleModel: LogScaleModel,
-    };
+    initialize: function() {
+        LogScaleModel.__super__.initialize.apply(this, arguments);
+        this.type = "log";
+        this.global_min = Number.MIN_VALUE;
+        this.global_max = Number.POSITIVE_INFINITY;
+        this.on_some_change(["min", "max"], this.min_max_changed, this);
+        this.on("change:reverse", this.reverse_changed, this);
+        this.min_max_changed();
+        this.reverse_changed();
+    }
 });
+
+module.exports = {
+    LogScaleModel: LogScaleModel
+};

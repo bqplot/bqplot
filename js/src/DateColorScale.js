@@ -13,30 +13,31 @@
  * limitations under the License.
  */
 
-define(["d3", "./ColorScale", "./ColorUtils", "underscore"], function(d3, ColorScaleView, ColorUtils, _) {
-    "use strict";
+var d3 = require("d3");
+var _ = require("underscore");
+var colorscale = require("./ColorScale");
+var colorutils = require("./ColorUtils");
 
-    var DateColorScale = ColorScaleView.ColorScale.extend({
+var DateColorScale = colorscale.ColorScale.extend({
 
-        render: function() {
-            this.scale = d3.time.scale();
-            if(this.model.domain.length > 0) {
-                this.scale.domain(this.model.domain);
-            }
-            this.offset = 0;
-            if(this.model.get("colors").length === 0) {
-               this.divergent = this.model.divergent = ColorUtils.is_divergent(this.model.get("scheme"));
-            } else {
-                this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
-            }
-            this.set_range();
+    render: function() {
+        this.scale = d3.time.scale();
+        if(this.model.domain.length > 0) {
+            this.scale.domain(this.model.domain);
+        }
+        this.offset = 0;
+        if(this.model.get("colors").length === 0) {
+           this.divergent = this.model.divergent = colorutils.is_divergent(this.model.get("scheme"));
+        } else {
+            this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
+        }
+        this.set_range();
 
-            this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
-            this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
-        },
-    });
-
-    return {
-        DateColorScale: DateColorScale,
-    };
+        this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
+        this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
+    }
 });
+
+module.exports = {
+    DateColorScale: DateColorScale
+};

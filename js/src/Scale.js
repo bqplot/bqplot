@@ -13,56 +13,55 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "d3"], function(widgets, d3) {
-     "use strict";
+var widgets = require("jupyter-js-widgets");
+var d3 = require("d3");
 
-    var Scale = widgets.WidgetView.extend({
+var Scale = widgets.WidgetView.extend({
 
-        render: function(){
-            this.offset = 0;
-        },
+    render: function() {
+        this.offset = 0;
+    },
 
-        create_event_listeners: function() {
-            this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
-            this.listenTo(this.model, "highlight_axis", this.highlight_axis, this);
-            this.listenTo(this.model, "unhighlight_axis", this.unhighlight_axis, this);
-        },
+    create_event_listeners: function() {
+        this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
+        this.listenTo(this.model, "highlight_axis", this.highlight_axis, this);
+        this.listenTo(this.model, "unhighlight_axis", this.unhighlight_axis, this);
+    },
 
-        set_range: function(range, padding) {
-            this.scale.range(range);
-        },
+    set_range: function(range, padding) {
+        this.scale.range(range);
+    },
 
-        compute_and_set_domain: function(array, id) {
-            this.model.compute_and_set_domain(array, id);
-        },
+    compute_and_set_domain: function(array, id) {
+        this.model.compute_and_set_domain(array, id);
+    },
 
-        set_domain: function(array, id) {
-            this.model.set_domain(array, id);
-        },
+    set_domain: function(array, id) {
+        this.model.set_domain(array, id);
+    },
 
-        model_domain_changed: function() {
-            this.scale.domain(this.model.domain);
-            this.trigger("domain_changed");
-        },
+    model_domain_changed: function() {
+        this.scale.domain(this.model.domain);
+        this.trigger("domain_changed");
+    },
 
-        highlight_axis: function() {
-            this.trigger("highlight_axis");
-        },
+    highlight_axis: function() {
+        this.trigger("highlight_axis");
+    },
 
-        unhighlight_axis: function() {
-            this.trigger("unhighlight_axis");
-        },
+    unhighlight_axis: function() {
+        this.trigger("unhighlight_axis");
+    },
 
-        expand_domain: function(old_range, new_range) {
-            // Base class function. No implementation.
-            // Implementation is particular to the child class
-            // if you have a current range and then a new range and want to
-            // expand the domain to expand to the new range but keep it
-            // consistent with the previous one, this is the function you use.
-        },
-    });
-
-    return {
-        Scale: Scale,
-    };
+    expand_domain: function(old_range, new_range) {
+        // Base class function. No implementation.
+        // Implementation is particular to the child class
+        // if you have a current range and then a new range and want to
+        // expand the domain to expand to the new range but keep it
+        // consistent with the previous one, this is the function you use.
+    }
 });
+
+module.exports = {
+    Scale: Scale
+};

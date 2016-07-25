@@ -13,98 +13,102 @@
  * limitations under the License.
  */
 
-define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
-        "use strict";
+var d3 = require("d3");
+var _ = require("underscore");
+var markmodel = require("./MarkModel");
 
-    var BoxplotModel = MarkModel.MarkModel.extend({
+var BoxplotModel = markmodel.MarkModel.extend({
 
-        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
-            _model_name: "BoxplotModel",
-            _view_name: "Boxplot",
+    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
+        _model_name: "BoxplotModel",
+        _view_name: "Boxplot",
 
-            x: [],
-            y: [],
-            scales_metadata: {
-                x: { orientation: "horizontal", dimension: "x" },
-                y: { orientation: "vertical", dimension: "y" }
-            },
-            stroke: null,
-            box_fill_color: "dodgerblue",
-            outlier_fill_color: "gray",
-            opacities: [],
-        }),
-
-        initialize: function() {
-            BoxplotModel.__super__.initialize.apply(this, arguments);
-            this.on_some_change(["x", "y"], this.update_data, this);
-            this.on_some_change(["preserve_domain"], this.update_domains, this);
-            this.update_data();
-            this.update_domains();
+        x: [],
+        y: [],
+        scales_metadata: {
+            x: { orientation: "horizontal", dimension: "x" },
+            y: { orientation: "vertical", dimension: "y" }
         },
+        stroke: null,
+        box_fill_color: "dodgerblue",
+        outlier_fill_color: "gray",
+        opacities: []
+    }),
 
-        update_bounding_box: function(model, value) {
-            // TODO: Actually add some padding.
-            var pad = 0;
-            this.x_padding = this.y_padding = pad;
-            this.trigger("mark_padding_updated");
-        },
+    initialize: function() {
+        BoxplotModel.__super__.initialize.apply(this, arguments);
+        this.on_some_change(["x", "y"], this.update_data, this);
+        this.on_some_change(["preserve_domain"], this.update_domains, this);
+        this.update_data();
+        this.update_domains();
+    },
 
-        update_data: function() {
-            var x_data = this.get_typed_field("x");
-            var y_data = this.get_typed_field("y");
+    update_bounding_box: function(model, value) {
+        // TODO: Actually add some padding.
+        var pad = 0;
+        this.x_padding = this.y_padding = pad;
+        this.trigger("mark_padding_updated");
+    },
 
-            y_data.forEach(function(elm) { elm.sort(function(a, b) { return a - b; }); });
+    update_data: function() {
+        var x_data = this.get_typed_field("x");
+        var y_data = this.get_typed_field("y");
 
-            if(x_data.length > y_data.length) {
-                x_data = x_data.slice(0, y_data.length);
-            } else if(x_data.length < y_data.length) {
-                y_data = y_data.slice(0, x_data.length);
-            }
+        y_data.forEach(function(elm) { 
+            elm.sort(function(a, b) { 
+                return a - b;
+            }); 
+        });
 
-            this.mark_data = _.zip(x_data, y_data);
+        if(x_data.length > y_data.length) {
+            x_data = x_data.slice(0, y_data.length);
+        } else if(x_data.length < y_data.length) {
+            y_data = y_data.slice(0, x_data.length);
+        }
 
-            this.update_domains();
-            this.trigger("data_updated");
-        },
+        this.mark_data = _.zip(x_data, y_data);
 
-        update_domains: function() {
-            // color scale needs an issue in DateScaleModel to be fixed. It
-            // should be moved here as soon as that is fixed.
+        this.update_domains();
+        this.trigger("data_updated");
+    },
 
-            var scales = this.get("scales");
-            var x_scale = scales.x;
-            var y_scale = scales.y;
-            var size_scale = scales.size;
-            var opacity_scale = scales.opacity;
+    update_domains: function() {
+        // color scale needs an issue in DateScaleModel to be fixed. It
+        // should be moved here as soon as that is fixed.
 
-            if(!this.get("preserve_domain").x && this.mark_data) {
-                x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                    return elem[0];
-                }), this.id + "_x");
-            } else {
-                x_scale.del_domain([], this.id + "_x");
-            }
-            if(!this.get("preserve_domain").y && this.mark_data) {
-               //The values are sorted, so we are using that to calculate the min/max
+        var scales = this.get("scales");
+        var x_scale = scales.x;
+        var y_scale = scales.y;
+        var size_scale = scales.size;
+        var opacity_scale = scales.opacity;
 
-                var min = d3.min(this.mark_data.map(function(d) {
-                    return d[1][0];
-                }));
-                var max = d3.max(this.mark_data.map(function(d) {
-                    var values = d[1];
-                    return values[values.length-1];
-                }));
+        if(!this.get("preserve_domain").x && this.mark_data) {
+            x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+                return elem[0];
+            }), this.id + "_x");
+        } else {
+            x_scale.del_domain([], this.id + "_x");
+        }
+        if(!this.get("preserve_domain").y && this.mark_data) {
+           //The values are sorted, so we are using that to calculate the min/max
 
-                y_scale.set_domain([min,max], this.id + "_y");
+            var min = d3.min(this.mark_data.map(function(d) {
+                return d[1][0];
+            }));
+            var max = d3.max(this.mark_data.map(function(d) {
+                var values = d[1];
+                return values[values.length-1];
+            }));
 
-            } else {
-                y_scale.del_domain([], this.id + "_y");
-            }
-        },
-    });
+            y_scale.set_domain([min,max], this.id + "_y");
 
-    return {
-        BoxplotModel: BoxplotModel,
-    };
+        } else {
+            y_scale.del_domain([], this.id + "_y");
+        }
+    }
 });
 
+
+module.exports = {
+    BoxplotModel: BoxplotModel
+};

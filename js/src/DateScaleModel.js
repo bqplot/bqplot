@@ -13,37 +13,39 @@
  * limitations under the License.
  */
 
-define(["d3", "./LinearScaleModel", "underscore"], function(d3, LinearScaleModel, _) {
-    "use strict";
+var d3 = require("d3");
+var _ = require("underscore");
+var linearscalemodel = require("./LinearScaleModel");
 
-    var DateScaleModel = LinearScaleModel.LinearScaleModel.extend({
+var DateScaleModel = linearscalemodel.LinearScaleModel.extend({
 
-        defaults: _.extend({}, LinearScaleModel.LinearScaleModel.prototype.defaults, {
-            _model_name: "DateScaleModel",
-            _view_name: "DateScale",
+    defaults: _.extend({}, linearscalemodel.LinearScaleModel.prototype.defaults, {
+        _model_name: "DateScaleModel",
+        _view_name: "DateScale",
 
-            // min: null,
-            // max: null,
-            // mid: null,
-        }),
+        // min: null,
+        // max: null,
+        // mid: null
+    }),
 
-        initialize: function() {
-            DateScaleModel.__super__.initialize.apply(this, arguments);
-            this.type = "date";
-            this.global_min = (new Date()).setTime(0);
-            this.global_max = new Date();
-        },
+    initialize: function() {
+        DateScaleModel.__super__.initialize.apply(this, arguments);
+        this.type = "date";
+        this.global_min = (new Date()).setTime(0);
+        this.global_max = new Date();
+    },
 
-        min_max_changed: function() {
-            this.min = this.get_date_elem("min");
-            this.max = this.get_date_elem("max");
-            this.min_from_data = (this.min === null);
-            this.max_from_data = (this.max === null);
-            this.update_domain();
-        },
-    });
-
-    return {
-        DateScaleModel: DateScaleModel,
-    };
+    min_max_changed: function() {
+        this.min = this.get_date_elem("min");
+        this.max = this.get_date_elem("max");
+        this.min_from_data = (this.min === null);
+        this.max_from_data = (this.max === null);
+        this.update_domain();
+    }
 });
+
+
+module.exports = {
+    DateScaleModel: DateScaleModel
+};
+

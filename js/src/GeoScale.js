@@ -13,56 +13,55 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "d3"], function(widgets, d3) {
-     "use strict";
+var d3 = require("d3");
+var widgets = require("jupyter-js-widgets");
 
-    var GeoScale = widgets.WidgetView.extend({
+var GeoScale = widgets.WidgetView.extend({
 
-        render: function() {
-            this.set_projection();
-            this.listenTo(this.model, "attribute_changed", this.reset_scale);
-        },
+    render: function() {
+        this.set_projection();
+        this.listenTo(this.model, "attribute_changed", this.reset_scale);
+    },
 
-        set_projection: function() {
-            this.path = d3.geo.path().projection(this.model.projection);
-            this.scale = this.model.projection;
-        },
+    set_projection: function() {
+        this.path = d3.geo.path().projection(this.model.projection);
+        this.scale = this.model.projection;
+    },
 
-        reset_scale: function() {
-            this.set_projection();
-            this.trigger("domain_changed", null);
-        }
-    });
-
-    var Mercator = GeoScale.extend({
-    });
-
-    var Albers = GeoScale.extend({
-    });
-
-    var AlbersUSA = GeoScale.extend({
-    });
-
-    var EquiRectangular = GeoScale.extend({
-    });
-
-    var Orthographic = GeoScale.extend({
-    });
-
-    var Gnomonic = GeoScale.extend({
-    });
-
-    var Stereographic = GeoScale.extend({
-    });
-
-    return {
-        GeoScale: GeoScale,
-        Mercator: Mercator,
-        Albers: Albers,
-        AlbersUSA: AlbersUSA,
-        EquiRectangular: EquiRectangular,
-        Orthographic: Orthographic,
-        Gnomonic: Gnomonic,
-        Stereographic: Stereographic,
-    };
+    reset_scale: function() {
+        this.set_projection();
+        this.trigger("domain_changed", null);
+    }
 });
+
+var Mercator = GeoScale.extend({
+});
+
+var Albers = GeoScale.extend({
+});
+
+var AlbersUSA = GeoScale.extend({
+});
+
+var EquiRectangular = GeoScale.extend({
+});
+
+var Orthographic = GeoScale.extend({
+});
+
+var Gnomonic = GeoScale.extend({
+});
+
+var Stereographic = GeoScale.extend({
+});
+
+module.exports = {
+    GeoScale: GeoScale,
+    Mercator: Mercator,
+    Albers: Albers,
+    AlbersUSA: AlbersUSA,
+    EquiRectangular: EquiRectangular,
+    Orthographic: Orthographic,
+    Gnomonic: Gnomonic,
+    Stereographic: Stereographic,
+};

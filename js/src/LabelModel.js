@@ -13,35 +13,34 @@
  * limitations under the License.
  */
 
-define(["d3", "./MarkModel", "underscore"], function(d3, MarkModel, _) {
-    "use strict";
+var d3 = require("d3");
+var _ = require("underscore");
+var markmodel = require("./MarkModel");
 
-    var LabelModel = MarkModel.MarkModel.extend({
+var LabelModel = markmodel.MarkModel.extend({
 
-        defaults: _.extend({}, MarkModel.MarkModel.prototype.defaults, {
-            _model_name: "LabelModel",
-            _view_name: "Label",
+    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
+        _model_name: "LabelModel",
+        _view_name: "Label",
 
-            x: 0.0,
-            y: 0.0,
-            x_offset: 0,
-            y_offset: 0,
-            scales_metadata: {
-                x: { orientation: "horizontal", dimension: "x" },
-                y: { orientation: "vertical", dimension: "y" },
-                color: { dimension: "color" }
-            },
-            color: null,
-            rotate_angle: 0.0,
-            text: "",
-            font_size: "14px",
-            font_weight: "bold",
-            align: "start"
-        }),
-    });
-
-    return {
-        LabelModel: LabelModel,
-    };
+        x: 0.0,
+        y: 0.0,
+        x_offset: 0,
+        y_offset: 0,
+        scales_metadata: {
+            x: { orientation: "horizontal", dimension: "x" },
+            y: { orientation: "vertical", dimension: "y" },
+            color: { dimension: "color" }
+        },
+        color: null,
+        rotate_angle: 0.0,
+        text: "",
+        font_size: "14px",
+        font_weight: "bold",
+        align: "start"
+    })
 });
 
+module.exports = {
+    LabelModel: LabelModel
+};

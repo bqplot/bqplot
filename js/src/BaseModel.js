@@ -13,116 +13,112 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
-    "use strict";
+var widgets = require("jupyter-js-widgets");
+var _ = require("underscore");
 
-    var BaseModel = widgets.WidgetModel.extend({
+var BaseModel = widgets.WidgetModel.extend({
 
-        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _model_name: "BaseModel",
-            _model_module: "bqplot",
-        }),
+    defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+        _model_name: "BaseModel",
+        _model_module: "bqplot"
+    }),
 
-        get_typed_field: function(param) {
-            // Function that reads in an array of a field that is typed. It
-            // performs tpe conversions that you may require and returns you
-            // the appropriate array.
-            var value = this.get(param);
-            var return_value = [];
-            var that = this;
-            if(value.hasOwnProperty("type") &&
-               value.hasOwnProperty("values") &&
-               value.values !== null) {
-                if(value.type === "date") {
-                    return_value = this.get(param).values;
-                    if(return_value[0] instanceof Array) {
-                       return_value = return_value.map(function(val) {
-                           return val.map(function(elem) {
-                               return that.convert_to_date(elem);
-                           });
+    get_typed_field: function(param) {
+        // Function that reads in an array of a field that is typed. It
+        // performs tpe conversions that you may require and returns you
+        // the appropriate array.
+        var value = this.get(param);
+        var return_value = [];
+        var that = this;
+        if(value.hasOwnProperty("type") &&
+           value.hasOwnProperty("values") &&
+           value.values !== null) {
+            if(value.type === "date") {
+                return_value = this.get(param).values;
+                if(return_value[0] instanceof Array) {
+                   return_value = return_value.map(function(val) {
+                       return val.map(function(elem) {
+                           return that.convert_to_date(elem);
                        });
-                    } else {
-                        return_value = return_value.map(function(val) {
-                            return that.convert_to_date(val);
-                        });
-                    }
+                   });
                 } else {
-                    return_value = this.get(param).values;
-                }
-            }
-            return return_value;
-        },
-
-        set_typed_field: function(param, value, options) {
-            // function takes a value which has to be set for a typed field and
-            // performs the conversion needed before sending it across to
-            // Python. This **only** sets the attribute. The caller is
-            // responsible for calling save_changes
-            var saved_value = value;
-            var is_date = false;
-            var return_object = {};
-            var that = this;
-
-            if(saved_value[0] instanceof Array) {
-                is_date = saved_value[0][0] instanceof Date;
-                if(is_date)
-                    saved_value = saved_value.map(function(val) {
-                        return val.map(function(elem) {
-                            return that.convert_to_json(elem);
-                        });
+                    return_value = return_value.map(function(val) {
+                        return that.convert_to_date(val);
                     });
+                }
             } else {
-                is_date = saved_value[0] instanceof Date;
-                if(is_date)
-                    saved_value = saved_value.map(function(elem) {
+                return_value = this.get(param).values;
+            }
+        }
+        return return_value;
+    },
+
+    set_typed_field: function(param, value, options) {
+        // function takes a value which has to be set for a typed field and
+        // performs the conversion needed before sending it across to
+        // Python. This **only** sets the attribute. The caller is
+        // responsible for calling save_changes
+        var saved_value = value;
+        var is_date = false;
+        var return_object = {};
+        var that = this;
+
+        if(saved_value[0] instanceof Array) {
+            is_date = saved_value[0][0] instanceof Date;
+            if(is_date)
+                saved_value = saved_value.map(function(val) {
+                    return val.map(function(elem) {
                         return that.convert_to_json(elem);
                     });
+                });
+        } else {
+            is_date = saved_value[0] instanceof Date;
+            if(is_date)
+                saved_value = saved_value.map(function(elem) {
+                    return that.convert_to_json(elem);
+                });
+        }
+        // TODO: this is not good. Need to think of something better
+        return_object.type = (is_date) ? "date" : "object";
+        return_object.values = saved_value;
+        this.set(param, return_object, options);
+    },
+
+    get_date_elem: function(param) {
+        return this.convert_to_date(this.get(param));
+    },
+
+    set_date_elem: function(param, value) {
+        this.set(param, this.convert_to_json(value));
+    },
+
+    convert_to_date: function(elem) {
+        // Function to convert the string to a date element
+        if(elem === undefined || elem === null) {
+            return null;
+        }
+        return new Date(elem);
+    },
+
+    convert_to_json: function(elem) {
+        // converts the date to a json compliant format
+        if(elem === undefined || elem === null) {
+            return null;
+        } else {
+            if (elem.toJSON === undefined) {
+                return elem;
+            } else {
+                // the format of the string to be sent across is
+                // '%Y-%m-%dT%H:%M:%S.%f'
+                // by default, toJSON returns '%Y-%m-%dT%H:%M:%S.%uZ'
+                // %u is milliseconds. Hence adding 000 to convert it into
+                // microseconds.
+                return elem.toJSON().slice(0, -1) + '000';
             }
-            //TODO: this is not good. Need to think of something better
-            return_object.type = (is_date) ? "date" : "object";
-            return_object.values = saved_value;
-            this.set(param, return_object, options);
-        },
-
-        get_date_elem: function(param) {
-            return this.convert_to_date(this.get(param));
-        },
-
-        set_date_elem: function(param, value) {
-            this.set(param, this.convert_to_json(value));
-        },
-
-        convert_to_date: function(elem) {
-            // Function to convert the string to a date element
-            if(elem === undefined || elem === null) {
-                return null;
-            }
-            return new Date(elem);
-        },
-
-        convert_to_json: function(elem) {
-            // converts the date to a json compliant format
-            if(elem === undefined || elem === null) {
-                return null;
-            }
-            else {
-                if (elem.toJSON === undefined) {
-                    return elem;
-                } else {
-                    // the format of the string to be sent across is
-                    // '%Y-%m-%dT%H:%M:%S.%f'
-                    // by default, toJSON returns '%Y-%m-%dT%H:%M:%S.%uZ'
-                    // %u is milliseconds. Hence adding 000 to convert it into
-                    // microseconds.
-                    return elem.toJSON().slice(0, -1) + '000';
-                }
-
-            }
-        },
-    });
-
-    return {
-        BaseModel: BaseModel,
-    };
-
+        }
+    }
 });
+
+module.exports = {
+    BaseModel: BaseModel
+};

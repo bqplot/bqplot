@@ -13,26 +13,24 @@
  * limitations under the License.
  */
 
-define(["jupyter-js-widgets", "underscore"], function(widgets, _) {
-    "use strict";
+var widgets = require("jupyter-js-widgets");
+var _ = require("underscore");
 
-    var TooltipModel = widgets.DOMWidgetModel.extend({
+var TooltipModel = widgets.DOMWidgetModel.extend({
 
-        defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
-            _model_name: "TooltipModel",
-            _view_name: "Tooltip",
-            _model_module: "bqplot",
-            _view_module: "bqplot",
+    defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
+        _model_name: "TooltipModel",
+        _view_name: "Tooltip",
+        _model_module: "bqplot",
+        _view_module: "bqplot",
 
-            fields: [],
-            formats: [],
-            show_labels: true,
-            labels: [],
-        }),
-    });
-
-    return {
-        TooltipModel: TooltipModel,
-    };
+        fields: [],
+        formats: [],
+        show_labels: true,
+        labels: []
+    })
 });
 
+module.exports = {
+    TooltipModel: TooltipModel
+};

@@ -13,120 +13,145 @@
  * limitations under the License.
  */
 
-define(["d3", "./colorbrewer", "./utils", "underscore"], function(d3, colorbrewer, utils, _) {
-    "use strict";
-    var color_schemes = ["Paired", "Set3", "Pastel1", "Set1", "Greys", "Greens", "Reds", "Purples", "Oranges", "YlOrRd", "YlOrBr", "YlGnBu", "YlGn", "RdPu",
-                         "PuRd", "PuBuGn", "PuBu", "OrRd", "GnBu", "BuPu", "BuGn", "BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral"];
-    return {
-        scale_colors_multi: function(colors, count) {
-            var scales = utils.getCustomRange(colors);
-            var scale_left = scales[0];
-            var scale_right = scales[1];
+var d3 = require("d3");
+var _ = require("underscore");
+var colorbrewer = require("./colorbrewer");
+var utils = require("./utils");
 
-            scale_left.domain([0, (count - 1)/ 2]);
-            scale_right.domain([(count - 1)/2, count - 1]);
-            var ret_colors = [];
-            var i;
-            for (i = 0; i < (count - 1)/ 2; i++) {
-                ret_colors.push(scale_left(i));
-            }
-            for(i = (count - 1) /2 + 1; i < count; i++) {
-                ret_colors.push(scale_right(i));
-            }
-            return ret_colors;
-        },
-        scale_colors: function(colors, count) {
-            var scale = d3.scale.linear()
-                .domain([0, count - 1])
-                .range(d3.extent[colors]);
-            var incr = (count < colors.length) ? Math.floor(colors.length / count) : 1;
-            var ret_colors = [];
-            for (var i = 0; i < count; i=i+incr) {
-                ret_colors.push(scale(i));
-            }
-            return ret_colors;
-        },
-        cycle_colors: function(colors, count) {
-            var colors_len = colors.length;
-            if(colors_len > count) {
-                return colors.slice(0, count);
-            } else {
-                var return_array = [];
-                var iters = Math.floor(count / colors_len);
-                for(;iters > 0; iters--) {
-                    return_array = return_array.concat(colors);
-                }
-                return return_array.concat(colors.slice(0, count % colors_len));
-            }
-        },
-        cycle_colors_from_scheme: function(scheme, num_steps) {
-            var index = color_schemes.indexOf(scheme);
-            index = (index === -1) ? 28 : index;
-            var color_set = colorbrewer[color_schemes[index]];
+var color_schemes = [
+    "Paired", "Set3", "Pastel1", "Set1", "Greys", "Greens", "Reds", "Purples", "Oranges", "YlOrRd", "YlOrBr", "YlGnBu", "YlGn", "RdPu",
+    "PuRd", "PuBuGn", "PuBu", "OrRd", "GnBu", "BuPu", "BuGn", "BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral"
+];
 
-            if (num_steps === 2) {
-                return [color_set[3][0], color_set[3][2]];
-            } else if (color_set.hasOwnProperty(num_steps)) {
-                return color_set[num_steps];
-            } else if (index < 2){
-                return this.cycle_colors(color_set[12], num_steps);
-            } else {
-                return this.cycle_colors(color_set[9], num_steps);
-            }
-        },
-        get_colors: function(scheme, num_colors) {
-            var index = color_schemes.indexOf(scheme);
 
-            if(index === -1) {
-                index = 28;
-            }
+var scale_colors_multi = function(colors, count) {
+    var scales = utils.getCustomRange(colors);
+    var scale_left = scales[0];
+    var scale_right = scales[1];
 
-            var colors_object = colorbrewer[color_schemes[index]];
-            if(index < 2) {
+    scale_left.domain([0, (count - 1)/ 2]);
+    scale_right.domain([(count - 1)/2, count - 1]);
+    var ret_colors = [];
+    var i;
+    for (i = 0; i < (count - 1)/ 2; i++) {
+        ret_colors.push(scale_left(i));
+    }
+    for(i = (count - 1) /2 + 1; i < count; i++) {
+        ret_colors.push(scale_right(i));
+    }
+    return ret_colors;
+};
 
-                return this.cycle_colors(colors_object[Math.min(num_colors, 12)], num_colors);
-            }
-            if(index < 4) {
-                return this.cycle_colors(colors_object[Math.min(num_colors, 9)], num_colors);
-            } else if(index < 21) {
-                return this.scale_colors(colors_object[Math.min(num_colors, 9)], num_colors);
-            } else {
-                return this.scale_colors_multi(colors_object[Math.min(num_colors, 9)], num_colors);
-            }
-        },
-        get_linear_scale: function(scheme) {
-            var index = color_schemes.indexOf(scheme);
-            if(index === -1 && index < 4) {
-                index = 28;
-            }
+var scale_colors = function(colors, count) {
+    var scale = d3.scale.linear()
+        .domain([0, count - 1])
+        .range(d3.extent[colors]);
+    var incr = (count < colors.length) ? Math.floor(colors.length / count) : 1;
+    var ret_colors = [];
+    for (var i = 0; i < count; i=i+incr) {
+        ret_colors.push(scale(i));
+    }
+    return ret_colors;
+};
 
-            var colors = colorbrewer[color_schemes[index]][9];
-            var scale = d3.scale.linear();
-            if(index > 21) {
-                scale.range([colors[0], colors[4], colors[8]]);
-            } else {
-                scale.range([colors[0], colors[8]]);
-            }
-            return scale;
-        },
-        get_ordinal_scale: function(scheme, num_steps) {
-            var scale = d3.scale.ordinal();
-            scale.range(this.cycle_colors_from_scheme(scheme, num_steps));
-            return scale;
-        },
-        get_linear_scale_range: function(scheme) {
-            return this.get_linear_scale(scheme).range();
-        },
-        get_ordinal_scale_range: function(scheme, num_steps) {
-            return this.get_ordinal_scale(scheme, num_steps).range();
-        },
-        is_divergent: function(scheme) {
-            var index = color_schemes.indexOf(scheme);
-            if(index === -1 && index < 4) {
-                index = 2;
-            }
-            return (index > 21);
-        },
-    };
-});
+var cycle_colors = function(colors, count) {
+    var colors_len = colors.length;
+    if(colors_len > count) {
+        return colors.slice(0, count);
+    } else {
+        var return_array = [];
+        var iters = Math.floor(count / colors_len);
+        for(;iters > 0; iters--) {
+            return_array = return_array.concat(colors);
+        }
+        return return_array.concat(colors.slice(0, count % colors_len));
+    }
+};
 
+var cycle_colors_from_scheme = function(scheme, num_steps) {
+    var index = color_schemes.indexOf(scheme);
+    index = (index === -1) ? 28 : index;
+    var color_set = colorbrewer[color_schemes[index]];
+
+    if (num_steps === 2) {
+        return [color_set[3][0], color_set[3][2]];
+    } else if (color_set.hasOwnProperty(num_steps)) {
+        return color_set[num_steps];
+    } else if (index < 2){
+        return this.cycle_colors(color_set[12], num_steps);
+    } else {
+        return this.cycle_colors(color_set[9], num_steps);
+    }
+};
+
+var get_colors = function(scheme, num_colors) {
+    var index = color_schemes.indexOf(scheme);
+
+    if(index === -1) {
+        index = 28;
+    }
+
+    var colors_object = colorbrewer[color_schemes[index]];
+    if(index < 2) {
+
+        return this.cycle_colors(colors_object[Math.min(num_colors, 12)], num_colors);
+    }
+    if(index < 4) {
+        return this.cycle_colors(colors_object[Math.min(num_colors, 9)], num_colors);
+    } else if(index < 21) {
+        return this.scale_colors(colors_object[Math.min(num_colors, 9)], num_colors);
+    } else {
+        return this.scale_colors_multi(colors_object[Math.min(num_colors, 9)], num_colors);
+    }
+};
+
+var get_linear_scale = function(scheme) {
+    var index = color_schemes.indexOf(scheme);
+    if(index === -1 && index < 4) {
+        index = 28;
+    }
+
+    var colors = colorbrewer[color_schemes[index]][9];
+    var scale = d3.scale.linear();
+    if(index > 21) {
+        scale.range([colors[0], colors[4], colors[8]]);
+    } else {
+        scale.range([colors[0], colors[8]]);
+    }
+    return scale;
+};
+
+var get_ordinal_scale = function(scheme, num_steps) {
+    var scale = d3.scale.ordinal();
+    scale.range(this.cycle_colors_from_scheme(scheme, num_steps));
+    return scale;
+};
+
+var get_linear_scale_range = function(scheme) {
+    return this.get_linear_scale(scheme).range();
+};
+
+var get_ordinal_scale_range = function(scheme, num_steps) {
+    return this.get_ordinal_scale(scheme, num_steps).range();
+};
+
+var is_divergent = function(scheme) {
+    var index = color_schemes.indexOf(scheme);
+    if(index === -1 && index < 4) {
+        index = 2;
+    }
+    return (index > 21);
+};
+
+module.exports = {
+    scale_colors_multi: scale_colors_multi,
+    scale_colors: scale_colors,
+    cycle_colors: cycle_colors,
+    cycle_colors_from_scheme: cycle_colors_from_scheme,
+    get_colors: get_colors,
+    get_linear_scale: get_linear_scale,
+    get_ordinal_scale: get_ordinal_scale,
+    get_linear_scale_range: get_linear_scale_range,
+    get_ordinal_scale_range: get_ordinal_scale_range,
+    is_divergent: is_divergent
+};
