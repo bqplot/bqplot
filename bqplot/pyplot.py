@@ -377,7 +377,7 @@ def hline(level, fig=None, preserve_domain=False, **kwargs):
     sc_x = fig.scale_x
     return plot([0., 1.], [level, level], scales={'x': sc_x}, preserve_domain={'x': True,
          'y': preserve_domain}, axes=False, colors=default_colors,
-         stroke_width=default_width, update_context=False)
+         stroke_width=default_width, update_context=False, **kwargs)
 
 
 def vline(level, fig=None, preserve_domain=False, **kwargs):
@@ -400,7 +400,7 @@ def vline(level, fig=None, preserve_domain=False, **kwargs):
     sc_y = fig.scale_y
     return plot([level, level], [0., 1.], scales={'y': sc_y}, preserve_domain={'x': preserve_domain,
          'y': True}, axes=False, colors=default_colors,
-         stroke_width=default_width, update_context=False)
+         stroke_width=default_width, update_context=False, **kwargs)
 
 
 def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
