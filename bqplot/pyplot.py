@@ -375,7 +375,7 @@ def hline(level, fig=None, preserve_domain=False, **kwargs):
     if fig is None:
         fig = current_figure()
     sc_x = fig.scale_x
-    plot([0., 1.], [level, level], scales={'x': sc_x}, preserve_domain={'x': True,
+    return plot([0., 1.], [level, level], scales={'x': sc_x}, preserve_domain={'x': True,
          'y': preserve_domain}, axes=False, colors=default_colors,
          stroke_width=default_width, update_context=False)
 
@@ -398,7 +398,7 @@ def vline(level, fig=None, preserve_domain=False, **kwargs):
     if fig is None:
         fig = current_figure()
     sc_y = fig.scale_y
-    plot([level, level], [0., 1.], scales={'y': sc_y}, preserve_domain={'x': preserve_domain,
+    return plot([level, level], [0., 1.], scales={'y': sc_y}, preserve_domain={'x': preserve_domain,
          'y': True}, axes=False, colors=default_colors,
          stroke_width=default_width, update_context=False)
 
@@ -437,7 +437,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
         elif name in scales:
             if update_context:
                 _context['scales'][dimension] = scales[name]
-        # Scale has to be fetched from the conext or created as it has not
+        # Scale has to be fetched from the context or created as it has not
         # been passed.
         elif dimension not in _context['scales']:
             # Creating a scale for the dimension if a matching scale is not
