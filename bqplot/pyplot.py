@@ -183,6 +183,7 @@ def figure(key=None, fig=None, **kwargs):
     # Used to automatically generate axis.
     if(getattr(_context['figure'], 'axis_registry', None) is None):
         setattr(_context['figure'], 'axis_registry', {})
+    return _context['figure']
 
 
 def close(key):
