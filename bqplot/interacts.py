@@ -168,8 +168,8 @@ def panzoom(marks):
     containing the scales of the marks passed.
     """
     return PanZoom(scales={
-        'x': [mark.scales.get('x') for mark in marks if 'x' in mark.scales],
-        'y': [mark.scales.get('y') for mark in marks if 'y' in mark.scales],
+        'x': sum([mark._get_dimension_scales('x', preserve_domain=True) for mark in marks], []),
+        'y': sum([mark._get_dimension_scales('y', preserve_domain=True) for mark in marks], []),
     })
 
 
