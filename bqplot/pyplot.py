@@ -46,15 +46,16 @@ Pyplot
 from collections import OrderedDict
 from IPython.display import display
 from ipywidgets import VBox
-from numpy import arange, issubdtype
+from numpy import arange, issubdtype, array, column_stack
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
 from .toolbar import Toolbar
-from .interacts import (BrushIntervalSelector, FastIntervalSelector,
-                        BrushSelector, IndexSelector, MultiSelector,
-                        LassoSelector)
+from .interacts import (
+        BrushIntervalSelector, FastIntervalSelector, BrushSelector,
+        IndexSelector, MultiSelector, LassoSelector
+    )
 from traitlets.utils.sentinel import Sentinel
 
 Keep = Sentinel('Keep', 'bqplot.pyplot', '''
@@ -365,7 +366,7 @@ def grids(fig=None, value='solid'):
         a.grid_lines = value
 
 
-def hline(level, fig=None, preserve_domain=False, **kwargs):
+def hline(level, fig=None, **kwargs):
     """Draws a horizontal line at the given level.
 
     Parameters
@@ -383,13 +384,21 @@ def hline(level, fig=None, preserve_domain=False, **kwargs):
     if fig is None:
         fig = current_figure()
     sc_x = fig.scale_x
-    return plot([0., 1.], [level, level], scales={ 'x': sc_x }, preserve_domain={
+
+    level = array(level)
+    if len(level.shape) == 0:
+        x = [0, 1]
+        y = [level, level]
+    else:
+        x = [0, 1]
+        y = column_stack([level, level])
+    return plot(x, y, scales={ 'x': sc_x }, preserve_domain={
         'x': True,
-        'y': preserve_domain
+        'y': kwargs.get('preserve_domain', False)
     }, axes=False, colors=default_colors, stroke_width=default_width, update_context=False)
 
 
-def vline(level, fig=None, preserve_domain=False, **kwargs):
+def vline(level, fig=None, **kwargs):
     """Draws a vertical line at the given level.
 
     Parameters
@@ -407,8 +416,17 @@ def vline(level, fig=None, preserve_domain=False, **kwargs):
     if fig is None:
         fig = current_figure()
     sc_y = fig.scale_y
-    return plot([level, level], [0., 1.], scales={ 'y': sc_y }, preserve_domain={
-        'x': preserve_domain,
+
+    level = array(level)
+    if len(level.shape) == 0:
+        x = [level, level]
+        y = [0, 1]
+    else:
+        x = column_stack([level, level])
+        y = [[0, 1]] * len(level)  # TODO: repeating [0, 1] should not be
+                                   # required once we allow for 2-D x and 1-D y
+    return plot(x, y, scales={ 'y': sc_y }, preserve_domain={
+        'x': kwargs.get('preserve_domain', False),
         'y': True
     }, axes=False, colors=default_colors, stroke_width=default_width, update_context=False)
 
