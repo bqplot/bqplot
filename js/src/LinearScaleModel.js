@@ -47,7 +47,7 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
 
     reverse_changed: function() {
         this.reverse = this.get("reverse");
-        if(this.domain.length > 0) {
+        if(this.domain.length > 0 && this.reverse) {
             this.domain.reverse();
             this.trigger("domain_changed", this.domain);
         }
