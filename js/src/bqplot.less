@@ -202,8 +202,17 @@
     svg.bqplot {
         background: #1a1a1a;
         .axis {
-            rect, path, line {
-                stroke: white;
+            rect {
+                stroke: #1A1A1A;
+            }
+            .tick line {
+                stroke: #1A1A1A;
+            }
+            .tick.short line {
+                stroke: grey;
+            }
+            .tick text {
+                fill: grey;
             }
         }
         .stick, .zeroLine {
@@ -221,14 +230,11 @@
         .brushintsel, .intsel {
             fill: #ffffff;
         }
-        .grid_lines .grid-line {
-            stroke: grey;
-        }
         text.axislabel, tspan.axislabel, text.mainheading {
             fill: orange;
         }
         .plotarea_background {
-            fill: #1F1F1F;
+            fill: #383838;
         }
     }
     .mark_tooltip {

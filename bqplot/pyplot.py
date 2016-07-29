@@ -253,10 +253,12 @@ def scales(key=None, scales={}):
                               else old_ctxt[_get_attribute_dimension(k)] for k in scales}
     else:  # A key is provided
         if key not in _context['scale_registry']:
-            _context['scale_registry'][key] = {_get_attribute_dimension(k): scales[k]
-                                               if scales[k] is not Keep
-                                               else old_ctxt[_get_attribute_dimension(k)]
-                                               for k in scales}
+            _context['scale_registry'][key] = {
+                _get_attribute_dimension(k): scales[k]
+                if scales[k] is not Keep
+                else old_ctxt[_get_attribute_dimension(k)]
+                for k in scales
+            }
         _context['scales'] = _context['scale_registry'][key]
 
 
