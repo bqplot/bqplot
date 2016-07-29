@@ -252,6 +252,16 @@ OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+Examples' Data Files License
+============================
+
+The files 'gdp_per_capita.csv' and 'country_codes.csv' were adapted from
+the World Bank Data Catalog.
+The World Bank: GDP per capita (current US$): http://data.worldbank.org/indicator/NY.GDP.PCAP.CD?end=2015&start=1960
+The World Bank: Country Codes: http://wits.worldbank.org/wits/wits/WITSHELP/Content/Codes/Country_Codes.htm
+
+The license and attribution may be found at http://go.worldbank.org/OJC02YMLA0.
+
 Wealth of Nations Files License
 ===============================
 
