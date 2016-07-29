@@ -183,6 +183,7 @@ def figure(key=None, fig=None, **kwargs):
     # Used to automatically generate axis.
     if(getattr(_context['figure'], 'axis_registry', None) is None):
         setattr(_context['figure'], 'axis_registry', {})
+    return _context['figure']
 
 
 def close(key):
@@ -397,7 +398,7 @@ def hline(level, fig=None, **kwargs):
     return plot(x, y, scales={ 'x': sc_x }, preserve_domain={
         'x': True,
         'y': kwargs.get('preserve_domain', False)
-    }, axes=False, colors=default_colors, stroke_width=default_width, update_context=False)
+    }, axes=False, colors=default_colors, stroke_width=default_width, update_context=False, **kwargs)
 
 
 def vline(level, fig=None, **kwargs):
@@ -430,7 +431,7 @@ def vline(level, fig=None, **kwargs):
     return plot(x, y, scales={ 'y': sc_y }, preserve_domain={
         'x': kwargs.get('preserve_domain', False),
         'y': True
-    }, axes=False, colors=default_colors, stroke_width=default_width, update_context=False)
+    }, axes=False, colors=default_colors, stroke_width=default_width, update_context=False, **kwargs)
 
 
 def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
