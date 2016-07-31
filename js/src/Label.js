@@ -176,11 +176,11 @@ var Label = mark.Mark.extend({
 
     update_position: function() {
         var that = this;
-        var x_scale = this.scales.x;
-        var y_scale = this.scales.y;
-        var x = (this.x_scale.model.type === "date") ?
+        var x_scale = this.x_scale;
+        var y_scale = this.y_scale;
+        var x = (x_scale.model.type === "date") ?
             this.model.get_date_elem("x") : this.model.get("x");
-        var y = (this.y_scale.model.type === "date") ?
+        var y = (y_scale.model.type === "date") ?
             this.model.get_date_elem("y") : this.model.get("y");
         var x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");

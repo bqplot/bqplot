@@ -46,7 +46,7 @@ var LabelModel = markmodel.MarkModel.extend({
 
     initialize: function() {
         // TODO: Normally, color, opacity and size should not require a redraw
-        LabelModel.__super__.initialize.apply(this);
+        LabelModel.__super__.initialize.apply(this, arguments);
         this.on_some_change(["x", "y", "color"], this.update_data, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
         // on_some_change depends on the GLOBAL backbone on("change") handler which
