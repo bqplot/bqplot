@@ -28,26 +28,34 @@ var LabelModel = markmodel.MarkModel.extend({
         color: null,
         size: null,
         rotation: null,
+        opacity: null,
         x_offset: 0,
         y_offset: 0,
         scales_metadata: {
             x: { orientation: "horizontal", dimension: "x" },
             y: { orientation: "vertical", dimension: "y" },
             size: { dimension: "size"},
-            color: { dimension: "color" }
+            color: { dimension: "color" },
+            opacity: { dimension: "opacity" }
         },
-        colors: null,
+        colors: [],
+        default_opacities: [],
         rotate_angle: 0.0,
         text: [],
-        font_size: "14px",
+        font_size: 16.0,
+        font_unit: "px",
         font_weight: "bold",
-        align: "start"
+        align: "start",
+        enable_move: false,
+        restrict_x: false,
+        restrict_y: false,
+        update_on_move: false
     }),
 
     initialize: function() {
         // TODO: Normally, color, opacity and size should not require a redraw
         LabelModel.__super__.initialize.apply(this, arguments);
-        this.on_some_change(["x", "y", "color"], this.update_data, this);
+        this.on_some_change(["x", "y", "color", "size", "rotation", "opacity"], this.update_data, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
         // on_some_change depends on the GLOBAL backbone on("change") handler which
         // is called AFTER the specific handlers on("change:foobar") and we make that
@@ -79,6 +87,7 @@ var LabelModel = markmodel.MarkModel.extend({
 
             var color = this.get_typed_field("color"),
                 size = this.get_typed_field("size"),
+                opacity = this.get_typed_field("opacity"),
                 rotation = this.get_typed_field("rotation");
 
 
@@ -98,6 +107,7 @@ var LabelModel = markmodel.MarkModel.extend({
                     color: color[i],
                     size: size[i],
                     rotation: rotation[i],
+                    opacity: opacity[i],
                     index: i
                 };
             });
