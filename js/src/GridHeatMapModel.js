@@ -30,6 +30,7 @@ var GridHeatMapModel = markmodel.MarkModel.extend({
             column: { orientation: "horizontal", dimension: "x" },
             color: { dimension: "color" }
         },
+        null_color: "black",
         row_align: "start",
         column_align: "start",
         stroke: "black",

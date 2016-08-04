@@ -461,7 +461,7 @@ var GridHeatMap = mark.Mark.extend({
         var col_nums = _.range(num_cols);
         var row_nums = _.range(num_rows);
 
-        var data_array = row_nums.map(function(row) { 
+        var data_array = row_nums.map(function(row) {
             return col_nums.map(function(col) {
                 return that.model.mark_data[row * num_cols + col];
             });
@@ -612,6 +612,9 @@ var GridHeatMap = mark.Mark.extend({
     },
 
     get_element_fill: function(dat) {
+        if (dat.color === null) {
+            return this.model.get("null_color")
+        }
         return this.scales.color.scale(dat.color);
     },
 

@@ -847,7 +847,7 @@ class Label(Mark):
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
     align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)
     enable_move = Bool().tag(sync=True)
-    
+
     _view_name = Unicode('Label').tag(sync=True)
     _model_name = Unicode('LabelModel').tag(sync=True)
 
@@ -1010,7 +1010,7 @@ class Pie(Mark):
     display_labels = Bool(True).tag(sync=True)
     label_color = Color(None, allow_none=True).tag(sync=True)
     font_size = Unicode(default_value='10px').tag(sync=True)
-    font_weight = Enum(['bold', 'normal', 'bolder'], 
+    font_weight = Enum(['bold', 'normal', 'bolder'],
                        default_value='normal').tag(sync=True)
 
     _view_name = Unicode('Pie').tag(sync=True)
@@ -1169,7 +1169,7 @@ class GridHeatMap(Mark):
 
     row_align = Enum(['start', 'end'], default_value='start').tag(sync=True)
     column_align = Enum(['start', 'end'], default_value='start').tag(sync=True)
-
+    null_color = Color('black', allow_none=True).tag(sync=True)
     stroke = Color('black', allow_none=True).tag(sync=True)
     opacity = Float(1.0, min=0.2, max=1).tag(sync=True, display_name='Opacity')
     anchor_style = Dict({'fill': 'white', 'stroke': 'blue'}).tag(sync=True)
