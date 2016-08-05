@@ -6,7 +6,7 @@ bqplot is a Grammar of Graphics based interactive plotting framework for the Jup
 [![bqplot](./bqplot-screencast.gif)](https://github.com/bloomberg/bqplot/blob/master/examples/Applications/Wealth%20of%20Nations.ipynb)
 
 In bqplot, every single attribute of the plot is an interactive widget.
-This allows the user to integrate any plot with iPython widgets to create a
+This allows the user to integrate any plot with IPython widgets to create a
 complex and feature rich GUI from just a few simple lines of Python code.
 
 Goals
