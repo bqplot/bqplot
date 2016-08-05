@@ -30,6 +30,9 @@ var DateScaleModel = linearscalemodel.LinearScaleModel.extend({
 
     initialize: function() {
         DateScaleModel.__super__.initialize.apply(this, arguments);
+    },
+
+    set_init_state: function() {
         this.type = "date";
         this.global_min = (new Date()).setTime(0);
         this.global_max = new Date();

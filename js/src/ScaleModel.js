@@ -30,9 +30,18 @@ var ScaleModel = basemodel.BaseModel.extend({
 
     initialize: function() {
         ScaleModel.__super__.initialize.apply(this, arguments);
-        this.type = "base";
         this.domains = {};
         this.domain = [];
+        this.set_init_state();
+        this.set_listeners();
+    },
+
+    set_init_state: function() {
+        this.type = "base";
+    },
+
+    set_listeners: function() {
+        // Function to be implementd by inherited classes.
     },
 
     set_domain: function(domain, id) {

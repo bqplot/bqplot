@@ -21,9 +21,15 @@ var OrdinalScaleModel = scalemodel.ScaleModel.extend({
 
     initialize: function() {
         OrdinalScaleModel.__super__.initialize.apply(this, arguments);
+    },
+
+    set_init_state: function() {
         this.type = "ordinal";
         this.min_from_data = true;
         this.max_from_data = true;
+    },
+
+    set_listeners: function() {
         this.on("change:domain", this.domain_changed, this);
         this.domain_changed();
         this.on("change:reverse", this.reverse_changed, this);
@@ -45,8 +51,15 @@ var OrdinalScaleModel = scalemodel.ScaleModel.extend({
         }
     },
 
-    reverse_changed: function() {
-        if(this.domain.length > 0) {
+    reverse_changed: function(model, value, options) {
+        var prev_reverse = (model === undefined) ? false : model.previous("reverse");
+        this.reverse = this.get("reverse");
+
+        // the domain should be reversed only if the previous value of reverse
+        // is different from the current value. During init, domain should be
+        // reversed only if reverse is set to True.
+        var reverse_domain = (prev_reverse + this.reverse) % 2;
+        if(this.domain.length > 0 && reverse_domain === 1) {
             this.domain.reverse();
             this.trigger("domain_changed", this.domain);
         }

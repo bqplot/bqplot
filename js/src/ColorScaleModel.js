@@ -21,8 +21,15 @@ var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
 
     initialize: function() {
         ColorScaleModel.__super__.initialize.apply(this, arguments);
+    },
+
+    set_init_state: function() {
         this.type = "color_linear";
         this.divergent = false;
+    },
+
+    set_listeners: function() {
+        ColorScaleModel.__super__.set_listeners.apply(this, arguments);
         this.on("change:mid", this.mid_changed, this);
         this.mid_changed();
     },

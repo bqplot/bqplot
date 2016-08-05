@@ -28,13 +28,19 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
 
     initialize: function() {
         LinearScaleModel.__super__.initialize.apply(this, arguments);
+    },
+
+    set_init_state: function() {
         this.type = "linear";
         this.global_min = Number.NEGATIVE_INFINITY;
         this.global_max = Number.POSITIVE_INFINITY;
-        this.on_some_change(["min", "max"], this.min_max_changed, this);
-        this.min_max_changed();
+    },
+
+    set_listeners: function() {
         this.on("change:reverse", this.reverse_changed, this);
         this.reverse_changed();
+        this.on_some_change(["min", "max"], this.min_max_changed, this);
+        this.min_max_changed();
     },
 
     min_max_changed: function() {
@@ -45,9 +51,15 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
         this.update_domain();
     },
 
-    reverse_changed: function() {
+    reverse_changed: function(model, value, options) {
+        var prev_reverse = (model === undefined) ? false : model.previous("reverse");
         this.reverse = this.get("reverse");
-        if(this.domain.length > 0) {
+
+        // the domain should be reversed only if the previous value of reverse
+        // is different from the current value. During init, domain should be
+        // reversed only if reverse is set to True.
+        var reverse_domain = (prev_reverse + this.reverse) % 2;
+        if(this.domain.length > 0 && reverse_domain === 1) {
             this.domain.reverse();
             this.trigger("domain_changed", this.domain);
         }
