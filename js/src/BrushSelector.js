@@ -21,7 +21,7 @@ var utils = require("./utils");
 var BrushSelector = selector.BaseXYSelector.extend({
 
     render: function() {
-        selector.__super__.render.apply(this);
+        BrushSelector.__super__.render.apply(this);
         var that = this;
         var scale_creation_promise = this.create_scales();
         //TODO: For all selectors, the brush background etc can be created
@@ -184,7 +184,7 @@ var BrushSelector = selector.BaseXYSelector.extend({
 var BrushIntervalSelector = selector.BaseXSelector.extend({
 
     render: function() {
-        selector.__super__.render.apply(this);
+        BrushIntervalSelector.__super__.render.apply(this);
         var that = this;
         var scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
