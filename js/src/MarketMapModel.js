@@ -72,6 +72,7 @@ var MarketMapModel = basemodel.BaseModel.extend({}, {
         axes: { deserialize: widgets.unpack_models },
         tooltip_widget: { deserialize: widgets.unpack_models },
         style: { deserialize: widgets.unpack_models },
+        layout:  { deserialize: widgets.unpack_models }
     }, basemodel.BaseModel.serializers)
 });
 

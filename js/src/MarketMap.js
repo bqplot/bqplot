@@ -102,14 +102,12 @@ var MarketMap = figure.Figure.extend({
                 color_scale.on("color_scale_range_changed", that.update_map_colors, that);
             }
             that.create_listeners();
-
             that.axis_views = new widgets.ViewList(that.add_axis, null, that);
             that.axis_views.update(that.model.get("axes"));
             that.model.on("change:axes", function(model, value, options) {
                 that.axis_views.update(value);
             });
         });
-
         this.displayed.then(function() {
             // Adding the tooltip to the parent of the el so as to not
             // pollute the DOM
