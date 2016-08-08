@@ -159,7 +159,6 @@ var Label = mark.Mark.extend({
 
     create_listeners: function() {
         Label.__super__.create_listeners.apply(this);
-        this.listenTo(this.model, "change:text", this.update_text, this);
         this.listenTo(this.model, "change:enable_move", this.set_drag_behavior);
         this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
         this.listenTo(this.model, "change:default_rotation", this.update_xy_position, this);
@@ -185,13 +184,15 @@ var Label = mark.Mark.extend({
     draw: function() {
         var that = this;
         this.set_ranges();
-        this.el.selectAll(".label")
+        //TODO: This need not be done. Elements should be added only
+        //when needed.
+        this.el.selectAll(".object_grp")
             .remove();
 
         var x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");
 
-        var elements = this.el.selectAll(".label")
+        var elements = this.el.selectAll(".object_grp")
             .data(this.model.mark_data, function(d) { return d.unique_id; });
 
         var elements_added = elements.enter().append("g")
@@ -261,13 +262,6 @@ var Label = mark.Mark.extend({
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset + x_offset) +
                                 "," + (y_scale.scale(d.y) + y_scale.offset + y_offset) + ")" +
                        that.get_element_rotation(d);
-            });
-    },
-
-    update_text: function(model, texts) {
-        this.el.selectAll(".label")
-            .text(function(d, i) {
-                return texts[i];
             });
     },
 
