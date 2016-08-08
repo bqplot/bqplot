@@ -346,12 +346,25 @@ class LinearScale(Scale):
         two or more scales have the same rtype and dtype.
         default_value is 2 because for the same range and domain types,
         LinearScale should take precedence.
+    stabilized: bool (default: False)
+        if set to False, the domain of the scale is tied to the data range
+        if set to True, the domain of the scale is udpated only when
+        the data range is beyond certain thresholds, given by the attributes
+        mid_range and min_range.
+    mid_range: float (default: 0.8)
+        Proportion of the range that is spanned initially.
+    min_range: float (default: 0.6)
+        Minimum proportion of the range that should be spanned by the data.
+        If the data span falls beneath that level, the scale is reset.
     """
     rtype = 'Number'
     dtype = np.number
     precedence = 2
     min = Float(None, allow_none=True).tag(sync=True)
     max = Float(None, allow_none=True).tag(sync=True)
+    stabilized = Bool(False).tag(sync=True)
+    min_range = Float(0.6, min=0.0, max=1.0).tag(sync=True)
+    mid_range = Float(0.8, min=0.1, max=1.0).tag(sync=True)
 
     _view_name = Unicode('LinearScale').tag(sync=True)
     _model_name = Unicode('LinearScaleModel').tag(sync=True)
