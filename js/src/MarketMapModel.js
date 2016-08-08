@@ -33,6 +33,7 @@ var MarketMapModel = basemodel.BaseModel.extend({}, {
         groups: [],
         display_text: [],
         ref_data: undefined,
+        title: "",
 
         tooltip_fields: [],
         tooltip_formats: [],
@@ -57,6 +58,8 @@ var MarketMapModel = basemodel.BaseModel.extend({}, {
         group_stroke: "black",
         selected_stroke: "dodgerblue",
         hovered_stroke: "orangered",
+        font_style: {},
+        title_style: {},
 
         selected: [],
         enable_hover: true,
@@ -69,6 +72,7 @@ var MarketMapModel = basemodel.BaseModel.extend({}, {
         axes: { deserialize: widgets.unpack_models },
         tooltip_widget: { deserialize: widgets.unpack_models },
         style: { deserialize: widgets.unpack_models },
+        layout:  { deserialize: widgets.unpack_models }
     }, basemodel.BaseModel.serializers)
 });
 
