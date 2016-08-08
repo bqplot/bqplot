@@ -20,14 +20,14 @@ var LogScaleModel = linearscalemodel.LinearScaleModel.extend({
 
     initialize: function() {
         LogScaleModel.__super__.initialize.apply(this, arguments);
+    },
+
+    set_init_state: function() {
         this.type = "log";
         this.global_min = Number.MIN_VALUE;
         this.global_max = Number.POSITIVE_INFINITY;
-        this.on_some_change(["min", "max"], this.min_max_changed, this);
-        this.on("change:reverse", this.reverse_changed, this);
-        this.min_max_changed();
-        this.reverse_changed();
-    }
+    },
+
 });
 
 module.exports = {
