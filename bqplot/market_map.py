@@ -109,8 +109,12 @@ class MarketMap(DOMWidget):
     Display Attributes
 
     colors: list of colors
-        colors for each of the groups which are cycled over to cover all the
+        Colors for each of the groups which are cycled over to cover all the
         groups
+    title: string
+        Title of the Market Map
+    title_style: dict
+        CSS style for the title of the Market Map
     stroke: color
         Stroke of each of the cells of the market map
     group_stroke: color
@@ -119,6 +123,8 @@ class MarketMap(DOMWidget):
         stroke for the selected cells
     hovered_stroke: color
         stroke for the cell being hovered on
+    font_style: dict
+        CSS style for the text of each cell
 
     Other Attributes
 
@@ -136,6 +142,7 @@ class MarketMap(DOMWidget):
     groups = NdArray().tag(sync=True)
     display_text = NdArray().tag(sync=True)
     ref_data = PandasDataFrame().tag(sync=True)
+    title = Unicode().tag(sync=True)
 
     tooltip_fields = List().tag(sync=True)
     tooltip_formats = List().tag(sync=True)
@@ -156,6 +163,8 @@ class MarketMap(DOMWidget):
     group_stroke = Color('black').tag(sync=True)
     selected_stroke = Color('dodgerblue').tag(sync=True)
     hovered_stroke = Color('orangered').tag(sync=True)
+    font_style = Dict().tag(sync=True)
+    title_style = Dict().tag(sync=True)
 
     selected = List().tag(sync=True)
     enable_hover = Bool(True).tag(sync=True)
