@@ -831,8 +831,16 @@ class Label(Mark):
     enable_move: Bool
         Enable the label to be moved by dragging
     """
-    x = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)  # TODO: Why could it be Unicode
-    y = Float().tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
+    x = NdArray().tag(sync=True, min_dim=1, max_dim=1, atype='bqplot.Axis')
+    y = NdArray().tag(sync=True, min_dim=1, max_dim=1, atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+                rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
+    size = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+                   rtype='Number', min_dim=1, max_dim=1)
+    rotation = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+                       rtype='Number', min_dim=1, max_dim=1)
+    opacity = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+                      rtype='Number', min_dim=1, max_dim=1)
     x_offset = Int().tag(sync=True)
     y_offset = Int().tag(sync=True)
     scales_metadata = Dict({
@@ -840,13 +848,46 @@ class Label(Mark):
         'y': { 'orientation': 'vertical', 'dimension': 'y' },
         'color': { 'dimension': 'color' }
     }).tag(sync=True)
-    color = Color(None, allow_none=True).tag(sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+    default_opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
     rotate_angle = Float().tag(sync=True)
-    text = Unicode().tag(sync=True)
-    font_size = Unicode(default_value='14px').tag(sync=True)
+    text = NdArray().tag(sync=True)
+    font_size = Float(16.).tag(sync=True)
+    font_unit = Enum(['px', 'em', 'pt', '%'], default_value='px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
     align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)
+
     enable_move = Bool().tag(sync=True)
+    restrict_x = Bool().tag(sync=True)
+    restrict_y = Bool().tag(sync=True)
+    update_on_move = Bool().tag(sync=True)
+
+    def __init__(self, **kwargs):
+        self._drag_start_handlers = CallbackDispatcher()
+        self._drag_handlers = CallbackDispatcher()
+        self._drag_end_handlers = CallbackDispatcher()
+        super(Label, self).__init__(**kwargs)
+
+    def on_drag_start(self, callback, remove=False):
+        self._drag_start_handlers.register_callback(callback, remove=remove)
+
+    def on_drag(self, callback, remove=False):
+        self._drag_handlers.register_callback(callback, remove=remove)
+
+    def on_drag_end(self, callback, remove=False):
+        self._drag_end_handlers.register_callback(callback, remove=remove)
+
+    def _handle_custom_msgs(self, _, content, buffers=None):
+        event = content.get('event', '')
+
+        if event == 'drag_start':
+            self._drag_start_handlers(self, content)
+        elif event == 'drag':
+            self._drag_handlers(self, content)
+        elif event == 'drag_end':
+            self._drag_end_handlers(self, content)
+
+        super(Label, self)._handle_custom_msgs(self, content)
 
     _view_name = Unicode('Label').tag(sync=True)
     _model_name = Unicode('LabelModel').tag(sync=True)
