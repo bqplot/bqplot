@@ -248,9 +248,6 @@ var Map = mark.Mark.extend({
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
-        $(this.options.cell).on("output_area_resize." + this.map_id, function() {
-            that.update_layout();
-        });
     },
 
     process_interactions: function() {
@@ -302,12 +299,6 @@ var Map = mark.Mark.extend({
                 this.event_listeners.legend_clicked = function() {};
             }
         }
-    },
-
-    update_layout: function() {
-        this.remove_map();
-        this.draw();
-        this.change_selected();
     },
 
     change_selected_fill: function() {

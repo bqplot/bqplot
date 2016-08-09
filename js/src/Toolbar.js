@@ -15,7 +15,6 @@
 
 var widgets = require("jupyter-js-widgets");
 var _ = require("underscore");
-var $ = require("jquery");
 
 var ToolbarModel = widgets.DOMWidgetModel.extend({
 
@@ -149,7 +148,8 @@ var Toolbar = widgets.DOMWidgetView.extend({
 
     render: function() {
         var that = this;
-        this.el.classList.add("bqplot", "widget-hbox"); // jupyter-js-widgets css
+        this.el.classList.add("jupyter-widget"); // jupyter-js-widgets css
+        this.el.classList.add("widget-hbox"); // jupyter-js-widgets css
 
         // We use jupyter-js-widgets css classes (ipywidget and widget-*-*) to
         // benefit from default width, shadows.
@@ -157,53 +157,65 @@ var Toolbar = widgets.DOMWidgetView.extend({
         // buttons.
 
         // Create the buttons
-        this.$Panzoom = $("<button />")
-            .addClass("btn btn-default") // bootstrap css
-            .addClass("jupyter-widgets widget-toggle-button") // jupyter-js-widgets css
-            .appendTo(this.$el)
-            .attr("data-toggle", "tooltip")
-            .attr("title", "PanZoom")
-            .on("click", function (e) {
-                e.preventDefault();
-                that.model.panzoom();
-            });
+        var _panzoom = document.createElement("button");
+        _panzoom.classList.add("btn"); // bootstrap css
+        _panzoom.classList.add("btn-default"); // bootstrap css
+        _panzoom.classList.add("jupyter-widgets"); // jupyter-js-widgets css
+        _panzoom.classList.add("widget-toggle-button") // jupyter-js-widgets css
+        _panzoom.setAttribute("data-toggle", "tooltip");
+        _panzoom.setAttribute("title", "PanZoom");
+        _panzoom.onclick = function (e) {
+            e.preventDefault();
+            that.model.panzoom();
+        };
+        var panzoomicon = document.createElement("i");
+        panzoomicon.className = "fa fa-arrows";
+        _panzoom.appendChild(panzoomicon);
 
-        this.$Reset = $("<button />")
-            .addClass("btn btn-default") // bootstrap css
-            .addClass("jupyter-widgets widget-button") // jupyter-js-widgets css
-            .appendTo(this.$el)
-            .attr("data-toggle", "tooltip")
-            .attr("title", "Reset")
-            .on("click", function (e) {
-                e.preventDefault();
-                that.model.reset();
-            });
+        var _reset = document.createElement("button");
+        _reset.classList.add("btn"); // bootstrap css
+        _reset.classList.add("btn-default"); // bootstrap css
+        _reset.classList.add("jupyter-widgets"); // jupyter-js-widgets css
+        _reset.classList.add("widget-button") // jupyter-js-widgets css
+        _reset.setAttribute("data-toggle", "tooltip");
+        _reset.setAttribute("title", "Reset");
+        _reset.onclick = function (e) {
+            e.preventDefault();
+            that.model.reset();
+        };
+        var refreshicon = document.createElement("i");
+        refreshicon.className = "fa fa-refresh";
+        _reset.appendChild(refreshicon);
 
-        this.$Save = $("<button />")
-            .addClass("btn btn-default") // bootstrap css
-            .addClass("jupyter-widgets widget-button") // jupyter-js-widgets css
-            .appendTo(this.$el)
-            .attr("data-toggle", "tooltip")
-            .attr("title", "Save")
-            .on("click", function (e) {
-                e.preventDefault();
-                that.model.save_png();
-            });
+        var _save = document.createElement("button");
+        _save.classList.add("btn"); // bootstrap css
+        _save.classList.add("btn-default"); // bootstrap css
+        _save.classList.add("jupyter-widgets"); // jupyter-js-widgets css
+        _save.classList.add("widget-button") // jupyter-js-widgets css
+        _save.setAttribute("data-toggle", "tooltip");
+        _save.setAttribute("title", "Save");
+        _save.onclick = function (e) {
+            e.preventDefault();
+            that.model.save_png();
+        };
+        var saveicon = document.createElement("i");
+        saveicon.className = "fa fa-save";
+        _save.appendChild(saveicon);
 
-        // Font Awesome icons
-        $("<i />").addClass("fa fa-arrows").prependTo(this.$Panzoom);
-        $("<i />").addClass("fa fa-refresh").prependTo(this.$Reset);
-        $("<i />").addClass("fa fa-save").prependTo(this.$Save);
+        this.el.appendChild(_panzoom);
+        this.el.appendChild(_reset);
+        this.el.appendChild(_save);
 
         // Handle initial state
+        this._panzoom = _panzoom;
         this.update();
     },
 
     update: function() {
         if (this.model.get("_panning")) {
-            this.$Panzoom.addClass("active");
+            this._panzoom.classList.add("active");
         } else {
-            this.$Panzoom.removeClass("active");
+            this._panzoom.classList.remove("active");
         }
     }
 });
