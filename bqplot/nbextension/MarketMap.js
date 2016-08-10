@@ -84,6 +84,12 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
 
             this.update_plotarea_dimensions();
 
+            this.title = this.fig.append("text")
+                .attr("class", "mainheading")
+                .attr({x: (0.5 * (this.rect_width)), y: -(this.margin.top / 2.0), dy: "1em"})
+                .text(this.model.get("title"))
+                .style(this.model.get("title_style"));
+
             var scale_creation_promise = this.create_scale_views();
             scale_creation_promise.then(function() {
                 var color_scale = that.scales.color;
@@ -146,6 +152,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.listenTo(this.model, "change:show_groups", this.show_groups, this);
             this.listenTo(this.model, "change:selected_stroke", this.update_selected_stroke, this);
             this.listenTo(this.model, "change:hovered_stroke", this.update_hovered_stroke, this);
+            this.listenTo(this.model, "change:font_style", this.update_font_style, this);
+            this.model.on_some_change(["title", "title_style"], this.update_title, this);
             this.listenTo(this.model, "change:selected", function() {
                 this.clear_selected();
                 this.apply_selected();
@@ -200,6 +208,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.svg.attr("width", this.width);
             // transform figure
             this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+            this.title.attr({x: (0.5 * (this.rect_width)),
+                             y: -(this.margin.top / 2.0),
+                             dy: "1em"});
+
             this.draw_map();
 
             // Drawing the selected cells
@@ -250,6 +262,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             if(color_scale_model && color_data.length > 0) {
                 color_scale_model.compute_and_set_domain(color_data, this.model.id);
             }
+        },
+        update_title: function(model, value) {
+            this.title.text(this.model.get("title"))
+                .style(this.model.get("title_style"));
         },
         set_area_dimensions: function(num_items) {
             this.num_rows = this.model.get("rows");
@@ -390,7 +406,8 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
 
                 new_groups.append("text")
                     .classed("market_map_text", true)
-                    .style({"text-anchor": "middle", 'fill' :'black'});
+                    .style({"text-anchor": "middle", 'fill' :'black'})
+                    .style(that.model.get("font_style"));
 
                 // Update the attributes of the entire set of nodes
                 groups.attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
@@ -557,6 +574,10 @@ define(["nbextensions/widgets/widgets/js/widget", "./components/d3/d3",
             this.hovered_stroke = value;
             // I do not need to update anything else because when hovered color
             // is being updated you are not hovering over anything.
+        },
+        update_font_style: function(model, value) {
+            this.svg.selectAll(".market_map_text")
+                .style(value);
         },
         mouseout_handler: function(data, id, cell) {
             this.fig_hover.select(".hover_" + id)

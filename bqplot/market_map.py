@@ -57,6 +57,8 @@ class MarketMap(DOMWidget):
         Data to represent the color for each of the cells. If the value of the
         data is NaN for a cell, then the color of the cell is the color of the
         group it belongs to in absence of data for color
+    title: string
+        Title of the Market Map
     scales: Dictionary of , scales holding a scale for each data attribute
         If the map has data being passed as color, then a corresponding color
         scale is required
@@ -120,6 +122,10 @@ class MarketMap(DOMWidget):
         stroke for the selected cells
     hovered_stroke: color
         stroke for the cell being hovered on
+    title_style: dict
+        CSS style for the title of the market map
+    font_style: dict
+        Css style for the text of each cell
 
     Other Attributes
 
@@ -137,6 +143,7 @@ class MarketMap(DOMWidget):
     groups = NdArray(sync=True)
     display_text = NdArray(sync=True)
     ref_data = PandasDataFrame(sync=True)
+    title = Unicode(sync=True)
 
     tooltip_fields = List(sync=True)
     tooltip_formats = List(sync=True)
@@ -160,6 +167,8 @@ class MarketMap(DOMWidget):
     group_stroke = Unicode('black', sync=True)
     selected_stroke = Unicode('dodgerblue', sync=True)
     hovered_stroke = Unicode('orangered', sync=True)
+    title_style = Dict(sync=True)
+    font_style = Dict(sync=True)
 
     selected = List(sync=True)
     enable_hover = Bool(True, sync=True)
