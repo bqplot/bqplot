@@ -210,7 +210,7 @@ var ColorBar = axis.Axis.extend({
     },
 
     get_topg_transform: function() {
-        var em = 16;
+        var em = 12;
         if(this.vertical){
             if(this.side === "right") {
                 return "translate(" + String(this.get_basic_transform() + this.margin.right / 2 - this.bar_height) + ", 0)";
