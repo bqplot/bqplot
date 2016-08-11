@@ -171,6 +171,8 @@ def figure(key=None, fig=None, **kwargs):
     if(getattr(_context['figure'], 'axis_registry', None) is None):
         setattr(_context['figure'], 'axis_registry', {})
 
+    return _context['figure']
+
 
 def close(key):
     """Closes and unregister the context figure corresponding to the key.
@@ -375,9 +377,9 @@ def hline(level, fig=None, preserve_domain=False, **kwargs):
     if fig is None:
         fig = current_figure()
     sc_x = fig.scale_x
-    plot([0., 1.], [level, level], scales={'x': sc_x}, preserve_domain={'x': True,
-         'y': preserve_domain}, axes=False, colors=default_colors,
-         stroke_width=default_width, update_context=False)
+    return plot([0., 1.], [level, level], scales={'x': sc_x}, preserve_domain={'x': True,
+                'y': preserve_domain}, axes=False, colors=default_colors,
+                stroke_width=default_width, update_context=False, **kwargs)
 
 
 def vline(level, fig=None, preserve_domain=False, **kwargs):
@@ -398,9 +400,9 @@ def vline(level, fig=None, preserve_domain=False, **kwargs):
     if fig is None:
         fig = current_figure()
     sc_y = fig.scale_y
-    plot([level, level], [0., 1.], scales={'y': sc_y}, preserve_domain={'x': preserve_domain,
-         'y': True}, axes=False, colors=default_colors,
-         stroke_width=default_width, update_context=False)
+    return plot([level, level], [0., 1.], scales={'y': sc_y}, preserve_domain={'x': preserve_domain,
+                'y': True}, axes=False, colors=default_colors,
+                stroke_width=default_width, update_context=False, **kwargs)
 
 
 def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
