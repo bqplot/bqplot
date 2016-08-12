@@ -502,7 +502,7 @@ var MarketMap = figure.Figure.extend({
     },
 
     update_font_style: function(model, value) {
-        d3.selectAll(".market_map_text")
+        this.svg.selectAll(".market_map_text")
             .style(value);
     },
 
