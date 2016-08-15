@@ -19,10 +19,14 @@ var interaction = require("./Interaction");
 
 var BaseSelector = interaction.Interaction.extend({
 
+    initialize: function() {
+        this.setElement(document.createElementNS(d3.ns.prefix.svg, "g"));
+        this.d3el = d3.select(this.el);
+        interaction.Interaction.__super__.initialize.apply(this, arguments);
+    },
+
     render: function() {
         this.parent = this.options.parent;
-        this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"));
-
         this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
         this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
         this.mark_views_promise = this.populate_mark_views();
@@ -40,7 +44,6 @@ var BaseSelector = interaction.Interaction.extend({
     },
 
     remove: function() {
-        this.el.remove();
         BaseSelector.__super__.remove.apply(this);
     },
 

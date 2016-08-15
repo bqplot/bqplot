@@ -36,10 +36,10 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
 
             d3.select(window).on("keydown", _.bind(that.keydown, that));
 
-            that.el.attr("class", "lassoselector");
+            that.d3el.attr("class", "lassoselector");
 
             //container for mouse events
-            that.background = that.el.append("rect")
+            that.background = that.d3el.append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", that.width)
@@ -60,13 +60,13 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
 
     change_color: function(model, color) {
         if (color) {
-            this.el.selectAll("path").style("stroke", color);
+            this.d3el.selectAll("path").style("stroke", color);
         }
     },
 
     drag_start: function() {
         this.lasso_vertices = [];
-        var lasso = this.el.append("path")
+        var lasso = this.d3el.append("path")
             .attr("id", "l" + (++this.lasso_counter))
             .on("click", function() {
                 //toggle the opacity of lassos
@@ -81,13 +81,13 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
 
     drag_move: function() {
         this.lasso_vertices.push(d3.mouse(this.background.node()));
-        this.el.select("#l" + this.lasso_counter)
+        this.d3el.select("#l" + this.lasso_counter)
             .attr("d", this.line(this.lasso_vertices));
     },
 
     drag_end: function() {
         //close the lasso
-        this.el.select("#l" + this.lasso_counter)
+        this.d3el.select("#l" + this.lasso_counter)
             .attr("d", this.line(this.lasso_vertices) + "Z");
 
         var mark_data_in_lasso = false;
@@ -104,7 +104,7 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
 
         //remove the lasso if it doesnt have any mark data
         if (!mark_data_in_lasso) {
-            this.el.select("#l" + this.lasso_counter).remove();
+            this.d3el.select("#l" + this.lasso_counter).remove();
             this.lasso_counter--;
         }
     },
@@ -118,7 +118,7 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
        //delete key pressed
        if (d3.event.keyCode === 46) {
            //delete selected lassos
-           var lassos_to_delete = this.el.selectAll(".selected");
+           var lassos_to_delete = this.d3el.selectAll(".selected");
 
            var that = this;
            lassos_to_delete.each(function() {

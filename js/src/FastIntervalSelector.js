@@ -34,7 +34,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         var scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             //container for mouse events
-            that.background = that.el.append("rect")
+            that.background = that.d3el.append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", that.width)
@@ -47,7 +47,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
                 .on("click", _.bind(that.click, that))
                 .on("dblclick", _.bind(that.dblclick, that));
 
-            that.rect = that.el.append("rect")
+            that.rect = that.d3el.append("rect")
             .attr("class", "selector intsel")
             .attr("x", 0)
             .attr("y", 0)
