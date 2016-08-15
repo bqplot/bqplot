@@ -133,7 +133,7 @@ var Label = mark.Mark.extend({
 
             // update opacity scale range?
             var that = this;
-            this.el.selectAll(".label")
+            this.d3el.selectAll(".label")
                 .transition()
                 .duration(animation_duration)
                 .style("opacity", function(d, i) {
@@ -148,7 +148,7 @@ var Label = mark.Mark.extend({
         if (!this.model.dirty) {
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
-            this.el.selectAll(".label")
+            this.d3el.selectAll(".label")
                 .transition()
                 .duration(animation_duration)
                 .style("font-size", function(d, i) {
@@ -186,13 +186,13 @@ var Label = mark.Mark.extend({
         this.set_ranges();
         //TODO: This need not be done. Elements should be added only
         //when needed.
-        this.el.selectAll(".object_grp")
+        this.d3el.selectAll(".object_grp")
             .remove();
 
         var x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");
 
-        var elements = this.el.selectAll(".object_grp")
+        var elements = this.d3el.selectAll(".object_grp")
             .data(this.model.mark_data, function(d) { return d.unique_id; });
 
         var elements_added = elements.enter().append("g")
@@ -257,7 +257,7 @@ var Label = mark.Mark.extend({
             this.model.get_date_elem("y") : this.model.get("y");
         var x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");
-        this.el.selectAll(".object_grp")
+        this.d3el.selectAll(".object_grp")
             .attr("transform", function(d) {
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset + x_offset) +
                                 "," + (y_scale.scale(d.y) + y_scale.offset + y_offset) + ")" +
@@ -267,15 +267,15 @@ var Label = mark.Mark.extend({
 
     update_style: function() {
         var that = this;
-        this.el.selectAll(".object_grp")
+        this.d3el.selectAll(".object_grp")
             .select("text")
             .style("font-size", function(d, i) {
                 return that.get_element_size(d);
             })
             .style("font-weight", this.model.get("font_weight"))
             .style("text-anchor", this.model.get("align"));
-        
-        this.el.selectAll(".label")
+
+        this.d3el.selectAll(".label")
             .style("fill", function(d, i) {
                     return that.get_element_color(d,i);
             });
@@ -285,7 +285,7 @@ var Label = mark.Mark.extend({
         var that = this;
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        this.el.selectAll(".object_grp")
+        this.d3el.selectAll(".object_grp")
             .select("text")
             .transition()
             .duration(animation_duration)
@@ -295,7 +295,7 @@ var Label = mark.Mark.extend({
     },
 
     set_drag_behavior: function() {
-        var labels = this.el.selectAll(".object_grp");
+        var labels = this.d3el.selectAll(".object_grp");
         if (this.model.get("enable_move")) {
             labels.call(this.drag_listener);
         }

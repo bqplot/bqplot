@@ -51,7 +51,7 @@ var MarketMap = figure.Figure.extend({
 
         // Reading the properties and creating the dom elements required
         this.svg = d3.select(this.el)
-                .attr("viewBox", "0 0 "+ this.width +' '+ this.height)
+                .attr("viewBox", "0 0 " + this.width + " " + this.height)
                 .attr("width", "100%")
                 .attr("height", "100%");
         if (this.model.get('theme')) {
@@ -65,7 +65,7 @@ var MarketMap = figure.Figure.extend({
         this.fig_click = this.fig.append("g");
         this.fig_hover = this.fig.append("g");
         this.fig_names = this.fig.append("g")
-                             .style("display", (this.model.get("show_groups") ? "inline" : "none"));
+            .style("display", (this.model.get("show_groups") ? "inline" : "none"));
 
         this.fig_map.classed("g-map", true);
         this.fig_axes.classed("g-axes", true);
@@ -122,18 +122,16 @@ var MarketMap = figure.Figure.extend({
     },
 
     set_top_el_style: function() {
-        this.$el.css({
-            "user-select": "none",
-            "ms-user-select": "none",
-            "moz-user-select": "none",
-            "khtml-user-select": "none",
-            "webkit-user-select": "none"});
+        this.el.style["user-select"] = "none";
+        this.el.style["ms-user-select"] = "none";
+        this.el.style["moz-user-select"] = "none";
+        this.el.style["khtml-user-select"] = "none";
+        this.el.style["webkit-user-select"] = "none";
 
-        this.$el.css({"flex-grow": "1",
-                      "flex-shrink": "1",
-                      "align-self": "stretch",
-                      "min-width": this.width,
-                      "min-height": this.height});
+        this.el.style["flex"] = "1 1 auto";
+        this.el.style["align-self"] = "stretch";
+        this.el.style["min-width"] = this.width;
+        this.el.style["min-height"] = this.height;
     },
 
     update_plotarea_dimensions: function() {
@@ -670,7 +668,7 @@ var MarketMap = figure.Figure.extend({
             var tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
             tooltip_widget_creation_promise.then(function(view) {
                 that.tooltip_view = view;
-                that.tooltip_div.node().appendChild(d3.select(view.el).node());
+                that.tooltip_div.node().appendChild(view.el);
             });
         }
     },
@@ -692,7 +690,8 @@ var MarketMap = figure.Figure.extend({
         } else {
             this.prev_y += this.y_direction;
         }
-        return "translate(" + (this.prev_x * this.column_width) + ", " + (this.prev_y * this.row_height) + ")";
+        return "translate(" + (this.prev_x * this.column_width) + ", " +
+                              (this.prev_y * this.row_height) + ")";
     },
 
     get_new_cords: function() {

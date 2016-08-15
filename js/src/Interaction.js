@@ -19,11 +19,17 @@ var _ = require("underscore");
 
 var Interaction = widgets.WidgetView.extend({
 
+    initialize : function() {
+        this.setElement(document.createElementNS(d3.ns.prefix.svg, "rect"));
+        this.d3el = d3.select(this.el);
+        Interaction.__super__.initialize.apply(this, arguments);
+    },
+
     render: function() {
         this.parent = this.options.parent;
 
         // Opaque interation layer
-        this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "rect"))
+        this.d3el
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", this.parent.width -
@@ -39,7 +45,7 @@ var Interaction = widgets.WidgetView.extend({
 
     relayout: function() {
         // Called when the figure margins are updated.
-        this.el
+        this.d3el
             .attr("width", this.parent.width -
                            this.parent.margin.left -
                            this.parent.margin.right)
@@ -50,7 +56,7 @@ var Interaction = widgets.WidgetView.extend({
 
     remove: function() {
         _.each(this.mark_views, function(mark) { mark.invert_range(); });
-        this.el.remove();
+        this.d3el.remove();
         Interaction.__super__.remove.apply(this);
     }
 });

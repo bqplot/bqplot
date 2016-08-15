@@ -67,9 +67,9 @@ var Hist = mark.Mark.extend({
 
     create_listeners: function() {
         Hist.__super__.create_listeners.apply(this);
-        this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
-            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
-            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
+        this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
+            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
+            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
 
         this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
         this.listenTo(this.model, "data_updated", this.draw, this);
@@ -136,10 +136,10 @@ var Hist = mark.Mark.extend({
     },
 
     update_colors: function(model, colors) {
-        this.el.selectAll(".bargroup").selectAll("rect")
+        this.d3el.selectAll(".bargroup").selectAll("rect")
           .style("fill", this.get_colors(0));
         if (model.get("labels") && colors.length > 1) {
-            this.el.selectAll(".bargroup").selectAll("text")
+            this.d3el.selectAll(".bargroup").selectAll("text")
               .style("fill", this.get_colors(1));
         }
         if (this.legend_el) {
@@ -153,7 +153,7 @@ var Hist = mark.Mark.extend({
     update_stroke_and_opacities: function() {
         var stroke = this.model.get("stroke");
         var opacities = this.model.get("opacities");
-        this.el.selectAll(".rect")
+        this.d3el.selectAll(".rect")
           .style("stroke", stroke)
           .style("opacity", function(d, i) {
                 return opacities[i];
@@ -175,13 +175,13 @@ var Hist = mark.Mark.extend({
 
         var x_scale = this.scales.sample,
             y_scale = this.scales.count;
-        this.el.selectAll(".bargroup")
+        this.d3el.selectAll(".bargroup")
             .attr("transform", function(d) {
               return "translate(" + x_scale.scale(d.x) +
                               "," + y_scale.scale(d.y) + ")";
             });
         var bar_width = this.calculate_bar_width();
-        this.el.selectAll(".bargroup").select("rect")
+        this.d3el.selectAll(".bargroup").select("rect")
           .transition().duration(this.parent.model.get("animation_duration"))
           .attr("x", 2)
           .attr("width", bar_width)
@@ -205,7 +205,7 @@ var Hist = mark.Mark.extend({
             y_scale = this.scales.count;
         var that = this;
         var bar_width = this.calculate_bar_width();
-        var bar_groups = this.el.selectAll(".bargroup")
+        var bar_groups = this.d3el.selectAll(".bargroup")
             .data(this.model.mark_data);
 
         var bars_added = bar_groups.enter()
@@ -227,7 +227,9 @@ var Hist = mark.Mark.extend({
         bar_groups.select(".rect")
           .style("fill", fill_color)
           .on("click", function(d, i) {
-              return that.event_dispatcher("element_clicked", {"data": d, "index": i});
+              return that.event_dispatcher("element_clicked", {
+                  "data": d, "index": i
+              });
           })
           .attr("id", function(d, i) { return "rect" + i; })
           .transition()
@@ -241,7 +243,9 @@ var Hist = mark.Mark.extend({
 
         //bin_pixels contains the pixel values of the start points of each
         //of the bins and the end point of the last bin.
-        this.bin_pixels = this.model.x_bins.map(function(el) { return x_scale.scale(el) + x_scale.offset; });
+        this.bin_pixels = this.model.x_bins.map(function(el) {
+            return x_scale.scale(el) + x_scale.offset;
+        });
         this.update_stroke_and_opacities();
     },
 
@@ -369,7 +373,7 @@ var Hist = mark.Mark.extend({
     },
 
     reset_colors: function(index, color) {
-        var rects = this.el.selectAll("#rect"+index);
+        var rects = this.d3el.selectAll("#rect"+index);
         rects.style("fill", color);
     },
 
@@ -389,14 +393,14 @@ var Hist = mark.Mark.extend({
         var colors = this.model.get("colors");
         var select_color = colors.length > 1 ? colors[1] : "red";
         var fill_color = colors[0];
-        var bars_sel = this.el.selectAll(".bargroup");
+        var bars_sel = this.d3el.selectAll(".bargroup");
         var that = this;
         _.difference(_.range(0, this.model.num_bins), indices)
             .forEach(function(d) {
-                that.el.selectAll("#rect" + d).style("fill", fill_color);
+                that.d3el.selectAll("#rect" + d).style("fill", fill_color);
             });
         indices.forEach(function(d) {
-                that.el.selectAll("#rect" + d).style("fill", select_color);
+            that.d3el.selectAll("#rect" + d).style("fill", select_color);
         });
     },
 
@@ -415,7 +419,9 @@ var Hist = mark.Mark.extend({
 
         //adding "bar_width / 2.0" to bin_pixels as we need to select the
         //bar whose center is closest to the current location of the mouse.
-        var abs_diff = this.bin_pixels.map(function(elem) { return Math.abs(elem + bar_width / 2.0 - pixel); });
+        var abs_diff = this.bin_pixels.map(function(elem) {
+            return Math.abs(elem + bar_width / 2.0 - pixel);
+        });
         var sel_index = abs_diff.indexOf(d3.min(abs_diff));
         this.model.set("selected", this.calc_data_indices([sel_index]));
         this.touch();

@@ -98,7 +98,7 @@ var FlexLine = lines.Lines.extend({
 
     draw: function() {
         this.set_ranges();
-        var curves_sel = this.el.selectAll(".curve")
+        var curves_sel = this.d3el.selectAll(".curve")
             .data(this.model.mark_data, function(d, i) { return d.name; });
 
         curves_sel.enter().append("g")
@@ -153,7 +153,7 @@ var FlexLine = lines.Lines.extend({
         var x_scale = this.scales.x, y_scale = this.scales.y;
 
         var that = this;
-        this.el.selectAll(".curve").selectAll(".line-elem")
+        this.d3el.selectAll(".curve").selectAll(".line-elem")
             .transition().duration(this.parent.model.get("animation_duration"))
             .attr({
                 x1: function(d) { return x_scale.scale(d.x1); },

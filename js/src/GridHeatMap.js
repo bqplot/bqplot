@@ -118,9 +118,9 @@ var GridHeatMap = mark.Mark.extend({
         this.listenTo(this.model, "change:stroke", this.update_stroke, this);
         this.listenTo(this.model, "change:opacity", this.update_opacity, this);
 
-        this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
-            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
-            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
+        this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
+            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
+            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
         this.listenTo(this.model, "data_updated", this.draw, this);
         this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
         this.listenTo(this.parent, "bg_clicked", function() {
@@ -375,7 +375,11 @@ var GridHeatMap = mark.Mark.extend({
 
         // Adding all the rows for the selected columns.
         var rows = _.range(this.model.colors.length);
-        selected = selected.map(function(s) { return rows.map(function(r) { return [r, s]; }); });
+        selected = selected.map(function(s) {
+            return rows.map(function(r) {
+                return [r, s];
+            });
+        });
         selected = _.flatten(selected, true);
         this.model.set("selected", selected);
         this.touch();
@@ -406,7 +410,11 @@ var GridHeatMap = mark.Mark.extend({
             var elem_y = that.row_pixels[index];
             return (elem_y <= y_max && elem_y >= y_min);
         });
-        var selected = sel_cols.map(function(s) { return sel_rows.map(function(r) { return [r, s]; }); });
+        var selected = sel_cols.map(function(s) {
+            return sel_rows.map(function(r) {
+                return [r, s];
+            });
+        });
         selected = _.flatten(selected, true);
         this.model.set("selected", selected);
         this.touch();
@@ -449,7 +457,7 @@ var GridHeatMap = mark.Mark.extend({
         this.row_pixels = row_plot_data.start;
         this.column_pixels = column_plot_data.start;
 
-        this.display_rows = this.el.selectAll(".heatmaprow")
+        this.display_rows = this.d3el.selectAll(".heatmaprow")
             .data(_.range(num_rows));
         this.display_rows.enter().append("g")
             .attr("class", "heatmaprow");
@@ -592,7 +600,10 @@ var GridHeatMap = mark.Mark.extend({
                     start_points.splice(0, 1);
                 }
             }
-            return {"widths": widths, "start": start_points};
+            return {
+                "widths": widths,
+                "start": start_points
+            };
         }
         if(mode === "expand_two") {
             start_points = data.map(function(d) {

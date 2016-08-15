@@ -22,7 +22,7 @@ var Figure = widgets.DOMWidgetView.extend({
     initialize : function() {
         this.setElement(document.createElementNS(d3.ns.prefix.svg, "svg"));
         // Internet Explorer does not support classList for svg elements
-        this.el.setAttribute("class", "bqplot figure");
+        this.el.setAttribute("class", "bqplot figure jupyter-widgets");
         Figure.__super__.initialize.apply(this, arguments);
     },
 
@@ -48,21 +48,16 @@ var Figure = widgets.DOMWidgetView.extend({
         this.figure_padding_y = this.model.get("padding_y");
         this.clip_id = "clip_path_" + this.id;
 
-        this.$el.css({
-            "user-select": "none",
-            "ms-user-select": "none",
-            "moz-user-select": "none",
-            "khtml-user-select": "none",
-            "webkit-user-select": "none"
-        });
+        this.el.style["user-select"] = "none";
+        this.el.style["ms-user-select"] = "none";
+        this.el.style["moz-user-select"] = "none";
+        this.el.style["khtml-user-select"] = "none";
+        this.el.style["webkit-user-select"] = "none";
 
-        this.$el.css({
-            "flex-grow": "1",
-            "flex-shrink": "1",
-            "align-self": "stretch",
-            "min-width": this.width,
-            "min-height": this.height
-        });
+        this.el.style["flex"] = "1 1 auto";
+        this.el.style["align-self"] = "stretch";
+        this.el.style["min-width"] = this.width;
+        this.el.style["min-height"] = this.height;
 
         this.margin = this.model.get("fig_margin");
 
@@ -192,8 +187,7 @@ var Figure = widgets.DOMWidgetView.extend({
     replace_dummy_nodes: function(views) {
         _.each(views, function(view) {
             if (view.dummy_node !== null) {
-                view.dummy_node.parentNode.replaceChild(view.el.node(),
-                                                        view.dummy_node);
+                view.dummy_node.parentNode.replaceChild(view.el, view.dummy_node);
                 view.dummy_node = null;
                 this.displayed.then(function() {
                     view.trigger("displayed");
@@ -216,8 +210,7 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     remove: function() {
-        this.svg.remove();
-        $(this.options.cell).off("output_area_resize."+this.id);
+        $(this.options.cell).off("output_area_resize." + this.id);
         Figure.__super__.remove.apply(this);
     },
 
@@ -299,7 +292,7 @@ var Figure = widgets.DOMWidgetView.extend({
         var that = this;
         return this.create_child_view(model)
           .then(function(view) {
-            that.fig_axes.node().appendChild(view.el.node());
+            that.fig_axes.node().appendChild(view.el);
             that.displayed.then(function() {
                 view.trigger("displayed");
             });
@@ -466,9 +459,11 @@ var Figure = widgets.DOMWidgetView.extend({
         // transform figure
         this.fig.attr("transform", "translate(" + this.margin.left + "," +
                                                   this.margin.top + ")");
-        this.title.attr({x: (0.5 * (this.plotarea_width)),
-                         y: -(this.margin.top / 2.0),
-                         dy: "1em"});
+        this.title.attr({
+            x: (0.5 * (this.plotarea_width)),
+            y: -(this.margin.top / 2.0),
+            dy: "1em"
+        });
 
         this.bg
           .attr("width", this.plotarea_width)
@@ -579,7 +574,7 @@ var Figure = widgets.DOMWidgetView.extend({
                         that.interaction_view.remove();
                     }
                     that.interaction_view = view;
-                    that.interaction.node().appendChild(view.el.node());
+                    that.interaction.node().appendChild(view.el);
                     that.displayed.then(function() {
                         view.trigger("displayed");
                     });

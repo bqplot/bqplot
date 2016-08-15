@@ -19,6 +19,12 @@ var _ = require("underscore");
 
 var Mark = widgets.WidgetView.extend({
 
+    initialize : function() {
+        this.setElement(document.createElementNS(d3.ns.prefix.svg, "g"));
+        this.d3el = d3.select(this.el);
+        Mark.__super__.initialize.apply(this, arguments);
+    },
+
     render: function() {
         this.x_padding = 0;
         this.y_padding = 0;
@@ -27,14 +33,13 @@ var Mark = widgets.WidgetView.extend({
         var scale_creation_promise = this.set_scale_views();
         var that = this;
         this.listenTo(this.model, "scales_updated", function() {
-            this.set_scale_views().then( function() { that.draw(); });
+            this.set_scale_views().then(_.bind(this.draw, this));
         }, this);
 
         this.colors = this.model.get("colors");
 
-        this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"));
         if(this.options.clip_id && this.model.get("apply_clip")) {
-            this.el.attr("clip-path", "url(#" + this.options.clip_id + ")");
+            this.d3el.attr("clip-path", "url(#" + this.options.clip_id + ")");
         }
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "mark_tooltip")
@@ -43,7 +48,7 @@ var Mark = widgets.WidgetView.extend({
             .style("opacity", 0);
 
         this.bisect = d3.bisector(function(d) { return d; }).left;
-        this.el.style("display", (this.model.get("visible") ? "inline" : "none"));
+        this.d3el.style("display", (this.model.get("visible") ? "inline" : "none"));
         this.display_el_classes = [];
         this.event_metadata = {
             "mouse_over": {
@@ -128,7 +133,7 @@ var Mark = widgets.WidgetView.extend({
 
     remove: function() {
         this.model.off(null, null, this);
-        this.el.transition().duration(0).remove();
+        this.d3el.transition().duration(0).remove();
         this.tooltip_div.remove();
         Mark.__super__.remove.apply(this);
     },
@@ -176,7 +181,7 @@ var Mark = widgets.WidgetView.extend({
     },
 
     update_visibility: function(model, visible) {
-        this.el.style("display", visible ? "inline" : "none");
+        this.d3el.style("display", visible ? "inline" : "none");
     },
 
     get_colors: function(index) {
@@ -249,9 +254,8 @@ var Mark = widgets.WidgetView.extend({
 
             var parent_node = this.parent.el.parentElement;
             var mouse_pos = d3.mouse(parent_node);
-            if(mouse_events === undefined || mouse_events === null ||
-               (!(mouse_events))) {
-                    this.tooltip_div.style("pointer-events", "none");
+            if(mouse_events === undefined || mouse_events === null || (!(mouse_events))) {
+                this.tooltip_div.style("pointer-events", "none");
             } else {
                 this.tooltip_div.style("pointer-events", "all");
             }
@@ -311,7 +315,7 @@ var Mark = widgets.WidgetView.extend({
                 }
                 //remove previous tooltip
                 that.tooltip_view = view;
-                that.tooltip_div.node().appendChild(d3.select(view.el).node());
+                that.tooltip_div.node().appendChild(view.el);
                 view.trigger("displayed");
             });
         } else {

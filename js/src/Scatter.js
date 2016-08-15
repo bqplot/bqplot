@@ -181,7 +181,7 @@ var Scatter = mark.Mark.extend({
 
     create_listeners: function() {
         Scatter.__super__.create_listeners.apply(this);
-        this.el.on("mouseover", _.bind(function() {
+        this.d3el.on("mouseover", _.bind(function() {
               this.event_dispatcher("mouse_over");
           }, this))
           .on("mousemove", _.bind(function() {
@@ -224,7 +224,7 @@ var Scatter = mark.Mark.extend({
             var that = this,
                 stroke = this.model.get("stroke"),
                 len = new_colors.length;
-            this.el.selectAll(".dot")
+            this.d3el.selectAll(".dot")
             .style("fill", this.model.get("fill") ?
                 function(d, i) {
                     return that.get_element_color(d, i);
@@ -254,7 +254,7 @@ var Scatter = mark.Mark.extend({
         var that = this,
             default_colors = this.model.get("default_colors"),
             len = default_colors.length;
-        this.el.selectAll(".dot").style("fill", fill  ? function(d, i) {
+        this.d3el.selectAll(".dot").style("fill", fill  ? function(d, i) {
             return that.get_element_color(d, i);
         } : "none");
         if (this.legend_el) {
@@ -268,7 +268,7 @@ var Scatter = mark.Mark.extend({
     update_stroke_width: function() {
         var stroke_width = this.model.get("stroke_width");
 
-        this.el.selectAll(".dot")
+        this.d3el.selectAll(".dot")
           .style("stroke-width", stroke_width);
 
         if (this.legend_el) {
@@ -280,7 +280,7 @@ var Scatter = mark.Mark.extend({
     update_stroke: function(model, fill) {
         var that = this,
             stroke = this.model.get("stroke");
-        this.el.selectAll(".dot")
+        this.d3el.selectAll(".dot")
             .style("stroke", stroke ? stroke : function(d, i) {
                 return that.get_element_color(d, i);
             });
@@ -301,7 +301,7 @@ var Scatter = mark.Mark.extend({
 
             // update opacity scale range?
             var that = this;
-            this.el.selectAll(".dot")
+            this.d3el.selectAll(".dot")
                 .transition()
                 .duration(animation_duration)
                 .style("opacity", function(d, i) {
@@ -321,12 +321,14 @@ var Scatter = mark.Mark.extend({
 
     update_marker: function(model, marker) {
         if (!this.model.dirty) {
-            this.el.selectAll(".dot")
+            this.d3el.selectAll(".dot")
                 .transition()
                 .duration(this.parent.model.get("animation_duration"))
                 .attr("d", this.dot.type(marker));
-            this.legend_el.select("path")
-                .attr("d", this.dot.type(marker));
+            if (this.legend_el) {
+                this.legend_el.select("path")
+                    .attr("d", this.dot.type(marker));
+            }
         }
     },
 
@@ -334,7 +336,7 @@ var Scatter = mark.Mark.extend({
         if (!this.model.dirty) {
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
-            this.el.selectAll(".dot")
+            this.d3el.selectAll(".dot")
                 .transition()
                 .duration(animation_duration)
                 .attr("d", this.dot.skew(function(d) {
@@ -348,7 +350,7 @@ var Scatter = mark.Mark.extend({
         if (!this.model.dirty) {
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
-            this.el.selectAll(".dot")
+            this.d3el.selectAll(".dot")
                 .transition()
                 .duration(animation_duration)
                 .attr("d", this.dot.size(function(d) {
@@ -410,7 +412,7 @@ var Scatter = mark.Mark.extend({
             stroke = this.model.get("stroke");
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        this.el.selectAll(".object_grp")
+        this.d3el.selectAll(".object_grp")
           .select("path")
           .transition()
           .duration(animation_duration)
@@ -433,7 +435,7 @@ var Scatter = mark.Mark.extend({
         var that = this;
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        this.el.selectAll(".object_grp").transition()
+        this.d3el.selectAll(".object_grp").transition()
             .duration(animation_duration)
             .attr("transform", function(d) {
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
@@ -452,7 +454,7 @@ var Scatter = mark.Mark.extend({
 
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        var elements = this.el.selectAll(".object_grp")
+        var elements = this.d3el.selectAll(".object_grp")
             .data(this.model.mark_data, function(d) { return d.unique_id; });
         var elements_added = elements.enter().append("g")
             .attr("class", "object_grp")
@@ -708,7 +710,7 @@ var Scatter = mark.Mark.extend({
     update_display_names: function(model, value) {
         var names = this.model.get_typed_field("names"),
             show_names = (value && names.length !== 0);
-        this.el.selectAll(".object_grp").select("text")
+        this.d3el.selectAll(".object_grp").select("text")
             .attr("display", function(d) {
                 return (show_names) ? "inline": "none";
             });
@@ -802,7 +804,7 @@ var Scatter = mark.Mark.extend({
         if(Object.keys(style).length === 0) {
             return;
         }
-        var elements = this.el.selectAll(".dot");
+        var elements = this.d3el.selectAll(".dot");
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
@@ -815,7 +817,7 @@ var Scatter = mark.Mark.extend({
         if(!indices || indices.length === 0) {
             return;
         }
-        var elements = this.el.selectAll(".dot").filter(function(data, index) {
+        var elements = this.d3el.selectAll(".dot").filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
         var fill = this.model.get("fill"),
@@ -841,7 +843,7 @@ var Scatter = mark.Mark.extend({
         // This function is not used right now. But it can be used if we
         // decide to accomodate more properties than those set by default.
         // Because those have to cleared specifically.
-        var elements = this.el.selectAll(".dot");
+        var elements = this.d3el.selectAll(".dot");
         if(indices) {
             elements = elements.filter(function(d, index) {
                 return indices.indexOf(index) !== -1;
@@ -928,14 +930,14 @@ var Scatter = mark.Mark.extend({
     },
 
     set_drag_behavior: function() {
-        var elements = this.el.selectAll(".object_grp");
+        var elements = this.d3el.selectAll(".object_grp");
         if (this.model.get("enable_move")) {
             elements.call(this.drag_listener);
-        } else { 
-            elements.on(".drag", null); 
+        } else {
+            elements.on(".drag", null);
         }
     },
-    
+
     drag_start: function(d, i, dragged_node) {
         // d[0] and d[1] will contain the previous position (in pixels)
         // of the dragged point, for the length of the drag event
@@ -1008,13 +1010,13 @@ var Scatter = mark.Mark.extend({
             d3.select(dragged_node)
               .select("path")
               .style("fill", original_color)
-              .style("stroke", stroke ? stroke : original_color);          
+              .style("stroke", stroke ? stroke : original_color);
         }
         this.update_array(d, i);
         this.send({
             event: "drag_end",
             point: {
-                x: x_scale.invert(d[0]), 
+                x: x_scale.invert(d[0]),
                 y: y_scale.invert(d[1])
             },
             index: i
@@ -1027,7 +1029,7 @@ var Scatter = mark.Mark.extend({
     },
 
     add_element: function() {
-        var mouse_pos = d3.mouse(this.el.node());
+        var mouse_pos = d3.mouse(this.el);
         var curr_pos = [mouse_pos[0], mouse_pos[1]];
 
         var x_scale = this.scales.x, y_scale = this.scales.y;

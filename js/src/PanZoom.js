@@ -25,7 +25,7 @@ var PanZoom = interaction.Interaction.extend({
     render: function() {
         PanZoom.__super__.render.apply(this);
         var that = this;
-        this.el
+        this.d3el
           .style({"cursor": "move"})
           .on("mousedown", function() { that.mousedown(); })
           .on("mousemove", function() { that.mousemove(); })
@@ -78,8 +78,8 @@ var PanZoom = interaction.Interaction.extend({
     mousedown: function () {
         var scales = this.model.get("scales");
         this.active = true;
-        this.el.style({"cursor": "move"});
-        this.previous_pos = d3.mouse(this.el.node());
+        this.d3el.style({"cursor": "move"});
+        this.previous_pos = d3.mouse(this.el);
         // A copy of the original domains is required to avoid additional
         // drift when Paning.
         this.domains = {
@@ -101,7 +101,7 @@ var PanZoom = interaction.Interaction.extend({
             // If memory is set to true, intermediate positions between the
             // last position of the mouse and the current one will be
             // interpolated.
-            var mouse_pos = d3.mouse(this.el.node());
+            var mouse_pos = d3.mouse(this.el);
             if (!("previous_pos" in this)) {
                 this.previous_pos = mouse_pos;
             }
@@ -155,12 +155,12 @@ var PanZoom = interaction.Interaction.extend({
             d3.event.preventDefault();
             // With Firefox, wheelDelta is undefined.
             var delta = d3.event.wheelDelta || d3.event.detail * (-40);
-            var mouse_pos = d3.mouse(this.el.node());
+            var mouse_pos = d3.mouse(this.el);
             if (delta) {
                 if (delta > 0) {
-                    this.el.style({"cursor": "zoom-in"});
+                    this.d3el.style({"cursor": "zoom-in"});
                 } else {
-                    this.el.style({"cursor": "zoom-out"});
+                    this.d3el.style({"cursor": "zoom-out"});
                 }
                 var scales = this.model.get("scales");
                 var that = this;

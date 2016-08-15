@@ -24,7 +24,7 @@ var Map = mark.Mark.extend({
 
     render: function() {
         var base_render_promise = Map.__super__.render.apply(this);
-        this.map = this.el.append("svg")
+        this.map = this.d3el.append("svg")
             .attr("viewBox", "0 0 1200 980");
         this.width = this.parent.plotarea_width;
         this.height = this.parent.plotarea_height;
@@ -231,9 +231,9 @@ var Map = mark.Mark.extend({
 
     create_listeners: function() {
         var that = this;
-        this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
-            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
-            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
+        this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
+            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
+            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
 
         this.listenTo(this.model, "data_updated", this.draw, this);
         this.listenTo(this.model, "change:color", this.update_style, this);
@@ -364,10 +364,10 @@ var Map = mark.Mark.extend({
         this.model.set("selected", []);
         this.touch();
         this.highlight_g.selectAll(".selected").remove();
-        d3.select(this.el.parentNode)
+        d3.select(this.d3el.parentNode)
             .selectAll("path")
             .classed("selected", false);
-        d3.select(this.el.parentNode)
+        d3.select(this.d3el.parentNode)
             .selectAll("path")
             .classed("hovered", false);
 
@@ -381,33 +381,32 @@ var Map = mark.Mark.extend({
             });
     },
 
-    change_stroke_color: function(){
+    change_stroke_color: function() {
         this.stroke_g.selectAll("path")
             .style("stroke", this.model.get("stroke_color"));
     },
 
-    change_map_color: function(){
+    change_map_color: function() {
 	var that = this;
-        if (!this.is_object_empty(this.model.get("color"))){
+        if (!this.is_object_empty(this.model.get("color"))) {
             return;
         }
-        this.fill_g.selectAll("path")
-            .style("fill", function(d, i) {
-		return that.fill_g_colorfill(d, i)
-	});
+        this.fill_g.selectAll("path").style("fill", function(d, i) {
+            return that.fill_g_colorfill(d, i)
+        });
     },
 
     update_style: function() {
         var color_data = this.model.get("color");
         var that = this;
-        if (!this.is_object_empty(color_data)){
+        if (!this.is_object_empty(color_data)) {
             this.fill_g.selectAll("path").style("fill", function(d, i) {
                 return that.fill_g_colorfill(d, i);
             });
         }
     },
 
-    is_object_empty: function(object){
+    is_object_empty: function(object) {
         var is_empty = true;
         for(var keys in object) {
             is_empty = false;

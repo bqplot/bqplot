@@ -19,7 +19,7 @@ var _ = require("underscore");
 var utils = require("./utils");
 
 // Polyfill for Math.log10 in IE11
-Math.log10 = Math.log10 || function (x) { 
+Math.log10 = Math.log10 || function (x) {
     return Math.log(x) / Math.LN10;
 };
 
@@ -27,9 +27,14 @@ var units_array = ["em", "ex", "px"];
 
 var Axis = widgets.WidgetView.extend({
 
+    initialize : function() {
+        this.setElement(document.createElementNS(d3.ns.prefix.svg, "g"));
+        this.d3el = d3.select(this.el);
+        Axis.__super__.initialize.apply(this, arguments);
+    },
+
     render: function() {
-        this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
-          .style("display", this.model.get("visible") ? "inline" : "none");
+        this.d3el.style("display", this.model.get("visible") ? "inline" : "none");
 
         this.parent = this.options.parent;
         this.margin = this.parent.margin;
@@ -243,7 +248,7 @@ var Axis = widgets.WidgetView.extend({
         this.update_axis_domain();
         this.update_offset_scale_domain();
 
-        this.g_axisline = this.el.append("g")
+        this.g_axisline = this.d3el.append("g")
             .attr("class", "axis")
             .attr("transform", this.get_axis_transform())
             .call(this.axis);
@@ -399,12 +404,12 @@ var Axis = widgets.WidgetView.extend({
     update_label: function() {
         this.g_axisline.select("text.axislabel")
             .text(this.model.get("label"));
-        this.el.selectAll(".axislabel").selectAll("text");
+        this.d3el.selectAll(".axislabel").selectAll("text");
         if(this.model.get("label_color") !== "" &&
            this.model.get("label_color") !== null) {
             this.g_axisline.select("text.axislabel")
               .style("fill", this.model.get("label_color"));
-            this.el.selectAll(".axislabel").selectAll("text")
+            this.d3el.selectAll(".axislabel").selectAll("text")
               .style("fill", this.model.get("label_color"));
         }
     },
@@ -452,7 +457,7 @@ var Axis = widgets.WidgetView.extend({
 
     remove: function() {
         this.model.off(null, null, this);
-        this.el.remove();
+        this.d3el.remove();
         Axis.__super__.remove.apply(this);
     },
 
@@ -506,10 +511,10 @@ var Axis = widgets.WidgetView.extend({
 
     update_color: function() {
         if (this.model.get("color")) {
-            this.el.selectAll(".tick")
+            this.d3el.selectAll(".tick")
                 .selectAll("text")
                 .style("fill", this.model.get("color"));
-            this.el.selectAll(".domain")
+            this.d3el.selectAll(".domain")
                 .style("stroke", this.model.get("color"));
         }
     },
@@ -557,7 +562,7 @@ var Axis = widgets.WidgetView.extend({
     },
 
     update_visibility: function(model, visible) {
-        this.el.style("display", visible ? "inline" : "none");
+        this.d3el.style("display", visible ? "inline" : "none");
     },
 
     get_ticks: function(data_array) {
