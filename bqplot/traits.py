@@ -233,9 +233,9 @@ class PandasDataFrame(Instance):
         super(PandasDataFrame, self).__init__(*args, **kwargs)
 
     def _from_json(self, value, obj=None):
-        if value is not None:
+        if value is not None or value != []:
             df = pd.DataFrame(value)
-            df = df.set_index('index')
+            df = df.set_index(self.index_name)
             df.index.name = None
         else:
             df = pd.DataFrame()
@@ -243,6 +243,11 @@ class PandasDataFrame(Instance):
 
     def _to_json(self, df, obj=None):
         if df is not None:
+            # Name of the index column
+            self.index_name = df.index.name
+            if self.index_name is None:
+                # If the index is not named, reset_index() names the column 'index'
+                self.index_name = 'index'
             return df.reset_index().to_dict(orient='records')
         else:
             return []
@@ -253,8 +258,6 @@ class PandasDataFrame(Instance):
             if isinstance(value.columns, pd.MultiIndex):
                 value = value.sortlevel(0, axis=1)
         return value
-
-    _cast = _from_json
 
 
 class PandasSeries(Instance):
