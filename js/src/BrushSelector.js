@@ -131,10 +131,6 @@ var BrushSelector = selector.BaseXYSelector.extend({
         this.create_scales();
     },
 
-    remove: function() {
-        BrushSelector.__super__.remove.apply(this);
-    },
-
     relayout: function() {
         BrushSelector.__super__.relayout.apply(this);
         this.d3el.select(".background")

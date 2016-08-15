@@ -19,10 +19,13 @@ var utils = require("./utils");
 
 var Tooltip = widgets.DOMWidgetView.extend({
 
-    render: function() {
-        // var base_creation_promise = Tooltip.__super__.render.apply(this);
+    initialize: function() {
         this.setElement(document.createElement("div"));
-        this.d3_el = d3.select(this.el);
+        this.d3el = d3.select(this.el);
+        Tooltip.__super__.initialize.apply(this, arguments);
+    },
+
+    render: function() {
         this.parent = this.options.parent;
         this.update_formats();
         this.create_listeners();
@@ -57,7 +60,7 @@ var Tooltip = widgets.DOMWidgetView.extend({
         //data is a dictionary passed by the parent along with the update_
         //tooltip event. Responsibility of the mark to pass the data
         var that = this;
-        this.d3_el.select("table")
+        this.d3el.select("table")
             .selectAll("tr")
             .select(".datavalue")
             .text(function(datum, index) {
@@ -73,8 +76,8 @@ var Tooltip = widgets.DOMWidgetView.extend({
             labels[ind] = fields[ind];
         }
 
-        this.d3_el.select("table").remove();
-        var tooltip_table = this.d3_el.append("table")
+        this.d3el.select("table").remove();
+        var tooltip_table = this.d3el.append("table")
             .selectAll("tr").data(fields);
 
         tooltip_table.exit().remove();
@@ -88,12 +91,6 @@ var Tooltip = widgets.DOMWidgetView.extend({
         table_rows.append("td")
             .attr("class", "tooltiptext datavalue");
         this.update_formats();
-    },
-
-    remove: function() {
-        this.model.off(null, null, this);
-        this.d3_el.remove();
-        Tooltip.__super__.remove.apply(this);
     }
 });
 

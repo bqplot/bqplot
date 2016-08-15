@@ -43,10 +43,6 @@ var BaseSelector = interaction.Interaction.extend({
         this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
     },
 
-    remove: function() {
-        BaseSelector.__super__.remove.apply(this);
-    },
-
     populate_mark_views: function() {
         var fig = this.parent;
         var that = this;

@@ -128,12 +128,6 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         this.create_scale();
     },
 
-    remove: function() {
-        this.rect.remove();
-        this.background.remove();
-        FastIntervalSelector.__super__.remove.apply(this);
-    },
-
     relayout: function() {
         FastIntervalSelector.__super__.relayout.apply(this);
         this.background.attr("width", this.width)

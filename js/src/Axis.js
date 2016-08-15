@@ -455,12 +455,6 @@ var Axis = widgets.WidgetView.extend({
         return label_offset;
     },
 
-    remove: function() {
-        this.model.off(null, null, this);
-        this.d3el.remove();
-        Axis.__super__.remove.apply(this);
-    },
-
     update_grid_lines: function(animate) {
         var grid_type = this.model.get("grid_lines");
         var side = this.model.get("side");

@@ -146,12 +146,6 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         }
     },
 
-    remove: function() {
-        this.line.remove();
-        this.background.remove();
-        IndexSelector.__super__.remove.apply(this);
-    },
-
     relayout: function() {
         IndexSelector.__super__.relayout.apply(this);
         this.line.attr("y1", 0)

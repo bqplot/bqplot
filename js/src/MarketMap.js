@@ -20,13 +20,7 @@ var figure = require("./Figure");
 
 var MarketMap = figure.Figure.extend({
 
-    initialize: function() {
-        MarketMap.__super__.initialize.apply(this, arguments);
-    },
-
     remove: function() {
-        this.model.off(null, null, this);
-        this.svg.remove();
         $(this.options.cell).off("output_area_resize." + this.id);
         this.tooltip_div.remove();
     },
@@ -631,7 +625,7 @@ var MarketMap = figure.Figure.extend({
             .style("top", (mouse_pos[1] + parent_node.offsetTop - ref_el.scrollTop + 5) + "px");
 
         tooltip_div.select("table").remove();
-        if(! this.tooltip_view) {
+        if(!this.tooltip_view) {
             var tooltip_table = tooltip_div.append("table")
                 .selectAll("tr").data(this.tooltip_fields);
 
