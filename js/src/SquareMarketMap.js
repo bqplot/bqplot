@@ -27,10 +27,6 @@ var SquareMarketMap = widgets.DOMWidgetView.extend({
         this.el.style["width"] = this.width + this.margin.left + this.margin.right;
         this.el.style["height"] = this.height + this.margin.top + this.margin.bottom;
 
-        this.$el.resizable({
-            aspectRatio: true
-        });
-
         var sector_data = this.model.get('data');
         this.colors = this.model.get('colors');
         this.mode = this.model.get('mode');
