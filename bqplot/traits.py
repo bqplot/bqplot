@@ -135,12 +135,10 @@ class NdArray(CInstance):
             return {'values': a, 'type': None}
 
     def _set_value(self, value):
-        if isinstance(value, np.ndarray) and len(value.shape) == 0:
-            return np.asarray(None)
+        if isinstance(value, np.ndarray):
+            return value
         elif value is None or len(value) == 0:
             return np.asarray(value)
-        if(isinstance(value, np.ndarray) and np.issubdtype(value.dtype, np.datetime64)):
-            return value
         else:
             return np.asarray(value)
 
@@ -150,16 +148,14 @@ class NdArray(CInstance):
             value = self._cast(value)
         min_dim = self.get_metadata('min_dim', 0)
         max_dim = self.get_metadata('max_dim', np.inf)
-        allow_none = getattr(self, 'allow_none', False)
         shape = np.shape(value)
         dim = 0 if value is None else len(shape)
         if (dim > 1) and (1 in shape):
             value = np.squeeze(value) if (self.squeeze) else value
             dim = len(np.shape(value))
-        if allow_none is True and dim == 0:
+        if self.allow_none and dim == 0:
             return value
         if (dim > max_dim or dim < min_dim):
-
             raise TraitError("Dimension mismatch")
         return value
 
