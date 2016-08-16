@@ -178,7 +178,7 @@ setup_args = {
     ],
     'install_requires': [
         'ipywidgets>=5.2.2',
-        'numpy',
+        'numpy>=1.10.4',
         'pandas'],
     'packages': find_packages(),
     'zip_safe': False,

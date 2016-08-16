@@ -88,12 +88,12 @@ class Date(TraitType):
         if value is None:
             return value
         else:
-            return value.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            return value.strftime('%Y-%m-%dT%H:%M:%S.%f')
 
     @staticmethod
     def from_json(value, obj=None):
         if value:
-            return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
+            return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
         else:
             return value
 
