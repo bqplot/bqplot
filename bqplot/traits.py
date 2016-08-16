@@ -135,7 +135,9 @@ class NdArray(CInstance):
             return {'values': a, 'type': None}
 
     def _set_value(self, value):
-        if value is None or len(value) == 0:
+        if isinstance(value, np.ndarray) and len(value.shape) == 0:
+            return np.asarray(None)
+        elif value is None or len(value) == 0:
             return np.asarray(value)
         if(isinstance(value, np.ndarray) and np.issubdtype(value.dtype, np.datetime64)):
             return value
@@ -148,12 +150,16 @@ class NdArray(CInstance):
             value = self._cast(value)
         min_dim = self.get_metadata('min_dim', 0)
         max_dim = self.get_metadata('max_dim', np.inf)
+        allow_none = getattr(self, 'allow_none', False)
         shape = np.shape(value)
         dim = 0 if value is None else len(shape)
         if (dim > 1) and (1 in shape):
             value = np.squeeze(value) if (self.squeeze) else value
             dim = len(np.shape(value))
-        if dim > max_dim or dim < min_dim:
+        if allow_none is True and dim == 0:
+            return value
+        if (dim > max_dim or dim < min_dim):
+
             raise TraitError("Dimension mismatch")
         return value
 
@@ -165,11 +171,9 @@ class NdArray(CInstance):
             return np.asarray(value['values'], dtype=array_dtype)
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('from_json', NdArray._from_json)
-        kwargs.setdefault('to_json', NdArray._to_json)
-        kwargs.setdefault('args', (0,))
         self.squeeze = kwargs.pop('squeeze', True)
         super(NdArray, self).__init__(*args, **kwargs)
+        self.tag(to_json=NdArray._to_json, from_json=NdArray._from_json)
 
     _cast = _set_value
 
