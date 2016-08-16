@@ -32,8 +32,7 @@ var ColorBar = axis.Axis.extend({
         this.x_offset = 100;
         this.y_offset = 40;
         this.bar_height = 20;
-        this.el = d3.select(document.createElementNS(d3.ns.prefix.svg, "g"))
-            .attr("class", "ColorBar")
+        this.d3el.attr("class", "ColorBar")
             .attr("display", (this.model.get("visible") ? "inline" : "none"))
             .attr("transform", this.get_topg_transform());
 
@@ -72,9 +71,9 @@ var ColorBar = axis.Axis.extend({
         this.side = this.model.get("side");
         this.vertical = this.model.get("orientation") === "vertical";
         this.rescale_axis();
-        this.el.select("#colorBarG" + this.cid)
+        this.d3el.select("#colorBarG" + this.cid)
             .attr("transform", this.get_colorbar_transform());
-        this.el.select("#colorBarG" + this.cid)
+        this.d3el.select("#colorBarG" + this.cid)
             .select(".g-rect")
             .attr("transform", this.vertical ? "rotate(-90)" : "");
         this.redraw_axisline();
@@ -107,7 +106,7 @@ var ColorBar = axis.Axis.extend({
         // occupies more than 100px then you are out of luck.
         var that = this;
         if(this.model.get("label") !== undefined && this.model.get("label") !== null) {
-            this.el.append("g")
+            this.d3el.append("g")
                 .attr("transform", this.get_label_transform())
                 .attr("class", "axis label_g")
                 .append("text")
@@ -118,7 +117,7 @@ var ColorBar = axis.Axis.extend({
                 .attr("class", "axislabel")
                 .style("text-anchor", this.vertical ? "middle" : "end");
         }
-        var colorBar = this.el.append("g")
+        var colorBar = this.d3el.append("g")
             .attr("id","colorBarG" + this.cid);
 
         this.draw_color_bar();
@@ -133,7 +132,7 @@ var ColorBar = axis.Axis.extend({
     },
 
     draw_color_bar: function() {
-        var colorBar = this.el.select("#colorBarG" + this.cid);
+        var colorBar = this.d3el.select("#colorBarG" + this.cid);
         colorBar.attr("transform", this.get_colorbar_transform());
         var that = this;
         colorBar.selectAll(".g-rect")
@@ -264,7 +263,7 @@ var ColorBar = axis.Axis.extend({
     },
 
     update_label: function(model, value) {
-        this.el.select("#text_elem")
+        this.d3el.select("#text_elem")
             .text(this.model.get("label"));
     },
 
@@ -272,11 +271,11 @@ var ColorBar = axis.Axis.extend({
         // rescale the axis
         this.set_axisline_scale_range();
         // shifting the entire g of the color bar first.
-        this.el.attr("transform", this.get_topg_transform());
+        this.d3el.attr("transform", this.get_topg_transform());
         var that = this;
         var bar_width = this.get_color_bar_width() / this.colors.length;
         if(this.ordinal) {
-            var rectangles = this.el.select("#colorBarG" + this.cid)
+            var rectangles = this.d3el.select("#colorBarG" + this.cid)
                 .select(".g-rect")
                 .selectAll("rect")
                 .attr("width", bar_width);
@@ -290,14 +289,14 @@ var ColorBar = axis.Axis.extend({
                 });
             }
         } else {
-            this.el.select("#colorBarG" + this.cid)
+            this.d3el.select("#colorBarG" + this.cid)
                 .select(".g-rect")
                 .selectAll("rect")
                 .attr("width", this.get_color_bar_width())
                 .attr("x", (this.vertical) ? -(this.height - 2 * this.x_offset) : 0);
         }
         if(this.model.get("label") !== undefined && this.model.get("label") !== null) {
-            this.el.select(".label_g")
+            this.d3el.select(".label_g")
                 .attr("transform", this.get_label_transform())
                 .select("#text_elem")
                 .style("text-anchor", this.vertical ? "middle" : "end");

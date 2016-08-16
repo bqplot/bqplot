@@ -24,9 +24,12 @@ var SquareMarketMap = widgets.DOMWidgetView.extend({
         this.height = this.model.get("height");
         this.margin = this.model.get('margin');
 
-        this.$el.css("width", (this.width + this.margin.left + this.margin.right))
-            .css("height", (this.height + this.margin.top + this.margin.bottom))
-            .resizable({aspectRatio: true});
+        this.el.style["width"] = this.width + this.margin.left + this.margin.right;
+        this.el.style["height"] = this.height + this.margin.top + this.margin.bottom;
+
+        this.$el.resizable({
+            aspectRatio: true
+        });
 
         var sector_data = this.model.get('data');
         this.colors = this.model.get('colors');
@@ -34,8 +37,7 @@ var SquareMarketMap = widgets.DOMWidgetView.extend({
 
         var color= d3.scale.category10();
         var that = this;
-        var div = d3.select(this.el)
-            .append("div")
+        this.d3el.append("div")
             .style("position", "relative")
             .style("width", (this.width + this.margin.left + this.margin.right) + "px")
             .style("height", (this.height + this.margin.top + this.margin.bottom) + "px")
@@ -51,7 +53,7 @@ var SquareMarketMap = widgets.DOMWidgetView.extend({
             .mode(this.mode)
             .value(function(d) {return d.size;});
 
-        var element = div.datum(sector_data).selectAll(".node")
+        var element = this.d3el.datum(sector_data).selectAll(".node")
             .data(this.tree_map.nodes)
             .enter().append("div")
             .attr("class", "node")

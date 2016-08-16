@@ -27,7 +27,7 @@ var Pie = mark.Mark.extend({
 
         this.display_el_classes = ["pie_slice", "pie_text"];
         var that = this;
-        this.el.append("g").attr("class", "pielayout");
+        this.d3el.append("g").attr("class", "pielayout");
 
         this.arc = d3.svg.arc()
             .outerRadius(this.model.get("radius"))
@@ -76,7 +76,7 @@ var Pie = mark.Mark.extend({
 
     create_listeners: function() {
         Pie.__super__.create_listeners.apply(this);
-        this.el
+        this.d3el
           .on("mouseover", _.bind(function() {
               this.event_dispatcher("mouse_over");
           }, this))
@@ -187,7 +187,7 @@ var Pie = mark.Mark.extend({
             this.model.get_date_elem("y") : this.model.get("y");
         var transform = "translate(" + (x_scale.scale(x) + x_scale.offset) +
                                 ", " + (y_scale.scale(y) + y_scale.offset) + ")";
-        this.el.select(".pielayout")
+        this.d3el.select(".pielayout")
             .transition().duration(animation_duration)
             .attr("transform", transform);
     },
@@ -196,7 +196,7 @@ var Pie = mark.Mark.extend({
         this.arc.outerRadius(this.model.get("radius"))
             .innerRadius(this.model.get("inner_radius"));
 
-        var slices = this.el.select(".pielayout").selectAll(".slice");
+        var slices = this.d3el.select(".pielayout").selectAll(".slice");
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         slices.select("path")
@@ -223,7 +223,7 @@ var Pie = mark.Mark.extend({
         if (!this.model.get("sort")) { pie.sort(null); }
 
         var that = this;
-        var slices = this.el.select(".pielayout")
+        var slices = this.d3el.select(".pielayout")
             .selectAll(".slice")
             .data(pie(this.model.mark_data));
 
@@ -270,7 +270,7 @@ var Pie = mark.Mark.extend({
     update_stroke_and_opacities: function() {
         var stroke = this.model.get("stroke");
         var opacities = this.model.get("opacities");
-        this.el.select(".pielayout").selectAll(".slice").select(".pie_slice")
+        this.d3el.select(".pielayout").selectAll(".slice").select(".pie_slice")
           .style("stroke", stroke)
           .style("opacity", function(d, i) { return opacities[i]; });
     },
@@ -278,7 +278,7 @@ var Pie = mark.Mark.extend({
     update_colors: function() {
         var that = this;
         var color_scale = this.scales.color;
-        this.el.select(".pielayout").selectAll(".pie_slice")
+        this.d3el.select(".pielayout").selectAll(".pie_slice")
           .style("fill", function(d, i) {
               return (d.data.color !== undefined && color_scale !== undefined) ?
                   color_scale.scale(d.data.color) : that.get_colors(d.data.index);
@@ -286,7 +286,7 @@ var Pie = mark.Mark.extend({
     },
 
     update_labels: function() {
-        var labels = this.el.select(".pielayout").selectAll(".pie_text")
+        var labels = this.d3el.select(".pielayout").selectAll(".pie_text")
             .text(function(d) { return d.data.label; })
             .style("visibility", this.model.get("display_labels") ? "visible" : "hidden")
             .style("font-weight", this.model.get("font_weight"))
@@ -302,7 +302,7 @@ var Pie = mark.Mark.extend({
         // Function to clear the style of a dict on some or all the elements of the
         // chart. If indices is null, clears the style on all elements. If
         // not, clears on only the elements whose indices are matching.
-        var elements = this.el.select(".pielayout").selectAll(".slice");
+        var elements = this.d3el.select(".pielayout").selectAll(".slice");
         if(indices) {
             elements = elements.filter(function(d, index) {
                 return indices.indexOf(index) !== -1;
@@ -321,7 +321,7 @@ var Pie = mark.Mark.extend({
         if(indices === undefined || indices === null || indices.length === 0) {
             return;
         }
-        var elements = this.el.select(".pielayout").selectAll(".slice");
+        var elements = this.d3el.select(".pielayout").selectAll(".slice");
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });

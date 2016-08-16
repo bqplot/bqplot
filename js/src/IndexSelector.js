@@ -25,7 +25,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         var that = this;
         var scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
-            that.line = that.el.append("line")
+            that.line = that.d3el.append("line")
             .attr("class", "selector indsel")
             .attr("x1", 0)
             .attr("y1", 0)
@@ -36,7 +36,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
             .attr("visibility", "hidden");
 
             //container for mouse events
-            that.background = that.el.append("rect")
+            that.background = that.d3el.append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", that.width)
@@ -144,12 +144,6 @@ var IndexSelector = baseselector.BaseXSelector.extend({
                 mark_view.invert_point(pixel);
             });
         }
-    },
-
-    remove: function() {
-        this.line.remove();
-        this.background.remove();
-        IndexSelector.__super__.remove.apply(this);
     },
 
     relayout: function() {

@@ -57,7 +57,7 @@ var OHLC = mark.Mark.extend({
 
     create_listeners: function() {
         OHLC.__super__.create_listeners.apply(this);
-         this.el.on("mouseover", _.bind(this.mouse_over, this))
+        this.d3el.on("mouseover", _.bind(this.mouse_over, this))
             .on("mousemove", _.bind(this.mouse_move, this))
             .on("mouseout", _.bind(this.mouse_out, this));
 
@@ -72,7 +72,7 @@ var OHLC = mark.Mark.extend({
 
     update_stroke: function() {
         var stroke = this.model.get("stroke");
-        this.el.selectAll(".stick").style("stroke", stroke);
+        this.d3el.selectAll(".stick").style("stroke", stroke);
 
         if(this.legend_el) {
             this.legend_el.selectAll("path").style("stroke", stroke);
@@ -82,7 +82,7 @@ var OHLC = mark.Mark.extend({
 
     update_stroke_width: function() {
         var stroke_width = this.model.get("stroke_width");
-        this.el.selectAll(".stick").attr("stroke-width", stroke_width);
+        this.d3el.selectAll(".stick").attr("stroke-width", stroke_width);
     },
 
     update_colors: function() {
@@ -92,7 +92,7 @@ var OHLC = mark.Mark.extend({
         var down_color = (colors[1] ? colors[1] : "none");
 
         // Fill candles based on the opening and closing values
-        this.el.selectAll(".stick").style("fill", function(d) {
+        this.d3el.selectAll(".stick").style("fill", function(d) {
             return (d.y[that.model.px.o] > d.y[that.model.px.c] ?
                 down_color : up_color);
         });
@@ -104,7 +104,7 @@ var OHLC = mark.Mark.extend({
 
     update_opacities: function() {
         var opacities = this.model.get("opacities");
-        this.el.selectAll(".stick").style("opacity", function(d, i) {
+        this.d3el.selectAll(".stick").style("opacity", function(d, i) {
             return opacities[i];
         });
 
@@ -122,14 +122,14 @@ var OHLC = mark.Mark.extend({
         }
 
         // Redraw existing marks
-        this.draw_mark_paths(marker, this.el,
+        this.draw_mark_paths(marker, this.d3el,
             this.model.mark_data.map(function(d, index) {
                 return d[1];
             }));
     },
 
     update_selected_colors: function(idx_start, idx_end) {
-        var stick_sel = this.el.selectAll(".stick");
+        var stick_sel = this.d3el.selectAll(".stick");
         var current_range = _.range(idx_start, idx_end + 1);
         if(current_range.length == this.model.mark_data.length) {
             current_range = [];
@@ -143,12 +143,12 @@ var OHLC = mark.Mark.extend({
 
         _.range(0, this.model.mark_data.length)
          .forEach(function(d) {
-             that.el.selectAll("#stick" + d)
+             that.d3el.selectAll("#stick" + d)
                .style("stroke", stroke);
          });
 
         current_range.forEach(function(d) {
-            that.el.selectAll("#stick" + d)
+            that.d3el.selectAll("#stick" + d)
                 .style("stroke", function(d) {
                     return d[px.o] > d[px.c] ? down_color : up_color;
                 });
@@ -159,7 +159,7 @@ var OHLC = mark.Mark.extend({
         if(start_pxl === undefined || end_pxl === undefined ||
            this.model.mark_data.length === 0)
         {
-            this.update_selected_colors(-1,-1);
+            this.update_selected_colors(-1, -1);
             selected = [];
             return selected;
         }
@@ -206,16 +206,20 @@ var OHLC = mark.Mark.extend({
         var up_color = (colors[0] ? colors[0] : "none");
         var down_color = (colors[1] ? colors[1] : "none");
         var px = this.model.px;
-        var stick = this.el.selectAll(".stick")
+        var stick = this.d3el.selectAll(".stick")
             .data(this.model.mark_data.map(function(data, index) {
-                return {'x': data[0], 'y': data[1], 'index': index};
+                return {
+                    x: data[0],
+                    y: data[1],
+                    index: index
+                };
             }));
 
         // Create new
         var new_sticks = stick.enter()
             .append("g")
             .attr("class", "stick")
-            .attr("id", function(d, i) { return "stick"+i; })
+            .attr("id", function(d, i) { return "stick" + i; })
             .style("stroke", this.model.get("stroke"))
             .style("opacity", function(d, i) {
                 return opacities[i];
@@ -235,7 +239,7 @@ var OHLC = mark.Mark.extend({
             y_index = px.o;
         }
         // Update all of the marks
-        this.el.selectAll(".stick")
+        this.d3el.selectAll(".stick")
             .style("fill", function(d, i) {
                 return (d.y[px.o] > d.y[px.c]) ? down_color : up_color;
             })
@@ -244,14 +248,14 @@ var OHLC = mark.Mark.extend({
             // If we are out of range, we just set the mark in the final
             // bucket's range band. FIXME?
             var x_max = d3.max(this.parent.range("x"));
-            this.el.selectAll(".stick").attr( "transform", function(d, i) {
+            this.d3el.selectAll(".stick").attr( "transform", function(d, i) {
                 return "translate(" + ((x_scale.scale(that.model.mark_data[i][0]) !== undefined ?
                                         x_scale.scale(that.model.mark_data[i][0]) : x_max) +
                                         x_scale.scale.rangeBand()/2) + "," +
                                       (y_scale.scale(d.y[y_index]) + y_scale.offset) + ")";
             });
         } else {
-            this.el.selectAll(".stick").attr( "transform", function(d, i) {
+            this.d3el.selectAll(".stick").attr( "transform", function(d, i) {
                  return "translate(" + (x_scale.scale(that.model.mark_data[i][0]) +
                                      x_scale.offset) + "," +
                                      (y_scale.scale(d.y[y_index]) +
@@ -260,12 +264,14 @@ var OHLC = mark.Mark.extend({
         }
 
         // Draw the mark paths
-        this.draw_mark_paths(this.model.get("marker"), this.el,
+        this.draw_mark_paths(this.model.get("marker"), this.d3el,
             this.model.mark_data.map(function(d) {
                 return d[1];
             }));
 
-        this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
+        this.x_pixels = this.model.mark_data.map(function(el) {
+            return x_scale.scale(el[0]) + x_scale.offset;
+        });
     },
 
     draw_mark_paths: function(type, selector, dat) {
@@ -490,7 +496,7 @@ var OHLC = mark.Mark.extend({
     relayout: function() {
         OHLC.__super__.relayout.apply(this);
         this.set_ranges();
-        this.el.select(".intselmouse")
+        this.d3el.select(".intselmouse")
             .attr("width", this.width)
             .attr("height", this.height);
 

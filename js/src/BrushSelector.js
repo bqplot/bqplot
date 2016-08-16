@@ -24,6 +24,7 @@ var BrushSelector = selector.BaseXYSelector.extend({
         BrushSelector.__super__.render.apply(this);
         var that = this;
         var scale_creation_promise = this.create_scales();
+
         //TODO: For all selectors, the brush background etc can be created
         //without waiting for the promise. But the issue is with resizing
         //and how they should resize when the parent is resized. So as a
@@ -40,7 +41,7 @@ var BrushSelector = selector.BaseXYSelector.extend({
             that.is_x_date = (that.x_scale.model.type === "date");
             that.is_y_date = (that.y_scale.model.type === "date");
 
-            that.brushsel = that.el.attr("class", "selector brushintsel")
+            that.brushsel = that.d3el.attr("class", "selector brushintsel")
                 .call(that.brush);
 
             if (that.model.get("color") !== null) {
@@ -130,13 +131,9 @@ var BrushSelector = selector.BaseXYSelector.extend({
         this.create_scales();
     },
 
-    remove: function() {
-        BrushSelector.__super__.remove.apply(this);
-    },
-
     relayout: function() {
         BrushSelector.__super__.relayout.apply(this);
-        this.el.select(".background")
+        this.d3el.select(".background")
             .attr("width", this.width)
             .attr("height", this.height);
 
@@ -176,8 +173,8 @@ var BrushSelector = selector.BaseXYSelector.extend({
     _update_brush: function() {
         //programmatically setting the brush does not redraw it. It is
         //being redrawn below
-        this.brushsel = this.el.call(this.brush);
-        this.el.call(this.brush.event);
+        this.brushsel = this.d3el.call(this.brush);
+        this.d3el.call(this.brush.event);
     },
 });
 
@@ -194,9 +191,9 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
                 .on("brush", _.bind(that.brush_move, that))
                 .on("brushend", _.bind(that.brush_end, that));
 
-            that.el.attr("class", "selector brushintsel");
+            that.d3el.attr("class", "selector brushintsel");
 
-            that.brushsel = that.el.call(that.brush)
+            that.brushsel = that.d3el.call(that.brush)
                 .selectAll("rect")
                 .attr("y", 0)
                 .attr("height", that.height);
@@ -321,8 +318,8 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
     _update_brush: function() {
         //programmatically setting the brush does not redraw it. It is
         //being redrawn below
-        this.brushsel = this.el.call(this.brush);
-        this.el.call(this.brush.event);
+        this.brushsel = this.d3el.call(this.brush);
+        this.d3el.call(this.brush.event);
     },
 
     remove: function() {
@@ -332,11 +329,11 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
 
     relayout: function() {
         BrushIntervalSelector.__super__.relayout.apply(this);
-        this.el.selectAll("rect")
+        this.d3el.selectAll("rect")
             .attr("y", 0)
             .attr("height", this.height);
 
-        this.el.select(".background")
+        this.d3el.select(".background")
             .attr("width", this.width)
             .attr("height", this.height);
 
@@ -383,7 +380,7 @@ var MultiSelector = selector.BaseXSelector.extend({
             // attribute to see if the scale is a date scale
             that.is_date = (that.scale.model.type === "date");
 
-            that.el.attr("class", "multiselector");
+            that.d3el.attr("class", "multiselector");
 
             that.create_brush();
             that.model.on("change:names", that.labels_change, that);
@@ -404,7 +401,7 @@ var MultiSelector = selector.BaseXSelector.extend({
             var label = that.get_label(elem);
             var prev_label = that.get_label(elem, prev_names);
             if(prev_label !== label) {
-                that.el.select(".brush_text_" + elem).text(label);
+                that.d3el.select(".brush_text_" + elem).text(label);
                 selected[label] = selected[prev_label];
                 delete selected[prev_label];
             }
@@ -425,7 +422,7 @@ var MultiSelector = selector.BaseXSelector.extend({
             .on("brush", function() { that.brush_move(index, this); })
             .on("brushend", function() { that.brush_end(index, this); });
 
-        var new_brush_g = this.el.append("g")
+        var new_brush_g = this.d3el.append("g")
             .attr("class", "selector brushintsel active");
 
         that.new_brushsel = new_brush_g.call(brush)
@@ -448,7 +445,7 @@ var MultiSelector = selector.BaseXSelector.extend({
 
         var old_handler = new_brush_g.on("mousedown.brush");
         new_brush_g.on("mousedown.brush", function() {
-            add_remove_classes(that.el.selectAll(".selector"), ["inactive"], ["visible"]);
+            add_remove_classes(that.d3el.selectAll(".selector"), ["inactive"], ["visible"]);
             add_remove_classes(d3.select(this), ["active"], ["inactive"]);
             old_handler.call(this);
             // Replacement for "Accel" modifier.
@@ -460,10 +457,10 @@ var MultiSelector = selector.BaseXSelector.extend({
                     add_remove_classes(d3.select(this), ["inactive"], ["active"]);
                     that.create_brush(d3.event);
                 } else if(d3.event.shiftKey && that.selecting_brush === false) {
-                    add_remove_classes(that.el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
+                    add_remove_classes(that.d3el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
                     that.selecting_brush = true;
                 } else {
-                    add_remove_classes(that.el.selectAll(".selector"), ["inactive"], ["visible"]);
+                    add_remove_classes(that.d3el.selectAll(".selector"), ["inactive"], ["visible"]);
                     add_remove_classes(d3.select(this), ["active"], ["inactive"]);
                     old_handler.call(this);
                     that.selecting_brush = false;
@@ -522,7 +519,7 @@ var MultiSelector = selector.BaseXSelector.extend({
     },
 
     reset: function() {
-        this.el.selectAll(".selector")
+        this.d3el.selectAll(".selector")
             .remove();
         this.model.set("_selected", {});
         this.curr_index = 0;
@@ -547,7 +544,7 @@ var MultiSelector = selector.BaseXSelector.extend({
     },
 
     scale_changed: function() {
-        this.el.selectAll(".selector")
+        this.d3el.selectAll(".selector")
             .remove();
         this.curr_index = 0;
         this.create_scale();
@@ -556,12 +553,12 @@ var MultiSelector = selector.BaseXSelector.extend({
 
     relayout: function() {
         MultiSelector.__super__.relayout.apply(this);
-        this.el.selectAll(".brushintsel")
+        this.d3el.selectAll(".brushintsel")
             .selectAll("rect")
             .attr("y", 0)
             .attr("height", this.height);
 
-        this.el.select(".background")
+        this.d3el.select(".background")
             .attr("width", this.width)
             .attr("height", this.height);
 

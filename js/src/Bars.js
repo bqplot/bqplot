@@ -108,7 +108,7 @@ var Bars = mark.Mark.extend({
 
     create_listeners: function() {
         Bars.__super__.create_listeners.apply(this);
-        this.el
+        this.d3el
           .on("mouseover", _.bind(function() {
               this.event_dispatcher("mouse_over");
           }, this))
@@ -202,7 +202,7 @@ var Bars = mark.Mark.extend({
         this.set_ranges();
         this.compute_view_padding();
 
-        this.el.select(".zeroLine")
+        this.d3el.select(".zeroLine")
           .attr("x1",  0)
           .attr("x2", this.parent.plotarea_width)
           .attr("y1", y_scale.scale(this.model.base_value))
@@ -253,7 +253,7 @@ var Bars = mark.Mark.extend({
         this.set_ranges();
         var colors = this.model.get("colors");
         var that = this;
-        var bar_groups = this.el.selectAll(".bargroup")
+        var bar_groups = this.d3el.selectAll(".bargroup")
           .data(this.model.mark_data, function(d) {
               return d.key;
           });
@@ -309,8 +309,8 @@ var Bars = mark.Mark.extend({
 
         this.apply_styles();
 
-        this.el.selectAll(".zeroLine").remove();
-        this.el.append("g")
+        this.d3el.selectAll(".zeroLine").remove();
+        this.d3el.append("g")
           .append("line")
           .attr("class", "zeroLine")
           .attr("x1",  0)
@@ -320,7 +320,7 @@ var Bars = mark.Mark.extend({
     },
 
     draw_bars: function(animate) {
-        var bar_groups = this.el.selectAll(".bargroup");
+        var bar_groups = this.d3el.selectAll(".bargroup");
         var bars_sel = bar_groups.selectAll(".bar");
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
         var that = this;
@@ -373,7 +373,7 @@ var Bars = mark.Mark.extend({
     update_stroke_and_opacities: function() {
         var stroke = this.model.get("stroke");
         var opacities = this.model.get("opacities");
-        this.el.selectAll(".bar")
+        this.d3el.selectAll(".bar")
             .style("stroke", stroke)
             .style("opacity", function(d, i) {
             return opacities[i];
@@ -390,12 +390,12 @@ var Bars = mark.Mark.extend({
         var color_scale = this.scales.color;
         if(this.model.mark_data.length > 0) {
             if(!(this.model.is_y_2d)) {
-                this.el.selectAll(".bar").style("fill", function(d, i) {
+                this.d3el.selectAll(".bar").style("fill", function(d, i) {
                     return (d.color !== undefined && color_scale !== undefined) ?
                         color_scale.scale(d.color) : that.get_colors(d.color_index);
                 });
             } else {
-                this.el.selectAll(".bargroup")
+                this.d3el.selectAll(".bargroup")
                    .selectAll(".bar")
                    .style("fill", function(d, i) {
                    return (d.color !== undefined && color_scale !== undefined) ?
@@ -492,7 +492,7 @@ var Bars = mark.Mark.extend({
         // This function is not used right now. But it can be used if we
         // decide to accomodate more properties than those set by default.
         // Because those have to cleared specifically.
-        var elements = this.el.selectAll(".bargroup");
+        var elements = this.d3el.selectAll(".bargroup");
         if(indices !== undefined) {
             elements = elements.filter(function(d, index) {
                 return indices.indexOf(index) !== -1;
@@ -515,7 +515,7 @@ var Bars = mark.Mark.extend({
         if(Object.keys(style).length === 0) {
             return;
         }
-        var elements = this.el.selectAll(".bargroup");
+        var elements = this.d3el.selectAll(".bargroup");
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });

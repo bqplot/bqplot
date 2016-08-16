@@ -21,7 +21,7 @@ var HandDraw = interaction.Interaction.extend({
 
     render: function() {
         HandDraw.__super__.render.apply(this);
-        this.el.style({
+        this.d3el.style({
             cursor: "crosshair"
         });
         this.active = false;
@@ -59,9 +59,9 @@ var HandDraw = interaction.Interaction.extend({
         this.active = true;
         this.mouse_entry(false);
         var that = this;
-        this.el.on("mousemove", function() { that.mousemove(); });
-        this.el.on("mouseleave", function() { that.mouseup(); });
-        this.el.on("mouseup", function() { that.mouseup(); });
+        this.d3el.on("mousemove", function() { that.mousemove(); });
+        this.d3el.on("mouseleave", function() { that.mouseup(); });
+        this.d3el.on("mouseup", function() { that.mouseup(); });
     },
 
     mouseup: function () {
@@ -71,9 +71,9 @@ var HandDraw = interaction.Interaction.extend({
             lines_model.set_typed_field("y", utils.deepCopy(lines_model.y_data));
             this.lines_view.touch();
             this.active = false;
-            this.el.on("mousemove", null);
-            this.el.on("mouseleave", null);
-            this.el.on("mouseup", null);
+            this.d3el.on("mousemove", null);
+            this.d3el.on("mouseleave", null);
+            this.d3el.on("mouseup", null);
         }
     },
 
@@ -88,7 +88,7 @@ var HandDraw = interaction.Interaction.extend({
             var lines_model = this.model.get("lines");
             var xindex = Math.min(this.line_index,
                                   lines_model.x_data.length - 1);
-            var mouse_pos = d3.mouse(this.el.node());
+            var mouse_pos = d3.mouse(this.el);
             if (!memory || !("previous_pos" in this)) {
                 this.previous_pos = mouse_pos;
             }
@@ -114,9 +114,12 @@ var HandDraw = interaction.Interaction.extend({
             var that  = this;
             var xy_data = lines_model.x_data[xindex].map(function(d, i)
             {
-                return {x: d, y: lines_model.y_data[that.line_index][i]};
+                return {
+                    x: d,
+                    y: lines_model.y_data[that.line_index][i]
+                };
             });
-            this.lines_view.el.select("#curve" + (that.line_index + 1))
+            this.lines_view.d3el.select("#curve" + (that.line_index + 1))
                 .attr("d", function(d) {
                     return that.lines_view.line(xy_data);
                 });

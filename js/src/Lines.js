@@ -82,9 +82,9 @@ var Lines = mark.Mark.extend({
 
     create_listeners: function() {
         Lines.__super__.create_listeners.apply(this);
-        this.el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
-            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move");}, this))
-            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out");}, this));
+        this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
+            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
+            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
 
         this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
 
@@ -120,25 +120,25 @@ var Lines = mark.Mark.extend({
 
     update_legend_labels: function() {
         if(this.model.get("labels_visibility") === "none") {
-            this.el.selectAll(".legend")
+            this.d3el.selectAll(".legend")
               .attr("display", "none");
-            this.el.selectAll(".curve_label")
+            this.d3el.selectAll(".curve_label")
               .attr("display", "none");
         } else if(this.model.get("labels_visibility") === "label") {
-            this.el.selectAll(".legend")
+            this.d3el.selectAll(".legend")
               .attr("display", "none");
-            this.el.selectAll(".curve_label")
+            this.d3el.selectAll(".curve_label")
               .attr("display", "inline");
         } else {
-            this.el.selectAll(".legend")
+            this.d3el.selectAll(".legend")
               .attr("display", "inline");
-            this.el.selectAll(".curve_label")
+            this.d3el.selectAll(".curve_label")
               .attr("display", "none");
         }
     },
 
     update_labels: function() {
-        var curves_sel = this.el.selectAll(".curve")
+        var curves_sel = this.d3el.selectAll(".curve")
           .data(this.model.mark_data)
           .select(".curve_label")
           .text(function(d) { return d.name; });
@@ -161,7 +161,7 @@ var Lines = mark.Mark.extend({
     // Could be fused in a single function for increased readability
     // and to avoid code repetition
     update_line_style: function() {
-        this.el.selectAll(".curve").select(".line")
+        this.d3el.selectAll(".curve").select(".line")
           .style("stroke-dasharray", _.bind(this.get_line_style, this));
         if (this.legend_el) {
             this.legend_el.select("path")
@@ -171,7 +171,7 @@ var Lines = mark.Mark.extend({
 
     update_stroke_width: function(model, stroke_width) {
         this.compute_view_padding();
-        this.el.selectAll(".curve").select(".line")
+        this.d3el.selectAll(".curve").select(".line")
           .style("stroke-width", stroke_width);
         if (this.legend_el) {
             this.legend_el.select("path")
@@ -186,7 +186,7 @@ var Lines = mark.Mark.extend({
             opacities = this.model.get("opacities"),
             fill_opacities = this.model.get("fill_opacities");
         // update curve colors
-        var curves = this.el.selectAll(".curve")
+        var curves = this.d3el.selectAll(".curve")
         curves.select(".line")
             .style("opacity", function(d, i) { return opacities[i]; })
             .style("stroke", function(d, i) { 
@@ -239,11 +239,11 @@ var Lines = mark.Mark.extend({
         this.line.interpolate(interpolation);
         this.area.interpolate(interpolation);
         var that = this;
-        this.el.selectAll(".curve").selectAll("path")
+        this.d3el.selectAll(".curve").selectAll("path")
           .attr("d", function(d) {
               return that.line(d.values) + that.path_closure();
           });
-        this.el.selectAll(".curve").select(".area")
+        this.d3el.selectAll(".curve").select(".area")
           .transition().duration(0) //FIXME
           .attr("d", function(d) { return that.area(d.values); });
         if (this.legend_el) {
@@ -389,22 +389,22 @@ var Lines = mark.Mark.extend({
         // Show a subset of the curves
         var curves_subset = this.model.get("curves_subset");
         if (curves_subset.length > 0) {
-            this.el.selectAll(".curve")
+            this.d3el.selectAll(".curve")
               .select("path")
               .attr("display", function(d, i) {
                   return curves_subset.indexOf(i) !== -1 ?
                       "inline" : "none";
               });
-            this.el.selectAll(".curve")
+            this.d3el.selectAll(".curve")
               .select(".curve_label")
               .attr("display", function(d, i) {
                   return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
                       "inline" : "none";
               });
         } else { //make all curves visible
-            this.el.selectAll(".curve")
+            this.d3el.selectAll(".curve")
               .select("path").attr("display", "inline");
-            this.el.selectAll(".curve")
+            this.d3el.selectAll(".curve")
               .select(".curve_label").attr("display", function(d) {
                   return that.model.get("labels_visibility") === "label" ?
                       "inline" : "none";
@@ -420,11 +420,11 @@ var Lines = mark.Mark.extend({
           .defined(function(d) { return area && d.y !== null && isFinite(d.y); });
 
         var that = this;
-        this.el.selectAll(".curve").select(".area")
+        this.d3el.selectAll(".curve").select(".area")
           .attr("d", function(d) {
               return that.area(d.values);
           })
-        this.el.selectAll(".curve").select(".line")
+        this.d3el.selectAll(".curve").select(".line")
           .style("fill", function(d, i) {
               return fill === "inside" ? that.get_fill_color(d, i) : "";
           })
@@ -467,7 +467,7 @@ var Lines = mark.Mark.extend({
           .y1(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
 
         var that = this;
-        var curves_sel = this.el.selectAll(".curve");
+        var curves_sel = this.d3el.selectAll(".curve");
 
         curves_sel.select(".line")
           .transition().duration(animation_duration)
@@ -495,7 +495,7 @@ var Lines = mark.Mark.extend({
 
     draw: function(animate) {
         this.set_ranges();
-        var curves_sel = this.el.selectAll(".curve")
+        var curves_sel = this.d3el.selectAll(".curve")
           .data(this.model.mark_data);
 
         var new_curves = curves_sel.enter().append("g")
@@ -558,7 +558,7 @@ var Lines = mark.Mark.extend({
     draw_dots: function() {
         if (this.model.get("marker")) {
             var that = this;
-            var dots = this.el.selectAll(".curve").selectAll(".dot")
+            var dots = this.d3el.selectAll(".curve").selectAll(".dot")
                 .data(function(d, i) {
                     return d.values.map(function(e) {
                         return {x: e.x, y: e.y}; });
@@ -573,7 +573,7 @@ var Lines = mark.Mark.extend({
             var that = this;
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-            var dots = this.el.selectAll(".curve").selectAll(".dot");
+            var dots = this.d3el.selectAll(".curve").selectAll(".dot");
 
             dots.transition().duration(animation_duration)
                 .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
@@ -604,29 +604,28 @@ var Lines = mark.Mark.extend({
         }
     },
 
-update_marker_style: function() {
-        var that = this,
-            fill_color = this.model.get("fill_colors"),
-            opacities = this.model.get("opacities");
-    this.el.selectAll(".curve")
-	.each(function(d, i) {
-	    var curve = d3.select(this);	
-                curve.selectAll(".dot")
-                    .style("opacity", opacities[i])
-                    .style("fill", that.get_element_color(d, i) || fill_color[i]);
-	});
-},
+    update_marker_style: function() {
+        var that = this;
+        var fill_color = this.model.get("fill_colors");
+        var opacities = this.model.get("opacities");
+        this.d3el.selectAll(".curve").each(function(d, i) {
+            var curve = d3.select(this);
+            curve.selectAll(".dot")
+                .style("opacity", opacities[i])
+                .style("fill", that.get_element_color(d, i) || fill_color[i]);
+        });
+    },
 
     update_marker: function(model, marker) {
         if (marker) {
             this.draw_dots();
             this.update_dots_xy();
-	this.update_marker_style();
+            this.update_marker_style();
             if (this.legend_el) {
                 this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
             }
         } else {
-            this.el.selectAll(".dot").remove();
+            this.id3el.selectAll(".dot").remove();
             if (this.legend_el) {
                 this.legend_el.select(".dot").attr("d", this.dot.size(0));
             }
@@ -635,12 +634,11 @@ update_marker_style: function() {
 
     update_marker_size: function(model, marker_size) {
         this.compute_view_padding();
-        this.el.selectAll(".dot").attr("d", this.dot.size(marker_size));
+        this.d3el.selectAll(".dot").attr("d", this.dot.size(marker_size));
     },
 
     update_selected_in_lasso: function(lasso_name, lasso_vertices,
-                                       point_in_lasso_func)
-    {
+                                       point_in_lasso_func) {
         var x_scale = this.scales.x, y_scale = this.scales.y;
         var idx = this.model.get("selected");
         var selected = idx ? utils.deepCopy(idx) : [];
