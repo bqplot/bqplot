@@ -227,10 +227,8 @@ class PandasDataFrame(Instance):
     info_text = 'a pandas DataFrame'
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('from_json', self._from_json)
-        kwargs.setdefault('to_json', self._to_json)
-        kwargs.setdefault('args', ())
         super(PandasDataFrame, self).__init__(*args, **kwargs)
+        self.tag(to_json=self._to_json, from_json=self._from_json)
 
     def _from_json(self, value, obj=None):
         if value is not None or value != []:
@@ -273,10 +271,8 @@ class PandasSeries(Instance):
     info_text = 'a pandas series'
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('from_json', self._from_json)
-        kwargs.setdefault('to_json', self._to_json)
-        kwargs.setdefault('args', ())
         super(PandasSeries, self).__init__(*args, **kwargs)
+        self.tag(to_json=self._to_json, from_json=self._from_json)
 
     def _from_json(self, value, obj=None):
         return pd.Series(value)
