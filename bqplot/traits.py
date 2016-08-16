@@ -142,6 +142,26 @@ class NdArray(CInstance):
         else:
             return np.asarray(value)
 
+    def set(self, obj, value):
+        #TODO: We shouldnt have to overload the set because
+        # numpy doesn't support == comparions
+        new_value = self._validate(obj, value)
+        try:
+            old_value = obj._trait_values[self.name]
+        except KeyError:
+            old_value = self.default_value
+
+        obj._trait_values[self.name] = new_value
+        try:
+            silent = np.array_equal(old_value, new_value)
+        except:
+            # if there is an error in comparing, default to notify
+            silent = False
+        if silent is not True:
+            # we explicitly compare silent to True just in case the equality
+            # comparison above returns something other than True/False
+            obj._notify_trait(self.name, old_value, new_value)
+
     def validate(self, obj, value):
         # If it is an object, I have to check if it can be cast into a date
         if (not isinstance(value, self.klass) or value.dtype == 'object'):
