@@ -251,7 +251,7 @@ class PandasDataFrame(Instance):
         self.tag(to_json=self._to_json, from_json=self._from_json)
 
     def _from_json(self, value, obj=None):
-        if value is not None or value != []:
+        if value is not None and value != []:
             df = pd.DataFrame(value)
             df = df.set_index(self.index_name)
             df.index.name = None
