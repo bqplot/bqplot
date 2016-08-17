@@ -250,6 +250,27 @@ class PandasDataFrame(Instance):
         else:
             return []
 
+    def set(self, obj, value):
+        new_value = self._validate(obj, value)
+        try:
+            old_value = obj._trait_values[self.name]
+        except KeyError:
+            old_value = self.default_value
+
+        obj._trait_values[self.name] = new_value
+        try:
+            if new_value is not None:
+                silent = new_value.equals(old_value)
+            else:
+                silent = bool(new_value == old_value)
+        except:
+            # if there is an error in comparing, default to notify
+            silent = False
+        if silent is not True:
+            # we explicitly compare silent to True just in case the equality
+            # comparison above returns something other than True/False
+            obj._notify_trait(self.name, old_value, new_value)
+
     def validate(self, obj, value):
         value = super(PandasDataFrame, self).validate(obj, value)
         if self.get_metadata('lexsort'):
