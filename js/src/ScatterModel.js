@@ -29,6 +29,7 @@ var ScatterModel = markmodel.MarkModel.extend({
         size: null,
         skew: null,
         rotation: null,
+        hovered_point: null,
         scales_metadata: {
             x: { orientation: "horizontal", dimension: "x" },
             y: { orientation: "vertical", dimension: "y" },

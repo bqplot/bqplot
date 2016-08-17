@@ -135,12 +135,32 @@ class NdArray(CInstance):
             return {'values': a, 'type': None}
 
     def _set_value(self, value):
-        if value is None or len(value) == 0:
-            return np.asarray(value)
-        if(isinstance(value, np.ndarray) and np.issubdtype(value.dtype, np.datetime64)):
+        if isinstance(value, np.ndarray):
             return value
+        elif value is None or len(value) == 0:
+            return np.asarray(value)
         else:
             return np.asarray(value)
+
+    def set(self, obj, value):
+        #TODO: We shouldnt have to overload the set because
+        # numpy doesn't support == comparions
+        new_value = self._validate(obj, value)
+        try:
+            old_value = obj._trait_values[self.name]
+        except KeyError:
+            old_value = self.default_value
+
+        obj._trait_values[self.name] = new_value
+        try:
+            silent = np.array_equal(old_value, new_value)
+        except:
+            # if there is an error in comparing, default to notify
+            silent = False
+        if silent is not True:
+            # we explicitly compare silent to True just in case the equality
+            # comparison above returns something other than True/False
+            obj._notify_trait(self.name, old_value, new_value)
 
     def validate(self, obj, value):
         # If it is an object, I have to check if it can be cast into a date
@@ -153,7 +173,9 @@ class NdArray(CInstance):
         if (dim > 1) and (1 in shape):
             value = np.squeeze(value) if (self.squeeze) else value
             dim = len(np.shape(value))
-        if dim > max_dim or dim < min_dim:
+        if self.allow_none and dim == 0:
+            return value
+        if (dim > max_dim or dim < min_dim):
             raise TraitError("Dimension mismatch")
         return value
 
@@ -165,11 +187,9 @@ class NdArray(CInstance):
             return np.asarray(value['values'], dtype=array_dtype)
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('from_json', NdArray._from_json)
-        kwargs.setdefault('to_json', NdArray._to_json)
-        kwargs.setdefault('args', (0,))
         self.squeeze = kwargs.pop('squeeze', True)
         super(NdArray, self).__init__(*args, **kwargs)
+        self.tag(to_json=NdArray._to_json, from_json=NdArray._from_json)
 
     _cast = _set_value
 
