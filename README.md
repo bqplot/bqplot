@@ -39,7 +39,7 @@ Using pip:
 
 ```
 $ pip install bqplot
-$ jupyter nbextension enable --py bqplot
+$ jupyter nbextension enable --py --sys-prefix bqplot
 ```
 
 Using conda
@@ -54,8 +54,8 @@ For a development installation (requires npm):
 $ git clone https://github.com/bloomberg/bqplot.git
 $ cd bqplot
 $ pip install -e .
-$ jupyter nbextension install --py --symlink --user bqplot
-$ jupyter nbextension enable --py --user bqplot
+$ jupyter nbextension install --py --symlink --sys-prefix bqplot
+$ jupyter nbextension enable --py --sys-prefix bqplot
 ```
 
 Note for developers: the `--symlink` argument on Linux or OS X allows one to
