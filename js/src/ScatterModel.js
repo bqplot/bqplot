@@ -48,6 +48,7 @@ var ScatterModel = markmodel.MarkModel.extend({
         display_names: true,
         fill: true,
         drag_color: null,
+        drag_size: null,
         names_unique: true,
         enable_move: false,
         enable_delete: false,
