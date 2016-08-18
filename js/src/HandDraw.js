@@ -30,7 +30,7 @@ var HandDraw = interaction.Interaction.extend({
         // resolved.
         var that = this;
         this.set_lines_view().then(function() {
-            that.el.on("mousedown", function() {
+            that.d3el.on("mousedown", function() {
                 return that.mousedown();
             });
             that.set_limits();
