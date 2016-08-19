@@ -261,12 +261,12 @@ class PandasDataFrame(Instance):
 
     def __init__(self, *args, **kwargs):
         default_value = kwargs.pop('default_value', None)
-        # The first entry in args should be the `klass` or else self.klass
-        # is assigned as the class. The second entry should be a tuple whose
+        # The first entry in args should be the `klass`. If it is None, self.klass
+        # is assigned as the klass. The second entry should be a tuple whose
         # first element is passed to the default constructor of the klass.
         # Hence, we should set the following as the args
         if len(args) == 0:
-            new_args = args + (None, (default_value,))
+            new_args = (None, (default_value,))
         super(PandasDataFrame, self).__init__(*new_args, **kwargs)
         self.tag(to_json=self._to_json, from_json=self._from_json)
 
@@ -334,12 +334,12 @@ class PandasSeries(Instance):
     def __init__(self, *args, **kwargs):
         default_value = kwargs.pop('default_value', None)
         # This is the same as for PandasDataFrame.
-        # The first entry in args should be the `klass` or else self.klass
-        # is assigned as the class. The second entry should be a tuple whose
+        # The first entry in args should be the `klass`. If it is None, self.klass
+        # is assigned as the klass. The second entry should be a tuple whose
         # first element is passed to the default constructor of the klass.
-        # Hence, we should set the following as the args
+        # Hence, we should set the following as the args.
         if len(args) == 0:
-            new_args = args + (None, (default_value,))
+            new_args = (None, (default_value,))
         super(PandasSeries, self).__init__(*new_args, **kwargs)
         self.tag(to_json=self._to_json, from_json=self._from_json)
 
