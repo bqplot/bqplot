@@ -134,7 +134,7 @@ class NdArray(CInstance):
         else:
             return {'values': a, 'type': None}
 
-    def _set_value(self, value):
+    def _convert_to_ndarray(self, value):
         if isinstance(value, np.ndarray):
             return value
         elif value is None or len(value) == 0:
@@ -186,12 +186,22 @@ class NdArray(CInstance):
                            'float': np.float64}.get(value.get('type'), object)
             return np.asarray(value['values'], dtype=array_dtype)
 
+    # Overriding the method of Instance class in traitlets
+    # This is because the default_value is set by calling the
+    # default constructor with args as the first argument and kwargs
+    # as the second argument. The constructor of np.ndarray
+    # requires shape, data type and stride to be passed.
+    def make_dynamic_default(self):
+        return self.default_value
+
     def __init__(self, *args, **kwargs):
         self.squeeze = kwargs.pop('squeeze', True)
+        kwargs['default_value'] = self._cast(kwargs.pop('default_value', None))
+
         super(NdArray, self).__init__(*args, **kwargs)
         self.tag(to_json=NdArray._to_json, from_json=NdArray._from_json)
 
-    _cast = _set_value
+    _cast = _convert_to_ndarray
 
 
 def convert_to_date(array, fmt='%m-%d-%Y'):
@@ -247,7 +257,16 @@ class PandasDataFrame(Instance):
     info_text = 'a pandas DataFrame'
 
     def __init__(self, *args, **kwargs):
-        super(PandasDataFrame, self).__init__(*args, **kwargs)
+        default_value = kwargs.pop('default_value', None)
+        # The first entry in args should be the `klass`. If it is None, self.klass
+        # is assigned as the klass. The second entry should be a tuple whose
+        # first element is passed to the default constructor of the klass.
+        # Hence, we should set the following as the args
+        if len(args) == 0:
+            new_args = (None, (default_value,))
+        else:
+            new_args = args
+        super(PandasDataFrame, self).__init__(*new_args, **kwargs)
         self.tag(to_json=self._to_json, from_json=self._from_json)
 
     def _from_json(self, value, obj=None):
@@ -312,7 +331,17 @@ class PandasSeries(Instance):
     info_text = 'a pandas series'
 
     def __init__(self, *args, **kwargs):
-        super(PandasSeries, self).__init__(*args, **kwargs)
+        default_value = kwargs.pop('default_value', None)
+        # This is the same as for PandasDataFrame.
+        # The first entry in args should be the `klass`. If it is None, self.klass
+        # is assigned as the klass. The second entry should be a tuple whose
+        # first element is passed to the default constructor of the klass.
+        # Hence, we should set the following as the args.
+        if len(args) == 0:
+            new_args = (None, (default_value,))
+        else:
+            new_args = args
+        super(PandasSeries, self).__init__(*new_args, **kwargs)
         self.tag(to_json=self._to_json, from_json=self._from_json)
 
     def _from_json(self, value, obj=None):
