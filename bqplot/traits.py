@@ -264,6 +264,8 @@ class PandasDataFrame(Instance):
         # Hence, we should set the following as the args
         if len(args) == 0:
             new_args = (None, (default_value,))
+        else:
+            new_args = args
         super(PandasDataFrame, self).__init__(*new_args, **kwargs)
         self.tag(to_json=self._to_json, from_json=self._from_json)
 
@@ -337,6 +339,8 @@ class PandasSeries(Instance):
         # Hence, we should set the following as the args.
         if len(args) == 0:
             new_args = (None, (default_value,))
+        else:
+            new_args = args
         super(PandasSeries, self).__init__(*new_args, **kwargs)
         self.tag(to_json=self._to_json, from_json=self._from_json)
 
