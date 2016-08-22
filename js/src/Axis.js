@@ -479,9 +479,9 @@ var Axis = widgets.WidgetView.extend({
         }
 
         if (grid_type !== "none") {
-            this.axis.innerTickSize(tickSize).outerTickSize(0);
+            this.axis.innerTickSize(tickSize).outerTickSize(6);
         } else {
-            this.axis.tickSize(5);
+            this.axis.tickSize(6);
         }
 
         this.g_axisline
