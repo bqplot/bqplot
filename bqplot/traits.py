@@ -145,8 +145,6 @@ class NdArray(CInstance):
     def set(self, obj, value):
         #TODO: We shouldnt have to overload the set because
         # numpy doesn't support == comparions
-        #TODO: This should also be removed once _buffered_state_diff is
-        # fixed in ipywidgets
         new_value = self._validate(obj, value)
         try:
             old_value = obj._trait_values[self.name]
@@ -194,12 +192,11 @@ class NdArray(CInstance):
     # as the second argument. The constructor of np.ndarray
     # requires shape, data type and stride to be passed.
     def make_dynamic_default(self):
-        return self._default_value
+        return self.default_value
 
     def __init__(self, *args, **kwargs):
         self.squeeze = kwargs.pop('squeeze', True)
-        default_value = kwargs.pop('default_value', None)
-        self._default_value = self._cast(default_value)
+        kwargs['default_value'] = self._cast(kwargs.pop('default_value', None))
 
         super(NdArray, self).__init__(*args, **kwargs)
         self.tag(to_json=NdArray._to_json, from_json=NdArray._from_json)
