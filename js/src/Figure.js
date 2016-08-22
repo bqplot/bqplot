@@ -48,12 +48,6 @@ var Figure = widgets.DOMWidgetView.extend({
         this.figure_padding_y = this.model.get("padding_y");
         this.clip_id = "clip_path_" + this.id;
 
-        this.el.style["user-select"] = "none";
-        this.el.style["ms-user-select"] = "none";
-        this.el.style["moz-user-select"] = "none";
-        this.el.style["khtml-user-select"] = "none";
-        this.el.style["webkit-user-select"] = "none";
-
         this.el.style["flex"] = "1 1 auto";
         this.el.style["align-self"] = "stretch";
         this.el.style["min-width"] = this.width;

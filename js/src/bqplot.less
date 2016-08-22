@@ -16,6 +16,12 @@
 .common() {
     svg.bqplot {
         font: 11px sans-serif;
+        user-select: none;
+        -ms-user-select: none;
+        -khtml-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+
         .axis {
             line {
                 shape-rendering: crispEdges;
@@ -26,6 +32,9 @@
             text.axislabel, tspan.axislabel {
                 text-anchor: end;
                 font: 14px sans-serif;
+            }
+            .tick text {
+                cursor: default;
             }
         }
         .axis.axisbold path {
