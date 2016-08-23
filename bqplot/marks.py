@@ -329,11 +329,11 @@ class Lines(Mark):
     name = 'Lines'
 
     # Scaled attributes
-    x = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=2,
+    x = NdArray(default_value=[], squeeze=True).tag(sync=True, min_dim=1, max_dim=2,
                 scaled=True, rtype='Number', atype='bqplot.Axis')
-    y = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=2,
+    y = NdArray(default_value=[], squeeze=True).tag(sync=True, min_dim=1, max_dim=2,
                 scaled=True, rtype='Number', atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    color = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                     rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     # Other attributes
@@ -402,10 +402,10 @@ class FlexLine(Mark):
     name = 'Flexible lines'
 
     # Scaled attributes
-    x = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
-    y = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis')
-    width = NdArray(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number')
+    x = NdArray(default_value=[], squeeze=True).tag(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
+    y = NdArray(default_value=[], squeeze=True).tag(sync=True, min_dim=1, max_dim=1, scaled=True, rtype='Number', atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis')
+    width = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True, rtype='Number')
 
     # Other attributes
     scales_metadata = Dict({
@@ -499,19 +499,19 @@ class Scatter(Mark):
     name = 'Scatter'
 
     # Scaled attribtes
-    x = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=1, scaled=True,
+    x = NdArray(default_value=[], squeeze=True).tag(sync=True, min_dim=1, max_dim=1, scaled=True,
                 rtype='Number', atype='bqplot.Axis')
-    y = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=1,
+    y = NdArray(default_value=[], squeeze=True).tag(sync=True, min_dim=1, max_dim=1,
                 scaled=True, rtype='Number', atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    color = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                     rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
-    opacity = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    opacity = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                       rtype='Number', min_dim=1, max_dim=1)
-    size = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    size = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                    rtype='Number', min_dim=1, max_dim=1)
-    skew = NdArray(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number',
+    skew = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True, rtype='Number',
                    min_dim=1, max_dim=1)
-    rotation = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    rotation = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                        rtype='Number', min_dim=1, max_dim=1)
     hovered_style = Dict().tag(sync=True)
     unhovered_style = Dict().tag(sync=True)
@@ -537,7 +537,7 @@ class Scatter(Mark):
     default_skew = Float(0.5, min=0, max=1).tag(sync=True)
     default_size = Int(64).tag(sync=True, display_name='Default size')
 
-    names = NdArray().tag(sync=True)
+    names = NdArray(squeeze=True).tag(sync=True)
     display_names = Bool(True).tag(sync=True, display_name='Display names')
     fill = Bool(True).tag(sync=True)
     drag_color = Color(None, allow_none=True).tag(sync=True)
@@ -632,10 +632,12 @@ class Hist(Mark):
     name = 'Histogram'
 
     # Scaled attributes
-    sample = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=1, display_name='Sample',
-                           scaled=True, rtype='Number', atype='bqplot.Axis')
-    count = NdArray(read_only=True).tag(sync=True, display_name='Count', scaled=True,
-                                        rtype='Number', atype='bqplot.Axis')
+    sample = NdArray(default_value=[], squeeze=True).tag(
+                sync=True, min_dim=1, max_dim=1, display_name='Sample',
+                scaled=True, rtype='Number', atype='bqplot.Axis')
+    count = NdArray(read_only=True, squeeze=True).tag(
+                sync=True, display_name='Count', scaled=True,
+                rtype='Number', atype='bqplot.Axis')
     normalized = Bool(default_value=False).tag(sync=True)
     # FIXME: Should we allow None for count?
     # count is a read-only attribute that is set when the mark is drawn
@@ -690,11 +692,13 @@ class Boxplot(Mark):
     name = 'Boxplot chart'
 
     # Scaled attributes
-    x = NdArray(default_value=[]).tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    x = NdArray(default_value=[], squeeze=True).tag(
+            sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
 
     # Second dimension must contain OHLC data, otherwise the behavior is
     # undefined.
-    y = NdArray(default_value=[]).tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
+    y = NdArray(default_value=[], squeeze=True).tag(
+            sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
 
     # Other attributes
     scales_metadata = Dict({
@@ -773,9 +777,9 @@ class Bars(Mark):
     name = 'Bar chart'
 
     # Scaled attributes
-    x = NdArray(default_value=[]).tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    y = NdArray(default_value=[]).tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True).tag(sync=True,
+    x = NdArray(default_value=[], squeeze=True).tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
+    y = NdArray(default_value=[], squeeze=True).tag(sync=True, scaled=True, rtype='Number', min_dim=1, max_dim=2, atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True, squeeze=True).tag(sync=True,
                     scaled=True, rtype='Color', atype='bqplot.ColorAxis',
                     min_dim=1, max_dim=1)
 
@@ -831,15 +835,15 @@ class Label(Mark):
     enable_move: Bool
         Enable the label to be moved by dragging
     """
-    x = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=1, atype='bqplot.Axis')
-    y = NdArray(default_value=[]).tag(sync=True, min_dim=1, max_dim=1, atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    x = NdArray(default_value=[], squeeze=True).tag(sync=True, min_dim=1, max_dim=1, atype='bqplot.Axis')
+    y = NdArray(default_value=[], squeeze=True).tag(sync=True, min_dim=1, max_dim=1, atype='bqplot.Axis')
+    color = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                 rtype='Color', atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
-    size = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    size = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                    rtype='Number', min_dim=1, max_dim=1)
-    rotation = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    rotation = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                        rtype='Number', min_dim=1, max_dim=1)
-    opacity = NdArray(None, allow_none=True).tag(sync=True, scaled=True,
+    opacity = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                       rtype='Number', min_dim=1, max_dim=1)
     x_offset = Int().tag(sync=True)
     y_offset = Int().tag(sync=True)
@@ -851,7 +855,7 @@ class Label(Mark):
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True, display_name='Colors')
     default_opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
     rotate_angle = Float().tag(sync=True)
-    text = NdArray().tag(sync=True)
+    text = NdArray(squeeze=True).tag(sync=True)
     font_size = Float(16.).tag(sync=True)
     font_unit = Enum(['px', 'em', 'pt', '%'], default_value='px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
@@ -944,7 +948,7 @@ class OHLC(Mark):
     name = 'OHLC chart'
 
     # Scaled attributes
-    x = NdArray(default_value=[]).tag(sync=True, scaled=True,
+    x = NdArray(default_value=[], squeeze=True).tag(sync=True, scaled=True,
                 rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
     y = NdArray(default_value=[[]]).tag(sync=True, scaled=True,
                 rtype='Number', min_dim=2, max_dim=2, atype='bqplot.Axis')
@@ -1030,8 +1034,8 @@ class Pie(Mark):
     name = 'Pie chart'
 
     # Scaled attributes
-    sizes = NdArray(default_value=[]).tag(sync=True, rtype='Number', min_dim=1, max_dim=1)
-    color = NdArray(allow_none=True).tag(sync=True, scaled=True, rtype='Color',
+    sizes = NdArray(default_value=[], squeeze=True).tag(sync=True, rtype='Number', min_dim=1, max_dim=1)
+    color = NdArray(allow_none=True, squeeze=True).tag(sync=True, scaled=True, rtype='Color',
                           atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     # Other attributes
@@ -1194,11 +1198,11 @@ class GridHeatMap(Mark):
         the column direction.
     """
     # Scaled attributes
-    row = NdArray(allow_none=True).tag(sync=True, scaled=True,
+    row = NdArray(allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                   rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    column = NdArray(allow_none=True).tag(sync=True, scaled=True,
+    column = NdArray(allow_none=True, squeeze=True).tag(sync=True, scaled=True,
                      rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    color = NdArray(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color',
+    color = NdArray(None, allow_none=True, squeeze=True).tag(sync=True, scaled=True, rtype='Color',
                     atype='bqplot.ColorAxis', min_dim=1, max_dim=2)
 
     # Other attributes
