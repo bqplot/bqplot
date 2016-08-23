@@ -195,7 +195,7 @@ class NdArray(CInstance):
         return self.default_value
 
     def __init__(self, *args, **kwargs):
-        self.squeeze = kwargs.pop('squeeze', True)
+        self.squeeze = kwargs.pop('squeeze', False)
         kwargs['default_value'] = self._cast(kwargs.pop('default_value', None))
 
         super(NdArray, self).__init__(*args, **kwargs)
