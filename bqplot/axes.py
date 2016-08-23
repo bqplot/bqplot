@@ -111,7 +111,7 @@ class Axis(BaseAxis):
     tick_format = Unicode(None, allow_none=True).tag(sync=True)
     scale = Instance(Scale).tag(sync=True, **widget_serialization)
     num_ticks = Int(default_value=None, allow_none=True).tag(sync=True)
-    tick_values = NdArray(allow_none=True).tag(sync=True)
+    tick_values = NdArray(None, allow_none=True).tag(sync=True)
     offset = Dict().tag(sync=True, **widget_serialization)
     label_location = Enum(['middle', 'start', 'end'], default_value='middle').tag(sync=True)
     label_color = Color(None, allow_none=True).tag(sync=True)

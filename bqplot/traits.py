@@ -29,7 +29,7 @@ Traits Types
    PandasSeries
 """
 
-from traitlets import Instance, TraitError, TraitType
+from traitlets import Instance, TraitError, TraitType, Undefined
 
 import numpy as np
 import pandas as pd
@@ -84,6 +84,42 @@ class Date(TraitType):
             return value
 
 
+def array_from_json(value, obj=None):
+    if value is not None:
+        array_dtype = {
+            'date': np.datetime64,
+            'float': np.float64
+        }.get(value.get('type'), object)
+        return np.asarray(value['values'], dtype=array_dtype)
+
+def array_to_json(a, obj=None):
+    if a is not None:
+        if np.issubdtype(a.dtype, np.float):
+            # replace nan with None
+            dtype = a.dtype
+            a = np.where(np.isnan(a), None, a)
+        elif a.dtype in (int, np.int64):
+            dtype = 'float'
+            a = a.astype(np.float64)
+        elif np.issubdtype(a.dtype, np.datetime64):
+            dtype = 'date'
+            a = a.astype(np.str).astype('object')
+            for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
+                # for every element in the nd array, forcing the conversion into
+                # the format specified here.
+                temp_x = pd.to_datetime(x.flatten()[0])
+                if pd.isnull(temp_x):
+                    x[...] = None
+                else:
+                    x[...] = temp_x.to_pydatetime().strftime(
+                        '%Y-%m-%dT%H:%M:%S.%f')
+        else:
+            dtype = a.dtype
+        return dict(values=a.tolist(), type=str(dtype))
+    else:
+        return dict(values=a, type=None)
+
+
 class NdArray(TraitType):
 
     """A numpy array trait type.
@@ -100,6 +136,8 @@ class NdArray(TraitType):
             obj._notify_trait(self.name, old_value, new_value)
 
     def validate(self, obj, value):
+        if value is None and not self.allow_none:
+            self.error(obj, value)
         value = self._cast(value)
         # squeeze
         min_dim = self.metadata.get('min_dim', 0)
@@ -123,48 +161,11 @@ class NdArray(TraitType):
         elif default_value is not None:
             default_value = self._cast(default_value)
         super(NdArray, self).__init__(default_value=default_value, allow_none=allow_none, **kwargs)
-        self.tag(to_json=NdArray._to_json, from_json=NdArray._from_json)
+        self.tag(to_json=array_to_json, from_json=array_from_json)
 
     def _cast(self, value):
         return np.asarray(value, dtype=self.metadata.get('dtype'),
                           order=self.metadata.get('order'))
-
-    @staticmethod
-    def _from_json(value, obj=None):
-        if value is not None:
-            array_dtype = {
-                'date': np.datetime64,
-                'float': np.float64
-            }.get(value.get('type'), object)
-            return np.asarray(value['values'], dtype=array_dtype)
-
-    @staticmethod
-    def _to_json(a, obj=None):
-        if a is not None:
-            if np.issubdtype(a.dtype, np.float):
-                # replace nan with None
-                dtype = a.dtype
-                a = np.where(np.isnan(a), None, a)
-            elif a.dtype in (int, np.int64):
-                dtype = 'float'
-                a = a.astype(np.float64)
-            elif np.issubdtype(a.dtype, np.datetime64):
-                dtype = 'date'
-                a = a.astype(np.str).astype('object')
-                for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
-                    # for every element in the nd array, forcing the conversion into
-                    # the format specified here.
-                    temp_x = pd.to_datetime(x.flatten()[0])
-                    if pd.isnull(temp_x):
-                        x[...] = None
-                    else:
-                        x[...] = temp_x.to_pydatetime().strftime(
-                            '%Y-%m-%dT%H:%M:%S.%f')
-            else:
-                dtype = a.dtype
-            return {'values': a.tolist(), 'type': str(dtype)}
-        else:
-            return {'values': a, 'type': None}
 
 
 def convert_to_date(array, fmt='%m-%d-%Y'):

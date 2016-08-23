@@ -265,7 +265,7 @@ class FastIntervalSelector(OneDSelector):
     size: Float or None (default: None)
         if not None, this is the fixed pixel-width of the interval selector
     """
-    selected = NdArray().tag(sync=True)
+    selected = NdArray(None, allow_none=True).tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
     size = Float(None, allow_none=True).tag(sync=True)
 
@@ -299,7 +299,7 @@ class IndexSelector(OneDSelector):
     line_width: nonnegative integer (default: 0)
         Width of the line represetning the index selector.
     """
-    selected = NdArray().tag(sync=True)
+    selected = NdArray(None, allow_none=True).tag(sync=True)
     line_width = Int(2).tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
 
@@ -340,7 +340,7 @@ class BrushIntervalSelector(OneDSelector):
         Color of the rectangle representing the brush selector.
     """
     brushing = Bool().tag(sync=True)
-    selected = NdArray().tag(sync=True)
+    selected = NdArray(None, allow_none=True).tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('BrushIntervalSelector').tag(sync=True)
