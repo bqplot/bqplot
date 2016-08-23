@@ -23,7 +23,6 @@ Traits Types
 .. autosummary::
    :toctree: _generate/
 
-   CInstance
    Date
    NdArray
    PandasDataFrame
@@ -36,19 +35,6 @@ import numpy as np
 import pandas as pd
 import warnings
 import datetime as dt
-
-
-# Numpy and Pandas Traitlets
-class CInstance(Instance):
-
-    def _cast(self, value):
-        return self.klass(value)
-
-    def validate(self, obj, value):
-        if isinstance(value, self.klass):
-            return value
-        else:
-            return self._cast(value)
 
 
 class Date(TraitType):
@@ -98,13 +84,59 @@ class Date(TraitType):
             return value
 
 
-class NdArray(CInstance):
+class NdArray(TraitType):
 
     """A numpy array trait type.
     """
 
-    klass = np.ndarray
-    info_text = 'type aware numpy array'
+    info_text = 'a numpy array'
+    squeeze = False
+
+    def set(self, obj, value):
+        new_value = self._validate(obj, value)
+        old_value = obj._trait_values.get(self.name, self.default_value)
+        obj._trait_values[self.name] = new_value
+        if not np.array_equal(old_value, new_value):
+            obj._notify_trait(self.name, old_value, new_value)
+
+    def validate(self, obj, value):
+        value = self._cast(value)
+        # squeeze
+        min_dim = self.metadata.get('min_dim', 0)
+        max_dim = self.metadata.get('max_dim', np.inf)
+        shape = np.shape(value)
+        dim = 0 if value is None else len(shape)
+        if (dim > 1) and (1 in shape):
+            value = np.squeeze(value) if self.squeeze else value
+            dim = len(np.shape(value))
+        if self.allow_none and dim == 0:
+            return value
+        # validate dimension
+        if (dim > max_dim or dim < min_dim):
+            raise TraitError('Dimension mismatch')
+        return value
+
+    def __init__(self, default_value=Undefined, allow_none=False, squeeze=False, **kwargs):
+        self.squeeze = squeeze
+        if default_value is Undefined:
+            default_value = np.array(0)
+        elif default_value is not None:
+            default_value = self._cast(default_value)
+        super(NdArray, self).__init__(default_value=default_value, allow_none=allow_none, **kwargs)
+        self.tag(to_json=NdArray._to_json, from_json=NdArray._from_json)
+
+    def _cast(self, value):
+        return np.asarray(value, dtype=self.metadata.get('dtype'),
+                          order=self.metadata.get('order'))
+
+    @staticmethod
+    def _from_json(value, obj=None):
+        if value is not None:
+            array_dtype = {
+                'date': np.datetime64,
+                'float': np.float64
+            }.get(value.get('type'), object)
+            return np.asarray(value['values'], dtype=array_dtype)
 
     @staticmethod
     def _to_json(a, obj=None):
@@ -133,75 +165,6 @@ class NdArray(CInstance):
             return {'values': a.tolist(), 'type': str(dtype)}
         else:
             return {'values': a, 'type': None}
-
-    def _convert_to_ndarray(self, value):
-        if isinstance(value, np.ndarray):
-            return value
-        elif value is None or len(value) == 0:
-            return np.asarray(value)
-        else:
-            return np.asarray(value)
-
-    def set(self, obj, value):
-        #TODO: We shouldnt have to overload the set because
-        # numpy doesn't support == comparions
-        new_value = self._validate(obj, value)
-        try:
-            old_value = obj._trait_values[self.name]
-        except KeyError:
-            old_value = self.default_value
-
-        obj._trait_values[self.name] = new_value
-        try:
-            silent = np.array_equal(old_value, new_value)
-        except:
-            # if there is an error in comparing, default to notify
-            silent = False
-        if silent is not True:
-            # we explicitly compare silent to True just in case the equality
-            # comparison above returns something other than True/False
-            obj._notify_trait(self.name, old_value, new_value)
-
-    def validate(self, obj, value):
-        # If it is an object, I have to check if it can be cast into a date
-        if (not isinstance(value, self.klass) or value.dtype == 'object'):
-            value = self._cast(value)
-        min_dim = self.get_metadata('min_dim', 0)
-        max_dim = self.get_metadata('max_dim', np.inf)
-        shape = np.shape(value)
-        dim = 0 if value is None else len(shape)
-        if (dim > 1) and (1 in shape):
-            value = np.squeeze(value) if (self.squeeze) else value
-            dim = len(np.shape(value))
-        if self.allow_none and dim == 0:
-            return value
-        if (dim > max_dim or dim < min_dim):
-            raise TraitError("Dimension mismatch")
-        return value
-
-    @staticmethod
-    def _from_json(value, obj=None):
-        if value is not None:
-            array_dtype = {'date': np.datetime64,
-                           'float': np.float64}.get(value.get('type'), object)
-            return np.asarray(value['values'], dtype=array_dtype)
-
-    # Overriding the method of Instance class in traitlets
-    # This is because the default_value is set by calling the
-    # default constructor with args as the first argument and kwargs
-    # as the second argument. The constructor of np.ndarray
-    # requires shape, data type and stride to be passed.
-    def make_dynamic_default(self):
-        return self.default_value
-
-    def __init__(self, *args, **kwargs):
-        self.squeeze = kwargs.pop('squeeze', False)
-        kwargs['default_value'] = self._cast(kwargs.pop('default_value', None))
-
-        super(NdArray, self).__init__(*args, **kwargs)
-        self.tag(to_json=NdArray._to_json, from_json=NdArray._from_json)
-
-    _cast = _convert_to_ndarray
 
 
 def convert_to_date(array, fmt='%m-%d-%Y'):
