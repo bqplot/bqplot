@@ -946,7 +946,7 @@ class OHLC(Mark):
     # Scaled attributes
     x = NdArray(default_value=[]).tag(sync=True, scaled=True,
                 rtype='Number', min_dim=1, max_dim=1, atype='bqplot.Axis')
-    y = NdArray(default_value=[]).tag(sync=True, scaled=True,
+    y = NdArray(default_value=[[]]).tag(sync=True, scaled=True,
                 rtype='Number', min_dim=2, max_dim=2, atype='bqplot.Axis')
     # FIXME Future warnings
     _y_default = None
