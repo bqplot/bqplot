@@ -28,9 +28,10 @@ Market Map
 """
 
 from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance
+from traittypes import Array
 from ipywidgets import DOMWidget, CallbackDispatcher, Color, widget_serialization
 
-from .traits import NdArray, PandasDataFrame
+from .traits import PandasDataFrame, array_serialization
 from .marks import CATEGORY10
 
 
@@ -138,9 +139,9 @@ class MarketMap(DOMWidget):
     map_width = Int(1080).tag(sync=True)
     map_height = Int(800).tag(sync=True)
 
-    names = NdArray().tag(sync=True)
-    groups = NdArray().tag(sync=True)
-    display_text = NdArray().tag(sync=True)
+    names = Array().tag(sync=True, **array_serialization)
+    groups = Array().tag(sync=True, **array_serialization)
+    display_text = Array().tag(sync=True, **array_serialization)
     ref_data = PandasDataFrame(allow_none=True).tag(sync=True)
     title = Unicode().tag(sync=True)
 
@@ -155,7 +156,7 @@ class MarketMap(DOMWidget):
     colors = List(CATEGORY10).tag(sync=True)
     scales = Dict().tag(sync=True, **widget_serialization)
     axes = List().tag(sync=True, **widget_serialization)
-    color = NdArray().tag(sync=True)
+    color = Array().tag(sync=True, **array_serialization)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50)).tag(sync=True)
     preserve_aspect = Bool().tag(sync=True, display_name='Preserve aspect ratio')
 

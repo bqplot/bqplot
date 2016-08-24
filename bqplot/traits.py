@@ -24,13 +24,13 @@ Traits Types
    :toctree: _generate/
 
    Date
-   NdArray
    PandasDataFrame
    PandasSeries
 """
 
 from traitlets import Instance, TraitError, TraitType, Undefined
 
+import traittypes as tt
 import numpy as np
 import pandas as pd
 import warnings
@@ -83,14 +83,14 @@ class Date(TraitType):
         else:
             return value
 
-
 def array_from_json(value, obj=None):
     if value is not None:
-        array_dtype = {
-            'date': np.datetime64,
-            'float': np.float64
-        }.get(value.get('type'), object)
-        return np.asarray(value['values'], dtype=array_dtype)
+        if value.get('values') is not None:
+            dtype = {
+                'date': np.datetime64,
+                'float': np.float64
+            }.get(value.get('type'), object)
+            return np.asarray(value['values'], dtype=dtype)
 
 def array_to_json(a, obj=None):
     if a is not None:
@@ -119,54 +119,7 @@ def array_to_json(a, obj=None):
     else:
         return dict(values=a, type=None)
 
-
-class NdArray(TraitType):
-
-    """A numpy array trait type.
-    """
-
-    info_text = 'a numpy array'
-    squeeze = False
-
-    def set(self, obj, value):
-        new_value = self._validate(obj, value)
-        old_value = obj._trait_values.get(self.name, self.default_value)
-        obj._trait_values[self.name] = new_value
-        if not np.array_equal(old_value, new_value):
-            obj._notify_trait(self.name, old_value, new_value)
-
-    def validate(self, obj, value):
-        if value is None and not self.allow_none:
-            self.error(obj, value)
-        value = self._cast(value)
-        # squeeze
-        min_dim = self.metadata.get('min_dim', 0)
-        max_dim = self.metadata.get('max_dim', np.inf)
-        shape = np.shape(value)
-        dim = 0 if value is None else len(shape)
-        if (dim > 1) and (1 in shape):
-            value = np.squeeze(value) if self.squeeze else value
-            dim = len(np.shape(value))
-        if self.allow_none and dim == 0:
-            return value
-        # validate dimension
-        if (dim > max_dim or dim < min_dim):
-            raise TraitError('Dimension mismatch')
-        return value
-
-    def __init__(self, default_value=Undefined, allow_none=False, squeeze=False, **kwargs):
-        self.squeeze = squeeze
-        if default_value is Undefined:
-            default_value = np.array(0)
-        elif default_value is not None:
-            default_value = self._cast(default_value)
-        super(NdArray, self).__init__(default_value=default_value, allow_none=allow_none, **kwargs)
-        self.tag(to_json=array_to_json, from_json=array_from_json)
-
-    def _cast(self, value):
-        return np.asarray(value, dtype=self.metadata.get('dtype'),
-                          order=self.metadata.get('order'))
-
+array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
 
 def convert_to_date(array, fmt='%m-%d-%Y'):
     # If array is a np.ndarray with type == np.datetime64, the array can be
@@ -206,6 +159,21 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
     elif(isinstance(array, np.ndarray)):
         warnings.warn("Array could not be converted into a date")
         return array
+
+def array_squeeze(trait, value):
+    if 1 in value.shape and len(value.shape) > 1:
+        value = np.squeeze(value)
+    return value
+
+def array_dimension_bounds(mindim=0, maxdim=np.inf):
+    def validator(trait, value):
+        dim = len(value.shape)
+        if dim < mindim or dim > maxdim:
+            raise TraitError('Dimension mismatch for trait %s of class %s: expected an \
+            array of dimension comprised in interval [%s, %s] and got an array of shape %s'\
+            % (trait.name, trait.this_class, mindim, maxdim, value.shape))
+        return value
+    return validator
 
 
 class PandasDataFrame(Instance):

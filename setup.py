@@ -178,6 +178,8 @@ setup_args = {
     ],
     'install_requires': [
         'ipywidgets>=5.2.2',
+        'traitlets>=4.2.2',
+        'traittype>=0.0.5',
         'numpy>=1.10.4',
         'pandas'],
     'packages': find_packages(),

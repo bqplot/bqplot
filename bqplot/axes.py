@@ -28,10 +28,11 @@ Axes
 """
 
 from traitlets import Int, Unicode, Instance, Enum, Dict, Bool
+from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization
 
 from .scales import Scale, ColorScale
-from .traits import NdArray
+from .traits import array_serialization, array_dimension_bounds
 
 
 def register_axis(key=None):
@@ -111,7 +112,7 @@ class Axis(BaseAxis):
     tick_format = Unicode(None, allow_none=True).tag(sync=True)
     scale = Instance(Scale).tag(sync=True, **widget_serialization)
     num_ticks = Int(default_value=None, allow_none=True).tag(sync=True)
-    tick_values = NdArray(None, allow_none=True).tag(sync=True)
+    tick_values = Array(None, allow_none=True).tag(sync=True, **array_serialization).valid(array_dimension_bounds(1, 1))
     offset = Dict().tag(sync=True, **widget_serialization)
     label_location = Enum(['middle', 'start', 'end'], default_value='middle').tag(sync=True)
     label_color = Color(None, allow_none=True).tag(sync=True)
