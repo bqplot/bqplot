@@ -248,8 +248,7 @@ var FlexLineModel = LinesModel.extend({
     },
 
     update_domains: function() {
-        if(!this.mark_data || this.mark_data.length === 0) {
-            this.clear_scale_domains(this.get("scales"));
+        if(!this.mark_data) {
             return;
         }
         var scales = this.get("scales");
