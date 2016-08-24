@@ -136,7 +136,7 @@ var BarsModel = markmodel.MarkModel.extend({
         //this is taken care of by the update_data itself. This is separate
         //in bars because update data does a lot more complex calculations
         //which should be avoided when possible
-        if(!this.mark_data || this.mark_data.length === 0) {
+        if(!this.mark_data) {
             return;
         }
         var color = this.get_typed_field("color");
@@ -160,8 +160,7 @@ var BarsModel = markmodel.MarkModel.extend({
     },
 
     update_domains: function() {
-        if(!this.mark_data || this.mark_data.length === 0) {
-            this.clear_scale_domains(this.get("scales"));
+        if(!this.mark_data) {
             return;
         }
         var scales = this.get("scales");

@@ -76,14 +76,6 @@ var MarkModel = basemodel.BaseModel.extend({
         this.update_domains();
     },
 
-    clear_scale_domains: function(scales) {
-        this.dirty = true;
-        for  (var key in scales) {
-            scales[key].compute_and_set_domain([], this.id + "_" + key);
-        }
-        this.dirty = false;
-    },
-
     unregister_all_scales: function(scales) {
         // disassociates the mark with the scale
         this.dirty = true;

@@ -74,7 +74,7 @@ var PieModel = markmodel.MarkModel.extend({
     },
 
     update_labels: function() {
-        if(!this.mark_data || this.mark_data.length === 0) {
+        if(!this.mark_data) {
             return;
         }
         var labels = this.get("labels");
@@ -85,7 +85,7 @@ var PieModel = markmodel.MarkModel.extend({
     },
 
     update_color: function() {
-        if(!this.mark_data || this.mark_data.length === 0) {
+        if(!this.mark_data) {
             return;
         }
         var color = this.get_typed_field("color");
@@ -100,8 +100,7 @@ var PieModel = markmodel.MarkModel.extend({
     },
 
     update_domains: function() {
-        if(!this.mark_data || this.mark_data.length === 0) {
-            this.clear_scale_domains(this.get("scales"));
+        if(!this.mark_data) {
             return;
         }
         var scales = this.get("scales");

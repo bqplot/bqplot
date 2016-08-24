@@ -149,7 +149,6 @@ var ScatterModel = markmodel.MarkModel.extend({
 
     update_domains: function() {
         if (!this.mark_data) {
-            this.clear_scale_domains(this.get("scales"));
             return;
         }
         // color scale needs an issue in DateScaleModel to be fixed. It
