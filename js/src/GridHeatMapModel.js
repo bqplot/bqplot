@@ -87,6 +87,7 @@ var GridHeatMapModel = markmodel.MarkModel.extend({
 
     update_domains: function() {
         if(!this.mark_data || this.mark_data.length === 0) {
+            this.clear_scale_domains(this.get("scales"));
             return;
         }
         var scales = this.get("scales");

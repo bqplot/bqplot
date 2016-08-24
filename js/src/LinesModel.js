@@ -138,6 +138,7 @@ var LinesModel = markmodel.MarkModel.extend({
 
     update_domains: function() {
         if(!this.mark_data || this.mark_data.length === 0) {
+            this.clear_scale_domains(this.get("scales"));
             return;
         }
         var scales = this.get("scales");
@@ -227,7 +228,7 @@ var FlexLineModel = LinesModel.extend({
             var width_data = this.get_typed_field("width");
             this.data_len = Math.min(this.x_data[0].length, this.y_data[0].length);
 
-            this.mark_data = [{ 
+            this.mark_data = [{
                 name: curve_labels[0],
                 values: _.range(this.data_len - 1).map(function(val, index) {
                     return {
@@ -249,6 +250,7 @@ var FlexLineModel = LinesModel.extend({
 
     update_domains: function() {
         if(!this.mark_data || this.mark_data.length === 0) {
+            this.clear_scale_domains(this.get("scales"));
             return;
         }
         var scales = this.get("scales");
