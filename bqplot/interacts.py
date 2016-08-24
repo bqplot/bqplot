@@ -122,11 +122,11 @@ class HandDraw(Interaction):
     min_x = (
             Float(None, allow_none=True).tag(sync=True) |
             Date(None, allow_none=True).tag(sync=True)
-        )
+        ).tag(sync=True)
     max_x = (
             Float(None, allow_none=True).tag(sync=True) |
             Date(None, allow_none=True).tag(sync=True)
-        )
+        ).tag(sync=True)
 
     _view_name = Unicode('HandDraw').tag(sync=True)
     _model_name = Unicode('HandDrawModel').tag(sync=True)

@@ -1039,8 +1039,8 @@ class Pie(Mark):
                           atype='bqplot.ColorAxis', min_dim=1, max_dim=1)
 
     # Other attributes
-    x = Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
-    y = Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)
+    x = (Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)).tag(sync=True)
+    y = (Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)).tag(sync=True)
 
     scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
     sort = Bool().tag(sync=True)
