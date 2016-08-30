@@ -19,7 +19,7 @@ var colorbrewer = require("./colorbrewer");
 var utils = require("./utils");
 
 var color_schemes = [
-    "Paired", "Set3", "Pastel1", "Set1", "Greys", "Greens", "Reds", "Purples", "Oranges", "YlOrRd", "YlOrBr", "YlGnBu", "YlGn", "RdPu",
+    "Paired", "Set3", "Pastel1", "Set1", "Greys", "Greens", "Reds", "Purples", "Oranges", "Blues", "YlOrRd", "YlOrBr", "YlGnBu", "YlGn", "RdPu",
     "PuRd", "PuBuGn", "PuBu", "OrRd", "GnBu", "BuPu", "BuGn", "BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral"
 ];
 
@@ -70,7 +70,7 @@ var cycle_colors = function(colors, count) {
 
 var cycle_colors_from_scheme = function(scheme, num_steps) {
     var index = color_schemes.indexOf(scheme);
-    index = (index === -1) ? 28 : index;
+    index = (index === -1) ? 29 : index;
     var color_set = colorbrewer[color_schemes[index]];
 
     if (num_steps === 2) {
@@ -88,7 +88,7 @@ var get_colors = function(scheme, num_colors) {
     var index = color_schemes.indexOf(scheme);
 
     if(index === -1) {
-        index = 28;
+        index = 29;
     }
 
     var colors_object = colorbrewer[color_schemes[index]];
@@ -98,7 +98,7 @@ var get_colors = function(scheme, num_colors) {
     }
     if(index < 4) {
         return this.cycle_colors(colors_object[Math.min(num_colors, 9)], num_colors);
-    } else if(index < 21) {
+    } else if(index < 22) {
         return this.scale_colors(colors_object[Math.min(num_colors, 9)], num_colors);
     } else {
         return this.scale_colors_multi(colors_object[Math.min(num_colors, 9)], num_colors);
@@ -108,12 +108,12 @@ var get_colors = function(scheme, num_colors) {
 var get_linear_scale = function(scheme) {
     var index = color_schemes.indexOf(scheme);
     if(index === -1 && index < 4) {
-        index = 28;
+        index = 29;
     }
 
     var colors = colorbrewer[color_schemes[index]][9];
     var scale = d3.scale.linear();
-    if(index > 21) {
+    if(index > 22) {
         scale.range([colors[0], colors[4], colors[8]]);
     } else {
         scale.range([colors[0], colors[8]]);
@@ -140,7 +140,7 @@ var is_divergent = function(scheme) {
     if(index === -1 && index < 4) {
         index = 2;
     }
-    return (index > 21);
+    return (index > 22);
 };
 
 module.exports = {
