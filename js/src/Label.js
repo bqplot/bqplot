@@ -309,7 +309,7 @@ var Label = mark.Mark.extend({
         // of the dragged point, for the length of the drag event
         var x_scale = this.x_scale, y_scale = this.y_scale;
         var font_size = this.model.get("font_size") + this.model.get("font_unit");
-        var dragged_size = (this.model.get("drag_size")) ? this.model.get("drag_size") + this.model.get("font_unit") : font_size;
+        var dragged_size = (this.model.get("drag_size")) ? (this.model.get("drag_size") * this.model.get("font_size")) + this.model.get("font_unit") : font_size;
         d[0] = x_scale.scale(d.x) + x_scale.offset;
         d[1] = y_scale.scale(d.y) + y_scale.offset;
 
@@ -365,7 +365,7 @@ var Label = mark.Mark.extend({
           .select("text")
           .classed("drag_label", false)
           .transition()
-          .attr("font-size", this.get_element_size(d));
+          .style("font-size", this.get_element_size(d));
 
         this.update_array(d, i);
         this.send({

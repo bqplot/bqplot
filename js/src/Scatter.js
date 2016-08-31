@@ -944,7 +944,8 @@ var Scatter = mark.Mark.extend({
         var x_scale = this.scales.x, y_scale = this.scales.y;
         d[0] = x_scale.scale(d.x) + x_scale.offset;
         d[1] = y_scale.scale(d.y) + y_scale.offset;
-        var dragged_size = (this.model.get("drag_size")) ? this.model.get("drag_size") : 5 * this.model.get("default_size");
+        var drag_ratio = (this.model.get("drag_size")) ? this.model.get("drag_size") : 5;
+        var dragged_size = drag_ratio * this.model.get("default_size");
 
         d3.select(dragged_node)
           .select("path")

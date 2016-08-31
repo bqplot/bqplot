@@ -454,6 +454,8 @@ class Scatter(Mark):
         Default marker size in pixel.
         If size data is provided with a scale, default_size stands for the
         maximal marker size (i.e. the maximum value for the 'size' scale range)
+    drag_size: nonnegative float (default: 5.)
+        Ratio of the size of the dragged scatter size to the default scatter size.
     names: numpy.ndarray (default: [])
         Labels for the points of the chart
     display_names: bool (default: True)
@@ -831,6 +833,8 @@ class Label(Mark):
         font size in px, em or ex
     font_weight: {'bold', 'normal', 'bolder'}
         font weight of the caption
+    drag_size: nonnegative float (default: 1.)
+        Ratio of the size of the dragged label font size to the default label font size.
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     enable_move: Bool
