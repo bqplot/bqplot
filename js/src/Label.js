@@ -205,8 +205,8 @@ var Label = mark.Mark.extend({
             .text(function(d) {
                 return d.text;
             });
-            
-        this.set_drag_behavior();    
+
+        this.set_drag_behavior();
         this.update_style();
         this.update_default_opacities(true);
         this.update_position();
@@ -299,8 +299,8 @@ var Label = mark.Mark.extend({
         if (this.model.get("enable_move")) {
             labels.call(this.drag_listener);
         }
-        else { 
-            labels.on(".drag", null); 
+        else {
+            labels.on(".drag", null);
         }
     },
 
@@ -308,7 +308,7 @@ var Label = mark.Mark.extend({
         // d[0] and d[1] will contain the previous position (in pixels)
         // of the dragged point, for the length of the drag event
         var x_scale = this.x_scale, y_scale = this.y_scale;
-        var font_size = this.model.get("font_size") + this.model.get("font_unit");
+        var dragged_size = (this.model.get("drag_size") * this.model.get("font_size")) + this.model.get("font_unit");
         d[0] = x_scale.scale(d.x) + x_scale.offset;
         d[1] = y_scale.scale(d.y) + y_scale.offset;
 
@@ -316,7 +316,7 @@ var Label = mark.Mark.extend({
           .select("text")
           .classed("drag_label", true)
           .transition()
-          .attr("font-size", (1.15 * font_size));
+          .style("font-size", (dragged_size));
 
         this.send({
             event: "drag_start",
@@ -343,7 +343,7 @@ var Label = mark.Mark.extend({
             event: "drag",
             origin: {x: d.x, y: d.y},
             point: {
-                x: x_scale.invert(d[0]), 
+                x: x_scale.invert(d[0]),
                 y: y_scale.invert(d[1])
             },
             index: i
@@ -364,13 +364,13 @@ var Label = mark.Mark.extend({
           .select("text")
           .classed("drag_label", false)
           .transition()
-          .attr("font-size", this.get_element_size(d));
+          .style("font-size", this.get_element_size(d));
 
         this.update_array(d, i);
         this.send({
             event: "drag_end",
             point: {
-                x: x_scale.invert(d[0]), 
+                x: x_scale.invert(d[0]),
                 y: y_scale.invert(d[1])
             },
             index: i

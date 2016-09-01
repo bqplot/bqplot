@@ -485,7 +485,7 @@ var Scatter = mark.Mark.extend({
 	    elements.on("mouseout", _.bind(function() {
 		    this.reset_hover();
             this.apply_styles();
-	    }, this));	
+	    }, this));
         var names = this.model.get_typed_field("names"),
             text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
             show_names = (this.model.get("display_names") && names.length !== 0);
@@ -511,7 +511,7 @@ var Scatter = mark.Mark.extend({
             //set all the event listeners to blank functions
             this.reset_interactions();
         } else {
-            if(interactions.click !== undefined && 
+            if(interactions.click !== undefined &&
                interactions.click !== null) {
                 if(interactions.click === "tooltip") {
                     this.event_listeners.element_clicked = function() {
@@ -575,7 +575,7 @@ var Scatter = mark.Mark.extend({
                        index, {updated_view: this});
 	    this.touch();
     },
-	
+
     reset_selection: function() {
         this.model.set("selected", null);
         this.selected_indices = null;
@@ -944,12 +944,13 @@ var Scatter = mark.Mark.extend({
         var x_scale = this.scales.x, y_scale = this.scales.y;
         d[0] = x_scale.scale(d.x) + x_scale.offset;
         d[1] = y_scale.scale(d.y) + y_scale.offset;
+        var dragged_size = this.model.get("drag_size") * this.model.get("default_size");
 
         d3.select(dragged_node)
           .select("path")
           .classed("drag_scatter", true)
           .transition()
-          .attr("d", this.dot.size(5 * this.model.get("default_size")));
+          .attr("d", this.dot.size(dragged_size));
 
         var drag_color = this.model.get("drag_color");
         if (drag_color) {
@@ -983,7 +984,7 @@ var Scatter = mark.Mark.extend({
             event: "drag",
             origin: {x: d.x, y: d.y},
 	        point: {
-                x: x_scale.invert(d[0]), 
+                x: x_scale.invert(d[0]),
                 y: y_scale.invert(d[1])
             },
             index: i

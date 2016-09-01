@@ -454,6 +454,8 @@ class Scatter(Mark):
         Default marker size in pixel.
         If size data is provided with a scale, default_size stands for the
         maximal marker size (i.e. the maximum value for the 'size' scale range)
+    drag_size: nonnegative float (default: 5.)
+        Ratio of the size of the dragged scatter size to the default scatter size.
     names: numpy.ndarray (default: [])
         Labels for the points of the chart
     display_names: bool (default: True)
@@ -541,6 +543,7 @@ class Scatter(Mark):
     display_names = Bool(True).tag(sync=True, display_name='Display names')
     fill = Bool(True).tag(sync=True)
     drag_color = Color(None, allow_none=True).tag(sync=True)
+    drag_size = Float(5.).tag(sync=True)
     names_unique = Bool(True).tag(sync=True)
 
     enable_move = Bool().tag(sync=True)
@@ -830,6 +833,8 @@ class Label(Mark):
         font size in px, em or ex
     font_weight: {'bold', 'normal', 'bolder'}
         font weight of the caption
+    drag_size: nonnegative float (default: 1.)
+        Ratio of the size of the dragged label font size to the default label font size.
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
     enable_move: Bool
@@ -857,6 +862,7 @@ class Label(Mark):
     rotate_angle = Float().tag(sync=True)
     text = NdArray(squeeze=True).tag(sync=True)
     font_size = Float(16.).tag(sync=True)
+    drag_size = Float(1.).tag(sync=True)
     font_unit = Enum(['px', 'em', 'pt', '%'], default_value='px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
     align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)
