@@ -106,7 +106,7 @@ class Figure(DOMWidget):
                            **widget_serialization)
     scale_x = Instance(Scale).tag(sync=True, **widget_serialization)
     scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
-    title_style = Dict().tag(sync=True)
+    title_style = Dict(trait=Unicode()).tag(sync=True)
     background_style = Dict().tag(sync=True)
 
     min_width = CFloat(800.0).tag(sync=True)
