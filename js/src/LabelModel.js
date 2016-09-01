@@ -44,7 +44,7 @@ var LabelModel = markmodel.MarkModel.extend({
         text: [],
         font_size: 16.0,
         font_unit: "px",
-        drag_size: null,
+        drag_size: 1.0,
         font_weight: "bold",
         align: "start",
         enable_move: false,

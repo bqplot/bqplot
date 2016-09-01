@@ -543,7 +543,7 @@ class Scatter(Mark):
     display_names = Bool(True).tag(sync=True, display_name='Display names')
     fill = Bool(True).tag(sync=True)
     drag_color = Color(None, allow_none=True).tag(sync=True)
-    drag_size = Float(None, allow_none=True).tag(sync=True)
+    drag_size = Float(5.).tag(sync=True)
     names_unique = Bool(True).tag(sync=True)
 
     enable_move = Bool().tag(sync=True)
@@ -862,7 +862,7 @@ class Label(Mark):
     rotate_angle = Float().tag(sync=True)
     text = NdArray(squeeze=True).tag(sync=True)
     font_size = Float(16.).tag(sync=True)
-    drag_size = Float(None, allow_none=True).tag(sync=True)
+    drag_size = Float(1.).tag(sync=True)
     font_unit = Enum(['px', 'em', 'pt', '%'], default_value='px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
     align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)
