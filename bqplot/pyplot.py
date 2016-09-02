@@ -369,6 +369,28 @@ def grids(fig=None, value='solid'):
         a.grid_lines = value
 
 
+def title(label, style=None):
+    """Sets the title for the current figure.
+
+    Parameters
+    ----------
+    label : str
+        The new title for the current figure.
+    style: dict
+        The CSS style to be applied to the figure title
+    """
+    fig = current_figure()
+    fig.title = label
+    if style is not None:
+        fig.title_style = style
+
+
+def legend():
+    """Places legend in the current figure."""
+    for m in current_figure().marks:
+        m.display_legend = True
+
+
 def hline(level, fig=None, **kwargs):
     """Draws a horizontal line at the given level.
 
