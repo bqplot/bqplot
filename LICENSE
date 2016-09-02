@@ -262,6 +262,15 @@ The World Bank: Country Codes: http://wits.worldbank.org/wits/wits/WITSHELP/Cont
 
 The license and attribution may be found at http://go.worldbank.org/OJC02YMLA0.
 
+The file 'state_polls.csv' was adapted from the HuffPost Pollster
+API. The license and attribution may be found at http://elections.huffingtonpost.com/pollster/api.
+
+The file '2012-election-results.csv' was adapted from the HuffPost Open Data
+initiative. The source, license and attribution can be found at https://github.com/huffpostdata/election-2012-results.
+
+The file 'state_codes.csv' was adopted from the Census Bureau and can be found
+at https://www.census.gov/geo/reference/ansi_statetables.html.
+
 Wealth of Nations Files License
 ===============================
 
