@@ -182,18 +182,12 @@ def dataframe_from_json(value, obj):
     if value is None:
         return None
     else:
-        df.set_index(obj.index_name)
-        df.index.name = None
         return pd.DataFrame(value)
 
 def dataframe_to_json(df, obj):
     if df is None:
         return None
     else:
-        obj.index_name = df.index.name
-        if obj.index_name is None:
-            # If the index is not named, reset_index() names the column 'index'
-            obj.index_name = 'index'
         return df.reset_index().to_dict(orient='records')
 
 dataframe_serialization = dict(to_json=dataframe_to_json, from_json=dataframe_from_json)
