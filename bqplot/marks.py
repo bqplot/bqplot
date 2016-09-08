@@ -307,7 +307,7 @@ class Lines(Mark):
         abscissas of the data points (1d or 2d array)
     y: numpy.ndarray (default: [])
         ordinates of the data points (1d or 2d array)
-    color: numpy.ndarray (default: [])
+    color: numpy.ndarray (default: None)
         colors of the different lines based on data. If it is [], then the
         colors from the colors attribute are used. Each line has a single color
         and if the size of colors is less than the number of lines, the
@@ -389,9 +389,9 @@ class FlexLine(Mark):
         abscissas of the data points (1d array)
     y: numpy.ndarray (default: [])
         ordinates of the data points (1d array)
-    color: numpy.ndarray or None (default: [])
+    color: numpy.ndarray or None (default: None)
         Array controlling the color of the data points
-    width: numpy.ndarray or None (default: [])
+    width: numpy.ndarray or None (default: None)
         Array controlling the widths of the Lines.
     """
     # Mark decoration
@@ -453,7 +453,7 @@ class Scatter(Mark):
         maximal marker size (i.e. the maximum value for the 'size' scale range)
     drag_size: nonnegative float (default: 5.)
         Ratio of the size of the dragged scatter size to the default scatter size.
-    names: numpy.ndarray (default: [])
+    names: numpy.ndarray (default: None)
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
@@ -464,19 +464,19 @@ class Scatter(Mark):
         abscissas of the data points (1d array)
     y: numpy.ndarray (default: [])
         ordinates of the data points (1d array)
-    color: numpy.ndarray or None (default: [])
+    color: numpy.ndarray or None (default: None)
         color of the data points (1d array). Defaults to default_color when not
         provided or when a value is NaN
-    opacity: numpy.ndarray or None (default: [])
+    opacity: numpy.ndarray or None (default: None)
         opacity of the data points (1d array). Defaults to default_opacity when
         not provided or when a value is NaN
-    size: numpy.ndarray or None (default: [])
+    size: numpy.ndarray or None (default: None)
         size of the data points. Defaults to default_size when not provided or
         when a value is NaN
-    skew: numpy.ndarray or None (default: [])
+    skew: numpy.ndarray or None (default: None)
         skewness of the markers representing the data points. Defaults to
         default_skew when not provided or when a value is NaN
-    rotation: numpy.ndarray or None (default: [])
+    rotation: numpy.ndarray or None (default: None)
         orientation of the markers representing the data points.
         The rotation scale's range is [0, 180]
         Defaults to 0 when not provided or when a value is NaN.
