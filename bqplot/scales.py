@@ -353,9 +353,12 @@ class LinearScale(Scale):
         mid_range and min_range.
     mid_range: float (default: 0.8)
         Proportion of the range that is spanned initially.
+        Used only if stabilized is True.
     min_range: float (default: 0.6)
         Minimum proportion of the range that should be spanned by the data.
         If the data span falls beneath that level, the scale is reset.
+        min_range must be <= mid_range.
+        Used only if stabilized is True.
     """
     rtype = 'Number'
     dtype = np.number

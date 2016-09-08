@@ -78,14 +78,14 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
             this.max : d3.max(_.map(this.domains, function(d) {
                 return d.length > 1 ? d[1] : that.global_min;
             }));
-        var mid = (min+max)/2,
-            new_width = (max-min)/2 / this.get("mid_range");
+        var mid = (min + max) * 0.5,
+            new_width = (max - min) * 0.5 / this.get("mid_range");
             prev_domain = this.domain,
             min_index = (this.reverse) ? 1 : 0,
             prev_min = prev_domain[min_index],
             prev_max = prev_domain[1 - min_index],
-            prev_mid = (prev_max+prev_min)/2,
-            min_width = (prev_max-prev_min)/2 * this.get("min_range");
+            prev_mid = (prev_max + prev_min) * 0.5,
+            min_width = (prev_max - prev_min) * 0.5 * this.get("min_range");
 
         var stabilized = this.get("stabilized");
 
@@ -95,7 +95,7 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
             (!(min >= prev_min) || !(min <= prev_mid-min_width) ||
              !(max <= prev_max) || !(max >= prev_mid+min_width)) :
             (min !== prev_min || max !== prev_max);
-        
+
         if (update_domain) {
             var new_min = stabilized ? mid - new_width : min,
                 new_max = stabilized ? mid + new_width : max;
