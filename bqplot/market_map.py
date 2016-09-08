@@ -141,7 +141,7 @@ class MarketMap(DOMWidget):
 
     names = Array().tag(sync=True, **array_serialization)
     groups = Array().tag(sync=True, **array_serialization)
-    display_text = Array().tag(sync=True, **array_serialization)
+    display_text = Array(None, allow_none=True).tag(sync=True, **array_serialization)
     ref_data = PandasDataFrame(allow_none=True).tag(sync=True)
     title = Unicode().tag(sync=True)
 
