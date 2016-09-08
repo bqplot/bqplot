@@ -125,7 +125,7 @@ var HistModel = markmodel.MarkModel.extend({
     },
 
     update_domains: function() {
-        if(!this.mark_data || this.mark_data.length === 0) {
+        if(!this.mark_data) {
             return;
         }
         // For histogram, changing the x-scale domain changes a lot of
