@@ -24,8 +24,6 @@ Traits Types
    :toctree: _generate/
 
    Date
-   PandasDataFrame
-   PandasSeries
 """
 
 from traitlets import Instance, TraitError, TraitType, Undefined
@@ -36,6 +34,21 @@ import pandas as pd
 import warnings
 import datetime as dt
 
+# Date
+
+def date_to_json(value, obj):
+    if value is None:
+        return value
+    else:
+        return value.strftime('%Y-%m-%dT%H:%M:%S.%f')
+
+def date_from_json(value, obj):
+    if value:
+        return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+    else:
+        return value
+
+date_serialization = dict(to_json=date_to_json, from_json=date_from_json) 
 
 class Date(TraitType):
 
@@ -65,61 +78,9 @@ class Date(TraitType):
     def __init__(self, default_value=dt.datetime.today(), **kwargs):
         args = (default_value,)
         self.default_value = default_value
-        kwargs.setdefault('to_json', Date.to_json)
-        kwargs.setdefault('from_json', Date.from_json)
         super(Date, self).__init__(args=args, **kwargs)
+        self.tag(**date_serialization)
 
-    @staticmethod
-    def to_json(value, obj=None):
-        if value is None:
-            return value
-        else:
-            return value.strftime('%Y-%m-%dT%H:%M:%S.%f')
-
-    @staticmethod
-    def from_json(value, obj=None):
-        if value:
-            return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
-        else:
-            return value
-
-def array_from_json(value, obj=None):
-    if value is not None:
-        if value.get('values') is not None:
-            dtype = {
-                'date': np.datetime64,
-                'float': np.float64
-            }.get(value.get('type'), object)
-            return np.asarray(value['values'], dtype=dtype)
-
-def array_to_json(a, obj=None):
-    if a is not None:
-        if np.issubdtype(a.dtype, np.float):
-            # replace nan with None
-            dtype = a.dtype
-            a = np.where(np.isnan(a), None, a)
-        elif a.dtype in (int, np.int64):
-            dtype = 'float'
-            a = a.astype(np.float64)
-        elif np.issubdtype(a.dtype, np.datetime64):
-            dtype = 'date'
-            a = a.astype(np.str).astype('object')
-            for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
-                # for every element in the nd array, forcing the conversion into
-                # the format specified here.
-                temp_x = pd.to_datetime(x.flatten()[0])
-                if pd.isnull(temp_x):
-                    x[...] = None
-                else:
-                    x[...] = temp_x.to_pydatetime().strftime(
-                        '%Y-%m-%dT%H:%M:%S.%f')
-        else:
-            dtype = a.dtype
-        return dict(values=a.tolist(), type=str(dtype))
-    else:
-        return dict(values=a, type=None)
-
-array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
 
 def convert_to_date(array, fmt='%m-%d-%Y'):
     # If array is a np.ndarray with type == np.datetime64, the array can be
@@ -160,10 +121,50 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
         warnings.warn("Array could not be converted into a date")
         return array
 
+# Array
+
+def array_from_json(value, obj=None):
+    if value is not None:
+        if value.get('values') is not None:
+            dtype = {
+                'date': np.datetime64,
+                'float': np.float64
+            }.get(value.get('type'), object)
+            return np.asarray(value['values'], dtype=dtype)
+
+def array_to_json(a, obj=None):
+    if a is not None:
+        if np.issubdtype(a.dtype, np.float):
+            # replace nan with None
+            dtype = a.dtype
+            a = np.where(np.isnan(a), None, a)
+        elif a.dtype in (int, np.int64):
+            dtype = 'float'
+            a = a.astype(np.float64)
+        elif np.issubdtype(a.dtype, np.datetime64):
+            dtype = 'date'
+            a = a.astype(np.str).astype('object')
+            for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
+                # for every element in the nd array, forcing the conversion into
+                # the format specified here.
+                temp_x = pd.to_datetime(x.flatten()[0])
+                if pd.isnull(temp_x):
+                    x[...] = None
+                else:
+                    x[...] = temp_x.to_pydatetime().strftime(
+                        '%Y-%m-%dT%H:%M:%S.%f')
+        else:
+            dtype = a.dtype
+        return dict(values=a.tolist(), type=str(dtype))
+    else:
+        return dict(values=a, type=None)
+
+array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
+
+# array validators
+
 def array_squeeze(trait, value):
-    if 1 in value.shape and len(value.shape) > 1:
-        value = np.squeeze(value)
-    return value
+    return np.squeeze(value)
 
 def array_dimension_bounds(mindim=0, maxdim=np.inf):
     def validator(trait, value):
@@ -175,109 +176,34 @@ def array_dimension_bounds(mindim=0, maxdim=np.inf):
         return value
     return validator
 
+# DataFrame
 
-class PandasDataFrame(Instance):
+def dataframe_from_json(value, obj):
+    if value is None:
+        return None
+    else:
+        df.set_index(obj.index_name)
+        df.index.name = None
+        return pd.DataFrame(value)
 
-    """A pandas Dataframe trait type.
+def dataframe_to_json(df, obj):
+    if df is None:
+        return None
+    else:
+        obj.index_name = df.index.name
+        if obj.index_name is None:
+            # If the index is not named, reset_index() names the column 'index'
+            obj.index_name = 'index'
+        return df.reset_index().to_dict(orient='records')
 
-    The json representation is an array of dicts which is amenable for
-    consumption by JavaScript. also note that index name is ignored and when
-    deserializing will use the 'index' attribute as an index for the df. This
-    means if the data frame cannot have a column called 'index'.
-    """
-    klass = pd.DataFrame
-    info_text = 'a pandas DataFrame'
+dataframe_serialization = dict(to_json=dataframe_to_json, from_json=dataframe_from_json)
 
-    def __init__(self, *args, **kwargs):
-        default_value = kwargs.pop('default_value', None)
-        # The first entry in args should be the `klass`. If it is None, self.klass
-        # is assigned as the klass. The second entry should be a tuple whose
-        # first element is passed to the default constructor of the klass.
-        # Hence, we should set the following as the args
-        if len(args) == 0:
-            new_args = (None, (default_value,))
-        else:
-            new_args = args
-        super(PandasDataFrame, self).__init__(*new_args, **kwargs)
-        self.tag(to_json=self._to_json, from_json=self._from_json)
+# Series
 
-    def _from_json(self, value, obj=None):
-        if value is not None and value != []:
-            df = pd.DataFrame(value)
-            df = df.set_index(self.index_name)
-            df.index.name = None
-        else:
-            df = pd.DataFrame()
-        return df
+def series_from_json(value, obj):
+    return pd.Series(value)
 
-    def _to_json(self, df, obj=None):
-        if df is not None:
-            # Name of the index column
-            self.index_name = df.index.name
-            if self.index_name is None:
-                # If the index is not named, reset_index() names the column 'index'
-                self.index_name = 'index'
-            return df.reset_index().to_dict(orient='records')
-        else:
-            return []
+def series_to_json(value, obj):
+    return value.to_dict()
 
-    def set(self, obj, value):
-        new_value = self._validate(obj, value)
-        try:
-            old_value = obj._trait_values[self.name]
-        except KeyError:
-            old_value = self.default_value
-
-        obj._trait_values[self.name] = new_value
-        try:
-            if new_value is not None:
-                silent = new_value.equals(old_value)
-            else:
-                silent = bool(new_value == old_value)
-        except:
-            # if there is an error in comparing, default to notify
-            silent = False
-        if silent is not True:
-            # we explicitly compare silent to True just in case the equality
-            # comparison above returns something other than True/False
-            obj._notify_trait(self.name, old_value, new_value)
-
-    def validate(self, obj, value):
-        value = super(PandasDataFrame, self).validate(obj, value)
-        if self.get_metadata('lexsort'):
-            if isinstance(value.columns, pd.MultiIndex):
-                value = value.sortlevel(0, axis=1)
-        return value
-
-
-class PandasSeries(Instance):
-
-    """A pandas Series trait type.
-
-    The json representation is an array of dicts which is amenable for
-    consumption by JavaScript. Also note that index name is ignored and when
-    deserializing will use the 'index' attribute as an index for the df. This
-    means if the data frame has a column called 'index'.
-    """
-    klass = pd.Series
-    info_text = 'a pandas series'
-
-    def __init__(self, *args, **kwargs):
-        default_value = kwargs.pop('default_value', None)
-        # This is the same as for PandasDataFrame.
-        # The first entry in args should be the `klass`. If it is None, self.klass
-        # is assigned as the klass. The second entry should be a tuple whose
-        # first element is passed to the default constructor of the klass.
-        # Hence, we should set the following as the args.
-        if len(args) == 0:
-            new_args = (None, (default_value,))
-        else:
-            new_args = args
-        super(PandasSeries, self).__init__(*new_args, **kwargs)
-        self.tag(to_json=self._to_json, from_json=self._from_json)
-
-    def _from_json(self, value, obj=None):
-        return pd.Series(value)
-
-    def _to_json(self, s, obj=None):
-        return s.to_dict()
+series_serialization = dict(to_json=series_to_json, from_json=series_from_json)

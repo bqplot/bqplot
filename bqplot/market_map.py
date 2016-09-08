@@ -28,10 +28,10 @@ Market Map
 """
 
 from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance
-from traittypes import Array
+from traittypes import Array, DataFrame
 from ipywidgets import DOMWidget, CallbackDispatcher, Color, widget_serialization
 
-from .traits import PandasDataFrame, array_serialization
+from .traits import array_serialization, dataframe_serialization
 from .marks import CATEGORY10
 
 
@@ -50,7 +50,7 @@ class MarketMap(DOMWidget):
     display_text: numpy.ndarray (default: None)
         data to be displayed on each rectangle of the map.If this is empty it
         defaults to the names attribute.
-    ref_data: PandasDataFrame
+    ref_data: pandas.DataDrame or None (default: None)
         Additional data associated with each element of the map. The data in
         this data frame can be displayed as a tooltip.
     color: numpy.ndarray (default: [])
@@ -142,7 +142,7 @@ class MarketMap(DOMWidget):
     names = Array([]).tag(sync=True, **array_serialization)
     groups = Array([]).tag(sync=True, **array_serialization)
     display_text = Array(None, allow_none=True).tag(sync=True, **array_serialization)
-    ref_data = PandasDataFrame(allow_none=True).tag(sync=True)
+    ref_data = DataFrame(None, allow_none=True).tag(sync=True, **dataframe_serialization)
     title = Unicode().tag(sync=True)
 
     tooltip_fields = List().tag(sync=True)
