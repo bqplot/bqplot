@@ -36,7 +36,8 @@ Marks
 """
 from ipywidgets import Widget, DOMWidget, CallbackDispatcher, Color, widget_serialization
 from traitlets import (
-        Int, Unicode, List, Enum, Dict, Bool, Float, TraitError, Instance, Tuple
+        Int, Unicode, List, Enum, Dict, Bool, Float, Instance, Tuple,
+        TraitError, validate
     )
 
 from .scales import Scale, OrdinalScale
@@ -184,7 +185,8 @@ class Mark(Widget):
                 )
             ]
 
-    def _scales_validate(self, scales, scales_trait):
+    @validate('scales')
+    def _validate_scales(self, proposal):
         """
         Validates the `scales` based on the mark's scaled attributes metadata.
 
@@ -193,6 +195,7 @@ class Mark(Widget):
         # Validate scales' 'rtype' versus data attribute 'rtype' decoration
         # At this stage it is already validated that all values in self.scales
         # are instances of Scale.
+        scales = proposal['value']
         for name in self.trait_names(scaled=True):
             trait = self.traits()[name]
             if name not in scales:
@@ -206,9 +209,6 @@ class Mark(Widget):
                     raise TraitError("Range type mismatch for scale %s." %
                                      name)
         return scales
-
-    def _selected_default(self):
-        return None
 
     def __init__(self, **kwargs):
         super(Mark, self).__init__(**kwargs)
