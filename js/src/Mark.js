@@ -85,8 +85,6 @@ var Mark = widgets.WidgetView.extend({
             this.stopListening(this.scales[key]);
         }
 
-        this.scales = {};
-
         var scale_models = this.model.get("scales");
         var that = this;
         var scale_promises = {};
