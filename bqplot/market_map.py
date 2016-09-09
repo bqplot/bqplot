@@ -41,13 +41,14 @@ class MarketMap(DOMWidget):
 
     Attributes
     ----------
-    names: numpy.ndarray of strings or objects convertible to strings (default: [])
-        primary key for the data of the map. One rectangle is created for each
+    names: numpy.ndarray of strings (default: [])
+        The elements can also be objects convertible to string
+        primary key for the map data. A rectangle is created for each
         unique entry in this array
     groups: numpy.ndarray (default: [])
         attribute on which the groupby is run. If this is an empty arrray, then
         there is no group by for the map.
-    display_text: numpy.ndarray (default: None)
+    display_text: numpy.ndarray or None(default: None)
         data to be displayed on each rectangle of the map.If this is empty it
         defaults to the names attribute.
     ref_data: pandas.DataDrame or None (default: None)
