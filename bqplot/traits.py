@@ -23,32 +23,18 @@ Traits Types
 .. autosummary::
    :toctree: _generate/
 
-   CInstance
    Date
-   NdArray
    PandasDataFrame
    PandasSeries
 """
 
-from traitlets import Instance, TraitError, TraitType
+from traitlets import Instance, TraitError, TraitType, Undefined
 
+import traittypes as tt
 import numpy as np
 import pandas as pd
 import warnings
 import datetime as dt
-
-
-# Numpy and Pandas Traitlets
-class CInstance(Instance):
-
-    def _cast(self, value):
-        return self.klass(value)
-
-    def validate(self, obj, value):
-        if isinstance(value, self.klass):
-            return value
-        else:
-            return self._cast(value)
 
 
 class Date(TraitType):
@@ -97,112 +83,43 @@ class Date(TraitType):
         else:
             return value
 
+def array_from_json(value, obj=None):
+    if value is not None:
+        if value.get('values') is not None:
+            dtype = {
+                'date': np.datetime64,
+                'float': np.float64
+            }.get(value.get('type'), object)
+            return np.asarray(value['values'], dtype=dtype)
 
-class NdArray(CInstance):
-
-    """A numpy array trait type.
-    """
-
-    klass = np.ndarray
-    info_text = 'type aware numpy array'
-
-    @staticmethod
-    def _to_json(a, obj=None):
-        if a is not None:
-            if np.issubdtype(a.dtype, np.float):
-                # replace nan with None
-                dtype = a.dtype
-                a = np.where(np.isnan(a), None, a)
-            elif a.dtype in (int, np.int64):
-                dtype = 'float'
-                a = a.astype(np.float64)
-            elif np.issubdtype(a.dtype, np.datetime64):
-                dtype = 'date'
-                a = a.astype(np.str).astype('object')
-                for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
-                    # for every element in the nd array, forcing the conversion into
-                    # the format specified here.
-                    temp_x = pd.to_datetime(x.flatten()[0])
-                    if pd.isnull(temp_x):
-                        x[...] = None
-                    else:
-                        x[...] = temp_x.to_pydatetime().strftime(
-                            '%Y-%m-%dT%H:%M:%S.%f')
-            else:
-                dtype = a.dtype
-            return {'values': a.tolist(), 'type': str(dtype)}
+def array_to_json(a, obj=None):
+    if a is not None:
+        if np.issubdtype(a.dtype, np.float):
+            # replace nan with None
+            dtype = a.dtype
+            a = np.where(np.isnan(a), None, a)
+        elif a.dtype in (int, np.int64):
+            dtype = 'float'
+            a = a.astype(np.float64)
+        elif np.issubdtype(a.dtype, np.datetime64):
+            dtype = 'date'
+            a = a.astype(np.str).astype('object')
+            for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
+                # for every element in the nd array, forcing the conversion into
+                # the format specified here.
+                temp_x = pd.to_datetime(x.flatten()[0])
+                if pd.isnull(temp_x):
+                    x[...] = None
+                else:
+                    x[...] = temp_x.to_pydatetime().strftime(
+                        '%Y-%m-%dT%H:%M:%S.%f')
         else:
-            return {'values': a, 'type': None}
+            dtype = a.dtype
+        return dict(values=a.tolist(), type=str(dtype))
+    else:
+        return dict(values=a, type=None)
 
-    def _convert_to_ndarray(self, value):
-        if isinstance(value, np.ndarray):
-            return value
-        elif value is None or len(value) == 0:
-            return np.asarray(value)
-        else:
-            return np.asarray(value)
-
-    def set(self, obj, value):
-        #TODO: We shouldnt have to overload the set because
-        # numpy doesn't support == comparions
-        new_value = self._validate(obj, value)
-        try:
-            old_value = obj._trait_values[self.name]
-        except KeyError:
-            old_value = self.default_value
-
-        obj._trait_values[self.name] = new_value
-        try:
-            silent = np.array_equal(old_value, new_value)
-        except:
-            # if there is an error in comparing, default to notify
-            silent = False
-        if silent is not True:
-            # we explicitly compare silent to True just in case the equality
-            # comparison above returns something other than True/False
-            obj._notify_trait(self.name, old_value, new_value)
-
-    def validate(self, obj, value):
-        # If it is an object, I have to check if it can be cast into a date
-        if (not isinstance(value, self.klass) or value.dtype == 'object'):
-            value = self._cast(value)
-        min_dim = self.get_metadata('min_dim', 0)
-        max_dim = self.get_metadata('max_dim', np.inf)
-        shape = np.shape(value)
-        dim = 0 if value is None else len(shape)
-        if (dim > 1) and (1 in shape):
-            value = np.squeeze(value) if (self.squeeze) else value
-            dim = len(np.shape(value))
-        if self.allow_none and dim == 0:
-            return value
-        if (dim > max_dim or dim < min_dim):
-            raise TraitError("Dimension mismatch")
-        return value
-
-    @staticmethod
-    def _from_json(value, obj=None):
-        if value is not None:
-            array_dtype = {'date': np.datetime64,
-                           'float': np.float64}.get(value.get('type'), object)
-            return np.asarray(value['values'], dtype=array_dtype)
-
-    # Overriding the method of Instance class in traitlets
-    # This is because the default_value is set by calling the
-    # default constructor with args as the first argument and kwargs
-    # as the second argument. The constructor of np.ndarray
-    # requires shape, data type and stride to be passed.
-    def make_dynamic_default(self):
-        return self.default_value
-
-    def __init__(self, *args, **kwargs):
-        self.squeeze = kwargs.pop('squeeze', False)
-        kwargs['default_value'] = self._cast(kwargs.pop('default_value', None))
-
-        super(NdArray, self).__init__(*args, **kwargs)
-        self.tag(to_json=NdArray._to_json, from_json=NdArray._from_json)
-
-    _cast = _convert_to_ndarray
-
+array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
 
 def convert_to_date(array, fmt='%m-%d-%Y'):
     # If array is a np.ndarray with type == np.datetime64, the array can be
@@ -242,6 +159,21 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
     elif(isinstance(array, np.ndarray)):
         warnings.warn("Array could not be converted into a date")
         return array
+
+def array_squeeze(trait, value):
+    if 1 in value.shape and len(value.shape) > 1:
+        value = np.squeeze(value)
+    return value
+
+def array_dimension_bounds(mindim=0, maxdim=np.inf):
+    def validator(trait, value):
+        dim = len(value.shape)
+        if dim < mindim or dim > maxdim:
+            raise TraitError('Dimension mismatch for trait %s of class %s: expected an \
+            array of dimension comprised in interval [%s, %s] and got an array of shape %s'\
+            % (trait.name, trait.this_class, mindim, maxdim, value.shape))
+        return value
+    return validator
 
 
 class PandasDataFrame(Instance):
