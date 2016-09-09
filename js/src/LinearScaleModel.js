@@ -23,7 +23,9 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
         _model_name: "LinearScaleModel",
          _view_name: "LinearScale",
         min: null,
-        max: null
+        max: null,
+        min_range: 0.6,
+        mid_range: 0.8
     }),
 
     initialize: function() {
@@ -41,6 +43,7 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
         this.reverse_changed();
         this.on_some_change(["min", "max"], this.min_max_changed, this);
         this.min_max_changed();
+        this.on_some_change(["min_range", "mid_range", "stabilized"], this.update_domain, this);
     },
 
     min_max_changed: function() {
@@ -75,10 +78,28 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
             this.max : d3.max(_.map(this.domains, function(d) {
                 return d.length > 1 ? d[1] : that.global_min;
             }));
-        var prev_domain = this.domain;
-        var min_index = (this.reverse) ? 1 : 0;
-        if(min !== prev_domain[min_index] || max !== prev_domain[1 - min_index]) {
-            this.domain = (this.reverse) ? [max, min] : [min, max];
+        var mid = (min + max) * 0.5,
+            new_width = (max - min) * 0.5 / this.get("mid_range");
+            prev_domain = this.domain,
+            min_index = (this.reverse) ? 1 : 0,
+            prev_min = prev_domain[min_index],
+            prev_max = prev_domain[1 - min_index],
+            prev_mid = (prev_max + prev_min) * 0.5,
+            min_width = (prev_max - prev_min) * 0.5 * this.get("min_range");
+
+        var stabilized = this.get("stabilized");
+
+        // If the scale is stabilized, only update if the new min/max is without
+        // a certain range, else update as soon as the new min/max is different.
+        var update_domain = stabilized ?
+            (!(min >= prev_min) || !(min <= prev_mid-min_width) ||
+             !(max <= prev_max) || !(max >= prev_mid+min_width)) :
+            (min !== prev_min || max !== prev_max);
+
+        if (update_domain) {
+            var new_min = stabilized ? mid - new_width : min,
+                new_max = stabilized ? mid + new_width : max;
+            this.domain = (this.reverse) ? [new_max, new_min] : [new_min, new_max];
             this.trigger("domain_changed", this.domain);
         }
     },

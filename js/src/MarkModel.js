@@ -67,7 +67,7 @@ var MarkModel = basemodel.BaseModel.extend({
 
     update_domains: function() {
         // update_domains is typically overloaded in each mark to update
-        // the domains related to it's scales
+        // the domains related to its scales
     },
 
     update_scales: function() {
