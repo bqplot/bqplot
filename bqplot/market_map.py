@@ -31,7 +31,7 @@ from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance
 from traittypes import Array, DataFrame
 from ipywidgets import DOMWidget, CallbackDispatcher, Color, widget_serialization
 
-from .traits import array_serialization, dataframe_serialization
+from .traits import array_serialization, dataframe_serialization, dataframe_warn_indexname
 from .marks import CATEGORY10
 
 
@@ -143,7 +143,7 @@ class MarketMap(DOMWidget):
     names = Array([]).tag(sync=True, **array_serialization)
     groups = Array([]).tag(sync=True, **array_serialization)
     display_text = Array(None, allow_none=True).tag(sync=True, **array_serialization)
-    ref_data = DataFrame(None, allow_none=True).tag(sync=True, **dataframe_serialization)
+    ref_data = DataFrame(None, allow_none=True).tag(sync=True, **dataframe_serialization).valid(dataframe_warn_indexname)
     title = Unicode().tag(sync=True)
 
     tooltip_fields = List().tag(sync=True)

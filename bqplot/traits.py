@@ -191,9 +191,17 @@ def dataframe_to_json(df, obj):
     if df is None:
         return None
     else:
-        return df.reset_index().to_dict(orient='records')
+        return df.to_dict(orient='records')
 
 dataframe_serialization = dict(to_json=dataframe_to_json, from_json=dataframe_from_json)
+
+# dataframe validators
+
+def dataframe_warn_indexname(trait, value):
+    if value.index.name is not None:
+        warnings.warn("The '%s' dataframe trait of the %s instance disregards the index name" % (trait.name, trait.this_class))
+        value = value.reset_index()
+    return value
 
 # Series
 
