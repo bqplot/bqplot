@@ -23,8 +23,8 @@ var LabelModel = markmodel.MarkModel.extend({
         _model_name: "LabelModel",
         _view_name: "Label",
 
-        x: [],
-        y: [],
+        x: null,
+        y: null,
         color: null,
         size: null,
         rotation: null,

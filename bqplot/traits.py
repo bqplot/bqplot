@@ -164,7 +164,10 @@ array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
 # array validators
 
 def array_squeeze(trait, value):
-    return np.squeeze(value)
+    if len(value.shape) > 1:
+        return np.squeeze(value)
+    else:
+        return value
 
 def array_dimension_bounds(mindim=0, maxdim=np.inf):
     def validator(trait, value):

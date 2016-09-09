@@ -828,8 +828,8 @@ class Label(Mark):
     name = 'Labels'
 
     # Scaled attributes
-    x = Array([]).tag(sync=True, scaled=True, atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    y = Array([]).tag(sync=True, scaled=True, atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    x = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    y = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
     color = Array(None, allow_none=True).tag(sync=True, scaled=True,
                 rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
     size = Array(None, allow_none=True).tag(sync=True, scaled=True,
@@ -838,7 +838,7 @@ class Label(Mark):
                        rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
     opacity = Array(None, allow_none=True).tag(sync=True, scaled=True,
                       rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    
+
     # Other attributes
     x_offset = Int().tag(sync=True)
     y_offset = Int().tag(sync=True)
