@@ -196,7 +196,7 @@ class Mark(Widget):
         # Validate scales' 'rtype' versus data attribute 'rtype' decoration
         # At this stage it is already validated that all values in self.scales
         # are instances of Scale.
-        scales = proposal['value']
+        scales = proposal.value
         for name in self.trait_names(scaled=True):
             trait = self.traits()[name]
             if name not in scales:
@@ -1029,8 +1029,8 @@ class Pie(Mark):
     color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Other attributes
-    x = (Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)).tag(sync=True)
-    y = (Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)).tag(sync=True)
+    x = (Float(0.5) | Date() | Unicode()).tag(sync=True)
+    y = (Float(0.5) | Date() | Unicode()).tag(sync=True)
 
     scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
     sort = Bool().tag(sync=True)

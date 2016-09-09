@@ -120,14 +120,8 @@ class HandDraw(Interaction):
     lines = Instance(Lines, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
     line_index = Int().tag(sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
-    min_x = (
-            Float(None, allow_none=True).tag(sync=True) |
-            Date(None, allow_none=True).tag(sync=True)
-        ).tag(sync=True)
-    max_x = (
-            Float(None, allow_none=True).tag(sync=True) |
-            Date(None, allow_none=True).tag(sync=True)
-        ).tag(sync=True)
+    min_x = (Float(None, allow_none=True) | Date(None, allow_none=True)).tag(sync=True)
+    max_x = (Float(None, allow_none=True) | Date(None, allow_none=True)).tag(sync=True)
 
     _view_name = Unicode('HandDraw').tag(sync=True)
     _model_name = Unicode('HandDrawModel').tag(sync=True)
@@ -521,8 +515,7 @@ class LassoSelector(TwoDSelector):
     color: Color (default: None)
         Color of the lasso.
     """
-    marks = List(Instance(Lines) | Instance(Scatter)).tag(sync=True,
-                 **widget_serialization)
+    marks = List(Instance(Lines) | Instance(Scatter)).tag(sync=True, **widget_serialization)
     color = Color(None, allow_none=True).tag(sync=True)
 
     def __init__(self, marks=None, **kwargs):
