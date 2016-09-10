@@ -109,7 +109,7 @@ var Axis = widgets.WidgetView.extend({
         var tick_values = this.model.get_typed_field("tick_values");
         var useticks = [];
         if (tick_values !== undefined && tick_values !== null && tick_values.length > 0) {
-            this.axis.tickValues(tick_values);
+            this.axis.tickValues(this.get_ticks(tick_values));
         } else if (this.num_ticks !== undefined && this.num_ticks !== null) {
             this.axis.tickValues(this.get_ticks());
         } else {
