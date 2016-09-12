@@ -189,11 +189,11 @@ var Lines = mark.Mark.extend({
         var curves = this.d3el.selectAll(".curve")
         curves.select(".line")
             .style("opacity", function(d, i) { return opacities[i]; })
-            .style("stroke", function(d, i) { 
-                return that.get_element_color(d, i) || fill_color[i]; 
+            .style("stroke", function(d, i) {
+                return that.get_element_color(d, i) || fill_color[i];
             })
             .style("fill", function(d, i) {
-                return fill === "inside" ? that.get_fill_color(d, i) : ""; 
+                return fill === "inside" ? that.get_fill_color(d, i) : "";
             });
         curves.select(".area")
             .style("fill", function(d, i) { return that.get_fill_color(d, i); })
@@ -239,7 +239,7 @@ var Lines = mark.Mark.extend({
         this.line.interpolate(interpolation);
         this.area.interpolate(interpolation);
         var that = this;
-        this.d3el.selectAll(".curve").selectAll("path")
+        this.d3el.selectAll(".curve").select(".line")
           .attr("d", function(d) {
               return that.line(d.values) + that.path_closure();
           });
