@@ -26,8 +26,9 @@ Figure
    Figure
 """
 
-from traitlets import (Unicode, Instance, List, Dict, CFloat, Bool, Enum,
-                       Float, Int)
+from traitlets import (
+    Unicode, Instance, List, Dict, CFloat, Bool, Enum, Float, Int, default
+)
 from ipywidgets import DOMWidget, register, Color, widget_serialization
 
 from .scales import Scale, LinearScale
@@ -121,10 +122,12 @@ class Figure(DOMWidget):
                            default_value='top-right').tag(sync=True, display_name='Legend position')
     animation_duration = Int().tag(sync=True, display_name='Animation duration')
 
-    def _scale_x_default(self):
+    @default('scale_x')
+    def _default_scale_x(self):
         return LinearScale(min=0, max=1, allow_padding=False)
 
-    def _scale_y_default(self):
+    @default('scale_y')
+    def _default_scale_y(self):
         return LinearScale(min=0, max=1, allow_padding=False)
 
     def save_png(self):

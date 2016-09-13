@@ -80,7 +80,7 @@ class Axis(BaseAxis):
         The scale represented by the axis
     num_ticks: int or None (default: None)
         If tick_values is None, number of ticks
-    tick_values: numpy.ndarray or None (default: [])
+    tick_values: numpy.ndarray or None (default: None)
         Tick values for the axis
     offset: dict (default: {})
         Contains a scale and a value {'scale': scale or None, 'value': value of the offset}

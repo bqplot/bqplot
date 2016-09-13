@@ -196,7 +196,7 @@ class Mark(Widget):
         # Validate scales' 'rtype' versus data attribute 'rtype' decoration
         # At this stage it is already validated that all values in self.scales
         # are instances of Scale.
-        scales = proposal['value']
+        scales = proposal.value
         for name in self.trait_names(scaled=True):
             trait = self.traits()[name]
             if name not in scales:
@@ -606,7 +606,7 @@ class Hist(Mark):
 
     Data Attributes
 
-    sample: numpy.ndarray
+    sample: numpy.ndarray (default: [])
         sample of which the histogram must be computed.
     count: numpy.ndarray (read-only)
         number of sample points per bin. It is a read-only attribute.
@@ -627,7 +627,7 @@ class Hist(Mark):
     # Scaled attributes
     sample = Array([]).tag(sync=True, display_name='Sample', scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
     count = Array([], read_only=True).tag(sync=True, display_name='Count', scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze)
-    normalized = Bool(default_value=False).tag(sync=True)
+    normalized = Bool().tag(sync=True)
 
     # Other attributes
     scales_metadata = Dict({
@@ -666,11 +666,9 @@ class Boxplot(Mark):
 
     Data Attributes
 
-    _y_default: numpy.ndarray
-        default 2 dimensional value for y
-    x: numpy.ndarray
+    x: numpy.ndarray (default: [])
         abscissas of the data points (1d array)
-    y: numpy.ndarray
+    y: numpy.ndarray (default: [[]])
         Sample data points (2d array)
     """
 
@@ -681,9 +679,8 @@ class Boxplot(Mark):
     # Scaled attributes
     x = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
 
-    # Second dimension must contain OHLC data, otherwise the behavior is
-    # undefined.
-    y = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 2))
+    # Second dimension must contain OHLC data, otherwise the behavior is undefined.
+    y = Array([[]]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_dimension_bounds(1, 2))
 
     # Other attributes
     scales_metadata = Dict({
@@ -742,11 +739,11 @@ class Bars(Mark):
 
     Data Attributes
 
-    x: numpy.ndarray
+    x: numpy.ndarray (default: [])
         abscissas of the data points (1d array)
-    y: numpy.ndarray
+    y: numpy.ndarray (default: [])
         ordinates of the values for the data points
-    color: numpy.ndarray
+    color: numpy.ndarray or None (default: None)
         color of the data points (1d array). Defaults to default_color when not
         provided or when a value is NaN
 
@@ -793,20 +790,10 @@ class Label(Mark):
 
     Attributes
     ----------
-    x: Date or float
-        horizontal position of the label, in data coordinates or in figure
-        coordinates
-    y: float or None (default: None)
-        vertical y position of the label, in data coordinates or in figure
-        coordinates
     x_offset: int (default: 0)
         horizontal offset in pixels from the stated x location
     y_offset: int (default: 0)
         vertical offset in pixels from the stated y location
-    color: Color or None (default: None)
-        label color
-    rotate_angle: float (default: 0.0)
-        angle by which the text is to be rotated
     text: string (default: '')
         text to be displayed
     font_size: string (default: '14px')
@@ -819,9 +806,30 @@ class Label(Mark):
         alignment of the text with respect to the provided location
     enable_move: Bool
         Enable the label to be moved by dragging
+
+    Data Attributes
+
+    x: numpy.ndarray (default: [])
+        horizontal position of the labels, in data coordinates or in figure coordinates
+    y: numpy.ndarray (default: [])
+        vertical position of the labels, in data coordinates or in figure coordinates
+    color: numpy.ndarray or None (default: None)
+        label colors
+    size: numpy.ndarray or None (default: None)
+        label sizes
+    rotation: numpy.ndarray or None (default: None)
+        label rotations
+    opacity: numpy.ndarray or None (default: None)
+        label opacities
+
     """
-    x = Array([]).tag(sync=True, atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    y = Array([]).tag(sync=True, atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    # Mark decoration
+    icon = 'fa-font'
+    name = 'Labels'
+
+    # Scaled attributes
+    x = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    y = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
     color = Array(None, allow_none=True).tag(sync=True, scaled=True,
                 rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
     size = Array(None, allow_none=True).tag(sync=True, scaled=True,
@@ -830,6 +838,8 @@ class Label(Mark):
                        rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
     opacity = Array(None, allow_none=True).tag(sync=True, scaled=True,
                       rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+
+    # Other attributes
     x_offset = Int().tag(sync=True)
     y_offset = Int().tag(sync=True)
     scales_metadata = Dict({
@@ -911,11 +921,9 @@ class OHLC(Mark):
 
     Data Attributes
 
-    _y_default: numpy.ndarray
-        default 2 dimensional value for y
     x: numpy.ndarray
         abscissas of the data points (1d array)
-    y: numpy.ndarray
+    y: numpy.ndarrays
         Open/High/Low/Close ordinates of the data points (2d array)
 
     Notes
@@ -938,8 +946,6 @@ class OHLC(Mark):
                 rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
     y = Array([[]]).tag(sync=True, scaled=True,
                 rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_dimension_bounds(1, 2))
-    # FIXME Future warnings
-    _y_default = None
 
     # Other attributes
     scales_metadata = Dict({
@@ -999,11 +1005,10 @@ class Pie(Mark):
 
     Data Attributes
 
-    sizes: numpy.ndarray
+    sizes: numpy.ndarray (default: [])
         proportions of the pie slices
-    color: numpy.ndarray or None
-        color of the data points (1d array). Defaults to colors when not
-        provided
+    color: numpy.ndarray or None (default: None)
+        color of the data points. Defaults to colors when not provided.
 
     Notes
     -----
@@ -1024,8 +1029,8 @@ class Pie(Mark):
     color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Other attributes
-    x = (Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)).tag(sync=True)
-    y = (Float(0.5).tag(sync=True) | Date().tag(sync=True) | Unicode().tag(sync=True)).tag(sync=True)
+    x = (Float(0.5) | Date() | Unicode()).tag(sync=True)
+    y = (Float(0.5) | Date() | Unicode()).tag(sync=True)
 
     scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
     sort = Bool().tag(sync=True)
@@ -1162,10 +1167,10 @@ class GridHeatMap(Mark):
 
     Data Attributes
 
-    color: numpy.ndarray
+    color: numpy.ndarray or None (default: None)
         color of the data points (2d array). The number of elements in this array
         correspond to the number of cells created in the heatmap.
-    row: numpy.ndarray or None
+    row: numpy.ndarray or None (default: None)
         labels for the rows of the `color` array passed. The length of this can be
         no more than 1 away from the number of rows in `color`.
         This is a scaled attribute and can be used to affect the height of the
@@ -1173,7 +1178,7 @@ class GridHeatMap(Mark):
         of the cells. Refer to the property `row_align`.
         If this prorety is None, then a uniformly spaced grid is generated in
         the row direction.
-    column: numpy.ndarray or None
+    column: numpy.ndarray or None (default: None)
         labels for the columns of the `color` array passed. The length of this can be
         no more than 1 away from the number of columns in `color`
         This is a scaled attribute and can be used to affect the width of the
