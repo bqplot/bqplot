@@ -73,3 +73,9 @@ def _jupyter_nbextension_paths():
         'dest': 'bqplot',
         'require': 'bqplot/extension'
     }]
+
+def _jupyter_labextension_paths():
+    return [{
+        'name': 'bqplot',
+        'src': 'staticlab',
+    }]
