@@ -12,6 +12,22 @@ var loaders = [
     { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=image/svg+xml" }
 ];
 
+var buildExtension = require('jupyterlab-extension-builder/lib/builder').buildExtension;
+
+buildExtension({
+  name: 'bqplot',
+  entry: './src/labplugin',
+  outputDir: '../bqplot/staticlab',
+  config: {
+    module: {
+      loaders: [
+          { test: /\.less$/, loader: "style-loader!css-loader!less-loader" },
+        ]
+    }
+  }
+});
+
+
 module.exports = [
     {// Notebook extension
         entry: './src/extension.js',

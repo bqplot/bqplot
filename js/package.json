@@ -18,6 +18,7 @@
     "file-loader": "^0.8.5",
     "imports-loader": "^0.6.5",
     "json-loader": "^0.5.4",
+    "jupyterlab-extension-builder": "^0.4.1",
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
     "rimraf": "^2.4.1",
@@ -27,7 +28,8 @@
   "dependencies": {
     "d3": "^3.5.16",
     "jquery": "^2.1.4",
-    "jupyter-js-widgets": "^1.0.0",
+    "jupyter-js-widgets": "^2.0.0-dev.20",
+    "jupyterlab": "^0.3.0",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   }
