@@ -1,0 +1,5 @@
+name: bqplot
+channels:
+  - conda-forge
+dependencies:
+  - bqplot
