@@ -1,7 +1,7 @@
 bqplot
 ======
 
-bqplot is a Grammar of Graphics based interactive plotting framework for the Jupyter notebook.
+bqplot is a Grammar of Graphics-based interactive plotting framework for the Jupyter notebook.
 
 [![bqplot](./bqplot-screencast.gif)](https://github.com/bloomberg/bqplot/blob/master/examples/Applications/Wealth%20of%20Nations.ipynb)
 
@@ -25,6 +25,10 @@ Two APIs are provided
 
 Getting Started
 ---------------
+
+### Try it online
+
+[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org:/repo/bloomberg/bqplot/notebooks/examples)
 
 ### Dependencies
 
