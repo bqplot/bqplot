@@ -30,8 +30,12 @@ Getting Started
 
 This package depends on the following packages:
 
--   `numpy`
--   `ipywidgets` (version >=5.0.0)
+- `ipywidgets` (version >= 5.2.2)
+- `traitlets` (version >= 4.3.0)
+- `traittypes` 
+- `numpy`
+- `pandas`
+
 
 ### Installation
 
