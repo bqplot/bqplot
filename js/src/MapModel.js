@@ -55,9 +55,7 @@ var MapModel = markmodel.MarkModel.extend({
 
     update_data: function() {
         this.dirty = true;
-        var mapdata = this.get("map_data");
-        this.geodata = mapdata[0];
-        this.subunits = mapdata[1];
+        this.geodata = this.get("map_data");
         this.color_data_updated();
         this.dirty = false;
         this.trigger("data_updated");
@@ -92,21 +90,8 @@ var MapModel = markmodel.MarkModel.extend({
         }
     },
 
-    get_subunit_name: function(id) {
-        for(var i = 0; i< this.subunits.length; i++) {
-            if(id == this.subunits[i].id){
-                name = this.subunits[i].Name;
-            }
-        }
-        return name;
-    },
-
     get_data_dict: function(data, index) {
-        return {
-            id: data.id,
-            name: this.get_subunit_name(data.id),
-            color: data.properties.color
-        };
+        return _.extend(data.properties, {'id': data.id});
     }
 });
 

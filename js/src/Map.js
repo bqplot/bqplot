@@ -171,7 +171,6 @@ var Map = mark.Mark.extend({
         var el = d3.select(d3.event.target);
         if(this.is_hover_element(el)) {
             var data = el.data()[0];
-            var name = this.model.get_subunit_name(data.id);
             var idx = this.model.get("selected");
             var selected = idx ? utils.deepCopy(idx) : [];
             var elem_index = selected.indexOf(data.id);
