@@ -13,16 +13,22 @@
  * limitations under the License.
  */
 
-var jlab = require('jupyterlab/lib/application');
-
 var bqplot = require('./index');
+
+var jupyterlab_widgets = require('jupyterlab_widgets/lib/plugin');
 
 /**
  * The widget manager provider.
  */
 module.exports = {
   id: 'jupyter.extensions.bqplot',
-  //requires: [IDocumentRegistry],
-  activate: function() {console.log('bqplot loaded');},
+  requires: [jupyterlab_widgets.IIPyWidgetExtension],
+  activate: function(app, widgets) {
+      widgets.registerWidget({
+          name: 'bqplot',
+          version: bqplot.version,
+          exports: bqplot
+      });
+    },
   autoStart: true
 };

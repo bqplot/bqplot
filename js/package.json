@@ -30,6 +30,7 @@
     "jquery": "^2.1.4",
     "jupyter-js-widgets": "^2.0.0-dev.20",
     "jupyterlab": "^0.3.0",
+    "jupyterlab_widgets": "^0.1.0",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   }
