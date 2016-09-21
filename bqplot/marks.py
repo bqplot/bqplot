@@ -1123,7 +1123,7 @@ class Map(Mark):
         'selected_stroke_width': 2.0
     }).tag(sync=True)
 
-    map_data = Dict(topo_load('map_data/WorldMapData.json')).tag(sync=True)
+    map_data = Dict(topo_load('map_data/WorldMap.json')).tag(sync=True)
 
     _view_name = Unicode('Map').tag(sync=True)
     _model_name = Unicode('MapModel').tag(sync=True)
