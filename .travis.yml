@@ -7,6 +7,9 @@ python:
     - 3.5
 install:
   - sudo apt-get update
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
@@ -23,8 +26,7 @@ install:
   - conda info -a
   - conda env create -f test-environment.yml
   - source activate bqplot-test
-  - python setup.py install
-
+  - pip install . coveralls
 script:
     - nosetests --with-coverage --cover-package bqplot
 after_success:
