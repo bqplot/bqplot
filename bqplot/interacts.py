@@ -254,7 +254,7 @@ class FastIntervalSelector(OneDSelector):
     ----------
     selected: numpy.ndarray
         Two-element array containing the start and end of the interval selected
-        in terms of the scale of the selector. This is a read-only attribute.
+        in terms of the scale of the selector.
     color: Color or None (default: None)
         color of the rectangle representing the interval selector
     size: Float or None (default: None)
@@ -322,7 +322,7 @@ class BrushIntervalSelector(OneDSelector):
     ----------
     selected: numpy.ndarray
         Two element array containing the start and end of the interval selected
-        in terms of the scale of the selector. This is a read-only attribute.
+        in terms of the scale of the selector.
         This attribute changes while the selection is being made with the
         ``BrushIntervalSelector``.
     brushing: bool
@@ -362,7 +362,7 @@ class BrushSelector(TwoDSelector):
     ----------
     selected: numpy.ndarray
         Two element array containing the start and end of the interval selected
-        in terms of the scales of the selector. This is a read-only attribute.
+        in terms of the scales of the selector.
         This attribute changes while the selection is being made with the
         ``BrushIntervalSelector``.
     brushing: bool (default: False)
