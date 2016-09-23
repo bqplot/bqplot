@@ -15,6 +15,7 @@
 
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var topojson = require("topojson");
 
 var MapModel = markmodel.MarkModel.extend({
 
@@ -55,21 +56,30 @@ var MapModel = markmodel.MarkModel.extend({
 
     update_data: function() {
         this.dirty = true;
-        this.geodata = this.get("map_data");
+        var data = this.get("map_data");
+        if (data.type == 'Topology') {
+            this.geodata = topojson.feature(data, data.objects.subunits).features;
+        } else {
+            this.geodata = data.features;
+        }
         this.color_data_updated();
         this.dirty = false;
         this.trigger("data_updated");
     },
 
+    update_properties: function(d) {
+        if (!d.properties) {
+            d.properties = {"color": this.color_data[d.id]};
+        } else {
+            d.properties.color = this.color_data[d.id];
+        }
+    },
+
     color_data_updated: function() {
         var that = this;
         this.update_domains();
-        this.geodata.objects.subunits.geometries.map(function (d) {
-            if (!d.properties) {
-                d.properties = {'color': that.color_data[d.id]};
-            } else {
-                d.properties.color = that.color_data[d.id];
-            }
+        this.geodata.map(function(d) {
+            return that.update_properties(d)
         });
     },
 
