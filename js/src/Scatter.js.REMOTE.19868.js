@@ -31,9 +31,8 @@ var Scatter = scatterbase.ScatterBase.extend({
         return Scatter.__super__.render.apply(this);
     },
 
-    create_listeners: function() {
-        Scatter.__super__.create_listeners.apply(this);
-        this.listenTo(this.model, "change:colors", this.update_colors, this);
+    create_additional_listeners: function() {
+        this.listenTo(this.model, "change:default_colors", this.update_default_colors, this);
         this.listenTo(this.model, "change:stroke", this.update_stroke, this);
         this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
         this.listenTo(this.model, "change:default_opacities", this.update_default_opacities, this);
@@ -45,7 +44,7 @@ var Scatter = scatterbase.ScatterBase.extend({
         this.listenTo(this.model, "change:display_names", this.update_display_names, this);
     },
 
-    update_colors: function(model, new_colors) {
+    update_default_colors: function(model, new_colors) {
         if(!this.model.dirty) {
             var that = this,
                 stroke = this.model.get("stroke"),
@@ -78,15 +77,15 @@ var Scatter = scatterbase.ScatterBase.extend({
 
     update_fill: function(model, fill) {
         var that = this,
-            colors = this.model.get("colors"),
-            len = colors.length;
+            default_colors = this.model.get("default_colors"),
+            len = default_colors.length;
         this.d3el.selectAll(".dot").style("fill", fill  ? function(d, i) {
             return that.get_element_color(d, i);
         } : "none");
         if (this.legend_el) {
             this.legend_el.selectAll("path")
                 .style("fill", fill  ? function(d, i) {
-                    return colors[i % len];
+                    return default_colors[i % len];
                 } : "none");
         }
     },
@@ -120,8 +119,8 @@ var Scatter = scatterbase.ScatterBase.extend({
     update_default_opacities: function(animate) {
         if (!this.model.dirty) {
             var default_opacities = this.model.get("default_opacities");
-            var colors = this.model.get("colors");
-            var len = colors.length;
+            var default_colors = this.model.get("default_colors");
+            var len = default_colors.length;
             var len_opac = default_opacities.length;
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
@@ -139,7 +138,7 @@ var Scatter = scatterbase.ScatterBase.extend({
                     return default_opacities[i % len_opac];
                 })
                 .style("fill", function(d, i) {
-                    return colors[i % len];
+                    return default_colors[i % len];
                 });
             }
         }
@@ -183,7 +182,6 @@ var Scatter = scatterbase.ScatterBase.extend({
                 }));
         }
     },
-
     color_scale_updated: function(animate) {
         var that = this,
             fill = this.model.get("fill"),
@@ -209,7 +207,7 @@ var Scatter = scatterbase.ScatterBase.extend({
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
         var elements = this.d3el.selectAll(".object_grp")
 
-        elements_added.append("path").attr("class", "dot element");
+        elements_added.append("path").attr("class", "dot");
         elements_added.append("text").attr("class", "dot_text");
         elements.select("path").transition()
             .duration(animation_duration)
@@ -229,10 +227,9 @@ var Scatter = scatterbase.ScatterBase.extend({
 
         this.apply_styles();
     },
-
     draw_legend_elements: function(elements_added, rect_dim) {
-        var colors = this.model.get("colors"),
-            len = colors.length,
+        var default_colors = this.model.get("default_colors"),
+            len = default_colors.length,
             stroke = this.model.get("stroke");
 
         var rect_dim = inter_y_disp * 0.8;
@@ -244,37 +241,13 @@ var Scatter = scatterbase.ScatterBase.extend({
           .attr("d", this.dot.size(64))
           .style("fill", this.model.get("fill")  ?
                 function(d, i) {
-                    return colors[i % len];
+                    return default_colors[i % len];
                 } : "none")
           .style("stroke", stroke ? stroke :
                 function(d, i) {
-                    return colors[i % len];
+                    return default_colors[i % len];
                 }
           );
-    },
-
-    set_default_style: function(indices) {
-        // For all the elements with index in the list indices, the default
-        // style is applied.
-        if(!indices || indices.length === 0) {
-            return;
-        }
-        var elements = this.d3el.selectAll(".element").filter(function(data, index) {
-            return indices.indexOf(index) !== -1;
-        });
-        var fill = this.model.get("fill"),
-            stroke = this.model.get("stroke"),
-            stroke_width = this.model.get("stroke_width"),
-            that = this;
-        elements
-          .style("fill", fill ? function(d, i) {
-             return that.get_element_color(d, i);
-          } : "none")
-          .style("stroke", stroke ? stroke : function(d, i) {
-              return that.get_element_color(d, i);
-          }).style("opacity", function(d, i) {
-              return that.get_element_opacity(d, i);
-          }).style("stroke-width", stroke_width);
     },
 
     set_drag_style: function(d, i, dragged_node) {

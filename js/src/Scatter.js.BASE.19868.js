@@ -17,14 +17,21 @@ var d3 = require("d3");
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
+var markers = require("./Markers");
 
 var min_size = 10;
 
+var bqSymbol = markers.symbol;
 
-var ScatterBase = mark.Mark.extend({
+var Scatter = mark.Mark.extend({
 
     render: function() {
-        var base_creation_promise = ScatterBase.__super__.render.apply(this);
+        var base_creation_promise = Scatter.__super__.render.apply(this);
+
+        this.dot = bqSymbol()
+          .type(this.model.get("marker"))
+          .size(this.model.get("default_size"))
+          .skew(this.model.get("default_skew"));
 
         var that = this;
         this.drag_listener = d3.behavior.drag()
@@ -40,7 +47,7 @@ var ScatterBase = mark.Mark.extend({
         this.unhovered_style = this.model.get("unhovered_style");
         this.hovered_index = (!this.model.get("hovered_point")) ? null: [this.model.get("hovered_point")];
 
-        this.display_el_classes = ["dot", "legendtext"]; //FIXME
+        this.display_el_classes = ["dot", "legendtext"];
         this.event_metadata = {
             "mouse_over": {
                 "msg_name": "hover",
@@ -113,24 +120,18 @@ var ScatterBase = mark.Mark.extend({
     },
 
     set_positional_scales: function() {
-        this.x_scale = this.scales.x;
-        this.y_scale = this.scales.y;
-        // If no scale for "x" or "y" is specified, figure scales are used.
-        if(!this.x_scale) {
-            this.x_scale = this.parent.scale_x;
-        }
-        if(!this.y_scale) {
-            this.y_scale = this.parent.scale_y;
-        }
-        this.listenTo(this.x_scale, "domain_changed", function() {
+        var x_scale = this.scales.x,
+            y_scale = this.scales.y;
+        this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) {
                 var animate = true;
-                this.update_position(animate); }
+                this.update_xy_position(animate); }
         });
-        this.listenTo(this.y_scale, "domain_changed", function() {
+        this.listenTo(y_scale, "domain_changed", function() {
             if (!this.model.dirty) {
                 var animate = true;
-                this.update_position(animate); }
+                this.update_xy_position(animate);
+            }
         });
     },
 
@@ -173,13 +174,13 @@ var ScatterBase = mark.Mark.extend({
         if (rotation_scale) {
             this.listenTo(rotation_scale, "domain_changed", function() {
                 var animate = true;
-                this.update_position(animate);
+                this.update_xy_position(animate);
             });
         }
     },
 
     create_listeners: function() {
-        ScatterBase.__super__.create_listeners.apply(this);
+        Scatter.__super__.create_listeners.apply(this);
         this.d3el.on("mouseover", _.bind(function() {
               this.event_dispatcher("mouse_over");
           }, this))
@@ -190,11 +191,21 @@ var ScatterBase = mark.Mark.extend({
               this.event_dispatcher("mouse_out");
           }, this));
 
+        this.listenTo(this.model, "change:default_colors", this.update_default_colors, this);
+        this.listenTo(this.model, "change:stroke", this.update_stroke, this);
+        this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
+        this.listenTo(this.model, "change:default_opacities", this.update_default_opacities, this);
+        this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
+        this.listenTo(this.model, "change:default_rotation", this.update_xy_position, this);
         this.listenTo(this.model, "data_updated", function() {
             //animate dots on data update
             var animate = true;
             this.draw(animate);
         }, this);
+        this.listenTo(this.model, "change:marker", this.update_marker, this);
+        this.listenTo(this.model, "change:default_size", this.update_default_size, this);
+        this.listenTo(this.model, "change:fill", this.update_fill, this);
+        this.listenTo(this.model, "change:display_names", this.update_display_names, this);
         this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
         this.listenTo(this.model, "change:enable_hover", function() { this.hide_tooltip(); }, this);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
@@ -208,6 +219,146 @@ var ScatterBase = mark.Mark.extend({
         });
     },
 
+    update_default_colors: function(model, new_colors) {
+        if(!this.model.dirty) {
+            var that = this,
+                stroke = this.model.get("stroke"),
+                len = new_colors.length;
+            this.d3el.selectAll(".dot")
+            .style("fill", this.model.get("fill") ?
+                function(d, i) {
+                    return that.get_element_color(d, i);
+                } : "none")
+            .style("stroke", stroke ? stroke : function(d, i) {
+                return that.get_element_color(d, i);
+            });
+
+            if (this.legend_el) {
+                this.legend_el.select("path")
+                .style("fill", function(d, i) {
+                    return new_colors[i % len];
+                })
+                .style("stroke", stroke ? stroke : function(d, i) {
+                        return new_colors[i % len];
+                    }
+                );
+                this.legend_el.select("text")
+                .style("fill", this.model.get("fill") ? function(d, i) {
+                    return new_colors[i % len];
+                } : "none");
+            }
+        }
+    },
+
+    update_fill: function(model, fill) {
+        var that = this,
+            default_colors = this.model.get("default_colors"),
+            len = default_colors.length;
+        this.d3el.selectAll(".dot").style("fill", fill  ? function(d, i) {
+            return that.get_element_color(d, i);
+        } : "none");
+        if (this.legend_el) {
+            this.legend_el.selectAll("path")
+                .style("fill", fill  ? function(d, i) {
+                    return default_colors[i % len];
+                } : "none");
+        }
+    },
+
+    update_stroke_width: function() {
+        var stroke_width = this.model.get("stroke_width");
+
+        this.d3el.selectAll(".dot")
+          .style("stroke-width", stroke_width);
+
+        if (this.legend_el) {
+            this.legend_el.selectAll("path")
+              .style("stroke-width", stroke_width);
+        }
+    },
+
+    update_stroke: function(model, fill) {
+        var that = this,
+            stroke = this.model.get("stroke");
+        this.d3el.selectAll(".dot")
+            .style("stroke", stroke ? stroke : function(d, i) {
+                return that.get_element_color(d, i);
+            });
+
+        if (this.legend_el) {
+            this.legend_el.selectAll("path")
+                .style("stroke", stroke);
+        }
+    },
+
+    update_default_opacities: function(animate) {
+        if (!this.model.dirty) {
+            var default_opacities = this.model.get("default_opacities");
+            var default_colors = this.model.get("default_colors");
+            var len = default_colors.length;
+            var len_opac = default_opacities.length;
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+
+            // update opacity scale range?
+            var that = this;
+            this.d3el.selectAll(".dot")
+                .transition()
+                .duration(animation_duration)
+                .style("opacity", function(d, i) {
+                    return that.get_element_opacity(d, i);
+                });
+            if (this.legend_el) {
+                this.legend_el.select("path")
+                .style("opacity", function(d, i) {
+                    return default_opacities[i % len_opac];
+                })
+                .style("fill", function(d, i) {
+                    return default_colors[i % len];
+                });
+            }
+        }
+    },
+
+    update_marker: function(model, marker) {
+        if (!this.model.dirty) {
+            this.d3el.selectAll(".dot")
+                .transition()
+                .duration(this.parent.model.get("animation_duration"))
+                .attr("d", this.dot.type(marker));
+            if (this.legend_el) {
+                this.legend_el.select("path")
+                    .attr("d", this.dot.type(marker));
+            }
+        }
+    },
+
+    update_default_skew: function(animate) {
+        if (!this.model.dirty) {
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            var that = this;
+            this.d3el.selectAll(".dot")
+                .transition()
+                .duration(animation_duration)
+                .attr("d", this.dot.skew(function(d) {
+                    return that.get_element_skew(d);
+                }));
+        }
+    },
+    update_default_size: function(animate) {
+        this.compute_view_padding();
+        // update size scale range?
+        if (!this.model.dirty) {
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            var that = this;
+            this.d3el.selectAll(".dot")
+                .transition()
+                .duration(animation_duration)
+                .attr("d", this.dot.size(function(d) {
+                    return that.get_element_size(d);
+                }));
+        }
+    },
+
     // The following three functions are convenience functions to get
     // the fill color / opacity / size of an element given the data.
     // In fact they are more than convenience functions as they limit the
@@ -215,12 +366,12 @@ var ScatterBase = mark.Mark.extend({
     // keep consistent across different places where we use it.
     get_element_color: function(data, index) {
         var color_scale = this.scales.color;
-        var colors = this.model.get("colors");
-        var len = colors.length;
+        var default_colors = this.model.get("default_colors");
+        var len = default_colors.length;
         if(color_scale && data.color !== undefined && data.color !== null) {
             return color_scale.scale(data.color);
         }
-        return colors[index % len];
+        return default_colors[index % len];
     },
 
     get_element_size: function(data) {
@@ -255,12 +406,31 @@ var ScatterBase = mark.Mark.extend({
             "rotate(" + rotation_scale.scale(d.rotation) + ")";
     },
 
-    relayout: function() {
-        this.set_ranges();
-        this.update_position();
+    color_scale_updated: function(animate) {
+        var that = this,
+            fill = this.model.get("fill"),
+            stroke = this.model.get("stroke");
+            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+
+        this.d3el.selectAll(".object_grp")
+          .select("path")
+          .transition()
+          .duration(animation_duration)
+          .style("fill", fill ?
+              function(d, i) {
+                  return that.get_element_color(d, i);
+              } : "none")
+          .style("stroke", stroke ? stroke : function(d, i) {
+                  return that.get_element_color(d, i);
+              });
     },
 
-    update_position: function(animate) {
+    relayout: function() {
+        this.set_ranges();
+        this.update_xy_position();
+    },
+
+    update_xy_position: function(animate) {
         var x_scale = this.scales.x, y_scale = this.scales.y;
         var that = this;
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
@@ -286,11 +456,22 @@ var ScatterBase = mark.Mark.extend({
 
         var elements = this.d3el.selectAll(".object_grp")
             .data(this.model.mark_data, function(d) { return d.unique_id; });
-
         var elements_added = elements.enter().append("g")
             .attr("class", "object_grp")
+            .attr("transform", function(d) {
+                return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
+                                "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
+                       that.get_element_rotation(d);
+            });
 
-        this.update_position(animate);
+        elements_added.append("path").attr("class", "dot");
+        elements_added.append("text").attr("class", "dot_text");
+        elements.select("path").transition()
+            .duration(animation_duration)
+            .attr("d", this.dot
+                .size(function(d) { return that.get_element_size(d); })
+                .skew(function(d) { return that.get_element_skew(d); }));
+        this.update_xy_position(animate);
 
         this.set_drag_behavior();
         elements.on("click", _.bind(function(d, i) {
@@ -299,12 +480,21 @@ var ScatterBase = mark.Mark.extend({
         }, this));
 	    elements.on("mouseover", _.bind(function(d, i) {
 		    this.scatter_hover_handler({"data": d, "index": i});
+            this.apply_styles();
 	    }, this));
 	    elements.on("mouseout", _.bind(function() {
 		    this.reset_hover();
+            this.apply_styles();
 	    }, this));
+        var names = this.model.get_typed_field("names"),
+            text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
+            show_names = (this.model.get("display_names") && names.length !== 0);
 
-        this.draw_elements(animate, elements_added)
+        elements.select("text")
+            .text(function(d) { return d.name; })
+            .attr("transform", function(d) {
+                return "translate(" + (text_loc) + "," + (-text_loc) + ")";})
+            .attr("display", function(d) { return (show_names) ? "inline": "none"; });
 
         // Removed the transition on exit as it was causing issues.
         // Elements are not removed until the transition is complete and
@@ -312,9 +502,8 @@ var ScatterBase = mark.Mark.extend({
         // The only way to call the function after all of the elements are
         // removed is round-about and doesn't look very nice visually.
         elements.exit().remove();
+        this.apply_styles();
     },
-
-    draw_elements: function(animate, elements_added) {},
 
     process_interactions: function() {
         var interactions = this.model.get("interactions");
@@ -462,8 +651,9 @@ var ScatterBase = mark.Mark.extend({
     draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         this.legend_el = elem.selectAll(".legend" + this.uuid)
           .data([this.model.mark_data[0]]);
-        var colors = this.model.get("colors"),
-            len = colors.length;
+        var default_colors = this.model.get("default_colors"),
+            len = default_colors.length,
+            stroke = this.model.get("stroke");
 
         var that = this;
         var rect_dim = inter_y_disp * 0.8;
@@ -482,8 +672,20 @@ var ScatterBase = mark.Mark.extend({
             .on("click", _.bind(function() {
                 this.event_dispatcher("legend_clicked");
             }, this));
-
-        this.draw_legend_elements(el_added, rect_dim)
+        el_added.append("path")
+          .attr("transform", function(d, i) {
+              return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
+          })
+          .attr("d", this.dot.size(64))
+          .style("fill", this.model.get("fill")  ?
+                function(d, i) {
+                    return default_colors[i % len];
+                } : "none")
+          .style("stroke", stroke ? stroke :
+                function(d, i) {
+                    return default_colors[i % len];
+                }
+          );
 
         this.legend_el.append("text")
           .attr("class","legendtext")
@@ -494,7 +696,7 @@ var ScatterBase = mark.Mark.extend({
               return that.model.get("labels")[i];
           })
           .style("fill", function(d, i) {
-              return colors[i % len];
+              return default_colors[i % len];
           });
 
         var max_length = d3.max(this.model.get("labels"), function(d) {
@@ -504,8 +706,6 @@ var ScatterBase = mark.Mark.extend({
         this.legend_el.exit().remove();
         return [1, max_length];
     },
-
-    draw_legend_elements: function(elements_added, rect_dim) {},
 
     update_display_names: function(model, value) {
         var names = this.model.get_typed_field("names"),
@@ -584,7 +784,7 @@ var ScatterBase = mark.Mark.extend({
     },
 
     apply_styles: function() {
-        ScatterBase.__super__.apply_styles.apply(this);
+        Scatter.__super__.apply_styles.apply(this);
 
         var all_indices = _.range(this.model.mark_data.length);
 
@@ -592,27 +792,6 @@ var ScatterBase = mark.Mark.extend({
         var unhovered_indices = (!this.hovered_index) ?
             [] : _.difference(all_indices, this.hovered_index);
         this.set_style_on_elements(this.unhovered_style, unhovered_indices);
-    },
-
-    clear_style: function(style_dict, indices) {
-        // Function to clear the style of a dict on some or all the elements of the
-        // chart.If indices is null, clears the style on all elements. If
-        // not, clears on only the elements whose indices are mathcing.
-        //
-        // This function is not used right now. But it can be used if we
-        // decide to accomodate more properties than those set by default.
-        // Because those have to cleared specifically.
-        var elements = this.d3el.selectAll(".element");
-        if(indices) {
-            elements = elements.filter(function(d, index) {
-                return indices.indexOf(index) !== -1;
-            });
-        }
-        var clearing_style = {};
-        for(var key in style_dict) {
-            clearing_style[key] = null;
-        }
-        elements.style(clearing_style);
     },
 
     set_style_on_elements: function(style, indices) {
@@ -625,11 +804,56 @@ var ScatterBase = mark.Mark.extend({
         if(Object.keys(style).length === 0) {
             return;
         }
-        var elements = this.d3el.selectAll(".element");
+        var elements = this.d3el.selectAll(".dot");
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
         elements.style(style);
+    },
+
+    set_default_style: function(indices) {
+        // For all the elements with index in the list indices, the default
+        // style is applied.
+        if(!indices || indices.length === 0) {
+            return;
+        }
+        var elements = this.d3el.selectAll(".dot").filter(function(data, index) {
+            return indices.indexOf(index) !== -1;
+        });
+        var fill = this.model.get("fill"),
+            stroke = this.model.get("stroke"),
+            stroke_width = this.model.get("stroke_width"),
+            that = this;
+        elements
+          .style("fill", fill ? function(d, i) {
+             return that.get_element_color(d, i);
+          } : "none")
+          .style("stroke", stroke ? stroke : function(d, i) {
+              return that.get_element_color(d, i);
+          }).style("opacity", function(d, i) {
+              return that.get_element_opacity(d, i);
+          }).style("stroke-width", stroke_width);
+    },
+
+    clear_style: function(style_dict, indices) {
+        // Function to clear the style of a dict on some or all the elements of the
+        // chart.If indices is null, clears the style on all elements. If
+        // not, clears on only the elements whose indices are mathcing.
+        //
+        // This function is not used right now. But it can be used if we
+        // decide to accomodate more properties than those set by default.
+        // Because those have to cleared specifically.
+        var elements = this.d3el.selectAll(".dot");
+        if(indices) {
+            elements = elements.filter(function(d, index) {
+                return indices.indexOf(index) !== -1;
+            });
+        }
+        var clearing_style = {};
+        for(var key in style_dict) {
+            clearing_style[key] = null;
+        }
+        elements.style(clearing_style);
     },
 
     compute_view_padding: function() {
@@ -714,19 +938,27 @@ var ScatterBase = mark.Mark.extend({
         }
     },
 
-    set_drag_style: function(d, i, dragged_node) {},
-
-    reset_drag_style: function(d, i, dragged_node) {},
-
     drag_start: function(d, i, dragged_node) {
         // d[0] and d[1] will contain the previous position (in pixels)
         // of the dragged point, for the length of the drag event
         var x_scale = this.scales.x, y_scale = this.scales.y;
         d[0] = x_scale.scale(d.x) + x_scale.offset;
         d[1] = y_scale.scale(d.y) + y_scale.offset;
+        var dragged_size = this.model.get("drag_size") * this.model.get("default_size");
 
-        this.set_drag_style(d, i, dragged_node)
+        d3.select(dragged_node)
+          .select("path")
+          .classed("drag_scatter", true)
+          .transition()
+          .attr("d", this.dot.size(dragged_size));
 
+        var drag_color = this.model.get("drag_color");
+        if (drag_color) {
+            d3.select(dragged_node)
+              .select("path")
+              .style("fill", drag_color)
+              .style("stroke", drag_color);
+        }
         this.send({
             event: "drag_start",
             point: {x : d.x, y: d.y},
@@ -741,8 +973,8 @@ var ScatterBase = mark.Mark.extend({
         var restrict_x = this.model.get("restrict_x"),
             restrict_y = this.model.get("restrict_y");
         if (restrict_x && restrict_y) { return; }
-        if (!restrict_y) { d[0] = d3.event.x; }
-        if (!restrict_x) { d[1] = d3.event.y; }
+        if (!restrict_x) { d[0] = d3.event.x; }
+        if (!restrict_y) { d[1] = d3.event.y; }
 
         d3.select(dragged_node)
           .attr("transform", function() {
@@ -764,9 +996,23 @@ var ScatterBase = mark.Mark.extend({
     },
 
     drag_ended: function(d, i, dragged_node) {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        var stroke = this.model.get("stroke"),
+            original_color = this.get_element_color(d, i),
+            x_scale = this.scales.x,
+            y_scale = this.scales.y;
 
-        this.reset_drag_style(d, i, dragged_node);
+        d3.select(dragged_node)
+          .select("path")
+          .classed("drag_scatter", false)
+          .transition()
+          .attr("d", this.dot.size(this.get_element_size(d)));
+
+        if (this.model.get("drag_color")) {
+            d3.select(dragged_node)
+              .select("path")
+              .style("fill", original_color)
+              .style("stroke", stroke ? stroke : original_color);
+        }
         this.update_array(d, i);
         this.send({
             event: "drag_end",
@@ -802,12 +1048,12 @@ var ScatterBase = mark.Mark.extend({
         this.model.set_typed_field("x", x_data);
         this.model.set_typed_field("y", y_data);
         this.touch();
-        // adding the point and saving the model automatically triggers a
-        // draw which adds the new point because the data now has a new
-        // point
+        //adding the point and saving the model automatically triggers a
+        //draw which adds the new point because the data now has a new
+        //point
     }
 });
 
 module.exports = {
-    ScatterBase: ScatterBase
+    Scatter: Scatter
 };

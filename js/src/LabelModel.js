@@ -15,32 +15,17 @@
 
 var d3 = require("d3");
 var _ = require("underscore");
-var markmodel = require("./MarkModel");
+var basemodel = require("./ScatterBaseModel");
 
-var LabelModel = markmodel.MarkModel.extend({
+var LabelModel = basemodel.ScatterBaseModel.extend({
 
     defaults: function () {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
-            _model_name: "LabelModel",
+        return _.extend(basemodel.ScatterBaseModel.prototype.defaults(), {
+            _model_name: "LabelModel",            
             _view_name: "Label",
 
-            x: null,
-            y: null,
-            color: null,
-            size: null,
-            rotation: null,
-            opacity: null,
             x_offset: 0,
             y_offset: 0,
-            scales_metadata: {
-                x: { orientation: "horizontal", dimension: "x" },
-                y: { orientation: "vertical", dimension: "y" },
-                size: { dimension: "size"},
-                color: { dimension: "color" },
-                opacity: { dimension: "opacity" }
-            },
-            colors: [],
-            default_opacities: [],
             rotate_angle: 0.0,
             text: [],
             font_size: 16.0,
@@ -48,77 +33,20 @@ var LabelModel = markmodel.MarkModel.extend({
             drag_size: 1.0,
             font_weight: "bold",
             align: "start",
-            enable_move: false,
-            restrict_x: false,
-            restrict_y: false,
-            update_on_move: false
         });
     },
 
     initialize: function() {
         // TODO: Normally, color, opacity and size should not require a redraw
         LabelModel.__super__.initialize.apply(this, arguments);
-        this.on_some_change(["x", "y", "color", "size", "rotation", "opacity", "text"], this.update_data, this);
-        // FIXME: replace this with on("change:preserve_domain"). It is not done here because
-        // on_some_change depends on the GLOBAL backbone on("change") handler which
-        // is called AFTER the specific handlers on("change:foobar") and we make that
-        // assumption.
-        this.on_some_change(["preserve_domain"], this.update_domains, this);
-        this.update_data();
-        this.update_unique_ids();
-        this.update_domains();
+        this.on("change:text", this.update_data, this);
     },
 
-    update_data: function() {
-        this.dirty = true;
-        var x_data = this.get_typed_field("x"),
-            y_data = this.get_typed_field("y"),
-            text = this.get_typed_field("text"),
-            scales = this.get("scales"),
-            x_scale = scales.x,
-            y_scale = scales.y,
-            color_scale = scales.color;
+    update_mark_data: function() {
+        LabelModel.__super__.update_mark_data.apply(this);
+        var text = this.get_typed_field("text");
 
-        if (x_data.length === 0 || y_data.length === 0) {
-            this.mark_data = [];
-        } else {
-            //FIXME:Temporary fix to avoid misleading NaN error due to X and Y
-            //being of different lengths. In particular, if Y is of a smaller
-            //length, throws an error on the JS side
-            var min_len = Math.min(x_data.length, y_data.length);
-            x_data = x_data.slice(0, min_len);
-
-            var color = this.get_typed_field("color"),
-                size = this.get_typed_field("size"),
-                opacity = this.get_typed_field("opacity"),
-                rotation = this.get_typed_field("rotation");
-
-
-            if(color_scale) {
-                if(!this.get("preserve_domain").color) {
-                    color_scale.compute_and_set_domain(color, this.id + "_color");
-                } else {
-                    color_scale.del_domain([], this.id + "_color");
-                }
-            }
-
-            this.mark_data = x_data.map(function(d, i) {
-                return {
-                    x: d,
-                    y: y_data[i],
-                    text: text[i],
-                    color: color[i],
-                    size: size[i],
-                    rotation: rotation[i],
-                    opacity: opacity[i],
-                    index: i
-                };
-            });
-        }
-        this.update_unique_ids();
-        this.update_domains();
-        this.dirty = false;
-        this.trigger("data_updated");
+        this.mark_data.forEach(function(d, i){ d.text = text[i]; });
     },
 
     update_unique_ids: function() {
@@ -126,29 +54,6 @@ var LabelModel = markmodel.MarkModel.extend({
                                    data.unique_id = "Label" + index;
         });
     },
-
-    update_domains: function() {
-        if (!this.mark_data) {
-            return;
-        }
-        // color scale needs an issue in DateScaleModel to be fixed. It
-        // should be moved here as soon as that is fixed.
-
-       var scales = this.get("scales");
-       for (var key in scales) {
-            if(scales.hasOwnProperty(key) && key != "color") {
-                var scale = scales[key];
-                if(!this.get("preserve_domain")[key]) {
-                    scale.compute_and_set_domain(this.mark_data.map(function(elem) {
-                        return elem[key];
-                    }), this.id + key);
-                } else {
-                    scale.del_domain([], this.id + key);
-                }
-            }
-       }
-
-    }
 });
 
 module.exports = {
