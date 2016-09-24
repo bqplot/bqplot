@@ -16,7 +16,6 @@
 var widgets = require("jupyter-js-widgets");
 var d3 = require("d3");
 var _ = require("underscore");
-var topojson = require("topojson");
 var mark = require("./Mark");
 var utils = require("./utils");
 
@@ -81,7 +80,7 @@ var Map = mark.Mark.extend({
         var projection = this.scales.projection;
         //Bind data and create one path per GeoJSON feature
         this.fill_g.selectAll("path")
-            .data(topojson.feature(this.model.geodata, this.model.geodata.objects.subunits).features)
+            .data(that.model.geodata)
             .enter()
             .append("path")
             .attr("d", projection.path)
@@ -89,7 +88,7 @@ var Map = mark.Mark.extend({
                 return that.fill_g_colorfill(d, i);
             });
         this.stroke_g.selectAll("path")
-            .data(topojson.feature(this.model.geodata, this.model.geodata.objects.subunits).features)
+            .data(that.model.geodata)
             .enter()
             .append("path")
             .attr("class", "event_layer")
@@ -440,7 +439,7 @@ var Map = mark.Mark.extend({
                    color_data[d.id] === null ||
                    color_data[d.id] === "nan" ||
                    color_scale === undefined) {
-            return colors.default_color; 
+            return colors.default_color;
         } else {
             return color_scale.scale(color_data[d.id]);
         }
