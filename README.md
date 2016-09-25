@@ -119,8 +119,7 @@ x_ord = OrdinalScale()
 y_sc = LinearScale()
 
 bar = Bars(x=x_data, y=np.random.randn(2, size), scales={'x': x_ord, 'y':
-y_sc},
-           type='stacked')
+y_sc}, type='stacked')
 line = Lines(x=x_data, y=np.random.randn(size), scales={'x': x_ord, 'y': y_sc},
              stroke_width=3, colors=['red'], display_legend=True, labels=['Line chart'])
 
@@ -128,9 +127,8 @@ ax_x = Axis(scale=x_ord, grid_lines='solid', label='X')
 ax_y = Axis(scale=y_sc, orientation='vertical', tick_format='0.2f',
             grid_lines='solid', label='Y')
 
-fig = Figure(marks=[bar, line], axes=[ax_x, ax_y], title='API Example',
-             legend_location='bottom-right')
-display(fig)
+Figure(marks=[bar, line], axes=[ax_x, ax_y], title='API Example',
+       legend_location='bottom-right')
 ```
 
 [![Bqplot Screenshot](/bqplot-screenshot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Advanced%20Plotting/Advanced%20Plotting.ipynb)

@@ -1,17 +1,9 @@
-BQPlot Documentation
-====================
-
-Contents:
+============================
+bqplot: Plotting for Jupyter
+============================
 
 .. toctree::
-   :maxdepth: 2
 
-   bqplot
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+   introduction
+   usage
+   api_documentation
