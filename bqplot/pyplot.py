@@ -141,6 +141,7 @@ def figure(key=None, fig=None, **kwargs):
     this figure becomes the current context figure.
 
     Otherwise:
+
     - If no key is provided, a new empty context figure is created.
     - If a key is provided for which a context already exists, the
       corresponding context becomes current.
@@ -156,6 +157,7 @@ def figure(key=None, fig=None, **kwargs):
         Any variable that can be used as a key for a dictionary
     fig: Figure, optional
         A bqplot Figure
+
     """
     scales_arg = kwargs.pop('scales', {})
     _context['current_key'] = key
