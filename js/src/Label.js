@@ -332,8 +332,8 @@ var Label = mark.Mark.extend({
         var restrict_x = this.model.get("restrict_x"),
             restrict_y = this.model.get("restrict_y");
         if (restrict_x && restrict_y) { return; }
-        if (!restrict_x) { d[0] = d3.event.x; }
-        if (!restrict_y) { d[1] = d3.event.y; }
+        if (!restrict_y) { d[0] = d3.event.x; }
+        if (!restrict_x) { d[1] = d3.event.y; }
 
         d3.select(dragged_node)
           .attr("transform", function() {
