@@ -36,9 +36,11 @@ var FigureModel = basemodel.BaseModel.extend({
         title_style: {},
         background_style: {},
 
-        min_width: 800.0,
-        min_height: 500.0,
+        min_width: "",
+        min_height: "",
         preserve_aspect: false,
+        min_aspect_ratio: 16 / 9,
+        max_aspect_ratio: 16 / 9,
 
         fig_margin: {
             top: 60,
