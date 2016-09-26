@@ -457,6 +457,18 @@ class Scatter(Mark):
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
+    enable_move: bool (default: False)
+        Controls whether points can be moved by dragging. Refer to restrict_x,
+        restrict_y for more options.
+    restrict_x: bool (default: False)
+        Restricts movement of the point to only along the x axis. This is valid
+        only when enable_move is set to True. If both restrict_x and restrict_y
+        are set to True, the point cannot be moved.
+    restrict_y: bool (default: False)
+        Restricts movement of the point to only along the y axis. This is valid
+        only when enable_move is set to True. If both restrict_x and restrict_y
+        are set to True, the point cannot be moved.
+
 
     Data Attributes
 
@@ -804,8 +816,17 @@ class Label(Mark):
         Ratio of the size of the dragged label font size to the default label font size.
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
-    enable_move: Bool
-        Enable the label to be moved by dragging
+    enable_move: Bool (default: False)
+        Enable the label to be moved by dragging. Refer to restrict_x,
+        restrict_y for more options.
+    restrict_x: bool (default: False)
+        Restricts movement of the label to only along the x axis. This is valid
+        only when enable_move is set to True. If both restrict_x and restrict_y
+        are set to True, the label cannot be moved.
+    restrict_y: bool (default: False)
+        Restricts movement of the label to only along the y axis. This is valid
+        only when enable_move is set to True. If both restrict_x and restrict_y
+        are set to True, the label cannot be moved.
 
     Data Attributes
 
