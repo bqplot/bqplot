@@ -16,6 +16,7 @@
 var widgets = require("jupyter-js-widgets");
 var d3 = require("d3");
 var _ = require("underscore");
+var $ = require("jquery");
 
 var Figure = widgets.DOMWidgetView.extend({
 
