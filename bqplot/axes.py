@@ -27,7 +27,7 @@ Axes
    ColorAxis
 """
 
-from traitlets import Int, Unicode, Instance, Enum, Dict, Bool
+from traitlets import Int, Unicode, Instance, Enum, Dict, Bool, Float
 from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization
 
@@ -119,6 +119,7 @@ class Axis(BaseAxis):
     grid_color = Color(None, allow_none=True).tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
     label_offset = Unicode(default_value=None, allow_none=True).tag(sync=True)
+    rotate_angle = Float(default_value=0., min=0., max=180.).tag(sync=True)
 
     visible = Bool(True).tag(sync=True)
 
