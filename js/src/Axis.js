@@ -522,33 +522,17 @@ var Axis = widgets.WidgetView.extend({
         var angle = this.model.get("rotate_angle");
         if (is_x){
             if (angle > 0 && angle < 180) {
-                if (side === "bottom") {
-                    return "start";
-                } else {
-                    return "end";
-                }
+                return (side === "bottom") ? "start" : "end";
             } else if (angle > 180 && angle < 360) {
-                if (side === "bottom") {
-                    return "end";                    
-                } else {
-                    return "start";
-                }
+                return (side === "bottom") ? "end" : "start";
             } else {
                 return "middle";
             }
         } else {
             if ((angle >= 0 && angle < 90) || (angle > 270 && angle <=360)) {
-                if (side === "right") {
-                    return "start";                    
-                } else {
-                    return "end";
-                }
+                return (side === "right") ? "start" : "end";
             } else if (angle > 90 && angle < 270) {
-                if (side === "right") {
-                    return "end";
-                } else {
-                    return "start";
-                }
+                return (side === "right") ? "end" : "start";
             } else {
                 return "middle";
             }
