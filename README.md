@@ -26,7 +26,7 @@ Two APIs are provided
 Getting Started
 ---------------
 
-### Try it online
+### Try it online with [Binder](http://mybinder.org/)
 
 [![Binder](http://mybinder.org/badge.svg)](http://mybinder.org:/repo/bloomberg/bqplot/notebooks/examples)
 
