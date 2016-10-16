@@ -12,7 +12,7 @@ var loaders = [
     { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=image/svg+xml" }
 ];
 
-var buildExtension = require('jupyterlab-extension-builder/lib/builder').buildExtension;
+var buildExtension = require('@jupyterlab/extension-builder/lib/builder').buildExtension;
 
 buildExtension({
   name: 'bqplot',

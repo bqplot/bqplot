@@ -18,7 +18,7 @@
     "file-loader": "^0.8.5",
     "imports-loader": "^0.6.5",
     "json-loader": "^0.5.4",
-    "jupyterlab-extension-builder": "^0.6.2",
+    "@jupyterlab/extension-builder": "^0.7.0",
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
     "rimraf": "^2.4.1",
@@ -28,9 +28,9 @@
   "dependencies": {
     "d3": "^3.5.16",
     "jquery": "^2.1.4",
-    "jupyter-js-widgets": "^2.0.0-dev.21",
-    "jupyterlab": "^0.3.0",
-    "jupyterlab_widgets": "^0.2.2",
+    "jupyter-js-widgets": "^2.0.2",
+    "jupyterlab": "^0.5.1",
+    "jupyterlab_widgets": "^0.3.4",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   }
