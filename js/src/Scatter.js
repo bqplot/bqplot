@@ -235,8 +235,6 @@ var Scatter = scatterbase.ScatterBase.extend({
             len = colors.length,
             stroke = this.model.get("stroke");
 
-        var rect_dim = inter_y_disp * 0.8;
-
         elements_added.append("path")
           .attr("transform", function(d, i) {
               return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";

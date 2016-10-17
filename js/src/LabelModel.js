@@ -21,7 +21,7 @@ var LabelModel = basemodel.ScatterBaseModel.extend({
 
     defaults: function () {
         return _.extend(basemodel.ScatterBaseModel.prototype.defaults(), {
-            _model_name: "LabelModel",            
+            _model_name: "LabelModel",
             _view_name: "Label",
 
             x_offset: 0,
