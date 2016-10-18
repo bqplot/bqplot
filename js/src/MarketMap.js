@@ -20,11 +20,6 @@ var figure = require("./Figure");
 
 var MarketMap = figure.Figure.extend({
 
-    remove: function() {
-        $(this.options.cell).off("output_area_resize." + this.id);
-        this.tooltip_div.remove();
-    },
-
     render: function(options) {
         this.id = widgets.uuid();
         this.width = this.model.get("map_width");
@@ -109,9 +104,6 @@ var MarketMap = figure.Figure.extend({
             that.update_layout();
             that.draw_group_names();
             that.create_tooltip_widget();
-        });
-        $(this.options.cell).on("output_area_resize" + this.id, function() {
-            that.update_layout();
         });
     },
 

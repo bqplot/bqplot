@@ -6,6 +6,9 @@ python:
     - 3.4
     - 3.5
 install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
@@ -23,8 +26,7 @@ install:
   - conda info -a
   - conda env create -f test-environment.yml
   - source activate bqplot-test
-  - python setup.py install
-
+  - pip install . coveralls
 script:
     - nosetests --with-coverage --cover-package bqplot
 after_success:
