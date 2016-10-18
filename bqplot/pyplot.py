@@ -406,11 +406,12 @@ def hline(level, fig=None, **kwargs):
     preserve_domain: boolean (default: False)
         If true, the line does not affect the domain of the 'y' scale.
     """
-    default_colors = kwargs.pop('colors', ['dodgerblue'])
-    default_width = kwargs.pop('stroke_width', 1)
+    kwargs.setdefault('colors', ['dodgerblue'])
+    kwargs.setdefault('stroke_width', 1)
     if fig is None:
         fig = current_figure()
-    sc_x = fig.scale_x
+    scales = kwargs.pop('scales', {})
+    scales['x'] = fig.scale_x
 
     level = array(level)
     if len(level.shape) == 0:
@@ -419,10 +420,10 @@ def hline(level, fig=None, **kwargs):
     else:
         x = [0, 1]
         y = column_stack([level, level])
-    return plot(x, y, scales={ 'x': sc_x }, preserve_domain={
+    return plot(x, y, scales=scales, preserve_domain={
         'x': True,
         'y': kwargs.get('preserve_domain', False)
-    }, axes=False, colors=default_colors, stroke_width=default_width, update_context=False, **kwargs)
+    }, axes=False, update_context=False, **kwargs)
 
 
 def vline(level, fig=None, **kwargs):
@@ -438,11 +439,12 @@ def vline(level, fig=None, **kwargs):
     preserve_domain: boolean (default: False)
         If true, the line does not affect the domain of the 'x' scale.
     """
-    default_colors = kwargs.pop('colors', ['dodgerblue'])
-    default_width = kwargs.pop('stroke_width', 1)
+    kwargs.setdefault('colors', ['dodgerblue'])
+    kwargs.setdefault('stroke_width', 1)
     if fig is None:
         fig = current_figure()
-    sc_y = fig.scale_y
+    scales = kwargs.pop('scales', {})
+    scales['y'] = fig.scale_y
 
     level = array(level)
     if len(level.shape) == 0:
@@ -452,10 +454,10 @@ def vline(level, fig=None, **kwargs):
         x = column_stack([level, level])
         y = [[0, 1]] * len(level)  # TODO: repeating [0, 1] should not be
                                    # required once we allow for 2-D x and 1-D y
-    return plot(x, y, scales={ 'y': sc_y }, preserve_domain={
+    return plot(x, y, scales=scales, preserve_domain={
         'x': kwargs.get('preserve_domain', False),
         'y': True
-    }, axes=False, colors=default_colors, stroke_width=default_width, update_context=False, **kwargs)
+    }, axes=False, update_context=False, **kwargs)
 
 
 def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
@@ -508,7 +510,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
                 ]
             sorted_scales = sorted(compat_scale_types, key=lambda x: x.precedence)
             scales[name] = sorted_scales[-1](**options.get(name, {}))
-            # Adding the scale to the conext scales
+            # Adding the scale to the context scales
             if update_context:
                 _context['scales'][dimension] = scales[name]
         else:
