@@ -27,9 +27,9 @@ Figure
 """
 
 from traitlets import (
-    Unicode, Instance, List, Dict, CFloat, Bool, Enum, Float, Int, default
+    Unicode, Instance, List, Dict, CFloat, Bool, Enum, Float, Int, TraitError, default, validate
 )
-from ipywidgets import DOMWidget, register, Color, widget_serialization
+from ipywidgets import DOMWidget, register, Color, widget_serialization, Layout
 
 from .scales import Scale, LinearScale
 from .interacts import Interaction
@@ -80,25 +80,37 @@ class Figure(DOMWidget):
 
     Layout Attributes
 
-    min_width: CFloat (default: 800.0)
-        minimum width of the figure including the figure margins
-    min_height: CFloat (default: 600.0)
-        minimum height of the figure including the figure margins
-    preserve_aspect: bool (default: False)
-        Determines whether the aspect ratio for the figure specified by
-        min_width and min_height is preserved during resizing. This does not
-        guarantee that the data coordinates will have any specific aspect
-        ratio.
     fig_margin: dict (default: {top=60, bottom=60, left=60, right=60})
         Dictionary containing the top, bottom, left and right margins. The user
         is responsible for making sure that the width and height are greater
         than the sum of the margins.
+    min_aspect_ratio: float
+         minimum width / height ratio of the figure
+    max_aspect_ratio: float
+         maximum width / height ratio of the figure
 
     Methods
     -------
 
     save_png:
        Saves the figure as a png file
+
+    Note
+    ----
+
+    The aspect ratios stand for width / height ratios.
+
+     - If the available space is within bounds in terms of min and max aspect
+       ratio, we use the entire available space.
+     - If the available space is too oblong horizontally, we use the client
+       height and the width that corresponds max_aspect_ratio (maximize width
+       under the constraints).
+     - If the available space is too oblong vertically, we use the client width
+       and the height that corresponds to min_aspect_ratio (maximize height
+       under the constraint).
+       This corresponds to maximizing the area under the constraints.
+
+    Default min and max aspect ratio are both equal to 16 / 9.
     """
     title = Unicode().tag(sync=True, display_name='Title')
     axes = List(Instance(Axis)).tag(sync=True, **widget_serialization)
@@ -110,9 +122,13 @@ class Figure(DOMWidget):
     title_style = Dict(trait=Unicode()).tag(sync=True)
     background_style = Dict().tag(sync=True)
 
-    min_width = CFloat(800.0).tag(sync=True)
-    min_height = CFloat(500.0).tag(sync=True)
-    preserve_aspect = Bool().tag(sync=True, display_name='Preserve aspect ratio')
+    layout = Instance(Layout, kw={
+            'flex': '1',
+            'align_self': 'stretch',
+            'max_width': '700px'
+        }, allow_none=True).tag(sync=True, **widget_serialization)
+    min_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
+    max_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60)).tag(sync=True)
     padding_x = Float(0.0, min=0.0, max=1.0).tag(sync=True)
@@ -132,6 +148,15 @@ class Figure(DOMWidget):
 
     def save_png(self):
         self.send({"type": "save_png"})
+
+    @validate('min_aspect_ratio', 'max_aspect_ratio')
+    def _validate_aspect_ratio(self, proposal):
+        value = proposal['value']
+        if proposal['trait'].name == 'min_aspect_ratio' and value > self.max_aspect_ratio:
+            raise TraitError('setting min_aspect_ratio > max_aspect_ratio')
+        if proposal['trait'].name == 'max_aspect_ratio' and value < self.min_aspect_ratio:
+            raise TraitError('setting max_aspect_ratio < min_aspect_ratio')
+        return value
 
     _view_name = Unicode('Figure').tag(sync=True)
     _model_name = Unicode('FigureModel').tag(sync=True)

@@ -55,8 +55,7 @@ var Figure = widgets.DOMWidgetView.extend({
 
         this.margin = this.model.get("fig_margin");
 
-        this.svg = d3.select(this.el)
-            .attr("viewBox", "0 0 " + this.width + " " + this.height);
+        this.svg = d3.select(this.el);
         this.update_plotarea_dimensions();
         // this.fig is the top <g> element to be impacted by a rescaling / change of margins
         this.fig = this.svg.append("g")
@@ -129,7 +128,7 @@ var Figure = widgets.DOMWidgetView.extend({
             that.axis_views.update(that.model.get("axes"));
 
             // TODO: move to the model
-            that.model.on_some_change(["fig_margin", "min_width", "min_height", "preserve_aspect"], that.update_layout, that);
+            that.model.on_some_change(["fig_margin", "min_aspect_ration", "max_aspect_ratio", "preserve_aspect"], that.relayout, that);
             that.model.on_some_change(["padding_x", "padding_y"], function() {
                 this.figure_padding_x = this.model.get("padding_x");
                 this.figure_padding_y = this.model.get("padding_y");
@@ -153,19 +152,10 @@ var Figure = widgets.DOMWidgetView.extend({
                 this.set_interaction(value);
             }, that);
 
-            // that.id is added to namespace the event to this particular
-            // view. This is required because we are adding the event on
-            // the output cell and hence we need to unbind it when this
-            // view is being removed. To identify the event listener
-            // corresponding to this view, we need the id.
-            $(that.options.cell).on("output_area_resize."+that.id, function() {
-                that.update_layout();
-            });
-
             that.displayed.then(function() {
                 that.el.parentNode.appendChild(that.tooltip_div.node());
                 that.create_listeners();
-                that.update_layout();
+                that.relayout();
                 that.model.on("msg:custom", that.handle_custom_messages,
 			  that);
             });
@@ -193,6 +183,7 @@ var Figure = widgets.DOMWidgetView.extend({
     create_listeners: function() {
         this.listenTo(this.model, "change:title_style", this.title_style_updated, this);
         this.listenTo(this.model, "change:background_style", this.background_style_updated, this);
+        this.listenTo(this.model, "change:layout", this.change_layout, this);
     },
 
     title_style_updated: function() {
@@ -201,11 +192,6 @@ var Figure = widgets.DOMWidgetView.extend({
 
     background_style_updated: function() {
         this.bg.style(this.model.get("background_style"));
-    },
-
-    remove: function() {
-        $(this.options.cell).off("output_area_resize." + this.id);
-        Figure.__super__.remove.apply(this);
     },
 
     create_figure_scales: function() {
@@ -423,51 +409,66 @@ var Figure = widgets.DOMWidgetView.extend({
         this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
     },
 
-    update_layout: function() {
-        // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
-        this.svg.attr("width", this.model.get("min_width"));
-        this.svg.attr("height", this.model.get("min_height"));
-        this.svg.attr("viewBox", "0 0 " + this.model.get("min_width") +
-                                    " " + this.model.get("min_height"));
-        var rect = this.el.getBoundingClientRect();
-        this.width = rect.width > 0 ? rect.width : this.model.get("min_width");
-        this.height = rect.height > 0 ? rect.height : this.model.get("min_height");
-        var preserve_aspect = this.model.get("preserve_aspect");
-        if (preserve_aspect === true) {
-            var aspect_ratio = this.model.get("min_width") / this.model.get("min_height");
-            if (this.width/this.height > aspect_ratio) {
-                this.width = this.height * aspect_ratio;
-            } else {
-                this.height = this.width / aspect_ratio;
-            }
+    onResize: function(msg) {
+        this.relayout();
+    },
+
+    relayout: function() {
+        this.svg.attr("viewBox", "0 0 1 1");
+        var that = this;
+
+        var ratio = that.el.clientWidth / that.el.clientHeight;
+        var max_ratio = that.model.get("max_aspect_ratio");
+        var min_ratio = that.model.get("min_aspect_ratio");
+
+        if (ratio <= max_ratio && ratio >= min_ratio) {
+            // If the available width and height are within bounds in terms
+            // of aspect ration, use all the space available.
+            that.width = that.el.clientWidth;
+            that.height = that.el.clientHeight;
+        } else if (ratio > max_ratio) {
+            // The available space is too oblong horizontally.
+            // Use all vertical space and compute width based on maximum
+            // aspect ratio.
+            that.height = that.el.clientHeight;
+            that.width = that.height * max_ratio;
+         } else { // ratio < min_ratio
+            // The available space is too oblong vertically.
+            // Use all horizontal space and compute height based on minimum
+            // aspect ratio.
+            that.width = that.el.clientWidth;
+            that.height = that.width / min_ratio;
         }
-        this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
-        this.svg.attr("width", this.width);
 
-        // update ranges
-        this.margin = this.model.get("fig_margin");
-        this.update_plotarea_dimensions();
+        that.svg.attr("viewBox", "0 0 " + that.width +
+                                    " " + that.height);
+        window.requestAnimationFrame(function () {
+            // update ranges
+            that.margin = that.model.get("fig_margin");
+            that.update_plotarea_dimensions();
 
-        this.scale_x.set_range([0, this.plotarea_width]);
-        this.scale_y.set_range([this.plotarea_height, 0]);
-        // transform figure
-        this.fig.attr("transform", "translate(" + this.margin.left + "," +
-                                                  this.margin.top + ")");
-        this.title.attr({
-            x: (0.5 * (this.plotarea_width)),
-            y: -(this.margin.top / 2.0),
-            dy: "1em"
+            that.scale_x.set_range([0, that.plotarea_width]);
+            that.scale_y.set_range([that.plotarea_height, 0]);
+            // transform figure
+            that.fig.attr("transform", "translate(" + that.margin.left + "," +
+                                                      that.margin.top + ")");
+            that.title.attr({
+                x: (0.5 * (that.plotarea_width)),
+                y: -(that.margin.top / 2.0),
+                dy: "1em"
+            });
+
+            that.bg
+                .attr("width", that.plotarea_width)
+                .attr("height", that.plotarea_height);
+
+            that.clip_path.attr("width", that.plotarea_width)
+                .attr("height", that.plotarea_height);
+
+            that.trigger("margin_updated");
+            that.update_legend();
         });
 
-        this.bg
-          .attr("width", this.plotarea_width)
-          .attr("height", this.plotarea_height);
-
-        this.clip_path.attr("width", this.plotarea_width)
-          .attr("height", this.plotarea_height);
-
-        this.trigger("margin_updated");
-        this.update_legend();
     },
 
     update_legend: function() {
