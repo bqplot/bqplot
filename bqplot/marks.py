@@ -348,7 +348,7 @@ class Lines(Mark):
     curves_subset = List().tag(sync=True)
     line_style = Enum(['solid', 'dashed', 'dotted', 'dash_dotted'],
                       default_value='solid').tag(sync=True, display_name='Line style')
-    interpolation = Enum(['linear', 'basis', 'cardinal', 'monotone', 'steps-before', 'steps-after'],
+    interpolation = Enum(['linear', 'basis', 'cardinal', 'monotone', 'step-before', 'step-after'],
                          default_value='linear').tag(sync=True, display_name='Interpolation')
     close_path = Bool().tag(sync=True, display_name='Close path')
     fill = Enum(['none', 'bottom', 'top', 'inside'], default_value='none').tag(sync=True, display_name='Fill')
