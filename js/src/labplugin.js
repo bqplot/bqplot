@@ -15,7 +15,7 @@
 
 var bqplot = require('./index');
 
-var jupyterlab_widgets = require('@jupyterlab/nbwidgets/lib/plugin');
+var jupyterlab_widgets = require('@jupyterlab/nbwidgets');
 
 /**
  * The widget manager provider.
