@@ -22,7 +22,7 @@ var jupyterlab_widgets = require('@jupyterlab/nbwidgets');
  */
 module.exports = {
   id: 'jupyter.extensions.bqplot',
-  requires: [jupyterlab_widgets.IIPyWidgetExtension],
+  requires: [jupyterlab_widgets.INBWidgetExtension],
   activate: function(app, widgets) {
       widgets.registerWidget({
           name: 'bqplot',
