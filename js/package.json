@@ -10,18 +10,20 @@
     "url": "https://github.com/bloomberg/bqplot.git"
   },
   "scripts": {
-    "prepublish": "webpack",
+    "build": "webpack",
+    "clean": "rimraf ./dist && rimraf ../bqplot/static && rimraf ../bqplot/staticlab",
+    "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@jupyterlab/extension-builder": "^0.7.0",
     "css-loader": "^0.23.1",
     "file-loader": "^0.8.5",
     "imports-loader": "^0.6.5",
     "json-loader": "^0.5.4",
-    "@jupyterlab/extension-builder": "^0.7.0",
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
-    "rimraf": "^2.4.1",
+    "rimraf": "^2.5.4",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14"
   },
