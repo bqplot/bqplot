@@ -158,9 +158,8 @@ var Toolbar = widgets.DOMWidgetView.extend({
 
         // Create the buttons
         var _panzoom = document.createElement("button");
-        _panzoom.classList.add("btn"); // bootstrap css
-        _panzoom.classList.add("btn-default"); // bootstrap css
         _panzoom.classList.add("jupyter-widgets"); // jupyter-js-widgets css
+        _panzoom.classList.add("jupyter-button"); // jupyter-js-widgets css
         _panzoom.classList.add("widget-toggle-button") // jupyter-js-widgets css
         _panzoom.setAttribute("data-toggle", "tooltip");
         _panzoom.setAttribute("title", "PanZoom");
@@ -173,9 +172,8 @@ var Toolbar = widgets.DOMWidgetView.extend({
         _panzoom.appendChild(panzoomicon);
 
         var _reset = document.createElement("button");
-        _reset.classList.add("btn"); // bootstrap css
-        _reset.classList.add("btn-default"); // bootstrap css
         _reset.classList.add("jupyter-widgets"); // jupyter-js-widgets css
+        _reset.classList.add("jupyter-button"); // jupyter-js-widgets css
         _reset.classList.add("widget-button") // jupyter-js-widgets css
         _reset.setAttribute("data-toggle", "tooltip");
         _reset.setAttribute("title", "Reset");
@@ -188,9 +186,8 @@ var Toolbar = widgets.DOMWidgetView.extend({
         _reset.appendChild(refreshicon);
 
         var _save = document.createElement("button");
-        _save.classList.add("btn"); // bootstrap css
-        _save.classList.add("btn-default"); // bootstrap css
         _save.classList.add("jupyter-widgets"); // jupyter-js-widgets css
+        _save.classList.add("jupyter-button"); // jupyter-js-widgets css
         _save.classList.add("widget-button") // jupyter-js-widgets css
         _save.setAttribute("data-toggle", "tooltip");
         _save.setAttribute("title", "Save");
