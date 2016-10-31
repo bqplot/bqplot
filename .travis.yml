@@ -24,6 +24,7 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
+  - conda install pyyaml
   - conda env create -f test-environment.yml
   - source activate bqplot-test
   - pip install . coveralls

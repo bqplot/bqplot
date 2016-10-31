@@ -2,7 +2,6 @@ var loaders = [
     { test: /\.css$/, loader: "style-loader!css-loader" },
     { test: /\.less$/, loader: "style-loader!css-loader!less-loader" },
     { test: /\.json$/, loader: "json-loader" },
-    // jquery-ui loads some images
     { test: /\.(jpg|png|gif)$/, loader: "file" },
     // required to load font-awesome
     { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/font-woff" },
