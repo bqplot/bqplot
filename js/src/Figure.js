@@ -39,8 +39,9 @@ var Figure = widgets.DOMWidgetView.extend({
         var height_undefined = (suggested_height === undefined || isNaN(suggested_height));
 
         if (width_undefined && height_undefined) {
-            suggested_height = 506.25;
-            suggested_width = 900;
+            // These are defaults if both min_width and min_height are undefined
+            suggested_height = 337.5;
+            suggested_width = 600;
         } else if (height_undefined) {
             suggested_height = suggested_width / min_ratio;
         } else if (width_undefined) {
