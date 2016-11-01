@@ -46,7 +46,7 @@ Pyplot
 from collections import OrderedDict
 from IPython.display import display
 from ipywidgets import VBox
-from numpy import arange, issubdtype, array, column_stack
+from numpy import arange, issubdtype, array, column_stack, shape
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
@@ -523,6 +523,19 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
         axes(mark, options=axes_options)
     return mark
 
+def _infer_x_for_line(y):
+    """
+    Infers the x for a line if no x is provided.
+    """
+    array_shape = shape(y)
+
+    if len(array_shape) == 0:
+        return []
+    if len(array_shape) == 1:
+        return arange(array_shape[0])
+    if len(array_shape) > 1:
+        return arange(array_shape[1])
+
 
 def plot(*args, **kwargs):
     """Draw lines in the current context figure.
@@ -556,11 +569,11 @@ def plot(*args, **kwargs):
 
     if len(args) == 1:
         kwargs['y'] = args[0]
-        kwargs['x'] = arange(len(args[0]))
+        kwargs['x'] = _infer_x_for_line(args[0])
     elif len(args) == 2:
         if type(args[1]) == str:
             kwargs['y'] = args[0]
-            kwargs['x'] = arange(len(args[0]))
+            kwargs['x'] = _infer_x_for_line(args[0])
             marker_str = args[1].strip()
         else:
             kwargs['x'] = args[0]
