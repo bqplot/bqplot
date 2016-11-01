@@ -51,20 +51,20 @@ var Figure = widgets.DOMWidgetView.extend({
         if (ratio <= max_ratio && ratio >= min_ratio) {
             // If the available width and height are within bounds in terms
             // of aspect ration, use all the space available.
-            return_value['width'] = suggested_width;
-            return_value['height'] = suggested_height;
+            return_value["width"] = suggested_width;
+            return_value["height"] = suggested_height;
         } else if (ratio > max_ratio) {
             // The available space is too oblong horizontally.
             // Use all vertical space and compute width based on maximum
             // aspect ratio.
-            return_value['height'] = suggested_height;
-            return_value['width'] = suggested_height * max_ratio;
+            return_value["height"] = suggested_height;
+            return_value["width"] = suggested_height * max_ratio;
          } else { // ratio < min_ratio
             // The available space is too oblong vertically.
             // Use all horizontal space and compute height based on minimum
             // aspect ratio.
-            return_value['width'] = suggested_width;
-            return_value['height'] = suggested_width / min_ratio;
+            return_value["width"] = suggested_width;
+            return_value["height"] = suggested_width / min_ratio;
         }
         return return_value;
     },
@@ -74,8 +74,8 @@ var Figure = widgets.DOMWidgetView.extend({
         var min_height = String(this.model.get("layout").get("min_height"));
 
         var impl_dimensions = this._get_height_width(min_height.slice(0, -2), min_width.slice(0, -2));
-        this.width = impl_dimensions['width'];
-        this.height = impl_dimensions['height'];
+        this.width = impl_dimensions["width"];
+        this.height = impl_dimensions["height"];
 
         this.id = widgets.uuid();
 
