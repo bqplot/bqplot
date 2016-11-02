@@ -26,9 +26,58 @@ var Figure = widgets.DOMWidgetView.extend({
         Figure.__super__.initialize.apply(this, arguments);
     },
 
+    _get_height_width: function(suggested_height, suggested_width) {
+        //Calculates the height and width of the figure from the suggested_height
+        //and suggested_width. Looks at the min_aspect_ratio and max_aspect_ratio
+        //to determine the final height and width.
+
+        var max_ratio = this.model.get("max_aspect_ratio");
+        var min_ratio = this.model.get("min_aspect_ratio");
+
+        var return_value = {};
+        var width_undefined = (suggested_width === undefined || isNaN(suggested_width));
+        var height_undefined = (suggested_height === undefined || isNaN(suggested_height));
+
+        if (width_undefined && height_undefined) {
+            // These are defaults if both min_width and min_height are undefined
+            suggested_height = 337.5;
+            suggested_width = 600;
+        } else if (height_undefined) {
+            suggested_height = suggested_width / min_ratio;
+        } else if (width_undefined) {
+            suggested_width = suggested_height * min_ratio;
+        }
+
+        var ratio = suggested_width / suggested_height;
+        if (ratio <= max_ratio && ratio >= min_ratio) {
+            // If the available width and height are within bounds in terms
+            // of aspect ration, use all the space available.
+            return_value["width"] = suggested_width;
+            return_value["height"] = suggested_height;
+        } else if (ratio > max_ratio) {
+            // The available space is too oblong horizontally.
+            // Use all vertical space and compute width based on maximum
+            // aspect ratio.
+            return_value["height"] = suggested_height;
+            return_value["width"] = suggested_height * max_ratio;
+         } else { // ratio < min_ratio
+            // The available space is too oblong vertically.
+            // Use all horizontal space and compute height based on minimum
+            // aspect ratio.
+            return_value["width"] = suggested_width;
+            return_value["height"] = suggested_width / min_ratio;
+        }
+        return return_value;
+    },
+
     render : function() {
-        this.width = this.model.get("min_width");
-        this.height = this.model.get("min_height");
+        var min_width = String(this.model.get("layout").get("min_width"));
+        var min_height = String(this.model.get("layout").get("min_height"));
+
+        var impl_dimensions = this._get_height_width(min_height.slice(0, -2), min_width.slice(0, -2));
+        this.width = impl_dimensions["width"];
+        this.height = impl_dimensions["height"];
+
         this.id = widgets.uuid();
 
         // Dictionary which contains the mapping for each of the marks id
@@ -417,28 +466,9 @@ var Figure = widgets.DOMWidgetView.extend({
         this.svg.attr("viewBox", "0 0 1 1");
         var that = this;
 
-        var ratio = that.el.clientWidth / that.el.clientHeight;
-        var max_ratio = that.model.get("max_aspect_ratio");
-        var min_ratio = that.model.get("min_aspect_ratio");
-
-        if (ratio <= max_ratio && ratio >= min_ratio) {
-            // If the available width and height are within bounds in terms
-            // of aspect ration, use all the space available.
-            that.width = that.el.clientWidth;
-            that.height = that.el.clientHeight;
-        } else if (ratio > max_ratio) {
-            // The available space is too oblong horizontally.
-            // Use all vertical space and compute width based on maximum
-            // aspect ratio.
-            that.height = that.el.clientHeight;
-            that.width = that.height * max_ratio;
-         } else { // ratio < min_ratio
-            // The available space is too oblong vertically.
-            // Use all horizontal space and compute height based on minimum
-            // aspect ratio.
-            that.width = that.el.clientWidth;
-            that.height = that.width / min_ratio;
-        }
+        var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
+        that.width = impl_dimensions["width"];
+        that.height = impl_dimensions["height"];
 
         that.svg.attr("viewBox", "0 0 " + that.width +
                                     " " + that.height);
@@ -461,6 +491,7 @@ var Figure = widgets.DOMWidgetView.extend({
             that.bg
                 .attr("width", that.plotarea_width)
                 .attr("height", that.plotarea_height);
+
 
             that.clip_path.attr("width", that.plotarea_width)
                 .attr("height", that.plotarea_height);
