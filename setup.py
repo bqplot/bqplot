@@ -175,6 +175,10 @@ setup_args = {
             'bqplot/static/index.js',
             'bqplot/static/index.js.map',
         ]),
+        ('share/jupyter/labextensions/bqplot', [
+            'bqplot/staticlab/bqplot.bundle.js',
+            'bqplot/staticlab/bqplot.bundle.js.manifest',
+        ]),
     ],
     'install_requires': [
         'ipywidgets>=5.2.2',
