@@ -210,9 +210,9 @@ var Toolbar = widgets.DOMWidgetView.extend({
 
     update: function() {
         if (this.model.get("_panning")) {
-            this._panzoom.classList.add("active");
+            this._panzoom.classList.add("mod-active");
         } else {
-            this._panzoom.classList.remove("active");
+            this._panzoom.classList.remove("mod-active");
         }
     }
 });
