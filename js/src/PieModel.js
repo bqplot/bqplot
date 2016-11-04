@@ -19,26 +19,28 @@ var markmodel = require("./MarkModel");
 
 var PieModel = markmodel.MarkModel.extend({
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
-        _model_name: "PieModel",
-        _view_name: "Pie",
+    defaults: function() {
+        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+            _model_name: "PieModel",
+            _view_name: "Pie",
 
-        sizes: [],
-        color: null,
-        x: 0.5,
-        y: 0.5,
-        scales_metadata: {
-            color: { dimension: "color" }
-        },
-        sort: false,
-        colors: d3.scale.category10().range(),
-        stroke: null,
-        opacities: [],
-        radius: 180,
-        inner_radius: 0.1,
-        start_angle: 0.0,
-        end_angle: 360.0
-    }),
+            sizes: [],
+            color: null,
+            x: 0.5,
+            y: 0.5,
+            scales_metadata: {
+                color: { dimension: "color" }
+            },
+            sort: false,
+            colors: d3.scale.category10().range(),
+            stroke: null,
+            opacities: [],
+            radius: 180,
+            inner_radius: 0.1,
+            start_angle: 0.0,
+            end_angle: 360.0
+        });
+    },
 
     initialize: function() {
         PieModel.__super__.initialize.apply(this, arguments);

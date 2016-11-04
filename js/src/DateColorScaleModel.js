@@ -19,10 +19,12 @@ var colorscale = require("./DateScaleModel");
 
 var DateColorScaleModel = colorscale.DateScaleModel.extend({
 
-    defaults: _.extend({}, colorscale.DateScaleModel.prototype.defaults, {
-        _model_name: "DateColorScaleModel",
-        _view_name: "DateColorScale",
-    }),
+    defaults: function() {
+        return _.extend(colorscale.DateScaleModel.prototype.defaults(), {
+            _model_name: "DateColorScaleModel",
+            _view_name: "DateColorScale"
+        });
+    },
 
     initialize: function() {
         DateColorScaleModel.__super__.initialize.apply(this, arguments);

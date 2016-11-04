@@ -19,14 +19,16 @@ var scalemodel = require("./ScaleModel");
 
 var LinearScaleModel = scalemodel.ScaleModel.extend({
 
-    defaults: _.extend({}, scalemodel.ScaleModel.prototype.defaults, {
-        _model_name: "LinearScaleModel",
-         _view_name: "LinearScale",
-        min: null,
-        max: null,
-        min_range: 0.6,
-        mid_range: 0.8
-    }),
+    defaults: function() {
+        return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
+            _model_name: "LinearScaleModel",
+            _view_name: "LinearScale",
+            min: null,
+            max: null,
+            min_range: 0.6,
+            mid_range: 0.8
+        });
+    },
 
     initialize: function() {
         LinearScaleModel.__super__.initialize.apply(this, arguments);

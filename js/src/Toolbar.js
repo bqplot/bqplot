@@ -18,16 +18,18 @@ var _ = require("underscore");
 
 var ToolbarModel = widgets.DOMWidgetModel.extend({
 
-    defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
-        _model_name: "ToolbarModel",
-        _view_name: "Toolbar",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
+    defaults: function() {
+        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+            _model_name: "ToolbarModel",
+            _view_name: "Toolbar",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
-        figure: undefined,
-        _panning: false,
-        _panzoom: null
-    }),
+            figure: undefined,
+            _panning: false,
+            _panzoom: null
+        });
+    },
 
     // Backbone attributes:
     // - _panning: Bool

@@ -18,55 +18,57 @@ var _ = require("underscore");
 var d3 = require("d3");
 var basemodel = require("./BaseModel");
 
-var MarketMapModel = basemodel.BaseModel.extend({}, {
+var MarketMapModel = basemodel.BaseModel.extend({
 
-    defaults: _.extend({}, basemodel.BaseModel.prototype.defaults, {
-        _model_name: "MarketMapModel",
-        _view_name: "MarketMap",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
+    defaults: function() {
+        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+            _model_name: "MarketMapModel",
+            _view_name: "MarketMap",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
-        map_width: 1080,
-        map_height: 800,
+            map_width: 1080,
+            map_height: 800,
 
-        names: [],
-        groups: [],
-        display_text: [],
-        ref_data: undefined,
-        title: "",
+            names: [],
+            groups: [],
+            display_text: [],
+            ref_data: undefined,
+            title: "",
 
-        tooltip_fields: [],
-        tooltip_formats: [],
-        show_groups: false,
+            tooltip_fields: [],
+            tooltip_formats: [],
+            show_groups: false,
 
-        cols: 0,
-        rows: 0,
+            cols: 0,
+            rows: 0,
 
-        row_groups: 1,
-        colors: d3.scale.category20().range(),
-        scales: {},
-        axes: [],
-        color: [],
-        map_margin: {
-            top: 50,
-            right: 50,
-            left: 50,
-            bottom: 50
-        },
-        preserve_aspect: false,
-        stroke: "white",
-        group_stroke: "black",
-        selected_stroke: "dodgerblue",
-        hovered_stroke: "orangered",
-        font_style: {},
-        title_style: {},
+            row_groups: 1,
+            colors: d3.scale.category20().range(),
+            scales: {},
+            axes: [],
+            color: [],
+            map_margin: {
+                top: 50,
+                right: 50,
+                left: 50,
+                bottom: 50
+            },
+            preserve_aspect: false,
+            stroke: "white",
+            group_stroke: "black",
+            selected_stroke: "dodgerblue",
+            hovered_stroke: "orangered",
+            font_style: {},
+            title_style: {},
 
-        selected: [],
-        enable_hover: true,
-        enable_select: true,
-        tooltip_widget: null
-    }),
-
+            selected: [],
+            enable_hover: true,
+            enable_select: true,
+            tooltip_widget: null
+        });
+    }
+}, {
     serializers: _.extend({
         scales: { deserialize: widgets.unpack_models },
         axes: { deserialize: widgets.unpack_models },

@@ -19,14 +19,16 @@ var basemodel = require("./BaseModel");
 
 var ScaleModel = basemodel.BaseModel.extend({
 
-    defaults: _.extend({}, basemodel.BaseModel.prototype.defaults, {
-        _model_name: "ScaleModel",
-         _view_name: "Scale",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
-        reverse: false,
-        allow_padding: true
-    }),
+    defaults: function() {
+        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+            _model_name: "ScaleModel",
+             _view_name: "Scale",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+            reverse: false,
+            allow_padding: true
+        });
+    },
 
     initialize: function() {
         ScaleModel.__super__.initialize.apply(this, arguments);

@@ -19,16 +19,18 @@ var basemodel = require("./BaseModel");
 
 var HandDrawModel = basemodel.BaseModel.extend({
 
-	defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-        _model_name: "HandDrawModel",
-        _view_name: "HandDraw",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
-	    lines: null,
-	    line_index: 0,
-	    min_x: null,
-	    max_x: null
-    })
+	defaults: function() {
+        return _.extend(widgets.WidgetModel.prototype.defaults(), {
+            _model_name: "HandDrawModel",
+            _view_name: "HandDraw",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+	        lines: null,
+	        line_index: 0,
+            min_x: null,
+            max_x: null
+        });
+    }
 }, {
     serializers: _.extend({
         lines:  { deserialize: widgets.unpack_models },

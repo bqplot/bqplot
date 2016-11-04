@@ -18,17 +18,19 @@ var _ = require("underscore");
 
 var TooltipModel = widgets.DOMWidgetModel.extend({
 
-    defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
-        _model_name: "TooltipModel",
-        _view_name: "Tooltip",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
+    defaults: function() {
+        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+            _model_name: "TooltipModel",
+            _view_name: "Tooltip",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
-        fields: [],
-        formats: [],
-        show_labels: true,
-        labels: []
-    })
+            fields: [],
+            formats: [],
+            show_labels: true,
+            labels: []
+        });
+    }
 });
 
 module.exports = {

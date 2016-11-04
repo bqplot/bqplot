@@ -20,40 +20,42 @@ var basemodel = require("./BaseModel");
 
 var FigureModel = basemodel.BaseModel.extend({
 
-    defaults: _.extend({}, basemodel.BaseModel.prototype.defaults, {
-        _model_name: "FigureModel",
-        _view_name: "Figure",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
+    defaults: function() {
+        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+            _model_name: "FigureModel",
+            _view_name: "Figure",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
-        title: "",
-        axes: [],
-        marks: [],
-        interaction: null,
-        scale_x: undefined,
-        scale_y: undefined,
-        fig_color: null,
-        title_style: {},
-        background_style: {},
+            title: "",
+            axes: [],
+            marks: [],
+            interaction: null,
+            scale_x: undefined,
+            scale_y: undefined,
+            fig_color: null,
+            title_style: {},
+            background_style: {},
 
-        min_width: "",
-        min_height: "",
-        preserve_aspect: false,
-        min_aspect_ratio: 16 / 9,
-        max_aspect_ratio: 16 / 9,
+            min_width: "",
+            min_height: "",
+            preserve_aspect: false,
+            min_aspect_ratio: 16 / 9,
+            max_aspect_ratio: 16 / 9,
 
-        fig_margin: {
-            top: 60,
-            bottom: 60,
-            left: 60,
-            right: 60
-        },
+            fig_margin: {
+                top: 60,
+                bottom: 60,
+                left: 60,
+                right: 60
+            },
 
-        padding_x: 0.0,
-        padding_y: 0.025,
-        legend_location: "top-right",
-        animation_duration: 0
-    }),
+            padding_x: 0.0,
+            padding_y: 0.025,
+            legend_location: "top-right",
+            animation_duration: 0
+        });
+    },
 
     save_png: function() {
         // TODO: Any view of this Figure model will pick up this event

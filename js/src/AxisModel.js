@@ -20,28 +20,30 @@ var basemodel = require("./BaseModel");
 
 var AxisModel = basemodel.BaseModel.extend({
 
-    defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-        _model_name: "AxisModel",
-        _view_name: "Axis",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
+    defaults: function() {
+        return _.extend(widgets.WidgetModel.prototype.defaults(), {
+            _model_name: "AxisModel",
+            _view_name: "Axis",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
-        orientation: "horizontal",
-        side: null,
-        label: "",
-        grid_lines: "solid",
-        tick_format: null,
-        scale: undefined,
-        num_ticks: null,
-        tick_values: [],
-        offset: {},
-        label_location: "middle",
-        label_color: null,
-        grid_color: null,
-        color: null,
-        label_offset: null,
-        visible: true
-    }),
+            orientation: "horizontal",
+            side: null,
+            label: "",
+            grid_lines: "solid",
+            tick_format: null,
+            scale: undefined,
+            num_ticks: null,
+            tick_values: [],
+            offset: {},
+            label_location: "middle",
+            label_color: null,
+            grid_color: null,
+            color: null,
+            label_offset: null,
+            visible: true
+        });
+    },
 
     initialize: function() {
         AxisModel.__super__.initialize.apply(this, arguments);
@@ -87,10 +89,12 @@ var AxisModel = basemodel.BaseModel.extend({
 
 var ColorAxisModel = AxisModel.extend({
 
-    defaults: _.extend({}, AxisModel.prototype.defaults, {
-        _model_name: "ColorAxisModel",
-        _view_name: "ColorAxis",
-    })
+    defaults: function() {
+        return _.extend(AxisModel.prototype.defaults(), {
+            _model_name: "ColorAxisModel",
+            _view_name: "ColorAxis"
+        });
+    }
 });
 
 

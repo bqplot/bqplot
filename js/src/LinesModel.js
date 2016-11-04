@@ -19,31 +19,33 @@ var markmodel = require("./MarkModel");
 
 var LinesModel = markmodel.MarkModel.extend({
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
-        _model_name: "LinesModel",
-        _view_name: "Lines",
-        x: [],
-        y: [],
-        color: null,
-        scales_metadata: {
-            x: { orientation: "horizontal", dimension: "x" },
-            y: { orientation: "vertical", dimension: "y" },
-            color: { dimension: "color" }
-        },
-        colors: d3.scale.category10().range(),
-        fill_colors: d3.scale.category10().range(),
-        stroke_width: 2.0,
-        labels_visibility: "none",
-        curves_subset: [],
-        line_style: "solid",
-        interpolation: "linear",
-        close_path: false,
-        fill: "none",
-        marker: null,
-        marker_size: 64,
-        opacities: [],
-        fill_opacities: []
-    }),
+    defaults: function () {
+        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+            _model_name: "LinesModel",
+            _view_name: "Lines",
+            x: [],
+            y: [],
+            color: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" }
+            },
+            colors: d3.scale.category10().range(),
+            fill_colors: d3.scale.category10().range(),
+            stroke_width: 2.0,
+            labels_visibility: "none",
+            curves_subset: [],
+            line_style: "solid",
+            interpolation: "linear",
+            close_path: false,
+            fill: "none",
+            marker: null,
+            marker_size: 64,
+            opacities: [],
+            fill_opacities: []
+        });
+    },
 
     initialize: function() {
         LinesModel.__super__.initialize.apply(this, arguments);
@@ -177,32 +179,34 @@ var LinesModel = markmodel.MarkModel.extend({
 
 var FlexLineModel = LinesModel.extend({
 
-    defaults: _.extend({}, LinesModel.prototype.defaults, {
-        _model_name: "FlexLineModel",
-        _view_name: "FlexLine",
+    defaults: function() {
+        return _.extend(LinesModel.prototype.defaults(), {
+            _model_name: "FlexLineModel",
+            _view_name: "FlexLine",
 
-        x: [],
-        y: [],
-        color: null,
-        scales_metadata: {
-            x: { orientation: "horizontal", dimension: "x" },
-            y: { orientation: "vertical", dimension: "y" },
-            color: { dimension: "color" }
-        },
-        colors: d3.scale.category10().range(),
-        fill_colors: d3.scale.category10().range(),
-        stroke_width: 2.0,
-        labels_visibility: "none",
-        curves_subset: [],
-        line_style: "solid",
-        interpolation: "linear",
-        close_path: false,
-        fill: "none",
-        marker: null,
-        marker_size: 64,
-        opacities: [],
-        fill_opacities: [],
-    }),
+            x: [],
+            y: [],
+            color: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" }
+            },
+            colors: d3.scale.category10().range(),
+            fill_colors: d3.scale.category10().range(),
+            stroke_width: 2.0,
+            labels_visibility: "none",
+            curves_subset: [],
+            line_style: "solid",
+            interpolation: "linear",
+            close_path: false,
+            fill: "none",
+            marker: null,
+            marker_size: 64,
+            opacities: [],
+            fill_opacities: [],
+        });
+    },
 
     update_data: function() {
         this.dirty = true;
