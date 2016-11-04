@@ -17,11 +17,10 @@ buildExtension({
   name: 'bqplot',
   entry: './src/labplugin',
   outputDir: '../bqplot/staticlab',
+  useDefaultLoaders: false,
   config: {
     module: {
-      loaders: [
-          { test: /\.less$/, loader: "style-loader!css-loader!less-loader" },
-        ]
+      loaders: loaders
     }
   }
 });
