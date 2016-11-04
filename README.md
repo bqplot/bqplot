@@ -36,7 +36,7 @@ This package depends on the following packages:
 
 - `ipywidgets` (version >= 5.2.2)
 - `traitlets` (version >= 4.3.0)
-- `traittypes` 
+- `traittypes`
 - `numpy`
 - `pandas`
 
@@ -56,7 +56,7 @@ Using conda
 $ conda install -c conda-forge bqplot
 ```
 
-For a development installation (requires npm):
+For a development installation (requires npm (version >= 3.8) and node (version >= 4.0)):
 
 ```
 $ git clone https://github.com/bloomberg/bqplot.git
