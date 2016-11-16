@@ -393,24 +393,20 @@ def legend():
         m.display_legend = True
 
 
-def hline(level, fig=None, **kwargs):
+def hline(level, **kwargs):
     """Draws a horizontal line at the given level.
 
     Parameters
     ----------
     level: float
         The level at which to draw the horizontal line.
-    fig: Figure or None
-        The figure to which the horizontal line is to be added.
-        If the value is None, the current figure is used.
     preserve_domain: boolean (default: False)
         If true, the line does not affect the domain of the 'y' scale.
     """
     kwargs.setdefault('colors', ['dodgerblue'])
     kwargs.setdefault('stroke_width', 1)
-    if fig is None:
-        fig = current_figure()
     scales = kwargs.pop('scales', {})
+    fig = kwargs.get('figure', current_figure())
     scales['x'] = fig.scale_x
 
     level = array(level)
@@ -426,24 +422,20 @@ def hline(level, fig=None, **kwargs):
     }, axes=False, update_context=False, **kwargs)
 
 
-def vline(level, fig=None, **kwargs):
+def vline(level, **kwargs):
     """Draws a vertical line at the given level.
 
     Parameters
     ----------
     level: float
         The level at which to draw the vertical line.
-    fig: Figure or None
-        The figure to which the vertical line is to be added.
-        If the value is None, the current figure is used.
     preserve_domain: boolean (default: False)
         If true, the line does not affect the domain of the 'x' scale.
     """
     kwargs.setdefault('colors', ['dodgerblue'])
     kwargs.setdefault('stroke_width', 1)
-    if fig is None:
-        fig = current_figure()
     scales = kwargs.pop('scales', {})
+    fig = kwargs.get('figure', current_figure())
     scales['y'] = fig.scale_y
 
     level = array(level)
@@ -475,6 +467,9 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
         Options for the axes to be created. If an axis labeled 'x' is required
         for that mark, axes_options['x'] contains optional keyword arguments
         for the constructor of the corresponding axis type.
+    figure: Figure or None
+        The figure to which the mark is to be added.
+        If the value is None, the current figure is used.
     """
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', {})
@@ -564,6 +559,9 @@ def plot(*args, **kwargs):
         Options for the axes to be created. If an axis labeled 'x' is required
         for that mark, axes_options['x'] contains optional keyword arguments
         for the constructor of the corresponding axis type.
+    figure: Figure or None
+        The figure to which the line is to be added.
+        If the value is None, the current figure is used.
     """
     marker_str = None
 
