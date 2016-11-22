@@ -73,6 +73,7 @@ var Axis = widgets.WidgetView.extend({
             this.num_ticks = value;
             this.set_tick_values();
         }, this);
+        this.listenTo(this.model, "change:rotate_angle", this.update_tick_text, this);
         this.listenTo(this.model, "change:color", this.update_color, this);
         this.model.on_some_change(["label", "label_color"], this.update_label, this);
         this.model.on_some_change(["grid_color", "grid_lines"], this.update_grid_lines, this);
@@ -496,10 +497,45 @@ var Axis = widgets.WidgetView.extend({
                   (this.offset_scale && grid_type !== "none") ? tickOffset : null)
             .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null);
 
+        this.update_tick_text(animate);
+
         if (this.model.get("grid_color")) {
             this.g_axisline
                 .selectAll(".tick line")
                 .style("stroke", this.model.get("grid_color"));
+        }
+    },
+
+    update_tick_text: function(animate) {
+        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        this.g_axisline
+            .transition().duration(animation_duration)
+            .selectAll(".tick text")
+            .attr("transform", "rotate("+this.model.get("rotate_angle")+")")
+            .style("text-anchor", this.get_tick_anchor());
+    },
+
+    get_tick_anchor: function() {
+        var side = this.model.get("side");
+        var orientation = this.model.get("orientation");
+        var is_x = orientation !== "vertical";
+        var angle = this.model.get("rotate_angle");
+        if (is_x){
+            if (angle > 0 && angle < 180) {
+                return (side === "bottom") ? "start" : "end";
+            } else if (angle > 180 && angle < 360) {
+                return (side === "bottom") ? "end" : "start";
+            } else {
+                return "middle";
+            }
+        } else {
+            if ((angle >= 0 && angle < 90) || (angle > 270 && angle <=360)) {
+                return (side === "right") ? "start" : "end";
+            } else if (angle > 90 && angle < 270) {
+                return (side === "right") ? "end" : "start";
+            } else {
+                return "middle";
+            }
         }
     },
 
