@@ -18,10 +18,12 @@ var _ = require("underscore");
 
 var BaseModel = widgets.WidgetModel.extend({
 
-    defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-        _model_name: "BaseModel",
-        _model_module: "bqplot"
-    }),
+    defaults: function() {
+        return _.extend(widgets.WidgetModel.prototype.defaults(), {
+            _model_name: "BaseModel",
+            _model_module: "bqplot"
+        });
+    },
 
     get_typed_field: function(param) {
         // Function that reads in an array of a field that is typed. It

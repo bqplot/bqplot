@@ -19,27 +19,28 @@ var markmodel = require("./MarkModel");
 
 var BarsModel = markmodel.MarkModel.extend({
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
-        _model_name: "BarsModel",
-        _view_name: "Bars",
-
-        x: [],
-        y: [],
-        color: null,
-        scales_metadata: {
-            x: { orientation: "horizontal", dimension: "x" },
-            y: { orientation: "vertical", dimension: "y" },
-            color: { dimension: "color" }
-        },
-        color_mode: "auto",
-        type: "stacked",
-        colors: d3.scale.category10().range(),
-        padding: 0.05,
-        stroke: null,
-        base: 0.0,
-        opacities: [],
-        align: "center"
-    }),
+    defaults: function() {
+        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+            _model_name: "BarsModel",
+            _view_name: "Bars",
+            x: [],
+            y: [],
+            color: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" }
+            },
+            color_mode: "auto",
+            type: "stacked",
+            colors: d3.scale.category10().range(),
+            padding: 0.05,
+            stroke: null,
+            base: 0.0,
+            opacities: [],
+            align: "center"
+        });
+    },
 
     initialize: function() {
         BarsModel.__super__.initialize.apply(this, arguments);

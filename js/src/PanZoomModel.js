@@ -19,15 +19,17 @@ var basemodel = require("./BaseModel");
 
 var PanZoomModel = basemodel.BaseModel.extend({
 
-    defaults: _.extend({}, basemodel.BaseModel.prototype.defaults, {
-        _model_name: "PanZoomModel",
-        _view_name: "PanZoom",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
-        scales: {},
-        allow_pan: true,
-        allow_zoom: true,
-    }),
+    defaults: function() {
+        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+            _model_name: "PanZoomModel",
+            _view_name: "PanZoom",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+            scales: {},
+            allow_pan: true,
+            allow_zoom: true
+        });
+    },
 
     initialize: function() {
         PanZoomModel.__super__.initialize.apply(this, arguments);

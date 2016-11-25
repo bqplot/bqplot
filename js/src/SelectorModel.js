@@ -19,12 +19,14 @@ var basemodel = require("./BaseModel");
 
 var SelectorModel = basemodel.BaseModel.extend({
 
-    defaults: _.extend({}, basemodel.BaseModel.prototype.defaults, {
-        _model_name: "SelectorModel",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
-        marks: []
-    })
+    defaults: function() {
+        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+            _model_name: "SelectorModel",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
+            marks: []
+        });
+    }
 }, {
     serializers: _.extend({
         marks: { deserialize: widgets.unpack_models },
@@ -33,10 +35,12 @@ var SelectorModel = basemodel.BaseModel.extend({
 
 var OneDSelectorModel = SelectorModel.extend({
 
-    defaults: _.extend({}, SelectorModel.prototype.defaults, {
-        _model_name: "OneDSelectorModel",
-        scale: null
-    })
+    defaults: function() {
+        return _.extend(SelectorModel.prototype.defaults(), {
+            _model_name: "OneDSelectorModel",
+            scale: null
+        });
+    }
 }, {
     serializers: _.extend({
         scale: { deserialize: widgets.unpack_models },
@@ -45,11 +49,13 @@ var OneDSelectorModel = SelectorModel.extend({
 
 var TwoDSelectorModel = SelectorModel.extend({
 
-    defaults: _.extend({}, SelectorModel.prototype.defaults, {
-        _model_name: "TwoDSelectorModel",
-        x_scale: null,
-        y_scale: null
-    })
+    defaults: function() {
+        return _.extend(SelectorModel.prototype.defaults(), {
+            _model_name: "TwoDSelectorModel",
+            x_scale: null,
+            y_scale: null
+        });
+    }
 }, {
     serializers: _.extend({
         x_scale: { deserialize: widgets.unpack_models },
@@ -59,69 +65,81 @@ var TwoDSelectorModel = SelectorModel.extend({
 
 var FastIntervalSelectorModel = OneDSelectorModel.extend({
 
-    defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
-        _model_name: "FastIntervalSelectorModel",
-        _view_name: "FastIntervalSelector",
-        selected: [],
-        color: null,
-        size: null
-    })
+    defaults: function() {
+        return _.extend(OneDSelectorModel.prototype.defaults(), {
+            _model_name: "FastIntervalSelectorModel",
+            _view_name: "FastIntervalSelector",
+            selected: [],
+            color: null,
+            size: null
+        });
+    },
 });
 
 var IndexSelectorModel = OneDSelectorModel.extend({
 
-    defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
-        _model_name: "IndexSelectorModel",
-        _view_name: "IndexSelector",
-        selected: [],
-        line_width: 2,
-        color: null
-    })
+    defaults: function() {
+        return _.extend(OneDSelectorModel.prototype.defaults(), {
+            _model_name: "IndexSelectorModel",
+            _view_name: "IndexSelector",
+            selected: [],
+            line_width: 2,
+            color: null
+        });
+    },
 });
 
 var BrushIntervalSelectorModel = OneDSelectorModel.extend({
 
-    defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
-        _model_name: "BrushIntervalSelectorModel",
-        _view_name: "BrushIntervalSelector",
-        brushing: false,
-        selected: [],
-        color: null
-    })
+    defaults: function() {
+        return _.extend(OneDSelectorModel.prototype.defaults(), {
+            _model_name: "BrushIntervalSelectorModel",
+            _view_name: "BrushIntervalSelector",
+            brushing: false,
+            selected: [],
+            color: null
+        });
+    }
 });
 
 var BrushSelectorModel = TwoDSelectorModel.extend({
 
-    defaults: _.extend({}, TwoDSelectorModel.prototype.defaults, {
-        _model_name: "BrushSelectorModel",
-        _view_name: "BrushSelector",
-        clear: false,
-        brushing: false,
-        selected: [],
-        color: null
-    })
+    defaults: function() {
+        return _.extend(TwoDSelectorModel.prototype.defaults(), {
+            _model_name: "BrushSelectorModel",
+            _view_name: "BrushSelector",
+            clear: false,
+            brushing: false,
+            selected: [],
+            color: null
+        });
+    }
 });
 
 var MultiSelectorModel = OneDSelectorModel.extend({
 
-    defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
-        _model_name: "MultiSelectorModel",
-        _view_name: "MultiSelector",
-        names: [],
-        brushing: false,
-        selected: {},
-        _selected: {},
-        show_names: true
-    })
+    defaults: function() {
+        return _.extend(OneDSelectorModel.prototype.defaults(), {
+            _model_name: "MultiSelectorModel",
+            _view_name: "MultiSelector",
+            names: [],
+            brushing: false,
+            selected: {},
+            _selected: {},
+            show_names: true
+        });
+    }
 });
 
 var LassoSelectorModel = TwoDSelectorModel.extend({
 
-    defaults: _.extend({}, OneDSelectorModel.prototype.defaults, {
-        _model_name: "LassoSelectorModel",
-        _view_name: "LassoSelector",
-        color: null
-    })
+    defaults: function() {
+        return _.extend(OneDSelectorModel.prototype.defaults(), {
+            _model_name: "LassoSelectorModel",
+            _view_name: "LassoSelector",
+           color: null
+       });
+    }
 });
 
 module.exports = {

@@ -19,21 +19,25 @@ var scalemodel = require("./ScaleModel");
 
 var GeoScaleModel = scalemodel.ScaleModel.extend({
 
-    defaults: _.extend({}, scalemodel.ScaleModel.prototype.defaults, {
-        _model_name: "GeoScaleModel",
-        _view_name: "GeoScale"
-    })
+    defaults: function() {
+        return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
+            _model_name: "GeoScaleModel",
+            _view_name: "GeoScale"
+        });
+    }
 });
 
 var MercatorModel = GeoScaleModel.extend({
 
-    defaults: _.extend({}, GeoScaleModel.prototype.defaults, {
-        _model_name: "MercatorModel",
-        _view_name: "Mercator",
-        scale_factor: 190.0,
-        center: [0, 60],
-        rotate: [0, 0]
-    }),
+    defaults: function() {
+        return _.extend(GeoScaleModel.prototype.defaults(), {
+            _model_name: "MercatorModel",
+            _view_name: "Mercator",
+            scale_factor: 190.0,
+            center: [0, 60],
+            rotate: [0, 0]
+        });
+    },
 
     initialize: function() {
         MercatorModel.__super__.initialize.apply(this, arguments);
@@ -56,15 +60,17 @@ var MercatorModel = GeoScaleModel.extend({
 
 var AlbersModel = GeoScaleModel.extend({
 
-    defaults: _.extend({}, GeoScaleModel.prototype.defaults, {
-        _model_name: "AlbersModel",
-        _view_name: "Albers",
-        scale_factor: 250.0,
-        /*rotate: [96, 0],*/
-        center: [0, 60],
-        parallels: [29.5, 45.5],
-        precision: 0.1
-    }),
+    defaults: function() {
+        return _.extend(GeoScaleModel.prototype.defaults(), {
+            _model_name: "AlbersModel",
+            _view_name: "Albers",
+            scale_factor: 250.0,
+            /*rotate: [96, 0],*/
+            center: [0, 60],
+            parallels: [29.5, 45.5],
+            precision: 0.1
+        });
+    },
 
     initialize: function() {
         AlbersModel.__super__.initialize.apply(this, arguments);
@@ -90,11 +96,13 @@ var AlbersModel = GeoScaleModel.extend({
 
 var AlbersUSAModel = GeoScaleModel.extend({
 
-    defaults: _.extend({}, GeoScaleModel.prototype.defaults, {
-        _model_name: "AlbersUSAModel",
-        _view_name: "AlbersUSA",
-        scale_factor: 1200
-    }),
+    defaults: function() {
+        return _.extend(GeoScaleModel.prototype.defaults(), {
+            _model_name: "AlbersUSAModel",
+            _view_name: "AlbersUSA",
+            scale_factor: 1200
+        });
+    },
 
     initialize: function() {
         AlbersUSAModel.__super__.initialize.apply(this, arguments);
@@ -115,11 +123,13 @@ var AlbersUSAModel = GeoScaleModel.extend({
 
 var EquiRectangularModel = GeoScaleModel.extend({
 
-    defaults: _.extend({}, GeoScaleModel.prototype.defaults, {
-        _model_name: "EquiRectangularModel",
-        _view_name: "EquiRectangular",
-        scale_factor: 145.0
-    }),
+    defaults: function() {
+        return _.extend(GeoScaleModel.prototype.defaults(), {
+            _model_name: "EquiRectangularModel",
+            _view_name: "EquiRectangular",
+            scale_factor: 145.0
+        });
+    },
 
     initialize: function() {
         EquiRectangularModel.__super__.initialize.apply(this, arguments);
@@ -141,15 +151,17 @@ var EquiRectangularModel = GeoScaleModel.extend({
 
 var OrthographicModel = GeoScaleModel.extend({
 
-    defaults: _.extend({}, GeoScaleModel.prototype.defaults, {
-        _model_name: "OrthographicModel",
-        _view_name: "Orthographic",
-        scale_factor: 145.0,
-        center: [0, 60],
-        rotate: [0, 0],
-        clip_angle: 90.0,
-        precision: 0.1
-    }),
+    defaults: function() {
+        return _.extend(GeoScaleModel.prototype.defaults(), {
+            _model_name: "OrthographicModel",
+            _view_name: "Orthographic",
+            scale_factor: 145.0,
+            center: [0, 60],
+            rotate: [0, 0],
+            clip_angle: 90.0,
+            precision: 0.1
+        });
+    },
 
     initialize: function() {
         OrthographicModel.__super__.initialize.apply(this, arguments);
@@ -174,14 +186,16 @@ var OrthographicModel = GeoScaleModel.extend({
 
 var GnomonicModel = GeoScaleModel.extend({
 
-    defaults: _.extend({}, GeoScaleModel.prototype.defaults, {
-        _model_name: "GnomonicModel",
-        _view_name: "Gnomonic",
-        scale_factor: 145.0,
-        center: [0, 60],
-        precision: 0.1,
-        clip_angle: 89.999
-    }),
+    defaults: function() {
+        return _.extend(GeoScaleModel.prototype.defaults(), {
+            _model_name: "GnomonicModel",
+            _view_name: "Gnomonic",
+            scale_factor: 145.0,
+           center: [0, 60],
+           precision: 0.1,
+           clip_angle: 89.999
+        });
+    },
 
     initialize: function() {
         GnomonicModel.__super__.initialize.apply(this, arguments);
@@ -204,15 +218,17 @@ var GnomonicModel = GeoScaleModel.extend({
 
 var StereographicModel = GeoScaleModel.extend({
 
-    defaults: _.extend({}, GeoScaleModel.prototype.defaults, {
-        _model_name: "StereographicModel",
-        _view_name: "StereographicModel",
-        scale_factor: 245,
-        center: [0, 60],
-        precision: 0.1,
-        rotate: [96, 0],
-        clip_angle: 179.9999
-    }),
+    defaults: function() {
+        return _.extend(GeoScaleModel.prototype.defaults(), {
+            _model_name: "StereographicModel",
+            _view_name: "StereographicModel",
+            scale_factor: 245,
+            center: [0, 60],
+            precision: 0.1,
+            rotate: [96, 0],
+            clip_angle: 179.9999
+        });
+    },
 
     initialize: function() {
         StereographicModel.__super__.initialize.apply(this, arguments);

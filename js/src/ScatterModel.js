@@ -19,43 +19,45 @@ var markmodel = require("./MarkModel");
 
 var ScatterModel = markmodel.MarkModel.extend({
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
-        _model_name: "ScatterModel",
-        _view_name: "Scatter",
-        x: [],
-        y: [],
-        color: null,
-        opacity: null,
-        size: null,
-        skew: null,
-        rotation: null,
-        hovered_point: null,
-        scales_metadata: {
-            x: { orientation: "horizontal", dimension: "x" },
-            y: { orientation: "vertical", dimension: "y" },
-            color: { dimension: "color" },
-            size: { dimension: "size" },
-            opacity: { dimension: "opacity" }
-        },
-        marker: "circle",
-        default_colors: [],
-        stroke: null,
-        stroke_width: 1.5,
-        default_opacities: [],
-        default_skew: 0.5,
-        default_size: 64,
-        names: [],
-        display_names: true,
-        fill: true,
-        drag_color: null,
-        drag_size: 5.0,
-        names_unique: true,
-        enable_move: false,
-        enable_delete: false,
-        restrict_x: false,
-        restrict_y: false,
-        update_on_move: false
-    }),
+    defaults: function() {
+        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+            _model_name: "ScatterModel",
+            _view_name: "Scatter",
+            x: [],
+            y: [],
+            color: null,
+            opacity: null,
+            size: null,
+            skew: null,
+            rotation: null,
+            hovered_point: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" },
+                size: { dimension: "size" },
+                opacity: { dimension: "opacity" }
+            },
+            marker: "circle",
+            default_colors: [],
+            stroke: null,
+            stroke_width: 1.5,
+            default_opacities: [],
+            default_skew: 0.5,
+            default_size: 64,
+            names: [],
+            display_names: true,
+            fill: true,
+            drag_color: null,
+            drag_size: 5.0,
+            names_unique: true,
+            enable_move: false,
+            enable_delete: false,
+            restrict_x: false,
+            restrict_y: false,
+            update_on_move: false
+        });
+    },
 
     initialize: function() {
         // TODO: Normally, color, opacity and size should not require a redraw

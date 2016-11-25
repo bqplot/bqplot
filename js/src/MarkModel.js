@@ -20,27 +20,29 @@ var basemodel = require("./BaseModel");
 
 var MarkModel = basemodel.BaseModel.extend({
 
-    defaults: _.extend({}, basemodel.BaseModel.prototype.defaults, {
-        _model_name: "MarkModel",
-        _model_module: "bqplot",
-        _view_module: "bqplot",
+    defaults: function() {
+        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+            _model_name: "MarkModel",
+            _model_module: "bqplot",
+            _view_module: "bqplot",
 
-        scales: {},
-        scales_metadata: {},
-        preserve_domain: {},
-        display_legend: true,
-        labels: [],
-        apply_clip: true,
-        visible: true,
-        selected_style: {},
-        unselected_style: {},
-        selected: [],
-        enable_hover: true,
-        tooltip: null,
-        tooltip_style: { opacity: 0.9 },
-        interactions: { hover: "tooltip" },
-        tooltip_location: "mouse"
-    }),
+            scales: {},
+            scales_metadata: {},
+            preserve_domain: {},
+            display_legend: true,
+            labels: [],
+            apply_clip: true,
+            visible: true,
+            selected_style: {},
+            unselected_style: {},
+            selected: [],
+            enable_hover: true,
+            tooltip: null,
+            tooltip_style: { opacity: 0.9 },
+            interactions: { hover: "tooltip" },
+            tooltip_location: "mouse"
+        });
+    },
 
     // These two attributes are the pixel values which should be appended
     // to the area of the plot to make sure that the entire mark is visible

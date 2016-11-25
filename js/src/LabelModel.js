@@ -19,39 +19,41 @@ var markmodel = require("./MarkModel");
 
 var LabelModel = markmodel.MarkModel.extend({
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
-        _model_name: "LabelModel",
-        _view_name: "Label",
+    defaults: function () {
+        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+            _model_name: "LabelModel",
+            _view_name: "Label",
 
-        x: null,
-        y: null,
-        color: null,
-        size: null,
-        rotation: null,
-        opacity: null,
-        x_offset: 0,
-        y_offset: 0,
-        scales_metadata: {
-            x: { orientation: "horizontal", dimension: "x" },
-            y: { orientation: "vertical", dimension: "y" },
-            size: { dimension: "size"},
-            color: { dimension: "color" },
-            opacity: { dimension: "opacity" }
-        },
-        colors: [],
-        default_opacities: [],
-        rotate_angle: 0.0,
-        text: [],
-        font_size: 16.0,
-        font_unit: "px",
-        drag_size: 1.0,
-        font_weight: "bold",
-        align: "start",
-        enable_move: false,
-        restrict_x: false,
-        restrict_y: false,
-        update_on_move: false
-    }),
+            x: null,
+            y: null,
+            color: null,
+            size: null,
+            rotation: null,
+            opacity: null,
+            x_offset: 0,
+            y_offset: 0,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                size: { dimension: "size"},
+                color: { dimension: "color" },
+                opacity: { dimension: "opacity" }
+            },
+            colors: [],
+            default_opacities: [],
+            rotate_angle: 0.0,
+            text: [],
+            font_size: 16.0,
+            font_unit: "px",
+            drag_size: 1.0,
+            font_weight: "bold",
+            align: "start",
+            enable_move: false,
+            restrict_x: false,
+            restrict_y: false,
+            update_on_move: false
+        });
+    },
 
     initialize: function() {
         // TODO: Normally, color, opacity and size should not require a redraw

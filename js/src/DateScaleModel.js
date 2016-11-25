@@ -19,14 +19,16 @@ var linearscalemodel = require("./LinearScaleModel");
 
 var DateScaleModel = linearscalemodel.LinearScaleModel.extend({
 
-    defaults: _.extend({}, linearscalemodel.LinearScaleModel.prototype.defaults, {
-        _model_name: "DateScaleModel",
-        _view_name: "DateScale",
+    defaults: function() {
+        return _.extend(linearscalemodel.LinearScaleModel.prototype.defaults(), {
+            _model_name: "DateScaleModel",
+            _view_name: "DateScale",
 
-        // min: null,
-        // max: null,
-        // mid: null
-    }),
+            // min: null,
+            // max: null,
+            // mid: null
+        });
+    },
 
     initialize: function() {
         DateScaleModel.__super__.initialize.apply(this, arguments);

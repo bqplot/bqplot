@@ -19,32 +19,34 @@ var topojson = require("topojson");
 
 var MapModel = markmodel.MarkModel.extend({
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
-        _model_name: "MapModel",
-        _view_name: "Map",
+    defaults: function() {
+        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+            _model_name: "MapModel",
+            _view_name: "Map",
 
-        color: {},
-        hover_highlight: true,
-        hovered_styles: {
-            hovered_fill: "Orange",
-            hovered_stroke: null,
-            hovered_stroke_width: 2.0
-        },
+            color: {},
+            hover_highlight: true,
+            hovered_styles: {
+                hovered_fill: "Orange",
+                hovered_stroke: null,
+                hovered_stroke_width: 2.0
+            },
 
-        stroke_color: null,
-        default_color: null,
-        scales_metadata: {
-            color: { dimension: "color" },
-            projection: { dimension: "geo" }
-        },
-        selected: [],
-        selected_styles: {
-            selected_fill: "Red",
-            selected_stroke: null,
-            selected_stroke_width: 2.0
-        },
-        map_data: undefined
-    }),
+            stroke_color: null,
+            default_color: null,
+            scales_metadata: {
+                color: { dimension: "color" },
+                projection: { dimension: "geo" }
+            },
+            selected: [],
+            selected_styles: {
+                selected_fill: "Red",
+                selected_stroke: null,
+                selected_stroke_width: 2.0
+            },
+            map_data: undefined
+        });
+    },
 
     initialize: function() {
         MapModel.__super__.initialize.apply(this, arguments);

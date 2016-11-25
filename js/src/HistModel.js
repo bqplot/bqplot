@@ -19,22 +19,24 @@ var markmodel = require("./MarkModel");
 
 var HistModel = markmodel.MarkModel.extend({
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
-        _model_name: "HistModel",
-        _view_name: "Hist",
-        sample: [],
-        count: [],
-        scales_metadata: {
-            sample: { orientation: "horizontal", dimension: "x" },
-            count: { orientation: "vertical", dimension: "y" }
-        },
-        bins: 10,
-        midpoints: [],
-        colors: d3.scale.category10().range(),
-        stroke: null,
-        opacities: [],
-        normalized: false
-    }),
+    defaults: function() {
+        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+            _model_name: "HistModel",
+            _view_name: "Hist",
+            sample: [],
+            count: [],
+            scales_metadata: {
+                sample: { orientation: "horizontal", dimension: "x" },
+                count: { orientation: "vertical", dimension: "y" }
+            },
+            bins: 10,
+            midpoints: [],
+            colors: d3.scale.category10().range(),
+            stroke: null,
+            opacities: [],
+            normalized: false
+        });
+    },
 
     initialize: function() {
         // TODO: should not need to set this.data
