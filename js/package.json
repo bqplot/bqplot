@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "d3": "^3.5.16",
-    "jupyter-js-widgets": "^2.0.4",
-    "@jupyterlab/nbwidgets": "^0.5.0",
+    "jupyter-js-widgets": "^2.0.6",
+    "@jupyterlab/nbwidgets": "^0.6.0",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   }
