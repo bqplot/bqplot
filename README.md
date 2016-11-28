@@ -9,6 +9,10 @@ In bqplot, every single attribute of the plot is an interactive widget.
 This allows the user to integrate any plot with IPython widgets to create a
 complex and feature rich GUI from just a few simple lines of Python code.
 
+For example, here just a few lines of code allow us to generate an interactive map that visualizes the 2016 County Level Results:
+
+![bqplot](./bqplot-election.gif)
+
 Goals
 -----
 
