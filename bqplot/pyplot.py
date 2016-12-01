@@ -50,7 +50,10 @@ from numpy import arange, issubdtype, array, column_stack
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
-from .marks import Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Label
+from .marks import (
+        Lines, Scatter, Hist, Bars, OHLC, Pie, Map,
+        Label, topo_load
+    )
 from .toolbar import Toolbar
 from .interacts import (
         BrushIntervalSelector, FastIntervalSelector, BrushSelector,
@@ -209,6 +212,20 @@ def close(key):
     fig.close()
     del figure_registry[key]
     del _context['scale_registry'][key]
+
+
+def _process_data(func):
+    """Helper function to handle data keyword argument
+    """
+    def _mark_with_data(*args, **kwargs):
+        data = kwargs.pop('data', None)
+        if data is None:
+            return func(*args, **kwargs)
+        else:
+            data_args = [data[i] for i in args]
+            return func(*data_args, **kwargs)
+
+    return _mark_with_data
 
 
 def scales(key=None, scales={}):
@@ -524,6 +541,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     return mark
 
 
+@_process_data
 def plot(*args, **kwargs):
     """Draw lines in the current context figure.
 
@@ -626,6 +644,7 @@ def ohlc(*args, **kwargs):
     return _draw_mark(OHLC, **kwargs)
 
 
+@_process_data
 def scatter(x, y, **kwargs):
     """Draw a scatter in the current context figure.
 
@@ -650,6 +669,7 @@ def scatter(x, y, **kwargs):
     return _draw_mark(Scatter, **kwargs)
 
 
+@_process_data
 def hist(sample, options={}, **kwargs):
     """Draw a histogram in the current context figure.
 
@@ -679,6 +699,7 @@ def hist(sample, options={}, **kwargs):
     return _draw_mark(Hist, options=options, **kwargs)
 
 
+@_process_data
 def bar(x, y, **kwargs):
     """Draws a bar chart in the current context figure.
 
@@ -703,6 +724,7 @@ def bar(x, y, **kwargs):
     return _draw_mark(Bars, **kwargs)
 
 
+@_process_data
 def pie(sizes, **kwargs):
     """Draws a Pie in the current context figure.
 
@@ -749,6 +771,8 @@ def geo(map_data, **kwargs):
 
     Parameters
     ----------
+    map_data: string or bqplot.map (default: WorldMap)
+        Name of the map or json file required for the map data.
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -763,7 +787,10 @@ def geo(map_data, **kwargs):
     if 'projection' not in scales:
         scales['projection'] = Mercator(**options.get('projection', {}))
     kwargs['scales'] = scales
-    kwargs['map_data'] = map_data
+    if isinstance(map_data, (str, unicode)):
+        kwargs['map_data'] = topo_load('map_data/' + map_data + '.json')
+    else:
+        kwargs['map_data'] = map_data
     return _draw_mark(Map, **kwargs)
 
 
