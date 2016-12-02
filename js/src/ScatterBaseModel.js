@@ -19,7 +19,8 @@ var markmodel = require("./MarkModel");
 
 var ScatterBaseModel = markmodel.MarkModel.extend({
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
+    defaults: function() {
+        return _.extend({}, markmodel.MarkModel.prototype.defaults, {
         _model_name: "ScatterBaseModel",
         _view_name: "ScatterBase",
 
@@ -44,7 +45,8 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
         restrict_x: false,
         restrict_y: false,
         update_on_move: false
-    }),
+        });
+    },
 
     initialize: function() {
         // TODO: Normally, color, opacity and size should not require a redraw
