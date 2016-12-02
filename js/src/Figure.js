@@ -460,8 +460,14 @@ var Figure = widgets.DOMWidgetView.extend({
         this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
     },
 
-    onResize: function(msg) {
-        this.relayout();
+    processPhosphorMessage: function(msg) {
+        Figure.__super__.processPhosphorMessage.apply(this, arguments);
+        switch (msg.type) {
+        case 'resize':
+        case 'after-show':
+            this.relayout();
+            break;
+        }
     },
 
     relayout: function() {
