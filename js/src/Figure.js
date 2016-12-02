@@ -20,9 +20,11 @@ var _ = require("underscore");
 var Figure = widgets.DOMWidgetView.extend({
 
     initialize : function() {
-        this.setElement(document.createElementNS(d3.ns.prefix.svg, "svg"));
         // Internet Explorer does not support classList for svg elements
         this.el.setAttribute("class", "bqplot figure jupyter-widgets");
+        var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
+        this.el.append(svg);
+        this.svg = d3.select(svg);
         Figure.__super__.initialize.apply(this, arguments);
     },
 
@@ -98,7 +100,6 @@ var Figure = widgets.DOMWidgetView.extend({
         this.clip_id = "clip_path_" + this.id;
         this.margin = this.model.get("fig_margin");
 
-        this.svg = d3.select(this.el);
         this.update_plotarea_dimensions();
         // this.fig is the top <g> element to be impacted by a rescaling / change of margins
         this.svg.attr("viewBox", "0 0 " + this.width +

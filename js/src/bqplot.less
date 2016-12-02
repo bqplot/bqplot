@@ -14,7 +14,7 @@
  */
 
 .common() {
-    svg.bqplot {
+    .bqplot > svg {
         font: 11px sans-serif;
         user-select: none;
         -ms-user-select: none;
@@ -132,7 +132,7 @@
 
 .theme-light {
     .common();
-    svg.bqplot {
+    .bqplot > svg {
         .axis {
             rect {
                 stroke: white;
@@ -205,7 +205,7 @@
 
 .theme-dark {
     .common();
-    svg.bqplot {
+    .bqplot > svg {
         background: #1a1a1a;
         .axis {
             rect {
