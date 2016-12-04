@@ -94,6 +94,14 @@ COLOR_CODES = {'b': 'blue', 'g': 'green', 'r': 'red', 'c': 'cyan',
 MARKER_CODES = {'o': 'circle', 'v': 'triangle-down', '^': 'triangle-up',
                 's': 'square', 'd': 'diamond', '+': 'cross'}
 
+import sys
+PY3 = sys.version_info[0] == 3
+
+if PY3:
+    string_types = str,
+else:
+    string_types = basestring,
+
 
 def show(key=None, display_toolbar=True):
     """Shows the current context figure in the output area.
@@ -214,18 +222,21 @@ def close(key):
     del _context['scale_registry'][key]
 
 
-def _process_data(func):
+def _process_data(*kwarg_names):
     """Helper function to handle data keyword argument
     """
-    def _mark_with_data(*args, **kwargs):
-        data = kwargs.pop('data', None)
-        if data is None:
-            return func(*args, **kwargs)
-        else:
-            data_args = [data[i] for i in args]
-            return func(*data_args, **kwargs)
+    def _data_decorator(func):
+        def _mark_with_data(*args, **kwargs):
+            data = kwargs.pop('data', None)
+            if data is None:
+                return func(*args, **kwargs)
+            else:
+                data_args = [data[i] if isinstance(i, string_types) else i for i in args]
+                data_kwargs = {kw: data[kwargs[kw]] if isinstance(kwargs[kw], string_types) else kwargs[kw] for kw in list(set(kwarg_names).intersection(list(kwargs.keys())))}
+                return func(*data_args, **data_kwargs)
 
-    return _mark_with_data
+        return _mark_with_data
+    return _data_decorator
 
 
 def scales(key=None, scales={}):
@@ -541,7 +552,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     return mark
 
 
-@_process_data
+@_process_data('color')
 def plot(*args, **kwargs):
     """Draw lines in the current context figure.
 
@@ -644,7 +655,7 @@ def ohlc(*args, **kwargs):
     return _draw_mark(OHLC, **kwargs)
 
 
-@_process_data
+@_process_data('color', 'opacity', 'size', 'skew', 'rotation')
 def scatter(x, y, **kwargs):
     """Draw a scatter in the current context figure.
 
@@ -669,7 +680,7 @@ def scatter(x, y, **kwargs):
     return _draw_mark(Scatter, **kwargs)
 
 
-@_process_data
+@_process_data()
 def hist(sample, options={}, **kwargs):
     """Draw a histogram in the current context figure.
 
@@ -699,7 +710,7 @@ def hist(sample, options={}, **kwargs):
     return _draw_mark(Hist, options=options, **kwargs)
 
 
-@_process_data
+@_process_data('color')
 def bar(x, y, **kwargs):
     """Draws a bar chart in the current context figure.
 
@@ -724,7 +735,7 @@ def bar(x, y, **kwargs):
     return _draw_mark(Bars, **kwargs)
 
 
-@_process_data
+@_process_data('color')
 def pie(sizes, **kwargs):
     """Draws a Pie in the current context figure.
 
