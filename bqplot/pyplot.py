@@ -798,7 +798,7 @@ def geo(map_data, **kwargs):
     if 'projection' not in scales:
         scales['projection'] = Mercator(**options.get('projection', {}))
     kwargs['scales'] = scales
-    if isinstance(map_data, (str, unicode)):
+    if isinstance(map_data, string_types):
         kwargs['map_data'] = topo_load('map_data/' + map_data + '.json')
     else:
         kwargs['map_data'] = map_data
