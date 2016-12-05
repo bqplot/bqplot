@@ -201,10 +201,14 @@ var Figure = widgets.DOMWidgetView.extend({
                 this.set_interaction(value);
             }, that);
 
-            that.displayed.then(function() {
+            that.displayed.then(function(args) {
                 that.el.parentNode.appendChild(that.tooltip_div.node());
                 that.create_listeners();
-                that.relayout();
+                if(args === undefined || args.add_to_dom_only !== true) {
+                    //do not relayout if it is only being added to the DOM
+                    //and not displayed.
+                    that.relayout();
+                }
                 that.model.on("msg:custom", that.handle_custom_messages,
 			  that);
             });

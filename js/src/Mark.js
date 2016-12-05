@@ -314,6 +314,7 @@ var Mark = widgets.WidgetView.extend({
                 //remove previous tooltip
                 that.tooltip_view = view;
                 that.tooltip_div.node().appendChild(view.el);
+                view.trigger("displayed", {"add_to_dom_only": true});
                 // we do not trigger displayed as the tooltip is not currently
                 // visible.
             });
