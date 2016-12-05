@@ -43,6 +43,7 @@ Pyplot
    ylim
 
 """
+import sys
 from collections import OrderedDict
 from IPython.display import display
 from ipywidgets import VBox
@@ -94,13 +95,18 @@ COLOR_CODES = {'b': 'blue', 'g': 'green', 'r': 'red', 'c': 'cyan',
 MARKER_CODES = {'o': 'circle', 'v': 'triangle-down', '^': 'triangle-up',
                 's': 'square', 'd': 'diamond', '+': 'cross'}
 
-import sys
-PY3 = sys.version_info[0] == 3
 
-if PY3:
-    string_types = str,
-else:
+PY2 = sys.version_info[0] == 2
+
+if PY2:
     string_types = basestring,
+else:
+    string_types = str,
+
+
+def hashable(v):
+    """Determine whether `v` can be hashed."""
+    return hasattr(v, '__hash__')
 
 
 def show(key=None, display_toolbar=True):
@@ -231,9 +237,13 @@ def _process_data(*kwarg_names):
             if data is None:
                 return func(*args, **kwargs)
             else:
-                data_args = [data[i] if isinstance(i, string_types) else i for i in args]
-                data_kwargs = {kw: data[kwargs[kw]] if isinstance(kwargs[kw], string_types) else kwargs[kw] for kw in list(set(kwarg_names).intersection(list(kwargs.keys())))}
-                return func(*data_args, **data_kwargs)
+                data_args = [data[i] if hashable(i) else i for i in args]
+                data_kwargs = {
+                   kw: data[kwargs[kw]] if hashable(kwargs[kw]) else kwargs[kw] for kw in list(set(kwarg_names).intersection(list(kwargs.keys())))
+                }
+                kwargs_update = kwargs.copy()
+                kwargs_update.update(data_kwargs)
+                return func(*data_args, **kwargs_update)
 
         return _mark_with_data
     return _data_decorator
