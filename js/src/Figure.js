@@ -104,6 +104,8 @@ var Figure = widgets.DOMWidgetView.extend({
         // this.fig is the top <g> element to be impacted by a rescaling / change of margins
         this.svg.attr("viewBox", "0 0 " + this.width +
                                     " " + this.height);
+        this.svg.style("min-width", "" + this.width + "px");
+        this.svg.style("min-height", "" + this.height + "px");
 
         this.fig = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -472,6 +474,9 @@ var Figure = widgets.DOMWidgetView.extend({
 
     relayout: function() {
         this.svg.attr("viewBox", "0 0 1 1");
+        this.svg.style("min-width", '');
+        this.svg.style("min-height", '');
+
         var that = this;
 
         var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
@@ -480,6 +485,8 @@ var Figure = widgets.DOMWidgetView.extend({
 
         that.svg.attr("viewBox", "0 0 " + that.width +
                                     " " + that.height);
+        that.svg.style("min-width", "" + that.width + "px");
+        that.svg.style("min-height", "" + that.height + "px");
         window.requestAnimationFrame(function () {
             // update ranges
             that.margin = that.model.get("fig_margin");
