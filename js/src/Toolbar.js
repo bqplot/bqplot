@@ -113,7 +113,8 @@ var ToolbarModel = widgets.DOMWidgetModel.extend({
         return this.widget_manager.new_widget({
             model_name: "PanZoomModel",
             model_module: "bqplot",
-            widget_class: "bqplot.interacts.PanZoom"
+            widget_class: "bqplot.interacts.PanZoom",
+            model_module_version: figure.get("_model_module_version")
         }).then(function(model) {
             return Promise.all(figure.get("marks")).then(function(marks) {
                 var x_scales = [], y_scales = [];
