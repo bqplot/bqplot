@@ -96,17 +96,14 @@ var Figure = widgets.DOMWidgetView.extend({
         this.figure_padding_x = this.model.get("padding_x");
         this.figure_padding_y = this.model.get("padding_y");
         this.clip_id = "clip_path_" + this.id;
-
-        this.el.style["flex"] = "1 1 auto";
-        this.el.style["align-self"] = "stretch";
-        this.el.style["min-width"] = this.width;
-        this.el.style["min-height"] = this.height;
-
         this.margin = this.model.get("fig_margin");
 
         this.svg = d3.select(this.el);
         this.update_plotarea_dimensions();
         // this.fig is the top <g> element to be impacted by a rescaling / change of margins
+        this.svg.attr("viewBox", "0 0 " + this.width +
+                                    " " + this.height);
+
         this.fig = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.tooltip_div = d3.select(document.createElement("div"))

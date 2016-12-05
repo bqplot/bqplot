@@ -315,8 +315,6 @@ var Mark = widgets.WidgetView.extend({
                 that.tooltip_view = view;
                 that.tooltip_div.node().appendChild(view.el);
                 view.trigger("displayed", {"add_to_dom_only": true});
-                // we do not trigger displayed as the tooltip is not currently
-                // visible.
             });
         } else {
             if(that.tooltip_view) {
