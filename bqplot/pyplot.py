@@ -243,7 +243,7 @@ def _process_data(*kwarg_names):
             else:
                 data_args = [data[i] if hashable(data, i) else i for i in args]
                 data_kwargs = {
-                   kw: data[kwargs[kw]] if hashable(data, kwargs[kw]) else kwargs[kw] for kw in list(set(kwarg_names).intersection(list(kwargs.keys())))
+                   kw: data[kwargs[kw]] if hashable(data, kwargs[kw]) else kwargs[kw] for kw in set(kwarg_names).intersection(list(kwargs.keys()))
                 }
                 kwargs_update = kwargs.copy()
                 kwargs_update.update(data_kwargs)
