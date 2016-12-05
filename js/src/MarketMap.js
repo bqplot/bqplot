@@ -39,8 +39,7 @@ var MarketMap = figure.Figure.extend({
         this.set_area_dimensions(this.data.length);
 
         // Reading the properties and creating the dom elements required
-        this.svg = d3.select(this.el)
-                .attr("viewBox", "0 0 " + this.width + " " + this.height)
+        this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height)
                 .attr("width", "100%")
                 .attr("height", "100%");
         if (this.model.get('theme')) {
@@ -457,7 +456,7 @@ var MarketMap = figure.Figure.extend({
     draw_group_names: function() {
         // Get all the bounding rects of the paths around each of the
         // sectors. Get their client bounding rect.
-        var paths = d3.select(this.el).selectAll(".bounding_path")[0];
+        var paths = this.svg.selectAll(".bounding_path")[0];
         var clientRects = paths.map(function(path) { return path.getBoundingClientRect(); });
         var text_elements = this.fig_names.selectAll(".names_object").data(clientRects);
         text_elements.attr("width", function(d) { return d.width;})
