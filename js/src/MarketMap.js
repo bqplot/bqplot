@@ -655,6 +655,7 @@ var MarketMap = figure.Figure.extend({
             tooltip_widget_creation_promise.then(function(view) {
                 that.tooltip_view = view;
                 that.tooltip_div.node().appendChild(view.el);
+                view.trigger("displayed", {"add_to_dom_only": true});
             });
         }
     },
