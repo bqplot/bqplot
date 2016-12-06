@@ -693,7 +693,7 @@ var Figure = widgets.DOMWidgetView.extend({
            var s = document.createElement("style");
            s.setAttribute("type", "text/css");
            s.innerHTML = "<![CDATA[\n" +
-               get_css(node, ["\.theme-dark", "\.theme-light"]) + "\n]]>";
+               get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
            var defs = document.createElement("defs");
            defs.appendChild(s);
            svg.insertBefore(defs, svg.firstChild);
@@ -701,13 +701,14 @@ var Figure = widgets.DOMWidgetView.extend({
            return svg.outerHTML;
        };
 
-       var svg2png = function(xml) {
+       var svg2png = function(xml, width, height) {
             // Render a SVG data into a canvas and download as PNG.
             var image = new Image();
             image.onload = function() {
                 var canvas = document.createElement("canvas");
-                canvas.width = image.width;
-                canvas.height = image.height;
+                canvas.classList.add('bqplot');
+                canvas.width = width;
+                canvas.height = height;
                 var context = canvas.getContext("2d");
                 context.drawImage(image, 0, 0);
                 var a = document.createElement("a");
@@ -722,7 +723,7 @@ var Figure = widgets.DOMWidgetView.extend({
         // Create standalone SVG string
         var svg = svg2svg(this.svg.node());
         // Save to PNG
-        svg2png(svg);
+        svg2png(svg, this.width, this.height);
     }
 });
 
