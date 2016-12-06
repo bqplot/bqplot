@@ -37,8 +37,8 @@ var Figure = widgets.DOMWidgetView.extend({
         var min_ratio = this.model.get("min_aspect_ratio");
 
         var return_value = {};
-        var width_undefined = (suggested_width === undefined || isNaN(suggested_width));
-        var height_undefined = (suggested_height === undefined || isNaN(suggested_height));
+        var width_undefined = (suggested_width === undefined || isNaN(suggested_width) || suggested_width <= 0);
+        var height_undefined = (suggested_height === undefined || isNaN(suggested_height) || suggested_width <= 0);
 
         if (width_undefined && height_undefined) {
             // These are defaults if both min_width and min_height are undefined
