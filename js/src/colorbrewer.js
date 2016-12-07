@@ -1,38 +1,38 @@
 /* Apache-Style Software License for ColorBrewer software and ColorBrewer Color
  * Schemes
- * 
+ *
  * Copyright (c) 2002 Cynthia Brewer, Mark Harrower, and The Pennsylvania State
  * University.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions as source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * 2. The end-user documentation included with the redistribution, if any, must
  * include the following acknowledgment: "This product includes color
  * specifications and designs developed by Cynthia Brewer
  * (http://colorbrewer.org/)." Alternately, this acknowledgment may appear in the
  * software itself, if and wherever such third-party acknowledgments normally
  * appear.
- * 
+ *
  * 4. The name "ColorBrewer" must not be used to endorse or promote products
  * derived from this software without prior written permission. For written
  * permission, please contact Cynthia Brewer at cbrewer@psu.edu.
- * 
+ *
  * 5. Products derived from this software may not be called "ColorBrewer", nor
  * may "ColorBrewer" appear in their name, without prior written permission of
  * Cynthia Brewer.
@@ -329,6 +329,15 @@ var colorbrewer = {YlGn: {
 6: ["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f"],
 7: ["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494"],
 8: ["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494","#b3b3b3"]
+},Viridis: {
+3: ["#440154","#35b779","#fde725"],
+4: ["#440154","#30698e","#35b779","#fde725"],
+5: ["#440154","#404588","#2a788e","#75d054","#fde725"],
+6: ["#440154","#404588","#2a788e","#22a785","#75d054","#fde725"],
+7: ["#440154","#443b84","#30698e","#21918c","#35b779","#8ed645","#fde725"],
+8: ["#450457","#463480","#365d8d","#27808e","#1fa187","#4ac16d","#9dd93b","#fde725"],
+9: ["#440154","#472a7a","#3e4c8a","#30698e","#25838e","#1f9e89","#35b779","#6ccd5a","#fde725"],
+10: ["#440154","#472e7c","#3b528b","#2c718e","#218f8d","#25ac82","#56c667","#a0da39","#f1e51d","#fde725"],
 },Set3: {
 3: ["#8dd3c7","#ffffb3","#bebada"],
 4: ["#8dd3c7","#ffffb3","#bebada","#fb8072"],
