@@ -237,7 +237,6 @@ var MarketMap = figure.Figure.extend({
         this.colors_map = function(d) { return that.get_color(d, num_colors);};
         var color_data = this.model.get_typed_field("color");
         var mapped_data = this.data.map(function(d, i) {
-
             return {
                 display: display_text[i],
                 name: d,
