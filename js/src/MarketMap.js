@@ -237,12 +237,13 @@ var MarketMap = figure.Figure.extend({
         this.colors_map = function(d) { return that.get_color(d, num_colors);};
         var color_data = this.model.get_typed_field("color");
         var mapped_data = this.data.map(function(d, i) {
+
             return {
                 display: display_text[i],
                 name: d,
                 color: color_data[i],
                 group: that.group_data[i],
-                ref_data: that.ref_data[i]
+                ref_data: (that.ref_data === null || that.ref_data === undefined) ? null : that.ref_data[i]
             };
         });
 
@@ -615,6 +616,7 @@ var MarketMap = figure.Figure.extend({
         // the +5s are for breathing room for the tool tip
         tooltip_div.style("left", (mouse_pos[0] + parent_node.offsetLeft - ref_el.scrollLeft + 5) + "px")
             .style("top", (mouse_pos[1] + parent_node.offsetTop - ref_el.scrollTop + 5) + "px");
+        var ref_data = data.ref_data;
 
         tooltip_div.select("table").remove();
         if(!this.tooltip_view) {
@@ -630,9 +632,9 @@ var MarketMap = figure.Figure.extend({
 
             table_rows.append("td")
                 .attr("class", "tooltiptext")
-                .text(function(datum, index) { return that.tooltip_formats[index](data.ref_data[datum]);});
+                .text(function(datum, index) { return (ref_data === null || ref_data === undefined) ? null : that.tooltip_formats[index](ref_data[datum]);});
         }
-        this.send({event: "hover", data: data.name, ref_data: data.ref_data});
+        this.send({event: "hover", data: data.name, ref_data: ref_data});
     },
 
     hide_tooltip: function() {
