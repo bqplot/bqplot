@@ -19,6 +19,15 @@ var scalemodel = require("./ScaleModel");
 
 var OrdinalScaleModel = scalemodel.ScaleModel.extend({
 
+    defaults: function() {
+        return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
+            _model_name: "OrdinalScaleModel",
+            _view_name: "OrdinalScale",
+            min: null,
+            max: null,
+        });
+    },
+
     initialize: function() {
         OrdinalScaleModel.__super__.initialize.apply(this, arguments);
     },

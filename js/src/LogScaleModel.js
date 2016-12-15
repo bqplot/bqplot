@@ -18,6 +18,14 @@ var linearscalemodel = require("./LinearScaleModel");
 
 var LogScaleModel = linearscalemodel.LinearScaleModel.extend({
 
+    defaults: function() {
+        return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
+            _model_name: "LogScaleModel",
+            _view_name: "LogScale",
+            domain: []
+        });
+    },
+
     initialize: function() {
         LogScaleModel.__super__.initialize.apply(this, arguments);
     },
@@ -26,7 +34,7 @@ var LogScaleModel = linearscalemodel.LinearScaleModel.extend({
         this.type = "log";
         this.global_min = Number.MIN_VALUE;
         this.global_max = Number.POSITIVE_INFINITY;
-    },
+    }
 
 });
 
