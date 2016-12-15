@@ -8,7 +8,7 @@ Examples
 
 Using the pyplot API
 
-.. code:: python
+.. ipywidgets-display::
 
     import numpy as np
     from bqplot import pyplot as plt
@@ -19,13 +19,12 @@ Using the pyplot API
     x = np.linspace(0.0, 10.0, n)
     y = np.cumsum(np.random.randn(n))
     plt.plot(x, y)
-    plt.show()
-
-.. image:: ../../pyplot-screenshot.png
+    fig = plt.current_figure()
+    fig
 
 Using the bqplot internal object model
 
-.. code:: python
+.. ipywidgets-display::
 
 	import numpy as np
 	from IPython.display import display
@@ -52,6 +51,3 @@ Using the bqplot internal object model
 
 	Figure(marks=[bar, line], axes=[ax_x, ax_y], title='API Example',
 	       legend_location='bottom-right')
-
-.. image:: ../../bqplot-screenshot.png
-	
