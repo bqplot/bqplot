@@ -576,7 +576,9 @@ var MarketMap = figure.Figure.extend({
                 .attr("y", 0)
                 .attr("width", this.column_width)
                 .attr("height", this.row_height)
-                .style({'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none'});
+                .style({'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none',
+                        'pointer-events': 'none'
+                    });
             this.show_tooltip(d3.event, data);
         }
     },
@@ -655,6 +657,7 @@ var MarketMap = figure.Figure.extend({
             tooltip_widget_creation_promise.then(function(view) {
                 that.tooltip_view = view;
                 that.tooltip_div.node().appendChild(view.el);
+                view.trigger("displayed", {"add_to_dom_only": true});
             });
         }
     },
