@@ -163,8 +163,8 @@ class MarketMap(DOMWidget):
 
     stroke = Color('white').tag(sync=True)
     group_stroke = Color('black').tag(sync=True)
-    selected_stroke = Color('dodgerblue').tag(sync=True)
-    hovered_stroke = Color('orangered').tag(sync=True)
+    selected_stroke = Color('dodgerblue', allow_none=True).tag(sync=True)
+    hovered_stroke = Color('orangered', allow_none=True).tag(sync=True)
     font_style = Dict().tag(sync=True)
     title_style = Dict().tag(sync=True)
 
