@@ -492,8 +492,15 @@ var Figure = widgets.DOMWidgetView.extend({
             that.margin = that.model.get("fig_margin");
             that.update_plotarea_dimensions();
 
-            that.scale_x.set_range([0, that.plotarea_width]);
-            that.scale_y.set_range([that.plotarea_height, 0]);
+            if (that.scale_x !== undefined && that.scale_x !== null) {
+                that.scale_x.set_range([0, that.plotarea_width]);
+            }
+
+
+            if (that.scale_y !== undefined && that.scale_y !== null) {
+                that.scale_y.set_range([that.plotarea_height, 0]);
+            }
+
             // transform figure
             that.fig.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
@@ -532,34 +539,37 @@ var Figure = widgets.DOMWidgetView.extend({
         var that = this;
         var count = 1;
         var max_label_len = 1;
-        Promise.all(this.mark_views.views).then(function(views) {
-            views.forEach(function(mark_view) {
-                if(mark_view.model.get("display_legend")) {
-                    var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
-                    count = count + child_count[0];
-                    max_label_len = (child_count[1]) ?
-                        Math.max(max_label_len, child_count[1]) : max_label_len;
-                }
-            });
 
-            var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
-            if(count !== 1) {
-                legend_g.append("g")
-                  .attr("class", "axis")
-                .append("rect")
-                  .attr({"y": (legend_height + 2) / 2.0,
-                         "x": (-0.5 * (legend_height + 2))})
-                  .attr("width", (max_label_len + 2) + "em")
-                  .attr("height", (count * (legend_height + 2)))
-                  .style({"fill": "none"});
-            }
-            max_label_len = (legend_location === "top-right" ||
-                             legend_location === "right" ||
-                             legend_location === "bottom-right") ? -(max_label_len + 2) : 1;
-            var em = 16;
-            legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
-                                                      String(coords[1]) + ") ");
-        });
+        if(this.mark_views !== undefined && this.mark_views !== null) {
+            Promise.all(this.mark_views.views).then(function(views) {
+                views.forEach(function(mark_view) {
+                    if(mark_view.model.get("display_legend")) {
+                        var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
+                        count = count + child_count[0];
+                        max_label_len = (child_count[1]) ?
+                            Math.max(max_label_len, child_count[1]) : max_label_len;
+                    }
+                });
+
+                var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
+                if(count !== 1) {
+                    legend_g.append("g")
+                      .attr("class", "axis")
+                    .append("rect")
+                      .attr({"y": (legend_height + 2) / 2.0,
+                             "x": (-0.5 * (legend_height + 2))})
+                      .attr("width", (max_label_len + 2) + "em")
+                      .attr("height", (count * (legend_height + 2)))
+                      .style({"fill": "none"});
+                }
+                max_label_len = (legend_location === "top-right" ||
+                                 legend_location === "right" ||
+                                 legend_location === "bottom-right") ? -(max_label_len + 2) : 1;
+                var em = 16;
+                legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
+                                                          String(coords[1]) + ") ");
+            });
+        }
     },
 
     get_legend_coords: function(legend_location, width, height, disp) {
