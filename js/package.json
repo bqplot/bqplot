@@ -10,7 +10,8 @@
     "url": "https://github.com/bloomberg/bqplot.git"
   },
   "scripts": {
-    "prepublish": "webpack",
+    "build": "webpack",
+    "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

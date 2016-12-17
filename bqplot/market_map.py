@@ -27,9 +27,10 @@ Market Map
    SquareMarketMap
 """
 
-from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance
+from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance, Float
 from traittypes import Array, DataFrame
-from ipywidgets import DOMWidget, CallbackDispatcher, Color, widget_serialization
+from ipywidgets import (DOMWidget, CallbackDispatcher, Color,
+    widget_serialization, Layout)
 
 from .traits import array_serialization, dataframe_serialization, dataframe_warn_indexname
 from .marks import CATEGORY10
@@ -82,17 +83,6 @@ class MarketMap(DOMWidget):
         True, the finer elements are blurred
 
     Map Drawing Attributes
-
-    map_width: int
-        minimum width of the entire map
-    map_height: int
-        minimum height of the entire map
-    map_margin: dict
-        margin for the market map plot area with respect to the entire display
-        area
-    preserve_aspect: bool
-        boolean to control if the aspect ratio should be preserved or not
-        during a resize
     cols: int
         Suggestion for no of columns in the map.If not specified, value is
         inferred from the no of rows and no of cells
@@ -107,6 +97,18 @@ class MarketMap(DOMWidget):
     row_groups: int
         No of groups the rows should be divided into. This can be used to draw
         more square cells for each of the groups
+
+    Layout Attributes
+
+    map_margin: dict (default: {top=50, bottom=50, left=50, right=50})
+        Dictionary containing the top, bottom, left and right margins. The user
+        is responsible for making sure that the width and height are greater
+        than the sum of the margins.
+    min_aspect_ratio: float
+         minimum width / height ratio of the figure
+    max_aspect_ratio: float
+         maximum width / height ratio of the figure
+
 
     Display Attributes
 
@@ -136,10 +138,24 @@ class MarketMap(DOMWidget):
     enable_hover: bool
         boolean to control if the map should be aware of which cell is being
         hovered on. If it is set to False, tooltip will not be displayed
-    """
-    map_width = Int(1080).tag(sync=True)
-    map_height = Int(800).tag(sync=True)
 
+    Note
+    ----
+
+    The aspect ratios stand for width / height ratios.
+
+     - If the available space is within bounds in terms of min and max aspect
+       ratio, we use the entire available space.
+     - If the available space is too oblong horizontally, we use the client
+       height and the width that corresponds max_aspect_ratio (maximize width
+       under the constraints).
+     - If the available space is too oblong vertically, we use the client width
+       and the height that corresponds to min_aspect_ratio (maximize height
+       under the constraint).
+       This corresponds to maximizing the area under the constraints.
+
+    Default min and max aspect ratio are both equal to 16 / 9.
+    """
     names = Array([]).tag(sync=True, **array_serialization)
     groups = Array([]).tag(sync=True, **array_serialization)
     display_text = Array(None, allow_none=True).tag(sync=True, **array_serialization)
@@ -159,7 +175,14 @@ class MarketMap(DOMWidget):
     axes = List().tag(sync=True, **widget_serialization)
     color = Array([]).tag(sync=True, **array_serialization)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50)).tag(sync=True)
-    preserve_aspect = Bool().tag(sync=True, display_name='Preserve aspect ratio')
+
+    layout = Instance(Layout, kw={
+            'flex': '1',
+            'align_self': 'stretch',
+            'min_width': '400px'
+        }, allow_none=True).tag(sync=True, **widget_serialization)
+    min_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
+    max_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
 
     stroke = Color('white').tag(sync=True)
     group_stroke = Color('black').tag(sync=True)

@@ -20,9 +20,11 @@ var _ = require("underscore");
 var Figure = widgets.DOMWidgetView.extend({
 
     initialize : function() {
-        this.setElement(document.createElementNS(d3.ns.prefix.svg, "svg"));
         // Internet Explorer does not support classList for svg elements
         this.el.setAttribute("class", "bqplot figure jupyter-widgets");
+        var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
+        this.el.append(svg);
+        this.svg = d3.select(svg);
         Figure.__super__.initialize.apply(this, arguments);
     },
 
@@ -35,8 +37,8 @@ var Figure = widgets.DOMWidgetView.extend({
         var min_ratio = this.model.get("min_aspect_ratio");
 
         var return_value = {};
-        var width_undefined = (suggested_width === undefined || isNaN(suggested_width));
-        var height_undefined = (suggested_height === undefined || isNaN(suggested_height));
+        var width_undefined = (suggested_width === undefined || isNaN(suggested_width) || suggested_width <= 0);
+        var height_undefined = (suggested_height === undefined || isNaN(suggested_height) || suggested_width <= 0);
 
         if (width_undefined && height_undefined) {
             // These are defaults if both min_width and min_height are undefined
@@ -98,11 +100,12 @@ var Figure = widgets.DOMWidgetView.extend({
         this.clip_id = "clip_path_" + this.id;
         this.margin = this.model.get("fig_margin");
 
-        this.svg = d3.select(this.el);
         this.update_plotarea_dimensions();
         // this.fig is the top <g> element to be impacted by a rescaling / change of margins
         this.svg.attr("viewBox", "0 0 " + this.width +
                                     " " + this.height);
+        this.svg.style("min-width", "" + this.width + "px");
+        this.svg.style("min-height", "" + this.height + "px");
 
         this.fig = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -459,12 +462,21 @@ var Figure = widgets.DOMWidgetView.extend({
         this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
     },
 
-    onResize: function(msg) {
-        this.relayout();
+    processPhosphorMessage: function(msg) {
+        Figure.__super__.processPhosphorMessage.apply(this, arguments);
+        switch (msg.type) {
+        case 'resize':
+        case 'after-show':
+            this.relayout();
+            break;
+        }
     },
 
     relayout: function() {
         this.svg.attr("viewBox", "0 0 1 1");
+        this.svg.style("min-width", '');
+        this.svg.style("min-height", '');
+
         var that = this;
 
         var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
@@ -473,13 +485,22 @@ var Figure = widgets.DOMWidgetView.extend({
 
         that.svg.attr("viewBox", "0 0 " + that.width +
                                     " " + that.height);
+        that.svg.style("min-width", "" + that.width + "px");
+        that.svg.style("min-height", "" + that.height + "px");
         window.requestAnimationFrame(function () {
             // update ranges
             that.margin = that.model.get("fig_margin");
             that.update_plotarea_dimensions();
 
-            that.scale_x.set_range([0, that.plotarea_width]);
-            that.scale_y.set_range([that.plotarea_height, 0]);
+            if (that.scale_x !== undefined && that.scale_x !== null) {
+                that.scale_x.set_range([0, that.plotarea_width]);
+            }
+
+
+            if (that.scale_y !== undefined && that.scale_y !== null) {
+                that.scale_y.set_range([that.plotarea_height, 0]);
+            }
+
             // transform figure
             that.fig.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
@@ -518,34 +539,37 @@ var Figure = widgets.DOMWidgetView.extend({
         var that = this;
         var count = 1;
         var max_label_len = 1;
-        Promise.all(this.mark_views.views).then(function(views) {
-            views.forEach(function(mark_view) {
-                if(mark_view.model.get("display_legend")) {
-                    var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
-                    count = count + child_count[0];
-                    max_label_len = (child_count[1]) ?
-                        Math.max(max_label_len, child_count[1]) : max_label_len;
-                }
-            });
 
-            var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
-            if(count !== 1) {
-                legend_g.append("g")
-                  .attr("class", "axis")
-                .append("rect")
-                  .attr({"y": (legend_height + 2) / 2.0,
-                         "x": (-0.5 * (legend_height + 2))})
-                  .attr("width", (max_label_len + 2) + "em")
-                  .attr("height", (count * (legend_height + 2)))
-                  .style({"fill": "none"});
-            }
-            max_label_len = (legend_location === "top-right" ||
-                             legend_location === "right" ||
-                             legend_location === "bottom-right") ? -(max_label_len + 2) : 1;
-            var em = 16;
-            legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
-                                                      String(coords[1]) + ") ");
-        });
+        if(this.mark_views !== undefined && this.mark_views !== null) {
+            Promise.all(this.mark_views.views).then(function(views) {
+                views.forEach(function(mark_view) {
+                    if(mark_view.model.get("display_legend")) {
+                        var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
+                        count = count + child_count[0];
+                        max_label_len = (child_count[1]) ?
+                            Math.max(max_label_len, child_count[1]) : max_label_len;
+                    }
+                });
+
+                var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
+                if(count !== 1) {
+                    legend_g.append("g")
+                      .attr("class", "axis")
+                    .append("rect")
+                      .attr({"y": (legend_height + 2) / 2.0,
+                             "x": (-0.5 * (legend_height + 2))})
+                      .attr("width", (max_label_len + 2) + "em")
+                      .attr("height", (count * (legend_height + 2)))
+                      .style({"fill": "none"});
+                }
+                max_label_len = (legend_location === "top-right" ||
+                                 legend_location === "right" ||
+                                 legend_location === "bottom-right") ? -(max_label_len + 2) : 1;
+                var em = 16;
+                legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
+                                                          String(coords[1]) + ") ");
+            });
+        }
     },
 
     get_legend_coords: function(legend_location, width, height, disp) {
@@ -679,7 +703,7 @@ var Figure = widgets.DOMWidgetView.extend({
            var s = document.createElement("style");
            s.setAttribute("type", "text/css");
            s.innerHTML = "<![CDATA[\n" +
-               get_css(node, ["\.theme-dark", "\.theme-light"]) + "\n]]>";
+               get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
            var defs = document.createElement("defs");
            defs.appendChild(s);
            svg.insertBefore(defs, svg.firstChild);
@@ -687,13 +711,14 @@ var Figure = widgets.DOMWidgetView.extend({
            return svg.outerHTML;
        };
 
-       var svg2png = function(xml) {
+       var svg2png = function(xml, width, height) {
             // Render a SVG data into a canvas and download as PNG.
             var image = new Image();
             image.onload = function() {
                 var canvas = document.createElement("canvas");
-                canvas.width = image.width;
-                canvas.height = image.height;
+                canvas.classList.add('bqplot');
+                canvas.width = width;
+                canvas.height = height;
                 var context = canvas.getContext("2d");
                 context.drawImage(image, 0, 0);
                 var a = document.createElement("a");
@@ -708,7 +733,7 @@ var Figure = widgets.DOMWidgetView.extend({
         // Create standalone SVG string
         var svg = svg2svg(this.svg.node());
         // Save to PNG
-        svg2png(svg);
+        svg2png(svg, this.width, this.height);
     }
 });
 

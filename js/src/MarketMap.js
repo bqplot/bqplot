@@ -22,8 +22,12 @@ var MarketMap = figure.Figure.extend({
 
     render: function(options) {
         this.id = widgets.uuid();
-        this.width = this.model.get("map_width");
-        this.height = this.model.get("map_height");
+        var min_width = String(this.model.get("layout").get("min_width"));
+        var min_height = String(this.model.get("layout").get("min_height"));
+
+        var impl_dimensions = this._get_height_width(min_height.slice(0, -2), min_width.slice(0, -2));
+        this.width = impl_dimensions["width"];
+        this.height = impl_dimensions["height"];
 
         this.scales = {};
         this.set_top_el_style();
@@ -39,8 +43,7 @@ var MarketMap = figure.Figure.extend({
         this.set_area_dimensions(this.data.length);
 
         // Reading the properties and creating the dom elements required
-        this.svg = d3.select(this.el)
-                .attr("viewBox", "0 0 " + this.width + " " + this.height)
+        this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height)
                 .attr("width", "100%")
                 .attr("height", "100%");
         if (this.model.get('theme')) {
@@ -79,7 +82,7 @@ var MarketMap = figure.Figure.extend({
 
         this.title = this.fig.append("text")
           .attr("class", "mainheading")
-          .attr({x: (0.5 * (this.rect_width)), y: -(this.margin.top / 2.0), dy: "1em"})
+          .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
           .text(this.model.get("title"))
           .style(this.model.get("title_style"));
 
@@ -101,7 +104,7 @@ var MarketMap = figure.Figure.extend({
             // Adding the tooltip to the parent of the el so as to not
             // pollute the DOM
             that.el.parentNode.appendChild(that.tooltip_div.node());
-            that.update_layout();
+            that.relayout();
             that.draw_group_names();
             that.create_tooltip_widget();
         });
@@ -121,10 +124,10 @@ var MarketMap = figure.Figure.extend({
     },
 
     update_plotarea_dimensions: function() {
-        this.rect_width = this.width - this.margin.left - this.margin.right;
-        this.rect_height = this.height - this.margin.top - this.margin.bottom;
-        this.column_width = parseFloat((this.rect_width / this.num_cols).toFixed(2));
-        this.row_height = parseFloat((this.rect_height / this.num_rows).toFixed(2));
+        this.plotarea_width = this.width - this.margin.left - this.margin.right;
+        this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
+        this.column_width = parseFloat((this.plotarea_width / this.num_cols).toFixed(2));
+        this.row_height = parseFloat((this.plotarea_height / this.num_rows).toFixed(2));
     },
 
     reset_drawing_controls: function() {
@@ -174,53 +177,49 @@ var MarketMap = figure.Figure.extend({
            .style(this.model.get("title_style"));
     },
 
-    update_layout: function() {
-        // First, reset the natural width by resetting the viewbox, then measure the flex size, then redraw to the flex dimensions
-        this.svg.attr("width", null);
-        this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
-        setTimeout(_.bind(this.update_layout2, this), 0);
-    },
+    relayout: function() {
+        this.svg.attr("viewBox", "0 0 1 1");
+        this.svg.style("min-width", '');
+        this.svg.style("min-height", '');
 
-    update_layout2: function() {
-        var rect = this.el.getBoundingClientRect();
-        this.width = rect.width > 0 ? rect.width : this.model.get("map_width");
-        this.height = rect.height > 0 ? rect.height : this.model.get("map_height");
-        setTimeout(_.bind(this.update_layout3, this), 0);
-    },
+        var that = this;
 
-    update_layout3: function() {
-        var preserve_aspect = this.model.get("preserve_aspect");
-        if (preserve_aspect === true) {
-            var aspect_ratio = this.model.get("map_width")/this.model.get("map_height");
-            if (this.width/this.height > aspect_ratio) {
-                this.width = this.height*aspect_ratio;
-            } else {
-                this.height = this.width/aspect_ratio;
-            }
-        }
-        // update ranges
-        this.margin = this.model.get("map_margin");
-        this.update_plotarea_dimensions();
+        var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
+        that.width = impl_dimensions["width"];
+        that.height = impl_dimensions["height"];
 
-        this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
-        this.svg.attr("width", this.width);
-        // transform figure
-        this.fig.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-        this.title.attr({x: (0.5 * (this.rect_width)),
-                         y: -(this.margin.top / 2.0),
-                         dy: "1em"});
-        this.draw_map();
+        that.svg.attr("viewBox", "0 0 " + that.width +
+                                    " " + that.height);
+        that.svg.style("min-width", "" + that.width + "px");
+        that.svg.style("min-height", "" + that.height + "px");
+        window.requestAnimationFrame(function () {
+            // update ranges
+            that.margin = that.model.get("map_margin");
+            that.update_plotarea_dimensions();
 
-        // Drawing the selected cells
-        this.clear_selected();
-        this.apply_selected();
+            // transform figure
+            that.fig.attr("transform", "translate(" + that.margin.left + "," +
+                                                      that.margin.top + ")");
+            that.title.attr({
+                x: (0.5 * (that.plotarea_width)),
+                y: -(that.margin.top / 2.0),
+                dy: "1em"
+            });
 
-        // When map is expanded or contracted, there should not be any
-        // accidental hovers. To prevent this, the following call is made.
-        this.fig_hover.selectAll("rect")
-            .remove();
-        this.hide_tooltip();
-        this.trigger("margin_updated");
+            that.draw_map();
+
+            // Drawing the selected cells
+            that.clear_selected();
+            that.apply_selected();
+
+            // When map is expanded or contracted, there should not be any
+            // accidental hovers. To prevent this, the following call is made.
+            that.fig_hover.selectAll("rect")
+                .remove();
+            that.hide_tooltip();
+            that.trigger("margin_updated");
+        });
+
     },
 
     update_data: function() {
@@ -457,7 +456,7 @@ var MarketMap = figure.Figure.extend({
     draw_group_names: function() {
         // Get all the bounding rects of the paths around each of the
         // sectors. Get their client bounding rect.
-        var paths = d3.select(this.el).selectAll(".bounding_path")[0];
+        var paths = this.svg.selectAll(".bounding_path")[0];
         var clientRects = paths.map(function(path) { return path.getBoundingClientRect(); });
         var text_elements = this.fig_names.selectAll(".names_object").data(clientRects);
         text_elements.attr("width", function(d) { return d.width;})

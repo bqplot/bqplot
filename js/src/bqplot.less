@@ -14,7 +14,7 @@
  */
 
 .common() {
-    svg.bqplot {
+    .bqplot > svg {
         font: 11px sans-serif;
         user-select: none;
         -ms-user-select: none;
@@ -132,7 +132,7 @@
 
 .theme-light {
     .common();
-    svg.bqplot {
+    .bqplot > svg {
         .axis {
             rect {
                 stroke: white;
@@ -185,6 +185,7 @@
         box-shadow: 1px 1px 2px rgba(10, 10, 10, 0.8);
         -webkit-user-select: none;
         -moz-user-select: none;
+        background-color: #FCFCFC;
     }
     .mark_tooltip td{
         border: thin solid black;
@@ -205,7 +206,7 @@
 
 .theme-dark {
     .common();
-    svg.bqplot {
+    .bqplot > svg {
         background: #1a1a1a;
         .axis {
             rect {
@@ -252,6 +253,7 @@
         box-shadow: 1px 1px 2px rgba(245, 245, 245, 0.8);
         -webkit-user-select: none;
         -moz-user-select: none;
+        background-color: black;
     }
     .mark_tooltip td{
         border: thin solid whitesmoke;

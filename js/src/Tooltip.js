@@ -20,7 +20,6 @@ var utils = require("./utils");
 var Tooltip = widgets.DOMWidgetView.extend({
 
     initialize: function() {
-        this.setElement(document.createElement("div"));
         this.d3el = d3.select(this.el);
         Tooltip.__super__.initialize.apply(this, arguments);
     },
