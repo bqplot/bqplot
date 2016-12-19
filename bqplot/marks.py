@@ -1170,7 +1170,7 @@ class GridHeatMap(Mark):
         `start` aligns the column values passed to be aligned with the start of the
         tiles and `end` aligns the column values to the end of the tiles.
     anchor_style: dict (default: {'fill': 'white', 'stroke': 'blue'})
-        Controls the style for the element which serves as the anchor duringi
+        Controls the style for the element which serves as the anchor during
         selection.
 
     Data Attributes
@@ -1184,7 +1184,7 @@ class GridHeatMap(Mark):
         This is a scaled attribute and can be used to affect the height of the
         cells as the entries of `row` can indicate the start or the end points
         of the cells. Refer to the property `row_align`.
-        If this prorety is None, then a uniformly spaced grid is generated in
+        If this property is None, then a uniformly spaced grid is generated in
         the row direction.
     column: numpy.ndarray or None (default: None)
         labels for the columns of the `color` array passed. The length of this can be
@@ -1192,7 +1192,7 @@ class GridHeatMap(Mark):
         This is a scaled attribute and can be used to affect the width of the
         cells as the entries of `column` can indicate the start or the end points
         of the cells. Refer to the property `column_align`.
-        If this prorety is None, then a uniformly spaced grid is generated in
+        If this property is None, then a uniformly spaced grid is generated in
         the column direction.
     """
     # Scaled attributes
@@ -1219,18 +1219,16 @@ class GridHeatMap(Mark):
 
     def __init__(self, **kwargs):
         data = kwargs['color']
-        row = kwargs.pop('row', range(data.shape[0]))
-        column = kwargs.pop('column', range(data.shape[1]))
+        kwargs.setdefault('row', range(data.shape[0]))
+        kwargs.setdefault('column', range(data.shape[1]))
         scales = kwargs.pop('scales', {})
         # Adding default row and column data if they are not passed.
         # Adding scales in case they are not passed too.
 
-        kwargs['row'] = row
         if(scales.get('row', None) is None):
             row_scale = OrdinalScale(reverse=True)
             scales['row'] = row_scale
 
-        kwargs['column'] = column
         if(scales.get('column', None) is None):
             column_scale = OrdinalScale()
             scales['column'] = column_scale
@@ -1239,3 +1237,64 @@ class GridHeatMap(Mark):
 
     _view_name = Unicode('GridHeatMap').tag(sync=True)
     _model_name = Unicode('GridHeatMapModel').tag(sync=True)
+
+
+@register_mark('bqplot.HeatMap')
+class HeatMap(Mark):
+
+    """HeatMap mark.
+
+
+    Attributes
+    ----------
+
+    Data Attributes
+
+    color: numpy.ndarray or None (default: None)
+        color of the data points (2d array).
+    x: numpy.ndarray or None (default: None)
+        labels for the columns of the `color` array passed. The length of this has
+        to be the number of columns in `color`.
+        This is a scaled attribute.
+    y: numpy.ndarray or None (default: None)
+        labels for the rows of the `color` array passed. The length of this has
+        to be the number of rows in `color`.
+        This is a scaled attribute.
+    """
+    # Scaled attributes
+    x = Array(None, allow_none=True).tag(sync=True, scaled=True,
+                  rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    y = Array(None, allow_none=True).tag(sync=True, scaled=True,
+                     rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color',
+                    atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(2, 2))
+
+    # Other attributes
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'},
+        'color': {'dimension': 'color'}
+    }).tag(sync=True)
+
+    null_color = Color('black', allow_none=True).tag(sync=True)
+
+    def __init__(self, **kwargs):
+        data = kwargs['color']
+        kwargs.setdefault('x', range(data.shape[1]))
+        kwargs.setdefault('y', range(data.shape[0]))
+        scales = kwargs.pop('scales', {})
+        # Adding default x and y data if they are not passed.
+        # Adding scales in case they are not passed too.
+
+        if(scales.get('x', None) is None):
+            x_scale = OrdinalScale()
+            scales['x'] = x_scale
+
+        if(scales.get('y', None) is None):
+            y_scale = OrdinalScale()
+            scales['y'] = y_scale
+        kwargs['scales'] = scales
+        super(HeatMap, self).__init__(**kwargs)
+
+    _view_name = Unicode('HeatMap').tag(sync=True)
+    _model_name = Unicode('HeatMapModel').tag(sync=True)
