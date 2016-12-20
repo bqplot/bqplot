@@ -298,6 +298,7 @@ var GridHeatMap = mark.Mark.extend({
 
         this.clear_style(this.selected_style);
         this.clear_style(this.unselected_style);
+        this.clear_style(this.anchor_style);
 
         this.set_default_style([], this.display_cells);
         var that = this;
@@ -331,7 +332,9 @@ var GridHeatMap = mark.Mark.extend({
         this.selected_indices = null;
         this.clear_style(this.selected_style);
         this.clear_style(this.unselected_style);
-        this.set_default_style();
+        this.clear_style(this.anchor_style);
+
+        this.set_default_style([], this.display_cells);
     },
 
     relayout: function() {
