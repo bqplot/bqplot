@@ -273,6 +273,9 @@ var GridHeatMap = mark.Mark.extend({
     },
 
     _filter_cells_by_cell_num: function(cell_numbers) {
+        if (cell_numbers === null || cell_numbers === undefined) {
+            return [];
+        }
         return this.display_cells.filter(function(el) {
            return (cell_numbers.indexOf(el._cell_num) !== -1);});
     },
@@ -302,7 +305,6 @@ var GridHeatMap = mark.Mark.extend({
         var selected_cell_nums = this._cell_nums_from_indices(this.selected_indices);
         var unsel_cell_nums = (selected_cell_nums === null) ? []
                                 : _.difference(_.range(num_rows*num_cols), selected_cell_nums);
-        var anchor_num = this._cell_nums_from_indices([this.anchor_cell_index]);
 
         this.selected_elements = this._filter_cells_by_cell_num(selected_cell_nums);
         this.set_style_on_elements(this.selected_style, this.selected_indices, this.selected_elements);
@@ -310,8 +312,11 @@ var GridHeatMap = mark.Mark.extend({
         this.unselected_elements = this._filter_cells_by_cell_num(unsel_cell_nums);
         this.set_style_on_elements(this.unselected_style, [], this.unselected_elements);
 
-        this.anchor_element = this._filter_cells_by_cell_num(anchor_num);
-        this.set_style_on_elements(this.anchor_style, [], this.anchor_element);
+        if(this.anchor_cell_index !== null && this.anchor_cell_index !== undefined) {
+            var anchor_num = this._cell_nums_from_indices([this.anchor_cell_index]);
+            this.anchor_element = this._filter_cells_by_cell_num(anchor_num);
+            this.set_style_on_elements(this.anchor_style, [], this.anchor_element);
+        }
     },
 
     style_updated: function(new_style, indices, elements) {
