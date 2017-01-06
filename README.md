@@ -145,6 +145,8 @@ Help / Documentation
 
 - Talk to us on the `ipywidgets` Gitter chat: [![Join the chat at https://gitter.im/ipython/ipywidgets](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ipython/ipywidgets?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+- Send us an email at bqplot@bloomberg.net
+
 License
 -------
 
