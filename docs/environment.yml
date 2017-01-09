@@ -6,9 +6,9 @@ dependencies:
  - traitlets
  - traittypes
  - widgetsnbextension
- - ipywidgets>=6.0.0b5
  - numpy
  - pandas
  - bqplot
  - pip:
     - jupyter_sphinx
+    - ipywidgets>=6.0.0b6
