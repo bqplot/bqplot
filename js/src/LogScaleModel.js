@@ -19,7 +19,7 @@ var linearscalemodel = require("./LinearScaleModel");
 var LogScaleModel = linearscalemodel.LinearScaleModel.extend({
 
     defaults: function() {
-        return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
+        return _.extend(linearscalemodel.LinearScaleModel.prototype.defaults(), {
             _model_name: "LogScaleModel",
             _view_name: "LogScale",
             domain: []
