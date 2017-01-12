@@ -38,6 +38,7 @@ var BarsModel = markmodel.MarkModel.extend({
             stroke: null,
             base: 0.0,
             opacities: [],
+            orientation: "vertical",
             align: "center"
         });
     },
@@ -87,6 +88,7 @@ var BarsModel = markmodel.MarkModel.extend({
                 var data = {};
                 var y0 = that.base_value;
                 var y0_neg = that.base_value;
+                var y0_left = that.base_value;
                 data.key = x_elem;
                 data.values = y_data.map(function(y_elem, y_index) {
                     var value = y_elem[index] - that.base_value;
@@ -101,16 +103,20 @@ var BarsModel = markmodel.MarkModel.extend({
 
                         // y0 is the value on the y scale for the upper end
                         // of the bar.
-                        y0: (positive) ? y0 : y0_neg,
+                        y0: (positive) ? y0 : (function() {
+                            y0_left += value;
+                            return y0_left
+                        }()),
                         // y1 is the value on the y scale for the lower end
                         // of the bar.
                         y1: (positive) ? (y0 += value) : (function() {
                             y0_neg += value;
                             return (y0_neg - value);
                         }()),
-                        // y is the value on the y scale which represents
+                        // y_ref is the value on the y scale which represents
                         // the height of the bar
-                        y: value,
+                        y_ref: value,
+                        y: y_elem[index],
                     };
                 });
                 // pos_max is the maximum positive value for a group of
@@ -165,39 +171,40 @@ var BarsModel = markmodel.MarkModel.extend({
             return;
         }
         var scales = this.get("scales");
-        var x_scale = scales.x;
-        var y_scale = scales.y;
+        var orient = this.get("orientation");
+        var dom_scale = scales.x;
+        var range_scale = scales.y;
 
         if(!this.get("preserve_domain").x) {
-            x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+            dom_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                 return elem.key;
             }), this.id + "_x");
         }
         else {
-            x_scale.del_domain([], this.id + "_x");
+            dom_scale.del_domain([], this.id + "_x");
         }
 
         if(!this.get("preserve_domain").y) {
             if(this.get("type") === "stacked") {
-                y_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
+                range_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
                                                 d3.max(this.mark_data, function(c) { return c.pos_max; }), this.base_value],
                                                 this.id + "_y");
             } else {
                 var min = d3.min(this.mark_data,
                     function(c) {
                         return d3.min(c.values, function(val) {
-                            return val.y;
+                            return val.y_ref;
                         });
                     });
                 var max = d3.max(this.mark_data, function(c) {
                     return d3.max(c.values, function(val) {
-                        return val.y;
+                        return val.y_ref;
                     });
                 });
-                y_scale.compute_and_set_domain([min, max, this.base_value], this.id + "_y");
+                range_scale.compute_and_set_domain([min, max, this.base_value], this.id + "_y");
             }
         } else {
-            y_scale.del_domain([], this.id + "_y");
+            range_scale.del_domain([], this.id + "_y");
         }
     }
 });

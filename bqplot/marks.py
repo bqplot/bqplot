@@ -884,6 +884,7 @@ class Bars(Mark):
     base = Float().tag(sync=True)
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
     align = Enum(['center', 'left', 'right'], default_value='center').tag(sync=True)
+    orientation = Enum(['vertical', 'horizontal'], default_value='vertical').tag(sync=True)
 
     _view_name = Unicode('Bars').tag(sync=True)
     _model_name = Unicode('BarsModel').tag(sync=True)

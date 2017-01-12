@@ -45,20 +45,30 @@ var Bars = mark.Mark.extend({
         });
     },
 
+    set_scale_orientation: function() {
+        var orient = this.model.get("orientation");
+        this.dom_scale = this.scales.x; //(orient === "vertical") ? this.scales.x : this.scales.y;
+        this.range_scale = this.scales.y; //(orient === "vertical") ? this.scales.y : this.scales.x;
+    },
+
     set_ranges: function() {
-        var x_scale = this.scales.x,
-            y_scale = this.scales.y;
-        if(x_scale.model.type !== "ordinal") {
-            x_scale.set_range(this.parent.padded_range("x", x_scale.model));
+        var orient = this.model.get("orientation");
+        this.set_scale_orientation();
+        var dom_scale = this.dom_scale,
+            range_scale = this.range_scale;
+        var dom = (orient === "vertical") ? "x" : "y",
+            rang = (orient === "vertical") ? "y" : "x";
+        if(dom_scale.model.type !== "ordinal") {
+            dom_scale.set_range(this.parent.padded_range(dom, dom_scale.model));
         } else {
-            x_scale.set_range(this.parent.padded_range("x", x_scale.model), this.padding);
+            dom_scale.set_range(this.parent.padded_range(dom, dom_scale.model), this.padding);
         }
-        y_scale.set_range(this.parent.padded_range("y", y_scale.model));
+        range_scale.set_range(this.parent.padded_range(rang, range_scale.model));
         // x_offset is set later by the adjust_offset method
         // This differs because it is not constant for a scale.
         // Changes based on the data.
-        this.x_offset = 0;
-        this.y_offset = y_scale.offset;
+        this.dom_offset = 0;
+        this.range_offset = (orient === "vertical") ? range_scale.offset: -range_scale.offset;
     },
 
     set_positional_scales: function() {
@@ -86,22 +96,22 @@ var Bars = mark.Mark.extend({
         // the value have to be negatively offset by half of the width of
         // the bars, because ordinal scales give the values corresponding
         // to the start of the bin but linear scale gives the actual value.
-        var x_scale = this.scales.x;
-        if(x_scale.model.type !== "ordinal") {
+        var dom_scale = this.dom_scale;
+        if(dom_scale.model.type !== "ordinal") {
             if (this.model.get("align")==="center") {
-                this.x_offset = -(this.x.rangeBand() / 2).toFixed(2);
+                this.dom_offset = -(this.x.rangeBand() / 2).toFixed(2);
             } else if (this.model.get("align") === "left") {
-                this.x_offset = -(this.x.rangeBand()).toFixed(2);
+                this.dom_offset = -(this.x.rangeBand()).toFixed(2);
             } else {
-                this.x_offset = 0;
+                this.dom_offset = 0;
             }
         } else {
             if (this.model.get("align")==="center") {
-                this.x_offset = 0;
+                this.dom_offset = 0;
             } else if (this.model.get("align")==="left") {
-                this.x_offset = -(this.x.rangeBand() / 2);
+                this.dom_offset = -(this.x.rangeBand() / 2);
             } else {
-                this.x_offset = (this.x.rangeBand() / 2);
+                this.dom_offset = (this.x.rangeBand() / 2);
             }
         }
     },
@@ -128,6 +138,7 @@ var Bars = mark.Mark.extend({
         this.listenTo(this.model, "colors_updated", this.update_colors, this);
         this.listenTo(this.model, "change:type", this.update_type, this);
         this.listenTo(this.model, "change:align", this.realign, this);
+        this.listenTo(this.model, "change:orientation", this.relayout, this)
         this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
         this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
@@ -197,16 +208,32 @@ var Bars = mark.Mark.extend({
         this.relayout();
     },
 
+    draw_zero_line: function() {
+        this.set_scale_orientation();
+        var range_scale = this.range_scale;
+        var orient = this.model.get("orientation");
+        if (orient === "vertical") {
+            this.d3el.select(".zeroLine")
+              .attr("x1",  0)
+              .attr("x2", this.parent.plotarea_width)
+              .attr("y1", range_scale.scale(this.model.base_value))
+              .attr("y2", range_scale.scale(this.model.base_value));
+        } else {
+            this.d3el.select(".zeroLine")
+              .attr("x1", range_scale.scale(this.model.base_value))
+              .attr("x2", range_scale.scale(this.model.base_value))
+              .attr("y1", 0)
+              .attr("y2", this.parent.plotarea_height);
+        }
+    },
+
     relayout: function() {
-        var y_scale = this.scales.y;
         this.set_ranges();
         this.compute_view_padding();
 
-        this.d3el.select(".zeroLine")
-          .attr("x1",  0)
-          .attr("x2", this.parent.plotarea_width)
-          .attr("y1", y_scale.scale(this.model.base_value))
-          .attr("y2", y_scale.scale(this.model.base_value));
+        var range_scale = this.range_scale;
+
+        this.draw_zero_line();
 
         this.x.rangeRoundBands(this.set_x_range(), this.padding);
         this.adjust_offset();
@@ -221,7 +248,6 @@ var Bars = mark.Mark.extend({
             return;
         }
 
-        var x_scale = this.scales.x;
         var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
         this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
         this.touch();
@@ -235,7 +261,6 @@ var Bars = mark.Mark.extend({
         }
 
         var that = this;
-        var x_scale = this.scales.x;
 
         var indices = _.range(this.model.mark_data.length);
         var filtered_indices = indices.filter(function(ind) { var x_pix = that.x_pixels[ind];
@@ -258,17 +283,17 @@ var Bars = mark.Mark.extend({
               return d.key;
           });
 
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        var dom_scale = this.dom_scale, range_scale = this.range_scale;
         // this.x is the ordinal scale used to draw the bars. If a linear
         // scale is given, then the ordinal scale is created from the
         // linear scale.
-        if(x_scale.model.type !== "ordinal") {
+        if(dom_scale.model.type !== "ordinal") {
             var model_domain = this.model.mark_data.map(function(elem) {
                 return elem.key;
             });
             this.x.domain(model_domain);
         } else {
-            this.x.domain(x_scale.scale.domain());
+            this.x.domain(dom_scale.scale.domain());
         }
         this.x.rangeRoundBands(this.set_x_range(), this.padding);
         this.adjust_offset();
@@ -312,11 +337,9 @@ var Bars = mark.Mark.extend({
         this.d3el.selectAll(".zeroLine").remove();
         this.d3el.append("g")
           .append("line")
-          .attr("class", "zeroLine")
-          .attr("x1",  0)
-          .attr("x2", this.parent.plotarea_width)
-          .attr("y1", y_scale.scale(this.model.base_value))
-          .attr("y2", y_scale.scale(this.model.base_value));
+          .attr("class", "zeroLine");
+
+        this.draw_zero_line();
     },
 
     draw_bars: function(animate) {
@@ -324,42 +347,62 @@ var Bars = mark.Mark.extend({
         var bars_sel = bar_groups.selectAll(".bar");
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
         var that = this;
+        var orient = this.model.get("orientation");
 
-        var x_scale = this.scales.x, y_scale = this.scales.y;
-        if (x_scale.model.type === "ordinal") {
-            var x_max = d3.max(this.parent.range("x"));
+        var dom_scale = this.dom_scale, range_scale = this.range_scale;
+
+        var dom = (orient === "vertical") ? "x" : "y",
+            rang = (orient === "vertical") ? "y" : "x",
+            mult = (orient === "vertical") ? 1 : -1;
+
+        var dom_control = (orient === "vertical") ? "width" : "height",
+            rang_control = (orient === "vertical") ? "height" : "width";
+        if (dom_scale.model.type === "ordinal") {
+            var dom_max = d3.max(this.parent.range(dom));
             bar_groups.attr("transform", function(d) {
-                return "translate(" + ((x_scale.scale(d.key) !== undefined ?
-                                        x_scale.scale(d.key) : x_max) + that.x_offset) + ", 0)";
+                if (orient === "vertical") {
+                    return "translate(" + ((dom_scale.scale(d.key) !== undefined ?
+                                        dom_scale.scale(d.key) : dom_max) + that.dom_offset) + ", 0)"
+                } else {
+                    return "translate(0, " + ((dom_scale.scale(d.key) !== undefined ?
+                                        dom_scale.scale(d.key) : dom_max) + that.dom_offset) + ")"
+                }
             });
         } else {
             bar_groups.attr("transform", function(d) {
-                return "translate(" + (x_scale.scale(d.key) + that.x_offset) + ", 0)";
+                if (orient === "vertical") {
+                    return "translate(" + (dom_scale.scale(d.key) + that.dom_offset) + ", 0)";
+                } else {
+                    return "translate(0, " + (dom_scale.scale(d.key) + that.dom_offset) + ")";
+                }
             });
         }
         if (this.model.get("type") === "stacked") {
             bars_sel.transition().duration(animation_duration)
-                .attr("x", 0)
-                .attr("width", this.x.rangeBand().toFixed(2))
-                .attr("y", function(d) {
-                    return y_scale.scale(d.y1);
-                }).attr("height", function(d) {
-                    return Math.abs(y_scale.scale(d.y1 + d.y) - y_scale.scale(d.y1));
+                .attr(dom, 0)
+                .attr(dom_control, this.x.rangeBand().toFixed(2))
+                .attr(rang, function(d) {
+                    return (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0);
+                })
+                .attr(rang_control, function(d) {
+                    return Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1));
                 });
         } else {
             bars_sel.transition().duration(animation_duration)
-              .attr("x", function(datum, index) {
+              .attr(dom, function(datum, index) {
                     return that.x1(index);
-              }).attr("width", this.x1.rangeBand().toFixed(2))
-              .attr("y", function(d) {
-                  return d3.min([y_scale.scale(d.y), y_scale.scale(that.model.base_value)]);
-              }).attr("height", function(d) {
-                  return Math.abs(y_scale.scale(that.model.base_value) - (y_scale.scale(d.y)));
+              })
+              .attr(dom_control, this.x1.rangeBand().toFixed(2))
+              .attr(rang, function(d) {
+                  return d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
+              })
+              .attr(rang_control, function(d) {
+                  return Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y_ref)));
               });
         }
 
         this.x_pixels = this.model.mark_data.map(function(el) {
-            return x_scale.scale(el.key) + x_scale.offset;
+            return dom_scale.scale(el.key) + dom_scale.offset;
         });
     },
 
@@ -530,12 +573,12 @@ var Bars = mark.Mark.extend({
     },
 
     set_x_range: function() {
-        var x_scale = this.scales.x;
-        if(x_scale.model.type === "ordinal") {
-            return x_scale.scale.rangeExtent();
+        var dom_scale = this.dom_scale;
+        if(dom_scale.model.type === "ordinal") {
+            return dom_scale.scale.rangeExtent();
         } else {
-            return [x_scale.scale(d3.min(this.x.domain())),
-                    x_scale.scale(d3.max(this.x.domain()))];
+            return [dom_scale.scale(d3.min(this.x.domain())),
+                    dom_scale.scale(d3.max(this.x.domain()))];
         }
     },
 
@@ -613,20 +656,22 @@ var Bars = mark.Mark.extend({
     },
 
     compute_view_padding: function() {
-        //This function returns a dictionary with keys as the scales and
-        //value as the pixel padding required for the rendering of the
-        //mark.
-        var x_scale = this.scales.x;
+        // //This function returns a dictionary with keys as the scales and
+        // //value as the pixel padding required for the rendering of the
+        // //mark.
+        var dom_scale = this.dom_scale;
+        var orient = this.model.get("orientation");
         var x_padding = 0;
-        if(x_scale) {
+        var avail_space = (orient === "vertical") ? this.parent.plotarea_width : this.parent.plotarea_height;
+        if(dom_scale) {
             if (this.x !== null && this.x !== undefined &&
                 this.x.domain().length !== 0) {
-                if(x_scale.model.type === "linear") {
+                if(dom_scale.model.type === "linear") {
                     if (this.model.get("align") === "center") {
-                        x_padding = (this.parent.plotarea_width / (2.0 * this.x.domain().length) + 1);
+                        x_padding = (avail_space / (2.0 * this.x.domain().length) + 1);
                     } else if (this.model.get("align") === "left" ||
                                this.model.get("align") === "right") {
-                        x_padding = (this.parent.plotarea_width / (this.x.domain().length) + 1);
+                        x_padding = (avail_space / (this.x.domain().length) + 1);
                     }
                 } else {
                     if (this.model.get("align") === "left" ||
@@ -636,11 +681,20 @@ var Bars = mark.Mark.extend({
                 }
             }
         }
-        if(x_padding !== this.x_padding) {
-            this.x_padding = x_padding;
-            this.trigger("mark_padding_updated");
-            //dispatch the event
+        if (orient === "vertical") {
+            if(x_padding !== this.x_padding) {
+                this.x_padding = x_padding;
+                this.trigger("mark_padding_updated");
+                //dispatch the event
+            }
+        } else {
+            if(x_padding !== this.y_padding) {
+                this.y_padding = x_padding;
+                this.trigger("mark_padding_updated");
+                //dispatch the event
+            }
         }
+
     }
 });
 
