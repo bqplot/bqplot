@@ -44,7 +44,7 @@ Pyplot
 
 """
 import sys
-from collections import OrderedDict, ChainMap
+from collections import OrderedDict
 from IPython.display import display
 from ipywidgets import VBox
 from numpy import arange, issubdtype, array, column_stack, shape
