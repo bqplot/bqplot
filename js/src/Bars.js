@@ -139,6 +139,8 @@ var Bars = mark.Mark.extend({
         this.listenTo(this.model, "change:type", this.update_type, this);
         this.listenTo(this.model, "change:align", this.realign, this);
         this.listenTo(this.model, "change:orientation", this.relayout, this)
+        // FIXME: These are expensive calls for changing padding and align
+        this.listenTo(this.model, "change:padding", this.relayout, this)
         this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
         this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
