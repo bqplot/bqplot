@@ -386,30 +386,39 @@ var Lines = mark.Mark.extend({
     },
 
     update_curves_subset: function() {
-        var that = this;
+        var display_labels = this.model.get("labels_visibility") === "label";
         // Show a subset of the curves
         var curves_subset = this.model.get("curves_subset");
         if (curves_subset.length > 0) {
             this.d3el.selectAll(".curve")
-              .select("path")
               .attr("display", function(d, i) {
                   return curves_subset.indexOf(i) !== -1 ?
                       "inline" : "none";
-              });
-            this.d3el.selectAll(".curve")
+              })
               .select(".curve_label")
               .attr("display", function(d, i) {
-                  return (curves_subset.indexOf(i) !== -1 && that.model.get("labels_visibility") === "label") ?
+                  return (curves_subset.indexOf(i) !== -1 && display_labels) ?
                       "inline" : "none";
               });
+            if (this.legend_el) {
+                this.legend_el
+                  .attr("display", function(d, i) {
+                      return curves_subset.indexOf(i) !== -1 ?
+                          "inline" : "none";
+                  });
+            }
+            this.d3el.selectAll(".curve")
+
         } else { //make all curves visible
             this.d3el.selectAll(".curve")
-              .select("path").attr("display", "inline");
-            this.d3el.selectAll(".curve")
-              .select(".curve_label").attr("display", function(d) {
-                  return that.model.get("labels_visibility") === "label" ?
-                      "inline" : "none";
+              .attr("display", "inline")
+              .select(".curve_label")
+              .attr("display", function(d) {
+                  return display_labels ? "inline" : "none";
               });
+            if (this.legend_el) {
+                this.legend_el.attr("display", "inline");
+            }
         }
     },
 
@@ -540,20 +549,7 @@ var Lines = mark.Mark.extend({
         this.update_style();
 
         // alter the display only if a few of the curves are visible
-        var curves_subset = this.model.get("curves_subset");
-        if(curves_subset.length > 0) {
-            curves_sel.select("path")
-              .attr("display", function(d, i) {
-                  return curves_subset.indexOf(i) !== -1 ?
-                      "inline" : "none";
-              });
-            curves_sel.select(".curve_label")
-              .attr("display", function(d, i) {
-                  return (curves_subset.indexOf(i) !== -1 &&
-                          that.model.get("labels_visibility") === "label") ?
-                      "inline" : "none";
-              });
-        }
+        this.update_curves_subset();
     },
 
     draw_dots: function() {
