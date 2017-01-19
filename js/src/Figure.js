@@ -102,6 +102,8 @@ var Figure = widgets.DOMWidgetView.extend({
 
         this.update_plotarea_dimensions();
         // this.fig is the top <g> element to be impacted by a rescaling / change of margins
+        this.svg.style("min-width", "300px");
+        this.svg.style("min-height", "300px");
 
         this.fig = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
