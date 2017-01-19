@@ -664,7 +664,7 @@ var Bars = mark.Mark.extend({
         var dom_scale = this.dom_scale;
         var orient = this.model.get("orientation");
         var x_padding = 0;
-        var avail_space = (orient === "vertical") ? this.parent.plotarea_width : this.parent.plotarea_height;
+        var avail_space = this.parent.plotarea_width * 2.;
         if(dom_scale) {
             if (this.x !== null && this.x !== undefined &&
                 this.x.domain().length !== 0) {
@@ -683,19 +683,19 @@ var Bars = mark.Mark.extend({
                 }
             }
         }
-        if (orient === "vertical") {
-            if(x_padding !== this.x_padding) {
-                this.x_padding = x_padding;
-                this.trigger("mark_padding_updated");
-                //dispatch the event
-            }
-        } else {
-            if(x_padding !== this.y_padding) {
-                this.y_padding = x_padding;
-                this.trigger("mark_padding_updated");
-                //dispatch the event
-            }
+        // if (orient === "vertical") {
+        if(x_padding !== this.x_padding) {
+            this.x_padding = x_padding;
+            this.trigger("mark_padding_updated");
+            //dispatch the event
         }
+        // } else {
+        //     if(x_padding !== this.y_padding) {
+        //         this.y_padding = x_padding;
+        //         this.trigger("mark_padding_updated");
+        //         //dispatch the event
+        //     }
+        // }
 
     }
 });
