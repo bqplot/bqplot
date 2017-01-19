@@ -147,7 +147,7 @@ var FlexLine = lines.Lines.extend({
     },
 
     relayout: function() {
-        LinesViewModule.Lines.__super__.relayout.apply(this);
+        lines.Lines.__super__.relayout.apply(this);
         this.set_ranges();
 
         var x_scale = this.scales.x, y_scale = this.scales.y;
