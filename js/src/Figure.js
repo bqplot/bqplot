@@ -102,10 +102,8 @@ var Figure = widgets.DOMWidgetView.extend({
 
         this.update_plotarea_dimensions();
         // this.fig is the top <g> element to be impacted by a rescaling / change of margins
-        this.svg.attr("viewBox", "0 0 " + this.width +
-                                    " " + this.height);
-        this.svg.style("min-width", "" + this.width + "px");
-        this.svg.style("min-height", "" + this.height + "px");
+        this.svg.style("min-width", "300px");
+        this.svg.style("min-height", "300px");
 
         this.fig = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -473,9 +471,6 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     relayout: function() {
-        this.svg.attr("viewBox", "0 0 1 1");
-        this.svg.style("min-width", '');
-        this.svg.style("min-height", '');
 
         var that = this;
 
@@ -483,10 +478,6 @@ var Figure = widgets.DOMWidgetView.extend({
         that.width = impl_dimensions["width"];
         that.height = impl_dimensions["height"];
 
-        that.svg.attr("viewBox", "0 0 " + that.width +
-                                    " " + that.height);
-        that.svg.style("min-width", "" + that.width + "px");
-        that.svg.style("min-height", "" + that.height + "px");
         window.requestAnimationFrame(function () {
             // update ranges
             that.margin = that.model.get("fig_margin");

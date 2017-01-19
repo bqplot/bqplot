@@ -14,6 +14,9 @@
  */
 
 .common() {
+    .bqplot {
+        display: flex;
+    }
     .bqplot > svg {
         font: 11px sans-serif;
         user-select: none;
@@ -21,7 +24,7 @@
         -khtml-user-select: none;
         -khtml-user-select: none;
         -webkit-user-select: none;
-
+        flex-grow: 1;
         .axis {
             line {
                 shape-rendering: crispEdges;
