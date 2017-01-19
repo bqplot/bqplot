@@ -28,8 +28,8 @@
   },
   "dependencies": {
     "d3": "^3.5.16",
-    "jupyter-js-widgets": "^2.0.21",
-    "@jupyterlab/nbwidgets": "^0.6.4",
+    "jupyter-js-widgets": "~2.0.23",
+    "@jupyterlab/nbwidgets": "^0.6.6",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   }
