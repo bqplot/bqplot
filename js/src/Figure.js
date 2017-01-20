@@ -47,7 +47,7 @@ var Figure = widgets.DOMWidgetView.extend({
         } else if (height_undefined) {
             suggested_height = suggested_width / min_ratio;
         } else if (width_undefined) {
-            suggested_width = suggested_height * min_ratio;
+            suggested_width = suggested_height * max_ratio;
         }
 
         var ratio = suggested_width / suggested_height;
@@ -80,6 +80,9 @@ var Figure = widgets.DOMWidgetView.extend({
         this.width = impl_dimensions["width"];
         this.height = impl_dimensions["height"];
 
+        this.svg.style("min-width", this.width + "px");
+        this.svg.style("min-height", this.height + "px");
+
         this.id = widgets.uuid();
 
         // Dictionary which contains the mapping for each of the marks id
@@ -101,9 +104,6 @@ var Figure = widgets.DOMWidgetView.extend({
         this.margin = this.model.get("fig_margin");
 
         this.update_plotarea_dimensions();
-        // this.fig is the top <g> element to be impacted by a rescaling / change of margins
-        this.svg.style("min-width", "300px");
-        this.svg.style("min-height", "300px");
 
         this.fig = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
