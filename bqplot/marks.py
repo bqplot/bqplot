@@ -830,6 +830,9 @@ class Bars(Mark):
         whether 2-dimensional bar charts should appear grouped or stacked.
     colors: list of colors (default: CATEGORY10)
         list of colors for the bars.
+    orientation: {'horizontal', 'vertical'}
+        Specifies whether the bar chart is drawn horizontally or vertically.
+        If a horizontal bar chart is drawn, the x data is drawn vertically.
     padding: float (default: 0.05)
         attribute to control the spacing between the bars value is specified
         as a percentage of the width of the bar
@@ -875,7 +878,7 @@ class Bars(Mark):
         'y': {'orientation': 'vertical', 'dimension': 'y'},
         'color': {'dimension': 'color'}
     }).tag(sync=True)
-    color_mode = Enum(['auto', 'group', 'element'], default_value='auto').tag(sync=True)
+    color_mode = Enum(['auto', 'group', 'element'], default_value='element').tag(sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked').tag(sync=True,
                 display_name='Type')
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True, display_name='Colors')
@@ -885,6 +888,14 @@ class Bars(Mark):
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
     align = Enum(['center', 'left', 'right'], default_value='center').tag(sync=True)
     orientation = Enum(['vertical', 'horizontal'], default_value='vertical').tag(sync=True)
+
+    @validate('orientation')
+    def _validate_orientation(self, proposal):
+        value = proposal['value']
+        x_orient = "horizontal" if value == "vertical" else "vertical"
+        self.scales_metadata = {'x': {'orientation': x_orient, 'dimension': 'x'},
+                                'y': {'orientation': value, 'dimension': 'y'}}
+        return value
 
     _view_name = Unicode('Bars').tag(sync=True)
     _model_name = Unicode('BarsModel').tag(sync=True)
