@@ -761,6 +761,30 @@ def bar(x, y, **kwargs):
 
 
 @_process_data('color')
+def barh(*args, **kwargs):
+    """Draws a horizontal bar chart in the current context figure.
+
+    Parameters
+    ----------
+
+    x: numpy.ndarray, 1d
+        The domain of the data points.
+    y: numpy.ndarray, 1d
+        The range of the data pints.
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
+    kwargs['orientation'] = "horizontal"
+    return bar(*args, **kwargs)
+
+
+@_process_data('color')
 def pie(sizes, **kwargs):
     """Draws a Pie in the current context figure.
 

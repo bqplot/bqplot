@@ -355,12 +355,12 @@ var Figure = widgets.DOMWidgetView.extend({
     mark_scales_updated: function(view) {
         var model = view.model;
         var prev_scale_models = model.previous("scales");
-        this.remove_from_padding_dict(this.x_pad_dict, view, prev_scale_models[model.get_key_for_dimension("x")]);
-        this.remove_from_padding_dict(this.y_pad_dict, view, prev_scale_models[model.get_key_for_dimension("y")]);
+        this.remove_from_padding_dict(this.x_pad_dict, view, prev_scale_models[model.get_key_for_orientation("horizontal")]);
+        this.remove_from_padding_dict(this.y_pad_dict, view, prev_scale_models[model.get_key_for_orientation("vertical")]);
 
         var scale_models = model.get("scales");
-        this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("x")], view.x_padding);
-        this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("y")], view.y_padding);
+        this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_orientation("horizontal")], view.x_padding);
+        this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")], view.y_padding);
 
         this.update_paddings();
     },
@@ -369,8 +369,8 @@ var Figure = widgets.DOMWidgetView.extend({
         var model = view.model;
         var scale_models = model.get("scales");
 
-        this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("x")], view.x_padding);
-        this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("y")], view.y_padding);
+        this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_orientation("horizontal")], view.x_padding);
+        this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")], view.y_padding);
 
         this.update_paddings();
     },
@@ -388,8 +388,8 @@ var Figure = widgets.DOMWidgetView.extend({
         model.off("mark_padding_updated", null, this);
 
         var scale_models = model.get("scales");
-        this.remove_from_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_dimension("x")]);
-        this.remove_from_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_dimension("y")]);
+        this.remove_from_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_orientation("horizontal")]);
+        this.remove_from_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")]);
         view.remove();
     },
 

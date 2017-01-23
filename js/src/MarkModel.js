@@ -100,7 +100,18 @@ var MarkModel = basemodel.BaseModel.extend({
             }
         }
         return null;
+    },
+
+    get_key_for_orientation: function(orientation) {
+        var scales_metadata = this.get("scales_metadata");
+        for (var scale in scales_metadata) {
+            if(scales_metadata[scale].orientation === orientation) {
+                return scale;
+            }
+        }
+        return null;
     }
+
 }, {
     serializers: _.extend({
         scales: { deserialize: widgets.unpack_models },
