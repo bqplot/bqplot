@@ -878,7 +878,7 @@ class Bars(Mark):
         'y': {'orientation': 'vertical', 'dimension': 'y'},
         'color': {'dimension': 'color'}
     }).tag(sync=True)
-    color_mode = Enum(['auto', 'group', 'element'], default_value='element').tag(sync=True)
+    color_mode = Enum(['auto', 'group', 'element'], default_value='auto').tag(sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked').tag(sync=True,
                 display_name='Type')
     colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True, display_name='Colors')
