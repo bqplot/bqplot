@@ -2,7 +2,10 @@
   "name": "bqplot",
   "version": "0.2.2",
   "description": "bqplot",
-  "author": "BQPlot Development team",
+  "author": {
+    "name": "BQPlot Development team",
+    "email": "bqplot@bloomberg.net"
+  },
   "license": "Apache-2.0",
   "main": "src/index.js",
   "repository": {
