@@ -475,8 +475,11 @@ var Figure = widgets.DOMWidgetView.extend({
         var that = this;
 
         var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
-        that.width = impl_dimensions["width"];
-        that.height = impl_dimensions["height"];
+        this.width = impl_dimensions["width"];
+        this.height = impl_dimensions["height"];
+
+        this.svg.style("min-width", this.width + "px");
+        this.svg.style("min-height", this.height + "px");
 
         window.requestAnimationFrame(function () {
             // update ranges
