@@ -41,9 +41,9 @@ var Figure = widgets.DOMWidgetView.extend({
         var height_undefined = (suggested_height === undefined || isNaN(suggested_height) || suggested_width <= 0);
 
         if (width_undefined && height_undefined) {
-            // These are defaults if both min_width and min_height are undefined
-            suggested_height = 337.5;
-            suggested_width = 600;
+            // Same as the defaults in bqplot.less
+            suggested_height = 480;
+            suggested_width = 640;
         } else if (height_undefined) {
             suggested_height = suggested_width / min_ratio;
         } else if (width_undefined) {
