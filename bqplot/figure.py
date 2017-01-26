@@ -122,12 +122,11 @@ class Figure(DOMWidget):
     title_style = Dict(trait=Unicode()).tag(sync=True)
     background_style = Dict().tag(sync=True)
 
+    # min width is based on hardcoded padding values
     layout = Instance(Layout, kw={
-            'flex': '1',
-            'align_self': 'stretch',
-            'min_width': '400px'
+            'min_width': '125px'
         }, allow_none=True).tag(sync=True, **widget_serialization)
-    min_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
+    min_aspect_ratio = Float(1.0).tag(sync=True)
     max_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60)).tag(sync=True)
