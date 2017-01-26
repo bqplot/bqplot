@@ -85,6 +85,8 @@ var loadedModules = [
     require("./MarketMap"),
     require("./GridHeatMap"),
     require("./MarketMapModel"),
+    require("./HeatMap"),
+    require("./HeatMapModel"),
     require("./Toolbar")
 ];
 
