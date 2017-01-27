@@ -127,7 +127,9 @@ class Figure(DOMWidget):
             'min_width': '125px'
         }, allow_none=True).tag(sync=True, **widget_serialization)
     min_aspect_ratio = Float(1.0).tag(sync=True)
-    max_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
+    # Max aspect ratio is such that we can have 3 charts stacked vertically
+    # on a 16:9 monitor: 16/9*3 ~ 5.333
+    max_aspect_ratio = Float(6.0).tag(sync=True)
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60)).tag(sync=True)
     padding_x = Float(0.0, min=0.0, max=1.0).tag(sync=True)
