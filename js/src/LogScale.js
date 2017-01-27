@@ -14,9 +14,9 @@
  */
 
 var d3 = require("d3");
-var scale = require("./Scale");
+var linearscale = require("./LinearScale");
 
-var LogScale = scale.Scale.extend({
+var LogScale = linearscale.LinearScale.extend({
     render: function() {
         this.scale = d3.scale.log();
         if(this.model.domain.length > 0) {
