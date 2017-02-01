@@ -177,12 +177,12 @@ class MarketMap(DOMWidget):
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50)).tag(sync=True)
 
     layout = Instance(Layout, kw={
-            'flex': '1',
-            'align_self': 'stretch',
-            'min_width': '400px'
+            'min_width': '125px'
         }, allow_none=True).tag(sync=True, **widget_serialization)
-    min_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
-    max_aspect_ratio = Float(16.0 / 9.0).tag(sync=True)
+    min_aspect_ratio = Float(1.0).tag(sync=True)
+    # Max aspect ratio is such that we can have 3 charts stacked vertically
+    # on a 16:9 monitor: 16/9*3 ~ 5.333
+    max_aspect_ratio = Float(6.0).tag(sync=True)
 
     stroke = Color('white').tag(sync=True)
     group_stroke = Color('black').tag(sync=True)
