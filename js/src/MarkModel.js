@@ -35,7 +35,7 @@ var MarkModel = basemodel.BaseModel.extend({
             visible: true,
             selected_style: {},
             unselected_style: {},
-            selected: [],
+            selected: null,
             enable_hover: true,
             tooltip: null,
             tooltip_style: { opacity: 0.9 },

@@ -213,10 +213,14 @@ var Mark = widgets.WidgetView.extend({
         this.set_style_on_elements(new_style, indices);
     },
 
-    apply_styles: function() {
+    apply_styles: function(style_arr) {
+        if(style_arr === undefined || style_arr == null) {
+            style_arr = [this.selected_style, this.unselected_style];
+        }
         var all_indices = _.range(this.model.mark_data.length);
-        this.clear_style(this.selected_style);
-        this.clear_style(this.unselected_style);
+        for(var i = 0; i < style_arr.length; i++) {
+            this.clear_style(style_arr[i]);
+        }
 
         this.set_default_style(all_indices);
 

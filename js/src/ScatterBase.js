@@ -579,12 +579,16 @@ var ScatterBase = mark.Mark.extend({
     },
 
     update_hovered: function(model, value) {
-        this.hovered_index = [value];
+        this.hovered_index = value === null ? value : [value];
         this.apply_styles();
     },
 
-    apply_styles: function() {
-        ScatterBase.__super__.apply_styles.apply(this);
+    apply_styles: function(style_arr) {
+        if(style_arr === undefined || style_arr == null) {
+            style_arr = [this.selected_style, this.unselected_style,
+                         this.hovered_style, this.unhovered_style];
+        }
+        ScatterBase.__super__.apply_styles.apply(this, [style_arr]);
 
         var all_indices = _.range(this.model.mark_data.length);
 
