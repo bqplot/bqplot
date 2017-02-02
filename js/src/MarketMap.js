@@ -42,10 +42,6 @@ var MarketMap = figure.Figure.extend({
         // set the number of rows and columns in the map
         this.set_area_dimensions(this.data.length);
 
-        // Reading the properties and creating the dom elements required
-        this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height)
-                .attr("width", "100%")
-                .attr("height", "100%");
         if (this.model.get('theme')) {
             this.svg.classed(this.model.get('theme'), true);
         }
@@ -116,11 +112,6 @@ var MarketMap = figure.Figure.extend({
         this.el.style["moz-user-select"] = "none";
         this.el.style["khtml-user-select"] = "none";
         this.el.style["webkit-user-select"] = "none";
-
-        this.el.style["flex"] = "1 1 auto";
-        this.el.style["align-self"] = "stretch";
-        this.el.style["min-width"] = this.width;
-        this.el.style["min-height"] = this.height;
     },
 
     update_plotarea_dimensions: function() {
@@ -178,20 +169,12 @@ var MarketMap = figure.Figure.extend({
     },
 
     relayout: function() {
-        this.svg.attr("viewBox", "0 0 1 1");
-        this.svg.style("min-width", '');
-        this.svg.style("min-height", '');
-
         var that = this;
 
         var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
-        that.width = impl_dimensions["width"];
-        that.height = impl_dimensions["height"];
+        this.width = impl_dimensions["width"];
+        this.height = impl_dimensions["height"];
 
-        that.svg.attr("viewBox", "0 0 " + that.width +
-                                    " " + that.height);
-        that.svg.style("min-width", "" + that.width + "px");
-        that.svg.style("min-height", "" + that.height + "px");
         window.requestAnimationFrame(function () {
             // update ranges
             that.margin = that.model.get("map_margin");
