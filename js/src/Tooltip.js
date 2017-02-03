@@ -16,6 +16,7 @@
 var widgets = require("jupyter-js-widgets");
 var d3 = require("d3");
 var utils = require("./utils");
+var _ = require("underscore");
 
 var Tooltip = widgets.DOMWidgetView.extend({
 
@@ -69,7 +70,7 @@ var Tooltip = widgets.DOMWidgetView.extend({
 
     create_table: function() {
         var fields = this.model.get("fields");
-        var labels = this.model.get("labels");
+        var labels = _.clone(this.model.get("labels"));
         var ind = labels.length;
         for (; ind < fields.length; ind++) {
             labels[ind] = fields[ind];
