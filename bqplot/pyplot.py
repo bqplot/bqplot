@@ -714,23 +714,23 @@ def hist(sample, options={}, **kwargs):
     sample: numpy.ndarray, 1d
         The sample for which the histogram must be generated.
     options: dict (default: {})
-        Options for the scales to be created. If a scale labeled 'counts'
-        is required for that mark, options['counts'] contains optional keyword
+        Options for the scales to be created. If a scale labeled 'x'
+        is required for that mark, options['x'] contains optional keyword
         arguments for the constructor of the corresponding scale type.
     axes_options: dict (default: {})
-        Options for the axes to be created. If an axis labeled 'counts' is
-        required for that mark, axes_options['counts'] contains optional
+        Options for the axes to be created. If an axis labeled 'x' is
+        required for that mark, axes_options['x'] contains optional
         keyword arguments for the constructor of the corresponding axis type.
     """
     kwargs['sample'] = sample
     scales = kwargs.pop('scales', {})
-    if 'count' not in scales:
-        dimension = _get_attribute_dimension('count', Hist)
+    if 'y' not in scales:
+        dimension = _get_attribute_dimension('y', Hist)
         if dimension in _context['scales']:
-            scales['count'] = _context['scales'][dimension]
+            scales['y'] = _context['scales'][dimension]
         else:
-            scales['count'] = LinearScale(**options.get('count', {}))
-            _context['scales'][dimension] = scales['count']
+            scales['y'] = LinearScale(**options.get('y', {}))
+            _context['scales'][dimension] = scales['y']
     kwargs['scales'] = scales
     return _draw_mark(Hist, options=options, **kwargs)
 

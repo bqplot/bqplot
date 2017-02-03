@@ -854,8 +854,8 @@ class Hist(Bars):
         the estimators) from the data that falls within the requested
         range.
     density : bool (default: `False`)
-        If `False`, the result will contain the number of samples in
-        each bin. If `True`, the result is the value of the
+        If `False`, the height of each bin is the number of samples in it.
+        If `True`, the height of each bin is the value of the
         probability *density* function at the bin, normalized such that
         the *integral* over the range is 1. Note that the sum of the
         histogram values will not be equal to 1 unless bins of unity
@@ -895,7 +895,16 @@ class Hist(Bars):
     bins = (Int(10) | List() | Enum(['auto', 'fd', 'doane', 'scott', 'rice', 'sturges', 'sqrt'])).tag(sync=True, display_name='Number of bins')
 
     def __init__(self, **kwargs):
+        '''
+        Sets listeners on the data and the binning parameters.
+        Adjusts `Bars` defaults to suit a histogram better.
+        '''
         self.observe(self.bin_data, names=['sample', 'bins', 'density', 'min', 'max'])
+        # One unique color by default
+        kwargs.setdefault('colors', [CATEGORY10[0]])
+        # No spacing between bars
+        kwargs.setdefault('padding', 0.)
+
         super(Hist, self).__init__(**kwargs)
 
     def bin_data(self, *args):
