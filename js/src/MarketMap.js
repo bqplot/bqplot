@@ -407,7 +407,7 @@ var MarketMap = figure.Figure.extend({
                 .attr("height", that.row_height)
                 .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
                 .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) {
-                    return (color_scale && elem.color !== undefined) ?
+                    return (color_scale && elem.color !== undefined && elem.color !== null) ?
                         color_scale.scale(elem.color) :
                         that.colors_map(i);}});
 
