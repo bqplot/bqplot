@@ -42,6 +42,8 @@ from traitlets import (
     )
 from traittypes import Array
 
+from numpy import histogram
+
 from .scales import Scale, OrdinalScale
 from .traits import Date, array_serialization, array_squeeze, array_dimension_bounds
 
@@ -679,80 +681,6 @@ class Label(_ScatterBase):
     _model_name = Unicode('LabelModel').tag(sync=True)
 
 
-@register_mark('bqplot.Hist')
-class Hist(Mark):
-
-    """Histogram mark.
-
-    In the case of the Hist mark, scales for 'sample' and 'count' MUST be
-    provided.
-
-    Attributes
-    ----------
-    icon: string (class-level attribute)
-        font-awesome icon for that mark
-    name: string (class-level attribute)
-        user-friendly name of the mark
-    bins: nonnegative int (default: 10)
-        number of bins in the histogram
-    normalized: bool (default: False)
-        Boolean attribute to return normalized values which
-        sum to 1 or direct counts for the `count` attribute. The scale of
-        `count` attribute is determined by the value of this flag.
-    colors: list of colors (default: CATEGORY10)
-        List of colors of the Histogram. If the list is shorter than the number
-        of bins, the colors are reused.
-    stroke: Color or None (default: None)
-        Stroke color of the histogram
-    opacities: list of floats (default: [])
-        Opacity for the bins of the histogram. Defaults to 1 when the list is too
-        short, or the element of the list is set to None.
-    midpoints: list (default: [])
-        midpoints of the bins of the histogram. It is a read-only attribute.
-
-    Data Attributes
-
-    sample: numpy.ndarray (default: [])
-        sample of which the histogram must be computed.
-    count: numpy.ndarray (read-only)
-        number of sample points per bin. It is a read-only attribute.
-
-    Notes
-    -----
-    The fields which can be passed to the default tooltip are:
-        midpoint: mid-point of the bin related to the rectangle hovered on
-        count: number of elements in the bin hovered on
-        bin_start: start point of the bin
-        bin-end: end point of the bin
-        index: index of the bin
-    """
-    # Mark decoration
-    icon = 'fa-signal'
-    name = 'Histogram'
-
-    # Scaled attributes
-    sample = Array([]).tag(sync=True, display_name='Sample', scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    count = Array([], read_only=True).tag(sync=True, display_name='Count', scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze)
-    normalized = Bool().tag(sync=True)
-
-    # Other attributes
-    scales_metadata = Dict({
-        'sample': {'orientation': 'horizontal', 'dimension': 'x'},
-        'count': {'orientation': 'vertical', 'dimension': 'y'}
-    }).tag(sync=True)
-
-    bins = Int(10).tag(sync=True, display_name='Number of bins')
-    midpoints = List(read_only=True).tag(sync=True, display_name='Mid points')
-    # midpoints is a read-only attribute that is set when the mark is drawn
-    colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10).tag(sync=True, display_name='Colors')
-    stroke = Color(None, allow_none=True).tag(sync=True)
-    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
-
-    _view_name = Unicode('Hist').tag(sync=True)
-    _model_name = Unicode('HistModel').tag(sync=True)
-
-
 @register_mark('bqplot.Boxplot')
 class Boxplot(Mark):
 
@@ -899,6 +827,92 @@ class Bars(Mark):
 
     _view_name = Unicode('Bars').tag(sync=True)
     _model_name = Unicode('BarsModel').tag(sync=True)
+
+
+@register_mark('bqplot.Hist')
+class Hist(Bars):
+
+    """Histogram mark.
+
+    A `Bars` instance that bins sample data.
+    The binning method is the numpy `histogram` method.
+    The following  documentation is in part taken from the numpy documentation.
+
+    Attributes
+    ----------
+    icon: string (class-level attribute)
+        font-awesome icon for that mark
+    name: string (class-level attribute)
+        user-friendly name of the mark
+    bins: nonnegative int (default: 10)
+          or {'auto', 'fd', 'doane', 'scott', 'rice', 'sturges', 'sqrt'}
+        If `bins` is an int, it defines the number of equal-width
+        bins in the given range (10, by default).
+        If `bins` is a string (method name), `histogram` will use
+        the method chosen to calculate the optimal bin width and
+        consequently the number of bins (see `Notes` for more detail on
+        the estimators) from the data that falls within the requested
+        range.
+    density : bool (default: `False`)
+        If `False`, the result will contain the number of samples in
+        each bin. If `True`, the result is the value of the
+        probability *density* function at the bin, normalized such that
+        the *integral* over the range is 1. Note that the sum of the
+        histogram values will not be equal to 1 unless bins of unity
+        width are chosen; it is not a probability *mass* function.
+    min : float (default: None)
+        The lower range of the bins.  If not provided, lower range
+        is simply `x.min()`.
+    max : float (default: None)
+        The upper range of the bins.  If not provided, lower range
+        is simply `x.max()`.
+
+    Data Attributes
+
+    sample: numpy.ndarray (default: [])
+        sample of which the histogram must be computed.
+
+    Notes
+    -----
+    The fields which can be passed to the default tooltip are:
+        midpoint: mid-point of the bin related to the rectangle hovered on
+        count: number of elements in the bin hovered on
+        bin_start: start point of the bin
+        bin-end: end point of the bin
+        index: index of the bin
+    """
+    # Mark decoration
+    icon = 'fa-signal'
+    name = 'Histogram'
+
+    # Scaled Attributes
+    sample = Array([]).tag(sync=True, display_name='Sample', rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+
+    # Binning options
+    min = Float(None, allow_none=True).tag(sync=True)
+    max = Float(None, allow_none=True).tag(sync=True)
+    density = Bool().tag(sync=True)
+    bins = (Int(10) | List() | Enum(['auto', 'fd', 'doane', 'scott', 'rice', 'sturges', 'sqrt'])).tag(sync=True, display_name='Number of bins')
+
+    def __init__(self, **kwargs):
+        self.observe(self.bin_data, names=['sample', 'bins', 'density', 'min', 'max'])
+        super(Hist, self).__init__(**kwargs)
+
+    def bin_data(self, *args):
+        '''
+        Performs the binning of `sample` data, and draws the corresponding bars
+        '''
+        # Get range
+        _min = self.sample.min() if self.min is None else self.min
+        _max = self.sample.max() if self.max is None else self.max
+        _range = (min(_min, _max), max(_min, _max))
+        # Bin the samples
+        counts, bin_edges = histogram(self.sample, bins=self.bins,
+                                      range=_range, density=self.density)
+        midpoints = (bin_edges[:-1] + bin_edges[1:]) / 2
+        # Redraw the underlying Bars
+        with self.hold_sync():
+            self.x, self.y = midpoints, counts
 
 
 @register_mark('bqplot.OHLC')
