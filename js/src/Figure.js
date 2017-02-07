@@ -23,7 +23,7 @@ var Figure = widgets.DOMWidgetView.extend({
         // Internet Explorer does not support classList for svg elements
         this.el.setAttribute("class", "bqplot figure jupyter-widgets");
         var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
-        this.el.append(svg);
+        this.el.appendChild(svg);
         this.svg = d3.select(svg);
         Figure.__super__.initialize.apply(this, arguments);
     },
