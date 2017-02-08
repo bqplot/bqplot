@@ -76,13 +76,15 @@ var Label = scatterbase.ScatterBase.extend({
         elements_added.append("text")
             .classed("label element", true);
 
-        elements_added.selectAll(".label")
-            .text(function(d) {
-                return d.text;
-            });
-
+        this.update_text();
         this.update_style();
         this.update_default_opacities(true);
+    },
+
+    update_text: function() {
+        this.d3el.selectAll(".object_grp")
+            .select(".label")
+            .text(function(d) { return d.text; });
     },
 
     get_element_size: function(data) {
