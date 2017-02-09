@@ -127,16 +127,17 @@ var Figure = widgets.DOMWidgetView.extend({
         /*
          * The following is the structure of the DOM element constructed
          *
-        <g class="widget-subarea">
-        <svg>
-            <g class="svg-figure" transform="margin translation">
-                <g class="svg-axes"></g>
-                <g class="svg-marks"></g>
-                <g class="svg-interaction"></g>
-            </g>
-        </svg>
-        <div class="tooltip_div>
-            <tooltip_elements>
+        <div class="bqplot figure jupyter-widgets">
+            <svg>
+                <g class="svg-figure" transform="margin translation">
+                    <g class="svg-axes"></g>
+                    <g class="svg-marks"></g>
+                    <g class="svg-interaction"></g>
+                </g>
+            </svg>
+            <div class="tooltip_div>
+                <tooltip_elements>
+            </div>
         </div>
         */
 

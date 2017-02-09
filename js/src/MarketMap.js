@@ -99,7 +99,7 @@ var MarketMap = figure.Figure.extend({
         this.displayed.then(function() {
             // Adding the tooltip to the parent of the el so as to not
             // pollute the DOM
-            that.el.parentNode.appendChild(that.tooltip_div.node());
+            that.el.appendChild(that.tooltip_div.node());
             that.relayout();
             that.draw_group_names();
             that.create_tooltip_widget();
@@ -585,11 +585,7 @@ var MarketMap = figure.Figure.extend({
     },
 
     show_tooltip: function(event, data) {
-        var ref_el = d3.select(document.body).select("#notebook").node();
-        var ref_mouse_pos = d3.mouse(ref_el);
-
-        var parent_node = this.el.parentElement;
-        var mouse_pos = d3.mouse(parent_node);
+        var mouse_pos = d3.mouse(this.el);
         var that = this;
         var tooltip_div = this.tooltip_div;
         tooltip_div.transition()
@@ -597,8 +593,8 @@ var MarketMap = figure.Figure.extend({
             .style("display", null);
 
         // the +5s are for breathing room for the tool tip
-        tooltip_div.style("left", (mouse_pos[0] + parent_node.offsetLeft - ref_el.scrollLeft + 5) + "px")
-            .style("top", (mouse_pos[1] + parent_node.offsetTop - ref_el.scrollTop + 5) + "px");
+        tooltip_div.style("left", (mouse_pos[0] + 5) + "px")
+            .style("top", (mouse_pos[1] + 5) + "px");
         var ref_data = data.ref_data;
 
         tooltip_div.select("table").remove();
