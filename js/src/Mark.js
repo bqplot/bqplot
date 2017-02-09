@@ -251,11 +251,7 @@ var Mark = widgets.WidgetView.extend({
         //mouse_events is a boolean to enable mouse_events or not.
         //If this property has never been set, it will default to false.
         if(this.tooltip_view) {
-            var ref_el = d3.select(document.body).select("#notebook").node();
-            var ref_mouse_pos = d3.mouse(ref_el);
-
-            var parent_node = this.parent.el.parentElement;
-            var mouse_pos = d3.mouse(parent_node);
+            var mouse_pos = d3.mouse(this.parent.el);
             if(mouse_events === undefined || mouse_events === null || (!(mouse_events))) {
                 this.tooltip_div.style("pointer-events", "none");
             } else {
@@ -270,14 +266,14 @@ var Mark = widgets.WidgetView.extend({
                 //node
                 var parent_rect = this.parent.el.getBoundingClientRect();
                 var tooltip_div_rect = this.tooltip_div.node().getBoundingClientRect();
-                this.tooltip_div.style("left", (parent_node.offsetLeft + 5 + parent_rect.width * 0.5 -
-                                                tooltip_div_rect.width * 0.5 - ref_el.scrollLeft) + "px")
-                    .style("top", (parent_node.offsetTop + 5 + parent_rect.height * 0.5 -
-                                                tooltip_div_rect.height * 0.5 - ref_el.scrollTop) + "px");
+                this.tooltip_div.style("left", (5 + parent_rect.width * 0.5 -
+                                                tooltip_div_rect.width * 0.5) + "px")
+                    .style("top", (5 + parent_rect.height * 0.5 -
+                                                tooltip_div_rect.height * 0.5) + "px");
             }
             else {
-                this.tooltip_div.style("left", (mouse_pos[0] + parent_node.offsetLeft - ref_el.scrollLeft + 5) + "px")
-                    .style("top", (mouse_pos[1] + parent_node.offsetTop - ref_el.scrollTop + 5) + "px");
+                this.tooltip_div.style("left", (mouse_pos[0] + 5) + "px")
+                    .style("top", (mouse_pos[1] + 5) + "px");
             }
         }
     },

@@ -21,7 +21,10 @@ var Figure = widgets.DOMWidgetView.extend({
 
     initialize : function() {
         // Internet Explorer does not support classList for svg elements
-        this.el.setAttribute("class", "bqplot figure jupyter-widgets");
+        this.el.classList.add("bqplot");
+        this.el.classList.add("figure");
+        this.el.classList.add("jupyter-widgets");
+
         var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
         this.el.appendChild(svg);
         this.svg = d3.select(svg);
@@ -124,16 +127,17 @@ var Figure = widgets.DOMWidgetView.extend({
         /*
          * The following is the structure of the DOM element constructed
          *
-        <g class="widget-subarea">
-        <svg>
-            <g class="svg-figure" transform="margin translation">
-                <g class="svg-axes"></g>
-                <g class="svg-marks"></g>
-                <g class="svg-interaction"></g>
-            </g>
-        </svg>
-        <div class="tooltip_div>
-            <tooltip_elements>
+        <div class="bqplot figure jupyter-widgets">
+            <svg>
+                <g class="svg-figure" transform="margin translation">
+                    <g class="svg-axes"></g>
+                    <g class="svg-marks"></g>
+                    <g class="svg-interaction"></g>
+                </g>
+            </svg>
+            <div class="tooltip_div>
+                <tooltip_elements>
+            </div>
         </div>
         */
 
@@ -198,7 +202,7 @@ var Figure = widgets.DOMWidgetView.extend({
             }, that);
 
             that.displayed.then(function(args) {
-                that.el.parentNode.appendChild(that.tooltip_div.node());
+                that.el.appendChild(that.tooltip_div.node());
                 that.create_listeners();
                 if(args === undefined || args.add_to_dom_only !== true) {
                     //do not relayout if it is only being added to the DOM
