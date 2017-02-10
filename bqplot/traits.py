@@ -128,8 +128,7 @@ def array_from_json(value, obj=None):
         if value.get('values') is not None:
             dtype = {
                 'date': np.datetime64,
-                'float': np.float64,
-                'int': np.int64
+                'float': np.float64
             }.get(value.get('type'), object)
             return np.asarray(value['values'], dtype=dtype)
 
@@ -140,7 +139,7 @@ def array_to_json(a, obj=None):
             dtype = 'float'
             a = np.where(np.isnan(a), None, a)
         elif a.dtype in (int, np.int64):
-            dtype = 'int'
+            dtype = 'float'
             a = a.astype(np.float64)
         elif np.issubdtype(a.dtype, np.datetime64):
             dtype = 'date'
