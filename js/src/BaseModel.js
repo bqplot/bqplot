@@ -61,27 +61,25 @@ var BaseModel = widgets.WidgetModel.extend({
         // Python. This **only** sets the attribute. The caller is
         // responsible for calling save_changes
         var saved_value = value;
-        var is_date = false;
         var return_object = {};
         var that = this;
+        var current_type = this.get(param).type;
 
         if(saved_value[0] instanceof Array) {
-            is_date = saved_value[0][0] instanceof Date;
-            if(is_date)
+            if(current_type === "date")
                 saved_value = saved_value.map(function(val) {
                     return val.map(function(elem) {
                         return that.convert_to_json(elem);
                     });
                 });
         } else {
-            is_date = saved_value[0] instanceof Date;
-            if(is_date)
+            if(current_type === "date")
                 saved_value = saved_value.map(function(elem) {
                     return that.convert_to_json(elem);
                 });
         }
         // TODO: this is not good. Need to think of something better
-        return_object.type = (is_date) ? "date" : "object";
+        return_object.type = current_type;
         return_object.values = saved_value;
         this.set(param, return_object, options);
     },
