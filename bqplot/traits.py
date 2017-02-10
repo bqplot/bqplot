@@ -48,7 +48,7 @@ def date_from_json(value, obj):
     else:
         return value
 
-date_serialization = dict(to_json=date_to_json, from_json=date_from_json) 
+date_serialization = dict(to_json=date_to_json, from_json=date_from_json)
 
 class Date(TraitType):
 
@@ -136,7 +136,7 @@ def array_to_json(a, obj=None):
     if a is not None:
         if np.issubdtype(a.dtype, np.float):
             # replace nan with None
-            dtype = a.dtype
+            dtype = 'float'
             a = np.where(np.isnan(a), None, a)
         elif a.dtype in (int, np.int64):
             dtype = 'float'
