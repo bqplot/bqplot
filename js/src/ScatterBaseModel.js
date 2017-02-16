@@ -36,7 +36,8 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
             y: { orientation: "vertical", dimension: "y" },
             color: { dimension: "color" },
             size: { dimension: "size" },
-            opacity: { dimension: "opacity" }
+            opacity: { dimension: "opacity" },
+            rotation: { dimension: "rotation" }
         },
         colors: [],
         default_opacities: [],
