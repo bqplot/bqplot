@@ -724,13 +724,14 @@ def hist(sample, options={}, **kwargs):
     """
     kwargs['sample'] = sample
     scales = kwargs.pop('scales', {})
-    if 'y' not in scales:
-        dimension = _get_attribute_dimension('y', Hist)
-        if dimension in _context['scales']:
-            scales['y'] = _context['scales'][dimension]
-        else:
-            scales['y'] = LinearScale(**options.get('y', {}))
-            _context['scales'][dimension] = scales['y']
+    for xy in ['x', 'y']:
+        if xy not in scales:
+            dimension = _get_attribute_dimension(xy, Bars)
+            if dimension in _context['scales']:
+                scales[xy] = _context['scales'][dimension]
+            else:
+                scales[xy] = LinearScale(**options.get(xy, {}))
+                _context['scales'][dimension] = scales[xy]
     kwargs['scales'] = scales
     return _draw_mark(Hist, options=options, **kwargs)
 
