@@ -622,7 +622,7 @@ var Lines = mark.Mark.extend({
                 this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
             }
         } else {
-            this.id3el.selectAll(".dot").remove();
+            this.d3el.selectAll(".dot").remove();
             if (this.legend_el) {
                 this.legend_el.select(".dot").attr("d", this.dot.size(0));
             }
