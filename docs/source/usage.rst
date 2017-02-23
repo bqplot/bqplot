@@ -19,8 +19,7 @@ Using the pyplot API
     x = np.linspace(0.0, 10.0, n)
     y = np.cumsum(np.random.randn(n))
     plt.plot(x, y)
-    fig = plt.current_figure()
-    fig
+    plt.show()
 
 Using the bqplot internal object model
 

@@ -11,4 +11,4 @@ dependencies:
  - bqplot
  - pip:
     - jupyter_sphinx
-    - ipywidgets>=6.0.0b6
+    - ipywidgets>=6.0.0rc2
