@@ -507,15 +507,6 @@ var ScatterBase = mark.Mark.extend({
 
     draw_legend_elements: function(elements_added, rect_dim) {},
 
-    update_display_names: function(model, value) {
-        var names = this.model.get_typed_field("names"),
-            show_names = (value && names.length !== 0);
-        this.d3el.selectAll(".object_grp").select("text")
-            .attr("display", function(d) {
-                return (show_names) ? "inline": "none";
-            });
-    },
-
     invert_point: function(pixel) {
         if(pixel === undefined) {
             this.model.set("selected", null);

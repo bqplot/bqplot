@@ -42,7 +42,7 @@ var Scatter = scatterbase.ScatterBase.extend({
         this.listenTo(this.model, "change:marker", this.update_marker, this);
         this.listenTo(this.model, "change:default_size", this.update_default_size, this);
         this.listenTo(this.model, "change:fill", this.update_fill, this);
-        this.listenTo(this.model, "change:display_names", this.update_display_names, this);
+        this.listenTo(this.model, "change:display_names", this.update_names, this);
     },
 
     update_colors: function(model, new_colors) {
@@ -181,7 +181,27 @@ var Scatter = scatterbase.ScatterBase.extend({
                 .attr("d", this.dot.size(function(d) {
                     return that.get_element_size(d);
                 }));
+            // Label positions also need to change
+            this.update_names(animate);
         }
+    },
+
+    update_names: function(animate) {
+        var that = this,
+            names = this.model.get_typed_field("names"),
+            show_names = this.model.get("display_names") && names.length !== 0,
+            animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+
+        this.d3el.selectAll(".object_grp").select("text")
+            .text(function(d) { return d.name; })
+            .transition()
+            .duration(animation_duration)
+            .attr("transform", function(d) {
+                var text_loc = Math.sqrt(that.get_element_size(d)) / 2.0;
+                return "translate(" + (text_loc) + "," + (-text_loc) + ")";})
+            .attr("display", function(d) {
+                return (show_names) ? "inline": "none";
+            });
     },
 
     color_scale_updated: function(animate) {
@@ -217,16 +237,7 @@ var Scatter = scatterbase.ScatterBase.extend({
                 .size(function(d) { return that.get_element_size(d); })
                 .skew(function(d) { return that.get_element_skew(d); }));
 
-        var names = this.model.get_typed_field("names"),
-            text_loc = Math.sqrt(this.model.get("default_size")) / 2.0,
-            show_names = (this.model.get("display_names") && names.length !== 0);
-
-        elements.select("text")
-            .text(function(d) { return d.name; })
-            .attr("transform", function(d) {
-                return "translate(" + (text_loc) + "," + (-text_loc) + ")";})
-            .attr("display", function(d) { return (show_names) ? "inline": "none"; });
-
+        this.update_names(animate);
         this.apply_styles();
     },
 
