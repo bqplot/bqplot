@@ -27,9 +27,11 @@ Figure
 """
 
 from traitlets import (
-    Unicode, Instance, List, Dict, CFloat, Bool, Enum, Float, Int, TraitError, default, validate
+    Unicode, Instance, List, Dict, Enum, Float, Int, TraitError, default,
+    validate
 )
-from ipywidgets import DOMWidget, register, Color, widget_serialization, Layout
+from ipywidgets import DOMWidget, register, widget_serialization
+from ipywidgets.widgets.widget_layout import LayoutTraitType
 
 from .scales import Scale, LinearScale
 from .interacts import Interaction
@@ -57,7 +59,7 @@ class Figure(DOMWidget):
         list containing the instances of the axes for the figure
     marks: List of Marks (default: [])
         list containing the marks which are to be appended to the figure
-    interaction: Interaction or None (default: )
+    interaction: Interaction or None (default: None)
         optional interaction layer for the figure
     scale_x: Scale
         Scale representing the x values of the figure
@@ -123,9 +125,8 @@ class Figure(DOMWidget):
     background_style = Dict().tag(sync=True)
 
     # min width is based on hardcoded padding values
-    layout = Instance(Layout, kw={
-            'min_width': '125px'
-        }, allow_none=True).tag(sync=True, **widget_serialization)
+    layout = LayoutTraitType(min_width='125px', allow_none=True).tag(
+        sync=True, **widget_serialization)
     min_aspect_ratio = Float(1.0).tag(sync=True)
     # Max aspect ratio is such that we can have 3 charts stacked vertically
     # on a 16:9 monitor: 16/9*3 ~ 5.333
