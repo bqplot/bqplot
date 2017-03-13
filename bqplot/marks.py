@@ -42,7 +42,7 @@ from traitlets import (
     )
 from traittypes import Array
 
-from .scales import Scale, OrdinalScale
+from .scales import Scale, OrdinalScale, LinearScale
 from .traits import Date, array_serialization, array_squeeze, array_dimension_bounds
 
 from .colorschemes import CATEGORY10
@@ -1287,11 +1287,11 @@ class HeatMap(Mark):
         # Adding scales in case they are not passed too.
 
         if(scales.get('x', None) is None):
-            x_scale = OrdinalScale()
+            x_scale = LinearScale()
             scales['x'] = x_scale
 
         if(scales.get('y', None) is None):
-            y_scale = OrdinalScale()
+            y_scale = LinearScale()
             scales['y'] = y_scale
         kwargs['scales'] = scales
         super(HeatMap, self).__init__(**kwargs)
