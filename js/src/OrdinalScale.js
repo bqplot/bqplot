@@ -21,8 +21,6 @@ var OrdinalScale = scale.Scale.extend({
 
     render: function() {
         this.scale = d3.scale.ordinal();
-        //forcefully setting the domain
-        this.model.domain_changed();
         this.scale.domain(this.model.domain);
         this.offset = 0;
         this.create_event_listeners();
