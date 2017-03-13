@@ -17,6 +17,7 @@ var widgets = require("jupyter-js-widgets");
 var d3 = require("d3");
 var _ = require("underscore");
 var basemodel = require("./BaseModel");
+var semver_range = "^" + require("../package.json").version;
 
 var MarkModel = basemodel.BaseModel.extend({
 
@@ -25,6 +26,8 @@ var MarkModel = basemodel.BaseModel.extend({
             _model_name: "MarkModel",
             _model_module: "bqplot",
             _view_module: "bqplot",
+            _model_module_version: semver_range,
+            _view_module_version: semver_range,
 
             scales: {},
             scales_metadata: {},

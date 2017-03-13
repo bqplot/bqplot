@@ -15,13 +15,15 @@
 
 var widgets = require("jupyter-js-widgets");
 var _ = require("underscore");
+var semver_range = "^" + require("../package.json").version;
 
 var BaseModel = widgets.WidgetModel.extend({
 
     defaults: function() {
         return _.extend(widgets.WidgetModel.prototype.defaults(), {
             _model_name: "BaseModel",
-            _model_module: "bqplot"
+            _model_module: "bqplot",
+            _model_module_version: semver_range
         });
     },
 

@@ -15,6 +15,7 @@
 
 var widgets = require("jupyter-js-widgets");
 var _ = require("underscore");
+var semver_range = "^" + require("../package.json").version;
 
 var TooltipModel = widgets.DOMWidgetModel.extend({
 
@@ -24,6 +25,8 @@ var TooltipModel = widgets.DOMWidgetModel.extend({
             _view_name: "Tooltip",
             _model_module: "bqplot",
             _view_module: "bqplot",
+            _model_module_version: semver_range,
+            _view_module_version: semver_range,
 
             fields: [],
             formats: [],
