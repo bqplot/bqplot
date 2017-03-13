@@ -43,6 +43,7 @@ from ipywidgets import Widget, Color, widget_serialization
 from .scales import Scale, DateScale
 from .traits import Date, array_serialization
 from .marks import Lines, Scatter
+from ._version import __frontend_version__
 
 
 def register_interaction(key=None):
@@ -85,6 +86,8 @@ class Interaction(Widget):
 
     _view_module = Unicode('bqplot').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _ipython_display_ = None  # We cannot display an interaction outside of a
                               # figure
 
@@ -225,6 +228,7 @@ class TwoDSelector(Selector):
     y_scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='y',
                        **widget_serialization)
     _model_name = Unicode('TwoDSelectorModel').tag(sync=True)
+
 
 @register_interaction('bqplot.FastIntervalSelector')
 class FastIntervalSelector(OneDSelector):
