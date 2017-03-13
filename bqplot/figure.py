@@ -125,8 +125,7 @@ class Figure(DOMWidget):
     background_style = Dict().tag(sync=True)
 
     # min width is based on hardcoded padding values
-    layout = LayoutTraitType(min_width='125px', allow_none=True).tag(
-        sync=True, **widget_serialization)
+    layout = LayoutTraitType(kw=dict(min_width='125px')).tag(sync=True, **widget_serialization)
     min_aspect_ratio = Float(1.0).tag(sync=True)
     # Max aspect ratio is such that we can have 3 charts stacked vertically
     # on a 16:9 monitor: 16/9*3 ~ 5.333
