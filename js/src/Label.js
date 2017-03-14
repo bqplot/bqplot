@@ -36,7 +36,7 @@ var Label = scatterbase.ScatterBase.extend({
             // update opacity scale range?
             var that = this;
             this.d3el.selectAll(".label")
-                .transition()
+                .transition("update_default_opacities")
                 .duration(animation_duration)
                 .style("opacity", function(d, i) {
                     return that.get_element_opacity(d, i);
@@ -51,7 +51,7 @@ var Label = scatterbase.ScatterBase.extend({
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
             this.d3el.selectAll(".label")
-                .transition()
+                .transition("update_default_size")
                 .duration(animation_duration)
                 .style("font-size", function(d, i) {
                     return that.get_element_size(d);
@@ -142,7 +142,7 @@ var Label = scatterbase.ScatterBase.extend({
 
         this.d3el.selectAll(".object_grp")
             .select("text")
-            .transition()
+            .transition("color_scale_updated")
             .duration(animation_duration)
             .style("fill", function(d, i) {
                   return that.get_element_color(d, i);
@@ -176,7 +176,7 @@ var Label = scatterbase.ScatterBase.extend({
         d3.select(dragged_node)
           .select("text")
           .classed("drag_label", true)
-          .transition()
+          .transition("set_drag_style")
           .style("font-size", (dragged_size));
     },
 
@@ -184,7 +184,7 @@ var Label = scatterbase.ScatterBase.extend({
         d3.select(dragged_node)
           .select("text")
           .classed("drag_label", false)
-          .transition()
+          .transition("reset_drag_style")
           .style("font-size", this.get_element_size(d));
     },
 });

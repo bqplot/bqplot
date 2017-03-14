@@ -160,7 +160,8 @@ var Axis = widgets.WidgetView.extend({
 
         if(this.g_axisline) {
              this.g_axisline
-                .transition().duration(animate === true ? this.parent.model.get("animation_duration") : 0)
+                .transition("set_tick_values")
+                .duration(animate === true ? this.parent.model.get("animation_duration") : 0)
                 .call(this.axis);
         }
     },
@@ -489,7 +490,7 @@ var Axis = widgets.WidgetView.extend({
             .classed("short", grid_type === "none");
 
         this.g_axisline
-            .transition().duration(animation_duration)
+            .transition("update_grid_lines").duration(animation_duration)
             .call(this.axis)
             .selectAll(".tick line")
             .attr(is_x ? "y1" : "x1",

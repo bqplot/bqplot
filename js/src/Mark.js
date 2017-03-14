@@ -131,7 +131,7 @@ var Mark = widgets.WidgetView.extend({
 
     remove: function() {
         this.model.off(null, null, this);
-        this.d3el.transition().duration(0).remove();
+        this.d3el.transition("remove").duration(0).remove();
         this.tooltip_div.remove();
         Mark.__super__.remove.apply(this);
     },
@@ -257,7 +257,7 @@ var Mark = widgets.WidgetView.extend({
             } else {
                 this.tooltip_div.style("pointer-events", "all");
             }
-            this.tooltip_div.transition()
+            this.tooltip_div.transition("show_tooltip")
                 .style(this.model.get("tooltip_style"))
                 .style("display", null);
 
@@ -282,7 +282,7 @@ var Mark = widgets.WidgetView.extend({
         //this function hides the tooltip. But the location of the tooltip
         //is the last location set by a call to show_tooltip.
         this.tooltip_div.style("pointer-events", "none");
-        this.tooltip_div.transition()
+        this.tooltip_div.transition("hide_tooltip")
             .style("opacity", 0)
             .style("display", "none");
     },

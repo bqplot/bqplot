@@ -380,7 +380,7 @@ var Bars = mark.Mark.extend({
             });
         }
         if (this.model.get("type") === "stacked") {
-            bars_sel.transition().duration(animation_duration)
+            bars_sel.transition("draw_bars").duration(animation_duration)
                 .attr(dom, 0)
                 .attr(dom_control, this.x.rangeBand().toFixed(2))
                 .attr(rang, function(d) {
@@ -390,7 +390,7 @@ var Bars = mark.Mark.extend({
                     return Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1));
                 });
         } else {
-            bars_sel.transition().duration(animation_duration)
+            bars_sel.transition("draw_bars").duration(animation_duration)
               .attr(dom, function(datum, index) {
                     return that.x1(index);
               })

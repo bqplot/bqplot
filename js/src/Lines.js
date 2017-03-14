@@ -245,7 +245,8 @@ var Lines = mark.Mark.extend({
               return that.line(d.values) + that.path_closure();
           });
         this.d3el.selectAll(".curve").select(".area")
-          .transition().duration(0) //FIXME
+          .transition("update_path_style")
+          .duration(0) //FIXME
           .attr("d", function(d) { return that.area(d.values); });
         if (this.legend_el) {
             this.legend_line.interpolate(interpolation);
@@ -480,17 +481,20 @@ var Lines = mark.Mark.extend({
         var curves_sel = this.d3el.selectAll(".curve");
 
         curves_sel.select(".line")
-          .transition().duration(animation_duration)
+          .transition("update_line_xy")
+          .duration(animation_duration)
           .attr("d", function(d) {
               return that.line(d.values) + that.path_closure();
           });
 
         curves_sel.select(".area")
-          .transition().duration(animation_duration)
+          .transition("update_line_xy")
+          .duration(animation_duration)
           .attr("d", function(d) { return that.area(d.values); });
 
         curves_sel.select(".curve_label")
-          .transition().duration(animation_duration)
+          .transition("update_line_xy")
+          .duration(animation_duration)
           .attr("transform", function(d) {
               var last_xy = d.values[d.values.length - 1];
               return "translate(" + x_scale.scale(last_xy.x) +
@@ -572,7 +576,7 @@ var Lines = mark.Mark.extend({
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var dots = this.d3el.selectAll(".curve").selectAll(".dot");
 
-            dots.transition().duration(animation_duration)
+            dots.transition("update_dots_xy").duration(animation_duration)
                 .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                         "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
                 })

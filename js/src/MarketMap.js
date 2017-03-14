@@ -588,7 +588,7 @@ var MarketMap = figure.Figure.extend({
         var mouse_pos = d3.mouse(this.el);
         var that = this;
         var tooltip_div = this.tooltip_div;
-        tooltip_div.transition()
+        tooltip_div.transition("show_tooltip")
             .style("opacity", 0.9)
             .style("display", null);
 
@@ -618,7 +618,7 @@ var MarketMap = figure.Figure.extend({
 
     hide_tooltip: function() {
          this.tooltip_div.style("pointer-events", "none");
-         this.tooltip_div.transition()
+         this.tooltip_div.transition("hide_tooltip")
             .style("opacity", 0)
             .style("display", "none");
     },

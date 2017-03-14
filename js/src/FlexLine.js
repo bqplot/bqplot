@@ -105,7 +105,8 @@ var FlexLine = lines.Lines.extend({
             .attr("class", "curve");
 
         curves_sel.exit()
-            .transition().duration(this.parent.model.get("animation_duration"))
+            .transition("draw")
+            .duration(this.parent.model.get("animation_duration"))
             .remove();
 
         var x_scale = this.scales.x, y_scale = this.scales.y;
@@ -154,7 +155,8 @@ var FlexLine = lines.Lines.extend({
 
         var that = this;
         this.d3el.selectAll(".curve").selectAll(".line-elem")
-            .transition().duration(this.parent.model.get("animation_duration"))
+            .transition("relayout")
+            .duration(this.parent.model.get("animation_duration"))
             .attr({
                 x1: function(d) { return x_scale.scale(d.x1); },
                 x2: function(d) { return x_scale.scale(d.x2); },
