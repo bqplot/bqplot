@@ -854,7 +854,7 @@ def geo(map_data, **kwargs):
     return _draw_mark(Map, **kwargs)
 
 
-def heat(color, **kwargs):
+def heatmap(color, **kwargs):
     """Draw a heatmap in the current context figure.
 
     Parameters
