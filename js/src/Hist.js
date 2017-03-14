@@ -182,7 +182,8 @@ var Hist = mark.Mark.extend({
             });
         var bar_width = this.calculate_bar_width();
         this.d3el.selectAll(".bargroup").select("rect")
-          .transition().duration(this.parent.model.get("animation_duration"))
+          .transition("relayout")
+          .duration(this.parent.model.get("animation_duration"))
           .attr("x", 2)
           .attr("width", bar_width)
           .attr("height", function(d) {
@@ -232,7 +233,7 @@ var Hist = mark.Mark.extend({
               });
           })
           .attr("id", function(d, i) { return "rect" + i; })
-          .transition()
+          .transition("draw")
           .duration(this.parent.model.get("animation_duration"))
           .attr("width", bar_width)
           .attr("height", function(d) {

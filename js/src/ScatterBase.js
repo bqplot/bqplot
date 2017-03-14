@@ -265,7 +265,7 @@ var ScatterBase = mark.Mark.extend({
         var that = this;
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        this.d3el.selectAll(".object_grp").transition()
+        this.d3el.selectAll(".object_grp").transition("update_position")
             .duration(animation_duration)
             .attr("transform", function(d) {
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +

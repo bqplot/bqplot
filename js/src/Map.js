@@ -156,10 +156,11 @@ var Map = mark.Mark.extend({
         var el = d3.select(d3.event.target);
         if(this.is_hover_element(el)) {
             var that = this;
-            el.transition().style("fill", function(d, i) {
+            el.transition("mouseout_handler")
+            .style("fill", function(d, i) {
                 return that.fill_g_colorfill(d, i);
-            });
-            el.transition().style("stroke", function(d, i) {
+            })
+            .style("stroke", function(d, i) {
                 return that.hoverfill(d, i);
             });
             that.highlight_g.selectAll(".hovered").remove();
@@ -175,7 +176,8 @@ var Map = mark.Mark.extend({
             var elem_index = selected.indexOf(data.id);
             if(elem_index > -1) {
                 selected.splice(elem_index, 1);
-                el.style("fill-opacity", 0.0).transition();
+                el.transition("click_handler")
+                    .style("fill-opacity", 0.0);
                 this.highlight_g.selectAll(".hovered").remove();
                 var choice = "#c".concat(data.id.toString());
                 d3.select(choice).remove();

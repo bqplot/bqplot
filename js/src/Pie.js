@@ -188,7 +188,7 @@ var Pie = mark.Mark.extend({
         var transform = "translate(" + (x_scale.scale(x) + x_scale.offset) +
                                 ", " + (y_scale.scale(y) + y_scale.offset) + ")";
         this.d3el.select(".pielayout")
-            .transition().duration(animation_duration)
+            .transition("position_center").duration(animation_duration)
             .attr("transform", transform);
     },
 
@@ -200,12 +200,12 @@ var Pie = mark.Mark.extend({
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         slices.select("path")
-            .transition().duration(animation_duration)
+            .transition("update_radii").duration(animation_duration)
             .attr("d", this.arc);
 
         var that = this;
         slices.select("text")
-            .transition().duration(animation_duration)
+            .transition("update_radii").duration(animation_duration)
             .attr("transform", function(d) {
                 return "translate(" + that.arc.centroid(d) + ")";
             });
@@ -244,7 +244,7 @@ var Pie = mark.Mark.extend({
 
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
         //animate slices on data changes using custom tween
-        var t = slices.transition().duration(animation_duration);
+        var t = slices.transition("draw").duration(animation_duration);
         t.select("path").attrTween("d", updateTween);
         t.select("text").attr("transform", function(d) {
             return "translate(" + that.arc.centroid(d) + ")";

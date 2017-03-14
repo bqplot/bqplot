@@ -128,7 +128,7 @@ var Scatter = scatterbase.ScatterBase.extend({
             // update opacity scale range?
             var that = this;
             this.d3el.selectAll(".dot")
-                .transition()
+                .transition("update_default_opacities")
                 .duration(animation_duration)
                 .style("opacity", function(d, i) {
                     return that.get_element_opacity(d, i);
@@ -148,7 +148,7 @@ var Scatter = scatterbase.ScatterBase.extend({
     update_marker: function(model, marker) {
         if (!this.model.dirty) {
             this.d3el.selectAll(".dot")
-                .transition()
+                .transition("update_marker")
                 .duration(this.parent.model.get("animation_duration"))
                 .attr("d", this.dot.type(marker));
             this.legend_el.select("path")
@@ -161,7 +161,7 @@ var Scatter = scatterbase.ScatterBase.extend({
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
             this.d3el.selectAll(".dot")
-                .transition()
+                .transition("update_default_skew")
                 .duration(animation_duration)
                 .attr("d", this.dot.skew(function(d) {
                     return that.get_element_skew(d);
@@ -176,7 +176,7 @@ var Scatter = scatterbase.ScatterBase.extend({
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
             this.d3el.selectAll(".dot")
-                .transition()
+                .transition("update_default_size")
                 .duration(animation_duration)
                 .attr("d", this.dot.size(function(d) {
                     return that.get_element_size(d);
@@ -194,7 +194,7 @@ var Scatter = scatterbase.ScatterBase.extend({
 
         this.d3el.selectAll(".object_grp").select("text")
             .text(function(d) { return d.name; })
-            .transition()
+            .transition("update_names")
             .duration(animation_duration)
             .attr("transform", function(d) {
                 var text_loc = Math.sqrt(that.get_element_size(d)) / 2.0;
@@ -212,7 +212,7 @@ var Scatter = scatterbase.ScatterBase.extend({
 
         this.d3el.selectAll(".object_grp")
           .select("path")
-          .transition()
+          .transition("color_scale_updated")
           .duration(animation_duration)
           .style("fill", fill ?
               function(d, i) {
@@ -231,7 +231,7 @@ var Scatter = scatterbase.ScatterBase.extend({
 
         elements_added.append("path").attr("class", "dot element");
         elements_added.append("text").attr("class", "dot_text");
-        elements.select("path").transition()
+        elements.select("path").transition("draw_elements")
             .duration(animation_duration)
             .attr("d", this.dot
                 .size(function(d) { return that.get_element_size(d); })
@@ -290,7 +290,7 @@ var Scatter = scatterbase.ScatterBase.extend({
         d3.select(dragged_node)
           .select("path")
           .classed("drag_scatter", true)
-          .transition()
+          .transition("set_drag_style")
           .attr("d", this.dot.size(5 * this.model.get("default_size")));
 
         var drag_color = this.model.get("drag_color");
@@ -309,7 +309,7 @@ var Scatter = scatterbase.ScatterBase.extend({
         d3.select(dragged_node)
           .select("path")
           .classed("drag_scatter", false)
-          .transition()
+          .transition("reset_drag_style")
           .attr("d", this.dot.size(this.get_element_size(d)));
 
         if (this.model.get("drag_color")) {
