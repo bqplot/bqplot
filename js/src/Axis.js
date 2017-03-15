@@ -109,9 +109,9 @@ var Axis = widgets.WidgetView.extend({
         var tick_values = this.model.get_typed_field("tick_values");
         var useticks = [];
         if (tick_values !== undefined && tick_values !== null && tick_values.length > 0) {
-            this.axis.tickValues(this.get_ticks(tick_values));
+            this.axis.tickValues(this.get_ticks_from_array_or_length(tick_values));
         } else if (this.num_ticks !== undefined && this.num_ticks !== null) {
-            this.axis.tickValues(this.get_ticks());
+            this.axis.tickValues(this.get_ticks_from_array_or_length());
         } else {
             if (this.axis_scale.model.type === "ordinal") {
                 this.axis.tickValues(this.axis_scale.scale.domain());
@@ -560,7 +560,9 @@ var Axis = widgets.WidgetView.extend({
         this.d3el.style("display", visible ? "inline" : "none");
     },
 
-    get_ticks: function(data_array) {
+    get_ticks_from_array_or_length: function(data_array) {
+        // This function is to be called when the ticks are passed explicilty
+        // or the number of ticks to be drawn.
         // Have to do different things based on the type of the scale.
         // If an array is passed, then just scale and return equally spaced
         // points in the array. This is the way it is done for ordinal
@@ -569,10 +571,11 @@ var Axis = widgets.WidgetView.extend({
         if(this.axis_scale.model.type === "ordinal") {
             data_array = this.axis_scale.scale.domain();
         }
-        if(this.num_ticks < 2)
+        if(this.num_ticks !== undefined && this.num_ticks !== null && this.num_ticks < 2) {
             return [];
+        }
         if(data_array) {
-            if(data_array.length <= this.num_ticks) {
+            if(this.num_ticks == undefined || this.num_ticks == null || data_array.length <= this.num_ticks) {
                 return data_array;
             } else {
                step = Math.floor(data_array.length / (this.num_ticks - 1));
