@@ -44,7 +44,7 @@ from traittypes import Array
 
 from .scales import Scale, OrdinalScale, LinearScale
 from .traits import Date, array_serialization, array_squeeze, array_dimension_bounds
-
+from ._version import __frontend_version__
 from .colorschemes import CATEGORY10
 
 
@@ -162,6 +162,8 @@ class Mark(Widget):
     _model_name = Unicode('MarkModel').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
     _view_module = Unicode('bqplot').tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _ipython_display_ = None
 
     def _get_dimension_scales(self, dimension, preserve_domain=False):

@@ -31,6 +31,7 @@ from ipywidgets import DOMWidget, register, widget_serialization
 
 from .interacts import PanZoom
 from .figure import Figure
+from ._version import __frontend_version__
 
 
 @register('bqplot.toolbar')
@@ -75,3 +76,5 @@ class Toolbar(DOMWidget):
     _model_name = Unicode('ToolbarModel').tag(sync=True)
     _view_module = Unicode('bqplot').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)

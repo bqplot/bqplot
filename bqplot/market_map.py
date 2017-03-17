@@ -29,11 +29,13 @@ Market Map
 
 from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance, Float
 from traittypes import Array, DataFrame
-from ipywidgets import (DOMWidget, CallbackDispatcher, Color,
-    widget_serialization, Layout)
+from ipywidgets import (
+        DOMWidget, CallbackDispatcher, Color, widget_serialization, Layout
+    )
 
 from .traits import array_serialization, dataframe_serialization, dataframe_warn_indexname
 from .marks import CATEGORY10
+from ._version import __frontend_version__
 
 
 class MarketMap(DOMWidget):
@@ -212,6 +214,8 @@ class MarketMap(DOMWidget):
     _model_name = Unicode('MarketMapModel').tag(sync=True)
     _view_module = Unicode('bqplot').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
 
 
 class SquareMarketMap(MarketMap):

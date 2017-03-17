@@ -33,6 +33,7 @@ from ipywidgets import Widget, Color, widget_serialization
 
 from .scales import Scale, ColorScale
 from .traits import array_serialization, array_dimension_bounds
+from ._version import __frontend_version__
 
 
 def register_axis(key=None):
@@ -53,6 +54,8 @@ class BaseAxis(Widget):
     axis_types = {}
     _view_module = Unicode('bqplot').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
 
 
 @register_axis('bqplot.Axis')

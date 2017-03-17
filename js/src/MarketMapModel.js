@@ -17,6 +17,7 @@ var widgets = require("jupyter-js-widgets");
 var _ = require("underscore");
 var d3 = require("d3");
 var basemodel = require("./BaseModel");
+var semver_range = "^" + require("../package.json").version;
 
 var MarketMapModel = basemodel.BaseModel.extend({
 
@@ -26,6 +27,8 @@ var MarketMapModel = basemodel.BaseModel.extend({
             _view_name: "MarketMap",
             _model_module: "bqplot",
             _view_module: "bqplot",
+            _model_module_version: semver_range,
+            _view_module_version: semver_range,
 
             map_width: 1080,
             map_height: 800,

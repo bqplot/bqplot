@@ -43,6 +43,7 @@ from traitlets import Unicode, List, Enum, Float, Bool, Type, Tuple
 
 import numpy as np
 from .traits import Date
+from ._version import __frontend_version__
 
 
 def register_scale(key=None):
@@ -92,6 +93,8 @@ class Scale(Widget):
     _model_name = Unicode('ScaleModel').tag(sync=True)
     _view_module = Unicode('bqplot').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _ipython_display_ = None  # We cannot display a scale outside of a figure
 
 

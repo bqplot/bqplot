@@ -16,6 +16,7 @@
 var widgets = require("jupyter-js-widgets");
 var _ = require("underscore");
 var basemodel = require("./BaseModel");
+var semver_range = "^" + require("../package.json").version;
 
 var HandDrawModel = basemodel.BaseModel.extend({
 
@@ -25,6 +26,9 @@ var HandDrawModel = basemodel.BaseModel.extend({
             _view_name: "HandDraw",
             _model_module: "bqplot",
             _view_module: "bqplot",
+            _model_module_version: semver_range,
+            _view_module_version: semver_range,
+
 	        lines: null,
 	        line_index: 0,
             min_x: null,
