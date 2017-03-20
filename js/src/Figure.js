@@ -635,6 +635,12 @@ var Figure = widgets.DOMWidgetView.extend({
         this.title.text(this.model.get("title"));
     },
 
+    remove: function() {
+        Figure.__super__.remove.apply(this, arguments);
+        this.mark_views.remove()
+        this.axis_views.remove()
+    },
+
     save_png: function() {
 
         var  replaceAll = function (find, replace, str) {
