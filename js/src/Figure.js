@@ -636,9 +636,9 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     remove: function() {
-        Figure.__super__.remove.apply(this, arguments);
         this.mark_views.remove()
         this.axis_views.remove()
+        return Figure.__super__.remove.apply(this, arguments);
     },
 
     save_png: function() {
