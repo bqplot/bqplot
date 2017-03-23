@@ -84,11 +84,6 @@ var MarketMap = figure.Figure.extend({
 
         var scale_creation_promise = this.create_scale_views();
         scale_creation_promise.then(function() {
-            var color_scale = that.scales.color;
-            if(color_scale){
-                color_scale.set_range();
-                color_scale.on("color_scale_range_changed", that.update_map_colors, that);
-            }
             that.create_listeners();
             that.axis_views = new widgets.ViewList(that.add_axis, null, that);
             that.axis_views.update(that.model.get("axes"));
@@ -131,6 +126,7 @@ var MarketMap = figure.Figure.extend({
     },
 
     create_listeners: function() {
+        this.listenTo(this.model, "change:scales", this.create_scale_views, this);
         this.listenTo(this.model, "change:color", this.recolor_chart, this);
         this.listenTo(this.model, "change:colors", this.colors_updated, this);
         this.listenTo(this.model, "change:show_groups", this.show_groups, this);
@@ -335,8 +331,12 @@ var MarketMap = figure.Figure.extend({
 
     set_scales: function() {
         var that = this;
-        if(this.scales.color) {
-            this.listenTo(this.scales.color, "domain_changed", function() {
+        var color_scale = this.scales.color;
+        if(color_scale) {
+            color_scale.set_range();
+            color_scale.on("color_scale_range_changed", that.update_map_colors, that);
+            this.update_domains();
+            this.listenTo(color_scale, "domain_changed", function() {
                 that.update_map_colors();
             });
             this.update_map_colors();

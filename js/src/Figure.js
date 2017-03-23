@@ -636,8 +636,12 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     remove: function() {
-        this.mark_views.remove()
-        this.axis_views.remove()
+        if(this.mark_views !== undefined && this.mark_views !== null) {
+            this.mark_views.remove();
+        }
+        if(this.axis_views !== undefined && this.axis_views !== null) {
+            this.axis_views.remove()
+        }
         return Figure.__super__.remove.apply(this, arguments);
     },
 
