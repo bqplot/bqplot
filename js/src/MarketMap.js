@@ -84,11 +84,6 @@ var MarketMap = figure.Figure.extend({
 
         var scale_creation_promise = this.create_scale_views();
         scale_creation_promise.then(function() {
-            var color_scale = that.scales.color;
-            if(color_scale){
-                color_scale.set_range();
-                color_scale.on("color_scale_range_changed", that.update_map_colors, that);
-            }
             that.create_listeners();
             that.axis_views = new widgets.ViewList(that.add_axis, null, that);
             that.axis_views.update(that.model.get("axes"));
@@ -131,6 +126,7 @@ var MarketMap = figure.Figure.extend({
     },
 
     create_listeners: function() {
+        this.listenTo(this.model, "change:scales", this.create_scale_views, this);
         this.listenTo(this.model, "change:color", this.recolor_chart, this);
         this.listenTo(this.model, "change:colors", this.colors_updated, this);
         this.listenTo(this.model, "change:show_groups", this.show_groups, this);
@@ -335,8 +331,12 @@ var MarketMap = figure.Figure.extend({
 
     set_scales: function() {
         var that = this;
-        if(this.scales.color) {
-            this.listenTo(this.scales.color, "domain_changed", function() {
+        var color_scale = this.scales.color;
+        if(color_scale) {
+            color_scale.set_range();
+            color_scale.on("color_scale_range_changed", that.update_map_colors, that);
+            this.update_domains();
+            this.listenTo(color_scale, "domain_changed", function() {
                 that.update_map_colors();
             });
             this.update_map_colors();
@@ -391,13 +391,14 @@ var MarketMap = figure.Figure.extend({
 
             new_groups.append("text")
                 .classed("market_map_text", true)
-                .style({"text-anchor": "middle", 'fill' :'black'})
+                .style({"text-anchor": "middle", 'fill' :'black', "pointer-events": "none"})
                 .style(that.model.get("font_style"));
 
             // Update the attributes of the entire set of nodes
             groups.attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
                 .on("click", function(data, ind) { that.cell_click_handler(data, (element_count + ind), this);})
                 .on("mouseover", function(data, ind) { that.mouseover_handler(data, (element_count + ind), this);})
+                .on("mousemove", function(data) { that.mousemove_handler(data); })
                 .on("mouseout", function(data, ind) { that.mouseout_handler(data, (element_count + ind), this);})
                 .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
                 .attr("id", function(data) { return "market_map_element_" + data.name;});
@@ -562,6 +563,7 @@ var MarketMap = figure.Figure.extend({
                         'pointer-events': 'none'
                     });
             this.show_tooltip(d3.event, data);
+            this.send({event: "hover", data: data.name, ref_data: data.ref_data});
         }
     },
 
@@ -587,38 +589,51 @@ var MarketMap = figure.Figure.extend({
     show_tooltip: function(event, data) {
         var mouse_pos = d3.mouse(this.el);
         var that = this;
-        var tooltip_div = this.tooltip_div;
-        tooltip_div.transition("show_tooltip")
-            .style("opacity", 0.9)
-            .style("display", null);
+        if(!this.tooltip_view && (!this.tooltip_fields || this.tooltip_fields.length == 0))
+        {
+            return;
+        } else {
 
-        // the +5s are for breathing room for the tool tip
-        tooltip_div.style("left", (mouse_pos[0] + 5) + "px")
-            .style("top", (mouse_pos[1] + 5) + "px");
-        var ref_data = data.ref_data;
+            var tooltip_div = this.tooltip_div;
+            tooltip_div.transition()
+                .style("opacity", 0.9)
+                .style("display", null);
 
-        tooltip_div.select("table").remove();
-        if(!this.tooltip_view) {
-            var tooltip_table = tooltip_div.append("table")
-                .selectAll("tr").data(this.tooltip_fields);
+            this.move_tooltip();
+            tooltip_div.select("table").remove();
 
-            tooltip_table.exit().remove();
-            var table_rows = tooltip_table.enter().append("tr");
+            var ref_data = data.ref_data;
+            if(!this.tooltip_view) {
+                var tooltip_table = tooltip_div.append("table")
+                    .selectAll("tr").data(this.tooltip_fields);
 
-            table_rows.append("td")
-                .attr("class", "tooltiptext")
-                .text(function(datum) { return datum;});
+                tooltip_table.exit().remove();
+                var table_rows = tooltip_table.enter().append("tr");
 
-            table_rows.append("td")
-                .attr("class", "tooltiptext")
-                .text(function(datum, index) { return (ref_data === null || ref_data === undefined) ? null : that.tooltip_formats[index](ref_data[datum]);});
+                table_rows.append("td")
+                    .attr("class", "tooltiptext")
+                    .text(function(datum) { return datum;});
+
+                table_rows.append("td")
+                    .attr("class", "tooltiptext")
+                    .text(function(datum, index) { return (ref_data === null || ref_data === undefined) ? null : that.tooltip_formats[index](ref_data[datum]);});
+            }
         }
-        this.send({event: "hover", data: data.name, ref_data: ref_data});
+    },
+
+    mousemove_handler: function(data) {
+        this.move_tooltip();
+    },
+
+    move_tooltip: function() {
+        var mouse_pos = d3.mouse(this.el);
+        this.tooltip_div.style("left", (mouse_pos[0] + 5) + "px")
+            .style("top", (mouse_pos[1] + 5) + "px");
     },
 
     hide_tooltip: function() {
          this.tooltip_div.style("pointer-events", "none");
-         this.tooltip_div.transition("hide_tooltip")
+         this.tooltip_div.transition()
             .style("opacity", 0)
             .style("display", "none");
     },
