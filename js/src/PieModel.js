@@ -66,7 +66,9 @@ var PieModel = markmodel.MarkModel.extend({
             return {
                 size: d,
                 color: color[i],
-                label: labels[i],
+                // since labels are used as join keys create default labels
+                // for missing labels
+                label: labels[i] == null ? 'S' + (i + 1) : labels[i],
                 index: i
             };
         });
@@ -81,7 +83,11 @@ var PieModel = markmodel.MarkModel.extend({
         }
         var labels = this.get("labels");
         this.mark_data.forEach( function(data, index) {
-            data.label = labels[index];
+            // since labels are used as join keys create default labels
+            // for missing labels
+            data.label = labels[index] == null ?
+                         'S' + (index + 1) :
+                         labels[index];
         });
         this.trigger("labels_updated");
     },
