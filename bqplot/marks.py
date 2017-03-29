@@ -1006,6 +1006,10 @@ class Pie(Mark):
         end angle of the pie (from top), in degrees
     display_labels: {'none', 'inside', 'outside'} (default: 'inside')
         label display options
+    display_values: bool (default: False)
+        if True show values along with labels
+    values_format: string (default: '.2f')
+        format for displaying values
     label_color: Color or None (default: None)
         color of the labels
     font_size: string (default: '14px')
@@ -1054,6 +1058,8 @@ class Pie(Mark):
     end_angle = Float(360.0).tag(sync=True)
     display_labels = Enum(['none', 'inside', 'outside'],
                           default_value='inside').tag(sync=True)
+    display_values = Bool(False).tag(sync=True)
+    values_format = Unicode(default_value='.1f').tag(sync=True)
     label_color = Color(None, allow_none=True).tag(sync=True)
     font_size = Unicode(default_value='10px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'],

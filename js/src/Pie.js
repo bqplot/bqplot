@@ -127,6 +127,10 @@ var Pie = mark.Mark.extend({
             var animate = true;
             this.draw(animate);
         }, this);
+
+        this.model.on_some_change(["display_values", "values_format"],
+                                  this.update_values, this);
+
         this.listenTo(this.model, "labels_updated", this.update_labels, this);
         this.listenTo(this.model, "change:selected", function() {
             this.selected_indices = this.model.get("selected");
@@ -469,6 +473,7 @@ var Pie = mark.Mark.extend({
         });
 
         this.update_labels();
+        this.update_values();
         this.apply_styles();
     },
 
@@ -502,6 +507,17 @@ var Pie = mark.Mark.extend({
         if(color !== undefined) {
             labels.style("fill", color);
         }
+    },
+
+    update_values: function() {
+        var display_values = this.model.get("display_values");
+        var values_format = d3.format(this.model.get("values_format"));
+
+        var labels = this.pie_g.selectAll(".labels text")
+            .text(function(d) {
+                return d.data.label +
+                    (display_values ? ": " + values_format(d.data.size) : "");
+            })
     },
 
     clear_style: function(style_dict, indices) {
