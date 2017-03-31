@@ -131,7 +131,7 @@ var Pie = mark.Mark.extend({
         this.model.on_some_change(["display_values", "values_format"],
                                   this.update_values, this);
 
-        this.listenTo(this.model, "labels_updated", this.update_labels, this);
+        this.listenTo(this.model, "labels_updated", this.update_values, this);
         this.listenTo(this.model, "change:selected", function() {
             this.selected_indices = this.model.get("selected");
             this.apply_styles();
@@ -271,22 +271,33 @@ var Pie = mark.Mark.extend({
             return d.label;
         })).values().sort();
 
-        // convert first array to map of label and value
+        // convert first array to map keyed with label
         var first_map = {};
-        first.forEach(function(d) { first_map[d.label] = d.size; });
+        first.forEach(function(d) { first_map[d.label] = d; });
 
-        // convert first array to map of label and value
+        // convert second array to map keyed with label
         var second_map = {};
-        second.forEach(function(d) { second_map[d.label] = d.size; });
+        second.forEach(function(d) { second_map[d.label] = d; });
 
         // create new first array with missing labels filled with 0
-        var new_first = common_keys.map(function(d) {
-            return {label: d, size: d in first_map ? first_map[d] : 0};
-        });
+        var new_first = [],
+            new_second = []
+        common_keys.forEach(function(d) {
+            if(d in first_map) {
+                new_first.push(first_map[d]);
+            } else {
+                var missing_d = utils.deepCopy(second_map[d]);
+                missing_d.size = 0;
+                new_first.push(missing_d);
+            }
 
-        // create new second array with missing labels filled with 0
-        var new_second = common_keys.map(function(d) {
-            return {label: d, size: d in second_map ? second_map[d] : 0};
+            if(d in second_map) {
+                new_second.push(second_map[d]);
+            } else {
+                var missing_d = utils.deepCopy(first_map[d]);
+                missing_d.size = 0;
+                new_second.push(missing_d);
+            }
         });
 
         return {first: new_first, second: new_second};
@@ -332,7 +343,7 @@ var Pie = mark.Mark.extend({
             .insert("path")
             .attr("class", "slice")
             .style("fill", function(d, i) {
-                that.get_colors(d.data.index);
+                return that.get_colors(i);
             })
             .each(function(d) {
                 this._current = d;
@@ -488,7 +499,8 @@ var Pie = mark.Mark.extend({
     update_colors: function() {
         var that = this;
         var color_scale = this.scales.color;
-        this.pie_g.selectAll("path.slice")
+        this.pie_g.select(".slices")
+          .selectAll("path.slice")
           .style("fill", function(d, i) {
               return (d.data.color !== undefined && color_scale !== undefined) ?
                   color_scale.scale(d.data.color) : that.get_colors(d.data.index);

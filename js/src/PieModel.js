@@ -83,7 +83,7 @@ var PieModel = markmodel.MarkModel.extend({
             return;
         }
         var labels = this.get("labels");
-        this.mark_data.forEach( function(data, index) {
+        this.mark_data.forEach(function(data, index) {
             // since labels are used as join keys create default labels
             // for missing labels. Using == to check for *both* undefined and null
             // jshint eqnull: true
