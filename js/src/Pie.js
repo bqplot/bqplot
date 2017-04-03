@@ -25,7 +25,7 @@ var Pie = mark.Mark.extend({
         this.selected_style = this.model.get("selected_style");
         this.unselected_style = this.model.get("unselected_style");
 
-        this.display_el_classes = ["pie_slice", "pie_text"];
+        this.display_el_classes = ["slice", "text"];
         var that = this;
         this.pie_g = this.d3el.append("g").attr("class", "pie");
         this.pie_g.append("g").attr("class", "slices");
