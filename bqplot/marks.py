@@ -1039,8 +1039,14 @@ class Pie(Mark):
     name = 'Pie chart'
 
     # Scaled attributes
-    sizes = Array([]).tag(sync=True, rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    sizes = Array([]).tag(sync=True, rtype='Number', **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True).tag(sync=True,
+                                             scaled=True,
+                                             rtype='Color',
+                                             atype='bqplot.ColorAxis',
+                                             **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Other attributes
     x = (Float(0.5) | Date() | Unicode()).tag(sync=True)
@@ -1049,9 +1055,11 @@ class Pie(Mark):
     scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
     sort = Bool().tag(sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+                  default_value=CATEGORY10).tag(sync=True,
+                                                display_name='Colors')
     stroke = Color(None, allow_none=True).tag(sync=True)
-    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
+        .tag(sync=True, display_name='Opacities')
     radius = Float(180.0, min=0.0, max=float('inf')).tag(sync=True)
     inner_radius = Float(0.1, min=0.0, max=float('inf')).tag(sync=True)
     start_angle = Float().tag(sync=True)
