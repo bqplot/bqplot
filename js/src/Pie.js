@@ -479,6 +479,8 @@ var Pie = mark.Mark.extend({
                 .remove();
         }
 
+        slices.order();
+
         slices.on("click", function(d, i) {
             return that.event_dispatcher("element_clicked", {data: d, index: i});
         });
