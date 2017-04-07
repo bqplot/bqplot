@@ -25,18 +25,38 @@ var Pie = mark.Mark.extend({
         this.selected_style = this.model.get("selected_style");
         this.unselected_style = this.model.get("unselected_style");
 
-        this.display_el_classes = ["pie_slice", "pie_text"];
+        this.display_el_classes = ["slice", "text"];
         var that = this;
-        this.d3el.append("g").attr("class", "pielayout");
+        this.pie_g = this.d3el.append("g").attr("class", "pie");
+        this.pie_g.append("g").attr("class", "slices");
+        this.pie_g.append("g").attr("class", "labels");
+        this.pie_g.append("g").attr("class", "lines");
 
-        this.arc = d3.svg.arc()
-            .outerRadius(this.model.get("radius"))
-            .innerRadius(this.model.get("inner_radius"));
+        var radius = this.model.get("radius");
+        var inner_radius = this.model.get("inner_radius");
+
+        var display_labels = this.model.get("display_labels");
+
+        if(display_labels === "outside") {
+            this.arc = d3.svg.arc()
+                .outerRadius(radius * 0.8)
+                .innerRadius(inner_radius * 0.8);
+
+            this.outer_arc = d3.svg.arc()
+                .innerRadius(radius * 0.9)
+                .outerRadius(radius * 0.9);
+        } else {
+            this.arc = d3.svg.arc()
+                .outerRadius(radius)
+                .innerRadius(inner_radius);
+        }
 
         this.displayed.then(function() {
             that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
             that.create_tooltip();
         });
+
+        this.join_key = function(d) { return d.data.label; };
 
         return base_creation_promise.then(function() {
             that.event_listeners = {};
@@ -107,7 +127,11 @@ var Pie = mark.Mark.extend({
             var animate = true;
             this.draw(animate);
         }, this);
-        this.listenTo(this.model, "labels_updated", this.update_labels, this);
+
+        this.model.on_some_change(["display_values", "values_format"],
+                                  this.update_values, this);
+
+        this.listenTo(this.model, "labels_updated", this.update_values, this);
         this.listenTo(this.model, "change:selected", function() {
             this.selected_indices = this.model.get("selected");
             this.apply_styles();
@@ -187,98 +211,298 @@ var Pie = mark.Mark.extend({
             this.model.get_date_elem("y") : this.model.get("y");
         var transform = "translate(" + (x_scale.scale(x) + x_scale.offset) +
                                 ", " + (y_scale.scale(y) + y_scale.offset) + ")";
-        this.d3el.select(".pielayout")
+        this.pie_g
             .transition("position_center").duration(animation_duration)
             .attr("transform", transform);
     },
 
     update_radii: function(animate) {
-        this.arc.outerRadius(this.model.get("radius"))
-            .innerRadius(this.model.get("inner_radius"));
+        var animation_duration = animate === true ?
+            this.parent.model.get("animation_duration") : 0;
 
-        var slices = this.d3el.select(".pielayout").selectAll(".slice");
-        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        var radius = this.model.get("radius");
+        var inner_radius = this.model.get("inner_radius");
+        var display_labels = this.model.get("display_labels");
 
-        slices.select("path")
+        if(display_labels === "inside") {
+            this.arc.outerRadius(radius).innerRadius(inner_radius);
+        } else if(display_labels === "outside") {
+            this.arc.outerRadius(radius * 0.8).innerRadius(inner_radius * 0.8);
+            this.outer_arc.innerRadius(radius * 0.9).outerRadius(radius * 0.9);
+        }
+
+        var slices = this.pie_g.select(".slices");
+        var labels = this.pie_g.select(".labels");
+        var lines = this.pie_g.select(".lines");
+
+        var that = this;
+
+        slices.selectAll("path.slice")
             .transition("update_radii").duration(animation_duration)
             .attr("d", this.arc);
 
-        var that = this;
-        slices.select("text")
-            .transition("update_radii").duration(animation_duration)
-            .attr("transform", function(d) {
-                return "translate(" + that.arc.centroid(d) + ")";
-            });
+        if(display_labels === "inside") {
+            labels.selectAll("text")
+                .transition("update_radii").duration(animation_duration)
+                .attr("transform", function(d) {
+                    return "translate(" + that.arc.centroid(d) + ")";
+                });
+        } else if(display_labels === "outside") {
+            labels.selectAll("text")
+                .transition("update_radii").duration(animation_duration)
+                .attr("transform", function(d) {
+                    var pos = that.outer_arc.centroid(d);
+                    pos[0] = radius * (that.is_mid_angle_left(d) ? -1 : 1);
+                    return "translate(" + pos + ")";
+                });
+
+            lines.selectAll("polyline")
+                .transition("update_radii").duration(animation_duration)
+                .attr("points", function(d) {
+                    var pos = that.outer_arc.centroid(d);
+                    pos[0] = radius * 0.95 * (that.is_mid_angle_left(d) ? -1 : 1);
+                    return [that.arc.centroid(d), that.outer_arc.centroid(d), pos];
+                });
+        }
+    },
+
+    outer_join: function(first, second) {
+        var common_keys = d3.set(first.concat(second).map(function(d) {
+            return d.label;
+        })).values().sort();
+
+        // convert first array to map keyed with label
+        var first_map = {};
+        first.forEach(function(d) { first_map[d.label] = d; });
+
+        // convert second array to map keyed with label
+        var second_map = {};
+        second.forEach(function(d) { second_map[d.label] = d; });
+
+        // create new first array with missing labels filled with 0
+        var new_first = [],
+            new_second = []
+        common_keys.forEach(function(d) {
+            if(d in first_map) {
+                new_first.push(first_map[d]);
+            } else {
+                var missing_d = utils.deepCopy(second_map[d]);
+                missing_d.size = 0;
+                new_first.push(missing_d);
+            }
+
+            if(d in second_map) {
+                new_second.push(second_map[d]);
+            } else {
+                var missing_d = utils.deepCopy(first_map[d]);
+                missing_d.size = 0;
+                new_second.push(missing_d);
+            }
+        });
+
+        return {first: new_first, second: new_second};
+    },
+
+    is_mid_angle_left: function(arc_data) {
+        // decides if the mid angle of the arc is toward left or right (to aid the
+        // placement of label text and polylines)
+        var mid_angle = (arc_data.startAngle + arc_data.endAngle) / 2;
+        return mid_angle > Math.PI || (mid_angle < 0 && mid_angle > -Math.PI);
     },
 
     draw: function(animate) {
         this.set_ranges();
         this.position_center(animate);
+        var new_data = this.model.mark_data;
+
+        var old_data = this.pie_g.select(".slices").selectAll("path.slice")
+            .data().map(function(d) { return d.data; });
+        if (old_data.length === 0) {
+            old_data = new_data;
+        }
+        var joined = this.outer_join(old_data, new_data);
+        var was = joined.first;
+        var is = joined.second;
 
         var pie = d3.layout.pie()
             .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
             .endAngle(this.model.get("end_angle") * 2 * Math.PI/360)
             .value(function(d) { return d.size; });
 
-        if (!this.model.get("sort")) { pie.sort(null); }
+        if(!this.model.get("sort")) { pie.sort(null); }
 
         var that = this;
-        var slices = this.d3el.select(".pielayout")
-            .selectAll(".slice")
-            .data(pie(this.model.mark_data));
+        var animation_duration = animate === true ?
+            this.parent.model.get("animation_duration") : 0;
 
-        slices.enter().append("g")
+        var slices = this.pie_g.select(".slices")
+            .selectAll("path.slice")
+            .data(pie(was), this.join_key);
+
+        slices.enter()
+            .insert("path")
             .attr("class", "slice")
+            .style("fill", function(d, i) {
+                return that.get_colors(i);
+            })
             .each(function(d) {
-                var slice = d3.select(this);
-                slice.append("path")
-                    .attr("class", "pie_slice")
-                    .each(function(d) { this.currData = d; }); // store the current angles
-                slice.append("text")
-                    .attr("class", "pie_text")
-                    .attr("dy", ".35em")
-                    .attr("pointer-events", "none")
-                    .style("text-anchor", "middle")
-                    .style("stroke", "none");
+                this._current = d;
             });
 
-        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-        //animate slices on data changes using custom tween
-        var t = slices.transition("draw").duration(animation_duration);
-        t.select("path").attrTween("d", updateTween);
-        t.select("text").attr("transform", function(d) {
-            return "translate(" + that.arc.centroid(d) + ")";
-        });
-        slices.exit().remove();
+        slices = this.pie_g.select(".slices")
+            .selectAll("path.slice")
+            .data(pie(is), this.join_key);
+
+        slices.transition("draw").duration(animation_duration)
+            .attrTween("d", function(d) {
+                var interpolate = d3.interpolate(this._current, d);
+                var _this = this;
+                return function(t) {
+                    _this._current = interpolate(t);
+                    return that.arc(_this._current);
+                };
+            });
+
+        slices = this.pie_g.select(".slices")
+            .selectAll("path.slice")
+            .data(pie(new_data), this.join_key);
+
+        slices.exit()
+            .transition("draw")
+            .delay(animation_duration)
+            .duration(0)
+            .remove();
+
+        var labels = this.pie_g.select(".labels")
+            .selectAll("text")
+            .data(pie(was), this.join_key);
+
+        labels.enter()
+            .append("text")
+            .attr("dy", ".35em")
+            .style("opacity", 0)
+            .text(function(d) {
+                return d.data.label;
+            })
+            .each(function(d) {
+                this._current = d;
+            });
+
+        labels = this.pie_g.select(".labels")
+            .selectAll("text")
+            .data(pie(is), this.join_key);
+
+        var label_trans = labels.transition("draw")
+            .duration(animation_duration)
+            .style("opacity", function(d) {
+                return d.data.value === 0 ? 0 : 1;
+            });
+        var display_labels = this.model.get("display_labels");
+
+        if(display_labels === "inside") {
+            label_trans.attr("transform", function(d) {
+                return "translate(" + that.arc.centroid(d) + ")";
+            })
+            .style("text-anchor", "middle");
+        } else if(display_labels === "outside") {
+            label_trans.attrTween("transform", function(d) {
+                var interpolate = d3.interpolate(this._current, d);
+                var _this = this;
+                return function(t) {
+                    var d2 = interpolate(t);
+                    _this._current = d2;
+                    var pos = that.outer_arc.centroid(d2);
+                    pos[0] = that.model.get("radius") *
+                        (that.is_mid_angle_left(d2) ?  -1 : 1);
+                    return "translate(" + pos + ")";
+                };
+            })
+            .styleTween("text-anchor", function(d) {
+                var interpolate = d3.interpolate(this._current, d);
+                return function(t) {
+                    var d2 = interpolate(t);
+                    return that.is_mid_angle_left(d2) ? "end":"start";
+                };
+            });
+        }
+
+        labels = this.pie_g.select(".labels")
+            .selectAll("text")
+            .data(pie(new_data), this.join_key);
+
+        labels.exit()
+            .transition("draw").delay(animation_duration)
+            .remove();
+
+        // for labels which are displayed outside draw the polylines
+        if(display_labels === "outside") {
+            var polylines = this.pie_g.select(".lines")
+                .selectAll("polyline")
+                .data(pie(was), this.join_key);
+
+            polylines.enter()
+                .append("polyline")
+                .style("opacity", 0)
+                .each(function(d) {
+                    this._current = d;
+                });
+
+            polylines = this.pie_g.select(".lines")
+                .selectAll("polyline")
+                .data(pie(is), this.join_key);
+
+            polylines.transition("draw")
+                .duration(animation_duration)
+                .style("opacity", function(d) {
+                    return d.data.value === 0 ? 0 : 0.5;
+                })
+                .attrTween("points", function(d) {
+                    this._current = this._current;
+                    var interpolate = d3.interpolate(this._current, d);
+                    var _this = this;
+                    return function(t) {
+                        var d2 = interpolate(t);
+                        _this._current = d2;
+                        var pos = that.outer_arc.centroid(d2);
+                        pos[0] = that.model.get("radius") * 0.95 *
+                            (that.is_mid_angle_left(d2) ? -1 : 1);
+                        return [that.arc.centroid(d2), that.outer_arc.centroid(d2), pos];
+                    };
+                });
+
+            polylines = this.pie_g.select(".lines")
+                .selectAll("polyline")
+                .data(pie(new_data), this.join_key);
+
+            polylines.exit()
+                .transition("draw").delay(animation_duration)
+                .remove();
+        }
+
+        slices.order();
 
         slices.on("click", function(d, i) {
             return that.event_dispatcher("element_clicked", {data: d, index: i});
         });
 
         this.update_labels();
+        this.update_values();
         this.apply_styles();
-
-        //for data updates transition from current angles to new angles
-        function updateTween(d) {
-            /*jshint validthis: true */
-            var i = d3.interpolate(this.currData, d);
-            this.currData = d;
-            return function(t) { return that.arc(i(t)); };
-        }
     },
 
     update_stroke_and_opacities: function() {
         var stroke = this.model.get("stroke");
         var opacities = this.model.get("opacities");
-        this.d3el.select(".pielayout").selectAll(".slice").select(".pie_slice")
-          .style("stroke", stroke)
-          .style("opacity", function(d, i) { return opacities[i]; });
+        this.pie_g.selectAll("path.slice")
+            .style("stroke", stroke)
+            .style("opacity", function(d, i) { return opacities[i]; });
     },
 
     update_colors: function() {
         var that = this;
         var color_scale = this.scales.color;
-        this.d3el.select(".pielayout").selectAll(".pie_slice")
+        this.pie_g.select(".slices")
+          .selectAll("path.slice")
           .style("fill", function(d, i) {
               return (d.data.color !== undefined && color_scale !== undefined) ?
                   color_scale.scale(d.data.color) : that.get_colors(d.data.index);
@@ -286,9 +510,10 @@ var Pie = mark.Mark.extend({
     },
 
     update_labels: function() {
-        var labels = this.d3el.select(".pielayout").selectAll(".pie_text")
-            .text(function(d) { return d.data.label; })
-            .style("visibility", this.model.get("display_labels") ? "visible" : "hidden")
+        var display_labels = this.model.get("display_labels");
+
+        var labels = this.pie_g.selectAll(".labels text")
+            .style("visibility",  display_labels === "none" ? "hidden" : "visible")
             .style("font-weight", this.model.get("font_weight"))
             .style("font-size", this.model.get("font_size"));
 
@@ -298,11 +523,22 @@ var Pie = mark.Mark.extend({
         }
     },
 
+    update_values: function() {
+        var display_values = this.model.get("display_values");
+        var values_format = d3.format(this.model.get("values_format"));
+
+        var labels = this.pie_g.selectAll(".labels text")
+            .text(function(d) {
+                return d.data.label +
+                    (display_values ? ": " + values_format(d.data.size) : "");
+            })
+    },
+
     clear_style: function(style_dict, indices) {
         // Function to clear the style of a dict on some or all the elements of the
         // chart. If indices is null, clears the style on all elements. If
         // not, clears on only the elements whose indices are matching.
-        var elements = this.d3el.select(".pielayout").selectAll(".slice");
+        var elements = this.pie_g.selectAll("path.slice");
         if(indices) {
             elements = elements.filter(function(d, index) {
                 return indices.indexOf(index) !== -1;
@@ -321,7 +557,7 @@ var Pie = mark.Mark.extend({
         if(indices === undefined || indices === null || indices.length === 0) {
             return;
         }
-        var elements = this.d3el.select(".pielayout").selectAll(".slice");
+        var elements = this.pie_g.selectAll(".slice");
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });

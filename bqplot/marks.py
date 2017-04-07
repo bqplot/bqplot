@@ -986,8 +986,8 @@ class Pie(Mark):
     stroke: color (default: 'white')
         stroke color for the marker
     opacities: list of floats (default: [])
-        Opacities for the slices of the Pie mark. Defaults to 1 when the list is
-        too short, or the element of the list is set to None.
+        Opacities for the slices of the Pie mark. Defaults to 1 when the list
+        is too short, or the element of the list is set to None.
     sort: bool (default: False)
         sort the pie slices by descending sizes
     x: Float (default: 0.5) or Date
@@ -1004,8 +1004,12 @@ class Pie(Mark):
         start angle of the pie (from top), in degrees
     end_angle: Float (default: 360.0)
         end angle of the pie (from top), in degrees
-    display_labels: bool (default: True)
-        display the labels on the pie
+    display_labels: {'none', 'inside', 'outside'} (default: 'inside')
+        label display options
+    display_values: bool (default: False)
+        if True show values along with labels
+    values_format: string (default: '.2f')
+        format for displaying values
     label_color: Color or None (default: None)
         color of the labels
     font_size: string (default: '14px')
@@ -1035,8 +1039,14 @@ class Pie(Mark):
     name = 'Pie chart'
 
     # Scaled attributes
-    sizes = Array([]).tag(sync=True, rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    sizes = Array([]).tag(sync=True, rtype='Number', **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True).tag(sync=True,
+                                             scaled=True,
+                                             rtype='Color',
+                                             atype='bqplot.ColorAxis',
+                                             **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Other attributes
     x = (Float(0.5) | Date() | Unicode()).tag(sync=True)
@@ -1045,14 +1055,19 @@ class Pie(Mark):
     scales_metadata = Dict({'color': {'dimension': 'color'}}).tag(sync=True)
     sort = Bool().tag(sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+                  default_value=CATEGORY10).tag(sync=True,
+                                                display_name='Colors')
     stroke = Color(None, allow_none=True).tag(sync=True)
-    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
+        .tag(sync=True, display_name='Opacities')
     radius = Float(180.0, min=0.0, max=float('inf')).tag(sync=True)
     inner_radius = Float(0.1, min=0.0, max=float('inf')).tag(sync=True)
     start_angle = Float().tag(sync=True)
     end_angle = Float(360.0).tag(sync=True)
-    display_labels = Bool(True).tag(sync=True)
+    display_labels = Enum(['none', 'inside', 'outside'],
+                          default_value='inside').tag(sync=True)
+    display_values = Bool(False).tag(sync=True)
+    values_format = Unicode(default_value='.1f').tag(sync=True)
     label_color = Color(None, allow_none=True).tag(sync=True)
     font_size = Unicode(default_value='10px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'],
