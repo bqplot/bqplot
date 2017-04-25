@@ -76,6 +76,10 @@ class Figure(DOMWidget):
         location of the legend relative to the center of the figure
     background_style: Dict (default: {})
         CSS style to be applied to the background of the figure
+    legend_style: Dict (default: {})
+        CSS style to be applied to the SVG legend e.g, {'fill': 'white'}
+    legend_text: Dict (default: {})
+        CSS style to be applied to the legend text e.g., {'font-size': 20}
     title_style: Dict (default: {})
         CSS style to be applied to the title of the figure
     animation_duration: nonnegative int (default: 0)
@@ -124,6 +128,8 @@ class Figure(DOMWidget):
     scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
     title_style = Dict(trait=Unicode()).tag(sync=True)
     background_style = Dict().tag(sync=True)
+    legend_style = Dict().tag(sync=True)
+    legend_text = Dict().tag(sync=True)
 
     # min width is based on hardcoded padding values
     layout = LayoutTraitType(kw=dict(min_width='125px')).tag(sync=True, **widget_serialization)
