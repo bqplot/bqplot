@@ -1315,3 +1315,73 @@ class HeatMap(Mark):
 
     _view_name = Unicode('HeatMap').tag(sync=True)
     _model_name = Unicode('HeatMapModel').tag(sync=True)
+
+
+class Graph(Mark):
+    """Graph with nodes and links.
+
+    Attributes
+    ----------
+    node_labels: List
+        labels of nodes in the graph
+    link_matrix: numpy.ndarray of shape(len(nodes), len(nodes))
+    link_distance: float (default: 100)
+        link distance in pixels between nodes
+    curved_links: bool (default: False)
+        curved_links to encode bi-directional links
+    directed: bool (default: True)
+        directed or undirected graph
+    """
+    link_distance = Float(100).tag(sync=True)
+    node_labels = List().tag(sync=True)
+    display_labels = Bool(True).tag(sync=True)
+    link_matrix = Array([]).tag(sync=True, rtype='Number',
+                                **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 2))
+    link_type = Enum(['arc', 'line', 'slant-line'],
+                     default_value='arc').tag(sync=True)
+    directed = Bool(True).tag(sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True),
+                  default_value=CATEGORY10).tag(sync=True,
+                                                display_name='Colors')
+
+    default_node_size = Int(3600).tag(sync=True, display_name='Default size')
+    interactions = Dict({'hover': 'tooltip', 'click': 'select'}).tag(sync=True)
+
+    # Scaled attributes
+    x = Array([], allow_none=True).tag(sync=True,
+                                       scaled=True,
+                                       rtype='Number',
+                                       atype='bqplot.Axis',
+                                       **array_serialization)\
+        .valid(array_dimension_bounds(1, 1))
+    y = Array([], allow_none=True).tag(sync=True,
+                                       scaled=True,
+                                       rtype='Number',
+                                       atype='bqplot.Axis',
+                                       **array_serialization)\
+        .valid(array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True).tag(sync=True,
+                                             scaled=True,
+                                             rtype='Color',
+                                             atype='bqplot.ColorAxis',
+                                             **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+
+    hovered_style = Dict().tag(sync=True)
+    unhovered_style = Dict().tag(sync=True)
+    hovered_point = Int(None, allow_none=True).tag(sync=True)
+
+    # Other attributes
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'},
+        'color': {'dimension': 'color'},
+        'size': {'dimension': 'size'},
+    }).tag(sync=True)
+
+    _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+
+    _model_name = Unicode('GraphModel').tag(sync=True)
+    _view_name = Unicode('Graph').tag(sync=True)
