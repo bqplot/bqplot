@@ -58,9 +58,6 @@ var Graph = mark.Mark.extend({
         });
 
         this.d3el.attr("class", "network");
-        this.links_g = this.d3el.append("g");
-        this.nodes_g = this.d3el.append("g");
-        this.nodetexts_g = this.d3el.append("g");
 
         this.arrow = this.parent.svg.append("defs")
             .append("marker")
@@ -119,23 +116,22 @@ var Graph = mark.Mark.extend({
 
         if (x_scale !== undefined) {
             this.model.mark_data.forEach(function(d) {
-                d.x = x_scale.scale(d.x) + x_scale.offset;
+                d.x_px = x_scale.scale(d.x) + x_scale.offset;
+                d.fixed = true;
             });
         }
 
         if (y_scale !== undefined) {
             this.model.mark_data.forEach(function(d) {
-                d.y = y_scale.scale(d.y) + y_scale.offset;
+                d.y_px = y_scale.scale(d.y) + y_scale.offset;
             });
         }
 
         if (this.force_layout) {
-            this.force_layout.
-                nodes(this.model.mark_data)
+            this.force_layout
+                .nodes(this.model.mark_data)
                 .links(this.model.link_data)
                 .start();
-        } else {
-            console.log("force layout not init");
         }
     },
 
@@ -197,21 +193,20 @@ var Graph = mark.Mark.extend({
 
         if (x_scale !== undefined) {
             this.model.mark_data.forEach(function(d) {
-                d.x = x_scale.scale(d.x) + x_scale.offset;
+                d.x_px = x_scale.scale(d.x) + x_scale.offset;
                 d.fixed = true;
             });
         }
 
         if (y_scale !== undefined) {
             this.model.mark_data.forEach(function(d) {
-                d.y = y_scale.scale(d.y) + y_scale.offset;
+                d.y_px = y_scale.scale(d.y) + y_scale.offset;
             });
         }
 
         // clean up the old graph
-        this.nodes_g.selectAll(".node").remove();
-        this.links_g.selectAll(".link").remove();
-        this.nodetexts_g.selectAll(".nodetext").remove();
+        this.d3el.selectAll(".node").remove();
+        this.d3el.selectAll(".link").remove();
 
         this.force_layout = d3.layout.force()
             .nodes(this.model.mark_data)
@@ -224,7 +219,7 @@ var Graph = mark.Mark.extend({
 
         var directed = this.model.get("directed");
 
-        this.links = this.links_g.selectAll("path")
+        this.links = this.d3el.selectAll(".link")
             .data(this.force_layout.links())
             .enter().append("path")
             .attr("class", "link")
@@ -233,23 +228,21 @@ var Graph = mark.Mark.extend({
             });
 
         var that = this;
-        this.nodes = this.nodes_g.selectAll(".node")
+        this.nodes = this.d3el.selectAll(".node")
             .data(this.force_layout.nodes())
-            .enter().append("circle")
-            .attr("class", "node")
+            .enter().append("g")
+            .attr("class", "node");
+
+        this.nodes.append("circle")
             .attr("r", 20)
             .style("fill", function(d, i) { return that.get_node_color(d, i); })
             .call(this.force_layout.drag);
 
         display_labels = this.model.get("display_labels");
-        this.node_labels = this.nodetexts_g.selectAll("text")
-            .data(this.force_layout.nodes())
-            .enter().append("text")
-            .attr("class", "nodelabel")
+        this.node_labels = this.nodes
+            .append("text")
             .attr("text-anchor", "middle")
-            .attr("display", function(d) {
-                return display_labels ? "inline": "none";
-            })
+            .attr("display", display_labels ? "inline": "none")
             .text(function(d) { return d.name; });
 
         this.nodes.on("click", _.bind(function(d, i) {
@@ -409,10 +402,10 @@ var Graph = mark.Mark.extend({
 
         var all_indices = _.range(this.model.mark_data.length);
 
-        this.set_style_on_nodes(this.hovered_style, this.hovered_index);
+        this.set_style_on_elements(this.hovered_style, this.hovered_index);
         var unhovered_indices = (!this.hovered_index) ?
             [] : _.difference(all_indices, this.hovered_index);
-        this.set_style_on_nodes(this.unhovered_style, unhovered_indices);
+        this.set_style_on_elements(this.unhovered_style, unhovered_indices);
     },
 
     clear_style: function(style_dict, indices) {
@@ -436,7 +429,7 @@ var Graph = mark.Mark.extend({
         nodes.style(clearing_style);
     },
 
-    set_style_on_nodes: function(style, indices) {
+    set_style_on_elements: function(style, indices) {
         // If the index array is undefined or of length=0, exit the
         // function without doing anything
         if(!indices || indices.length === 0) {
@@ -456,7 +449,7 @@ var Graph = mark.Mark.extend({
     compute_view_padding: function() {
         //This function computes the padding along the x and y directions.
         //The value is in pixels.
-        var x_padding = Math.sqrt(this.model.get("default_size")) / 2 + 1.0;
+        var x_padding = 1.0;
 
         if(x_padding !== this.x_padding || x_padding !== this.y_padding) {
             this.x_padding = x_padding;
@@ -476,32 +469,31 @@ var Graph = mark.Mark.extend({
     },
 
     link_arc: function(d) {
-        var dx = d.target.x - d.source.x,
-            dy = d.target.y - d.source.y,
+        var dx = d.target.x_px - d.source.x_px,
+            dy = d.target.y_px - d.source.y_px,
             dr = Math.sqrt(dx * dx + dy * dy);
-        return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr +
-               " 0 0,1 " + d.target.x + "," + d.target.y;
+        return "M" + d.source.x_px + "," + d.source.y_px + "A" + dr + "," + dr +
+               " 0 0,1 " + d.target.x_px + "," + d.target.y_px;
     },
 
     link_line: function(d) {
-        var midx = (d.source.x + d.target.x) / 2,
-            midy = (d.source.y + d.target.y) / 2;
-        return "M" + d.source.x + "," + d.source.y + "L" + midx + "," +
-               midy + "L" +  d.target.x + "," + d.target.y;
+        var midx = (d.source.x_px + d.target.x_px) / 2,
+            midy = (d.source.y_px + d.target.y_px) / 2;
+        return "M" + d.source.x_px + "," + d.source.y_px + "L" + midx + "," +
+               midy + "L" +  d.target.x_px + "," + d.target.y_px;
     },
 
     link_slant_line: function(d) {
-        var midx = (d.source.x + d.target.x) / 2;
-        return "M" + d.source.x + "," + d.source.y +
-               "L" +  midx + "," + d.target.y +
-               "L" +  d.target.x + "," + d.target.y;
+        var midx = (d.source.x_px + d.target.x_px) / 2;
+        return "M" + d.source.x_px + "," + d.source.y_px +
+               "L" +  midx + "," + d.target.y_px +
+               "L" +  d.target.x_px + "," + d.target.y_px;
     },
 
     tick: function() {
         var link_type = this.model.get("link_type");
 
         this.nodes.attr("transform", transform);
-        this.node_labels.attr("transform", transform);
 
         var link_path_func = this.link_arc;
         switch(link_type) {
@@ -521,7 +513,7 @@ var Graph = mark.Mark.extend({
         this.links.attr("d", function(d) { return link_path_func(d); });
 
         function transform(d) {
-            return "translate(" + d.x + "," + d.y + ")";
+            return "translate(" + d.x_px + "," + d.y_px + ")";
         }
     },
 });
