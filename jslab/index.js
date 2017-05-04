@@ -14,6 +14,7 @@
  */
 
 var bqplot = require('bqplot');
+require("bqplot/css/bqplot.css");
 
 var jupyterlab_widgets = require('@jupyterlab/nbwidgets');
 
