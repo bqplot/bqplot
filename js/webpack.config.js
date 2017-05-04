@@ -21,7 +21,7 @@ module.exports = [
         }
     },
     {// bqplot bundle for the notebook
-        entry: './src/index.js',
+        entry: './src/index-embed.js',
         output: {
             filename: 'index.js',
             path: '../bqplot/static',
@@ -35,7 +35,7 @@ module.exports = [
     },
     {// embeddable bqplot bundle
         // TODO: add in the less file
-        entry: './src/index.js',
+        entry: './src/index-embed.js',
         output: {
             filename: 'index.js',
             path: './dist/',
