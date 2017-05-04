@@ -34,7 +34,6 @@ module.exports = [
         externals: ['jupyter-js-widgets']
     },
     {// embeddable bqplot bundle
-        // TODO: add in the less file
         entry: './src/index-embed.js',
         output: {
             filename: 'index.js',
