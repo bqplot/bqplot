@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-require("./bqplot.less");
-
 module.exports = {};
 
 var loadedModules = [

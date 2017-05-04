@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+require("./bqplot.less");
+
 if (window.require) {
     window.require.config({
         map: {

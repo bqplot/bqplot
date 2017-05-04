@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-var bqplot = require('./index');
+var bqplot = require('bqplot');
 
 var jupyterlab_widgets = require('@jupyterlab/nbwidgets');
 
 /**
  * The widget manager provider.
  */
-module.exports = {
+module.exports.default = {
   id: 'jupyter.extensions.bqplot',
   requires: [jupyterlab_widgets.INBWidgetExtension],
   activate: function(app, widgets) {
