@@ -1,0 +1,21 @@
+{
+  "name": "jupyterlab-bqplot",
+  "version": "0.1.0",
+  "description": "A JupyterLab plugin exposing bqplot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "BQPlot Development team",
+    "email": "bqplot@bloomberg.net"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@jupyterlab/nbwidgets": "^0.18.0",
+    "bqplot": "0.3.0-alpha.0"
+  },
+  "jupyterlab": {
+    "extension": true
+  }
+}
