@@ -1315,3 +1315,90 @@ class HeatMap(Mark):
 
     _view_name = Unicode('HeatMap').tag(sync=True)
     _model_name = Unicode('HeatMapModel').tag(sync=True)
+
+
+class Graph(Mark):
+    """Graph with nodes and links.
+
+    Attributes
+    ----------
+    node_data: List
+        list of node attributes for the graph
+    link_data: List
+        list of link attributes for the graph
+    link_matrix: numpy.ndarray of shape(len(nodes), len(nodes))
+        link matrix
+    charge: int (default: -300)
+        charge of force layout. Will be ignored when x and y data attributes
+        are set
+    link_distance: float (default: 100)
+        link distance in pixels between nodes. Will be ignored when x and y
+        data attributes are set
+    link_type: {'arc', 'line', 'slant_line'} (default: 'arc')
+        Enum representing link type
+    directed: bool (default: True)
+        directed or undirected graph
+    highlight_links: bool (default: True)
+        highlights incoming and outgoing links when hovered on a node
+    colors: list (default: CATEGORY10)
+        list of node colors
+
+    Data Attributes
+
+    x: numpy.ndarray (default: [])
+        abscissas of the node data points (1d array)
+    y: numpy.ndarray (default: [])
+        ordinates of the node data points (1d array)
+    color: numpy.ndarray or None (default: None)
+        color of the node data points (1d array).
+    """
+    charge = Int(-300).tag(sync=True)
+    link_distance = Float(100).tag(sync=True)
+    node_data = List().tag(sync=True)
+    link_data = List().tag(sync=True)
+    link_matrix = Array([]).tag(sync=True, rtype='Number',
+                                **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 2))
+    link_type = Enum(['arc', 'line', 'slant_line'],
+                     default_value='arc').tag(sync=True)
+    directed = Bool(True).tag(sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True),
+                  default_value=CATEGORY10).tag(sync=True,
+                                                display_name='Colors')
+    interactions = Dict({'hover': 'tooltip', 'click': 'select'}).tag(sync=True)
+    highlight_links = Bool(True).tag(sync=True)
+
+    # Scaled attributes
+    x = Array([], allow_none=True).tag(sync=True,
+                                       scaled=True,
+                                       rtype='Number',
+                                       atype='bqplot.Axis',
+                                       **array_serialization)\
+        .valid(array_dimension_bounds(1, 1))
+    y = Array([], allow_none=True).tag(sync=True,
+                                       scaled=True,
+                                       rtype='Number',
+                                       atype='bqplot.Axis',
+                                       **array_serialization)\
+        .valid(array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True).tag(sync=True,
+                                             scaled=True,
+                                             rtype='Color',
+                                             atype='bqplot.ColorAxis',
+                                             **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+
+    hovered_style = Dict().tag(sync=True)
+    unhovered_style = Dict().tag(sync=True)
+    hovered_point = Int(None, allow_none=True).tag(sync=True)
+
+    # Other attributes
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'},
+        'color': {'dimension': 'color'},
+        'link_color': {'dimension': 'color'},
+    }).tag(sync=True)
+
+    _model_name = Unicode('GraphModel').tag(sync=True)
+    _view_name = Unicode('Graph').tag(sync=True)
