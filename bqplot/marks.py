@@ -1352,7 +1352,7 @@ class Graph(Mark):
     color: numpy.ndarray or None (default: None)
         color of the node data points (1d array).
     """
-    charge = Int(-300).tag(sync=True)
+    charge = Int(-600).tag(sync=True)
     link_distance = Float(100).tag(sync=True)
     node_data = List().tag(sync=True)
     link_data = List().tag(sync=True)
