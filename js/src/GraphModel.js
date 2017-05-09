@@ -86,14 +86,12 @@ var GraphModel = markmodel.MarkModel.extend({
         var that = this;
         //populate mark data from node data with meaningful defaults filled in
         node_data.forEach(function(d, i) {
-            var node_datum = {};
-            node_datum.label = d.label || "N" + i;
-            node_datum.label_display = d.label_display || "center";
-            node_datum.shape = d.shape || "circle";
-            node_datum.shape_attrs = get_shape_attrs(node_datum.shape,
-                                                     d.shape_attrs || {});
-            node_datum.value = d.value || 0;
-            that.mark_data.push(node_datum);
+            d.label = d.label || "N" + i;
+            d.label_display = d.label_display || "center";
+            d.shape = d.shape || "circle";
+            d.shape_attrs = get_shape_attrs(d.shape, d.shape_attrs || {});
+            d.value = d.value || null;
+            that.mark_data.push(d);
         });
 
         // also add x, y and color fields
