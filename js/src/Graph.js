@@ -520,11 +520,19 @@ var Graph = mark.Mark.extend({
     },
 
     compute_view_padding: function() {
-        //This function computes the padding along the x and y directions.
-        //The value is in pixels.
-        var x_padding = 1.0;
+        var x_padding = d3.max(this.model.mark_data.map(function(d) {
+                return d.shape_attrs['r'] ||
+                       d.shape_attrs['width'] / 2 ||
+                       d.shape_attrs['rx'];
+            }));
 
-        if(x_padding !== this.x_padding || x_padding !== this.y_padding) {
+        var y_padding = d3.max(this.model.mark_data.map(function(d) {
+                return d.shape_attrs['r'] ||
+                       d.shape_attrs['height'] / 2 ||
+                       d.shape_attrs['ry'];
+            }));
+
+        if (x_padding !== this.x_padding || y_padding !== this.y_padding) {
             this.x_padding = x_padding;
             this.y_padding = x_padding;
             this.trigger("mark_padding_updated");
