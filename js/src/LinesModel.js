@@ -86,7 +86,8 @@ var LinesModel = markmodel.MarkModel.extend({
                     return {
                         name: name,
                         values: that.y_data[i].map(function(d, j) {
-                            return {x: that.x_data[0][j], y: d};
+                            return {x: that.x_data[0][j], y: d,
+                                    sub_index: j};
                         }),
                         color: that.color_data[i],
                         index: i,
@@ -98,7 +99,7 @@ var LinesModel = markmodel.MarkModel.extend({
                     return {
                         name: name,
                         values: xy_data.map(function(d, j) {
-                            return {x: d[0], y: d[1]};
+                            return {x: d[0], y: d[1], sub_index: j};
                         }),
                         color: that.color_data[i],
                         index: i,
