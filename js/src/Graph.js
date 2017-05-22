@@ -474,7 +474,7 @@ var Graph = mark.Mark.extend({
     },
 
     apply_styles: function(style_arr) {
-        if(style_arr === undefined || style_arr == null) {
+        if(style_arr === undefined || style_arr === null) {
             style_arr = [this.selected_style, this.unselected_style,
                          this.hovered_style, this.unhovered_style];
         }
@@ -521,15 +521,15 @@ var Graph = mark.Mark.extend({
 
     compute_view_padding: function() {
         var x_padding = d3.max(this.model.mark_data.map(function(d) {
-                return d.shape_attrs['r'] ||
-                       d.shape_attrs['width'] / 2 ||
-                       d.shape_attrs['rx'];
+                return d.shape_attrs.r ||
+                       d.shape_attrs.width / 2 ||
+                       d.shape_attrs.rx;
             }));
 
         var y_padding = d3.max(this.model.mark_data.map(function(d) {
-                return d.shape_attrs['r'] ||
-                       d.shape_attrs['height'] / 2 ||
-                       d.shape_attrs['ry'];
+                return d.shape_attrs.r ||
+                       d.shape_attrs.height / 2 ||
+                       d.shape_attrs.ry;
             }));
 
         if (x_padding !== this.x_padding || y_padding !== this.y_padding) {
