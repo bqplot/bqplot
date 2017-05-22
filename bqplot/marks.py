@@ -1326,8 +1326,6 @@ class Graph(Mark):
         list of node attributes for the graph
     link_data: List
         list of link attributes for the graph
-    link_matrix: numpy.ndarray of shape(len(nodes), len(nodes))
-        link matrix
     charge: int (default: -300)
         charge of force layout. Will be ignored when x and y data attributes
         are set
@@ -1351,14 +1349,13 @@ class Graph(Mark):
         ordinates of the node data points (1d array)
     color: numpy.ndarray or None (default: None)
         color of the node data points (1d array).
+    link_color: numpy.ndarray of shape(len(nodes), len(nodes))
+        link data passed as 2d matrix
     """
     charge = Int(-600).tag(sync=True)
     link_distance = Float(100).tag(sync=True)
     node_data = List().tag(sync=True)
     link_data = List().tag(sync=True)
-    link_matrix = Array([]).tag(sync=True, rtype='Number',
-                                **array_serialization)\
-        .valid(array_squeeze, array_dimension_bounds(1, 2))
     link_type = Enum(['arc', 'line', 'slant_line'],
                      default_value='arc').tag(sync=True)
     directed = Bool(True).tag(sync=True)
@@ -1387,6 +1384,10 @@ class Graph(Mark):
                                              atype='bqplot.ColorAxis',
                                              **array_serialization)\
         .valid(array_squeeze, array_dimension_bounds(1, 1))
+
+    link_color = Array([]).tag(sync=True, rtype='Number',
+                               **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 2))
 
     hovered_style = Dict().tag(sync=True)
     unhovered_style = Dict().tag(sync=True)

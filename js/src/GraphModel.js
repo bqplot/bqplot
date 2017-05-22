@@ -39,7 +39,7 @@ var GraphModel = markmodel.MarkModel.extend({
     initialize: function() {
         GraphModel.__super__.initialize.apply(this, arguments);
         this.on_some_change(["x", "y", "color", "link_color",
-                             "node_data", "link_data", "link_matrix", ],
+                             "node_data", "link_data", "link_color", ],
                             this.update_data, this);
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
@@ -114,18 +114,26 @@ var GraphModel = markmodel.MarkModel.extend({
     },
 
     update_link_data: function() {
-        var link_matrix = this.get_typed_field("link_matrix");
-        this.link_data = this.get("link_data");
+        var link_color_scale = this.get("scales").link_color;
+        this.link_data = [];
+        var link_matrix = null;
+
+        // when link_color scale is defined look for link_color data attribute
+        if (link_color_scale !== undefined) {
+            link_matrix = this.get_typed_field("link_color");
+        } else {
+            this.link_data = this.get("link_data");
+        }
 
         //coerce link matrix into format understandable by d3 force layout
-        if (this.link_data.length === 0) {
+        if (this.link_data.length === 0 && link_matrix.length > 0) {
             var that = this;
             link_matrix.forEach(function(d, i) {
                 d.forEach(function(e, j) {
                     if (e !== null) {
                         that.link_data.push({source: i, target: j, value: e});
                     }
-                })
+                });
             });
         }
     },
