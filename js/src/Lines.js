@@ -40,7 +40,7 @@ var Lines = mark.Mark.extend({
             that.create_tooltip();
         });
 
-        this.display_el_classes = ["line", "legendtext"];
+        this.display_el_classes = ["line", "legendtext", "dot"];
         return base_render_promise.then(function() {
             that.event_listeners = {};
             that.process_interactions();
@@ -562,7 +562,7 @@ var Lines = mark.Mark.extend({
             var dots = this.d3el.selectAll(".curve").selectAll(".dot")
                 .data(function(d, i) {
                     return d.values.map(function(e) {
-                        return {x: e.x, y: e.y}; });
+                        return {x: e.x, y: e.y, sub_index: e.sub_index}; });
                 });
             dots.enter().append("path").attr("class", "dot");
             dots.exit().remove();
