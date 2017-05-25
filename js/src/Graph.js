@@ -17,8 +17,6 @@ var d3 = require("d3");
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
-var markers = require("./Markers");
-var bqSymbol = markers.symbol;
 
 var min_size = 10;
 
