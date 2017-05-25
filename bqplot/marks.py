@@ -1324,6 +1324,8 @@ class Graph(Mark):
     ----------
     node_data: List
         list of node attributes for the graph
+    link_matrix: numpy.ndarray of shape(len(nodes), len(nodes))
+        link data passed as 2d matrix
     link_data: List
         list of link attributes for the graph
     charge: int (default: -300)
@@ -1356,6 +1358,9 @@ class Graph(Mark):
     link_distance = Float(100).tag(sync=True)
     node_data = List().tag(sync=True)
     link_data = List().tag(sync=True)
+    link_matrix = Array([]).tag(sync=True, rtype='Number',
+                                **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 2))
     link_type = Enum(['arc', 'line', 'slant_line'],
                      default_value='arc').tag(sync=True)
     directed = Bool(True).tag(sync=True)
