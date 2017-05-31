@@ -27,6 +27,14 @@ var BaseModel = widgets.WidgetModel.extend({
         });
     },
 
+    initialize: function() {
+        BaseModel.__super__.initialize.apply(this, arguments);
+        // Temporary fix to address issue in WidgetModel where
+        // _buffered_state_diff is initially set to the state
+        // on creation.
+        this._buffered_state_diff = {};
+    },
+
     get_typed_field: function(param) {
         // Function that reads in an array of a field that is typed. It
         // performs tpe conversions that you may require and returns you
