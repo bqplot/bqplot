@@ -85,7 +85,9 @@ var loadedModules = [
     require("./MarketMapModel"),
     require("./HeatMap"),
     require("./HeatMapModel"),
-    require("./Toolbar")
+    require("./Toolbar"),
+    require("./GraphModel"),
+    require("./Graph"),
 ];
 
 for (var i in loadedModules) {
