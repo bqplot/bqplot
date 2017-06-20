@@ -519,15 +519,15 @@ var Graph = mark.Mark.extend({
 
     compute_view_padding: function() {
         var x_padding = d3.max(this.model.mark_data.map(function(d) {
-                return d.shape_attrs.r ||
-                       d.shape_attrs.width / 2 ||
-                       d.shape_attrs.rx;
+                return (d.shape_attrs.r ||
+                        d.shape_attrs.width / 2 ||
+                        d.shape_attrs.rx) + 1.0;
             }));
 
         var y_padding = d3.max(this.model.mark_data.map(function(d) {
-                return d.shape_attrs.r ||
-                       d.shape_attrs.height / 2 ||
-                       d.shape_attrs.ry;
+                return (d.shape_attrs.r ||
+                        d.shape_attrs.height / 2 ||
+                        d.shape_attrs.ry) + 1.0;
             }));
 
         if (x_padding !== this.x_padding || y_padding !== this.y_padding) {
