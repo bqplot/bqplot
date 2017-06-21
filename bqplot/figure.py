@@ -21,7 +21,8 @@ Figure
 .. currentmodule:: bqplot.figure::
 
 
-.. autosummary   :toctree: _generate/
+.. autosummary::
+   :toctree: _generate/
 
    Figure
 """
