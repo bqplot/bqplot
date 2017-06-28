@@ -18,8 +18,7 @@ r"""
 Figure
 ======
 
-.. currentmodule:: bqplot.figure::
-
+.. currentmodule:: bqplot.figure
 
 .. autosummary::
    :toctree: _generate/
