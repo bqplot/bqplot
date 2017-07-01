@@ -16,13 +16,13 @@
 var bqplot = require('bqplot');
 require("bqplot/css/bqplot.css");
 
-var jupyterlab_widgets = require('@jupyterlab/nbwidgets');
+var jupyterlab_widgets = require('@jupyter-widgets/jupyterlab-manager');
 
 /**
  * The widget manager provider.
  */
-module.exports.default = {
-  id: 'jupyter.extensions.bqplot',
+module.exports = {
+  id: 'bqplot',
   requires: [jupyterlab_widgets.INBWidgetExtension],
   activate: function(app, widgets) {
       widgets.registerWidget({
