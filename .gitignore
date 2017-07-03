@@ -46,7 +46,6 @@ _templates/
 
 # Compiled javascript
 bqplot/static/
-bqplot/staticlab/
 
 # Node modules
 node_modules
