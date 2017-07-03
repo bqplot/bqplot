@@ -1,3 +1,2 @@
 recursive-include bqplot/static *.*
-recursive-include bqplot/staticlab *.*
 include bqplot/map_data/*.json
