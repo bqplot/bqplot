@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "d3": "^3.5.16",
-    "@jupyter-widgets/base": "^0.5.0",
+    "@jupyter-widgets/base": "^0.5.1",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   },
