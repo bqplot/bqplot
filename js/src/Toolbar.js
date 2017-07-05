@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var widgets = require("jupyter-js-widgets");
+var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
 var semver_range = "^" + require("../package.json").version;
 
@@ -154,19 +154,19 @@ var Toolbar = widgets.DOMWidgetView.extend({
 
     render: function() {
         var that = this;
-        this.el.classList.add("jupyter-widget"); // jupyter-js-widgets css
-        this.el.classList.add("widget-hbox"); // jupyter-js-widgets css
+        this.el.classList.add("jupyter-widget"); // @jupyter-widgets/controls css
+        this.el.classList.add("widget-hbox"); // @jupyter-widgets/controls css
 
-        // We use jupyter-js-widgets css classes (ipywidget and widget-*-*) to
+        // We use @jupyter-widgets/controls css classes (ipywidget and widget-*-*) to
         // benefit from default width, shadows.
         // We do not use btn-group to not break alignment with jupyter
         // buttons.
 
         // Create the buttons
         var _panzoom = document.createElement("button");
-        _panzoom.classList.add("jupyter-widgets"); // jupyter-js-widgets css
-        _panzoom.classList.add("jupyter-button"); // jupyter-js-widgets css
-        _panzoom.classList.add("widget-toggle-button") // jupyter-js-widgets css
+        _panzoom.classList.add("jupyter-widgets"); // @jupyter-widgets/controls css
+        _panzoom.classList.add("jupyter-button"); // @jupyter-widgets/controls css
+        _panzoom.classList.add("widget-toggle-button") // @jupyter-widgets/controls css
         _panzoom.setAttribute("data-toggle", "tooltip");
         _panzoom.setAttribute("title", "PanZoom");
         _panzoom.onclick = function (e) {
@@ -178,9 +178,9 @@ var Toolbar = widgets.DOMWidgetView.extend({
         _panzoom.appendChild(panzoomicon);
 
         var _reset = document.createElement("button");
-        _reset.classList.add("jupyter-widgets"); // jupyter-js-widgets css
-        _reset.classList.add("jupyter-button"); // jupyter-js-widgets css
-        _reset.classList.add("widget-button") // jupyter-js-widgets css
+        _reset.classList.add("jupyter-widgets"); // @jupyter-widgets/controls css
+        _reset.classList.add("jupyter-button"); // @jupyter-widgets/controls css
+        _reset.classList.add("widget-button") // @jupyter-widgets/controls css
         _reset.setAttribute("data-toggle", "tooltip");
         _reset.setAttribute("title", "Reset");
         _reset.onclick = function (e) {
@@ -192,9 +192,9 @@ var Toolbar = widgets.DOMWidgetView.extend({
         _reset.appendChild(refreshicon);
 
         var _save = document.createElement("button");
-        _save.classList.add("jupyter-widgets"); // jupyter-js-widgets css
-        _save.classList.add("jupyter-button"); // jupyter-js-widgets css
-        _save.classList.add("widget-button") // jupyter-js-widgets css
+        _save.classList.add("jupyter-widgets"); // @jupyter-widgets/controls css
+        _save.classList.add("jupyter-button"); // @jupyter-widgets/controls css
+        _save.classList.add("widget-button") // @jupyter-widgets/controls css
         _save.setAttribute("data-toggle", "tooltip");
         _save.setAttribute("title", "Save");
         _save.onclick = function (e) {
