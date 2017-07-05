@@ -14,7 +14,7 @@
  */
 
 var d3 = require("d3");
-var widgets = require("jupyter-js-widgets");
+var widgets = require("@jupyter-widgets/base");
 
 var GeoScale = widgets.WidgetView.extend({
 

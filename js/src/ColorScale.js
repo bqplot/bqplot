@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-var widgets = require("jupyter-js-widgets");
 var _ = require("underscore");
 var scale = require("./Scale");
 var colorutils = require("./ColorUtils");

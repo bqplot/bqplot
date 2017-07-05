@@ -31,7 +31,7 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets']
+        externals: ['@jupyter-widgets/base']
     },
     {// embeddable bqplot bundle
         entry: './src/index-embed.js',
@@ -44,6 +44,6 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets']
+        externals: ['@jupyter-widgets/base']
     }
 ];
