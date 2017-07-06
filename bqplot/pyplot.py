@@ -42,6 +42,10 @@ Pyplot
    xlim
    ylim
 
+   axis
+   xlabel
+   ylabel
+
 """
 import sys
 from collections import OrderedDict
@@ -392,6 +396,52 @@ def axes(mark=None, options={}, **kwargs):
             _update_fig_axis_registry(fig, dimension, scales[name], axis)
     fig.axes = fig_axes
     return axes
+
+
+def _set_label(label, mark, dim, **kwargs):
+    """Helper function to set labels for an axis
+    """
+    if mark is None:
+        mark = _context['last_mark']
+    if mark is None:
+        return {}
+    fig = kwargs.get('figure', current_figure())
+    scales = mark.scales
+    scale_metadata = mark.scales_metadata.get(dim, {})
+    scale = scales.get(dim, None)
+    if scale is None:
+        return
+    dimension = scale_metadata.get('dimension', scales[dim])
+    axis = _fetch_axis(fig, dimension, scales[dim])
+
+    if axis is not None:
+        _apply_properties(axis, {'label': label})
+
+    return axis
+
+
+def xlabel(label=None, mark=None, **kwargs):
+    """Sets the value of label for an axis whose associated scale has the
+    dimension `x`.
+
+    Parameters
+    ----------
+    label: Unicode or None (default: None)
+        The label for x axis
+    """
+    return _set_label(label, mark, 'x', **kwargs)
+
+
+def ylabel(label=None, mark=None, **kwargs):
+    """Sets the value of label for an axis whose associated scale has the
+    dimension `y`.
+
+    Parameters
+    ----------
+    label: Unicode or None (default: None)
+        The label for y axis
+    """
+    return _set_label(label, mark, 'y', **kwargs)
 
 
 def grids(fig=None, value='solid'):
