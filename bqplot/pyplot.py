@@ -417,8 +417,6 @@ def _set_label(label, mark, dim, **kwargs):
     if axis is not None:
         _apply_properties(axis, {'label': label})
 
-    return axis
-
 
 def xlabel(label=None, mark=None, **kwargs):
     """Sets the value of label for an axis whose associated scale has the
@@ -429,7 +427,7 @@ def xlabel(label=None, mark=None, **kwargs):
     label: Unicode or None (default: None)
         The label for x axis
     """
-    return _set_label(label, mark, 'x', **kwargs)
+    _set_label(label, mark, 'x', **kwargs)
 
 
 def ylabel(label=None, mark=None, **kwargs):
@@ -441,7 +439,7 @@ def ylabel(label=None, mark=None, **kwargs):
     label: Unicode or None (default: None)
         The label for y axis
     """
-    return _set_label(label, mark, 'y', **kwargs)
+    _set_label(label, mark, 'y', **kwargs)
 
 
 def grids(fig=None, value='solid'):
