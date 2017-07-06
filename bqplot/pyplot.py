@@ -42,7 +42,7 @@ Pyplot
    xlim
    ylim
 
-   axis
+   axes
    xlabel
    ylabel
 
