@@ -247,6 +247,12 @@ def _process_data(*kwarg_names):
                 data_kwargs = {
                    kw: data[kwargs[kw]] if hashable(data, kwargs[kw]) else kwargs[kw] for kw in set(kwarg_names).intersection(list(kwargs.keys()))
                 }
+                try:
+                    # if any of the plots want to use the index_data, they can use it by referring to
+                    # this attribute.
+                    data_kwargs['index_data'] = data.index
+                except AttributeError as e:
+                    pass
                 kwargs_update = kwargs.copy()
                 kwargs_update.update(data_kwargs)
                 return func(*data_args, **kwargs_update)
@@ -609,10 +615,12 @@ def plot(*args, **kwargs):
         If the value is None, the current figure is used.
     """
     marker_str = None
-
     if len(args) == 1:
         kwargs['y'] = args[0]
-        kwargs['x'] = _infer_x_for_line(args[0])
+        if kwargs.get('index_data', None) is not None:
+            kwargs['x'] = kwargs['index_data']
+        else:
+            kwargs['x'] = _infer_x_for_line(args[0]);
     elif len(args) == 2:
         if type(args[1]) == str:
             kwargs['y'] = args[0]
@@ -646,7 +654,6 @@ def plot(*args, **kwargs):
             return _draw_mark(Lines, **kwargs)
     else:
         return _draw_mark(Lines, **kwargs)
-
 
 def ohlc(*args, **kwargs):
     """Draw OHLC bars or candle bars in the current context figure.
