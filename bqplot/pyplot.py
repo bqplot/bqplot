@@ -61,6 +61,7 @@ from .interacts import (
         IndexSelector, MultiSelector, LassoSelector
     )
 from traitlets.utils.sentinel import Sentinel
+import functools
 
 Keep = Sentinel('Keep', 'bqplot.pyplot', '''
         Used in bqplot.pyplot to specify that the same scale should be used for
@@ -236,6 +237,7 @@ def _process_data(*kwarg_names):
     """Helper function to handle data keyword argument
     """
     def _data_decorator(func):
+        @functools.wraps(func)
         def _mark_with_data(*args, **kwargs):
             data = kwargs.pop('data', None)
             if data is None:
