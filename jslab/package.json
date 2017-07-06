@@ -1,10 +1,14 @@
 {
   "name": "bqplot-jupyterlab",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A JupyterLab extension exposing bqplot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloomberg/bqplot.git"
   },
   "author": {
     "name": "BQPlot Development team",
@@ -12,8 +16,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@jupyter-widgets/jupyterlab-manager": "^0.23.1",
-    "bqplot": "0.3.0-alpha.1"
+    "@jupyter-widgets/jupyterlab-manager": "^0.23.2",
+    "bqplot": "0.3.0-alpha.2"
   },
   "jupyterlab": {
     "extension": true
