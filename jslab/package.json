@@ -1,6 +1,6 @@
 {
   "name": "bqplot-jupyterlab",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A JupyterLab extension exposing bqplot",
   "main": "index.js",
   "scripts": {
