@@ -29,6 +29,9 @@ Marks
    Scatter
    Hist
    Bars
+   Graph
+   GridHeatMap
+   HeatMap
    Label
    OHLC
    Pie
