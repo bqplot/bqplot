@@ -40,7 +40,7 @@ from .axes import Axis
 from ._version import __frontend_version__
 
 
-@register('bqplot.Figure')
+@register
 class Figure(DOMWidget):
 
     """Main canvas for drawing a chart.

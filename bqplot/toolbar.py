@@ -34,7 +34,7 @@ from .figure import Figure
 from ._version import __frontend_version__
 
 
-@register('bqplot.toolbar')
+@register
 class Toolbar(DOMWidget):
 
     """Default toolbar for bqplot figures.
