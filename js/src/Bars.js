@@ -332,6 +332,8 @@ var Bars = mark.Mark.extend({
           .attr("width", 0)
           .attr("height", 0);
 
+        bars_sel.exit().remove();
+
         this.draw_bars(animate);
 
         this.apply_styles();
