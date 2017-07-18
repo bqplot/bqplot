@@ -52,3 +52,25 @@ CATEGORY20c = ['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#e6550d',
                '#fd8d3c', '#fdae6b', '#fdd0a2', '#31a354', '#74c476',
                '#a1d99b', '#c7e9c0', '#756bb1', '#9e9ac8', '#bcbddc',
                '#dadaeb', '#636363', '#969696', '#bdbdbd', '#d9d9d9']
+
+# From Colorgoircal <http://vrl.cs.brown.edu/color>
+"""
+@article{gramazio-2017-ccd,
+  author={Gramazio, Connor C. and Laidlaw, David H. and Schloss, Karen B.},
+  journal={IEEE Transactions on Visualization and Computer Graphics},
+  title={Colorgorical: creating discriminable and preferable color palettes for information visualization},
+  year={2017}
+}
+"""
+CATEGORY10b = ["#88e99a", "#285d28", "#62d7e1", "#458da6", "#304866", "#d5d2e7",
+               "#41369e", "#ef6fcc", "#528efb", "#8711ac"]
+
+CATEGORY10c = ["#75eab6", "#0b5313", "#5f9b99", "#aedbf0", "#1c4c5e", "#67f059",
+               "#44a42f", "#b6e45c", "#788c3b", "#f6cf89"]
+
+CATEGORY20d = ["#68affc", "#214a65", "#72c8b8", "#2a6b2a", "#62f065", "#97c84c",
+               "#6d4c2b", "#fa9051", "#a23e27", "#f17797", "#f73931", "#e6d0c2",
+               "#403996", "#d38ffd", "#a113b2", "#f75ef0", "#270fe2", "#f4d403",
+               "#ff0087", "#a68a88"]
+
+
