@@ -1,6 +1,6 @@
 {
   "name": "bqplot",
-  "version": "0.3.0-alpha.3",
+  "version": "0.3.0-alpha.4",
   "description": "bqplot",
   "author": {
     "name": "BQPlot Development team",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "d3": "^3.5.16",
-    "@jupyter-widgets/base": "^0.6.0",
+    "@jupyter-widgets/base": "^0.6.4",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   },
