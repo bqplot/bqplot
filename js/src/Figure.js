@@ -16,6 +16,8 @@
 var widgets = require("@jupyter-widgets/base");
 var d3 = require("d3");
 var _ = require("underscore");
+var popperreference = require("./PopperReference");
+var popper = require("popper.js");
 
 var Figure = widgets.DOMWidgetView.extend({
 
@@ -110,6 +112,10 @@ var Figure = widgets.DOMWidgetView.extend({
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "tooltip_div");
+        this.popper_reference = new popperreference.PopperReference(this.svg.node());
+        this.popper = new popper(this.popper_reference, this.tooltip_div.node(), {
+            placement: 'auto',
+        });
 
         this.bg = this.fig.append("rect")
           .attr("class", "plotarea_background")
@@ -135,9 +141,6 @@ var Figure = widgets.DOMWidgetView.extend({
                     <g class="svg-interaction"></g>
                 </g>
             </svg>
-            <div class="tooltip_div>
-                <tooltip_elements>
-            </div>
         </div>
         */
 
@@ -202,7 +205,7 @@ var Figure = widgets.DOMWidgetView.extend({
             }, that);
 
             that.displayed.then(function(args) {
-                that.el.appendChild(that.tooltip_div.node());
+                document.body.appendChild(that.tooltip_div.node());
                 that.create_listeners();
                 if(args === undefined || args.add_to_dom_only !== true) {
                     //do not relayout if it is only being added to the DOM
@@ -640,7 +643,10 @@ var Figure = widgets.DOMWidgetView.extend({
             this.mark_views.remove();
         }
         if(this.axis_views !== undefined && this.axis_views !== null) {
-            this.axis_views.remove()
+            this.axis_views.remove();
+        }
+        if(this.tooltip_div !== undefined) {
+            this.tooltip_div.remove();
         }
         return Figure.__super__.remove.apply(this, arguments);
     },

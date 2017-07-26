@@ -17,6 +17,9 @@ var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
 var d3 = require("d3");
 var figure = require("./Figure");
+var popperreference = require("./PopperReference");
+var popper = require("popper.js");
+
 
 var MarketMap = figure.Figure.extend({
 
@@ -66,9 +69,12 @@ var MarketMap = figure.Figure.extend({
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "mark_tooltip")
             .style("opacity", 0)
-            .style("position", "absolute")
             .style("pointer-events", "none")
-            .style("z-index", 1001);  // setting the z-index to a value which is greater than the full screen z-index value
+        this.popper_reference = new popperreference.PopperReference(this.svg.node());
+        this.popper = new popper(this.popper_reference, this.tooltip_div.node(), {
+            placement: 'auto',
+        });
+
         this.update_default_tooltip();
 
         this.selected_stroke = this.model.get("selected_stroke");
@@ -92,9 +98,7 @@ var MarketMap = figure.Figure.extend({
             });
         });
         this.displayed.then(function() {
-            // Adding the tooltip to the parent of the el so as to not
-            // pollute the DOM
-            that.el.appendChild(that.tooltip_div.node());
+            document.body.appendChild(that.tooltip_div.node())
             that.relayout();
             that.draw_group_names();
             that.create_tooltip_widget();
@@ -618,17 +622,17 @@ var MarketMap = figure.Figure.extend({
                     .attr("class", "tooltiptext")
                     .text(function(datum, index) { return (ref_data === null || ref_data === undefined) ? null : that.tooltip_formats[index](ref_data[datum]);});
             }
+            this.popper.enableEventListeners();
         }
     },
 
     mousemove_handler: function(data) {
-        this.move_tooltip();
+        this.move_tooltip(data);
     },
 
-    move_tooltip: function() {
-        var mouse_pos = d3.mouse(this.el);
-        this.tooltip_div.style("left", (mouse_pos[0] + 5) + "px")
-            .style("top", (mouse_pos[1] + 5) + "px");
+    move_tooltip: function(data) {
+        this.popper_reference.elt = d3.event.target;
+        this.popper.scheduleUpdate();
     },
 
     hide_tooltip: function() {
@@ -636,6 +640,7 @@ var MarketMap = figure.Figure.extend({
          this.tooltip_div.transition()
             .style("opacity", 0)
             .style("display", "none");
+        this.popper.disableEventListeners();
     },
 
     create_tooltip_widget: function() {
