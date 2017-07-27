@@ -78,7 +78,7 @@ class Axis(BaseAxis):
     label: string (default: '')
         The axis label
     tick_format: string or None (default: '')
-        The tick format for the axis.
+        The tick format for the axis, for dates use d3 string formatting.
     scale: Scale
         The scale represented by the axis
     num_ticks: int or None (default: None)
