@@ -242,7 +242,7 @@ var MarketMap = figure.Figure.extend({
         var color_scale_model = this.model.get("scales").color;
         var color_data = this.model.get_typed_field("color");
         if(color_scale_model && color_data.length > 0) {
-            color_scale_model.compute_and_set_domain(color_data, this.model.id);
+            color_scale_model.compute_and_set_domain(color_data, this.model.model_id);
         }
     },
 

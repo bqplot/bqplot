@@ -48,9 +48,9 @@ var HandDraw = interaction.Interaction.extend({
         var that = this;
         return Promise.all(fig.mark_views.views).then(function(views) {
             var fig_mark_ids = fig.mark_views._models.map(function(mark_model) {
-                return mark_model.id; // Model ids of the marks in the figure
+                return mark_model.model_id; // Model ids of the marks in the figure
             });
-            var mark_index = fig_mark_ids.indexOf(lines_model.id);
+            var mark_index = fig_mark_ids.indexOf(lines_model.model_id);
             that.lines_view = views[mark_index];
         });
     },
@@ -164,7 +164,7 @@ var HandDraw = interaction.Interaction.extend({
             return idx-1;
         }
     },
-    
+
     update_line_index: function() {
         // Called when the line index is changed in the model
         this.line_index = this.model.get("line_index");

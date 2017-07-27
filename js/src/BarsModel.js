@@ -159,9 +159,9 @@ var BarsModel = markmodel.MarkModel.extend({
         });
         if(color_scale && color.length > 0) {
                 if(!this.get("preserve_domain").color) {
-                    color_scale.compute_and_set_domain(color, this.id + "_color");
+                    color_scale.compute_and_set_domain(color, this.model_id + "_color");
                 } else {
-                    color_scale.del_domain([], this.id + "_color");
+                    color_scale.del_domain([], this.model_id + "_color");
                 }
         }
     },
@@ -178,17 +178,17 @@ var BarsModel = markmodel.MarkModel.extend({
         if(!this.get("preserve_domain").x) {
             dom_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                 return elem.key;
-            }), this.id + "_x");
+            }), this.model_id + "_x");
         }
         else {
-            dom_scale.del_domain([], this.id + "_x");
+            dom_scale.del_domain([], this.model_id + "_x");
         }
 
         if(!this.get("preserve_domain").y) {
             if(this.get("type") === "stacked") {
                 range_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
                                                 d3.max(this.mark_data, function(c) { return c.pos_max; }), this.base_value],
-                                                this.id + "_y");
+                                                this.model_id + "_y");
             } else {
                 var min = d3.min(this.mark_data,
                     function(c) {
@@ -201,10 +201,10 @@ var BarsModel = markmodel.MarkModel.extend({
                         return val.y_ref;
                     });
                 });
-                range_scale.compute_and_set_domain([min, max, this.base_value], this.id + "_y");
+                range_scale.compute_and_set_domain([min, max, this.base_value], this.model_id + "_y");
             }
         } else {
-            range_scale.del_domain([], this.id + "_y");
+            range_scale.del_domain([], this.model_id + "_y");
         }
     }
 });

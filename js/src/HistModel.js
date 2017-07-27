@@ -60,9 +60,9 @@ var HistModel = markmodel.MarkModel.extend({
         // Draw, while update_data is generally followed by a Draw.
 
         if(!this.get("preserve_domain").sample) {
-            x_scale.compute_and_set_domain(x_data, this.id + "_sample");
+            x_scale.compute_and_set_domain(x_data, this.model_id + "_sample");
         } else {
-            x_scale.del_domain([], this.id + "_sample");
+            x_scale.del_domain([], this.model_id + "_sample");
         }
 
         this.min_x = x_scale.domain[0];
@@ -138,7 +138,7 @@ var HistModel = markmodel.MarkModel.extend({
         if(!this.get("preserve_domain").count) {
             y_scale.set_domain([0, d3.max(this.mark_data, function(d) {
                 return d.y;
-            }) * 1.05], this.id + "_count");
+            }) * 1.05], this.model_id + "_count");
         }
     },
 
