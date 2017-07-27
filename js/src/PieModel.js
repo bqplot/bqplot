@@ -102,9 +102,9 @@ var PieModel = markmodel.MarkModel.extend({
         var color_scale = this.get("scales").color;
         if(color_scale) {
             if(!this.get("preserve_domain").color) {
-                color_scale.compute_and_set_domain(color, this.id + "_color");
+                color_scale.compute_and_set_domain(color, this.model_id + "_color");
             } else {
-                color_scale.del_domain([], this.id + "_color");
+                color_scale.del_domain([], this.model_id + "_color");
             }
         }
     },
@@ -121,16 +121,16 @@ var PieModel = markmodel.MarkModel.extend({
             var x = (x_scale.type === "date") ?
                 this.get_date_elem("x") : this.get("x");
             if(!this.get("preserve_domain").x) {
-                x_scale.compute_and_set_domain([x], this.id + "_x");
+                x_scale.compute_and_set_domain([x], this.model_id + "_x");
             } else {
-                x_scale.del_domain([], this.id + "_x");
+                x_scale.del_domain([], this.model_id + "_x");
             }
         }
         if(y_scale) {
             if(!this.get("preserve_domain").y) {
-                y_scale.compute_and_set_domain([this.get("y")], this.id + "_y");
+                y_scale.compute_and_set_domain([this.get("y")], this.model_id + "_y");
             } else {
-                y_scale.del_domain([], this.id + "_y");
+                y_scale.del_domain([], this.model_id + "_y");
             }
         }
     },

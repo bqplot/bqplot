@@ -160,10 +160,10 @@ var OHLCModel = markmodel.MarkModel.extend({
                     return d[0];
                 }));
                 if(max instanceof Date) max = max.getTime();
-                x_scale.set_domain([min - min_x_dist/2, max + min_x_dist/2], this.id + "_x");
+                x_scale.set_domain([min - min_x_dist/2, max + min_x_dist/2], this.model_id + "_x");
             }
         } else {
-            x_scale.del_domain([], this.id + "_x");
+            x_scale.del_domain([], this.model_id + "_x");
         }
 
         // Y Scale
@@ -183,9 +183,9 @@ var OHLCModel = markmodel.MarkModel.extend({
                 return (d[1][top] > d[1][bottom]) ? d[1][top] : d[1][bottom];
             }));
             if(max instanceof  Date) max = max.getTime();
-            y_scale.set_domain([min - max_y_height, max + max_y_height], this.id + "_y");
+            y_scale.set_domain([min - max_y_height, max + max_y_height], this.model_id + "_y");
         } else {
-            y_scale.del_domain([], this.id + "_y");
+            y_scale.del_domain([], this.model_id + "_y");
         }
     },
 

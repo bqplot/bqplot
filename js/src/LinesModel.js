@@ -150,25 +150,25 @@ var LinesModel = markmodel.MarkModel.extend({
         if(!this.get("preserve_domain").x) {
             x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                 return elem.values.map(function(d) { return d.x; });
-            }), this.id + "_x");
+            }), this.model_id + "_x");
         } else {
-            x_scale.del_domain([], this.id + "_x");
+            x_scale.del_domain([], this.model_id + "_x");
         }
 
         if(!this.get("preserve_domain").y) {
             y_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                 return elem.values.map(function(d) { return d.y; });
-            }), this.id + "_y");
+            }), this.model_id + "_y");
         } else {
-            y_scale.del_domain([], this.id + "_y");
+            y_scale.del_domain([], this.model_id + "_y");
         }
         if(color_scale !== null && color_scale !== undefined) {
             if(!this.get("preserve_domain").color) {
                 color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.color;
-                }), this.id + "_color");
+                }), this.model_id + "_color");
             } else {
-                color_scale.del_domain([], this.id + "_color");
+                color_scale.del_domain([], this.model_id + "_color");
             }
         }
     },
@@ -262,15 +262,15 @@ var FlexLineModel = LinesModel.extend({
         var width_scale = scales.width;
 
         if(!this.get("preserve_domain").x) {
-            x_scale.compute_and_set_domain(this.x_data[0].slice(0, this.data_len), this.id + "_x");
+            x_scale.compute_and_set_domain(this.x_data[0].slice(0, this.data_len), this.model_id + "_x");
         } else {
-            x_scale.del_domain([], this.id + "_x");
+            x_scale.del_domain([], this.model_id + "_x");
         }
 
         if(!this.get("preserve_domain").y) {
-            y_scale.compute_and_set_domain(this.y_data[0].slice(0, this.data_len), this.id + "_y");
+            y_scale.compute_and_set_domain(this.y_data[0].slice(0, this.data_len), this.model_id + "_y");
         } else {
-            y_scale.del_domain([], this.id + "_y");
+            y_scale.del_domain([], this.model_id + "_y");
         }
 
         if(color_scale !== null && color_scale !== undefined) {
@@ -279,9 +279,9 @@ var FlexLineModel = LinesModel.extend({
                     return elem.values.map(function(d) {
                         return d.color;
                     });
-                }), this.id + "_color");
+                }), this.model_id + "_color");
             } else {
-                color_scale.del_domain([], this.id + "_color");
+                color_scale.del_domain([], this.model_id + "_color");
             }
         }
         if(width_scale !== null && width_scale !== undefined) {
@@ -290,9 +290,9 @@ var FlexLineModel = LinesModel.extend({
                     return elem.values.map(function(d) {
                         return d.size;
                     });
-                }), this.id + "_width");
+                }), this.model_id + "_width");
             } else {
-                width_scale.del_domain([], this.id + "_width");
+                width_scale.del_domain([], this.model_id + "_width");
             }
         }
     }

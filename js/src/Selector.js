@@ -47,11 +47,11 @@ var BaseSelector = interaction.Interaction.extend({
         var fig = this.parent;
         var that = this;
         var mark_ids = this.model.get("marks").map(function(mark_model) {
-            return mark_model.id; // Model ids of the marks of the selector
+            return mark_model.model_id; // Model ids of the marks of the selector
         });
         return Promise.all(fig.mark_views.views).then(function(views) {
             var fig_mark_ids = fig.mark_views._models.map(function(mark_model) {
-                return mark_model.id;
+                return mark_model.model_id;
             });  // Model ids of the marks in the figure
             var mark_indices = mark_ids.map(function(mark_model_id) {
                 return fig_mark_ids.indexOf(mark_model_id); // look up based on model ids

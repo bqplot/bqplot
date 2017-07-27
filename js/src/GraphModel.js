@@ -99,9 +99,9 @@ var GraphModel = markmodel.MarkModel.extend({
             if (color_scale) {
                 if (!this.get("preserve_domain").color) {
                     color_scale.compute_and_set_domain(color,
-                                                       this.id + "_color");
+                                                       this.model_id + "_color");
                 } else {
-                    color_scale.del_domain([], this.id + "_color");
+                    color_scale.del_domain([], this.model_id + "_color");
                 }
             }
 
@@ -166,9 +166,9 @@ var GraphModel = markmodel.MarkModel.extend({
                 if (!this.get("preserve_domain")[key]) {
                     scale.compute_and_set_domain(this.mark_data.map(function(d) {
                         return d[key] || d[data_scale_key_map[key]];
-                    }), this.id + key);
+                    }), this.model_id + key);
                 } else {
-                    scale.del_domain([], this.id + key);
+                    scale.del_domain([], this.model_id + key);
                 }
             }
        }

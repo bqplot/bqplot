@@ -95,9 +95,9 @@ var MapModel = markmodel.MarkModel.extend({
                 color_scale.compute_and_set_domain(
                     Object.keys(this.color_data).map(function (d) {
                         return that.color_data[d];
-                    }), this.id + "_color");
+                    }), this.model_id + "_color");
             } else {
-                color_scale.del_domain([], this.id + "_color");
+                color_scale.del_domain([], this.model_id + "_color");
             }
         }
     },

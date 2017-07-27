@@ -85,7 +85,7 @@ var MarkModel = basemodel.BaseModel.extend({
         // disassociates the mark with the scale
         this.dirty = true;
         for (var key in scales) {
-            scales[key].del_domain([], this.id + "_" + key);
+            scales[key].del_domain([], this.model_id + "_" + key);
         }
         this.dirty = false;
         //TODO: Check if the views are being removed

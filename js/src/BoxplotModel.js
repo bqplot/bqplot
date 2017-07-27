@@ -56,10 +56,10 @@ var BoxplotModel = markmodel.MarkModel.extend({
         var x_data = this.get_typed_field("x");
         var y_data = this.get_typed_field("y");
 
-        y_data.forEach(function(elm) { 
-            elm.sort(function(a, b) { 
+        y_data.forEach(function(elm) {
+            elm.sort(function(a, b) {
                 return a - b;
-            }); 
+            });
         });
 
         if(x_data.length > y_data.length) {
@@ -87,9 +87,9 @@ var BoxplotModel = markmodel.MarkModel.extend({
         if(!this.get("preserve_domain").x && this.mark_data) {
             x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                 return elem[0];
-            }), this.id + "_x");
+            }), this.model_id + "_x");
         } else {
-            x_scale.del_domain([], this.id + "_x");
+            x_scale.del_domain([], this.model_id + "_x");
         }
         if(!this.get("preserve_domain").y && this.mark_data) {
            //The values are sorted, so we are using that to calculate the min/max
@@ -102,10 +102,10 @@ var BoxplotModel = markmodel.MarkModel.extend({
                 return values[values.length-1];
             }));
 
-            y_scale.set_domain([min,max], this.id + "_y");
+            y_scale.set_domain([min,max], this.model_id + "_y");
 
         } else {
-            y_scale.del_domain([], this.id + "_y");
+            y_scale.del_domain([], this.model_id + "_y");
         }
     }
 });

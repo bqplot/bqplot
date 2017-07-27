@@ -276,7 +276,7 @@ var Figure = widgets.DOMWidgetView.extend({
         if(!scale_model.get("allow_padding")) {
             return this.range(direction);
         }
-        var scale_id = scale_model.id;
+        var scale_id = scale_model.model_id;
 
         if(direction==="x") {
             scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
@@ -303,7 +303,7 @@ var Figure = widgets.DOMWidgetView.extend({
         if(!(scale_model.get("allow_padding"))) {
             return this.plotarea_height;
         }
-        var scale_id = scale_model.id;
+        var scale_id = scale_model.model_id;
         var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
             this.y_padding_arr[scale_id] : 0;
         return (this.plotarea_height) * (1 - this.figure_padding_y) - scale_padding - scale_padding;
@@ -314,7 +314,7 @@ var Figure = widgets.DOMWidgetView.extend({
             return this.plotarea_width;
         }
 
-        var scale_id = scale_model.id;
+        var scale_id = scale_model.model_id;
         var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
             this.x_padding_arr[scale_id] : 0;
         return (this.plotarea_width) * (1 - this.figure_padding_x) - scale_padding - scale_padding;
@@ -337,9 +337,9 @@ var Figure = widgets.DOMWidgetView.extend({
         if(scale_model === undefined || scale_model === null) {
             return;
         }
-        var scale_id = scale_model.id;
+        var scale_id = scale_model.model_id;
         if(dict[scale_id] !== undefined) {
-            delete dict[scale_id][mark_view.model.id + "_" + mark_view.cid];
+            delete dict[scale_id][mark_view.model.model_id + "_" + mark_view.cid];
             if(Object.keys(dict[scale_id]).length === 0) {
                 delete dict[scale_id];
             }
@@ -347,11 +347,11 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     update_padding_dict: function(dict, mark_view, scale_model, value) {
-        var scale_id = scale_model.id;
+        var scale_id = scale_model.model_id;
         if(!(dict[scale_id])) {
             dict[scale_id]= {};
         }
-        dict[scale_id][mark_view.model.id + "_" + mark_view.cid] = value;
+        dict[scale_id][mark_view.model.model_id + "_" + mark_view.cid] = value;
     },
 
     mark_scales_updated: function(view) {

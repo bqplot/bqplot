@@ -96,23 +96,23 @@ var GridHeatMapModel = markmodel.MarkModel.extend({
         var color_scale = scales.color;
 
         if(!this.get("preserve_domain").row) {
-            y_scale.compute_and_set_domain(this.rows, this.id + "_row");
+            y_scale.compute_and_set_domain(this.rows, this.model_id + "_row");
         } else {
-            y_scale.del_domain([], this.id + "_row");
+            y_scale.del_domain([], this.model_id + "_row");
         }
 
         if(!this.get("preserve_domain").column) {
-            x_scale.compute_and_set_domain(this.columns, this.id + "_column");
+            x_scale.compute_and_set_domain(this.columns, this.model_id + "_column");
         } else {
-            x_scale.del_domain([], this.id + "_column");
+            x_scale.del_domain([], this.model_id + "_column");
         }
         if(color_scale !== null && color_scale !== undefined) {
             if(!this.get("preserve_domain").color) {
                 color_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                     return elem.color;
-                }), this.id + "_color");
+                }), this.model_id + "_color");
             } else {
-                color_scale.del_domain([], this.id + "_color");
+                color_scale.del_domain([], this.model_id + "_color");
             }
         }
     },
