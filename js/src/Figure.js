@@ -112,7 +112,7 @@ var Figure = widgets.DOMWidgetView.extend({
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "tooltip_div");
-        this.popper_reference = new popperreference.PopperReference(this.svg.node());
+        this.popper_reference = new popperreference.PositionReference({x: 0, y: 0, width: 20, height: 20});
         this.popper = new popper(this.popper_reference, this.tooltip_div.node(), {
             placement: 'auto',
         });

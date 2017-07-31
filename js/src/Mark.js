@@ -259,7 +259,8 @@ var Mark = widgets.WidgetView.extend({
             }
             var transition = this.tooltip_div.style(this.model.get("tooltip_style"))
                 .style("display", null);
-            this.parent.popper_reference.elt = d3.event.target;
+            this.parent.popper_reference.x = d3.event.clientX;
+            this.parent.popper_reference.y = d3.event.clientY;
             this.parent.popper.enableEventListeners();
             this.parent.popper.scheduleUpdate();
         }

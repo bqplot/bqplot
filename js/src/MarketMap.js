@@ -70,7 +70,7 @@ var MarketMap = figure.Figure.extend({
             .attr("class", "mark_tooltip")
             .style("opacity", 0)
             .style("pointer-events", "none")
-        this.popper_reference = new popperreference.PopperReference(this.svg.node());
+        this.popper_reference = new popperreference.ElementReference(this.svg.node());
         this.popper = new popper(this.popper_reference, this.tooltip_div.node(), {
             placement: 'auto',
         });

@@ -14,7 +14,7 @@
  */
 
 /* Generated from this typescript code:
-class PopperReference {
+class ElementReference {
     constructor(elt) {
         this.elt = elt;
     }
@@ -35,30 +35,101 @@ class PopperReference {
 /**
  * A delegate reference for the popper js library
  */
-var PopperReference = (function () {
-    function PopperReference(elt) {
+var ElementReference = (function () {
+    function ElementReference(elt) {
         this.elt = elt;
     }
-    PopperReference.prototype.getBoundingClientRect = function () {
+    ElementReference.prototype.getBoundingClientRect = function () {
         return this.elt.getBoundingClientRect();
     };
-    Object.defineProperty(PopperReference.prototype, "clientWidth", {
+    Object.defineProperty(ElementReference.prototype, "clientWidth", {
         get: function () {
             return this.elt.clientWidth;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(PopperReference.prototype, "clientHeight", {
+    Object.defineProperty(ElementReference.prototype, "clientHeight", {
         get: function () {
             return this.elt.clientHeight;
         },
         enumerable: true,
         configurable: true
     });
-    return PopperReference;
+    return ElementReference;
 }());
 
+
+
+/* Generated from the Typescript code:
+
+class PositionReference {
+    constructor({ x, y, width, height }) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+    getBoundingClientRect() {
+        let halfwidth = this.width / 2;
+        let halfheight = this.height / 2;
+        return {
+            left: this.x - halfwidth,
+            right: this.x + halfwidth,
+            top: this.y - halfheight,
+            bottom: this.y + halfheight,
+            width: this.width,
+            height: this.height
+        }
+    }
+    get clientWidth() { return this.width; }
+    get clientHeight() { return this.height; }
+
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+*/
+
+/**
+ * A reference for a specific position.
+ */
+var PositionReference = (function () {
+    function PositionReference(_a) {
+        var x = _a.x, y = _a.y, width = _a.width, height = _a.height;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+    PositionReference.prototype.getBoundingClientRect = function () {
+        var halfwidth = this.width / 2;
+        var halfheight = this.height / 2;
+        return {
+            left: this.x - halfwidth,
+            right: this.x + halfwidth,
+            top: this.y - halfheight,
+            bottom: this.y + halfheight,
+            width: this.width,
+            height: this.height
+        };
+    };
+    Object.defineProperty(PositionReference.prototype, "clientWidth", {
+        get: function () { return this.width; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PositionReference.prototype, "clientHeight", {
+        get: function () { return this.height; },
+        enumerable: true,
+        configurable: true
+    });
+    return PositionReference;
+}());
+
+
 module.exports = {
-    PopperReference: PopperReference
+    ElementReference: ElementReference,
+    PositionReference: PositionReference
 };
