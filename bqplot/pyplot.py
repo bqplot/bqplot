@@ -57,7 +57,7 @@ from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import (
         Lines, Scatter, Hist, Bars, OHLC, Pie, Map,
-        Label, HeatMap, topo_load
+        Label, HeatMap, GridHeatMap, topo_load
     )
 from .toolbar import Toolbar
 from .interacts import (
@@ -929,6 +929,27 @@ def heatmap(color, **kwargs):
     """
     kwargs['color'] = color
     return _draw_mark(HeatMap, **kwargs)
+
+
+def gridheatmap(color, **kwargs):
+    """Draw a GridHeatMap in the current context figure.
+
+    Parameters
+    ----------
+    color: numpy.ndarray, 2d
+        Matrix of color of the data points
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
+    kwargs['color'] = color
+    return _draw_mark(GridHeatMap, **kwargs)
+
 
 def _add_interaction(int_type, **kwargs):
     """Add the interaction for the specified type.
