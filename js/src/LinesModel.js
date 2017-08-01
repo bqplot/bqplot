@@ -80,13 +80,16 @@ var LinesModel = markmodel.MarkModel.extend({
                 this.y_data : [this.y_data];
             curve_labels = this.get_labels();
 
-            if (this.x_data.length == 1 && this.y_data.length > 1) {
+            var y_length = this.y_data.length;
+
+            if (this.x_data.length == 1 && y_length > 1) {
                 // same x for all y
                 this.mark_data = curve_labels.map(function(name, i) {
                     return {
                         name: name,
                         values: that.y_data[i].map(function(d, j) {
                             return {x: that.x_data[0][j], y: d,
+                                    y0: that.y_data[Math.min(i + 1, y_length - 1)][j],
                                     sub_index: j};
                         }),
                         color: that.color_data[i],
@@ -95,11 +98,13 @@ var LinesModel = markmodel.MarkModel.extend({
                 });
             } else {
                 this.mark_data = curve_labels.map(function(name, i) {
-                    var xy_data = d3.zip(that.x_data[i], that.y_data[i]);
+                    var xy_data = d3.zip(that.x_data[i], that.y_data[i][j]);
                     return {
                         name: name,
                         values: xy_data.map(function(d, j) {
-                            return {x: d[0], y: d[1], sub_index: j};
+                            return {x: d[0], y: d[1],
+                                    y0: that.y_data[Math.min(i + 1, y_length - 1)][j],
+                                    sub_index: j};
                         }),
                         color: that.color_data[i],
                         index: i,
