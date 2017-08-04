@@ -278,7 +278,7 @@ var Map = mark.Mark.extend({
                         this.mouseover_handler();
                         return this.refresh_tooltip();
                     };
-                    this.event_listeners.mouse_move = this.show_tooltip;
+                    this.event_listeners.mouse_move = this.move_tooltip;
                     this.event_listeners.mouse_out = function() {
                         this.mouseout_handler();
                         return this.hide_tooltip();

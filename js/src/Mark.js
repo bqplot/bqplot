@@ -259,9 +259,15 @@ var Mark = widgets.WidgetView.extend({
             }
             var transition = this.tooltip_div.style(this.model.get("tooltip_style"))
                 .style("display", null);
+            this.parent.popper.enableEventListeners();
+            this.move_tooltip();
+        }
+    },
+
+    move_tooltip: function(mouse_events) {
+        if(this.tooltip_view) {
             this.parent.popper_reference.x = d3.event.clientX;
             this.parent.popper_reference.y = d3.event.clientY;
-            this.parent.popper.enableEventListeners();
             this.parent.popper.scheduleUpdate();
         }
     },
@@ -399,7 +405,8 @@ var Mark = widgets.WidgetView.extend({
     mouse_move: function() {
         if(this.model.get("enable_hover") &&
             this.is_hover_element(d3.select(d3.event.target))) {
-            this.show_tooltip();
+            // this.show_tooltip();
+            this.move_tooltip();
         }
     },
 

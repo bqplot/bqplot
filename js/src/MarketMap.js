@@ -597,7 +597,6 @@ var MarketMap = figure.Figure.extend({
         {
             return;
         } else {
-
             var tooltip_div = this.tooltip_div;
             tooltip_div.transition()
                 .style("opacity", 0.9)
@@ -623,6 +622,7 @@ var MarketMap = figure.Figure.extend({
                     .text(function(datum, index) { return (ref_data === null || ref_data === undefined) ? null : that.tooltip_formats[index](ref_data[datum]);});
             }
             this.popper.enableEventListeners();
+            this.move_tooltip();
         }
     },
 
@@ -631,7 +631,8 @@ var MarketMap = figure.Figure.extend({
     },
 
     move_tooltip: function(data) {
-        this.popper_reference.elt = d3.event.target;
+        this.popper_reference.x = d3.event.clientX;
+        this.popper_reference.y = d3.event.clientY;
         this.popper.scheduleUpdate();
     },
 

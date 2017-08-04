@@ -106,7 +106,7 @@ var Hist = mark.Mark.extend({
               interactions.hover !== null) {
                 if(interactions.hover === "tooltip") {
                     this.event_listeners.mouse_over = this.refresh_tooltip;
-                    this.event_listeners.mouse_move = this.show_tooltip;
+                    this.event_listeners.mouse_move = this.move_tooltip;
                     this.event_listeners.mouse_out = this.hide_tooltip;
                 }
             } else {
