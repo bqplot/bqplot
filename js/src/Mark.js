@@ -405,7 +405,6 @@ var Mark = widgets.WidgetView.extend({
     mouse_move: function() {
         if(this.model.get("enable_hover") &&
             this.is_hover_element(d3.select(d3.event.target))) {
-            // this.show_tooltip();
             this.move_tooltip();
         }
     },
