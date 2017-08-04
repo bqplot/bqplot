@@ -98,7 +98,7 @@ var LinesModel = markmodel.MarkModel.extend({
                 });
             } else {
                 this.mark_data = curve_labels.map(function(name, i) {
-                    var xy_data = d3.zip(that.x_data[i], that.y_data[i][j]);
+                    var xy_data = d3.zip(that.x_data[i], that.y_data[i]);
                     return {
                         name: name,
                         values: xy_data.map(function(d, j) {
