@@ -18,7 +18,8 @@ module.exports = [
             filename: 'extension.js',
             path: '../bqplot/static',
             libraryTarget: 'amd'
-        }
+        },
+        externals: ['@jupyter-widgets/base']
     },
     {// bqplot bundle for the notebook
         entry: './src/index-embed.js',
