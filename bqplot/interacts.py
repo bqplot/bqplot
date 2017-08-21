@@ -38,7 +38,7 @@ Interacts
 
 from traitlets import Bool, Int, Float, Unicode, Dict, Instance, List, TraitError
 from traittypes import Array
-from ipywidgets import Widget, Color, widget_serialization
+from ipywidgets import Widget, Color, widget_serialization, register
 
 from .scales import Scale, DateScale
 from .traits import Date, array_serialization
@@ -131,6 +131,7 @@ class HandDraw(Interaction):
 
 
 @register_interaction('bqplot.PanZoom')
+@register
 class PanZoom(Interaction):
 
     """An interaction to pan and zoom wrt scales.
