@@ -257,33 +257,27 @@ var Mark = widgets.WidgetView.extend({
             } else {
                 this.tooltip_div.style("pointer-events", "all");
             }
-            this.tooltip_div.transition("show_tooltip")
-                .style(this.model.get("tooltip_style"))
+            var transition = this.tooltip_div.style(this.model.get("tooltip_style"))
                 .style("display", null);
+            this.parent.popper.enableEventListeners();
+            this.move_tooltip();
+        }
+    },
 
-            if(this.model.get("tooltip_location") === "center") {
-                //Assumption that parent.el is not a selection and is a div
-                //node
-                var parent_rect = this.parent.el.getBoundingClientRect();
-                var tooltip_div_rect = this.tooltip_div.node().getBoundingClientRect();
-                this.tooltip_div.style("left", (5 + parent_rect.width * 0.5 -
-                                                tooltip_div_rect.width * 0.5) + "px")
-                    .style("top", (5 + parent_rect.height * 0.5 -
-                                                tooltip_div_rect.height * 0.5) + "px");
-            }
-            else {
-                this.tooltip_div.style("left", (mouse_pos[0] + 5) + "px")
-                    .style("top", (mouse_pos[1] + 5) + "px");
-            }
+    move_tooltip: function(mouse_events) {
+        if(this.tooltip_view) {
+            this.parent.popper_reference.x = d3.event.clientX;
+            this.parent.popper_reference.y = d3.event.clientY;
+            this.parent.popper.scheduleUpdate();
         }
     },
 
     hide_tooltip: function() {
         //this function hides the tooltip. But the location of the tooltip
         //is the last location set by a call to show_tooltip.
+        this.parent.popper.disableEventListeners();
         this.tooltip_div.style("pointer-events", "none");
-        this.tooltip_div.transition("hide_tooltip")
-            .style("opacity", 0)
+        this.tooltip_div.style("opacity", 0)
             .style("display", "none");
     },
 
@@ -411,7 +405,7 @@ var Mark = widgets.WidgetView.extend({
     mouse_move: function() {
         if(this.model.get("enable_hover") &&
             this.is_hover_element(d3.select(d3.event.target))) {
-            this.show_tooltip();
+            this.move_tooltip();
         }
     },
 
