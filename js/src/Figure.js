@@ -19,6 +19,10 @@ var _ = require("underscore");
 var popperreference = require("./PopperReference");
 var popper = require("popper.js");
 
+if (popper.__esModule) {
+    popper = popper.default;
+}
+
 var Figure = widgets.DOMWidgetView.extend({
 
     initialize : function() {
