@@ -16,7 +16,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@jupyter-widgets/jupyterlab-manager": "^0.24.7",
+    "@jupyter-widgets/jupyterlab-manager": "^0.26.0",
     "bqplot": "0.3.0-alpha.4"
   },
   "jupyterlab": {
