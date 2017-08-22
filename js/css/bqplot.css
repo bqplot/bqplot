@@ -1,0 +1,653 @@
+/* Copyright 2015 Bloomberg Finance L.P.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+.theme-light .bqplot {
+  box-sizing: border-box;
+  display: flex;
+  width: 640px;
+  height: 480px;
+}
+.theme-light .bqplot > svg {
+  font: 11px sans-serif;
+  user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  flex-grow: 1;
+}
+.theme-light .bqplot > svg .axis line {
+  shape-rendering: crispEdges;
+  font: 10px sans-serif;
+  stroke-width: 1px;
+}
+.theme-light .bqplot > svg .axis path,
+.theme-light .bqplot > svg .axis line {
+  fill: none;
+}
+.theme-light .bqplot > svg .axis text.axislabel,
+.theme-light .bqplot > svg .axis tspan.axislabel {
+  text-anchor: end;
+  font: 14px sans-serif;
+}
+.theme-light .bqplot > svg .axis .tick text {
+  cursor: default;
+}
+.theme-light .bqplot > svg .axis.axisbold path {
+  stroke-width: 3px;
+}
+.theme-light .bqplot > svg .axis.axisbold text,
+.theme-light .bqplot > svg .axis.axisbold text.axislabel {
+  font-weight: bolder;
+}
+.theme-light .bqplot > svg text.mainheading {
+  text-anchor: middle;
+  font: 16px sans-serif;
+}
+.theme-light .bqplot > svg .zeroLine {
+  shape-rendering: crispEdges;
+}
+.theme-light .bqplot > svg .brushintsel,
+.theme-light .bqplot > svg .intsel {
+  pointer-events: none;
+}
+.theme-light .bqplot > svg .indsel {
+  stroke: red;
+}
+.theme-light .bqplot > svg .brushintsel,
+.theme-light .bqplot > svg .intsel {
+  fill-opacity: 0.2;
+}
+.theme-light .bqplot > svg .intselmouse {
+  visibility: hidden;
+  pointer-events: all;
+  /*none?*/
+}
+.theme-light .bqplot > svg text.legendtext {
+  text-anchor: start;
+  font: 14px sans-serif;
+}
+.theme-light .bqplot > svg .multiselector .active {
+  pointer-events: all  !important;
+  stroke: green;
+}
+.theme-light .bqplot > svg .multiselector .inactive {
+  pointer-events: none !important;
+  stroke: red;
+}
+.theme-light .bqplot > svg .multiselector .visible {
+  pointer-events: visible !important;
+  stroke: red;
+}
+.theme-light .bqplot > svg .lassoselector .selected {
+  opacity: 0.3;
+}
+.theme-light .bqplot > svg .lassoselector path {
+  fill: none;
+  stroke: orange;
+  stroke-width: 4;
+}
+.theme-light .tooltip_div {
+  z-index: 1001;
+}
+.theme-light .mark_tooltip {
+  pointer-events: none;
+  z-index: 1001;
+}
+.theme-light .mark_tooltip table {
+  border-radius: 5px;
+}
+.theme-light .mark_tooltip .tooltiptext {
+  text-align: center;
+  padding: 0.5em;
+}
+.theme-light .world_map .hovered {
+  fill: Orange;
+  stroke: Orange;
+  stroke-width: 2.5px;
+}
+.theme-light .world_map #container {
+  margin: 10px 10%;
+  border: 2px solid #000;
+  border-radius: 5px;
+  height: 100%;
+  overflow: hidden;
+  background: #F0F8FF;
+}
+.theme-light .world_map .graticule {
+  fill: none;
+  stroke: #bbb;
+  stroke-width: .5px;
+  stroke-opacity: .5;
+}
+.theme-light .bqplot > svg .axis rect {
+  stroke: white;
+  opacity: 1.0;
+}
+.theme-light .bqplot > svg .axis .tick line {
+  stroke: white;
+  stroke-width: 1.4;
+  opacity: 1.0;
+}
+.theme-light .bqplot > svg .axis .tick.short line {
+  stroke: #8B8B8B;
+}
+.theme-light .bqplot > svg .axis .tick text {
+  fill: #8B8B8B;
+  font: 12px sans-serif;
+}
+.theme-light .bqplot > svg .stick,
+.theme-light .bqplot > svg .zeroLine {
+  stroke: black;
+  fill: black;
+}
+.theme-light .bqplot > svg .bargroup rect,
+.theme-light .bqplot > svg .boxplot rect,
+.theme-light .bqplot > svg .slice rect,
+.theme-light .bqplot > svg .bargroup path,
+.theme-light .bqplot > svg .boxplot path,
+.theme-light .bqplot > svg .slice path,
+.theme-light .bqplot > svg .bargroup line,
+.theme-light .bqplot > svg .boxplot line,
+.theme-light .bqplot > svg .slice line {
+  stroke: black;
+}
+.theme-light .bqplot > svg .sticktext {
+  fill: black;
+}
+.theme-light .bqplot > svg .brushintsel,
+.theme-light .bqplot > svg .intsel {
+  fill: #000000;
+}
+.theme-light .bqplot > svg text.axislabel,
+.theme-light .bqplot > svg tspan.axislabel {
+  fill: black;
+  font: serif;
+}
+.theme-light .bqplot > svg text.mainheading {
+  fill: black;
+  font: serif;
+  font-size: large;
+}
+.theme-light .bqplot > svg .plotarea_background {
+  fill: #F7F7F7;
+}
+.theme-light .mark_tooltip {
+  border: 2px solid black;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px rgba(10, 10, 10, 0.8);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  background-color: #FCFCFC;
+}
+.theme-light .mark_tooltip td {
+  border: thin solid black;
+}
+.theme-light .mark_tooltip table {
+  background: #ececec;
+}
+.theme-light .world_map path {
+  stroke: #FFF;
+  stroke-width: 0.25px;
+  fill: dodgerblue;
+}
+.theme-light .pie polyline {
+  opacity: .3;
+  stroke: black;
+  stroke-width: 1px;
+  fill: none;
+}
+.theme-light .network .node .element {
+  fill: #ccc;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+.theme-light .network .link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+.theme-light .network .node .label {
+  font: 12px sans-serif;
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+.theme-light .linkarrow {
+  fill: #000;
+}
+/* by default, activate theme-light*/
+.bqplot {
+  box-sizing: border-box;
+  display: flex;
+  width: 640px;
+  height: 480px;
+}
+.bqplot > svg {
+  font: 11px sans-serif;
+  user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  flex-grow: 1;
+}
+.bqplot > svg .axis line {
+  shape-rendering: crispEdges;
+  font: 10px sans-serif;
+  stroke-width: 1px;
+}
+.bqplot > svg .axis path,
+.bqplot > svg .axis line {
+  fill: none;
+}
+.bqplot > svg .axis text.axislabel,
+.bqplot > svg .axis tspan.axislabel {
+  text-anchor: end;
+  font: 14px sans-serif;
+}
+.bqplot > svg .axis .tick text {
+  cursor: default;
+}
+.bqplot > svg .axis.axisbold path {
+  stroke-width: 3px;
+}
+.bqplot > svg .axis.axisbold text,
+.bqplot > svg .axis.axisbold text.axislabel {
+  font-weight: bolder;
+}
+.bqplot > svg text.mainheading {
+  text-anchor: middle;
+  font: 16px sans-serif;
+}
+.bqplot > svg .zeroLine {
+  shape-rendering: crispEdges;
+}
+.bqplot > svg .brushintsel,
+.bqplot > svg .intsel {
+  pointer-events: none;
+}
+.bqplot > svg .indsel {
+  stroke: red;
+}
+.bqplot > svg .brushintsel,
+.bqplot > svg .intsel {
+  fill-opacity: 0.2;
+}
+.bqplot > svg .intselmouse {
+  visibility: hidden;
+  pointer-events: all;
+  /*none?*/
+}
+.bqplot > svg text.legendtext {
+  text-anchor: start;
+  font: 14px sans-serif;
+}
+.bqplot > svg .multiselector .active {
+  pointer-events: all  !important;
+  stroke: green;
+}
+.bqplot > svg .multiselector .inactive {
+  pointer-events: none !important;
+  stroke: red;
+}
+.bqplot > svg .multiselector .visible {
+  pointer-events: visible !important;
+  stroke: red;
+}
+.bqplot > svg .lassoselector .selected {
+  opacity: 0.3;
+}
+.bqplot > svg .lassoselector path {
+  fill: none;
+  stroke: orange;
+  stroke-width: 4;
+}
+.tooltip_div {
+  z-index: 1001;
+}
+.mark_tooltip {
+  pointer-events: none;
+  z-index: 1001;
+}
+.mark_tooltip table {
+  border-radius: 5px;
+}
+.mark_tooltip .tooltiptext {
+  text-align: center;
+  padding: 0.5em;
+}
+.world_map .hovered {
+  fill: Orange;
+  stroke: Orange;
+  stroke-width: 2.5px;
+}
+.world_map #container {
+  margin: 10px 10%;
+  border: 2px solid #000;
+  border-radius: 5px;
+  height: 100%;
+  overflow: hidden;
+  background: #F0F8FF;
+}
+.world_map .graticule {
+  fill: none;
+  stroke: #bbb;
+  stroke-width: .5px;
+  stroke-opacity: .5;
+}
+.bqplot > svg .axis rect {
+  stroke: white;
+  opacity: 1.0;
+}
+.bqplot > svg .axis .tick line {
+  stroke: white;
+  stroke-width: 1.4;
+  opacity: 1.0;
+}
+.bqplot > svg .axis .tick.short line {
+  stroke: #8B8B8B;
+}
+.bqplot > svg .axis .tick text {
+  fill: #8B8B8B;
+  font: 12px sans-serif;
+}
+.bqplot > svg .stick,
+.bqplot > svg .zeroLine {
+  stroke: black;
+  fill: black;
+}
+.bqplot > svg .bargroup rect,
+.bqplot > svg .boxplot rect,
+.bqplot > svg .slice rect,
+.bqplot > svg .bargroup path,
+.bqplot > svg .boxplot path,
+.bqplot > svg .slice path,
+.bqplot > svg .bargroup line,
+.bqplot > svg .boxplot line,
+.bqplot > svg .slice line {
+  stroke: black;
+}
+.bqplot > svg .sticktext {
+  fill: black;
+}
+.bqplot > svg .brushintsel,
+.bqplot > svg .intsel {
+  fill: #000000;
+}
+.bqplot > svg text.axislabel,
+.bqplot > svg tspan.axislabel {
+  fill: black;
+  font: serif;
+}
+.bqplot > svg text.mainheading {
+  fill: black;
+  font: serif;
+  font-size: large;
+}
+.bqplot > svg .plotarea_background {
+  fill: #F7F7F7;
+}
+.mark_tooltip {
+  border: 2px solid black;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px rgba(10, 10, 10, 0.8);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  background-color: #FCFCFC;
+}
+.mark_tooltip td {
+  border: thin solid black;
+}
+.mark_tooltip table {
+  background: #ececec;
+}
+.world_map path {
+  stroke: #FFF;
+  stroke-width: 0.25px;
+  fill: dodgerblue;
+}
+.pie polyline {
+  opacity: .3;
+  stroke: black;
+  stroke-width: 1px;
+  fill: none;
+}
+.network .node .element {
+  fill: #ccc;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+.network .link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+.network .node .label {
+  font: 12px sans-serif;
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+.linkarrow {
+  fill: #000;
+}
+.theme-dark .bqplot {
+  box-sizing: border-box;
+  display: flex;
+  width: 640px;
+  height: 480px;
+}
+.theme-dark .bqplot > svg {
+  font: 11px sans-serif;
+  user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  flex-grow: 1;
+}
+.theme-dark .bqplot > svg .axis line {
+  shape-rendering: crispEdges;
+  font: 10px sans-serif;
+  stroke-width: 1px;
+}
+.theme-dark .bqplot > svg .axis path,
+.theme-dark .bqplot > svg .axis line {
+  fill: none;
+}
+.theme-dark .bqplot > svg .axis text.axislabel,
+.theme-dark .bqplot > svg .axis tspan.axislabel {
+  text-anchor: end;
+  font: 14px sans-serif;
+}
+.theme-dark .bqplot > svg .axis .tick text {
+  cursor: default;
+}
+.theme-dark .bqplot > svg .axis.axisbold path {
+  stroke-width: 3px;
+}
+.theme-dark .bqplot > svg .axis.axisbold text,
+.theme-dark .bqplot > svg .axis.axisbold text.axislabel {
+  font-weight: bolder;
+}
+.theme-dark .bqplot > svg text.mainheading {
+  text-anchor: middle;
+  font: 16px sans-serif;
+}
+.theme-dark .bqplot > svg .zeroLine {
+  shape-rendering: crispEdges;
+}
+.theme-dark .bqplot > svg .brushintsel,
+.theme-dark .bqplot > svg .intsel {
+  pointer-events: none;
+}
+.theme-dark .bqplot > svg .indsel {
+  stroke: red;
+}
+.theme-dark .bqplot > svg .brushintsel,
+.theme-dark .bqplot > svg .intsel {
+  fill-opacity: 0.2;
+}
+.theme-dark .bqplot > svg .intselmouse {
+  visibility: hidden;
+  pointer-events: all;
+  /*none?*/
+}
+.theme-dark .bqplot > svg text.legendtext {
+  text-anchor: start;
+  font: 14px sans-serif;
+}
+.theme-dark .bqplot > svg .multiselector .active {
+  pointer-events: all  !important;
+  stroke: green;
+}
+.theme-dark .bqplot > svg .multiselector .inactive {
+  pointer-events: none !important;
+  stroke: red;
+}
+.theme-dark .bqplot > svg .multiselector .visible {
+  pointer-events: visible !important;
+  stroke: red;
+}
+.theme-dark .bqplot > svg .lassoselector .selected {
+  opacity: 0.3;
+}
+.theme-dark .bqplot > svg .lassoselector path {
+  fill: none;
+  stroke: orange;
+  stroke-width: 4;
+}
+.theme-dark .tooltip_div {
+  z-index: 1001;
+}
+.theme-dark .mark_tooltip {
+  pointer-events: none;
+  z-index: 1001;
+}
+.theme-dark .mark_tooltip table {
+  border-radius: 5px;
+}
+.theme-dark .mark_tooltip .tooltiptext {
+  text-align: center;
+  padding: 0.5em;
+}
+.theme-dark .world_map .hovered {
+  fill: Orange;
+  stroke: Orange;
+  stroke-width: 2.5px;
+}
+.theme-dark .world_map #container {
+  margin: 10px 10%;
+  border: 2px solid #000;
+  border-radius: 5px;
+  height: 100%;
+  overflow: hidden;
+  background: #F0F8FF;
+}
+.theme-dark .world_map .graticule {
+  fill: none;
+  stroke: #bbb;
+  stroke-width: .5px;
+  stroke-opacity: .5;
+}
+.theme-dark .bqplot > svg {
+  background: #1a1a1a;
+}
+.theme-dark .bqplot > svg .axis rect {
+  stroke: #1A1A1A;
+}
+.theme-dark .bqplot > svg .axis path {
+  stroke: #b3b3b3;
+}
+.theme-dark .bqplot > svg .axis .tick line {
+  stroke: #3b3b3b;
+}
+.theme-dark .bqplot > svg .axis .tick.short line {
+  stroke: #B3B3B3;
+}
+.theme-dark .bqplot > svg .axis .tick text {
+  fill: #B3B3B3;
+}
+.theme-dark .bqplot > svg .stick,
+.theme-dark .bqplot > svg .zeroLine {
+  stroke: white;
+  fill: white;
+}
+.theme-dark .bqplot > svg .bargroup rect,
+.theme-dark .bqplot > svg .slice rect,
+.theme-dark .bqplot > svg .bargroup path,
+.theme-dark .bqplot > svg .slice path,
+.theme-dark .bqplot > svg .bargroup line,
+.theme-dark .bqplot > svg .slice line {
+  stroke: white;
+}
+.theme-dark .bqplot > svg .sticktext {
+  fill: white;
+}
+.theme-dark .bqplot > svg .brushintsel,
+.theme-dark .bqplot > svg .intsel {
+  fill: #ffffff;
+}
+.theme-dark .bqplot > svg text.axislabel,
+.theme-dark .bqplot > svg tspan.axislabel,
+.theme-dark .bqplot > svg text.mainheading {
+  fill: orange;
+}
+.theme-dark .bqplot > svg .plotarea_background {
+  fill: #1a1a1a;
+}
+.theme-dark .mark_tooltip {
+  border: 2px solid whitesmoke;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px rgba(245, 245, 245, 0.8);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  background-color: black;
+}
+.theme-dark .mark_tooltip td {
+  border: thin solid whitesmoke;
+}
+.theme-dark .mark_tooltip table {
+  background: black;
+}
+.theme-dark .world_map path {
+  stroke: black;
+  stroke-width: 0.25px;
+  fill: seagreen;
+}
+.theme-dark .pie polyline {
+  opacity: .5;
+  stroke: white;
+  stroke-width: 1px;
+  fill: none;
+}
+.theme-dark .network .node .element {
+  fill: #666;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+.theme-dark .network .node .element {
+  fill: #666;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+.theme-dark .network .link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+.theme-dark .network .node .label {
+  font: 12px sans-serif;
+  pointer-events: none;
+  text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
+}
+.theme-dark .linkarrow {
+  fill: #ccc;
+}
