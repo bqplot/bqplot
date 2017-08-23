@@ -20,6 +20,9 @@ var figure = require("./Figure");
 var popperreference = require("./PopperReference");
 var popper = require("popper.js");
 
+if (popper.__esModule) {
+    popper = popper.default;
+}
 
 var MarketMap = figure.Figure.extend({
 
