@@ -428,7 +428,7 @@ var Lines = mark.Mark.extend({
             area = (fill === "top" || fill === "bottom");
 
         this.area.y0(fill === "bottom" ? this.parent.plotarea_height : 0)
-          .defined(function(d) { return area && d.y !== null && isFinite(d.y); });
+          .defined(function(d) { return area && d.y !== null; });
 
         var that = this;
         this.d3el.selectAll(".curve").select(".area")
@@ -512,6 +512,8 @@ var Lines = mark.Mark.extend({
         var curves_sel = this.d3el.selectAll(".curve")
           .data(this.model.mark_data);
 
+        var y_scale = this.scales.y;
+
         var new_curves = curves_sel.enter().append("g")
           .attr("class", "curve");
         new_curves.append("path")
@@ -540,11 +542,11 @@ var Lines = mark.Mark.extend({
 
         this.line = d3.svg.line()
           .interpolate(this.model.get("interpolation"))
-          .defined(function(d) { return d.y !== null && isFinite(d.y); });
+          .defined(function(d) { return d.y !== null && isFinite(y_scale.scale(d.y)); });
 
         this.area = d3.svg.area()
           .interpolate(this.model.get("interpolation"))
-          .defined(function(d) { return area && d.y !== null && isFinite(d.y); });
+          .defined(function(d) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
 
         // Having a transition on exit is complicated. Please refer to
         // Scatter.js for detailed explanation.
