@@ -58,34 +58,41 @@ var HistModel = markmodel.MarkModel.extend({
 
         // TODO: This potentially triggers domain_changed and therefore a
         // Draw, while update_data is generally followed by a Draw.
-
-        if(!this.get("preserve_domain").sample) {
-            x_scale.compute_and_set_domain(x_data, this.model_id + "_sample");
-        } else {
-            x_scale.del_domain([], this.model_id + "_sample");
-        }
-
-        this.min_x = x_scale.domain[0];
-        this.max_x = x_scale.domain[1];
-
-        var that = this;
-        x_data = x_data.filter(function(d) {
-            return (d <= that.max_x && d >= that.min_x);
-        });
-        var x_data_ind = x_data.map(function (d,i) {
-            return {index: i, value: d};
-        });
-
         this.num_bins = this.get("bins");
-        this.x_bins =  this.create_uniform_bins(this.min_x, this.max_x, this.num_bins);
-        this.x_mid = this.x_bins.map(function(d, i) {
-            return 0.5 * (d + that.x_bins[i - 1]);
-        }).slice(1);
-        this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d) {
-            return d.value;
-        })(x_data_ind);
-        //adding index attribute to mark_data of the model
-        this.mark_data.forEach(function(data, index) { data.index = index; });
+        if (x_data.length == 0) {
+            this.mark_data = [];
+            this.x_mid = [];
+            this.count = [];
+            this.x_bins = [];
+        } else {
+            if(!this.get("preserve_domain").sample) {
+                x_scale.compute_and_set_domain(x_data, this.model_id + "_sample");
+            } else {
+                x_scale.del_domain([], this.model_id + "_sample");
+            }
+
+            this.min_x = x_scale.domain[0];
+            this.max_x = x_scale.domain[1];
+
+            var that = this;
+            x_data = x_data.filter(function(d) {
+                return (d <= that.max_x && d >= that.min_x);
+            });
+            var x_data_ind = x_data.map(function (d,i) {
+                return {index: i, value: d};
+            });
+
+            this.x_bins =  this.create_uniform_bins(this.min_x, this.max_x, this.num_bins);
+            this.x_mid = this.x_bins.map(function(d, i) {
+                return 0.5 * (d + that.x_bins[i - 1]);
+            }).slice(1);
+
+            this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d) {
+                return d.value;
+            })(x_data_ind);
+            //adding index attribute to mark_data of the model
+            this.mark_data.forEach(function(data, index) { data.index = index; });
+        }
         this.normalize_data(false);
 
         this.set("midpoints", this.x_mid);
@@ -97,11 +104,18 @@ var HistModel = markmodel.MarkModel.extend({
     },
 
     normalize_data: function(save_and_update) {
+
+
         this.count = this.mark_data.map(function(d) { return d.length; });
         if (this.get("normalized")) {
+            var x_width = 1;
+            if(this.mark_data.length > 0) {
+                x_width = this.mark_data[0].dx;
+            }
+
             var sum = this.count.reduce(function(a, b) { return a + b; }, 0);
             if (sum != 0) {
-                this.count = this.count.map(function(a) { return a / sum; });
+                this.count = this.count.map(function(a) { return a / (sum * x_width); });
             }
         }
 
