@@ -536,7 +536,7 @@ var Figure = widgets.DOMWidgetView.extend({
         var legend_disp = 30 + num_series * 7;
         var legend_height = 14;
         var legend_width = 24;
-        var legend_location = this.model.get("legend_location")
+        var legend_location = this.model.get("legend_location");
 
         var legend_g = this.fig_marks.append("g")
           .attr("class", "g_legend");
@@ -558,7 +558,7 @@ var Figure = widgets.DOMWidgetView.extend({
 
                 var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
                 if(count !== 1) {
-                    legend_g.append("g")
+                    legend_g.insert("g", ":first-child")
                       .attr("class", "axis")
                     .append("rect")
                       .attr({"y": (legend_height + 2) / 2.0,
@@ -574,11 +574,10 @@ var Figure = widgets.DOMWidgetView.extend({
                 legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
                                                           String(coords[1]) + ") ");
 
-                var legend_rect = legend_g.selectAll("rect");
-                legend_rect.style(that.model.get("legend_style"));
+                legend_g.selectAll("text.legendtext").style(that.model.get("legend_text"));
 
-                var legend_text = legend_g.selectAll("text.legendtext");
-                legend_text.style(that.model.get("legend_text"));
+                legend_g.selectAll(".axis").selectAll("rect").style(that.model.get("legend_style"));
+
             });
         }
     },
