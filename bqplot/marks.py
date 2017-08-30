@@ -38,6 +38,7 @@ Marks
    Map
 """
 from warnings import warn
+import ipywidgets as widgets
 from ipywidgets import Widget, DOMWidget, CallbackDispatcher, Color, widget_serialization
 from traitlets import (
         Int, Unicode, List, Enum, Dict, Bool, Float, Instance, Tuple,
@@ -1411,3 +1412,17 @@ class Graph(Mark):
 
     _model_name = Unicode('GraphModel').tag(sync=True)
     _view_name = Unicode('Graph').tag(sync=True)
+
+@register_mark('bqplot.Image')
+class Image(Mark):
+    _view_name = Unicode('Image').tag(sync=True)
+    _model_name = Unicode('ImageModel').tag(sync=True)
+    image = Instance(widgets.Image).tag(sync=True, **widget_serialization)
+    x0 = (Float(0.0) | Date() | Unicode()).tag(sync=True)
+    y0 = (Float(0.0) | Date() | Unicode()).tag(sync=True)
+    x1 = (Float(1.0) | Date() | Unicode()).tag(sync=True)
+    y1 = (Float(1.0) | Date() | Unicode()).tag(sync=True)
+    scales_metadata = Dict({
+        'x': {'orientation': 'horizontal', 'dimension': 'x'},
+        'y': {'orientation': 'vertical', 'dimension': 'y'},
+    }).tag(sync=True)
