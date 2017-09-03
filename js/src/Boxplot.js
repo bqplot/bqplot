@@ -68,6 +68,8 @@ var Boxplot = mark.Mark.extend({
         this.d3el.selectAll(".boxplot").selectAll("path, rect")
             .style("stroke", stroke);
 
+        this.d3el.selectAll(".outlier").style("stroke", stroke);
+
         if (this.legend_el) {
             this.legend_el.selectAll("path").attr("stroke", stroke);
             this.legend_el.selectAll("text").style("fill", stroke);
@@ -159,10 +161,14 @@ var Boxplot = mark.Mark.extend({
         elements.style("fill", function(d) {
               return (d[0] > d[3] ? color : "none");
           })
-          .style("stroke", stroke)
           .style("opacity", function(d, i) {
                     return opacities[i];
                 });
+
+        elements.selectAll("path, rect")
+          .style("stroke", stroke);
+
+          elements.selectAll(".outliers").style("stroke", stroke);
     },
 
     clear_style: function(style_dict, indices) {
