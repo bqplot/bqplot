@@ -774,6 +774,8 @@ class Boxplot(Mark):
         too short, or the element of the list is set to None.
     outlier-color: color
         color for the outlier
+    box_width: int (default: 30)
+        width of the box in pixels. The minimum value is 5
 
     Data Attributes
 
@@ -803,6 +805,7 @@ class Boxplot(Mark):
     box_fill_color = Color('dodgerblue', sync=True, display_name='Fill color for the box')
     outlier_fill_color = Color('gray').tag(sync=True, display_name='Outlier fill color')
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    box_width = Int(30, min=5).tag(sync=True, display_name='Box Width')
 
     _view_name = Unicode('Boxplot').tag(sync=True)
     _model_name = Unicode('BoxplotModel').tag(sync=True)
