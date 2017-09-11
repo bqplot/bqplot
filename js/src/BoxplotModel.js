@@ -33,7 +33,8 @@ var BoxplotModel = markmodel.MarkModel.extend({
             stroke: null,
             box_fill_color: "dodgerblue",
             outlier_fill_color: "gray",
-            opacities: []
+            opacities: [],
+            box_width: 30
         });
     },
 
@@ -43,13 +44,6 @@ var BoxplotModel = markmodel.MarkModel.extend({
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
         this.update_domains();
-    },
-
-    update_bounding_box: function(model, value) {
-        // TODO: Actually add some padding.
-        var pad = 0;
-        this.x_padding = this.y_padding = pad;
-        this.trigger("mark_padding_updated");
     },
 
     update_data: function() {
