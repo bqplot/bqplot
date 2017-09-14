@@ -57,7 +57,7 @@ from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import (
         Lines, Scatter, Hist, Bars, OHLC, Pie, Map,
-        Label, HeatMap, GridHeatMap, topo_load
+        Label, HeatMap, GridHeatMap, topo_load, Boxplot
     )
 from .toolbar import Toolbar
 from .interacts import (
@@ -815,6 +815,30 @@ def bar(x, y, **kwargs):
     kwargs['x'] = x
     kwargs['y'] = y
     return _draw_mark(Bars, **kwargs)
+
+def boxplot(x, y, **kwargs):
+    """Draws a boxplot in the current context figure.
+
+    Parameters
+    ----------
+
+    x: numpy.ndarray, 1d
+        The x-coordinates of the data points.
+    y: numpy.ndarray, 2d
+        The data from which the boxes are to be created. Each row of the data
+        corresponds to one box drawn in the plot.
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
+    kwargs['x'] = x
+    kwargs['y'] = y
+    return _draw_mark(Boxplot, **kwargs)
 
 
 @_process_data('color')
