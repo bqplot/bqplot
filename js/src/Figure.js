@@ -203,6 +203,8 @@ var Figure = widgets.DOMWidgetView.extend({
             }, that);
             that.model.on("change:legend_location", that.update_legend, that);
             that.model.on("change:title", that.update_title, that);
+            that.model.on("change:legend_style", that.update_legend, that);
+            that.model.on("change:legend_text", that.update_legend, that);
 
             that.model.on("change:interaction", function(model, value) {
                 this.set_interaction(value);
@@ -244,6 +246,8 @@ var Figure = widgets.DOMWidgetView.extend({
         this.listenTo(this.model, "change:title_style", this.title_style_updated, this);
         this.listenTo(this.model, "change:background_style", this.background_style_updated, this);
         this.listenTo(this.model, "change:layout", this.change_layout, this);
+        this.listenTo(this.model, "change:legend_style", this.legend_style_updated, this);
+        this.listenTo(this.model, "change:legend_text", this.legend_text_updated, this);
     },
 
     title_style_updated: function() {
@@ -252,6 +256,14 @@ var Figure = widgets.DOMWidgetView.extend({
 
     background_style_updated: function() {
         this.bg.style(this.model.get("background_style"));
+    },
+
+    legend_style_updated: function() {
+        this.fig_marks.legend_g.style(this.model.get("legend_style"));
+    },
+
+    legend_text_updated: function() {
+        this.fig_marks.legend_g.text.style(this.model.get("legend_text"));
     },
 
     create_figure_scales: function() {
@@ -553,14 +565,14 @@ var Figure = widgets.DOMWidgetView.extend({
 
                 var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
                 if(count !== 1) {
-                    legend_g.append("g")
+                    legend_g.insert("g", ":first-child")
                       .attr("class", "axis")
                     .append("rect")
                       .attr({"y": (legend_height + 2) / 2.0,
                              "x": (-0.5 * (legend_height + 2))})
                       .attr("width", (max_label_len + 2) + "em")
-                      .attr("height", (count * (legend_height + 2)))
-                      .style({"fill": "none"});
+                      .attr("height", (count * (legend_height + 2)));
+                      
                 }
                 max_label_len = (legend_location === "top-right" ||
                                  legend_location === "right" ||
@@ -568,6 +580,11 @@ var Figure = widgets.DOMWidgetView.extend({
                 var em = 16;
                 legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
                                                           String(coords[1]) + ") ");
+
+                legend_g.selectAll("text.legendtext").style(that.model.get("legend_text"));
+
+                legend_g.selectAll(".axis").selectAll("rect").style(that.model.get("legend_style"));
+
             });
         }
     },

@@ -39,6 +39,8 @@ var FigureModel = basemodel.BaseModel.extend({
             fig_color: null,
             title_style: {},
             background_style: {},
+            legend_style: {},
+            legend_text: {},
 
             min_width: "",
             min_height: "",
