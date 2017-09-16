@@ -816,6 +816,7 @@ def bar(x, y, **kwargs):
     kwargs['y'] = y
     return _draw_mark(Bars, **kwargs)
 
+@_process_data()
 def boxplot(x, y, **kwargs):
     """Draws a boxplot in the current context figure.
 
