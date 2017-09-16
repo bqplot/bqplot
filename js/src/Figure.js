@@ -203,8 +203,6 @@ var Figure = widgets.DOMWidgetView.extend({
             }, that);
             that.model.on("change:legend_location", that.update_legend, that);
             that.model.on("change:title", that.update_title, that);
-            that.model.on("change:legend_style", that.update_legend, that);
-            that.model.on("change:legend_text", that.update_legend, that);
 
             that.model.on("change:interaction", function(model, value) {
                 this.set_interaction(value);
@@ -259,11 +257,13 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     legend_style_updated: function() {
-        this.fig_marks.legend_g.style(this.model.get("legend_style"));
+        this.fig_marks.selectAll(".g_legend").selectAll(".axis").selectAll("rect")
+            .style(this.model.get("legend_style"));
     },
 
     legend_text_updated: function() {
-        this.fig_marks.legend_g.text.style(this.model.get("legend_text"));
+        this.fig_marks.selectAll(".g_legend").selectAll("text.legendtext")
+            .style(this.model.get("legend_text"));
     },
 
     create_figure_scales: function() {
@@ -572,7 +572,7 @@ var Figure = widgets.DOMWidgetView.extend({
                              "x": (-0.5 * (legend_height + 2))})
                       .attr("width", (max_label_len + 2) + "em")
                       .attr("height", (count * (legend_height + 2)));
-                      
+
                 }
                 max_label_len = (legend_location === "top-right" ||
                                  legend_location === "right" ||
