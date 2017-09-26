@@ -9,6 +9,17 @@ See the [bqplot
 readme](https://github.com/bloomberg/bqplot/blob/master/README.md) for more
 information.
 
+Install
+-------
+To install the experimental bqplot JupyterLab extension, install the Python package, make sure the Jupyter widgets extension is installed, and install the bqplot extension:
+
+```
+$ pip install bqplot
+$ jupyter labextension install @jupyter-widgets/jupyterlab-manager # install the Jupyter widgets extension
+$ jupyter labextension install bqplot-jupyterlab
+```
+
+
 License
 -------
 

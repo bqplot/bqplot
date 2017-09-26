@@ -38,7 +38,7 @@ Getting Started
 
 This package depends on the following packages:
 
-- `ipywidgets` (version >= 5.2.2)
+- `ipywidgets` (version >= 7.0.0)
 - `traitlets` (version >= 4.3.0)
 - `traittypes`
 - `numpy`
@@ -74,6 +74,13 @@ Note for developers: the `--symlink` argument on Linux or OS X allows one to
 modify the JavaScript code in-place. This feature is not available
 with Windows.
 
+For the experimental JupyterLab extension, install the Python package, make sure the Jupyter widgets extension is installed, and install the bqplot extension:
+
+```
+$ pip install bqplot
+$ jupyter labextension install @jupyter-widgets/jupyterlab-manager # install the Jupyter widgets extension
+$ jupyter labextension install bqplot-jupyterlab
+```
 
 ### Loading `bqplot`
 
