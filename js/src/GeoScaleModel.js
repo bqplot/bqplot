@@ -100,19 +100,21 @@ var AlbersUSAModel = GeoScaleModel.extend({
         return _.extend(GeoScaleModel.prototype.defaults(), {
             _model_name: "AlbersUSAModel",
             _view_name: "AlbersUSA",
-            scale_factor: 1200
+            scale_factor: 1200,
+            translate: [600, 490]  // center of the SVG viewbox (see Map.js)
         });
     },
 
     initialize: function() {
         AlbersUSAModel.__super__.initialize.apply(this, arguments);
-        this.on_some_change(["scale_factor"], this.create_projection, this);
+        this.on_some_change(["scale_factor", "translate"], this.create_projection, this);
         this.create_projection();
     },
 
     create_projection: function() {
         this.projection = d3.geo.albersUsa()
-            .scale(this.get("scale_factor"));
+            .scale(this.get("scale_factor"))
+            .translate(this.get("translate"));
         this.attribute_changed();
     },
 

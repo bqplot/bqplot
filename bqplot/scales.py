@@ -191,6 +191,7 @@ class AlbersUSA(GeoScale):
     ----------
     scale_factor: float (default: 1200)
         Specifies the scale value for the projection
+    translate: tuple (default: (600, 490))
     rtype: (Number, Number) (class-level attribute)
         This attribute should not be modifed. The range type of a geo
         scale is a tuple.
@@ -199,6 +200,7 @@ class AlbersUSA(GeoScale):
     """
 
     scale_factor = Float(1200).tag(sync=True)
+    translate = Tuple((600, 490)).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('AlbersUSA').tag(sync=True)
