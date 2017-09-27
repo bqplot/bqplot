@@ -1125,8 +1125,9 @@ class Map(Mark):
     hover_highlight: bool (default: True)
         boolean to control if the map should be aware of which country is being
         hovered on.
-    map_data: tuple (default: topoload("WorldMapData.json"))
-        tuple containing which map is to be displayed
+    map_data: dict (default: topo_load("map_data/WorldMap.json"))
+        a topojson-formatted dictionary with the objects to map under the key
+        'subunits'.
 
     Data Attributes
 
