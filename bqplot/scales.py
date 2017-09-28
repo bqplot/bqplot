@@ -121,7 +121,7 @@ class Mercator(GeoScale):
     ----------
     scale_factor: float (default: 190)
         Specifies the scale value for the projection
-    center: list (default: (0, 60))
+    center: tuple (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     rotate: tuple (default: (0, 0))
         Degree of rotation in each axis.
@@ -158,7 +158,7 @@ class Albers(GeoScale):
         Degree of rotation in each axis.
     parallels: tuple (default: (29.5, 45.5))
         Sets the two parallels for the conic projection.
-    center: list (default: (0, 60))
+    center: tuple (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     precision: float (default: 0.1)
         Specifies the threshold for the projections adaptive resampling to the
@@ -191,6 +191,7 @@ class AlbersUSA(GeoScale):
     ----------
     scale_factor: float (default: 1200)
         Specifies the scale value for the projection
+    translate: tuple (default: (600, 490))
     rtype: (Number, Number) (class-level attribute)
         This attribute should not be modifed. The range type of a geo
         scale is a tuple.
@@ -199,6 +200,7 @@ class AlbersUSA(GeoScale):
     """
 
     scale_factor = Float(1200).tag(sync=True)
+    translate = Tuple((600, 490)).tag(sync=True)
     rtype = '(Number, Number)'
     dtype = np.number
     _view_name = Unicode('AlbersUSA').tag(sync=True)
@@ -216,7 +218,7 @@ class EquiRectangular(GeoScale):
     ----------
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
-    center: list (default: (0, 60))
+    center: tuple (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     """
 
@@ -240,7 +242,7 @@ class Orthographic(GeoScale):
     ----------
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
-    center: list (default: (0, 60))
+    center: tuple (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     rotate: tuple (default: (96, 0))
         Degree of rotation in each axis.
@@ -273,7 +275,7 @@ class Gnomonic(GeoScale):
     ----------
     scale_factor: float (default: 145)
        Specifies the scale value for the projection
-    center: list (default: (0, 60))
+    center: tuple (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     precision: float (default: 0.1)
         Specifies the threshold for the projections adaptive resampling to the
@@ -306,7 +308,7 @@ class Stereographic(GeoScale):
         Specifies the scale value for the projection
     rotate: tuple (default: (96, 0))
         Degree of rotation in each axis.
-    center: list (default: (0, 60))
+    center: tuple (default: (0, 60))
         Specifies the longitude and latitude where the map is centered.
     precision: float (default: 0.1)
         Specifies the threshold for the projections adaptive resampling to the
