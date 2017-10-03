@@ -154,8 +154,11 @@ class Figure(DOMWidget):
     def _default_scale_y(self):
         return LinearScale(min=0, max=1, allow_padding=False)
 
-    def save_png(self):
-        self.send({"type": "save_png"})
+    def save_png(self, filename=None):
+        msg = {"type": "save_png"}
+        if filename:
+            msg["filename"] = filename
+        self.send(msg)
 
     @validate('min_aspect_ratio', 'max_aspect_ratio')
     def _validate_aspect_ratio(self, proposal):

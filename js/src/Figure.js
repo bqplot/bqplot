@@ -223,8 +223,8 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
 	handle_custom_messages: function(msg) {
-        if (msg.type === 'save_png') {
-            this.save_png();
+      if (msg.type === 'save_png') {
+          this.save_png(msg.filename);
 	    }
 	},
 
@@ -672,7 +672,7 @@ var Figure = widgets.DOMWidgetView.extend({
         return Figure.__super__.remove.apply(this, arguments);
     },
 
-    save_png: function() {
+    save_png: function(filename) {
 
         var  replaceAll = function (find, replace, str) {
             return str.replace(new RegExp(find, "g"), replace);
@@ -752,7 +752,7 @@ var Figure = widgets.DOMWidgetView.extend({
                 var context = canvas.getContext("2d");
                 context.drawImage(image, 0, 0);
                 var a = document.createElement("a");
-                a.download = "image.png";
+                a.download = filename || "image.png";
                 a.href = canvas.toDataURL("image/png");
                 document.body.appendChild(a);
                 a.click();
