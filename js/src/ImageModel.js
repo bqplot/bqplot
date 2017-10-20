@@ -37,7 +37,7 @@ var ImageModel = markmodel.MarkModel.extend({
 
     initialize: function() {
         ImageModel.__super__.initialize.apply(this, arguments);
-        this.on("change:x0 change:y0 change:x1 change:y1", this.update_data, this);
+        this.on_some_change(['x0', 'y0', 'x1', 'y1'], this.update_data, this);
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
     },
