@@ -1429,8 +1429,29 @@ class Graph(Mark):
     _model_name = Unicode('GraphModel').tag(sync=True)
     _view_name = Unicode('Graph').tag(sync=True)
 
+
 @register_mark('bqplot.Image')
 class Image(Mark):
+    """Image mark, based on the ipywidgets image
+
+    If no scales are passed, uses the parent Figure scales.
+
+    Attributes
+    ----------
+    image: Instance of ipywidgets.Image
+        Image to be displayed
+
+    Data Attributes
+
+    x0: float or date or unicode (default: 0)
+        abscissa of the left-hand side of the image
+    x1: float or date or unicode (default: 1)
+        abscissa of the right-hand side of the image
+    y0: float or date or unicode (default: 0)
+        ordinate of the bottom of the image
+    y1: float or date or unicode (default: 1)
+        ordinate of the top of the image
+    """
     _view_name = Unicode('Image').tag(sync=True)
     _model_name = Unicode('ImageModel').tag(sync=True)
     image = Instance(widgets.Image).tag(sync=True, **widget_serialization)
