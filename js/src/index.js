@@ -87,7 +87,9 @@ var loadedModules = [
     require("./HeatMapModel"),
     require("./Toolbar"),
     require("./GraphModel"),
-    require("./Graph")
+    require("./Graph"),
+    require("./Image"),
+    require("./ImageModel")
 ];
 
 for (var i in loadedModules) {
