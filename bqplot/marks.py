@@ -279,7 +279,7 @@ class Lines(Mark):
         of lines, the colors are reused.
     close_path: bool (default: False)
         Whether to close the paths or not.
-    fill: {'none', 'bottom', 'top', 'inside'}
+    fill: {'none', 'bottom', 'top', 'inside', 'between'}
         Fill in the area defined by the curves
     fill_colors: list of colors (default: [])
         Fill colors for the areas. Defaults to stroke-colors when no color provided.
@@ -359,7 +359,7 @@ class Lines(Mark):
                           'cardinal', 'cardinal-open', 'cardinal-closed', 'monotone', 'step-before', 'step-after'],
                          default_value='linear').tag(sync=True, display_name='Interpolation')
     close_path = Bool().tag(sync=True, display_name='Close path')
-    fill = Enum(['none', 'bottom', 'top', 'inside'], default_value='none').tag(sync=True, display_name='Fill')
+    fill = Enum(['none', 'bottom', 'top', 'inside', 'between'], default_value='none').tag(sync=True, display_name='Fill')
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                    'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value=None, allow_none=True).tag(sync=True,

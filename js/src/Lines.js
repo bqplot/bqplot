@@ -425,11 +425,18 @@ var Lines = mark.Mark.extend({
 
     update_fill: function() {
         var fill = this.model.get("fill"),
-            area = (fill === "top" || fill === "bottom");
+            area = (fill === "top" || fill === "bottom" || fill === "between");
 
-        this.area.y0(fill === "bottom" ? this.parent.plotarea_height : 0)
-          .defined(function(d) { return area && d.y !== null; });
+        var y_scale = this.scales.y;
 
+        this.area.defined(function(d) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
+        if (fill == "bottom") {
+            this.area.y0(this.parent.plotarea_height);
+        } else if (fill == "top") {
+            this.area.y0(0)
+        } else if (fill == "between") {
+            this.area.y0(function(d) { return y_scale.scale(d.y0) + y_scale.offset; })
+        }
         var that = this;
         this.d3el.selectAll(".curve").select(".area")
           .attr("d", function(d) {
@@ -474,8 +481,15 @@ var Lines = mark.Mark.extend({
         var fill = this.model.get("fill");
         this.area
           .x(function(d) { return x_scale.scale(d.x) + x_scale.offset; })
-          .y0(fill === "bottom" ? this.parent.plotarea_height : 0)
           .y1(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
+        
+        if (fill == "bottom") {
+            this.area.y0(this.parent.plotarea_height);
+        } else if (fill == "top") {
+            this.area.y0(0)
+        } else if (fill == "between") {
+            this.area.y0(function(d) { return y_scale.scale(d.y0) + y_scale.offset; })
+        }
 
         var that = this;
         var curves_sel = this.d3el.selectAll(".curve");
@@ -490,7 +504,10 @@ var Lines = mark.Mark.extend({
         curves_sel.select(".area")
           .transition("update_line_xy")
           .duration(animation_duration)
-          .attr("d", function(d) { return that.area(d.values); });
+          .attr("d", function(d, i) {
+            return that.area(d.values);
+        });
+
 
         curves_sel.select(".curve_label")
           .transition("update_line_xy")
@@ -530,7 +547,7 @@ var Lines = mark.Mark.extend({
           .text(function(d) { return d.name; });
 
         var fill = this.model.get("fill"),
-            area = (fill === "top" || fill === "bottom");
+            area = (fill === "top" || fill === "bottom" || fill === "between");
         var that = this;
         curves_sel.select(".line")
           .attr("id", function(d, i) { return "curve" + (i+1); })
