@@ -51,13 +51,14 @@ import sys
 from collections import OrderedDict
 from IPython.display import display
 from ipywidgets import VBox
-from numpy import arange, issubdtype, array, column_stack, shape
+from numpy import arange, issubdtype, array, column_stack, shape, asarray
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import (
         Lines, Scatter, Hist, Bars, OHLC, Pie, Map,
-        Label, HeatMap, GridHeatMap, topo_load, Boxplot
+        Label, HeatMap, GridHeatMap, topo_load, Boxplot,
+        _check_scaled, _get_scale_name
     )
 from .toolbar import Toolbar
 from .interacts import (
@@ -376,7 +377,7 @@ def axes(mark=None, options={}, **kwargs):
     fig_axes = [axis for axis in fig.axes]
     axes = {}
     for name in scales:
-        if name not in mark.class_trait_names(scaled=True):
+        if name not in mark.class_trait_names(scaled=_check_scaled):
             # The scale is not needed.
             continue
         scale_metadata = mark.scales_metadata.get(name, {})
@@ -574,40 +575,42 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     update_context = kwargs.pop('update_context', True)
 
     # Going through the list of data attributes
-    for name in mark_type.class_trait_names(scaled=True):
-        dimension = _get_attribute_dimension(name, mark_type)
-        # TODO: the following should also happen if name in kwargs and
-        # scales[name] is incompatible.
-        if name not in kwargs:
+    for name, traitlet in mark_type.class_traits(scaled=_check_scaled).items():
+        scale_name = _get_scale_name(traitlet)
+        dimension = _get_attribute_dimension(scale_name, mark_type)
+
+        if name not in kwargs and traitlet.allow_none:
             # The scaled attribute is not being passed to the mark. So no need
             # create a scale for this.
             continue
-        elif name in scales:
+        elif scale_name in scales:
             if update_context:
-                _context['scales'][dimension] = scales[name]
+                _context['scales'][dimension] = scales[scale_name]
         # Scale has to be fetched from the context or created as it has not
         # been passed.
         elif dimension not in _context['scales']:
             # Creating a scale for the dimension if a matching scale is not
             # present in _context['scales']
-            traitlet = mark_type.class_traits()[name]
             rtype = traitlet.get_metadata('rtype')
-            dtype = traitlet.validate(None, kwargs[name]).dtype
+            # Check the numpy dtype of the trait value
+            # The `default_value` will not work if `traitlet` is a `Union` or an
+            # `Array`. In that case the traitlet must be added to `kwargs`
+            # before the call to `_draw_mark`.
+            dtype = asarray(kwargs.get(name, traitlet.default_value)).dtype
             # Fetching the first matching scale for the rtype and dtype of the
             # scaled attributes of the mark.
             compat_scale_types = [
-                    Scale.scale_types[key]
-                    for key in Scale.scale_types
-                    if Scale.scale_types[key].rtype == rtype and
-                    issubdtype(dtype, Scale.scale_types[key].dtype)
+                    scale_type for key, scale_type in Scale.scale_types.items()
+                    if scale_type.rtype == rtype and
+                    issubdtype(dtype, scale_type.dtype)
                 ]
             sorted_scales = sorted(compat_scale_types, key=lambda x: x.precedence)
-            scales[name] = sorted_scales[-1](**options.get(name, {}))
+            scales[scale_name] = sorted_scales[-1](**options.get(scale_name, {}))
             # Adding the scale to the context scales
             if update_context:
-                _context['scales'][dimension] = scales[name]
+                _context['scales'][dimension] = scales[scale_name]
         else:
-            scales[name] = _context['scales'][dimension]
+            scales[scale_name] = _context['scales'][dimension]
 
     mark = mark_type(scales=scales, **kwargs)
     _context['last_mark'] = mark
@@ -615,6 +618,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     if kwargs.get('axes', True):
         axes(mark, options=axes_options)
     return mark
+
 
 def _infer_x_for_line(y):
     """
