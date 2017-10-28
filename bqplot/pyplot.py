@@ -307,14 +307,14 @@ def scales(key=None, scales={}):
     """
     old_ctxt = _context['scales']
     if key is None:  # No key provided
-        _context['scales'] = {_get_attribute_dimension(k): scales[k] if scales[k] is not Keep
-                              else old_ctxt[_get_attribute_dimension(k)] for k in scales}
+        _context['scales'] = {_get_scale_dimension(k): scales[k] if scales[k] is not Keep
+                              else old_ctxt[_get_scale_dimension(k)] for k in scales}
     else:  # A key is provided
         if key not in _context['scale_registry']:
             _context['scale_registry'][key] = {
-                _get_attribute_dimension(k): scales[k]
+                _get_scale_dimension(k): scales[k]
                 if scales[k] is not Keep
-                else old_ctxt[_get_attribute_dimension(k)]
+                else old_ctxt[_get_scale_dimension(k)]
                 for k in scales
             }
         _context['scales'] = _context['scale_registry'][key]
@@ -346,7 +346,7 @@ def set_lim(min, max, name):
         When no context figure is associated with the provided key.
 
     """
-    scale = _context['scales'][_get_attribute_dimension(name)]
+    scale = _context['scales'][_get_scale_dimension(name)]
     scale.min = min
     scale.max = max
     return scale
@@ -577,7 +577,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     # Going through the list of data attributes
     for name, traitlet in mark_type.class_traits(scaled=_check_scaled).items():
         scale_name = _get_scale_name(traitlet)
-        dimension = _get_attribute_dimension(scale_name, mark_type)
+        dimension = _get_scale_dimension(scale_name, mark_type)
 
         if name not in kwargs and traitlet.allow_none:
             # The scaled attribute is not being passed to the mark. So no need
@@ -786,7 +786,7 @@ def hist(sample, options={}, **kwargs):
     kwargs['sample'] = sample
     scales = kwargs.pop('scales', {})
     if 'count' not in scales:
-        dimension = _get_attribute_dimension('count', Hist)
+        dimension = _get_scale_dimension('count', Hist)
         if dimension in _context['scales']:
             scales['count'] = _context['scales'][dimension]
         else:
@@ -1215,17 +1215,17 @@ def _update_fig_axis_registry(fig, dimension, scale, axis):
     setattr(fig, 'axis_registry', axis_registry)
 
 
-def _get_attribute_dimension(trait_name, mark_type=None):
-    """Returns the dimension for the name of the trait for the specified mark.
+def _get_scale_dimension(scale_name, mark_type=None):
+    """Returns the dimension for the name of the scale of the specified mark.
 
-    If `mark_type` is `None`, then the `trait_name` is returned
+    If `mark_type` is `None`, then the `scale_name` is returned
     as is.
-    Returns `None` if the `trait_name` is not valid for `mark_type`.
+    Returns `None` if the `scale_name` is not valid for `mark_type`.
     """
     if(mark_type is None):
-        return trait_name
+        return scale_name
     scale_metadata = mark_type.class_traits()['scales_metadata'].default_args[0]
-    return scale_metadata.get(trait_name, {}).get('dimension', None)
+    return scale_metadata.get(scale_name, {}).get('dimension', None)
 
 
 def _apply_properties(widget, properties={}):
