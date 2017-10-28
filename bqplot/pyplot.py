@@ -573,6 +573,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', {})
     update_context = kwargs.pop('update_context', True)
+    old_context = {k: v for k, v in _context['scales'].items()}
 
     # Going through the list of data attributes
     for name, traitlet in mark_type.class_traits(scaled=_check_scaled).items():
@@ -612,7 +613,12 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
         else:
             scales[scale_name] = _context['scales'][dimension]
 
-    mark = mark_type(scales=scales, **kwargs)
+    try:
+        mark = mark_type(scales=scales, **kwargs)
+    except:
+        # Revert the changes to the scale context
+        _context['scales'] = old_context
+        raise
     _context['last_mark'] = mark
     fig.marks = [m for m in fig.marks] + [mark]
     if kwargs.get('axes', True):
