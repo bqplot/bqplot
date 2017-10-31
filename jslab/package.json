@@ -1,6 +1,6 @@
 {
   "name": "jupyterlab-bqplot",
-  "version": "0.3.1",
+  "version": "0.3.0.1",
   "description": "A JupyterLab plugin exposing bqplot",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@jupyter-widgets/jupyterlab-manager": "^0.23.1",
-    "bqplot": "0.3.1"
+    "bqplot": "0.3.0.1"
   },
   "jupyterlab": {
     "extension": true
