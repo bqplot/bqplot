@@ -61,6 +61,7 @@ var Boxplot = mark.Mark.extend({
         this.listenTo(this.model, "change:outlier_fill_color", this.update_outlier_fill_color, this);
         this.listenTo(this.model, "change:box_fill_color", this.update_box_fill_color, this);
         this.listenTo(this.model, "data_updated", this.draw, this);
+        this.listenTo(this.model, "change:box_width", this.update_box_width, this);
     },
 
     update_stroke: function() {
@@ -118,6 +119,21 @@ var Boxplot = mark.Mark.extend({
         // Redraw existing marks
         this.draw_mark_paths(marker, this.calculate_mark_max_width(),
             this.d3el, this.model.mark_data);
+    },
+
+    compute_view_padding: function() {
+        //This function sets the padding for the view through the variables
+        //x_padding and y_padding which are view specific paddings in pixel
+        var x_padding = this.model.get("box_width") / 2.0 + 1;
+        if (x_padding !== this.x_padding) {
+            this.x_padding = x_padding;
+            this.trigger("mark_padding_updated");
+        }
+    },
+
+    update_box_width: function() {
+        this.compute_view_padding();
+        this.draw();
     },
 
     update_idx_selected: function(model, value) {
@@ -388,7 +404,8 @@ var Boxplot = mark.Mark.extend({
             });
 
        //Box
-        var width = 30;
+        var width = this.model.get("box_width");
+
         selector.selectAll(".box")
             .style("fill", fillcolor)
             .attr("x", -width /2)
@@ -513,6 +530,7 @@ var Boxplot = mark.Mark.extend({
     relayout: function() {
         Boxplot.__super__.relayout.apply(this);
         this.set_ranges();
+        this.compute_view_padding();
         this.d3el.select(".intselmouse")
             .attr("width", this.width)
             .attr("height", this.height);
