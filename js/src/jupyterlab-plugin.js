@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 
-var bqplot = require('bqplot');
-require("bqplot/css/bqplot.css");
+var bqplot = require('./index');
+require("../css/bqplot.css");
 
-var jupyterlab_widgets = require('@jupyter-widgets/jupyterlab-manager');
+var base = require('@jupyter-widgets/base');
 
 /**
  * The widget manager provider.
  */
 module.exports = {
   id: 'bqplot',
-  requires: [jupyterlab_widgets.INBWidgetExtension],
+  requires: [base.IJupyterWidgetRegistry],
   activate: function(app, widgets) {
       widgets.registerWidget({
           name: 'bqplot',
