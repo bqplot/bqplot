@@ -106,6 +106,10 @@ class Axis(BaseAxis):
         values are towards the figure with resepect to the axis line.
     visible: bool (default: True)
         A visibility toggle for the axis
+    tick_style: Dict (default: {})
+        Dictionary containing the CSS-style of the text for the ticks.
+        For example: font-size of the text can be changed by passing
+        `{'font-size': 14}`
     """
     icon = 'fa-arrows'
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
@@ -124,6 +128,7 @@ class Axis(BaseAxis):
     label_offset = Unicode(default_value=None, allow_none=True).tag(sync=True)
 
     visible = Bool(True).tag(sync=True)
+    tick_style = Dict().tag(sync=True)
 
     _view_name = Unicode('Axis').tag(sync=True)
     _model_name = Unicode('AxisModel').tag(sync=True)

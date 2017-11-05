@@ -69,6 +69,7 @@ var Axis = widgets.WidgetView.extend({
 
         this.listenTo(this.model, "change:tick_values", this.set_tick_values, this);
         this.listenTo(this.model, "change:tick_format", this.tickformat_changed, this);
+        this.listenTo(this.model, "change:tick_style", this.tickstyle_changed, this);
         this.listenTo(this.model, "change:num_ticks", function(model, value) {
             this.num_ticks = value;
             this.set_tick_values();
@@ -158,6 +159,7 @@ var Axis = widgets.WidgetView.extend({
         }
         this.axis.tickFormat(this.tick_format);
 
+
         if(this.g_axisline) {
              this.g_axisline
                 .transition("set_tick_values")
@@ -171,6 +173,13 @@ var Axis = widgets.WidgetView.extend({
         this.axis.tickFormat(this.tick_format);
         if(this.g_axisline) {
             this.g_axisline.call(this.axis);
+        }
+    },
+
+    tickstyle_changed: function() {
+        if(this.g_axisline) {
+            this.g_axisline.selectAll(".tick text")
+                .style(this.model.get("tick_style"));
         }
     },
 
@@ -262,6 +271,7 @@ var Axis = widgets.WidgetView.extend({
 
         this.set_tick_values();
         this.update_grid_lines();
+        this.tickstyle_changed();
         this.update_color();
         this.update_label();
     },
