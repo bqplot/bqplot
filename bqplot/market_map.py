@@ -210,6 +210,14 @@ class MarketMap(DOMWidget):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
 
+    def _compare(self, a, b):
+        # Compare dataframes properly
+        import pandas as pd
+        if isinstance(a, pd.DataFrame) or isinstance(b, pd.DataFrame):
+            return pd.DataFrame.equals(a,b)
+
+        return super(MarketMap, self)._compare(a, b)
+
     _view_name = Unicode('MarketMap').tag(sync=True)
     _model_name = Unicode('MarketMapModel').tag(sync=True)
     _view_module = Unicode('bqplot').tag(sync=True)
