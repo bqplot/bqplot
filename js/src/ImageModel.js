@@ -41,6 +41,12 @@ var ImageModel = markmodel.MarkModel.extend({
     },
 
     update_data: function() {
+        // var x_raw = this.get_typed_field("x"),
+        //     y_raw = this.get_typed_field("y");
+        // var scales = this.get("scales");
+        // var x = (scales.x.type === "date") ? x_raw.map(this.convert_to_date) : x_raw,
+        //     y = (scales.y.type === "date") ? y_raw.map(this.convert_to_date) : y_raw;
+        this.mark_data = {x: this.get_typed_field("x"), y: this.get_typed_field("y")};
         this.update_domains();
         this.trigger("data_updated");
     },
@@ -54,19 +60,15 @@ var ImageModel = markmodel.MarkModel.extend({
         var y_scale = scales.y;
 
         if(x_scale) {
-            var x_raw = this.get("x")
-            var x = (x_scale.type === "date") ? x_raw.map(this.convert_to_date) : x_raw;
             if(!this.get("preserve_domain").x) {
-                x_scale.compute_and_set_domain(x, this.model_id + "_x");
+                x_scale.compute_and_set_domain(this.mark_data['x'], this.model_id + "_x");
             } else {
                 x_scale.del_domain([], this.model_id + "_x");
             }
         }
         if(y_scale) {
-            var y_raw = this.get("y")
-            var y = (y_scale.type === "date") ? y_raw.map(this.convert_to_date) : y_raw;
             if(!this.get("preserve_domain").y) {
-                y_scale.compute_and_set_domain(y, this.model_id + "_y");
+                y_scale.compute_and_set_domain(this.mark_data['y'], this.model_id + "_y");
             } else {
                 y_scale.del_domain([], this.model_id + "_y");
             }

@@ -71,15 +71,15 @@ var Image = mark.Mark.extend({
             var that = this;
             var animation_duration = this.parent.model.get("animation_duration");
             var el = this.d3el || this.el;
-            var x = this.model.get('x').map(x_scale.scale),
-                y = this.model.get('y').map(y_scale.scale);
+            var x_scaled = this.model.mark_data['x'].map(x_scale.scale),
+                y_scaled = this.model.mark_data['y'].map(y_scale.scale);
             el.selectAll("image").transition()
                 .duration(animation_duration)
                 .attr("transform", function(d) {
-                    var tx = x[0] + x_scale.offset
-                    var ty = y[1] + y_scale.offset
-                    var sx  = x[1] - x[0]
-                    var sy = y[0] - y[1]
+                    var tx = x_scaled[0] + x_scale.offset
+                    var ty = y_scaled[1] + y_scale.offset
+                    var sx  = x_scaled[1] - x_scaled[0]
+                    var sy = y_scaled[0] - y_scaled[1]
                     return "translate(" + tx + "," + ty + ") scale(" + sx + ", " + sy + ")"});
     },
     
