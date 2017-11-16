@@ -71,22 +71,22 @@ var Image = mark.Mark.extend({
             var that = this;
             var animation_duration = this.parent.model.get("animation_duration");
             var el = this.d3el || this.el;
+            var x = this.model.get('x').map(x_scale.scale),
+                y = this.model.get('y').map(y_scale.scale);
             el.selectAll("image").transition()
                 .duration(animation_duration)
                 .attr("transform", function(d) {
-                    var tx = x_scale.scale(that.model.get('x0')) + x_scale.offset
-                    var ty = y_scale.scale(that.model.get('y1')) + y_scale.offset
-                    var width  = x_scale.scale(that.model.get('x1')) - x_scale.scale(that.model.get('x0'))
-                    var height = y_scale.scale(that.model.get('y0')) - y_scale.scale(that.model.get('y1'))
-                    var sx = width
-                    var sy = height
+                    var tx = x[0] + x_scale.offset
+                    var ty = y[1] + y_scale.offset
+                    var sx  = x[1] - x[0]
+                    var sy = y[0] - y[1]
                     return "translate(" + tx + "," + ty + ") scale(" + sx + ", " + sy + ")"});
     },
     
     create_listeners: function() {
         Image.__super__.create_listeners.apply(this);
         this.listenTo(this.model, "change:image", this.update_image, this);
-        this.listenTo(this.model, "change:x0 change:x1 change:y0 change:y1", this.set_ranges, this);
+        this.listenTo(this.model, "change:x change:y", this.set_ranges, this);
     },
     
     update_image: function() {

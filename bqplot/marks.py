@@ -1443,8 +1443,9 @@ class Image(Mark):
 
     Data Attributes
 
-    x0: float or date or unicode (default: 0)
-        abscissa of the left-hand side of the image
+    x: tuple of float or date or unicode (default: (0, 1))
+        abscissas of the left and right-hand side of the image
+        in the format (x0, x1)
     x1: float or date or unicode (default: 1)
         abscissa of the right-hand side of the image
     y0: float or date or unicode (default: 0)
@@ -1455,11 +1456,18 @@ class Image(Mark):
     _view_name = Unicode('Image').tag(sync=True)
     _model_name = Unicode('ImageModel').tag(sync=True)
     image = Instance(widgets.Image).tag(sync=True, **widget_serialization)
-    x0 = (Float(0.0) | Date() | Unicode()).tag(sync=True)
-    y0 = (Float(0.0) | Date() | Unicode()).tag(sync=True)
-    x1 = (Float(1.0) | Date() | Unicode()).tag(sync=True)
-    y1 = (Float(1.0) | Date() | Unicode()).tag(sync=True)
+    x = Tuple(
+        Float(0.0) | Date() | Unicode(),
+        Float(1.0) | Date() | Unicode(),
+        default_value=(0, 1),
+              ).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis')
+    y = Tuple(
+        Float(0.0) | Date() | Unicode(),
+        Float(1.0) | Date() | Unicode(),
+        default_value=(0, 1),
+              ).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis')
     scales_metadata = Dict({
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'},
     }).tag(sync=True)
+
