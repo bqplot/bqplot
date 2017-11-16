@@ -24,10 +24,8 @@ var ImageModel = markmodel.MarkModel.extend({
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
             _model_name: "ImageModel",
             _view_name: "Image",
-            x0: 0.0,
-            y0: 0.0,
-            x1: 1.0,
-            y1: 1.0,
+            x: (0.0, 1.0),
+            y: (0.0, 1.0),
             scales_metadata: {
                 'x': {'orientation': 'horizontal', 'dimension': 'x'},
                 'y': {'orientation': 'vertical', 'dimension': 'y'},
@@ -37,12 +35,13 @@ var ImageModel = markmodel.MarkModel.extend({
 
     initialize: function() {
         ImageModel.__super__.initialize.apply(this, arguments);
-        this.on_some_change(['x0', 'y0', 'x1', 'y1'], this.update_data, this);
+        this.on_some_change(['x', 'y'], this.update_data, this);
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
     },
 
     update_data: function() {
+        this.mark_data = {x: this.get_typed_field("x"), y: this.get_typed_field("y")};
         this.update_domains();
         this.trigger("data_updated");
     },
@@ -56,19 +55,15 @@ var ImageModel = markmodel.MarkModel.extend({
         var y_scale = scales.y;
 
         if(x_scale) {
-            var x = (y_scale.type === "date") ?
-                [this.get_date_elem("x0"), this.get_date_elem("x1")] : [this.get("x0"), this.get("x1")];
             if(!this.get("preserve_domain").x) {
-                x_scale.compute_and_set_domain(x, this.model_id + "_x");
+                x_scale.compute_and_set_domain(this.mark_data['x'], this.model_id + "_x");
             } else {
                 x_scale.del_domain([], this.model_id + "_x");
             }
         }
         if(y_scale) {
-            var y = (y_scale.type === "date") ?
-                [this.get_date_elem("y0"), this.get_date_elem("y1")] : [this.get("y0"), this.get("y1")];
             if(!this.get("preserve_domain").y) {
-                y_scale.compute_and_set_domain(y, this.model_id + "_y");
+                y_scale.compute_and_set_domain(this.mark_data['y'], this.model_id + "_y");
             } else {
                 y_scale.del_domain([], this.model_id + "_y");
             }

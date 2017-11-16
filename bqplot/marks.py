@@ -66,6 +66,16 @@ def register_mark(key=None):
     return wrap
 
 
+# Shape constraint for array-types
+def shape(*dimensions):
+    def validator(trait, value):
+        if value.shape != dimensions:
+            raise TraitError('Expected an of shape %s and got and array with shape %s' % (dimensions, value.shape))
+        else:
+            return value
+    return validator
+
+
 class Mark(Widget):
 
     """The base mark class.
@@ -1443,23 +1453,29 @@ class Image(Mark):
 
     Data Attributes
 
-    x0: float or date or unicode (default: 0)
-        abscissa of the left-hand side of the image
-    x1: float or date or unicode (default: 1)
-        abscissa of the right-hand side of the image
-    y0: float or date or unicode (default: 0)
-        ordinate of the bottom of the image
-    y1: float or date or unicode (default: 1)
-        ordinate of the top of the image
+    x: tuple (default: (0, 1))
+        abscissas of the left and right-hand side of the image
+        in the format (x0, x1)
+    y: tuple (default: (0, 1))
+        ordinates of the bottom and top side of the image
+        in the format (x0, x1)
     """
     _view_name = Unicode('Image').tag(sync=True)
     _model_name = Unicode('ImageModel').tag(sync=True)
     image = Instance(widgets.Image).tag(sync=True, **widget_serialization)
-    x0 = (Float(0.0) | Date() | Unicode()).tag(sync=True)
-    y0 = (Float(0.0) | Date() | Unicode()).tag(sync=True)
-    x1 = (Float(1.0) | Date() | Unicode()).tag(sync=True)
-    y1 = (Float(1.0) | Date() | Unicode()).tag(sync=True)
+    x = Array(default_value=(0, 1)).tag(sync=True, scaled=True,
+                                        rtype='Number',
+                                        atype='bqplot.Axis',
+                                        **array_serialization)\
+        .valid(array_squeeze, shape(2))
+    y = Array(default_value=(0, 1)).tag(sync=True, scaled=True,
+                                        rtype='Number',
+                                        atype='bqplot.Axis',
+                                        **array_serialization)\
+        .valid(array_squeeze, shape(2))
     scales_metadata = Dict({
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'},
     }).tag(sync=True)
+
+
