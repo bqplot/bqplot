@@ -66,6 +66,22 @@ def register_mark(key=None):
     return wrap
 
 
+def _check_scaled(scaled):
+    '''
+    Checks whether a trait is scaled or not
+    '''
+    return scaled is not None
+
+
+def _get_scale_name(trait):
+    '''
+    Returns the scale name for the passed trait, as specified
+    by its `scaled` attribute
+    '''
+    scaled = trait.get_metadata('scaled')
+    return trait.name if scaled is True else scaled
+
+
 class Mark(Widget):
 
     """The base mark class.
@@ -76,9 +92,10 @@ class Mark(Widget):
 
     Data attributes are decorated with the following values:
 
-    scaled: bool
-        Indicates whether the considered attribute is a data attribute which
-        must be associated with a scale in order to be taken into account.
+    scaled: bool or string
+        Indicates that the considered attribute must be associated with a scale.
+        If `True`, the scale's name defaults to the attribute's name.
+        Otherwise, `scaled` is the scale's name.
     rtype: string
         Range type of the associated scale.
     atype: string
@@ -204,18 +221,18 @@ class Mark(Widget):
         # At this stage it is already validated that all values in self.scales
         # are instances of Scale.
         scales = proposal.value
-        for name in self.trait_names(scaled=True):
+        for name in self.trait_names(scaled=_check_scaled):
             trait = self.traits()[name]
-            if name not in scales:
+            scale_name = _get_scale_name(trait)
+            if scale_name not in scales:
                 # Check for missing scale
                 if not trait.allow_none:
-                    raise TraitError("Missing scale for data attribute %s." %
-                                     name)
+                    raise TraitError("'{}' scale missing for data attribute {}".format(scale_name, name))
             else:
                 # Check scale range type compatibility
-                if scales[name].rtype != trait.get_metadata('rtype'):
+                if scales[scale_name].rtype != trait.get_metadata('rtype'):
                     raise TraitError("Range type mismatch for scale %s." %
-                                     name)
+                                     scale_name)
         return scales
 
     def __init__(self, **kwargs):
