@@ -41,11 +41,6 @@ var ImageModel = markmodel.MarkModel.extend({
     },
 
     update_data: function() {
-        // var x_raw = this.get_typed_field("x"),
-        //     y_raw = this.get_typed_field("y");
-        // var scales = this.get("scales");
-        // var x = (scales.x.type === "date") ? x_raw.map(this.convert_to_date) : x_raw,
-        //     y = (scales.y.type === "date") ? y_raw.map(this.convert_to_date) : y_raw;
         this.mark_data = {x: this.get_typed_field("x"), y: this.get_typed_field("y")};
         this.update_domains();
         this.trigger("data_updated");
