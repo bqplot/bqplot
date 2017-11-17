@@ -513,7 +513,7 @@ class Scatter(_ScatterBase):
     marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
              'triangle-up', 'arrow', 'rectangle', 'ellipse'}
         Marker shape
-    colors: list of colors (default: ['DeepSkyBlue'])
+    colors: list of colors (default: ['steelblue'])
         List of colors of the markers. If the list is shorter than the number
         of points, the colors are reused.
     default_colors: Deprecated
@@ -598,7 +598,7 @@ class Scatter(_ScatterBase):
                    'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value='circle').tag(sync=True, display_name='Marker')
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=['DeepSkyBlue']).tag(sync=True,
+                  default_value=['steelblue']).tag(sync=True,
                   display_name='Colors')
     scales_metadata = Dict({
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
@@ -824,7 +824,7 @@ class Boxplot(Mark):
     }).tag(sync=True)
 
     stroke = Color(None, allow_none=True).tag(sync=True, display_name='Stroke color')
-    box_fill_color = Color('dodgerblue', sync=True, display_name='Fill color for the box')
+    box_fill_color = Color('steelblue', sync=True, display_name='Fill color for the box')
     outlier_fill_color = Color('gray').tag(sync=True, display_name='Outlier fill color')
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
     box_width = Int(30, min=5).tag(sync=True, display_name='Box Width')
@@ -858,7 +858,7 @@ class Bars(Mark):
         Y respectively.
     type: {'stacked', 'grouped'}
         whether 2-dimensional bar charts should appear grouped or stacked.
-    colors: list of colors (default: CATEGORY10)
+    colors: list of colors (default: ['steelblue'])
         list of colors for the bars.
     orientation: {'horizontal', 'vertical'}
         Specifies whether the bar chart is drawn horizontally or vertically.
@@ -911,7 +911,7 @@ class Bars(Mark):
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto').tag(sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked').tag(sync=True,
                 display_name='Type')
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+    colors = List(trait=Color(default_value=None, allow_none=True), default_value=['steelblue']).tag(sync=True, display_name='Colors')
     padding = Float(0.05).tag(sync=True)
     stroke = Color(None, allow_none=True).tag(sync=True)
     base = Float().tag(sync=True)
@@ -994,7 +994,7 @@ class OHLC(Mark):
     stroke = Color(None, display_name='Stroke color', allow_none=True).tag(sync=True)
     stroke_width = Float(1.0).tag(sync=True, display_name='Stroke Width')
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=['limegreen', 'red']).tag(sync=True, display_name='Colors')
+                  default_value=['green', 'red']).tag(sync=True, display_name='Colors')
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
     format = Unicode('ohlc').tag(sync=True, display_name='Format')
 
