@@ -51,12 +51,13 @@ import sys
 from collections import OrderedDict
 from IPython.display import display
 from ipywidgets import VBox
+from ipywidgets import Image as ipyImage
 from numpy import arange, issubdtype, array, column_stack, shape
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import (
-        Lines, Scatter, Hist, Bars, OHLC, Pie, Map,
+        Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Image,
         Label, HeatMap, GridHeatMap, topo_load, Boxplot
     )
 from .toolbar import Toolbar
@@ -702,6 +703,43 @@ def plot(*args, **kwargs):
             return _draw_mark(Lines, **kwargs)
     else:
         return _draw_mark(Lines, **kwargs)
+
+
+def imshow(image, format='ipyimage', **kwargs):
+    """Draw an image in the current context figure.
+    Parameters
+    ----------
+    image: image data 
+        Image data, depending on the passed format, can be one of:
+            - an instance of an ipywidgets Image
+            - a file name
+            - an raw byte string
+    format: {'ipyimage', 'filename', 'raw'}
+        type of the input argument
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x' is
+        required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is required
+        for that mark, axes_options['x'] contains optional keyword arguments
+        for the constructor of the corresponding axis type.
+    """
+    if format == 'ipyimage':
+        ipyimage = image
+    elif format == 'filename':
+        with open(image, 'rb') as f:
+            data = f.read()
+            ipyimage = ipyImage(value=data)
+    elif format == 'raw':
+        ipyimage = ipyImage(value=image)
+    kwargs['image'] = ipyimage
+
+    kwargs.setdefault('x', [0., 1.])
+    kwargs.setdefault('y', [0., 1.])
+
+    return _draw_mark(Image, **kwargs)
+
 
 def ohlc(*args, **kwargs):
     """Draw OHLC bars or candle bars in the current context figure.
