@@ -40,8 +40,8 @@ var Graph = mark.Mark.extend({
                 "lookup_data": false,
                 "hit_test": true
             },
-            "node_clicked": {
-                "msg_name": "node_click",
+            "element_clicked": {
+                "msg_name": "element_click",
                 "lookup_data": false,
                 "hit_test": true
             },
@@ -305,7 +305,7 @@ var Graph = mark.Mark.extend({
             });
 
         this.nodes.on("click", _.bind(function(d, i) {
-            this.event_dispatcher("node_clicked",
+            this.event_dispatcher("element_clicked",
                   {"data": d, "index": i});
         }, this));
         this.nodes.on("mouseover", _.bind(function(d, i) {
@@ -342,13 +342,13 @@ var Graph = mark.Mark.extend({
             if(interactions.click !== undefined &&
                interactions.click !== null) {
                 if(interactions.click === "tooltip") {
-                    this.event_listeners.node_clicked = function() {
+                    this.event_listeners.element_clicked = function() {
                         return this.refresh_tooltip(true);
                     };
                     this.event_listeners.parent_clicked = this.hide_tooltip;
                 } else if (interactions.click == "select") {
                     this.event_listeners.parent_clicked = this.reset_selection;
-                    this.event_listeners.node_clicked = this.click_handler;
+                    this.event_listeners.element_clicked = this.click_handler;
                 }
             } else {
                 this.reset_click();
