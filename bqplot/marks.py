@@ -1346,6 +1346,7 @@ class HeatMap(Mark):
     _model_name = Unicode('HeatMapModel').tag(sync=True)
 
 
+@register_mark('bqplot.Graph')
 class Graph(Mark):
     """Graph with nodes and links.
 
