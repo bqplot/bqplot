@@ -714,7 +714,7 @@ def imshow(image, format='ipyimage', **kwargs):
             - an instance of an ipywidgets Image
             - a file name
             - an raw byte string
-    format: {'ipyimage', 'filename', 'raw'}
+    format: {'ipyimage', 'filename', 'bytestring'}
         type of the input argument
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
@@ -731,8 +731,13 @@ def imshow(image, format='ipyimage', **kwargs):
         with open(image, 'rb') as f:
             data = f.read()
             ipyimage = ipyImage(value=data)
-    elif format == 'raw':
+    elif format == 'bytestring':
         ipyimage = ipyImage(value=image)
+    else:
+        raise ValueError(
+            '''`format` must be one of {}, but a value of '{}'
+            was specified'''.format(['ipyimage', 'filename', 'bytestring'], format)
+            )
     kwargs['image'] = ipyimage
 
     kwargs.setdefault('x', [0., 1.])
