@@ -79,7 +79,7 @@ For the experimental JupyterLab extension, install the Python package, make sure
 ```
 $ pip install bqplot
 $ jupyter labextension install @jupyter-widgets/jupyterlab-manager # install the Jupyter widgets extension
-$ jupyter labextension install bqplot-jupyterlab
+$ jupyter labextension install bqplot
 ```
 
 ### Loading `bqplot`
