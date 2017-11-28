@@ -182,7 +182,7 @@ var Graph = mark.Mark.extend({
 
         this.listenTo(this.model, "change:charge", this.update_charge);
         this.listenTo(this.model, "change:link_distance", this.update_link_distance);
-        this.listenTo(this.model, "data_updated", this.draw, this);
+        this.listenTo(this.model, "data_updated", this.data_updated, this);
         this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
         this.listenTo(this.model, "change:enable_hover", function() { this.hide_tooltip(); }, this);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
@@ -194,6 +194,11 @@ var Graph = mark.Mark.extend({
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
+    },
+
+    data_updated: function() {
+        this.draw();
+        this.relayout();
     },
 
     get_node_color: function(data, index) {
@@ -249,7 +254,7 @@ var Graph = mark.Mark.extend({
             .style("stroke", function(d) {
                 return link_color_scale ? link_color_scale.scale(d.value) : null;
             })
-            .attr("stroke-width", function(d) { return d.link_width; })
+            .style("stroke-width", function(d) { return d.link_width; })
             .attr("marker-mid", directed ? "url(#arrow)" : null);
 
         var that = this;
