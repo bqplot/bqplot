@@ -5,6 +5,8 @@ python:
     - 3.3
     - 3.4
     - 3.5
+addons:
+  firefox: latest
 install:
   - sudo apt-get update
   - . $HOME/.nvm/nvm.sh
@@ -30,6 +32,12 @@ install:
   - pip install . coveralls
 script:
     - nosetests --with-coverage --cover-package bqplot
+    - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+        export DISPLAY=:99.0;
+        sh -e /etc/init.d/xvfb start || true;
+        jupyter labextension install js @jupyter-widgets/jupyterlab-manager;
+        python -m jupyterlab.selenium_check;
+      fi
 after_success:
     - coveralls
 

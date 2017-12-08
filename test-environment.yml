@@ -10,4 +10,6 @@ dependencies:
     - numpy >=1.10.4
     - pandas
     - coverage  # test dependency
+    - jupyterlab  # test dependency
+    - selenium  # test dependency
     - nose
