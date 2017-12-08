@@ -705,7 +705,7 @@ def plot(*args, **kwargs):
         return _draw_mark(Lines, **kwargs)
 
 
-def imshow(image, format='ipyimage', **kwargs):
+def imshow(image, format='widget', **kwargs):
     """Draw an image in the current context figure.
     Parameters
     ----------
@@ -714,8 +714,10 @@ def imshow(image, format='ipyimage', **kwargs):
             - an instance of an ipywidgets Image
             - a file name
             - an raw byte string
-    format: {'ipyimage', 'filename', 'bytestring'}
-        type of the input argument
+    format: {'widget', 'filename', ...}
+        Type of the input argument.
+        If not 'widget' or 'filename', must be a format supported by the 
+        ipywidgets Image.
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -725,19 +727,14 @@ def imshow(image, format='ipyimage', **kwargs):
         for that mark, axes_options['x'] contains optional keyword arguments
         for the constructor of the corresponding axis type.
     """
-    if format == 'ipyimage':
+    if format == 'widget':
         ipyimage = image
     elif format == 'filename':
         with open(image, 'rb') as f:
             data = f.read()
             ipyimage = ipyImage(value=data)
-    elif format == 'bytestring':
-        ipyimage = ipyImage(value=image)
     else:
-        raise ValueError(
-            '''`format` must be one of {}, but a value of '{}'
-            was specified'''.format(['ipyimage', 'filename', 'bytestring'], format)
-            )
+        ipyimage = ipyImage(value=image, format=format)
     kwargs['image'] = ipyimage
 
     kwargs.setdefault('x', [0., 1.])
