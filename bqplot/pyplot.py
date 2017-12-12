@@ -705,7 +705,7 @@ def plot(*args, **kwargs):
         return _draw_mark(Lines, **kwargs)
 
 
-def imshow(image, format='widget', **kwargs):
+def imshow(image, format, **kwargs):
     """Draw an image in the current context figure.
     Parameters
     ----------
