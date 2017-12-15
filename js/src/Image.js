@@ -100,7 +100,7 @@ var Image = mark.Mark.extend({
         var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
 
         var that = this;
-        var animation_duration = this.parent.model.get("animation_duration");
+        var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
         var el = this.d3el || this.el;
         var x_scaled = this.model.mark_data["x"].map(x_scale.scale),
             y_scaled = this.model.mark_data["y"].map(y_scale.scale);
