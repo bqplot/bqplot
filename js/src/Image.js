@@ -36,10 +36,12 @@ var Image = mark.Mark.extend({
 
         return base_render_promise.then(() => {
             this.create_listeners();
-            this.draw();
+            this.parent.displayed.then(() => {
+                this.draw();
+            });
         });
     },
-    
+
     set_positional_scales: function() {
         var x_scale = this.scales.x,
             y_scale = this.scales.y;
@@ -77,19 +79,20 @@ var Image = mark.Mark.extend({
     },
     
     update_image: function() {
-        if(this.im.attr('href'))
-            URL.revokeObjectURL(this.im.attr('href'));
-        var image = this.model.get('image')
-        var blob = new Blob([image.get('value')], {type: 'image/' + image.get('format')});
+        if(this.im.attr("href")) {
+            URL.revokeObjectURL(this.im.attr("href"));
+        }
+        var image = this.model.get("image")
+        var blob = new Blob([image.get("value")], {type: "image/" + image.get("format")});
         var url = URL.createObjectURL(blob);
         this.im.attr("href", url)
     },
     
     remove: function() {
-        URL.revokeObjectURL(this.im.attr('href'));
+        URL.revokeObjectURL(this.im.attr("href"));
         Image.__super__.remove.apply(this);
     },
-    
+ 
     draw: function(animate) {
         this.set_ranges()
 
@@ -99,8 +102,8 @@ var Image = mark.Mark.extend({
         var that = this;
         var animation_duration = this.parent.model.get("animation_duration");
         var el = this.d3el || this.el;
-        var x_scaled = this.model.mark_data['x'].map(x_scale.scale),
-            y_scaled = this.model.mark_data['y'].map(y_scale.scale);
+        var x_scaled = this.model.mark_data["x"].map(x_scale.scale),
+            y_scaled = this.model.mark_data["y"].map(y_scale.scale);
         el.selectAll("image").transition()
             .duration(animation_duration)
             .attr("transform", function(d) {
