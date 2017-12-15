@@ -36,7 +36,7 @@ var Image = mark.Mark.extend({
 
         return base_render_promise.then(() => {
             this.create_listeners();
-            this.parent.displayed.then(() => {
+            this.listenTo(this.parent, "margin_updated", () => {
                 this.draw();
             });
         });
@@ -92,7 +92,11 @@ var Image = mark.Mark.extend({
         URL.revokeObjectURL(this.im.attr("href"));
         Image.__super__.remove.apply(this);
     },
- 
+
+    relayout: function() {
+        this.draw(true);
+    },
+
     draw: function(animate) {
         this.set_ranges()
 
@@ -104,6 +108,9 @@ var Image = mark.Mark.extend({
         var el = this.d3el || this.el;
         var x_scaled = this.model.mark_data["x"].map(x_scale.scale),
             y_scaled = this.model.mark_data["y"].map(y_scale.scale);
+        if (x_scaled[1] == 5) {
+            console.log("bad");
+        }
         el.selectAll("image").transition()
             .duration(animation_duration)
             .attr("transform", function(d) {
