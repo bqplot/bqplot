@@ -46,6 +46,8 @@ from traitlets import (
     )
 from traittypes import Array
 
+from numpy import histogram
+
 from .scales import Scale, OrdinalScale, LinearScale
 from .traits import Date, array_serialization, array_squeeze, array_dimension_bounds
 from ._version import __frontend_version__
@@ -929,6 +931,101 @@ class Bars(Mark):
 
     _view_name = Unicode('Bars').tag(sync=True)
     _model_name = Unicode('BarsModel').tag(sync=True)
+
+
+@register_mark('bqplot.Bins')
+class Bins(Bars):
+
+    """Backend histogram mark.
+    A `Bars` instance that bins sample data.
+    The binning method is the numpy `histogram` method.
+    The following  documentation is in part taken from the numpy documentation.
+    Attributes
+    ----------
+    icon: string (class-level attribute)
+        font-awesome icon for that mark
+    name: string (class-level attribute)
+        user-friendly name of the mark
+    bins: nonnegative int (default: 10)
+          or {'auto', 'fd', 'doane', 'scott', 'rice', 'sturges', 'sqrt'}
+        If `bins` is an int, it defines the number of equal-width
+        bins in the given range (10, by default).
+        If `bins` is a string (method name), `histogram` will use
+        the method chosen to calculate the optimal bin width and
+        consequently the number of bins (see `Notes` for more detail on
+        the estimators) from the data that falls within the requested
+        range.
+    density : bool (default: `False`)
+        If `False`, the height of each bin is the number of samples in it.
+        If `True`, the height of each bin is the value of the
+        probability *density* function at the bin, normalized such that
+        the *integral* over the range is 1. Note that the sum of the
+        histogram values will not be equal to 1 unless bins of unity
+        width are chosen; it is not a probability *mass* function.
+    min : float (default: None)
+        The lower range of the bins.  If not provided, lower range
+        is simply `x.min()`.
+    max : float (default: None)
+        The upper range of the bins.  If not provided, lower range
+        is simply `x.max()`.
+    Data Attributes
+    sample: numpy.ndarray (default: [])
+        sample of which the histogram must be computed.
+    Notes
+    -----
+    The fields which can be passed to the default tooltip are:
+        midpoint: mid-point of the bin related to the rectangle hovered on
+        count: number of elements in the bin hovered on
+        bin_start: start point of the bin
+        bin-end: end point of the bin
+        index: index of the bin
+    """
+    # Mark decoration
+    icon = 'fa-signal'
+    name = 'Backend Histogram'
+
+    # Scaled Attributes
+    sample = Array([]).tag(
+        sync=True, display_name='Sample', rtype='Number',
+        atype='bqplot.Axis', **array_serialization
+        ).valid(array_squeeze, array_dimension_bounds(1, 1))
+
+    # Binning options
+    min = Float(None, allow_none=True).tag(sync=True)
+    max = Float(None, allow_none=True).tag(sync=True)
+    density = Bool().tag(sync=True)
+    bins = (Int(10) | List() | 
+        Enum(['auto', 'fd', 'doane', 'scott', 'rice', 'sturges', 'sqrt'])).tag(
+        sync=True, display_name='Number of bins')
+
+    def __init__(self, **kwargs):
+        '''
+        Sets listeners on the data and the binning parameters.
+        Adjusts `Bars` defaults to suit a histogram better.
+        '''
+        self.observe(self.bin_data, names=['sample', 'bins', 'density', 'min', 'max'])
+        # One unique color by default
+        kwargs.setdefault('colors', [CATEGORY10[0]])
+        # No spacing between bars
+        kwargs.setdefault('padding', 0.)
+
+        super(Bins, self).__init__(**kwargs)
+
+    def bin_data(self, *args):
+        '''
+        Performs the binning of `sample` data, and draws the corresponding bars
+        '''
+        # Get range
+        _min = self.sample.min() if self.min is None else self.min
+        _max = self.sample.max() if self.max is None else self.max
+        _range = (min(_min, _max), max(_min, _max))
+        # Bin the samples
+        counts, bin_edges = histogram(self.sample, bins=self.bins,
+                                      range=_range, density=self.density)
+        midpoints = (bin_edges[:-1] + bin_edges[1:]) / 2
+        # Redraw the underlying Bars
+        with self.hold_sync():
+            self.x, self.y = midpoints, counts
 
 
 @register_mark('bqplot.OHLC')
