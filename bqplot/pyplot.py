@@ -58,7 +58,7 @@ from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import (
         Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Image,
-        Label, HeatMap, GridHeatMap, topo_load, Boxplot
+        Label, HeatMap, GridHeatMap, topo_load, Boxplot, Bins
     )
 from .toolbar import Toolbar
 from .interacts import (
@@ -832,6 +832,36 @@ def hist(sample, options={}, **kwargs):
     return _draw_mark(Hist, options=options, **kwargs)
 
 
+@_process_data()
+def bin(sample, options={}, **kwargs):
+    """Draw a histogram in the current context figure.
+    Parameters
+    ----------
+    sample: numpy.ndarray, 1d
+        The sample for which the histogram must be generated.
+    options: dict (default: {})
+        Options for the scales to be created. If a scale labeled 'x'
+        is required for that mark, options['x'] contains optional keyword
+        arguments for the constructor of the corresponding scale type.
+    axes_options: dict (default: {})
+        Options for the axes to be created. If an axis labeled 'x' is
+        required for that mark, axes_options['x'] contains optional
+        keyword arguments for the constructor of the corresponding axis type.
+    """
+    kwargs['sample'] = sample
+    scales = kwargs.pop('scales', {})
+    for xy in ['x', 'y']:
+        if xy not in scales:
+            dimension = _get_attribute_dimension(xy, Bars)
+            if dimension in _context['scales']:
+                scales[xy] = _context['scales'][dimension]
+            else:
+                scales[xy] = LinearScale(**options.get(xy, {}))
+                _context['scales'][dimension] = scales[xy]
+    kwargs['scales'] = scales
+    return _draw_mark(Bins, options=options, **kwargs)
+
+
 @_process_data('color')
 def bar(x, y, **kwargs):
     """Draws a bar chart in the current context figure.
@@ -855,6 +885,7 @@ def bar(x, y, **kwargs):
     kwargs['x'] = x
     kwargs['y'] = y
     return _draw_mark(Bars, **kwargs)
+
 
 @_process_data()
 def boxplot(x, y, **kwargs):
