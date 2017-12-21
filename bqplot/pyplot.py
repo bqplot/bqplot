@@ -713,7 +713,7 @@ def imshow(image, format, **kwargs):
         Image data, depending on the passed format, can be one of:
             - an instance of an ipywidgets Image
             - a file name
-            - an raw byte string
+            - a raw byte string
     format: {'widget', 'filename', ...}
         Type of the input argument.
         If not 'widget' or 'filename', must be a format supported by the 
