@@ -127,7 +127,7 @@ var Figure = widgets.DOMWidgetView.extend({
           .attr("width", this.plotarea_width)
           .attr("height", this.plotarea_height)
           .on("click", function() { that.trigger("bg_clicked"); })
-          .style("pointer-events", "all")
+          .style("pointer-events", "inherit")
           .style(this.model.get("background_style"));
 
         this.fig_axes = this.fig.append("g");
