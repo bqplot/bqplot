@@ -31,12 +31,12 @@ var Image = mark.Mark.extend({
             .attr("y", 0)
             .attr("width", 1)
             .attr("height", 1)
-            .attr("preserveAspectRatio", "none")
-        this.update_image()
+            .attr("preserveAspectRatio", "none");
+        this.update_image();
 
-        return base_render_promise.then(() => {
+        return base_render_promise.then(function() {
             this.create_listeners();
-            this.listenTo(this.parent, "margin_updated", () => {
+            this.listenTo(this.parent, "margin_updated", function() {
                 this.draw();
             });
         });
@@ -47,19 +47,19 @@ var Image = mark.Mark.extend({
             y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) {
-                this.draw()
+                this.draw();
              }
         });
         this.listenTo(y_scale, "domain_changed", function() {
             if (!this.model.dirty) {
-                this.draw()
+                this.draw();
             }
         });
     },
     
     set_ranges: function() {
-        var x_scale = this.scales.x
-        var y_scale = this.scales.y
+        var x_scale = this.scales.x,
+            y_scale = this.scales.y;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
         } 
@@ -82,10 +82,10 @@ var Image = mark.Mark.extend({
         if(this.im.attr("href")) {
             URL.revokeObjectURL(this.im.attr("href"));
         }
-        var image = this.model.get("image")
+        var image = this.model.get("image");
         var blob = new Blob([image.get("value")], {type: "image/" + image.get("format")});
         var url = URL.createObjectURL(blob);
-        this.im.attr("href", url)
+        this.im.attr("href", url);
     },
     
     remove: function() {
@@ -108,16 +108,14 @@ var Image = mark.Mark.extend({
         var el = this.d3el || this.el;
         var x_scaled = this.model.mark_data["x"].map(x_scale.scale),
             y_scaled = this.model.mark_data["y"].map(y_scale.scale);
-        if (x_scaled[1] == 5) {
-            console.log("bad");
-        }
+
         el.selectAll("image").transition()
             .duration(animation_duration)
             .attr("transform", function(d) {
-                var tx = x_scaled[0] + x_scale.offset
-                var ty = y_scaled[1] + y_scale.offset
-                var sx = x_scaled[1] - x_scaled[0]
-                var sy = y_scaled[0] - y_scaled[1]
+                var tx = x_scaled[0] + x_scale.offset;
+                var ty = y_scaled[1] + y_scale.offset;
+                var sx = x_scaled[1] - x_scaled[0];
+                var sy = y_scaled[0] - y_scaled[1];
                 return "translate(" + tx + "," + ty + ") scale(" + sx + ", " + sy + ")"});
     },
 });
