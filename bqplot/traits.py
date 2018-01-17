@@ -134,7 +134,7 @@ def array_from_json(value, obj=None):
 
 def array_to_json(a, obj=None):
     if a is not None:
-        if np.issubdtype(a.dtype, np.float):
+        if np.issubdtype(a.dtype, np.floating):
             # replace nan with None
             dtype = 'float'
             a = np.where(np.isnan(a), None, a)
