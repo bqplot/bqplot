@@ -103,7 +103,6 @@ var get_linear_scale = function(scheme) {
     scheme = ((scheme in colorbrewer) && !(colorbrewer[scheme]["type"] === "qual")) ?
                   scheme : default_scheme;
     var color_set = colorbrewer[scheme];
-    var scheme_type = color_set["type"];
 
     var colors = color_set["9"];
     var scale = d3.scale.linear();
