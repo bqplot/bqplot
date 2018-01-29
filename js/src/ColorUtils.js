@@ -18,11 +18,7 @@ var _ = require("underscore");
 var colorbrewer = require("./colorbrewer");
 var utils = require("./utils");
 
-var color_schemes = [
-    "Paired", "Set3", "Pastel1", "Set1", "Greys", "Greens", "Reds", "Purples", "Oranges", "Blues", "YlOrRd", "YlOrBr", "YlGnBu", "YlGn", "RdPu",
-    "PuRd", "PuBuGn", "PuBu", "OrRd", "GnBu", "BuPu", "BuGn", "BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral"
-];
-
+var default_scheme = 'RdYlGn'
 
 var scale_colors_multi = function(colors, count) {
     var scales = utils.getCustomRange(colors);
@@ -69,51 +65,48 @@ var cycle_colors = function(colors, count) {
 };
 
 var cycle_colors_from_scheme = function(scheme, num_steps) {
-    var index = color_schemes.indexOf(scheme);
-    index = (index === -1) ? 29 : index;
-    var color_set = colorbrewer[color_schemes[index]];
+    scheme = (scheme in colorbrewer) ? scheme : default_scheme;
+    var color_set = colorbrewer[scheme];
+    
+    // Indices of colorbrewer objects are strings
+    var num_steps_str = "" + num_steps + "";
 
     if (num_steps === 2) {
-        return [color_set[3][0], color_set[3][2]];
-    } else if (color_set.hasOwnProperty(num_steps)) {
-        return color_set[num_steps];
-    } else if (index < 2){
-        return this.cycle_colors(color_set[12], num_steps);
+        return [color_set[3]["0"], color_set[3]["2"]];
+    } else if (num_steps_str in color_set) {
+        return color_set[num_steps_str];
     } else {
-        return this.cycle_colors(color_set[9], num_steps);
+        var max_num_str = "" + get_max_index(color_set) + "";
+        return this.cycle_colors(color_set[max_num_str], num_steps);
     }
 };
 
 var get_colors = function(scheme, num_colors) {
-    var index = color_schemes.indexOf(scheme);
+    scheme = (scheme in colorbrewer) ? scheme : default_scheme;
+    var color_set = colorbrewer[scheme];
 
-    if(index === -1) {
-        index = 29;
+    var color_index = "" + Math.min(num_colors, get_max_index(color_set)) + "";
+    var colors = color_set[color_index]
+
+    var scheme_type = color_set["type"];
+    if(scheme_type == "qual") {
+        return this.cycle_colors(colors, num_colors);
     }
-
-    var colors_object = colorbrewer[color_schemes[index]];
-    if(index < 2) {
-
-        return this.cycle_colors(colors_object[Math.min(num_colors, 12)], num_colors);
-    }
-    if(index < 4) {
-        return this.cycle_colors(colors_object[Math.min(num_colors, 9)], num_colors);
-    } else if(index < 22) {
-        return this.scale_colors(colors_object[Math.min(num_colors, 9)], num_colors);
+    else if (scheme_type === "seq") {
+        return this.scale_colors(colors, num_colors);
     } else {
-        return this.scale_colors_multi(colors_object[Math.min(num_colors, 9)], num_colors);
+        return this.scale_colors_multi(colors, num_colors);
     }
 };
 
 var get_linear_scale = function(scheme) {
-    var index = color_schemes.indexOf(scheme);
-    if(index === -1 && index < 4) {
-        index = 29;
-    }
+    scheme = ((scheme in colorbrewer) && !(colorbrewer[scheme]["type"] === "qual")) ?
+                  scheme : default_scheme;
+    var color_set = colorbrewer[scheme];
 
-    var colors = colorbrewer[color_schemes[index]][9];
+    var colors = color_set["9"];
     var scale = d3.scale.linear();
-    if(index > 22) {
+    if(color_set["type"] === "div") {
         scale.range([colors[0], colors[4], colors[8]]);
     } else {
         scale.range([colors[0], colors[8]]);
@@ -136,11 +129,14 @@ var get_ordinal_scale_range = function(scheme, num_steps) {
 };
 
 var is_divergent = function(scheme) {
-    var index = color_schemes.indexOf(scheme);
-    if(index === -1 && index < 4) {
-        index = 2;
-    }
-    return (index > 22);
+    scheme = (scheme in colorbrewer) ? scheme : default_scheme;
+    var color_set = colorbrewer[scheme];
+    return (color_set["type"] == "div");
+};
+
+// Returns the maximum number of colors available in the colorbrewer object
+var get_max_index = function(color_object) {
+    return d3.max(Object.keys(color_object).map(Number));
 };
 
 module.exports = {
