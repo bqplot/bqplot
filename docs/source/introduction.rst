@@ -28,7 +28,7 @@ Using pip:
 .. code:: bash
 
     pip install bqplot
-    jupyter nbextension enable --py --sys-prefix bqplot
+    jupyter nbextension enable --py --sys-prefix bqplot  # can be skipped for notebook version 5.3 and above
 
 Using conda
 
