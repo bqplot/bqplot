@@ -175,6 +175,7 @@ setup_args = {
             'bqplot/static/index.js',
             'bqplot/static/index.js.map',
         ]),
+        ('etc/jupyter/nbconfig/notebook.d' , ['bqplot.json'])
     ],
     'install_requires': [
         'ipywidgets>=7.0.0a8',
