@@ -20,10 +20,6 @@ var colorutils = require("./ColorUtils");
 
 var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
 
-    // initialize: function() {
-    //     ColorScaleModel.__super__.initialize.apply(this, arguments);
-    // },
-
     set_init_state: function() {
         this.type = "color_linear";
         this.color_range = [];
@@ -40,7 +36,7 @@ var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
 
     mid_changed: function() {
         this.mid = this.get("mid");
-        // this.update_domain();
+        this.update_domain();
     },
 
     update_domain: function() {
@@ -54,8 +50,6 @@ var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
             this.max : d3.max(_.map(this.domains, function(d) {
                 return d.length > 0 ? d[d.length-1] : that.global_min;
             }));
-
-        // Mid = this.get("mid") or min+max/2 if scheme.is_divergent
 
         // If the min/max has changed, or the number of colors has changed,
         // update the domain
