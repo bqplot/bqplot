@@ -103,14 +103,16 @@ var get_linear_scale = function(scheme) {
     scheme = ((scheme in colorbrewer) && !(colorbrewer[scheme]["type"] === "qual")) ?
                   scheme : default_scheme;
     var color_set = colorbrewer[scheme];
+    var max_num = get_max_index(color_set);
+    var max_num_str = "" + max_num + "";
 
-    var color_index = get_max_index(color_set).toString();
-    var colors = color_set[color_index];
+    var colors = color_set[max_num_str];
     var scale = d3.scale.linear();
     if(color_set["type"] === "div") {
-        scale.range([colors[0], colors[Math.floor(colors.length / 2)], colors[colors.length - 1]]);
+        var mid_num = Math.floor(max_num / 2);
+        scale.range([colors[0], colors[mid_num], colors[max_num-1]]);
     } else {
-        scale.range([colors[0], colors[colors.length - 1]]);
+        scale.range(colors); //[colors[0], colors[max_num-1]]);
     }
     return scale;
 };
@@ -138,6 +140,13 @@ var is_divergent = function(scheme) {
 // Returns the maximum number of colors available in the colorbrewer object
 var get_max_index = function(color_object) {
     return d3.max(Object.keys(color_object).map(Number));
+};
+
+var get_max_number = function(scheme) {
+    scheme = ((scheme in colorbrewer) && !(colorbrewer[scheme]["type"] === "qual")) ?
+                  scheme : default_scheme;
+    var color_set = colorbrewer[scheme];
+    return get_max_index(color_set);
 };
 
 module.exports = {

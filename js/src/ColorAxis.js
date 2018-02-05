@@ -121,7 +121,9 @@ var ColorBar = axis.Axis.extend({
             .attr("id","colorBarG" + this.cid);
 
         this.draw_color_bar();
-        this.axis_line_scale.domain(this.axis_scale.scale.domain());
+        var domain = this.axis_scale.scale.domain();
+        this.axis_line_scale.domain([domain[0], domain[domain.length-1]]);
+        // this.axis_line_scale.domain(this.axis_scale.scale.domain());
 
         this.g_axisline = colorBar.append("g")
             .attr("class", "axis");
@@ -306,7 +308,9 @@ var ColorBar = axis.Axis.extend({
 
     redraw_axisline: function() {
         if (this.axis) {
-            this.axis_line_scale.domain(this.axis_scale.scale.domain());
+            var domain = this.axis_scale.scale.domain();
+            this.axis_line_scale.domain([domain[0], domain[domain.length-1]]);
+            //this.axis_line_scale.domain(this.axis_scale.scale.domain());
             // We need to set the range of the axis line scale here again.
             // Only because, if the domain has changed from a two element
             // array to a three element one, the range of the axis has to
