@@ -19,13 +19,17 @@ var scale = require("./Scale");
 var ColorScale = scale.Scale.extend({
 
     render: function(){
-        this.scale = d3.scale.linear();
+        this.create_d3_scale()
         if(this.model.domain.length > 0) {
             this.scale.domain(this.model.domain);
         }
         this.offset = 0;
         this.create_event_listeners();
         this.set_range();
+    },
+
+    create_d3_scale: function(){
+        this.scale = d3.scale.linear();
     },
 
     create_event_listeners: function() {

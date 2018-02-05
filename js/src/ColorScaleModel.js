@@ -20,9 +20,9 @@ var colorutils = require("./ColorUtils");
 
 var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
 
-    initialize: function() {
-        ColorScaleModel.__super__.initialize.apply(this, arguments);
-    },
+    // initialize: function() {
+    //     ColorScaleModel.__super__.initialize.apply(this, arguments);
+    // },
 
     set_init_state: function() {
         this.type = "color_linear";

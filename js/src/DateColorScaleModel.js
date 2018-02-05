@@ -15,59 +15,30 @@
 
 var d3 = require("d3");
 var _ = require("underscore");
-var colorscale = require("./DateScaleModel");
+var colorscale = require("./ColorScaleModel");
 
-var DateColorScaleModel = colorscale.DateScaleModel.extend({
+var DateColorScaleModel = colorscale.ColorScaleModel.extend({
 
     defaults: function() {
-        return _.extend(colorscale.DateScaleModel.prototype.defaults(), {
+        return _.extend(colorscale.ColorScaleModel.prototype.defaults(), {
             _model_name: "DateColorScaleModel",
             _view_name: "DateColorScale"
         });
     },
 
-    initialize: function() {
-        DateColorScaleModel.__super__.initialize.apply(this, arguments);
+    set_init_state: function() {
         this.type = "date_color_linear";
-        this.divergent = false;
-        this.on("change:mid", this.mid_changed, this);
-        this.mid_changed();
+        this.color_range = [];
+        this.global_min = (new Date()).setTime(0);
+        this.global_max = new Date();
     },
 
-    mid_changed: function() {
-        this.mid = this.get("mid");
+    min_max_changed: function() {
+        this.min = this.get_date_elem("min");
+        this.max = this.get_date_elem("max");
+        this.min_from_data = (this.min === null);
+        this.max_from_data = (this.max === null);
         this.update_domain();
-    },
-
-    update_domain: function() {
-        var that = this;
-        var max_index = (this.divergent) ? 2 : 1;
-
-        var min = (!this.min_from_data) ? this.min : d3.min(
-            _.map(this.domains, function(d) {
-                return d.length > 0 ? d[0] : that.global_max;
-            })
-        );
-
-        var max = (!this.max_from_data) ? this.max : d3.max(
-            _.map(this.domains, function(d) {
-                return d.length > max_index ?
-                    d[max_index] : d.length > 1 ? d[1] : that.global_min;
-            })
-        );
-        var prev_domain = this.domain;
-        if(min != prev_domain[0] || max != prev_domain[max_index]) {
-            if(this.divergent) {
-                var mean = new Date();
-                mean.setTime(min.getTime() + Math.abs(max - min) / 2);
-                this.domain = (this.reverse) ?
-                    [max, mean, min] : [min, mean, max];
-            } else {
-                this.domain = (this.reverse) ?
-                    [max, min] : [min, max];
-            }
-            this.trigger("domain_changed", this.domain);
-        }
     }
 });
 
