@@ -29,6 +29,7 @@ var DateColorScaleModel = colorscale.ColorScaleModel.extend({
     set_init_state: function() {
         this.type = "date_color_linear";
         this.color_range = [];
+        this.mid = null;
         this.global_min = (new Date()).setTime(0);
         this.global_max = new Date();
     },
