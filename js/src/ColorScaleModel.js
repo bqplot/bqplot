@@ -23,7 +23,6 @@ var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
     set_init_state: function() {
         this.type = "color_linear";
         this.color_range = [];
-        this.divergent = false;
         this.mid = null;
     },
 
