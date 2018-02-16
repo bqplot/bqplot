@@ -32,7 +32,7 @@ Getting Started
 
 ### Try it online with [Binder](http://mybinder.org/)
 
-[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org:/repo/bloomberg/bqplot/notebooks/examples)
+[![Binder](https://img.shields.io/badge/launch-binder-brightgreen.svg)](https://mybinder.org/v2/gh/bloomberg/bqplot/0.10.4-binder?filepath=notebooks/)
 
 ### Dependencies
 
