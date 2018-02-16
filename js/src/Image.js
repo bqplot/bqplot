@@ -34,10 +34,11 @@ var Image = mark.Mark.extend({
             .attr("preserveAspectRatio", "none");
         this.update_image();
 
+        var that = this;
         return base_render_promise.then(function() {
-            this.create_listeners();
-            this.listenTo(this.parent, "margin_updated", function() {
-                this.draw();
+            that.create_listeners();
+            that.listenTo(that.parent, "margin_updated", function() {
+                that.draw();
             });
         });
     },
@@ -56,18 +57,18 @@ var Image = mark.Mark.extend({
             }
         });
     },
-    
+
     set_ranges: function() {
         var x_scale = this.scales.x,
             y_scale = this.scales.y;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
-        } 
+        }
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
     },
-    
+
     create_listeners: function() {
         Image.__super__.create_listeners.apply(this);
         this.listenTo(this.model, "change:image", this.update_image, this);
@@ -77,7 +78,7 @@ var Image = mark.Mark.extend({
             this.draw(animate);
         }, this);
     },
-    
+
     update_image: function() {
         if(this.im.attr("href")) {
             URL.revokeObjectURL(this.im.attr("href"));
@@ -87,7 +88,7 @@ var Image = mark.Mark.extend({
         var url = URL.createObjectURL(blob);
         this.im.attr("href", url);
     },
-    
+
     remove: function() {
         URL.revokeObjectURL(this.im.attr("href"));
         Image.__super__.remove.apply(this);
