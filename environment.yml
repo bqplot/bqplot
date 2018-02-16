@@ -4,3 +4,6 @@ channels:
   - conda-forge
 dependencies:
   - bqplot
+  - sklearn
+  - scipy
+  - numpy>=1.13,<1.14  # prevent warning in pyplot demo re: dtypes
