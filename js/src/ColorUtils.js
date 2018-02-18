@@ -67,7 +67,7 @@ var cycle_colors = function(colors, count) {
 var cycle_colors_from_scheme = function(scheme, num_steps) {
     scheme = (scheme in colorbrewer) ? scheme : default_scheme;
     var color_set = colorbrewer[scheme];
-    
+
     // Indices of colorbrewer objects are strings
     var num_steps_str = "" + num_steps + "";
 
@@ -85,8 +85,8 @@ var get_colors = function(scheme, num_colors) {
     scheme = (scheme in colorbrewer) ? scheme : default_scheme;
     var color_set = colorbrewer[scheme];
 
-    var color_index = "" + Math.min(num_colors, get_max_index(color_set)) + "";
-    var colors = color_set[color_index]
+    var color_index = Math.min(num_colors, get_max_index(color_set)).toString();
+    var colors = color_set[color_index];
 
     var scheme_type = color_set["type"];
     if(scheme_type == "qual") {
@@ -104,12 +104,13 @@ var get_linear_scale = function(scheme) {
                   scheme : default_scheme;
     var color_set = colorbrewer[scheme];
 
-    var colors = color_set["9"];
+    var color_index = get_max_index(color_set).toString();
+    var colors = color_set[color_index];
     var scale = d3.scale.linear();
     if(color_set["type"] === "div") {
-        scale.range([colors[0], colors[4], colors[8]]);
+        scale.range([colors[0], colors[Math.floor(colors.length / 2)], colors[colors.length - 1]]);
     } else {
-        scale.range([colors[0], colors[8]]);
+        scale.range([colors[0], colors[colors.length - 1]]);
     }
     return scale;
 };
