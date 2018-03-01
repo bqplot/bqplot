@@ -20,36 +20,6 @@ var utils = require("./utils");
 
 var default_scheme = 'RdYlGn'
 
-var scale_colors_multi = function(colors, count) {
-    var scales = utils.getCustomRange(colors);
-    var scale_left = scales[0];
-    var scale_right = scales[1];
-
-    scale_left.domain([0, (count - 1)/ 2]);
-    scale_right.domain([(count - 1)/2, count - 1]);
-    var ret_colors = [];
-    var i;
-    for (i = 0; i < (count - 1)/ 2; i++) {
-        ret_colors.push(scale_left(i));
-    }
-    for(i = (count - 1) /2 + 1; i < count; i++) {
-        ret_colors.push(scale_right(i));
-    }
-    return ret_colors;
-};
-
-var scale_colors = function(colors, count) {
-    var scale = d3.scale.linear()
-        .domain([0, count - 1])
-        .range(d3.extent[colors]);
-    var incr = (count < colors.length) ? Math.floor(colors.length / count) : 1;
-    var ret_colors = [];
-    for (var i = 0; i < count; i=i+incr) {
-        ret_colors.push(scale(i));
-    }
-    return ret_colors;
-};
-
 var cycle_colors = function(colors, count) {
     var colors_len = colors.length;
     if(colors_len > count) {
@@ -81,24 +51,6 @@ var cycle_colors_from_scheme = function(scheme, num_steps) {
     }
 };
 
-var get_colors = function(scheme, num_colors) {
-    scheme = (scheme in colorbrewer) ? scheme : default_scheme;
-    var color_set = colorbrewer[scheme];
-
-    var color_index = Math.min(num_colors, get_max_index(color_set)).toString();
-    var colors = color_set[color_index]
-
-    var scheme_type = color_set["type"];
-    if(scheme_type == "qual") {
-        return this.cycle_colors(colors, num_colors);
-    }
-    else if (scheme_type === "seq") {
-        return this.scale_colors(colors, num_colors);
-    } else {
-        return this.scale_colors_multi(colors, num_colors);
-    }
-};
-
 var get_linear_scale = function(scheme) {
     scheme = ((scheme in colorbrewer) && !(colorbrewer[scheme]["type"] === "qual")) ?
                   scheme : default_scheme;
@@ -124,26 +76,16 @@ var get_ordinal_scale_range = function(scheme, num_steps) {
     return this.get_ordinal_scale(scheme, num_steps).range();
 };
 
-var is_divergent = function(scheme) {
-    scheme = (scheme in colorbrewer) ? scheme : default_scheme;
-    var color_set = colorbrewer[scheme];
-    return (color_set["type"] == "div");
-};
-
 // Returns the maximum number of colors available in the colorbrewer object
 var get_max_index = function(color_object) {
     return d3.max(Object.keys(color_object).map(Number));
 };
 
 module.exports = {
-    scale_colors_multi: scale_colors_multi,
-    scale_colors: scale_colors,
     cycle_colors: cycle_colors,
     cycle_colors_from_scheme: cycle_colors_from_scheme,
-    get_colors: get_colors,
     get_linear_scale: get_linear_scale,
     get_ordinal_scale: get_ordinal_scale,
     get_linear_scale_range: get_linear_scale_range,
     get_ordinal_scale_range: get_ordinal_scale_range,
-    is_divergent: is_divergent
 };
