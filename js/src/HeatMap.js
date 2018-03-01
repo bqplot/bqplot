@@ -72,6 +72,16 @@ var HeatMap = mark.Mark.extend({
         });
     },
 
+    initialize_additional_scales: function() {
+        var color_scale = this.scales.color;
+        if(color_scale) {
+            this.listenTo(color_scale, "domain_changed", function() {
+                this.draw();
+            });
+            color_scale.on("color_scale_range_changed", this.draw, this);
+        }
+    },
+
     create_listeners: function() {
         HeatMap.__super__.create_listeners.apply(this);
 
