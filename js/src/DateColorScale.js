@@ -14,27 +14,12 @@
  */
 
 var d3 = require("d3");
-var _ = require("underscore");
 var colorscale = require("./ColorScale");
-var colorutils = require("./ColorUtils");
 
 var DateColorScale = colorscale.ColorScale.extend({
 
-    render: function() {
+    create_d3_scale: function(){
         this.scale = d3.time.scale();
-        if(this.model.domain.length > 0) {
-            this.scale.domain(this.model.domain);
-        }
-        this.offset = 0;
-        if(this.model.get("colors").length === 0) {
-           this.divergent = this.model.divergent = colorutils.is_divergent(this.model.get("scheme"));
-        } else {
-            this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
-        }
-        this.set_range();
-
-        this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
-        this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
     }
 });
 

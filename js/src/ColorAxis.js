@@ -121,7 +121,7 @@ var ColorBar = axis.Axis.extend({
             .attr("id","colorBarG" + this.cid);
 
         this.draw_color_bar();
-        this.axis_line_scale.domain(this.axis_scale.scale.domain());
+        this.set_axisline_domain();
 
         this.g_axisline = colorBar.append("g")
             .attr("class", "axis");
@@ -244,10 +244,11 @@ var ColorBar = axis.Axis.extend({
         if(this.ordinal) {
             this.axis_line_scale.rangeRoundBands(range, 0.05);
         } else {
-            if(this.axis_scale.divergent) {
-                this.axis_line_scale.range([range[0], (range[0] + range[1]) * 0.5, range[1]]);
-            } else {
+            var mid = this.axis_scale.model.mid;
+            if (mid === undefined || mid === null) {
                 this.axis_line_scale.range(range);
+            } else {
+                this.axis_line_scale.range([range[0], (range[0] + range[1]) * 0.5, range[1]]);
             }
         }
     },
@@ -306,7 +307,7 @@ var ColorBar = axis.Axis.extend({
 
     redraw_axisline: function() {
         if (this.axis) {
-            this.axis_line_scale.domain(this.axis_scale.scale.domain());
+            this.set_axisline_domain();
             // We need to set the range of the axis line scale here again.
             // Only because, if the domain has changed from a two element
             // array to a three element one, the range of the axis has to
@@ -326,6 +327,16 @@ var ColorBar = axis.Axis.extend({
             }
             this.g_axisline.attr("transform", transform)
                 .call(this.axis);
+        }
+    },
+
+    set_axisline_domain: function() {
+        var domain = this.axis_scale.scale.domain();
+        var mid = this.axis_scale.model.mid;
+        if (mid === undefined || mid === null) {
+            this.axis_line_scale.domain([domain[0], domain[domain.length-1]]);
+        } else {
+            this.axis_line_scale.domain([domain[0], mid, domain[domain.length-1]]);
         }
     },
 

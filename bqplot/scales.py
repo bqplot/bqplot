@@ -522,8 +522,12 @@ class DateColorScale(ColorScale):
     dtype: type (class-level attribute)
         the associated data type / domain type
     """
-    rtype = 'Color'
     dtype = np.datetime64
+    domain_class = Type(Date)
+
+    min = Date(default_value=None, allow_none=True).tag(sync=True)
+    mid = Date(default_value=None, allow_none=True).tag(sync=True)
+    max = Date(default_value=None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('DateColorScale').tag(sync=True)
     _model_name = Unicode('DateColorScaleModel').tag(sync=True)

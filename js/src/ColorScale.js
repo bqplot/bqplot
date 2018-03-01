@@ -15,56 +15,32 @@
 
 var _ = require("underscore");
 var scale = require("./Scale");
-var colorutils = require("./ColorUtils");
 
 var ColorScale = scale.Scale.extend({
 
     render: function(){
-        this.scale = d3.scale.linear();
+        this.create_d3_scale()
         if(this.model.domain.length > 0) {
             this.scale.domain(this.model.domain);
         }
         this.offset = 0;
-        if(this.model.get("colors").length === 0) {
-           this.divergent = this.model.divergent = colorutils.is_divergent(this.model.get("scheme"));
-        } else {
-            this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
-        }
         this.create_event_listeners();
         this.set_range();
     },
 
+    create_d3_scale: function(){
+        this.scale = d3.scale.linear();
+    },
+
     create_event_listeners: function() {
         ColorScale.__super__.create_event_listeners.apply(this);
-        this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
+        this.listenTo(this.model, "colors_changed", this.set_range, this);
     },
 
     set_range: function() {
-        if(this.model.get("colors").length > 0) {
-            var colors = this.model.get("colors");
-            if(this.divergent) {
-                this.scale.range([colors[0], colors[1], colors[2]]);
-            } else {
-                this.scale.range([colors[0], colors[1]]);
-            }
-        } else {
-            this.scale.range(colorutils.get_linear_scale_range(this.model.get("scheme")));
-        }
-
-        //This is to handle the case where it changed from 3 element colors
-        //to 2 element or vice-versa
-        this.model.update_domain();
-    },
-
-    colors_changed: function() {
-        if(this.model.get("colors").length === 0) {
-            this.divergent = this.model.divergent = colorutils.is_divergent(this.model.get("scheme"));
-        } else {
-            this.divergent = this.model.divergent = (this.model.get("colors").length > 2);
-        }
-        this.set_range();
+        this.scale.range(this.model.color_range);
         this.trigger("color_scale_range_changed");
-    }
+    },
 });
 
 module.exports = {
