@@ -69,15 +69,15 @@ var cycle_colors_from_scheme = function(scheme, num_steps) {
     var color_set = colorbrewer[scheme];
 
     // Indices of colorbrewer objects are strings
-    var num_steps_str = "" + num_steps + "";
+    var color_index = num_steps.toString();
 
     if (num_steps === 2) {
         return [color_set[3]["0"], color_set[3]["2"]];
-    } else if (num_steps_str in color_set) {
-        return color_set[num_steps_str];
+    } else if (color_index in color_set) {
+        return color_set[color_index];
     } else {
-        var max_num_str = "" + get_max_index(color_set) + "";
-        return this.cycle_colors(color_set[max_num_str], num_steps);
+        var color_index = get_max_index(color_set).toString();
+        return this.cycle_colors(color_set[color_index], num_steps);
     }
 };
 
@@ -86,7 +86,7 @@ var get_colors = function(scheme, num_colors) {
     var color_set = colorbrewer[scheme];
 
     var color_index = Math.min(num_colors, get_max_index(color_set)).toString();
-    var colors = color_set[color_index];
+    var colors = color_set[color_index]
 
     var scheme_type = color_set["type"];
     if(scheme_type == "qual") {
@@ -103,12 +103,10 @@ var get_linear_scale = function(scheme) {
     scheme = ((scheme in colorbrewer) && !(colorbrewer[scheme]["type"] === "qual")) ?
                   scheme : default_scheme;
     var color_set = colorbrewer[scheme];
-    var max_num = get_max_index(color_set);
-    var max_num_str = "" + max_num + "";
+    var color_index = get_max_index(color_set).toString();
 
-    var colors = color_set[max_num_str];
-    var scale = d3.scale.linear();
-    scale.range(colors);
+    var colors = color_set[color_index];
+    var scale = d3.scale.linear().range(colors);
     return scale;
 };
 
