@@ -551,6 +551,32 @@ def vline(level, **kwargs):
     }, axes=False, update_context=False, **kwargs)
 
 
+def _process_cmap(cmap):
+    '''
+    Returns a kwarg dict suitable for a ColorScale
+    '''
+    option = {}
+    if isinstance(cmap, str):
+        option['scheme'] = cmap
+    elif isinstance(cmap, list):
+        option['colors'] = cmap
+    else:
+        raise ValueError('''`cmap` must be a string (name of a color scheme)
+                         or a list of colors, but a value of {} was given
+                         '''.format(cmap))
+    return option
+
+
+def set_cmap(cmap):
+    '''
+    Set the color map of the current 'color' scale.
+    '''
+    scale = _context['scales']['color']
+    for k, v in _process_cmap(cmap).items():
+        setattr(scale, k, v)
+    return scale
+
+
 def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     """Draw the mark of specified mark type.
 
@@ -569,10 +595,18 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     figure: Figure or None
         The figure to which the mark is to be added.
         If the value is None, the current figure is used.
+    cmap: list or string
+        List of css colors, or name of bqplot color scheme
     """
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', {})
     update_context = kwargs.pop('update_context', True)
+    
+    # Set the color map of the color scale
+    cmap = kwargs.pop('cmap', None)
+    if cmap is not None:
+        # Add the colors or scheme to the color scale options
+        options['color'] = dict(options.get('color', {}), **_process_cmap(cmap))
 
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
