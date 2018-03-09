@@ -937,9 +937,17 @@ class Bars(Mark):
 class Bins(Bars):
 
     """Backend histogram mark.
+
     A `Bars` instance that bins sample data.
+
+    It is very similar in purpose to the `Hist` mark, the difference being that
+    the binning is done in the backend (python), which avoids large amounts of
+    data being shipped back and forth to the frontend. It should therefore be
+    preferred for large data.
     The binning method is the numpy `histogram` method.
+
     The following  documentation is in part taken from the numpy documentation.
+
     Attributes
     ----------
     icon: string (class-level attribute)
@@ -974,10 +982,7 @@ class Bins(Bars):
     Notes
     -----
     The fields which can be passed to the default tooltip are:
-        midpoint: mid-point of the bin related to the rectangle hovered on
-        count: number of elements in the bin hovered on
-        bin_start: start point of the bin
-        bin-end: end point of the bin
+        All the `Bars` data attributes (`x`, `y`, `color`)
         index: index of the bin
     """
     # Mark decoration
@@ -986,7 +991,7 @@ class Bins(Bars):
 
     # Scaled Attributes
     sample = Array([]).tag(
-        sync=True, display_name='Sample', rtype='Number',
+        sync=False, display_name='Sample', rtype='Number',
         atype='bqplot.Axis', **array_serialization
         ).valid(array_squeeze, array_dimension_bounds(1, 1))
 
@@ -996,7 +1001,7 @@ class Bins(Bars):
     density = Bool().tag(sync=True)
     bins = (Int(10) | List() | 
         Enum(['auto', 'fd', 'doane', 'scott', 'rice', 'sturges', 'sqrt'])).tag(
-        sync=True, display_name='Number of bins')
+             sync=True, display_name='Number of bins')
 
     def __init__(self, **kwargs):
         '''
