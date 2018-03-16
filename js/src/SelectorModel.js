@@ -100,7 +100,8 @@ var BrushIntervalSelectorModel = OneDSelectorModel.extend({
             _view_name: "BrushIntervalSelector",
             brushing: false,
             selected: [],
-            color: null
+            color: null,
+            orientation: "horizontal"
         });
     }
 });
