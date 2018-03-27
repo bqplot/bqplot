@@ -17,6 +17,7 @@ var d3 = require("d3");
 var _ = require("underscore");
 var selector = require("./Selector");
 var utils = require("./utils");
+var sel_utils = require("./lasso_test");
 
 var BrushSelector = selector.BaseXYSelector.extend({
 
@@ -195,9 +196,6 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
             that.d3el.attr("class", "selector brushintsel");
 
             that.brushsel = that.d3el.call(that.brush);
-                //.selectAll("rect")
-                //.attr("y", 0)
-                //.attr("height", that.height);
             that.adjust_rectangle();
 
             if(that.model.get("color") !== null) {
@@ -238,24 +236,11 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
 
     convert_and_save: function(extent) {
         var that = this;
-        var xy = (this.model.get("orientation") == "vertical") ? "y" : "x";
-        if(extent.length === 0) {
-            _.each(this.mark_views, function(mark_view) {
-                return mark_view.invert_range(extent);
-            });
-        } else {
-            if(this.scale.model.type === "ordinal") {
-                _.each(this.mark_views, function(mark_view) {
-                    mark_view.invert_range(extent[0], extent[1], xy);
-                });
-                extent = this.scale.invert_range(extent);
-            } else {
-                _.each(this.mark_views, function(mark_view) {
-                    mark_view.invert_range(that.scale.scale(extent[0]),
-                                           that.scale.scale(extent[1]), xy);
-                });
-            }
-        }
+        var ordinal = (this.scale.model.type === "ordinal");
+        var pixel_extent = ordinal ? extent : extent.map(this.scale.scale);
+        extent = ordinal ? this.scale.invert_range(extent) : extent;
+
+        this.update_mark_selected(pixel_extent);
 
         this.model.set_typed_field("selected", extent, {js_ignore: true});
         this.touch();
@@ -273,7 +258,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
 
         this.model.set_typed_field("selected", [], {js_ignore : true});
         _.each(this.mark_views, function(mark_view) {
-            mark_view.invert_range([]);
+            mark_view.selector_changed();
         });
         this.touch();
     },
@@ -307,22 +292,42 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
         var selected = this.model.get_typed_field("selected");
         if(selected.length === 0) {
             this.reset();
-        } else if (selected.length != 2) {
+        } else if(selected.length != 2) {
             // invalid value for selected. Ignoring the value
             return;
         } else {
             var that = this;
             selected = selected.sort(function(a, b) { return a - b; });
-
-            this.brush.extent([selected[0], selected[1]]);
+            var extent = [selected[0], selected[1]];
+            this.brush.extent(extent);
             this._update_brush();
-
-            _.each(this.mark_views, function(mark_view) {
-                var xy = (this.model.get("orientation") == "vertical") ? "y" : "x";
-                mark_view.invert_range(that.scale.scale(selected[0]),
-                                       that.scale.scale(selected[1]), xy);
-            }, this);
+            this.update_mark_selected(extent);
         }
+    },
+
+    update_mark_selected: function(extent) {
+
+        if(extent.length === 0) {
+            // Reset all the selected in marks
+            _.each(this.mark_views, function(mark_view) {
+                return mark_view.selector_changed();
+            });
+        }
+
+        var orient = this.model.get("orientation");
+        var x = (orient == "vertical") ? [] : extent,
+            y = (orient == "vertical") ? extent : [];
+
+        var point_selector = function(p) {
+            return sel_utils.point_in_rectangle(p, x, y);
+        };
+        var rect_selector = function(xm, ym) {
+            return sel_utils.rect_inter_rect(xm, ym, x, y);
+        };
+
+        _.each(this.mark_views, function(mark_view) {
+            mark_view.selector_changed(point_selector, rect_selector);
+        }, this);
     },
 
     _update_brush: function() {

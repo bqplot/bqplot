@@ -522,20 +522,23 @@ var ScatterBase = mark.Mark.extend({
         this.touch();
     },
 
-    invert_range: function(start_pxl, end_pxl) {
+    invert_range: function(start_pxl, end_pxl, orientation) {
         if(start_pxl === undefined || end_pxl === undefined) {
             this.model.set("selected", null);
             this.touch();
             return [];
         }
-
-        var x_scale = this.scales.x;
+        var pixels = (orientation == "y") ? this.y_pixels : this.x_pixels;
+        var indices = _.range(pixels.length);
         var that = this;
-        var indices = _.range(this.model.mark_data.length);
-
         var selected = _.filter(indices, function(index) {
-            var elem = that.x_pixels[index];
-            return (elem >= start_pxl && elem <= end_pxl);
+            var elem = pixels[index];
+            if (orientation == "x") {
+                return (elem >= start_pxl && elem <= end_pxl);
+            } else {
+                return (elem <= start_pxl && elem >= end_pxl)
+            }
+            
         });
         this.model.set("selected", selected);
         this.touch();

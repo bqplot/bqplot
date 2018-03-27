@@ -282,6 +282,21 @@ var Lines = mark.Mark.extend({
         this.touch();
     },
 
+    selector_changed: function(point_selector, rect_selector) {
+        if(point_selector === undefined) {
+            this.model.set("selected", null);
+            this.touch();
+            return [];
+        }
+        var pixels = this.pixel_coords;
+        var indices = _.range(pixels.length);
+        var selected = _.filter(indices, function(index) {
+            return point_selector(pixels[index]);
+        });
+        this.model.set("selected", selected);
+        this.touch();
+    },
+
     invert_point: function(pixel) {
         if(pixel === undefined) {
             this.model.set("selected", null);
@@ -528,7 +543,11 @@ var Lines = mark.Mark.extend({
                                                           : [];
         this.y_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
                                                                     { return y_scale.scale(el.y) + y_scale.offset; })
-                                                          : [];                                                  
+                                                          : [];
+        this.pixel_coords = (this.model.mark_data.length > 0) ?
+            this.model.mark_data[0].values.map(function(el) {
+                return [x_scale.scale(el.x) + x_scale.offset, y_scale.scale(el.y) + y_scale.offset];
+            }) : [];
     },
 
     draw: function(animate) {
