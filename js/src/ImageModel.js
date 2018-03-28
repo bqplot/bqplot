@@ -24,6 +24,7 @@ var ImageModel = markmodel.MarkModel.extend({
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
             _model_name: "ImageModel",
             _view_name: "Image",
+            pixelated: true,
             x: (0.0, 1.0),
             y: (0.0, 1.0),
             scales_metadata: {
