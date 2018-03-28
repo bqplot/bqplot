@@ -31,7 +31,8 @@ var Image = mark.Mark.extend({
             .attr("y", 0)
             .attr("width", 1)
             .attr("height", 1)
-            .attr("preserveAspectRatio", "none");
+            .attr("preserveAspectRatio", "none")
+            .classed("image_pixelated", this.model.get('pixelated'));
         this.update_image();
 
         var that = this;
@@ -71,6 +72,9 @@ var Image = mark.Mark.extend({
 
     create_listeners: function() {
         Image.__super__.create_listeners.apply(this);
+        this.listenTo(this.model, "change:pixelated", () => {
+            this.im.classed("image_pixelated", this.model.get('pixelated'));
+        });
         this.listenTo(this.model, "change:image", this.update_image, this);
         this.listenTo(this.model, "data_updated", function() {
             //animate on data update
