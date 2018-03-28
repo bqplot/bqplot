@@ -17,6 +17,7 @@ var widgets = require("@jupyter-widgets/base");
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var jupyter_dataserializers = require("jupyter-dataserializers");
 
 var ImageModel = markmodel.MarkModel.extend({
 
@@ -24,6 +25,7 @@ var ImageModel = markmodel.MarkModel.extend({
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
             _model_name: "ImageModel",
             _view_name: "Image",
+            interpolation: 'nearest',
             x: (0.0, 1.0),
             y: (0.0, 1.0),
             scales_metadata: {
@@ -74,7 +76,7 @@ var ImageModel = markmodel.MarkModel.extend({
 
 }, {
     serializers: _.extend({
-        image: { deserialize: widgets.unpack_models },
+        image: { deserialize: jupyter_dataserializers.JSONToArray },
     }, markmodel.MarkModel.serializers)
 });
 

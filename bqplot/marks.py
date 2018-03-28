@@ -1714,7 +1714,12 @@ class Image(Mark):
     """
     _view_name = Unicode('Image').tag(sync=True)
     _model_name = Unicode('ImageModel').tag(sync=True)
-    image = Instance(widgets.Image).tag(sync=True, **widget_serialization)
+    image = Array().tag(sync=True,
+                        scaled=True,
+                        rtype='Color',
+                        atype='bqplot.ColorAxis',
+                        **array_binary_serialization)
+    interpolation = Unicode('nearest', allow_none=True).tag(sync=True)
     x = Array(default_value=(0, 1)).tag(sync=True, scaled=True,
                                         rtype='Number',
                                         atype='bqplot.Axis',
@@ -1728,4 +1733,5 @@ class Image(Mark):
     scales_metadata = Dict({
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'},
+        'image': {'dimension': 'color'},
     }).tag(sync=True)

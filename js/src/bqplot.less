@@ -100,6 +100,22 @@
                stroke-width: 4;
            }
         }
+        .image_interpolation_bilinear {
+          /*
+          optimizeQuality does not guarantee bilinear, but at least as good
+          https://www.w3.org/TR/SVG/single-page.html#painting-ImageRenderingProperty
+          */
+            image-rendering: optimizeQuality
+        }
+        .image_interpolation_nearest {
+          /*
+          optimizespeed does not guarantee nearest neighbor, but firefox seems to do so for now
+          https://www.w3.org/TR/SVG/single-page.html#painting-ImageRenderingProperty
+          */
+          image-rendering: optimizespeed;
+          image-rendering: pixelated; /* chrome doesn't support optimizespeed */
+          image-rendering: -moz-crisp-edges; /* this is guaranteed to work for firefox */
+        }
     }
     .tooltip_div {
         z-index: 1001;

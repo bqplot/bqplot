@@ -606,6 +606,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
         # Add the colors or scheme to the color scale options
         options['color'] = dict(options.get('color', {}),
                                 **_process_cmap(cmap))
+        # TODO: is there a nicer way of getting the options in the right entry
+        options['image'] = options['color']
 
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
@@ -740,7 +742,7 @@ def plot(*args, **kwargs):
         return _draw_mark(Lines, **kwargs)
 
 
-def imshow(image, format, **kwargs):
+def imshow(image, extent=None, interpolation='nearest', **kwargs):
     """Draw an image in the current context figure.
     Parameters
     ----------
@@ -749,10 +751,10 @@ def imshow(image, format, **kwargs):
             - an instance of an ipywidgets Image
             - a file name
             - a raw byte string
-    format: {'widget', 'filename', ...}
-        Type of the input argument.
-        If not 'widget' or 'filename', must be a format supported by
-        the ipywidgets Image.
+    extent: [x0, x1, y0, y1]
+        Coordinates of the corners of the image
+    interpolation: str
+        Type of interpolation, 'nearest' or 'bilinear'
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -762,18 +764,16 @@ def imshow(image, format, **kwargs):
         for that mark, axes_options['x'] contains optional keyword arguments
         for the constructor of the corresponding axis type.
     """
-    if format == 'widget':
-        ipyimage = image
-    elif format == 'filename':
-        with open(image, 'rb') as f:
-            data = f.read()
-            ipyimage = ipyImage(value=data)
+    image = array(image, copy=False)
+    kwargs['image'] = image
+    if extent:
+        x0, x1, y0, y1 = extent
     else:
-        ipyimage = ipyImage(value=image, format=format)
-    kwargs['image'] = ipyimage
+        x0, x1, y0, y1 = 0, image.shape[1], 0, image.shape[0]
 
-    kwargs.setdefault('x', [0., 1.])
-    kwargs.setdefault('y', [0., 1.])
+    kwargs['interpolation'] = 'interpolation'
+    kwargs.setdefault('x', [x0, x1])
+    kwargs.setdefault('y', [y0, y1])
 
     return _draw_mark(Image, **kwargs)
 
