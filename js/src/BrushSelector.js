@@ -321,8 +321,8 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
         var point_selector = function(p) {
             return sel_utils.point_in_rectangle(p, x, y);
         };
-        var rect_selector = function(xm, ym) {
-            return sel_utils.rect_inter_rect(xm, ym, x, y);
+        var rect_selector = function(xy) {
+            return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
         };
 
         _.each(this.mark_views, function(mark_view) {

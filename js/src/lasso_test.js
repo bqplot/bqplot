@@ -69,7 +69,7 @@ function point_in_rectangle(point, x, y) {
 
 // checks whether two rectangles intersect
 function rect_inter_rect(x0, y0, x1, y1) {
-    return seg_inter_seg(x0, x1) || seg_inter_seg(y0, y1);
+    return seg_inter_seg(x0, x1) && seg_inter_seg(y0, y1);
 }
 
 function lasso_inter_rect(x, y, vertices) {
