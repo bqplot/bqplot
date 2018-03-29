@@ -169,8 +169,8 @@ var BaseXYSelector = BaseSelector.extend({
     update_yscale_domain: function() {
         // When the domain of the scale is updated, the domain of the scale
         // for the selector must be expanded to account for the padding.
-        var initial_range = this.parent.padded_range("x", this.y_scale.model);
-        var target_range = this.parent.range("x");
+        var initial_range = this.parent.padded_range("y", this.y_scale.model);
+        var target_range = this.parent.range("y");
         this.y_scale.expand_domain(initial_range, target_range);
     }
 });
