@@ -24,7 +24,7 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
         LassoSelector.__super__.render.apply(this);
         var scale_creation_promise = this.create_scales();
         this.line = d3.svg.line();
-        this.lasso_vertices = [];
+        this.all_vertices = {};
         this.lasso_counter = 0;
 
         var that = this;
@@ -64,8 +64,7 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
         }
     },
 
-    drag_start: function() {
-        this.lasso_vertices = [];
+    create_new_lasso: function() {
         var lasso = this.d3el.append("path")
             .attr("id", "l" + (++this.lasso_counter))
             .on("click", function() {
@@ -79,34 +78,50 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
         }
     },
 
+    drag_start: function() {
+        this.current_vertices = [];
+        this.create_new_lasso();
+    },
+
     drag_move: function() {
-        this.lasso_vertices.push(d3.mouse(this.background.node()));
+        this.current_vertices.push(d3.mouse(this.background.node()));
         this.d3el.select("#l" + this.lasso_counter)
-            .attr("d", this.line(this.lasso_vertices));
+            .attr("d", this.line(this.current_vertices));
     },
 
     drag_end: function() {
-        //close the lasso
-        this.d3el.select("#l" + this.lasso_counter)
-            .attr("d", this.line(this.lasso_vertices) + "Z");
+        var lasso_name = "l" + this.lasso_counter;
+        // Close the lasso
+        this.d3el.select("#" + lasso_name)
+            .attr("d", this.line(this.current_vertices) + "Z");
+        // Add the current vertices to the global lasso vertices
+        this.all_vertices[lasso_name] = this.current_vertices;
+        // Update selected for each mark
+        this.update_mark_selected(this.all_vertices)
+    },
 
-        var mark_data_in_lasso = false;
-        var that = this;
-        // update selected for each mark
-        _.each(this.mark_views, function(mark_view) {
-            var data_in_lasso = mark_view.update_selected_in_lasso("l" + that.lasso_counter,
-                                                                   that.lasso_vertices,
-                                                                   lasso.point_in_lasso);
-            if (data_in_lasso) {
-                mark_data_in_lasso = true;
-            }
-        });
+    update_mark_selected: function(vertices) {
 
-        //remove the lasso if it doesnt have any mark data
-        if (!mark_data_in_lasso) {
-            this.d3el.select("#l" + this.lasso_counter).remove();
-            this.lasso_counter--;
+        if(vertices === undefined || vertices.length === 0) {
+            // Reset all the selected in marks
+            _.each(this.mark_views, function(mark_view) {
+                return mark_view.selector_changed();
+            });
         }
+        var point_selector = function(p) {
+            for (var l in vertices) {
+                if (lasso.point_in_lasso(p, vertices[l])) { return true; }
+            } return false;
+        };
+        var rect_selector = function(xy) {
+            for (var l in vertices) {
+                if (lasso.lasso_inter_rect(xy[0], xy[1], vertices[l])) { return true; }
+            } return false;
+        };
+
+        _.each(this.mark_views, function(mark_view) {
+            mark_view.selector_changed(point_selector, rect_selector);
+        }, this);
     },
 
     relayout: function() {
@@ -115,22 +130,27 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
     },
 
     keydown: function() {
-       //delete key pressed
+       // delete key pressed
        if (d3.event.keyCode === 46) {
-           //delete selected lassos
+           // Delete selected lassos
            var lassos_to_delete = this.d3el.selectAll(".selected");
-
-           var that = this;
+           // Update the lasso vertices
+           var vertices = this.all_vertices;
            lassos_to_delete.each(function() {
                var lasso_name = d3.select(this).attr("id");
-               // delete selected for each mark
-               _.each(that.mark_views, function(mark_view) {
-                   mark_view.update_selected_in_lasso(lasso_name, null, null);
-               });
+               delete vertices[lasso_name];
            });
            lassos_to_delete.remove();
+           this.update_mark_selected(this.all_vertices);
       }
-    }
+    },
+
+    reset: function() {
+        this.lasso_counter = 0;
+        this.all_vertices = {};
+        this.d3el.selectAll("path").remove();
+        this.update_mark_selected();
+    },
 });
 
 

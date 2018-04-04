@@ -77,7 +77,7 @@ function lasso_inter_rect(x, y, vertices) {
     // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
 
     for (var i = 0; i < vertices.length; i++) {
-        if (point_in_rectangle(vertices[i])) { return true; }
+        if (point_in_rectangle(vertices[i], x, y)) { return true; }
     }
     return false;
 }

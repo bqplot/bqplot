@@ -683,47 +683,6 @@ var Lines = mark.Mark.extend({
         this.d3el.selectAll(".dot").attr("d", this.dot.size(marker_size));
     },
 
-    update_selected_in_lasso: function(lasso_name, lasso_vertices,
-                                       point_in_lasso_func) {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
-        var idx = this.model.get("selected");
-        var selected = idx ? utils.deepCopy(idx) : [];
-        var data_in_lasso = false;
-        var that = this;
-        if(lasso_vertices !== null && lasso_vertices.length > 0) {
-            // go through each line and check if its data is in lasso
-            _.each(this.model.mark_data, function(line_data) {
-               var line_name = line_data.name;
-               var data = line_data.values;
-               var indices = _.range(data.length);
-               var idx_in_lasso = _.filter(indices, function(index) {
-                   var elem = data[index];
-                   var point = [x_scale.scale(elem.x), y_scale.scale(elem.y)];
-                   return point_in_lasso_func(point, lasso_vertices);
-               });
-               if (idx_in_lasso.length > 0) {
-                   data_in_lasso = true;
-                   selected.push({
-                       line_name: line_name,
-                       lasso_name: lasso_name,
-                       indices: idx_in_lasso,
-                   });
-               }
-           });
-           that.model.set("selected", selected);
-           that.touch();
-        } else {
-            // delete the lasso specific selected
-            this.model.set("selected", _.filter(selected, function(lasso) {
-                return lasso.lasso_name !== lasso_name;
-            }));
-            this.touch();
-        }
-
-        //return true if there are any mark data inside lasso
-        return data_in_lasso;
-    },
-
     process_interactions: function() {
         var interactions = this.model.get("interactions");
         if(_.isEmpty(interactions)) {

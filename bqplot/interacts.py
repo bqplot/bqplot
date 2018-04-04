@@ -523,21 +523,7 @@ class LassoSelector(TwoDSelector):
     color: Color (default: None)
         Color of the lasso.
     """
-    marks = List(Instance(Lines) | Instance(Scatter)).tag(sync=True, **widget_serialization)
     color = Color(None, allow_none=True).tag(sync=True)
-
-    def __init__(self, marks=None, **kwargs):
-        _marks = []
-        if marks is not None:
-            for mark in marks:
-                try:
-                    mark_trait = self.class_traits()['marks']
-                    _marks.append(mark_trait.validate_elements(self, [mark])[0])
-                except TraitError:
-                    pass
-
-        kwargs['marks'] = _marks
-        super(LassoSelector, self).__init__(**kwargs)
 
     _view_name = Unicode('LassoSelector').tag(sync=True)
     _model_name = Unicode('LassoSelectorModel').tag(sync=True)
