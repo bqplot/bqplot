@@ -274,6 +274,10 @@ var ScatterBase = mark.Mark.extend({
             });
         this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el.x) + x_scale.offset; });
         this.y_pixels = this.model.mark_data.map(function(el) { return y_scale.scale(el.y) + y_scale.offset; });
+        this.pixel_coords = this.model.mark_data.map(function(el) {
+                return [x_scale.scale(el.x) + x_scale.offset,
+                        y_scale.scale(el.y) + y_scale.offset];
+            });
     },
 
     draw: function(animate) {
@@ -522,49 +526,19 @@ var ScatterBase = mark.Mark.extend({
         this.touch();
     },
 
-    invert_range: function(start_pxl, end_pxl, orientation) {
-        if(start_pxl === undefined || end_pxl === undefined) {
+    selector_changed: function(point_selector, rect_selector) {
+        if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
             return [];
         }
-        var pixels = (orientation == "y") ? this.y_pixels : this.x_pixels;
+        var pixels = this.pixel_coords;
         var indices = _.range(pixels.length);
-        var that = this;
         var selected = _.filter(indices, function(index) {
-            var elem = pixels[index];
-            if (orientation == "x") {
-                return (elem >= start_pxl && elem <= end_pxl);
-            } else {
-                return (elem <= start_pxl && elem >= end_pxl)
-            }
-            
+            return point_selector(pixels[index]);
         });
         this.model.set("selected", selected);
         this.touch();
-    },
-
-    invert_2d_range: function(x_start, x_end, y_start, y_end) {
-        //y_start is usually greater than y_end as the y_scale is invert
-        //by default
-        if(!x_end) {
-            this.model.set("selected", null);
-            this.touch();
-            return _.range(this.model.mark_data.length);
-        }
-        var x_scale = this.scales.x, y_scale = this.scales.y;
-
-        var indices = _.range(this.model.mark_data.length);
-        var that = this;
-        var selected = _.filter(indices, function(index) {
-            var elem_x = that.x_pixels[index],
-                elem_y = that.y_pixels[index];
-            return (elem_x >= x_start && elem_x <= x_end &&
-                    elem_y <= y_start && elem_y >= y_end);
-        });
-        this.model.set("selected", selected);
-        this.touch();
-        return selected;
     },
 
     update_selected: function(model, value) {
@@ -640,44 +614,6 @@ var ScatterBase = mark.Mark.extend({
             this.y_padding = x_padding;
             this.trigger("mark_padding_updated");
         }
-    },
-
-    update_selected_in_lasso: function(lasso_name, lasso_vertices,
-                                       point_in_lasso_func)
-    {
-        var x_scale = this.scales.x, y_scale = this.scales.y,
-            idx = this.model.get("selected"),
-            selected = idx ? utils.deepCopy(idx) : [],
-            data_in_lasso = false;
-        if(lasso_vertices !== null && lasso_vertices.length > 0) {
-            var indices = _.range(this.model.mark_data.length);
-            var that = this;
-            var idx_in_lasso = _.filter(indices, function(index) {
-                var elem = that.model.mark_data[index];
-                var point = [x_scale.scale(elem.x), y_scale.scale(elem.y)];
-                return point_in_lasso_func(point, lasso_vertices);
-            });
-            data_in_lasso = idx_in_lasso.length > 0;
-            if (data_in_lasso) {
-                this.update_selected(idx_in_lasso);
-                selected.push({lasso_name: lasso_name, indices: idx_in_lasso});
-                this.model.set("selected", selected);
-                this.touch();
-            }
-        } else { //delete the lasso specific selected
-            var to_be_deleted_lasso = _.filter(selected, function(lasso_data) {
-                return lasso_data.lasso_name === lasso_name;
-            });
-            this.update_selected(to_be_deleted_lasso.indices);
-
-            this.model.set("selected", _.filter(selected, function(lasso_data) {
-                return lasso_data.lasso_name !== lasso_name;
-            }));
-            this.touch();
-        }
-
-        //return true if there are any mark data inside lasso
-        return data_in_lasso;
     },
 
     update_array: function(d, i) {

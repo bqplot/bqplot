@@ -24,25 +24,20 @@ var BaseBrushSelector = {
     brush_render: function() {
         var that = this;
         var scale_creation_promise = this.create_scales();
+        
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.brush = d3.svg.brush()
                 .on("brushstart", _.bind(that.brush_start, that))
                 .on("brush", _.bind(that.brush_move, that))
                 .on("brushend", _.bind(that.brush_end, that));
-
             that.set_brush_scale();
 
             that.d3el.attr("class", "selector brushintsel");
-
             that.brushsel = that.d3el.call(that.brush);
             that.adjust_rectangle();
-
-            if(that.model.get("color") !== null) {
-                that.brushsel.style("fill", that.model.get("color"));
-            }
-
+            that.color_change();
             that.create_listeners();
-            that.selected_changed();
+            // that.selected_changed();
         });
     },
 
@@ -73,12 +68,11 @@ var BaseBrushSelector = {
         this._update_brush();
 
         this.model.set("selected", [], {js_ignore: true});
-        this.update_mark_selected([]);
+        this.update_mark_selected();
         this.touch();
     },
 
     reset_mark_selected: function() {
-
     },
 
     scale_changed: function() {
@@ -88,21 +82,20 @@ var BaseBrushSelector = {
     },
 
     _update_brush: function() {
-        //programmatically setting the brush does not redraw it. It is
-        //being redrawn below
+        // Programmatically setting the brush does not redraw it. It is
+        // being redrawn below
         this.brushsel = this.d3el.call(this.brush);
         this.d3el.call(this.brush.event);
     },
 
     update_mark_selected: function(extent_x, extent_y) {
 
-        if(extent_x.length === 0) {
+        if(extent_x === undefined || extent_x.length === 0) {
             // Reset all the selected in marks
             _.each(this.mark_views, function(mark_view) {
                 return mark_view.selector_changed();
             });
-        }
-        if (extent_y === undefined) {
+        } if (extent_y === undefined) {
             // 1d brush
             var orient = this.model.get("orientation");
             var x = (orient == "vertical") ? [] : extent_x,
@@ -111,7 +104,6 @@ var BaseBrushSelector = {
             // 2d brush
             var x = extent_x, y = extent_y;
         }
-
         var point_selector = function(p) {
             return sel_utils.point_in_rectangle(p, x, y);
         };
@@ -131,8 +123,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
         BrushSelector.__super__.render.apply(this);
         this.brush_render();
         // Put inside promise?
-        //this.is_x_date = (this.x_scale.model.type === "date");
-        //this.is_y_date = (this.y_scale.model.type === "date");
+        // this.is_x_date = (this.x_scale.model.type === "date");
+        // this.is_y_date = (this.y_scale.model.type === "date");
     },
 
     create_listeners: function() {
@@ -262,11 +254,12 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
             // invalid value for selected. Ignoring the value
             return;
         } else {
-            selected = selected.sort(function(a, b) { return a - b; });
             var extent = [selected[0], selected[1]];
             this.brush.extent(extent);
             this._update_brush();
-            this.update_mark_selected(extent.map(this.scale.scale));
+            var pixel_extent = extent.map(this.scale.scale).sort(
+                function(a, b) { return a - b; });
+            this.update_mark_selected(pixel_extent);
         }
     },
 
