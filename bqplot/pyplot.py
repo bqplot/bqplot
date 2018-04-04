@@ -771,7 +771,7 @@ def imshow(image, extent=None, interpolation='nearest', **kwargs):
     else:
         x0, x1, y0, y1 = 0, image.shape[1], 0, image.shape[0]
 
-    kwargs['interpolation'] = 'interpolation'
+    kwargs['interpolation'] = interpolation
     kwargs.setdefault('x', [x0, x1])
     kwargs.setdefault('y', [y0, y1])
 

@@ -1718,8 +1718,9 @@ class Image(Mark):
                         scaled=True,
                         rtype='Color',
                         atype='bqplot.ColorAxis',
-                        **array_binary_serialization)
+                        **array_serialization)
     interpolation = Unicode('nearest', allow_none=True).tag(sync=True)
+    opacity = Float(1.0).tag(sync=True)
     x = Array(default_value=(0, 1)).tag(sync=True, scaled=True,
                                         rtype='Number',
                                         atype='bqplot.Axis',

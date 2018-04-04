@@ -18,6 +18,7 @@ var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var jupyter_dataserializers = require("jupyter-dataserializers");
+var serialize = require("./serialize");
 
 var ImageModel = markmodel.MarkModel.extend({
 
@@ -26,6 +27,7 @@ var ImageModel = markmodel.MarkModel.extend({
             _model_name: "ImageModel",
             _view_name: "Image",
             interpolation: 'nearest',
+            opacity: 1.0,
             x: (0.0, 1.0),
             y: (0.0, 1.0),
             scales_metadata: {
@@ -76,7 +78,12 @@ var ImageModel = markmodel.MarkModel.extend({
 
 }, {
     serializers: _.extend({
-        image: { deserialize: jupyter_dataserializers.JSONToArray },
+        image: { deserialize: (obj, manager) => {
+            let state = {buffer: obj.value, dtype: obj.dtype, shape: obj.shape}
+            return jupyter_dataserializers.JSONToArray(state)
+        }},
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
     }, markmodel.MarkModel.serializers)
 });
 
