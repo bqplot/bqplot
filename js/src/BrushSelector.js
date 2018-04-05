@@ -17,7 +17,7 @@ var d3 = require("d3");
 var _ = require("underscore");
 var selector = require("./Selector");
 var utils = require("./utils");
-var sel_utils = require("./lasso_test");
+var sel_utils = require("./selector_utils");
 
 var BaseBrushSelector = {
 

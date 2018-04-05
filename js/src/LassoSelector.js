@@ -17,7 +17,7 @@ var d3 = require("d3");
 var _ = require("underscore");
 var utils = require("./utils");
 var baseselector = require("./Selector");
-var lasso = require("./lasso_test");
+var sel_utils = require("./selector_utils");
 
 var LassoSelector = baseselector.BaseXYSelector.extend({
     render: function() {
@@ -110,12 +110,12 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
         }
         var point_selector = function(p) {
             for (var l in vertices) {
-                if (lasso.point_in_lasso(p, vertices[l])) { return true; }
+                if (sel_utils.point_in_lasso(p, vertices[l])) { return true; }
             } return false;
         };
         var rect_selector = function(xy) {
             for (var l in vertices) {
-                if (lasso.lasso_inter_rect(xy[0], xy[1], vertices[l])) { return true; }
+                if (sel_utils.lasso_inter_rect(xy[0], xy[1], vertices[l])) { return true; }
             } return false;
         };
 

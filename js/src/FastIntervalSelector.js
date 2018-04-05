@@ -17,7 +17,7 @@ var _ = require("underscore");
 var d3 = require("d3");
 var baseselector = require("./Selector");
 var mark = require("./Mark");
-var sel_utils = require("./lasso_test");
+var sel_utils = require("./selector_utils");
 
 var FastIntervalSelector = baseselector.BaseXSelector.extend({
 
