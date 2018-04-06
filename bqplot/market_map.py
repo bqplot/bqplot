@@ -30,8 +30,9 @@ Market Map
 from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance, Float
 from traittypes import Array, DataFrame
 from ipywidgets import (
-        DOMWidget, CallbackDispatcher, Color, widget_serialization, Layout
+        DOMWidget, CallbackDispatcher, Color, widget_serialization
     )
+from ipywidgets.widgets.widget_layout import LayoutTraitType
 
 from .traits import array_serialization, dataframe_serialization, dataframe_warn_indexname
 from .marks import CATEGORY10
@@ -178,9 +179,7 @@ class MarketMap(DOMWidget):
     color = Array([]).tag(sync=True, **array_serialization)
     map_margin = Dict(dict(top=50, right=50, left=50, bottom=50)).tag(sync=True)
 
-    layout = Instance(Layout, kw={
-            'min_width': '125px'
-        }, allow_none=True).tag(sync=True, **widget_serialization)
+    layout = LayoutTraitType(kw=dict(min_width='125px')).tag(sync=True, **widget_serialization)
     min_aspect_ratio = Float(1.0).tag(sync=True)
     # Max aspect ratio is such that we can have 3 charts stacked vertically
     # on a 16:9 monitor: 16/9*3 ~ 5.333
