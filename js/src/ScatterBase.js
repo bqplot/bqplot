@@ -18,9 +18,6 @@ var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
 
-var min_size = 10;
-
-
 var ScatterBase = mark.Mark.extend({
 
     render: function() {
@@ -89,17 +86,7 @@ var ScatterBase = mark.Mark.extend({
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
         if(size_scale) {
-            // I don't know how to set the lower bound on the range of the
-            // values that the size scale takes. I guess a reasonable
-            // approximation is that the area should be proportional to the
-            // value. But I also want to set a lower bound of 10px area on
-            // the size. This is what I do in the step below.
-
-            // I don't know how to handle for ordinal scale.
-            var size_domain = size_scale.scale.domain();
-            var ratio = d3.min(size_domain) / d3.max(size_domain);
-            size_scale.set_range([d3.max([(this.model.get("default_size") * ratio), min_size]),
-                                 this.model.get("default_size")]);
+            size_scale.set_range([0, this.model.get("default_size")]);
         }
         if(opacity_scale) {
             opacity_scale.set_range([0.2, 1]);
