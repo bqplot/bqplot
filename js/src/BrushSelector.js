@@ -186,17 +186,19 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
         var scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.brush = d3.svg.brush()
-                .x(that.scale.scale)
                 .on("brushstart", _.bind(that.brush_start, that))
                 .on("brush", _.bind(that.brush_move, that))
                 .on("brushend", _.bind(that.brush_end, that));
 
+            that.set_brush_scale();
+
             that.d3el.attr("class", "selector brushintsel");
 
-            that.brushsel = that.d3el.call(that.brush)
-                .selectAll("rect")
-                .attr("y", 0)
-                .attr("height", that.height);
+            that.brushsel = that.d3el.call(that.brush);
+                //.selectAll("rect")
+                //.attr("y", 0)
+                //.attr("height", that.height);
+            that.adjust_rectangle();
 
             if(that.model.get("color") !== null) {
                 that.brushsel.style("fill", that.model.get("color"));
@@ -236,6 +238,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
 
     convert_and_save: function(extent) {
         var that = this;
+        var xy = (this.model.get("orientation") == "vertical") ? "y" : "x";
         if(extent.length === 0) {
             _.each(this.mark_views, function(mark_view) {
                 return mark_view.invert_range(extent);
@@ -243,19 +246,17 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
         } else {
             if(this.scale.model.type === "ordinal") {
                 _.each(this.mark_views, function(mark_view) {
-                    mark_view.invert_range(extent[0], extent[1]);
+                    mark_view.invert_range(extent[0], extent[1], xy);
                 });
+                extent = this.scale.invert_range(extent);
             } else {
                 _.each(this.mark_views, function(mark_view) {
                     mark_view.invert_range(that.scale.scale(extent[0]),
-                                           that.scale.scale(extent[1]));
+                                           that.scale.scale(extent[1]), xy);
                 });
             }
         }
 
-        if(this.scale.model.type == "ordinal") {
-            extent = this.scale.invert_range(extent);
-        }
         this.model.set_typed_field("selected", extent, {js_ignore: true});
         this.touch();
     },
@@ -263,7 +264,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
     scale_changed: function() {
         this.brush.clear();
         this.create_scale();
-        this.brush.x(this.scale.scale);
+        this.set_brush_scale();
     },
 
     reset: function() {
@@ -281,11 +282,19 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
         // Call the base class function to update the scale.
         BrushIntervalSelector.__super__.update_scale_domain.apply(this);
         if(this.brush !== undefined && this.brush !== null) {
-            this.brush.x(this.scale.scale);
+            this.set_brush_scale();
         }
         if(ignore_gui_update !== true) {
             this.selected_changed();
         }
+    },
+
+    set_brush_scale: function() {
+        if (this.model.get("orientation") == "vertical") {
+                this.brush.y(this.scale.scale);
+            } else {
+                this.brush.x(this.scale.scale);
+            }
     },
 
     selected_changed: function(model, value, options) {
@@ -309,8 +318,9 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
             this._update_brush();
 
             _.each(this.mark_views, function(mark_view) {
+                var xy = (this.model.get("orientation") == "vertical") ? "y" : "x";
                 mark_view.invert_range(that.scale.scale(selected[0]),
-                                       that.scale.scale(selected[1]));
+                                       that.scale.scale(selected[1]), xy);
             }, this);
         }
     },
@@ -327,12 +337,22 @@ var BrushIntervalSelector = selector.BaseXSelector.extend({
         BrushIntervalSelector.__super__.remove.apply(this);
     },
 
+    adjust_rectangle: function() {
+        if (this.model.get("orientation") == "vertical") {
+            this.d3el.selectAll("rect")
+                .attr("x", 0)
+                .attr("width", this.width);
+        } else {
+            this.d3el.selectAll("rect")
+                .attr("y", 0)
+                .attr("height", this.height);
+        }
+    },
+
     relayout: function() {
         BrushIntervalSelector.__super__.relayout.apply(this);
-        this.d3el.selectAll("rect")
-            .attr("y", 0)
-            .attr("height", this.height);
 
+        this.adjust_rectangle();
         this.d3el.select(".background")
             .attr("width", this.width)
             .attr("height", this.height);

@@ -260,19 +260,23 @@ var Lines = mark.Mark.extend({
         this.update_line_xy();
     },
 
-    invert_range: function(start_pxl, end_pxl) {
+    invert_range: function(start_pxl, end_pxl, orientation) {
         if(start_pxl === undefined || end_pxl === undefined) {
             this.model.set("selected", null);
             this.touch();
             return [];
         }
-        var x_scale = this.scales.x;
-
-        var indices = _.range(this.x_pixels.length);
+        var pixels = (orientation == "y") ? this.y_pixels : this.x_pixels;
+        var indices = _.range(pixels.length);
         var that = this;
         var selected = _.filter(indices, function(index) {
-            var elem = that.x_pixels[index];
-            return (elem >= start_pxl && elem <= end_pxl);
+            var elem = pixels[index];
+            if (orientation == "x") {
+                return (elem >= start_pxl && elem <= end_pxl);
+            } else {
+                return (elem <= start_pxl && elem >= end_pxl)
+            }
+            
         });
         this.model.set("selected", selected);
         this.touch();
@@ -522,6 +526,9 @@ var Lines = mark.Mark.extend({
         this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
                                                                     { return x_scale.scale(el.x) + x_scale.offset; })
                                                           : [];
+        this.y_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
+                                                                    { return y_scale.scale(el.y) + y_scale.offset; })
+                                                          : [];                                                  
     },
 
     draw: function(animate) {
