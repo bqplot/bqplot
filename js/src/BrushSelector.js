@@ -202,7 +202,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
     },
 
     create_listeners: function() {
-        BrushSelector.__super__.create_listeners.apply(this);
+        BrushIntervalSelector.__super__.create_listeners.apply(this);
         this.listenTo(this.model, "change:color", this.change_color, this);
     },
 

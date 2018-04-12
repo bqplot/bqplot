@@ -260,28 +260,6 @@ var Lines = mark.Mark.extend({
         this.update_line_xy();
     },
 
-    invert_range: function(start_pxl, end_pxl, orientation) {
-        if(start_pxl === undefined || end_pxl === undefined) {
-            this.model.set("selected", null);
-            this.touch();
-            return [];
-        }
-        var pixels = (orientation == "y") ? this.y_pixels : this.x_pixels;
-        var indices = _.range(pixels.length);
-        var that = this;
-        var selected = _.filter(indices, function(index) {
-            var elem = pixels[index];
-            if (orientation == "x") {
-                return (elem >= start_pxl && elem <= end_pxl);
-            } else {
-                return (elem <= start_pxl && elem >= end_pxl)
-            }
-            
-        });
-        this.model.set("selected", selected);
-        this.touch();
-    },
-
     selector_changed: function(point_selector, rect_selector) {
         if(point_selector === undefined) {
             this.model.set("selected", null);

@@ -222,52 +222,37 @@ var Boxplot = mark.Mark.extend({
         this.style_updated(style, unselected_indices);
     },
 
-    update_selected_colors: function(idx_start, idx_end) {
-        var boxplot_sel = this.d3el.selectAll(".boxplot");
-        var current_range = _.range(idx_start, idx_end + 1);
-        if(current_range.length == this.model.mark_data.length) {
-            current_range = [];
-        }
+    //FIXME: should use the selected_style logic
+    update_selected_colors: function(selected_indices) {
         var that = this;
         var stroke = this.model.get("stroke");
-        var selected_stroke = this.model.get("stroke");
-
-        _.range(0, this.model.mark_data.length)
-         .forEach(function(d) {
-             that.d3el.selectAll("#boxplot" + d)
-               .style("stroke", stroke);
-         });
-
-        current_range.forEach(function(d) {
-            that.d3el.selectAll("#boxplot" + d)
-              .style("stroke", selected_stroke);
-        });
+        var selected_stroke = stroke;
+        var boxplot_sel = this.d3el.selectAll(".boxplot")
+            .style("stroke", function(d, i) {
+                return (selected_indices.indexOf(i) > -1) ? selected_stroke : stroke;
+            })
     },
 
-    invert_range: function(start_pxl, end_pxl) {
-        if(start_pxl === undefined || end_pxl === undefined ||
-           this.model.mark_data.length === 0)
-        {
-            this.update_selected_colors(-1,-1);
-            idx_selected = [];
-            return idx_selected;
+    selector_changed: function(point_selector, rect_selector) {
+        if(point_selector === undefined) {
+            this.model.set("selected", null);
+            this.touch();
+            this.update_selected_colors([])
+            return [];
         }
-        var that = this;
-        var indices = _.range(this.model.mark_data.length);
-        var idx_selected = _.filter(indices, function(index) {
-            var elem = that.x_pixels[index];
-            return (elem <= end_pxl && elem >= start_pxl);
+        var pixels = this.pixel_coords;
+        var indices = _.range(pixels.length);
+        var selected = _.filter(indices, function(index) {
+            return rect_selector(pixels[index]);
         });
-
-        this.update_selected_colors(idx_selected[0], idx_selected[idx_selected.length -1]);
-        this.model.set("selected", idx_selected);
+        this.update_selected_colors(selected)
+        this.model.set("selected", selected);
         this.touch();
-        return idx_selected;
     },
 
     invert_point: function(pixel) {
         if(pixel === undefined) {
-            this.update_selected_colors(-1, -1);
+            this.update_selected_colors([]);
             this.model.set("selected", null);
             this.touch();
             return;
@@ -277,7 +262,7 @@ var Boxplot = mark.Mark.extend({
         var sel_index = abs_diff.indexOf(d3.min(abs_diff));
 
         this.model.set("selected", [sel_index]);
-        this.update_selected_colors(sel_index, sel_index);
+        this.update_selected_colors([sel_index]);
         this.touch();
         return sel_index;
     },
@@ -344,15 +329,19 @@ var Boxplot = mark.Mark.extend({
 
         // Draw the visual elements with data which was bound
         this.draw_mark_paths(".boxplot", this.d3el, plotData);
+        // Keep the pixel coordinates of the boxes, for interactions.
         this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
+        var width = this.model.get("box_width") / 2;
+        this.pixel_coords = plotData.map(function(d) { return [[d.x - width, d.x + width],
+                                                               [d.boxLower, d.boxUpper]] })
     },
 
     draw_mark_paths: function(parentClass, selector, plotData) {
         var that = this;
 
         var mark_max_width = this.calculate_mark_max_width();
-        var color      = this.model.get("color");
-        var boxplot    = this.d3el.selectAll(parentClass).data(plotData);
+        var color = this.model.get("color");
+        var boxplot = this.d3el.selectAll(parentClass).data(plotData);
 
         var fillcolor = this.model.get("box_fill_color");
         var start_time = this.model.get("start_time");
@@ -481,20 +470,19 @@ var Boxplot = mark.Mark.extend({
 
           // Add the outliers group
           var outliers = selector.selectAll(".outliers").selectAll("circle")
-                                  .data(function(d) { return d.outliers;});
+              .data(function(d) { return d.outliers;});
 
           //Individual outlier drawing spec
           outliers.enter().append("circle").attr("class", "outlier");
 
           selector.selectAll(".outlier")
-                  .style("fill", this.model.get("outlier_fill_color"))
-                  .attr("class", "outlier")
-                  .attr("cx", 0)
-                  .attr("r", 3)
-                  .attr("cy", function(d) {
-                    return (d);
-                  });
-
+              .style("fill", this.model.get("outlier_fill_color"))
+              .attr("class", "outlier")
+              .attr("cx", 0)
+              .attr("r", 3)
+              .attr("cy", function(d) {
+                return (d);
+              });
 
           outliers.exit().remove();
 
@@ -511,7 +499,7 @@ var Boxplot = mark.Mark.extend({
         var x_scale = this.scales.x;
         for(var i = 1; i < that.model.mark_data.length; i++) {
             var dist = x_scale.scale(that.model.mark_data[i][0]) -
-                        x_scale.scale(that.model.mark_data[i-1][0]);
+                       x_scale.scale(that.model.mark_data[i-1][0]);
             dist = (dist < 0) ? (-1*dist) : dist;
             if(dist < min_distance) min_distance = dist;
         }

@@ -431,20 +431,6 @@ var Hist = mark.Mark.extend({
         this.touch();
     },
 
-    invert_range: function(start_pxl, end_pxl) {
-        if(start_pxl === undefined || end_pxl === undefined ) {
-            this.model.set("selected", null);
-            this.touch();
-            return [];
-        }
-
-        var selected = this.calc_data_indices_from_data_range(d3.min([start_pxl, end_pxl]),
-                                                              d3.max([start_pxl, end_pxl]));
-        this.model.set("selected", selected);
-        this.touch();
-        return selected;
-    },
-
     selector_changed: function(point_selector, rect_selector) {
         if(point_selector === undefined) {
             this.model.set("selected", null);
