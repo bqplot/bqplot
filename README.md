@@ -67,7 +67,7 @@ $ git clone https://github.com/bloomberg/bqplot.git
 $ cd bqplot
 $ pip install -e .
 $ jupyter nbextension install --py --symlink --sys-prefix bqplot
-$ jupyter nbextension enable --py --sys-prefix bqplot  # can be skipped for notebook version 5.3 and above
+$ jupyter nbextension enable --py --sys-prefix bqplot
 ```
 
 Note for developers: the `--symlink` argument on Linux or OS X allows one to
