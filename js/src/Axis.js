@@ -571,7 +571,7 @@ var Axis = widgets.WidgetView.extend({
     },
 
     get_ticks_from_array_or_length: function(data_array) {
-        // This function is to be called when the ticks are passed explicilty
+        // This function is to be called when the ticks are passed explicitly
         // or the number of ticks to be drawn.
         // Have to do different things based on the type of the scale.
         // If an array is passed, then just scale and return equally spaced

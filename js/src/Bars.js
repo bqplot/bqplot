@@ -537,7 +537,7 @@ var Bars = mark.Mark.extend({
         // not, clears on only the elements whose indices are mathcing.
         //
         // This function is not used right now. But it can be used if we
-        // decide to accomodate more properties than those set by default.
+        // decide to accommodate more properties than those set by default.
         // Because those have to cleared specifically.
         var elements = this.d3el.selectAll(".bargroup");
         if(indices !== undefined) {

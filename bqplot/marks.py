@@ -112,7 +112,7 @@ class Mark(Widget):
     scales_metadata: Dict (default: {})
         A dictionary of dictionaries holding metadata on the way scales are
         used by the mark. For example, a linear scale may be used to count
-        pixels horizontally or vertically. The content of this dictionnary
+        pixels horizontally or vertically. The content of this dictionary
         may change dynamically. It is an instance-level attribute.
     preserve_domain: dict (default: {})
         Indicates if this mark affects the domain(s) of the specified scale(s).

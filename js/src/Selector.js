@@ -87,7 +87,7 @@ var BaseXSelector = BaseSelector.extend({
             var that = this;
             return this.create_child_view(this.model.get("scale")).then(function(view) {
                 that.scale = view;
-                // The argument is to supress the update to gui
+                // The argument is to suppress the update to gui
                 that.update_scale_domain(true);
                 that.set_range([that.scale]);
                 that.scale.on("domain_changed", that.update_scale_domain, that);

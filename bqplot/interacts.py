@@ -278,7 +278,7 @@ class IndexSelector(OneDSelector):
 
     """Index selector interaction.
 
-    This 1-D selector interaction uses the mouse x-cooridnate to select the
+    This 1-D selector interaction uses the mouse x-coordinate to select the
     corresponding point in terms of the selector scale.
 
     Index Selector has two modes:
