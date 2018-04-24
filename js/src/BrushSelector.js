@@ -469,7 +469,7 @@ var MultiSelector = selector.BaseXSelector.extend({
         });
         this.curr_index = this.curr_index + 1;
         /* if(this.curr_index > 1) {
-            // Have to create a dupicate event and re dispatch it for the
+            // Have to create a duplicate event and re dispatch it for the
             // event to get triggered on the new brush.
             // if curr_index === 1, then it is the first brush being
             // created. So no duplicate event needs to dispatched.

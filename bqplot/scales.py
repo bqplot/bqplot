@@ -353,7 +353,7 @@ class LinearScale(Scale):
         LinearScale should take precedence.
     stabilized: bool (default: False)
         if set to False, the domain of the scale is tied to the data range
-        if set to True, the domain of the scale is udpated only when
+        if set to True, the domain of the scale is updated only when
         the data range is beyond certain thresholds, given by the attributes
         mid_range and min_range.
     mid_range: float (default: 0.8)

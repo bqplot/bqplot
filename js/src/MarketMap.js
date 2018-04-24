@@ -282,7 +282,7 @@ var MarketMap = figure.Figure.extend({
 
         // row_groups cannot be greater than the number of rows
         this.row_groups = Math.min(this.row_groups, this.num_rows);
-        // if there is only one row_group, then the number of coulmns are
+        // if there is only one row_group, then the number of columns are
         // not necessarily equal to the variable this.num_cols as we draw
         // row first. So we need to adjust the this.num_cols variable
         // according to the num_rows.

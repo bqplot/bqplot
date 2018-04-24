@@ -249,7 +249,7 @@ var GridHeatMap = mark.Mark.extend({
         // If elements are passed, then indices are ignored and the style
         // is cleared only on the elements that are passed.
         //
-        // This can be used if we decide to accomodate more properties than
+        // This can be used if we decide to accommodate more properties than
         // those set by default. Because those have to cleared specifically.
         //
         if(Object.keys(style_dict).length === 0) {

@@ -96,7 +96,7 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
         # data could be any of the combinations of
         #            [list, nparray] X [python_datetime, np.datetime]
         # Because of the coerce=True flag, any non-compatible datetime type
-        # will be converted to pd.NaT. By this comparision, we can figure
+        # will be converted to pd.NaT. By this comparison, we can figure
         # out if it is date castable or not.
         if(len(np.shape(array)) == 2):
             for elem in array:
