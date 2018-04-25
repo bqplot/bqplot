@@ -247,6 +247,11 @@ var Hist = mark.Mark.extend({
         this.bin_pixels = this.model.x_bins.map(function(el) {
             return x_scale.scale(el) + x_scale.offset;
         });
+        // pixel coords contains the [x0, x1] and [y0, y1] of each bin
+        this.pixel_coords = this.model.mark_data.map(function(d) {
+            var x = x_scale.scale(d.x);
+            return [[x, x+bar_width], [0, d.y].map(y_scale.scale)];
+        });
         this.update_stroke_and_opacities();
     },
 
@@ -426,18 +431,19 @@ var Hist = mark.Mark.extend({
         this.touch();
     },
 
-    invert_range: function(start_pxl, end_pxl) {
-        if(start_pxl === undefined || end_pxl === undefined ) {
+    selector_changed: function(point_selector, rect_selector) {
+        if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
             return [];
         }
-
-        var selected = this.calc_data_indices_from_data_range(d3.min([start_pxl, end_pxl]),
-                                                              d3.max([start_pxl, end_pxl]));
-        this.model.set("selected", selected);
+        var pixels = this.pixel_coords;
+        var indices = _.range(pixels.length);
+        var selected_bins = _.filter(indices, function(index) {
+            return rect_selector(pixels[index]);
+        });
+        this.model.set("selected", this.calc_data_indices(selected_bins));
         this.touch();
-        return selected;
     },
 
     calc_data_indices: function(indices) {

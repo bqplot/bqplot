@@ -31,8 +31,8 @@
  * SOFTWARE.
  */
 
-// checks if a point is in lasso
 function point_in_lasso(point, vertices) {
+    // Checks if a point is in lasso
     var xi, xj, yi, yj, intersect,
         x = point[0], y = point[1], is_inside = false;
 
@@ -48,5 +48,5 @@ function point_in_lasso(point, vertices) {
 }
 
 module.exports = {
-    point_in_lasso: point_in_lasso
+    point_in_lasso: point_in_lasso,
 }

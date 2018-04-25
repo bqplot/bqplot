@@ -17,6 +17,7 @@ var _ = require("underscore");
 var d3 = require("d3");
 var baseselector = require("./Selector");
 var mark = require("./Mark");
+var sel_utils = require("./selector_utils");
 
 var FastIntervalSelector = baseselector.BaseXSelector.extend({
 
@@ -48,17 +49,15 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
                 .on("dblclick", _.bind(that.dblclick, that));
 
             that.rect = that.d3el.append("rect")
-            .attr("class", "selector intsel")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", that.size)
-            .attr("height", that.height)
-            .attr("pointer-events", "none")
-            .attr("display", "none");
+                .attr("class", "selector intsel")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", that.size)
+                .attr("height", that.height)
+                .attr("pointer-events", "none")
+                .attr("display", "none");
 
-            if(that.model.get("color") !== null) {
-                that.rect.style("fill", that.model.get("color"));
-            }
+            that.color_change();
 
             that.create_listeners();
         });
@@ -90,7 +89,6 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         if (this.freeze_dont_move || !this.active) {
             return;
         }
-
         var mouse_pos = d3.mouse(this.background.node());
         var int_len = this.size > 0 ?
             this.size : parseInt(this.rect.attr("width"));
@@ -110,17 +108,40 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         //update the interval location and size
         this.rect.attr("x", start);
         this.rect.attr("width", interval_size);
+        var pixel_extent = [start, start + interval_size];
         this.model.set_typed_field("selected",
-                                   this.invert_range(start,
-                                                     start + interval_size), { js_ignore : true});
-        _.each(this.mark_views, function(mark_view) {
-            mark_view.invert_range(start, start + interval_size);
-        });
+                                   this.scale.invert_range(pixel_extent),
+                                   { js_ignore : true });
+        this.update_mark_selected(pixel_extent);
         this.touch();
     },
 
-    invert_range: function(start, end) {
-        return this.scale.invert_range([start, end]);
+    update_mark_selected: function(extent_x, extent_y) {
+
+        if(extent_x === undefined || extent_x.length === 0) {
+            // Reset all the selected in marks
+            _.each(this.mark_views, function(mark_view) {
+                return mark_view.selector_changed();
+            });
+        } if (extent_y === undefined) {
+            // 1d brush
+            var orient = this.model.get("orientation");
+            var x = (orient == "vertical") ? [] : extent_x,
+                y = (orient == "vertical") ? extent_x : [];
+        } else {
+            // 2d brush
+            var x = extent_x, y = extent_y;
+        }
+        var point_selector = function(p) {
+            return sel_utils.point_in_rectangle(p, x, y);
+        };
+        var rect_selector = function(xy) {
+            return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
+        };
+
+        _.each(this.mark_views, function(mark_view) {
+            mark_view.selector_changed(point_selector, rect_selector);
+        }, this);
     },
 
     scale_changed: function() {
@@ -130,9 +151,12 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
 
     relayout: function() {
         FastIntervalSelector.__super__.relayout.apply(this);
-        this.background.attr("width", this.width)
+
+        this.adjust_rectangle();
+        this.background
+            .attr("width", this.width)
             .attr("height", this.height);
-        this.rect.attr("height", this.height);
+
         this.set_range([this.scale]);
     },
 
@@ -140,9 +164,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         this.rect.attr("x", 0)
             .attr("width", 0);
         this.model.set_typed_field("selected", [], {js_ignore : true});
-        _.each(this.mark_views, function(mark_view) {
-            mark_view.invert_range([]);
-        });
+        this.update_mark_selected();
         this.touch();
     },
 
@@ -170,8 +192,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
             // invalid value for selected. Ignoring the value
             return;
         } else {
-            var that = this;
-            var pixels = selected.map(function(d) { return that.scale.scale(d); });
+            var pixels = selected.map(this.scale.scale);
             pixels = pixels.sort(function(a, b) { return a - b; });
 
             this.rect.attr({
@@ -179,11 +200,21 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
                 width: (pixels[1] - pixels[0])
             }).style("display", "inline");
             this.active = true;
-            _.each(this.mark_views, function(mark_view) {
-                mark_view.invert_range(pixels[0], pixels[1]);
-            });
+            this.update_mark_selected(pixels)
         }
-    }
+    },
+
+    adjust_rectangle: function() {
+        if (this.model.get("orientation") == "vertical") {
+            this.d3el.selectAll("rect")
+                .attr("x", 0)
+                .attr("width", this.width);
+        } else {
+            this.d3el.selectAll("rect")
+                .attr("y", 0)
+                .attr("height", this.height);
+        }
+    },
 });
 
 module.exports = {

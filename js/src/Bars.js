@@ -255,19 +255,23 @@ var Bars = mark.Mark.extend({
         this.touch();
     },
 
-    invert_range: function(start_pxl, end_pxl) {
-        if(start_pxl === undefined || end_pxl === undefined) {
+    selector_changed: function(point_selector, rect_selector) {
+        if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
             return [];
         }
-
-        var that = this;
-
-        var indices = _.range(this.model.mark_data.length);
-        var filtered_indices = indices.filter(function(ind) { var x_pix = that.x_pixels[ind];
-                                                              return (x_pix <= end_pxl && x_pix >= start_pxl); });
-        this.model.set("selected", filtered_indices);
+        var pixels = this.pixel_coords;
+        var indices = _.range(pixels.length);
+        // Here we only select bar groups. It shouldn't be too hard to select
+        // individual bars, the `selected` attribute would then be a list of pairs.
+        var selected_groups = _.filter(indices, function(index) {
+            var bars = pixels[index];
+            for (var i = 0; i < bars.length; i++) {
+                if (rect_selector(bars[i])) { return true; }
+            } return false;
+        });
+        this.model.set("selected", selected_groups);
         this.touch();
     },
 
@@ -356,8 +360,7 @@ var Bars = mark.Mark.extend({
         var dom_scale = this.dom_scale, range_scale = this.range_scale;
 
         var dom = (orient === "vertical") ? "x" : "y",
-            rang = (orient === "vertical") ? "y" : "x",
-            mult = (orient === "vertical") ? 1 : -1;
+            rang = (orient === "vertical") ? "y" : "x";
 
         var dom_control = (orient === "vertical") ? "width" : "height",
             rang_control = (orient === "vertical") ? "height" : "width";
@@ -381,7 +384,8 @@ var Bars = mark.Mark.extend({
                 }
             });
         }
-        if (this.model.get("type") === "stacked") {
+        var is_stacked = (this.model.get("type") === "stacked");
+        if (is_stacked) {
             bars_sel.transition("draw_bars").duration(animation_duration)
                 .attr(dom, 0)
                 .attr(dom_control, this.x.rangeBand().toFixed(2))
@@ -405,6 +409,24 @@ var Bars = mark.Mark.extend({
               });
         }
 
+        this.pixel_coords = this.model.mark_data.map(function(d) {
+            var key = d.key;
+            var group_dom = dom_scale.scale(key) + that.dom_offset;
+            return d.values.map(function(d) {
+                var rect_coords = {};
+                rect_coords[dom] = is_stacked ? group_dom : group_dom + that.x1(d.sub_index);
+                rect_coords[rang] = is_stacked ?
+                    (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0) :
+                    d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
+                rect_coords[dom_control] = is_stacked ?
+                    that.x.rangeBand() : that.x1.rangeBand();
+                rect_coords[rang_control] = is_stacked ?
+                    Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1)) :
+                    Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y_ref)));
+                return [[rect_coords["x"], rect_coords["x"] + rect_coords["width"]],
+                        [rect_coords["y"], rect_coords["y"] + rect_coords["height"]]];
+            })
+        })
         this.x_pixels = this.model.mark_data.map(function(el) {
             return dom_scale.scale(el.key) + dom_scale.offset;
         });

@@ -260,19 +260,16 @@ var Lines = mark.Mark.extend({
         this.update_line_xy();
     },
 
-    invert_range: function(start_pxl, end_pxl) {
-        if(start_pxl === undefined || end_pxl === undefined) {
+    selector_changed: function(point_selector, rect_selector) {
+        if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
             return [];
         }
-        var x_scale = this.scales.x;
-
-        var indices = _.range(this.x_pixels.length);
-        var that = this;
+        var pixels = this.pixel_coords;
+        var indices = _.range(pixels.length);
         var selected = _.filter(indices, function(index) {
-            var elem = that.x_pixels[index];
-            return (elem >= start_pxl && elem <= end_pxl);
+            return point_selector(pixels[index]);
         });
         this.model.set("selected", selected);
         this.touch();
@@ -522,6 +519,13 @@ var Lines = mark.Mark.extend({
         this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
                                                                     { return x_scale.scale(el.x) + x_scale.offset; })
                                                           : [];
+        this.y_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
+                                                                    { return y_scale.scale(el.y) + y_scale.offset; })
+                                                          : [];
+        this.pixel_coords = (this.model.mark_data.length > 0) ?
+            this.model.mark_data[0].values.map(function(el) {
+                return [x_scale.scale(el.x) + x_scale.offset, y_scale.scale(el.y) + y_scale.offset];
+            }) : [];
     },
 
     draw: function(animate) {
@@ -655,47 +659,6 @@ var Lines = mark.Mark.extend({
     update_marker_size: function(model, marker_size) {
         this.compute_view_padding();
         this.d3el.selectAll(".dot").attr("d", this.dot.size(marker_size));
-    },
-
-    update_selected_in_lasso: function(lasso_name, lasso_vertices,
-                                       point_in_lasso_func) {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
-        var idx = this.model.get("selected");
-        var selected = idx ? utils.deepCopy(idx) : [];
-        var data_in_lasso = false;
-        var that = this;
-        if(lasso_vertices !== null && lasso_vertices.length > 0) {
-            // go through each line and check if its data is in lasso
-            _.each(this.model.mark_data, function(line_data) {
-               var line_name = line_data.name;
-               var data = line_data.values;
-               var indices = _.range(data.length);
-               var idx_in_lasso = _.filter(indices, function(index) {
-                   var elem = data[index];
-                   var point = [x_scale.scale(elem.x), y_scale.scale(elem.y)];
-                   return point_in_lasso_func(point, lasso_vertices);
-               });
-               if (idx_in_lasso.length > 0) {
-                   data_in_lasso = true;
-                   selected.push({
-                       line_name: line_name,
-                       lasso_name: lasso_name,
-                       indices: idx_in_lasso,
-                   });
-               }
-           });
-           that.model.set("selected", selected);
-           that.touch();
-        } else {
-            // delete the lasso specific selected
-            this.model.set("selected", _.filter(selected, function(lasso) {
-                return lasso.lasso_name !== lasso_name;
-            }));
-            this.touch();
-        }
-
-        //return true if there are any mark data inside lasso
-        return data_in_lasso;
     },
 
     process_interactions: function() {

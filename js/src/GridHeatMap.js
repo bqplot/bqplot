@@ -357,66 +357,20 @@ var GridHeatMap = mark.Mark.extend({
         // For now, an index selector is not supported for the heatmap
     },
 
-    invert_range: function(start_pxl, end_pxl) {
-        if(start_pxl === undefined || end_pxl === undefined) {
+    selector_changed: function(point_selector, rect_selector) {
+        if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
             return [];
         }
-
-        var x_scale = this.scales.column;
-        var that = this;
-
-        var x_start = start_pxl;
-        var x_end = end_pxl;
-
-        if(start_pxl > end_pxl) {
-            x_start = end_pxl;
-            x_end = start_pxl;
-        }
-        var column_indices = _.range(this.model.colors.length);
-
-        var selected = _.filter(column_indices, function(index) {
-            var elem = that.column_pixels[index];
-            return (elem >= x_start && elem <= x_end);
-        });
-
-        // Adding all the rows for the selected columns.
-        var rows = _.range(this.model.colors.length);
-        selected = selected.map(function(s) {
-            return rows.map(function(r) {
-                return [r, s];
-            });
-        });
-        selected = _.flatten(selected, true);
-        this.model.set("selected", selected);
-        this.touch();
-    },
-
-    invert_2d_range: function(x_start, x_end, y_start, y_end) {
-        //y_start is usually greater than y_end as the y_scale is invert
-        //by default
-        if(!x_end) {
-            this.model.set("selected", null);
-            this.touch();
-            return _.range(this.model.mark_data.length);
-        }
-        var x_scale = this.scales.column, y_scale = this.scales.row;
-        var y_min = d3.min([y_start, y_end]);
-        var y_max = d3.max([y_start, y_end]);
-        var x_min = d3.min([x_start, x_end]);
-        var x_max = d3.max([x_start, x_end]);
-
         var col_indices = _.range(this.model.colors[0].length);
         var row_indices = _.range(this.model.colors.length);
         var that = this;
         var sel_cols = _.filter(col_indices, function(index) {
-            var elem_x = that.column_pixels[index];
-            return (elem_x >= x_min && elem_x <= x_max);
+            return rect_selector([that.column_pixels[index], []]);
         });
         var sel_rows = _.filter(row_indices, function(index) {
-            var elem_y = that.row_pixels[index];
-            return (elem_y <= y_max && elem_y >= y_min);
+            return rect_selector([[], that.row_pixels[index]]);
         });
         var selected = sel_cols.map(function(s) {
             return sel_rows.map(function(r) {
@@ -426,7 +380,6 @@ var GridHeatMap = mark.Mark.extend({
         selected = _.flatten(selected, true);
         this.model.set("selected", selected);
         this.touch();
-        return selected;
     },
 
     draw: function() {
@@ -462,8 +415,12 @@ var GridHeatMap = mark.Mark.extend({
         var row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes.row, row_start_aligned);
         var column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes.column, col_start_aligned);
 
-        this.row_pixels = row_plot_data.start;
-        this.column_pixels = column_plot_data.start;
+        this.row_pixels = row_plot_data.start.map(function(d, i) {
+            return [d, d + row_plot_data.widths[i]];
+        })
+        this.column_pixels = column_plot_data.start.map(function(d, i) {
+            return [d, d + column_plot_data.widths[i]];
+        })
 
         this.display_rows = this.d3el.selectAll(".heatmaprow")
             .data(_.range(num_rows));

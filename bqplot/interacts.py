@@ -36,7 +36,7 @@ Interacts
    TwoDSelector
 """
 
-from traitlets import Bool, Int, Float, Unicode, Dict, Instance, List, TraitError
+from traitlets import Bool, Int, Float, Unicode, Dict, Instance, List, TraitError, Enum
 from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization, register
 
@@ -336,11 +336,14 @@ class BrushIntervalSelector(OneDSelector):
         This attribute can be used to trigger computationally intensive code
         which should be run only on the interval selection being completed as
         opposed to code which should be run whenever selected is changing.
+    orientation: {'horizontal', 'vertical'}
+        The orientation of the interval, either vertical or horizontal
     color: Color or None (default: None)
         Color of the rectangle representing the brush selector.
     """
     brushing = Bool().tag(sync=True)
     selected = Array(None, allow_none=True).tag(sync=True, **array_serialization)
+    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('BrushIntervalSelector').tag(sync=True)
@@ -520,21 +523,7 @@ class LassoSelector(TwoDSelector):
     color: Color (default: None)
         Color of the lasso.
     """
-    marks = List(Instance(Lines) | Instance(Scatter)).tag(sync=True, **widget_serialization)
     color = Color(None, allow_none=True).tag(sync=True)
-
-    def __init__(self, marks=None, **kwargs):
-        _marks = []
-        if marks is not None:
-            for mark in marks:
-                try:
-                    mark_trait = self.class_traits()['marks']
-                    _marks.append(mark_trait.validate_elements(self, [mark])[0])
-                except TraitError:
-                    pass
-
-        kwargs['marks'] = _marks
-        super(LassoSelector, self).__init__(**kwargs)
 
     _view_name = Unicode('LassoSelector').tag(sync=True)
     _model_name = Unicode('LassoSelectorModel').tag(sync=True)
