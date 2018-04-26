@@ -308,7 +308,7 @@ var add_remove_classes = function(selection, add_classes, remove_classes) {
     }
 };
 
-var MultiSelector = selector.BaseXSelector.extend({
+var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
 
     render: function() {
         MultiSelector.__super__.render.apply(this);
@@ -323,13 +323,10 @@ var MultiSelector = selector.BaseXSelector.extend({
         var scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             var brush = d3.svg.brush()
-                .x(that.scale.scale)
-                .on("brushstart", function() { that.brush_start(name, that); })
-                .on("brush", function() { that.brush_move(name, that); })
-                .on("brushend", function() { that.brush_end(name, that); });
-
-            // attribute to see if the scale is a date scale
-            that.is_date = (that.scale.model.type === "date");
+              .x(that.scale.scale)
+              .on("brushstart", function() { that.brush_start(name, that); })
+              .on("brush", function() { that.brush_move(name, that); })
+              .on("brushend", function() { that.brush_end(name, that); });
 
             that.d3el.attr("class", "multiselector");
 
@@ -368,31 +365,31 @@ var MultiSelector = selector.BaseXSelector.extend({
             this.names[this.curr_index] : this.curr_index;
         var index = this.curr_index;
         var brush = d3.svg.brush()
-            .x(this.scale.scale)
-            .on("brushstart", function() { that.brush_start(); })
-            .on("brush", function() { that.brush_move(index, this); })
-            .on("brushend", function() { that.brush_end(index, this); });
+          .x(this.scale.scale)
+          .on("brushstart", function() { that.brush_start(); })
+          .on("brush", function() { that.brush_move(index, this); })
+          .on("brushend", function() { that.brush_end(index, this); });
 
         var new_brush_g = this.d3el.append("g")
             .attr("class", "selector brushintsel active");
 
         that.new_brushsel = new_brush_g.call(brush)
             .selectAll("rect")
-            .attr("y", 0)
-            .attr("height", this.height);
+          .attr("y", 0)
+          .attr("height", this.height);
 
         if(that.model.get("color") !== null) {
             that.new_brushsel.style("fill", that.model.get("color"));
         }
 
         new_brush_g.append("text")
-            .attr("y", 30)
+          .attr("y", 30)
             .text(this.get_label(this.curr_index))
-            .attr("class", "brush_text_" + this.curr_index)
-            .style("text-anchor", "middle")
-            .style("stroke", "yellow")
-            .style("font-size", "16px")
-            .style("display", "none");
+          .attr("class", "brush_text_" + this.curr_index)
+          .style("text-anchor", "middle")
+          .style("stroke", "yellow")
+          .style("font-size", "16px")
+          .style("display", "none");
 
         var old_handler = new_brush_g.on("mousedown.brush");
         new_brush_g.on("mousedown.brush", function() {
@@ -438,18 +435,18 @@ var MultiSelector = selector.BaseXSelector.extend({
         return (arr.length > index) ? arr[index] : index;
     },
 
-    brush_start: function () {
+    brush_start: function() {
         this.model.set("brushing", true);
         this.touch();
     },
 
-    brush_move: function (item, brush_g) {
+    brush_move: function(item, brush_g) {
         var brush = d3.event.target;
         var extent = brush.empty() ? this.scale.scale.domain() : brush.extent();
         var hide_names = !(this.model.get("show_names"));
         d3.select(brush_g).select("text")
-            .attr("x", this.get_text_location(extent))
-            .style("display", ((brush.empty() || hide_names) ? "none" : "inline"));
+          .attr("x", this.get_text_location(extent))
+          .style("display", ((brush.empty() || hide_names) ? "none" : "inline"));
         this.convert_and_save(extent, item);
     },
 
@@ -471,7 +468,7 @@ var MultiSelector = selector.BaseXSelector.extend({
 
     reset: function() {
         this.d3el.selectAll(".selector")
-            .remove();
+          .remove();
         this.model.set("_selected", {});
         this.curr_index = 0;
         this.touch();
@@ -479,24 +476,18 @@ var MultiSelector = selector.BaseXSelector.extend({
     },
 
     convert_and_save: function(extent, item) {
-        var selected = utils.deepCopy(this.model.get("_selected"));
         var that = this;
-        _.each(this.mark_views, function(mark_view) {
-            mark_view.invert_range(that.scale.scale(extent[0]),
-                                   that.scale.scale(extent[1]));
-        });
-        // TODO: remove the ternary operator once _pack_models is changed
-        selected[this.get_label(item)] = extent.map(function(elem) {
-            return (that.is_date) ?
-                that.scale.model.convert_to_json(elem) : elem;
-        });
+        var selected = utils.deepCopy(this.model.get("_selected"));
+        selected[this.get_label(item)] = extent;
+        var pixel_extent = extent.map(this.scale.scale);
+        this.update_mark_selected(pixel_extent);
         this.model.set("_selected", selected);
         this.touch();
     },
 
     scale_changed: function() {
         this.d3el.selectAll(".selector")
-            .remove();
+          .remove();
         this.curr_index = 0;
         this.create_scale();
         this.create_brush();
@@ -506,12 +497,12 @@ var MultiSelector = selector.BaseXSelector.extend({
         MultiSelector.__super__.relayout.apply(this);
         this.d3el.selectAll(".brushintsel")
             .selectAll("rect")
-            .attr("y", 0)
-            .attr("height", this.height);
+          .attr("y", 0)
+          .attr("height", this.height);
 
         this.d3el.select(".background")
-            .attr("width", this.width)
-            .attr("height", this.height);
+          .attr("width", this.width)
+          .attr("height", this.height);
 
         this.set_range([this.scale]);
     },
