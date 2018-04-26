@@ -507,11 +507,9 @@ class LassoSelector(TwoDSelector):
     """Lasso selector interaction.
 
     This 2-D selector enables the user to select multiple sets of data points
-    by drawing lassos on the figure. Lasso Selector is currently supported only
-    for Lines and Scatter marks. A mouse-down starts drawing the lasso and
+    by drawing lassos on the figure. A mouse-down starts drawing the lasso and
     after the mouse-up the lasso is closed and the `selected` attribute of each
-    mark gets updated with the data in the lasso. A lasso which doesn't
-    encompass any mark data will be automatically deleted.
+    mark gets updated with the data in the lasso.
 
     The user can select (de-select) by clicking on lassos and can delete them
     (and their associated data) by pressing the 'Delete' button.
