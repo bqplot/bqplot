@@ -415,7 +415,7 @@ class BrushSelector(TwoDSelector):
 
 
 @register_interaction('bqplot.MultiSelector')
-class MultiSelector(OneDSelector):
+class MultiSelector(BrushIntervalSelector):
 
     """Multi selector interaction.
 
@@ -469,7 +469,6 @@ class MultiSelector(OneDSelector):
         along with the interval.
     """
     names = List().tag(sync=True)
-    brushing = Bool().tag(sync=True)
     selected = Dict().tag(sync=True)
     _selected = Dict().tag(sync=True)  # TODO: UglyHack. Hidden variable to get
     # around the even more ugly hack to have a trait which converts dates,
