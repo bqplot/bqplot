@@ -10,8 +10,8 @@ addons:
 install:
   - sudo apt-get update
   - . $HOME/.nvm/nvm.sh
-  - nvm install stable
-  - nvm use stable
+  - nvm install --lts
+  - nvm use --lts
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
