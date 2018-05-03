@@ -26,24 +26,25 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         var scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.line = that.d3el.append("line")
-            .attr("class", "selector indsel")
-            .attr("x1", 0)
-            .attr("y1", 0)
-            .attr("x2", 0)
-            .attr("y2", that.height)
-            .attr("stroke-width", that.model.get("line_width"))
-            .attr("pointer-events", "none")
-            .attr("visibility", "hidden");
+              .attr("class", "selector indsel")
+              .attr("x1", 0)
+              .attr("y1", 0)
+              .attr("x2", 0)
+              .attr("y2", that.height)
+              .attr("stroke-width", that.model.get("line_width"))
+              .attr("pointer-events", "none")
+              .attr("visibility", "hidden");
+            that.color_change();
 
             //container for mouse events
             that.background = that.d3el.append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", that.width)
-                .attr("height", that.height)
-                .attr("class", "selector selectormouse")
-                .attr("pointer-events", "all")
-                .attr("visibility", "hidden");
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", that.width)
+              .attr("height", that.height)
+              .attr("class", "selector selectormouse")
+              .attr("pointer-events", "all")
+              .attr("visibility", "hidden");
 
             that.background.on("mousemove", _.bind(that.mousemove, that))
                 .on("click", _.bind(that.initial_click, that));

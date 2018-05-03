@@ -415,7 +415,7 @@ class BrushSelector(TwoDSelector):
 
 
 @register_interaction('bqplot.MultiSelector')
-class MultiSelector(OneDSelector):
+class MultiSelector(BrushIntervalSelector):
 
     """Multi selector interaction.
 
@@ -469,7 +469,6 @@ class MultiSelector(OneDSelector):
         along with the interval.
     """
     names = List().tag(sync=True)
-    brushing = Bool().tag(sync=True)
     selected = Dict().tag(sync=True)
     _selected = Dict().tag(sync=True)  # TODO: UglyHack. Hidden variable to get
     # around the even more ugly hack to have a trait which converts dates,
@@ -507,11 +506,9 @@ class LassoSelector(TwoDSelector):
     """Lasso selector interaction.
 
     This 2-D selector enables the user to select multiple sets of data points
-    by drawing lassos on the figure. Lasso Selector is currently supported only
-    for Lines and Scatter marks. A mouse-down starts drawing the lasso and
+    by drawing lassos on the figure. A mouse-down starts drawing the lasso and
     after the mouse-up the lasso is closed and the `selected` attribute of each
-    mark gets updated with the data in the lasso. A lasso which doesn't
-    encompass any mark data will be automatically deleted.
+    mark gets updated with the data in the lasso.
 
     The user can select (de-select) by clicking on lassos and can delete them
     (and their associated data) by pressing the 'Delete' button.

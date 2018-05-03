@@ -453,7 +453,7 @@ var Bars = mark.Mark.extend({
         //the following if condition is to handle the case of single
         //dimensional data.
         //if y is 1-d, each bar should be of 1 color.
-        //if y is multi-dimensional, the correspoding values should be of
+        //if y is multi-dimensional, the corresponding values should be of
         //the same color.
         var that = this;
         var color_scale = this.scales.color;

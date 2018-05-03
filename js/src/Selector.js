@@ -35,6 +35,7 @@ var BaseSelector = interaction.Interaction.extend({
     create_listeners: function() {
         this.parent.on("margin_updated", this.relayout, this);
         this.listenTo(this.model, "change:selected", this.selected_changed);
+        this.listenTo(this.model, "change:marks", this.marks_changed);
         this.listenTo(this.model, "msg:custom", this.handle_custom_messages);
     },
 
@@ -60,6 +61,11 @@ var BaseSelector = interaction.Interaction.extend({
                 return views[elem]; // return the views, based on the assumption that fig.mark_views is an ordered list
             });
         });
+    },
+
+    marks_changed: function() {
+        var that = this;
+        this.populate_mark_views().then(function() {that.selected_changed();});
     },
 
     handle_custom_messages: function(msg) {
