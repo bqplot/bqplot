@@ -37,19 +37,22 @@ Marks
    Pie
    Map
 """
+import os
+import json
+
 from warnings import warn
 import ipywidgets as widgets
-from ipywidgets import Widget, DOMWidget, CallbackDispatcher, Color, widget_serialization
-from traitlets import (
-        Int, Unicode, List, Enum, Dict, Bool, Float, Instance, Tuple,
-        TraitError, validate
-    )
+from ipywidgets import (Widget, DOMWidget, CallbackDispatcher,
+                        Color, widget_serialization)
+from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float,
+                       Instance, TraitError, validate)
 from traittypes import Array
 
 from numpy import histogram
 
 from .scales import Scale, OrdinalScale, LinearScale
-from .traits import Date, array_serialization, array_squeeze, array_dimension_bounds
+from .traits import (Date, array_serialization,
+                     array_squeeze, array_dimension_bounds)
 from ._version import __frontend_version__
 from .colorschemes import CATEGORY10
 
@@ -62,8 +65,8 @@ def register_mark(key=None):
     this key regardless of the kernel language.
     """
     def wrap(mark):
-        l = key if key is not None else mark.__module__ + mark.__name__
-        Mark.mark_types[l] = mark
+        name = key if key is not None else mark.__module__ + mark.__name__
+        Mark.mark_types[name] = mark
         return mark
     return wrap
 
@@ -71,8 +74,10 @@ def register_mark(key=None):
 # Shape constraint for array-types
 def shape(*dimensions):
     def validator(trait, value):
+        err_msg_tmpl = 'Expected an array of shape {} ' + \
+                       'but got an array of shape {}'
         if value.shape != dimensions:
-            raise TraitError('Expected an of shape %s and got and array with shape %s' % (dimensions, value.shape))
+            raise TraitError(err_msg_tmpl.format(dimensions, value.shape))
         else:
             return value
     return validator
@@ -170,10 +175,12 @@ class Mark(Widget):
     selected = List(None, allow_none=True).tag(sync=True)
 
     enable_hover = Bool(True).tag(sync=True)
-    tooltip = Instance(DOMWidget, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
+    tooltip = Instance(DOMWidget, allow_none=True, default_value=None)\
+        .tag(sync=True, **widget_serialization)
     tooltip_style = Dict({'opacity': 0.9}).tag(sync=True)
     interactions = Dict({'hover': 'tooltip'}).tag(sync=True)
-    tooltip_location = Enum(['mouse', 'center'], default_value='mouse').tag(sync=True)
+    tooltip_location = Enum(['mouse', 'center'], default_value='mouse')\
+        .tag(sync=True)
 
     _model_name = Unicode('MarkModel').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
@@ -192,16 +199,16 @@ class Mark(Widget):
         if preserve_domain:
             return [
                 self.scales[k] for k in self.scales if (
-                    k in self.scales_metadata
-                    and self.scales_metadata[k].get('dimension') == dimension
-                    and not self.preserve_domain.get(k)
+                    k in self.scales_metadata and
+                    self.scales_metadata[k].get('dimension') == dimension and
+                    not self.preserve_domain.get(k)
                 )
             ]
         else:
             return [
                 self.scales[k] for k in self.scales if (
-                    k in self.scales_metadata
-                    and self.scales_metadata[k].get('dimension') == dimension
+                    k in self.scales_metadata and
+                    self.scales_metadata[k].get('dimension') == dimension
                 )
             ]
 
@@ -294,7 +301,8 @@ class Lines(Mark):
     fill: {'none', 'bottom', 'top', 'inside', 'between'}
         Fill in the area defined by the curves
     fill_colors: list of colors (default: [])
-        Fill colors for the areas. Defaults to stroke-colors when no color provided.
+        Fill colors for the areas. Defaults to stroke-colors when no
+        color provided
     opacities: list of floats (default: [])
         Opacity for the  lines and patches. Defaults to 1 when the list is too
         short, or the element of the list is set to None.
@@ -349,9 +357,20 @@ class Lines(Mark):
     name = 'Lines'
 
     # Scaled attributes
-    x = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 2))
-    y = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 2))
-    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    x = Array([]).tag(sync=True, scaled=True,
+                      rtype='Number', atype='bqplot.Axis',
+                      **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 2))
+    y = Array([]).tag(sync=True, scaled=True,
+                      rtype='Number', atype='bqplot.Axis',
+                      **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 2))
+    color = Array(None, allow_none=True).tag(sync=True,
+                                             scaled=True,
+                                             rtype='Color',
+                                             atype='bqplot.ColorAxis',
+                                             **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Other attributes
     scales_metadata = Dict({
@@ -360,22 +379,32 @@ class Lines(Mark):
         'color': {'dimension': 'color'}
     }).tag(sync=True)
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10).tag(sync=True, display_name='Colors')
-    fill_colors = List(trait=Color(default_value=None, allow_none=True)).tag(sync=True, display_name='Fill colors')
+                  default_value=CATEGORY10)\
+        .tag(sync=True, display_name='Colors')
+    fill_colors = List(trait=Color(default_value=None, allow_none=True))\
+        .tag(sync=True, display_name='Fill colors')
     stroke_width = Float(2.0).tag(sync=True, display_name='Stroke width')
-    labels_visibility = Enum(['none', 'label'], default_value='none').tag(sync=True, display_name='Labels visibility')
+    labels_visibility = Enum(['none', 'label'], default_value='none')\
+        .tag(sync=True, display_name='Labels visibility')
     curves_subset = List().tag(sync=True)
     line_style = Enum(['solid', 'dashed', 'dotted', 'dash_dotted'],
-                      default_value='solid').tag(sync=True, display_name='Line style')
-    interpolation = Enum(['linear', 'basis', 'basis-open', 'basis-closed', 'bundle',
-                          'cardinal', 'cardinal-open', 'cardinal-closed', 'monotone', 'step-before', 'step-after'],
-                         default_value='linear').tag(sync=True, display_name='Interpolation')
+                      default_value='solid')\
+        .tag(sync=True, display_name='Line style')
+    interpolation = Enum(['linear', 'basis', 'basis-open',
+                          'basis-closed', 'bundle',
+                          'cardinal', 'cardinal-open',
+                          'cardinal-closed', 'monotone', 'step-before',
+                          'step-after'],
+                         default_value='linear')\
+        .tag(sync=True, display_name='Interpolation')
     close_path = Bool().tag(sync=True, display_name='Close path')
-    fill = Enum(['none', 'bottom', 'top', 'inside', 'between'], default_value='none').tag(sync=True, display_name='Fill')
+    fill = Enum(['none', 'bottom', 'top', 'inside', 'between'],
+                default_value='none')\
+        .tag(sync=True, display_name='Fill')
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                    'triangle-up', 'arrow', 'rectangle', 'ellipse'],
-                  default_value=None, allow_none=True).tag(sync=True,
-                  display_name='Marker')
+                  default_value=None, allow_none=True)\
+        .tag(sync=True, display_name='Marker')
     marker_size = Int(64).tag(sync=True, display_name='Default size')
 
     opacities = List().tag(sync=True, display_name='Opacity')
@@ -419,10 +448,22 @@ class FlexLine(Mark):
     name = 'Flexible lines'
 
     # Scaled attributes
-    x = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    y = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze)
-    width = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', **array_serialization).valid(array_squeeze)
+    x = Array([]).tag(sync=True, scaled=True, rtype='Number',
+                      atype='bqplot.Axis',
+                      **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    y = Array([]).tag(sync=True, scaled=True,
+                      rtype='Number',
+                      atype='bqplot.Axis',
+                      **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True)\
+        .tag(sync=True, scaled=True, rtype='Color',
+             atype='bqplot.ColorAxis',
+             **array_serialization).valid(array_squeeze)
+    width = Array(None, allow_none=True)\
+        .tag(sync=True, scaled=True, rtype='Number',
+             **array_serialization).valid(array_squeeze)
 
     # Other attributes
     scales_metadata = Dict({
@@ -431,7 +472,8 @@ class FlexLine(Mark):
         'color': {'dimension': 'color'}
     }).tag(sync=True)
     stroke_width = Float(1.5).tag(sync=True, display_name='Stroke width')
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True),
+                  default_value=CATEGORY10).tag(sync=True)
     _view_name = Unicode('FlexLine').tag(sync=True)
     _model_name = Unicode('FlexLineModel').tag(sync=True)
 
@@ -441,12 +483,35 @@ class _ScatterBase(Mark):
     Base Mark for Label and Scatter
     """
     # Scaled attributes
-    x = Array([], allow_none=True).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_dimension_bounds(1, 1))
-    y = Array([], allow_none=True).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_dimension_bounds(1, 1))
-    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    opacity = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    size = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    rotation = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    x = Array([], allow_none=True).tag(sync=True, scaled=True,
+                                       rtype='Number',
+                                       atype='bqplot.Axis',
+                                       **array_serialization)\
+        .valid(array_dimension_bounds(1, 1))
+    y = Array([], allow_none=True).tag(sync=True, scaled=True,
+                                       rtype='Number',
+                                       atype='bqplot.Axis',
+                                       **array_serialization)\
+        .valid(array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True).tag(sync=True,
+                                             scaled=True,
+                                             rtype='Color',
+                                             atype='bqplot.ColorAxis',
+                                             **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    opacity = Array(None, allow_none=True).tag(sync=True,
+                                               scaled=True,
+                                               rtype='Number',
+                                               **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    size = Array(None, allow_none=True).tag(sync=True, scaled=True,
+                                            rtype='Number',
+                                            **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    rotation = Array(None, allow_none=True).tag(sync=True, scaled=True,
+                                                rtype='Number',
+                                                **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Other attributes
     scales_metadata = Dict({
@@ -457,7 +522,8 @@ class _ScatterBase(Mark):
         'opacity': {'dimension': 'opacity'},
         'rotation': {'dimension': 'rotation'}
     }).tag(sync=True)
-    default_opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    default_opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
+        .tag(sync=True, display_name='Opacities')
     hovered_style = Dict().tag(sync=True)
     unhovered_style = Dict().tag(sync=True)
     hovered_point = Int(None, allow_none=True).tag(sync=True)
@@ -525,7 +591,8 @@ class Scatter(_ScatterBase):
     stroke_width: Float (default: 1.5)
         Stroke width of the marker
     default_opacities: list of floats (default: [1.0])
-        Default opacities of the markers. If the list is shorter than the number
+        Default opacities of the markers. If the list is shorter than
+        the number
         of points, the opacities are reused.
     default_skew: float (default: 0.5)
         Default skew of the marker.
@@ -535,7 +602,8 @@ class Scatter(_ScatterBase):
         If size data is provided with a scale, default_size stands for the
         maximal marker size (i.e. the maximum value for the 'size' scale range)
     drag_size: nonnegative float (default: 5.)
-        Ratio of the size of the dragged scatter size to the default scatter size.
+        Ratio of the size of the dragged scatter size to the default
+        scatter size.
     names: numpy.ndarray (default: None)
         Labels for the points of the chart
     display_names: bool (default: True)
@@ -593,15 +661,18 @@ class Scatter(_ScatterBase):
     name = 'Scatter'
 
     # Scaled attribtes
-    skew = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Number', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    skew = Array(None, allow_none=True).tag(sync=True, scaled=True,
+                                            rtype='Number',
+                                            **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Other attributes
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
                    'triangle-up', 'arrow', 'rectangle', 'ellipse'],
                   default_value='circle').tag(sync=True, display_name='Marker')
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=['steelblue']).tag(sync=True,
-                  display_name='Colors')
+                  default_value=['steelblue'])\
+        .tag(sync=True, display_name='Colors')
     scales_metadata = Dict({
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'},
@@ -622,12 +693,14 @@ class Scatter(_ScatterBase):
              DeprecationWarning)
         self.colors = value
 
-    stroke = Color(None, allow_none=True).tag(sync=True, display_name='Stroke color')
+    stroke = Color(None, allow_none=True).tag(sync=True,
+                                              display_name='Stroke color')
     stroke_width = Float(1.5).tag(sync=True, display_name='Stroke width')
     default_skew = Float(0.5, min=0, max=1).tag(sync=True)
     default_size = Int(64).tag(sync=True, display_name='Default size')
 
-    names = Array(None, allow_none=True).tag(sync=True, **array_serialization).valid(array_squeeze)
+    names = Array(None, allow_none=True)\
+        .tag(sync=True, **array_serialization).valid(array_squeeze)
     display_names = Bool(True).tag(sync=True, display_name='Display names')
     fill = Bool(True).tag(sync=True)
     drag_color = Color(None, allow_none=True).tag(sync=True)
@@ -656,7 +729,8 @@ class Label(_ScatterBase):
     font_weight: {'bold', 'normal', 'bolder'}
         font weight of the caption
     drag_size: nonnegative float (default: 1.)
-        Ratio of the size of the dragged label font size to the default label font size.
+        Ratio of the size of the dragged label font size to the default
+        label font size.
     align: {'start', 'middle', 'end'}
         alignment of the text with respect to the provided location
         enable_move: Bool (default: False)
@@ -674,9 +748,11 @@ class Label(_ScatterBase):
     Data Attributes
 
     x: numpy.ndarray (default: [])
-        horizontal position of the labels, in data coordinates or in figure coordinates
+        horizontal position of the labels, in data coordinates or in
+        figure coordinates
     y: numpy.ndarray (default: [])
-        vertical position of the labels, in data coordinates or in figure coordinates
+        vertical position of the labels, in data coordinates or in
+        figure coordinates
     color: numpy.ndarray or None (default: None)
         label colors
     size: numpy.ndarray or None (default: None)
@@ -695,14 +771,21 @@ class Label(_ScatterBase):
     x_offset = Int().tag(sync=True)
     y_offset = Int().tag(sync=True)
 
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+    colors = List(trait=Color(default_value=None,
+                              allow_none=True),
+                  default_value=CATEGORY10)\
+        .tag(sync=True, display_name='Colors')
     rotate_angle = Float().tag(sync=True)
-    text = Array(None, allow_none=True).tag(sync=True, **array_serialization).valid(array_squeeze)
+    text = Array(None, allow_none=True)\
+        .tag(sync=True, **array_serialization).valid(array_squeeze)
     default_size = Float(16.).tag(sync=True)
     drag_size = Float(1.).tag(sync=True)
-    font_unit = Enum(['px', 'em', 'pt', '%'], default_value='px').tag(sync=True)
-    font_weight = Enum(['bold', 'normal', 'bolder'], default_value='bold').tag(sync=True)
-    align = Enum(['start', 'middle', 'end'], default_value='start').tag(sync=True)
+    font_unit = Enum(['px', 'em', 'pt', '%'],
+                     default_value='px').tag(sync=True)
+    font_weight = Enum(['bold', 'normal', 'bolder'],
+                       default_value='bold').tag(sync=True)
+    align = Enum(['start', 'middle', 'end'],
+                 default_value='start').tag(sync=True)
 
     _view_name = Unicode('Label').tag(sync=True)
     _model_name = Unicode('LabelModel').tag(sync=True)
@@ -734,8 +817,8 @@ class Hist(Mark):
     stroke: Color or None (default: None)
         Stroke color of the histogram
     opacities: list of floats (default: [])
-        Opacity for the bins of the histogram. Defaults to 1 when the list is too
-        short, or the element of the list is set to None.
+        Opacity for the bins of the histogram. Defaults to 1 when the list
+        is too short, or the element of the list is set to None.
     midpoints: list (default: [])
         midpoints of the bins of the histogram. It is a read-only attribute.
 
@@ -760,8 +843,18 @@ class Hist(Mark):
     name = 'Histogram'
 
     # Scaled attributes
-    sample = Array([]).tag(sync=True, display_name='Sample', scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    count = Array([], read_only=True).tag(sync=True, display_name='Count', scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze)
+    sample = Array([]).tag(sync=True, display_name='Sample',
+                           scaled=True, rtype='Number',
+                           atype='bqplot.Axis',
+                           **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    count = Array([], read_only=True).tag(sync=True,
+                                          display_name='Count',
+                                          scaled=True,
+                                          rtype='Number',
+                                          atype='bqplot.Axis',
+                                          **array_serialization)\
+        .valid(array_squeeze)
     normalized = Bool().tag(sync=True)
 
     # Other attributes
@@ -774,9 +867,11 @@ class Hist(Mark):
     midpoints = List(read_only=True).tag(sync=True, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10).tag(sync=True, display_name='Colors')
+                  default_value=CATEGORY10)\
+        .tag(sync=True, display_name='Colors')
     stroke = Color(None, allow_none=True).tag(sync=True)
-    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
+        .tag(sync=True, display_name='Opacities')
 
     _view_name = Unicode('Hist').tag(sync=True)
     _model_name = Unicode('HistModel').tag(sync=True)
@@ -794,8 +889,8 @@ class Boxplot(Mark):
     color: Color
         fill color of the box
     opacities: list of floats (default: [])
-        Opacities for the markers of the boxplot. Defaults to 1 when the list is
-        too short, or the element of the list is set to None.
+        Opacities for the markers of the boxplot. Defaults to 1 when the
+        list is too short, or the element of the list is set to None.
     outlier-color: color
         color for the outlier
     box_width: int (default: 30)
@@ -814,10 +909,15 @@ class Boxplot(Mark):
     name = 'Boxplot chart'
 
     # Scaled attributes
-    x = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    x = Array([]).tag(sync=True, scaled=True, rtype='Number',
+                      atype='bqplot.Axis', **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
 
-    # Second dimension must contain OHLC data, otherwise the behavior is undefined.
-    y = Array([[]]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_dimension_bounds(1, 2))
+    # Second dimension must contain OHLC data, otherwise the behavior
+    # is undefined.
+    y = Array([[]]).tag(sync=True, scaled=True, rtype='Number',
+                        atype='bqplot.Axis', **array_serialization)\
+        .valid(array_dimension_bounds(1, 2))
 
     # Other attributes
     scales_metadata = Dict({
@@ -825,10 +925,14 @@ class Boxplot(Mark):
         'y': {'orientation': 'vertical', 'dimension': 'y'}
     }).tag(sync=True)
 
-    stroke = Color(None, allow_none=True).tag(sync=True, display_name='Stroke color')
-    box_fill_color = Color('steelblue', sync=True, display_name='Fill color for the box')
-    outlier_fill_color = Color('gray').tag(sync=True, display_name='Outlier fill color')
-    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+    stroke = Color(None, allow_none=True)\
+        .tag(sync=True, display_name='Stroke color')
+    box_fill_color = Color('steelblue', sync=True,
+                           display_name='Fill color for the box')
+    outlier_fill_color = Color('gray').tag(sync=True,
+                                           display_name='Outlier fill color')
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
+        .tag(sync=True, display_name='Opacities')
     box_width = Int(30, min=5).tag(sync=True, display_name='Box Width')
 
     _view_name = Unicode('Boxplot').tag(sync=True)
@@ -900,9 +1004,18 @@ class Bars(Mark):
     name = 'Bar chart'
 
     # Scaled attributes
-    x = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    y = Array([]).tag(sync=True, scaled=True, rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 2))
-    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color', atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+    x = Array([]).tag(sync=True, scaled=True, rtype='Number',
+                      atype='bqplot.Axis',
+                      **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    y = Array([]).tag(sync=True, scaled=True, rtype='Number',
+                      atype='bqplot.Axis',
+                      **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 2))
+    color = Array(None, allow_none=True)\
+        .tag(sync=True, scaled=True, rtype='Color',
+             atype='bqplot.ColorAxis', **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Other attributes
     scales_metadata = Dict({
@@ -910,22 +1023,30 @@ class Bars(Mark):
         'y': {'orientation': 'vertical', 'dimension': 'y'},
         'color': {'dimension': 'color'}
     }).tag(sync=True)
-    color_mode = Enum(['auto', 'group', 'element'], default_value='auto').tag(sync=True)
-    type = Enum(['stacked', 'grouped'], default_value='stacked').tag(sync=True,
-                display_name='Type')
-    colors = List(trait=Color(default_value=None, allow_none=True), default_value=['steelblue']).tag(sync=True, display_name='Colors')
+    color_mode = Enum(['auto', 'group', 'element'], default_value='auto')\
+        .tag(sync=True)
+    type = Enum(['stacked', 'grouped'], default_value='stacked')\
+        .tag(sync=True, display_name='Type')
+    colors = List(trait=Color(default_value=None,
+                              allow_none=True),
+                  default_value=['steelblue'])\
+        .tag(sync=True, display_name='Colors')
     padding = Float(0.05).tag(sync=True)
     stroke = Color(None, allow_none=True).tag(sync=True)
     base = Float().tag(sync=True)
-    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
-    align = Enum(['center', 'left', 'right'], default_value='center').tag(sync=True)
-    orientation = Enum(['vertical', 'horizontal'], default_value='vertical').tag(sync=True)
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
+        .tag(sync=True, display_name='Opacities')
+    align = Enum(['center', 'left', 'right'], default_value='center')\
+        .tag(sync=True)
+    orientation = Enum(['vertical', 'horizontal'], default_value='vertical')\
+        .tag(sync=True)
 
     @validate('orientation')
     def _validate_orientation(self, proposal):
         value = proposal['value']
         x_orient = "horizontal" if value == "vertical" else "vertical"
-        self.scales_metadata = {'x': {'orientation': x_orient, 'dimension': 'x'},
+        self.scales_metadata = {'x': {'orientation': x_orient,
+                                      'dimension': 'x'},
                                 'y': {'orientation': value, 'dimension': 'y'}}
         return value
 
@@ -992,23 +1113,24 @@ class Bins(Bars):
     # Scaled Attributes
     sample = Array([]).tag(
         sync=False, display_name='Sample', rtype='Number',
-        atype='bqplot.Axis', **array_serialization
-        ).valid(array_squeeze, array_dimension_bounds(1, 1))
+        atype='bqplot.Axis', **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
 
     # Binning options
     min = Float(None, allow_none=True).tag(sync=True)
     max = Float(None, allow_none=True).tag(sync=True)
     density = Bool().tag(sync=True)
-    bins = (Int(10) | List() | 
-        Enum(['auto', 'fd', 'doane', 'scott', 'rice', 'sturges', 'sqrt'])).tag(
-             sync=True, display_name='Number of bins')
+    bins = (Int(10) | List() | Enum(['auto', 'fd', 'doane',
+                                     'scott', 'rice', 'sturges', 'sqrt']))\
+        .tag(sync=True, display_name='Number of bins')
 
     def __init__(self, **kwargs):
         '''
         Sets listeners on the data and the binning parameters.
         Adjusts `Bars` defaults to suit a histogram better.
         '''
-        self.observe(self.bin_data, names=['sample', 'bins', 'density', 'min', 'max'])
+        self.observe(self.bin_data,
+                     names=['sample', 'bins', 'density', 'min', 'max'])
         # One unique color by default
         kwargs.setdefault('colors', [CATEGORY10[0]])
         # No spacing between bars
@@ -1053,8 +1175,8 @@ class OHLC(Mark):
     colors: List of colors (default: ['limegreen', 'red'])
         fill colors for the markers (up/down)
     opacities: list of floats (default: [])
-        Opacities for the markers of the OHLC mark. Defaults to 1 when the list is too
-        short, or the element of the list is set to None.
+        Opacities for the markers of the OHLC mark. Defaults to 1 when
+        the list is too short, or the element of the list is set to None.
     format: string (default: 'ohlc')
         description of y data being passed
         supports all permutations of the strings 'ohlc', 'oc', and 'hl'
@@ -1083,21 +1205,29 @@ class OHLC(Mark):
 
     # Scaled attributes
     x = Array([]).tag(sync=True, scaled=True,
-                rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+                      rtype='Number', atype='bqplot.Axis',
+                      **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
     y = Array([[]]).tag(sync=True, scaled=True,
-                rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_dimension_bounds(1, 2))
+                        rtype='Number', atype='bqplot.Axis',
+                        **array_serialization)\
+        .valid(array_dimension_bounds(1, 2))
 
     # Other attributes
     scales_metadata = Dict({
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'}
     }).tag(sync=True)
-    marker = Enum(['candle', 'bar'], default_value='candle', display_name='Marker').tag(sync=True)
-    stroke = Color(None, display_name='Stroke color', allow_none=True).tag(sync=True)
+    marker = Enum(['candle', 'bar'], default_value='candle',
+                  display_name='Marker').tag(sync=True)
+    stroke = Color(None, display_name='Stroke color', allow_none=True)\
+        .tag(sync=True)
     stroke_width = Float(1.0).tag(sync=True, display_name='Stroke Width')
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=['green', 'red']).tag(sync=True, display_name='Colors')
-    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True)).tag(sync=True, display_name='Opacities')
+                  default_value=['green', 'red'])\
+        .tag(sync=True, display_name='Colors')
+    opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
+        .tag(sync=True, display_name='Opacities')
     format = Unicode('ohlc').tag(sync=True, display_name='Format')
 
     _view_name = Unicode('OHLC').tag(sync=True)
@@ -1207,13 +1337,9 @@ class Pie(Mark):
     _model_name = Unicode('PieModel').tag(sync=True)
 
 
-import os
-import json
-
-
 def topo_load(name):
     with open(os.path.join(os.path.split(os.path.realpath(__file__))[0],
-              name)) as data_file:
+                           name)) as data_file:
         data = json.load(data_file)
     return data
 
@@ -1226,12 +1352,15 @@ class Map(Mark):
     Attributes
     ----------
     colors: Dict (default: {})
-        default colors for items of the map when no color data is passed. The dictionary should be indexed by the
-        id of the element and have the corresponding colors as values. The key `default_color` controls the items
-        for which no color is specified.
-    selected_styles: Dict (default: {'selected_fill': 'Red', 'selected_stroke': None, 'selected_stroke_width': 2.0})
+        default colors for items of the map when no color data is passed.
+        The dictionary should be indexed by the id of the element and have
+        the corresponding colors as values. The key `default_color`
+        controls the items for which no color is specified.
+    selected_styles: Dict (default: {'selected_fill': 'Red',
+    'selected_stroke': None, 'selected_stroke_width': 2.0})
         Dictionary containing the styles for selected subunits
-    hovered_styles: Dict (default: {'hovered_fill': 'Orange', 'hovered_stroke': None, 'hovered_stroke_width': 2.0})
+    hovered_styles: Dict (default: {'hovered_fill': 'Orange',
+    'hovered_stroke': None, 'hovered_stroke_width': 2.0})
         Dictionary containing the styles for hovered subunits
     selected: List (default: [])
         list containing the selected countries in the map
@@ -1263,15 +1392,12 @@ class Map(Mark):
     hovered_styles = Dict({
         'hovered_fill': 'Orange',
         'hovered_stroke': None,
-        'hovered_stroke_width': 2.0},
-    allow_none=True).tag(sync=True)
+        'hovered_stroke_width': 2.0}, allow_none=True).tag(sync=True)
 
     stroke_color = Color(default_value=None, allow_none=True).tag(sync=True)
     colors = Dict().tag(sync=True, display_name='Colors')
-    scales_metadata = Dict({
-        'color': { 'dimension': 'color' },
-        'projection': { 'dimension': 'geo' }
-    }).tag(sync=True)
+    scales_metadata = Dict({'color': {'dimension': 'color'},
+                            'projection': {'dimension': 'geo'}}).tag(sync=True)
     selected = List(allow_none=True).tag(sync=True)
     selected_styles = Dict({
         'selected_fill': 'Red',
@@ -1299,24 +1425,25 @@ class GridHeatMap(Mark):
     scale, the data cannot be aligned to the mid points of the rectangles.
 
     If it is not ordinal, then two cases arise. If the number of rows passed
-    is m, then align attribute can be used. If the number of rows passed is m+1,
-    then the data are the boundaries of the m rectangles.
+    is m, then align attribute can be used. If the number of rows passed
+    is m+1, then the data are the boundaries of the m rectangles.
 
-    If rows and columns are not passed, and scales for them are also not passed,
-    then ordinal scales are generated for the rows and columns.
+    If rows and columns are not passed, and scales for them are also
+    not passed, then ordinal scales are generated for the rows and columns.
 
     Attributes
     ----------
     row_align: Enum(['start', 'end'])
         This is only valid if the number of entries in `row` exactly match the
         number of rows in `color` and the `row_scale` is not `OrdinalScale`.
-        `start` aligns the row values passed to be aligned with the start of the
-        tiles and `end` aligns the row values to the end of the tiles.
+        `start` aligns the row values passed to be aligned with the start
+        of the tiles and `end` aligns the row values to the end of the tiles.
     column_align: Enum(['start', end'])
-        This is only valid if the number of entries in `column` exactly match the
-        number of columns in `color` and the `column_scale` is not `OrdinalScale`.
-        `start` aligns the column values passed to be aligned with the start of the
-        tiles and `end` aligns the column values to the end of the tiles.
+        This is only valid if the number of entries in `column` exactly
+        match the number of columns in `color` and the `column_scale` is
+        not `OrdinalScale`. `start` aligns the column values passed to
+        be aligned with the start of the tiles and `end` aligns the
+        column values to the end of the tiles.
     anchor_style: dict (default: {'fill': 'white', 'stroke': 'blue'})
         Controls the style for the element which serves as the anchor during
         selection.
@@ -1324,32 +1451,41 @@ class GridHeatMap(Mark):
     Data Attributes
 
     color: numpy.ndarray or None (default: None)
-        color of the data points (2d array). The number of elements in this array
-        correspond to the number of cells created in the heatmap.
+        color of the data points (2d array). The number of elements in
+        this array correspond to the number of cells created in the heatmap.
     row: numpy.ndarray or None (default: None)
-        labels for the rows of the `color` array passed. The length of this can be
-        no more than 1 away from the number of rows in `color`.
+        labels for the rows of the `color` array passed. The length of
+        this can be no more than 1 away from the number of rows in `color`.
         This is a scaled attribute and can be used to affect the height of the
         cells as the entries of `row` can indicate the start or the end points
         of the cells. Refer to the property `row_align`.
         If this property is None, then a uniformly spaced grid is generated in
         the row direction.
     column: numpy.ndarray or None (default: None)
-        labels for the columns of the `color` array passed. The length of this can be
-        no more than 1 away from the number of columns in `color`
+        labels for the columns of the `color` array passed. The length of
+        this can be no more than 1 away from the number of columns in `color`
         This is a scaled attribute and can be used to affect the width of the
-        cells as the entries of `column` can indicate the start or the end points
-        of the cells. Refer to the property `column_align`.
+        cells as the entries of `column` can indicate the start or the
+        end points of the cells. Refer to the property `column_align`.
         If this property is None, then a uniformly spaced grid is generated in
         the column direction.
     """
     # Scaled attributes
     row = Array(None, allow_none=True).tag(sync=True, scaled=True,
-                  rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+                                           rtype='Number',
+                                           atype='bqplot.Axis',
+                                           **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
     column = Array(None, allow_none=True).tag(sync=True, scaled=True,
-                     rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color',
-                    atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 2))
+                                              rtype='Number',
+                                              atype='bqplot.Axis',
+                                              **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True).tag(sync=True, scaled=True,
+                                             rtype='Color',
+                                             atype='bqplot.ColorAxis',
+                                             **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 2))
 
     # Other attributes
     scales_metadata = Dict({
@@ -1401,8 +1537,8 @@ class HeatMap(Mark):
     color: numpy.ndarray or None (default: None)
         color of the data points (2d array).
     x: numpy.ndarray or None (default: None)
-        labels for the columns of the `color` array passed. The length of this has
-        to be the number of columns in `color`.
+        labels for the columns of the `color` array passed. The length of
+        this has to be the number of columns in `color`.
         This is a scaled attribute.
     y: numpy.ndarray or None (default: None)
         labels for the rows of the `color` array passed. The length of this has
@@ -1411,11 +1547,20 @@ class HeatMap(Mark):
     """
     # Scaled attributes
     x = Array(None, allow_none=True).tag(sync=True, scaled=True,
-                  rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
+                                         rtype='Number',
+                                         atype='bqplot.Axis',
+                                         **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
     y = Array(None, allow_none=True).tag(sync=True, scaled=True,
-                     rtype='Number', atype='bqplot.Axis', **array_serialization).valid(array_squeeze, array_dimension_bounds(1, 1))
-    color = Array(None, allow_none=True).tag(sync=True, scaled=True, rtype='Color',
-                    atype='bqplot.ColorAxis', **array_serialization).valid(array_squeeze, array_dimension_bounds(2, 2))
+                                         rtype='Number',
+                                         atype='bqplot.Axis',
+                                         **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
+    color = Array(None, allow_none=True).tag(sync=True, scaled=True,
+                                             rtype='Color',
+                                             atype='bqplot.ColorAxis',
+                                             **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(2, 2))
 
     # Other attributes
     scales_metadata = Dict({
@@ -1580,5 +1725,3 @@ class Image(Mark):
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'},
     }).tag(sync=True)
-
-
