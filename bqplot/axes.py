@@ -44,8 +44,8 @@ def register_axis(key=None):
     of the kernel language.
     """
     def wrap(axis):
-        l = key if key is not None else axis.__module__ + axis.__name__
-        BaseAxis.axis_types[l] = axis
+        name = key if key is not None else axis.__module__ + axis.__name__
+        BaseAxis.axis_types[name] = axis
         return axis
     return wrap
 
@@ -86,7 +86,8 @@ class Axis(BaseAxis):
     tick_values: numpy.ndarray or None (default: None)
         Tick values for the axis
     offset: dict (default: {})
-        Contains a scale and a value {'scale': scale or None, 'value': value of the offset}
+        Contains a scale and a value {'scale': scale or None,
+        'value': value of the offset}
         If offset['scale'] is None, the corresponding figure scale is used
         instead.
     label_location: {'middle', 'start', 'end'}
@@ -112,16 +113,22 @@ class Axis(BaseAxis):
         `{'font-size': 14}`
     """
     icon = 'fa-arrows'
-    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
-    side = Enum(['bottom', 'top', 'left', 'right'], allow_none=True, default_value=None).tag(sync=True)
+    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal')\
+        .tag(sync=True)
+    side = Enum(['bottom', 'top', 'left', 'right'],
+                allow_none=True, default_value=None).tag(sync=True)
     label = Unicode().tag(sync=True)
-    grid_lines = Enum(['none', 'solid', 'dashed'], default_value='solid').tag(sync=True)
+    grid_lines = Enum(['none', 'solid', 'dashed'], default_value='solid')\
+        .tag(sync=True)
     tick_format = Unicode(None, allow_none=True).tag(sync=True)
     scale = Instance(Scale).tag(sync=True, **widget_serialization)
     num_ticks = Int(default_value=None, allow_none=True).tag(sync=True)
-    tick_values = Array(None, allow_none=True).tag(sync=True, **array_serialization).valid(array_dimension_bounds(1, 1))
+    tick_values = Array(None, allow_none=True)\
+        .tag(sync=True, **array_serialization)\
+        .valid(array_dimension_bounds(1, 1))
     offset = Dict().tag(sync=True, **widget_serialization)
-    label_location = Enum(['middle', 'start', 'end'], default_value='middle').tag(sync=True)
+    label_location = Enum(['middle', 'start', 'end'],
+                          default_value='middle').tag(sync=True)
     label_color = Color(None, allow_none=True).tag(sync=True)
     grid_color = Color(None, allow_none=True).tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
@@ -147,8 +154,10 @@ class ColorAxis(Axis):
     scale: ColorScale
         The scale represented by the axis
     """
-    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
-    side = Enum(['bottom', 'top', 'left', 'right'], default_value='bottom').tag(sync=True)
+    orientation = Enum(['horizontal', 'vertical'],
+                       default_value='horizontal').tag(sync=True)
+    side = Enum(['bottom', 'top', 'left', 'right'],
+                default_value='bottom').tag(sync=True)
     label = Unicode().tag(sync=True)
     scale = Instance(ColorScale).tag(sync=True, **widget_serialization)
     _view_name = Unicode('ColorAxis').tag(sync=True)

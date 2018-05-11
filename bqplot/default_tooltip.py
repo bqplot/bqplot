@@ -47,7 +47,8 @@ class Tooltip(DOMWidget):
         the length of labels is less than the length of fields, then the field
         names are displayed for those fields for which label is missing.
     show_labels: bool (default: True)
-        Boolean attribute to enable and disable display of the label /field name
+        Boolean attribute to enable and disable display of the
+        label /field name
         as the first column along with the value
     """
 

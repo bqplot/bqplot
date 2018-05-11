@@ -56,15 +56,12 @@ from numpy import arange, issubdtype, array, column_stack, shape
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
-from .marks import (
-        Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Image,
-        Label, HeatMap, GridHeatMap, topo_load, Boxplot, Bins
-    )
+from .marks import (Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Image,
+                    Label, HeatMap, GridHeatMap, topo_load, Boxplot, Bins)
 from .toolbar import Toolbar
-from .interacts import (
-        BrushIntervalSelector, FastIntervalSelector, BrushSelector,
-        IndexSelector, MultiSelector, LassoSelector
-    )
+from .interacts import (BrushIntervalSelector, FastIntervalSelector,
+                        BrushSelector, IndexSelector, MultiSelector,
+                        LassoSelector)
 from traitlets.utils.sentinel import Sentinel
 import functools
 
@@ -77,9 +74,9 @@ Keep = Sentinel('Keep', 'bqplot.pyplot', '''
 # `scales`: The current set of scales which will be used for drawing a mark. if
 # the scale for an attribute is not present, it is created based on the range
 # type.
-# `scale_registry`: This is a dictionary where the keys are the context names and
-# the values are the set of scales which were used on the last plot in that
-# context. This is useful when switching context.
+# `scale_registry`: This is a dictionary where the keys are the context
+# names and the values are the set of scales which were used on the last plot
+# in that context. This is useful when switching context.
 # `last_mark`: refers to the last mark that has been plotted.
 # `current_key`: The key for the current context figure. If there is no key,
 # then the value is `None`.
@@ -253,8 +250,8 @@ def _process_data(*kwarg_names):
                    kw: data[kwargs[kw]] if hashable(data, kwargs[kw]) else kwargs[kw] for kw in set(kwarg_names).intersection(list(kwargs.keys()))
                 }
                 try:
-                    # if any of the plots want to use the index_data, they can use it by referring to
-                    # this attribute.
+                    # if any of the plots want to use the index_data, they can
+                    # use it by referring to this attribute.
                     data_kwargs['index_data'] = data.index
                 except AttributeError as e:
                     pass
@@ -543,8 +540,9 @@ def vline(level, **kwargs):
         y = [0, 1]
     else:
         x = column_stack([level, level])
-        y = [[0, 1]] * len(level)  # TODO: repeating [0, 1] should not be
-                                   # required once we allow for 2-D x and 1-D y
+        # TODO: repeating [0, 1] should not be required once we allow for
+        # 2-D x and 1-D y
+        y = [[0, 1]] * len(level)
     return plot(x, y, scales=scales, preserve_domain={
         'x': kwargs.get('preserve_domain', False),
         'y': True
@@ -601,12 +599,13 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     fig = kwargs.pop('figure', current_figure())
     scales = kwargs.pop('scales', {})
     update_context = kwargs.pop('update_context', True)
-    
+
     # Set the color map of the color scale
     cmap = kwargs.pop('cmap', None)
     if cmap is not None:
         # Add the colors or scheme to the color scale options
-        options['color'] = dict(options.get('color', {}), **_process_cmap(cmap))
+        options['color'] = dict(options.get('color', {}),
+                                **_process_cmap(cmap))
 
     # Going through the list of data attributes
     for name in mark_type.class_trait_names(scaled=True):
@@ -636,7 +635,8 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
                     if Scale.scale_types[key].rtype == rtype and
                     issubdtype(dtype, Scale.scale_types[key].dtype)
                 ]
-            sorted_scales = sorted(compat_scale_types, key=lambda x: x.precedence)
+            sorted_scales = sorted(compat_scale_types,
+                                   key=lambda x: x.precedence)
             scales[name] = sorted_scales[-1](**options.get(name, {}))
             # Adding the scale to the context scales
             if update_context:
@@ -650,6 +650,7 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
     if kwargs.get('axes', True):
         axes(mark, options=axes_options)
     return mark
+
 
 def _infer_x_for_line(y):
     """
@@ -703,7 +704,7 @@ def plot(*args, **kwargs):
         if kwargs.get('index_data', None) is not None:
             kwargs['x'] = kwargs['index_data']
         else:
-            kwargs['x'] = _infer_x_for_line(args[0]);
+            kwargs['x'] = _infer_x_for_line(args[0])
     elif len(args) == 2:
         if type(args[1]) == str:
             kwargs['y'] = args[0]
@@ -743,15 +744,15 @@ def imshow(image, format, **kwargs):
     """Draw an image in the current context figure.
     Parameters
     ----------
-    image: image data 
+    image: image data
         Image data, depending on the passed format, can be one of:
             - an instance of an ipywidgets Image
             - a file name
             - a raw byte string
     format: {'widget', 'filename', ...}
         Type of the input argument.
-        If not 'widget' or 'filename', must be a format supported by the 
-        ipywidgets Image.
+        If not 'widget' or 'filename', must be a format supported by
+        the ipywidgets Image.
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -1086,9 +1087,9 @@ def _add_interaction(int_type, **kwargs):
 
     If a figure is passed using the key-word argument `figure` it is used. Else
     the context figure is used.
-    If a list of marks are passed using the key-word argument `marks` it is used.
-    Else the latest mark that is passed is used as the only mark associated with
-    the selector.
+    If a list of marks are passed using the key-word argument `marks` it
+    is used. Else the latest mark that is passed is used as the only mark
+    associated with the selector.
 
     Parameters
     ----------
@@ -1172,7 +1173,8 @@ def brush_int_selector(func=None, trait='selected', **kwargs):
 def int_selector(func=None, trait='selected', **kwargs):
     """Creates a `FastIntervalSelector` interaction for the `figure`.
 
-    Also attaches the function `func` as an event listener for the trait `trait`.
+    Also attaches the function `func` as an event listener for the
+    trait `trait`.
 
     Parameters
     ----------
@@ -1190,7 +1192,8 @@ def int_selector(func=None, trait='selected', **kwargs):
 def index_selector(func=None, trait='selected', **kwargs):
     """Creates an `IndexSelector` interaction for the `figure`.
 
-    Also attaches the function `func` as an event listener for the trait `trait`.
+    Also attaches the function `func` as an event listener for the
+    trait `trait`.
 
     Parameters
     ----------
@@ -1208,7 +1211,8 @@ def index_selector(func=None, trait='selected', **kwargs):
 def brush_selector(func=None, trait='selected', **kwargs):
     """Creates a `BrushSelector` interaction for the `figure`.
 
-    Also attaches the function `func` as an event listener for the trait `trait`.
+    Also attaches the function `func` as an event listener for the
+    trait `trait`.
 
     Parameters
     ----------
@@ -1226,7 +1230,8 @@ def brush_selector(func=None, trait='selected', **kwargs):
 def multi_selector(func=None, trait='selected', **kwargs):
     """Creates a `MultiSelector` interaction for the `figure`.
 
-    Also attaches the function `func` as an event listener for the trait `trait`.
+    Also attaches the function `func` as an event listener for the
+    trait `trait`.
 
     Parameters
     ----------
@@ -1244,7 +1249,8 @@ def multi_selector(func=None, trait='selected', **kwargs):
 def lasso_selector(func=None, trait='selected', **kwargs):
     """Creates a `LassoSelector` interaction for the `figure`.
 
-    Also attaches the function `func` as an event listener for the specified trait.
+    Also attaches the function `func` as an event listener for the
+    specified trait.
 
     Parameters
     ----------
@@ -1282,7 +1288,8 @@ def current_figure():
 
 
 def get_context():
-    """Used for debug only. Return a copy of the current global context dictionary."""
+    """Used for debug only. Return a copy of the current global
+    context dictionary."""
     return {k: v for k, v in _context.items()}
 
 
@@ -1325,7 +1332,8 @@ def _get_attribute_dimension(trait_name, mark_type=None):
     """
     if(mark_type is None):
         return trait_name
-    scale_metadata = mark_type.class_traits()['scales_metadata'].default_args[0]
+    scale_metadata = mark_type.class_traits()['scales_metadata']\
+        .default_args[0]
     return scale_metadata.get(trait_name, {}).get('dimension', None)
 
 

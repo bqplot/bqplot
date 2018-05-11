@@ -47,8 +47,8 @@ from ._version import __frontend_version__
 
 
 def register_scale(key=None):
-
-    """Returns a decorator to register a scale type in the scale type registry.
+    """Returns a decorator to register a scale type in the scale type
+    registry.
 
     If no key is provided, the class name is used as a key. A key is
     provided for each core bqplot scale type so that the frontend can use
@@ -491,7 +491,8 @@ class ColorScale(Scale):
     rtype = 'Color'
     dtype = np.number
     scale_type = Enum(['linear'], default_value='linear').tag(sync=True)
-    colors = List(trait=Color(default_value=None, allow_none=True)).tag(sync=True)
+    colors = List(trait=Color(default_value=None, allow_none=True))\
+        .tag(sync=True)
     min = Float(None, allow_none=True).tag(sync=True)
     max = Float(None, allow_none=True).tag(sync=True)
     mid = Float(None, allow_none=True).tag(sync=True)

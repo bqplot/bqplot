@@ -36,18 +36,18 @@ Interacts
    TwoDSelector
 """
 
-from traitlets import Bool, Int, Float, Unicode, Dict, Instance, List, TraitError, Enum
+from traitlets import (Bool, Int, Float, Unicode, Dict,
+                       Instance, List, Enum)
 from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization, register
 
 from .scales import Scale, DateScale
 from .traits import Date, array_serialization
-from .marks import Lines, Scatter
+from .marks import Lines
 from ._version import __frontend_version__
 
 
 def register_interaction(key=None):
-
     """Decorator registering an interaction class in the registry.
 
     If no key is provided, the class name is used as a key. A key is provided
@@ -55,8 +55,9 @@ def register_interaction(key=None):
     key regardless of the kernal language.
     """
     def wrap(interaction):
-        l = key if key is not None else interaction.__module__ + interaction.__name__
-        interaction.types[l] = interaction
+        name = key if key is not None else interaction.__module__ + \
+            interaction.__name__
+        interaction.types[name] = interaction
         return interaction
     return wrap
 
@@ -88,8 +89,8 @@ class Interaction(Widget):
     _model_module = Unicode('bqplot').tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
-    _ipython_display_ = None  # We cannot display an interaction outside of a
-                              # figure
+    # We cannot display an interaction outside of a figure
+    _ipython_display_ = None
 
 
 @register_interaction('bqplot.HandDraw')
@@ -120,11 +121,14 @@ class HandDraw(Interaction):
     max_x: float or Date or None (default: None)
         The maximum value of 'x' which should be edited via the handdraw.
     """
-    lines = Instance(Lines, allow_none=True, default_value=None).tag(sync=True, **widget_serialization)
+    lines = Instance(Lines, allow_none=True, default_value=None)\
+        .tag(sync=True, **widget_serialization)
     line_index = Int().tag(sync=True)
     # TODO: Handle infinity in a meaningful way (json does not)
-    min_x = (Float(None, allow_none=True) | Date(None, allow_none=True)).tag(sync=True)
-    max_x = (Float(None, allow_none=True) | Date(None, allow_none=True)).tag(sync=True)
+    min_x = (Float(None, allow_none=True) | Date(None, allow_none=True))\
+        .tag(sync=True)
+    max_x = (Float(None, allow_none=True) | Date(None, allow_none=True))\
+        .tag(sync=True)
 
     _view_name = Unicode('HandDraw').tag(sync=True)
     _model_name = Unicode('HandDrawModel').tag(sync=True)
@@ -149,8 +153,8 @@ class PanZoom(Interaction):
     """
     allow_pan = Bool(True).tag(sync=True)
     allow_zoom = Bool(True).tag(sync=True)
-    scales = Dict(trait=List(trait=Instance(Scale))).tag(sync=True,
-                  **widget_serialization)
+    scales = Dict(trait=List(trait=Instance(Scale)))\
+        .tag(sync=True, **widget_serialization)
 
     _view_name = Unicode('PanZoom').tag(sync=True)
     _model_name = Unicode('PanZoomModel').tag(sync=True)
@@ -165,7 +169,7 @@ def panzoom(marks):
     return PanZoom(scales={
             'x': sum([mark._get_dimension_scales('x', preserve_domain=True) for mark in marks], []),
             'y': sum([mark._get_dimension_scales('y', preserve_domain=True) for mark in marks], [])
-        })
+    })
 
 
 class Selector(Interaction):
@@ -193,7 +197,8 @@ class OneDSelector(Selector):
     """One-dimensional selector interaction
 
     Base class for all selectors which select data in one dimension, i.e.,
-    either the x or the y direction. The ``scale`` attribute should be provided.
+    either the x or the y direction. The ``scale`` attribute should
+    be provided.
 
     Attributes
     ----------
@@ -202,7 +207,8 @@ class OneDSelector(Selector):
         co-ordinates. This scale is used for setting the selected attribute for
         the selector.
     """
-    scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='x', **widget_serialization)
+    scale = Instance(Scale, allow_none=True, default_value=None)\
+        .tag(sync=True, dimension='x', **widget_serialization)
     _model_name = Unicode('OneDSelectorModel').tag(sync=True)
 
 
@@ -224,10 +230,10 @@ class TwoDSelector(Selector):
         co-ordinates in the y-direction. This scale is used for setting the
         selected attribute for the selector along with ``x_scale``.
     """
-    x_scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='x',
-                       **widget_serialization)
-    y_scale = Instance(Scale, allow_none=True, default_value=None).tag(sync=True, dimension='y',
-                       **widget_serialization)
+    x_scale = Instance(Scale, allow_none=True, default_value=None)\
+        .tag(sync=True, dimension='x', **widget_serialization)
+    y_scale = Instance(Scale, allow_none=True, default_value=None)\
+        .tag(sync=True, dimension='y', **widget_serialization)
     _model_name = Unicode('TwoDSelectorModel').tag(sync=True)
 
 
@@ -265,7 +271,8 @@ class FastIntervalSelector(OneDSelector):
     size: Float or None (default: None)
         if not None, this is the fixed pixel-width of the interval selector
     """
-    selected = Array(None, allow_none=True).tag(sync=True, **array_serialization)
+    selected = Array(None, allow_none=True)\
+        .tag(sync=True, **array_serialization)
     color = Color(None, allow_none=True).tag(sync=True)
     size = Float(None, allow_none=True).tag(sync=True)
 
@@ -299,7 +306,8 @@ class IndexSelector(OneDSelector):
     line_width: nonnegative integer (default: 0)
         Width of the line represetning the index selector.
     """
-    selected = Array(None, allow_none=True).tag(sync=True, **array_serialization)
+    selected = Array(None, allow_none=True)\
+        .tag(sync=True, **array_serialization)
     line_width = Int(2).tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
 
@@ -342,8 +350,10 @@ class BrushIntervalSelector(OneDSelector):
         Color of the rectangle representing the brush selector.
     """
     brushing = Bool().tag(sync=True)
-    selected = Array(None, allow_none=True).tag(sync=True, **array_serialization)
-    orientation = Enum(['horizontal', 'vertical'], default_value='horizontal').tag(sync=True)
+    selected = Array(None, allow_none=True)\
+        .tag(sync=True, **array_serialization)
+    orientation = Enum(['horizontal', 'vertical'],
+                       default_value='horizontal').tag(sync=True)
     color = Color(None, allow_none=True).tag(sync=True)
 
     _view_name = Unicode('BrushIntervalSelector').tag(sync=True)
@@ -358,7 +368,8 @@ class BrushSelector(TwoDSelector):
     This 2-D selector interaction enables the user to select a rectangular
     region using the brushing action of the mouse. A mouse-down marks the
     starting point of the interval. The drag after the mouse down selects the
-    rectangle of interest and a mouse-up signifies the end point of the interval.
+    rectangle of interest and a mouse-up signifies the end point of
+    the interval.
 
     Once an interval is drawn, the selector can be moved to a new interval by
     dragging the selector to the new interval.
@@ -474,8 +485,9 @@ class MultiSelector(BrushIntervalSelector):
     # around the even more ugly hack to have a trait which converts dates,
     # if present, into strings and send it across. It means writing a trait
     # which does that on top of a dictionary. I don't like that
-    show_names = Bool(True).tag(sync=True)  # TODO: Not a trait. The value has to
-                                        # be set at declaration time.
+
+    # TODO: Not a trait. The value has to be set at declaration time.
+    show_names = Bool(True).tag(sync=True)
 
     def __init__(self, **kwargs):
         self.is_date = isinstance(kwargs.get('scale'), DateScale)

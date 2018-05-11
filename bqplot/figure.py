@@ -72,7 +72,8 @@ class Figure(DOMWidget):
     padding_y: Float (default: 0.025)
         Padding to be applied in the vertical direction of the figure
         around the data points, proportion of the vertical length
-    legend_location: {'top-right', 'top', 'top-left', 'left', 'bottom-left', 'bottom', 'bottom-right', 'right'}
+    legend_location: {'top-right', 'top', 'top-left', 'left',
+        'bottom-left', 'bottom', 'bottom-right', 'right'}
         location of the legend relative to the center of the figure
     background_style: Dict (default: {})
         CSS style to be applied to the background of the figure
@@ -122,8 +123,9 @@ class Figure(DOMWidget):
     title = Unicode().tag(sync=True, display_name='Title')
     axes = List(Instance(Axis)).tag(sync=True, **widget_serialization)
     marks = List(Instance(Mark)).tag(sync=True, **widget_serialization)
-    interaction = Instance(Interaction, default_value=None, allow_none=True).tag(sync=True,
-                           **widget_serialization)
+    interaction = Instance(Interaction, default_value=None,
+                           allow_none=True).tag(sync=True,
+                                                **widget_serialization)
     scale_x = Instance(Scale).tag(sync=True, **widget_serialization)
     scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
     title_style = Dict(trait=Unicode()).tag(sync=True)
@@ -132,19 +134,23 @@ class Figure(DOMWidget):
     legend_text = Dict().tag(sync=True)
 
     # min width is based on hardcoded padding values
-    layout = LayoutTraitType(kw=dict(min_width='125px')).tag(sync=True, **widget_serialization)
+    layout = LayoutTraitType(kw=dict(min_width='125px'))\
+        .tag(sync=True, **widget_serialization)
     min_aspect_ratio = Float(1.0).tag(sync=True)
     # Max aspect ratio is such that we can have 3 charts stacked vertically
     # on a 16:9 monitor: 16/9*3 ~ 5.333
     max_aspect_ratio = Float(6.0).tag(sync=True)
 
-    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60)).tag(sync=True)
+    fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60))\
+        .tag(sync=True)
     padding_x = Float(0.0, min=0.0, max=1.0).tag(sync=True)
     padding_y = Float(0.025, min=0.0, max=1.0).tag(sync=True)
     legend_location = Enum(['top-right', 'top', 'top-left', 'left',
                             'bottom-left', 'bottom', 'bottom-right', 'right'],
-                           default_value='top-right').tag(sync=True, display_name='Legend position')
-    animation_duration = Int().tag(sync=True, display_name='Animation duration')
+                           default_value='top-right')\
+        .tag(sync=True, display_name='Legend position')
+    animation_duration = Int().tag(sync=True,
+                                   display_name='Animation duration')
 
     @default('scale_x')
     def _default_scale_x(self):
@@ -163,9 +169,11 @@ class Figure(DOMWidget):
     @validate('min_aspect_ratio', 'max_aspect_ratio')
     def _validate_aspect_ratio(self, proposal):
         value = proposal['value']
-        if proposal['trait'].name == 'min_aspect_ratio' and value > self.max_aspect_ratio:
+        if proposal['trait'].name == 'min_aspect_ratio' and \
+           value > self.max_aspect_ratio:
             raise TraitError('setting min_aspect_ratio > max_aspect_ratio')
-        if proposal['trait'].name == 'max_aspect_ratio' and value < self.min_aspect_ratio:
+        if proposal['trait'].name == 'max_aspect_ratio' and \
+           value < self.min_aspect_ratio:
             raise TraitError('setting max_aspect_ratio < min_aspect_ratio')
         return value
 
