@@ -42,11 +42,9 @@ var FigureModel = basemodel.BaseModel.extend({
             legend_style: {},
             legend_text: {},
 
-            min_width: "",
-            min_height: "",
             preserve_aspect: false,
-            min_aspect_ratio: 1,
-            max_aspect_ratio: 16 / 9,
+            min_aspect_ratio: 0,
+            max_aspect_ratio: 100,
 
             fig_margin: {
                 top: 60,

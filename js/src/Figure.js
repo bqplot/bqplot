@@ -216,8 +216,12 @@ var Figure = widgets.DOMWidgetView.extend({
                     //and not displayed.
                     that.relayout();
                 }
-                that.model.on("msg:custom", that.handle_custom_messages,
-			  that);
+                that.model.on("msg:custom", that.handle_custom_messages, that);
+                // In the classic notebook, we should relayout the figure on
+                // resize of the main window.
+                window.addEventListener('resize', function() {
+                    that.relayout();
+                })
             });
         });
     },
