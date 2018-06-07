@@ -67,6 +67,11 @@ var BaseModel = widgets.WidgetModel.extend({
         var that = this;
         var current_type = this.get(param).type;
 
+        if (saved_value[0] instanceof Array && saved_value[0][0] instanceof Date ||
+            saved_value[0] instanceof Date) {
+            current_type = "date";
+        }
+
         if(saved_value[0] instanceof Array) {
             if(current_type === "date")
                 saved_value = saved_value.map(function(val) {

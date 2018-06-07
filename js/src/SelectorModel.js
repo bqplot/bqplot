@@ -99,7 +99,7 @@ var BrushIntervalSelectorModel = OneDSelectorModel.extend({
             _model_name: "BrushIntervalSelectorModel",
             _view_name: "BrushIntervalSelector",
             brushing: false,
-            selected: [],
+            selected: {},
             color: null,
             orientation: "horizontal"
         });
@@ -114,7 +114,8 @@ var BrushSelectorModel = TwoDSelectorModel.extend({
             _view_name: "BrushSelector",
             clear: false,
             brushing: false,
-            selected: [],
+            selected_x: {},
+            selected_y: {},
             color: null
         });
     }

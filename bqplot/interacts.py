@@ -379,11 +379,20 @@ class BrushSelector(TwoDSelector):
 
     Attributes
     ----------
-    selected: numpy.ndarray
+    selected_x: numpy.ndarray
         Two element array containing the start and end of the interval selected
-        in terms of the scales of the selector.
+        in terms of the x_scale of the selector.
         This attribute changes while the selection is being made with the
-        ``BrushIntervalSelector``.
+        ``BrushSelector``.
+    selected_y: numpy.ndarray
+        Two element array containing the start and end of the interval selected
+        in terms of the y_scale of the selector.
+        This attribute changes while the selection is being made with the
+        ``BrushSelector``.
+    selected_x: list
+        Readonly 2x2 array containing the coordinates 
+        [[selected_x[0], selected_y[0]],
+         [selected_x[1], selected_y[1]]]
     brushing: bool (default: False)
         boolean attribute to indicate if the selector is being dragged.
         It is True when the selector is being moved and False when it is not.
@@ -395,31 +404,18 @@ class BrushSelector(TwoDSelector):
     """
     clear = Bool().tag(sync=True)
     brushing = Bool().tag(sync=True)
-    selected = List().tag(sync=True)
+    selected_x = Array(None, allow_none=True).tag(sync=True, **array_serialization)
+    selected_y = Array(None, allow_none=True).tag(sync=True, **array_serialization)
     color = Color(None, allow_none=True).tag(sync=True)
 
-    def __init__(self, **kwargs):
-        # Stores information regarding the scales. The date scaled values have
-        # to be converted into dateobjects because they are transmitted as
-        # strings.
-        try:
-            self.read_json_x = kwargs.get('x_scale').domain_class.from_json
-        except AttributeError:
-            self.read_json_x = None
-        try:
-            self.read_json_y = kwargs.get('y_scale').domain_class.from_json
-        except AttributeError:
-            self.read_json_y = None
-        super(BrushSelector, self).__init__(**kwargs)
-
-    def _selected_changed(self, name, selected):
-        if(len(self.selected) == 2):
-            if(self.read_json_x is not None):
-                self.selected[0][0] = self.read_json_x(self.selected[0][0])
-                self.selected[1][0] = self.read_json_x(self.selected[1][0])
-            if(self.read_json_y is not None):
-                self.selected[0][1] = self.read_json_y(self.selected[0][1])
-                self.selected[1][1] = self.read_json_y(self.selected[1][1])
+    # This is for backward compatibility
+    @property
+    def selected(self):
+        if self.selected_x is None or len(self.selected_x) == 0:
+            return []
+        else:
+            return [[self.selected_x[0], self.selected_y[0]],
+                    [self.selected_x[1], self.selected_y[1]]]
 
     _view_name = Unicode('BrushSelector').tag(sync=True)
     _model_name = Unicode('BrushSelectorModel').tag(sync=True)
