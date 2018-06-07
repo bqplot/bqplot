@@ -72,7 +72,7 @@ var FastIntervalSelectorModel = OneDSelectorModel.extend({
         return _.extend(OneDSelectorModel.prototype.defaults(), {
             _model_name: "FastIntervalSelectorModel",
             _view_name: "FastIntervalSelector",
-            selected: [],
+            selected: {},
             color: null,
             size: null
         });
@@ -85,7 +85,7 @@ var IndexSelectorModel = OneDSelectorModel.extend({
         return _.extend(OneDSelectorModel.prototype.defaults(), {
             _model_name: "IndexSelectorModel",
             _view_name: "IndexSelector",
-            selected: [],
+            selected: {},
             line_width: 2,
             color: null
         });

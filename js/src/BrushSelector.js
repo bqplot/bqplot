@@ -512,7 +512,7 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
         selected[this.get_label(item)] = extent;
         var pixel_extent = extent.map(this.scale.scale);
         this.update_mark_selected(pixel_extent);
-        this.model.set_typed_field("_selected", selected);
+        this.model.set("_selected", selected);
         this.touch();
     },
 
