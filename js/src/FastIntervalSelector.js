@@ -26,6 +26,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         this.freeze_but_move = true;
         this.freeze_dont_move = false;
         this.active = false;
+        this.dirty = false;
         this.size = this.model.get("size");
 
         this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
@@ -36,29 +37,29 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             //container for mouse events
             that.background = that.d3el.append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", that.width)
-                .attr("height", that.height)
-                .attr("class", "selector selectormouse")
-                .attr("pointer-events", "all")
-                .attr("visibility", "hidden");
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", that.width)
+              .attr("height", that.height)
+              .attr("class", "selector selectormouse")
+              .attr("pointer-events", "all")
+              .attr("visibility", "hidden");
 
             that.background.on("mousemove", _.bind(that.mousemove, that))
-                .on("click", _.bind(that.click, that))
-                .on("dblclick", _.bind(that.dblclick, that));
+              .on("click", _.bind(that.click, that))
+              .on("dblclick", _.bind(that.dblclick, that));
 
             that.rect = that.d3el.append("rect")
-                .attr("class", "selector intsel")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", that.size)
-                .attr("height", that.height)
-                .attr("pointer-events", "none")
-                .attr("display", "none");
+              .attr("class", "selector intsel")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", that.size)
+              .attr("height", that.height)
+              .attr("pointer-events", "none")
+              .attr("display", "none");
 
             that.color_change();
-
+            that.selected_changed();
             that.create_listeners();
         });
     },
@@ -89,6 +90,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         if (this.freeze_dont_move || !this.active) {
             return;
         }
+        this.dirty = true;
         var mouse_pos = d3.mouse(this.background.node());
         var int_len = this.size > 0 ?
             this.size : parseInt(this.rect.attr("width"));
@@ -110,10 +112,10 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         this.rect.attr("width", interval_size);
         var pixel_extent = [start, start + interval_size];
         this.model.set_typed_field("selected",
-                                   this.scale.invert_range(pixel_extent),
-                                   { js_ignore : true });
+                                   this.scale.invert_range(pixel_extent));
         this.update_mark_selected(pixel_extent);
         this.touch();
+        this.dirty = false;
     },
 
     update_mark_selected: function(extent_x, extent_y) {
@@ -154,16 +156,16 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
 
         this.adjust_rectangle();
         this.background
-            .attr("width", this.width)
-            .attr("height", this.height);
+          .attr("width", this.width)
+          .attr("height", this.height);
 
         this.set_range([this.scale]);
     },
 
     reset: function() {
         this.rect.attr("x", 0)
-            .attr("width", 0);
-        this.model.set_typed_field("selected", [], {js_ignore : true});
+          .attr("width", 0);
+        this.model.set_typed_field("selected", {});
         this.update_mark_selected();
         this.touch();
     },
@@ -176,10 +178,10 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         }
     },
 
-    selected_changed: function(model, value, options) {
+    selected_changed: function(model, value) {
         //TODO: should the size get overridden if it was set previously and
         //then selected was changed from the python side?
-        if(options && options.js_ignore) {
+        if(this.dirty) {
             //this change was most probably triggered from the js side and
             //should be ignored.
             return;
@@ -207,12 +209,12 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
     adjust_rectangle: function() {
         if (this.model.get("orientation") == "vertical") {
             this.d3el.selectAll("rect")
-                .attr("x", 0)
-                .attr("width", this.width);
+              .attr("x", 0)
+              .attr("width", this.width);
         } else {
             this.d3el.selectAll("rect")
-                .attr("y", 0)
-                .attr("height", this.height);
+              .attr("y", 0)
+              .attr("height", this.height);
         }
     },
 });

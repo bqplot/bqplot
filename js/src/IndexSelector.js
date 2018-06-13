@@ -22,6 +22,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
     render : function() {
         IndexSelector.__super__.render.apply(this);
         this.active = false;
+        this.dirty = false;
         var that = this;
         var scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
@@ -50,6 +51,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
                 .on("click", _.bind(that.initial_click, that));
 
             that.create_listeners();
+            that.selected_changed();
         });
     },
 
@@ -78,17 +80,18 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         if (!this.active) {
             return;
         }
-
+        this.dirty = true;
         var mouse_pos = d3.mouse(this.background.node());
         var xpixel = mouse_pos[0];
         //update the index vertical line
         this.line.attr({x1: xpixel, x2: xpixel});
 
-        this.model.set_typed_field("selected", [this.invert_pixel(xpixel)], {js_ignore: true});
+        this.model.set_typed_field("selected", [this.invert_pixel(xpixel)]);
         _.each(this.mark_views, function(mark_view) {
              mark_view.invert_point(xpixel);
         });
         this.touch();
+        this.dirty = false;
     },
 
     invert_pixel: function(pixel) {
@@ -104,7 +107,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         if(this.background !== undefined && this.background !== null) {
             this.background.on("click", _.bind(this.initial_click, this));
         }
-        this.model.set_typed_field("selected", [], {js_ignore : true});
+        this.model.set_typed_field("selected", {});
 
         _.each(this.mark_views, function(mark_view) {
             mark_view.invert_point();
@@ -120,8 +123,8 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         }
     },
 
-    selected_changed: function(model, value, options) {
-        if(options && options.js_ignore) {
+    selected_changed: function(model, value) {
+        if(this.dirty) {
             //this change was most probably triggered from the js side and
             //should be ignored.
             return;
