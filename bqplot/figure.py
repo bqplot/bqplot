@@ -101,7 +101,9 @@ class Figure(DOMWidget):
     -------
 
     save_png:
-       Saves the figure as a png file
+       Saves the figure as a PNG file
+    save_svg:
+       Saves the figure as an SVG file
 
     Note
     ----
@@ -159,17 +161,27 @@ class Figure(DOMWidget):
     def _default_scale_y(self):
         return LinearScale(min=0, max=1, allow_padding=False)
 
-    def save_png(self, filename=None):
-        msg = {"type": "save_png"}
-        if filename:
-            msg["filename"] = filename
-        self.send(msg)
+    def save_png(self, filename='bqplot.png'):
+        '''
+        Saves the Figure as a PNG file
 
-    def save_svg(self, filename=None):
-        msg = {"type": "save_svg"}
-        if filename:
-            msg["filename"] = filename
-        self.send(msg)
+        Parameters
+        ----------
+        filename: str (default: 'bqplot.png')
+            name of the saved file
+        '''
+        self.send({"type": "save_png", "filename": filename})
+
+    def save_svg(self, filename='bqplot.svg'):
+        '''
+        Saves the Figure as an SVG file
+
+        Parameters
+        ----------
+        filename: str (default: 'bqplot.svg')
+            name of the saved file
+        '''
+        self.send({"type": "save_svg", "filename": filename})
 
     @validate('min_aspect_ratio', 'max_aspect_ratio')
     def _validate_aspect_ratio(self, proposal):
