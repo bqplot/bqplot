@@ -165,6 +165,12 @@ class Figure(DOMWidget):
             msg["filename"] = filename
         self.send(msg)
 
+    def save_svg(self, filename=None):
+        msg = {"type": "save_svg"}
+        if filename:
+            msg["filename"] = filename
+        self.send(msg)
+
     @validate('min_aspect_ratio', 'max_aspect_ratio')
     def _validate_aspect_ratio(self, proposal):
         value = proposal['value']
