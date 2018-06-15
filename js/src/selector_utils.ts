@@ -23,19 +23,17 @@ export function point_in_rectangle(point, x, y) {
     // Checks whether `point` is within the rectangle of coordinates
     // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
     // If one of x or y is undefined, treat them as [-inf, inf]
-    
+
     if (x.length == 0 && y.length == 0) { return false; }
 
     let is_inside = true;
-    x.sort(function(a, b){return a-b});
-    y.sort(function(a, b){return a-b});
 
     if (x.length != 0) {
         is_inside = is_inside && x[0] <= point[0] && point[0] <= x[1];
     }
     if (y.length != 0) {
         is_inside = is_inside && y[0] <= point[1] && point[1] <= y[1];
-    } 
+    }
     return is_inside;
 }
 

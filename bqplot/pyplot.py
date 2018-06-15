@@ -56,7 +56,7 @@ from numpy import arange, issubdtype, array, column_stack, shape
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
-from .marks import (Lines, Scatter, Hist, Bars, OHLC, Pie, Map, Image,
+from .marks import (Lines, Scatter, ScatterMega, Hist, Bars, OHLC, Pie, Map, Image,
                     Label, HeatMap, GridHeatMap, topo_load, Boxplot, Bins)
 from .toolbar import Toolbar
 from .interacts import (BrushIntervalSelector, FastIntervalSelector,
@@ -64,6 +64,8 @@ from .interacts import (BrushIntervalSelector, FastIntervalSelector,
                         LassoSelector)
 from traitlets.utils.sentinel import Sentinel
 import functools
+
+SCATTER_SIZE_LIMIT = 10*1000 # above this limit, ScatterMega will be used by default
 
 Keep = Sentinel('Keep', 'bqplot.pyplot', '''
         Used in bqplot.pyplot to specify that the same scale should be used for
@@ -813,7 +815,7 @@ def ohlc(*args, **kwargs):
 
 
 @_process_data('color', 'opacity', 'size', 'skew', 'rotation')
-def scatter(x, y, **kwargs):
+def scatter(x, y, use_gl=None, **kwargs):
     """Draw a scatter in the current context figure.
 
     Parameters
@@ -823,6 +825,9 @@ def scatter(x, y, **kwargs):
         The x-coordinates of the data points.
     y: numpy.ndarray, 1d
         The y-coordinates of the data points.
+    use_gl: If true, will use the ScatterGL mark (pixelized but faster), if false a normal
+        Scatter mark is used. If None, a choised is made automatically depending on the length
+        of x.
     options: dict (default: {})
         Options for the scales to be created. If a scale labeled 'x' is
         required for that mark, options['x'] contains optional keyword
@@ -834,7 +839,11 @@ def scatter(x, y, **kwargs):
     """
     kwargs['x'] = x
     kwargs['y'] = y
-    return _draw_mark(Scatter, **kwargs)
+    if use_gl is None:
+        mark_class = ScatterMega if len(x) >= SCATTER_SIZE_LIMIT else Scatter
+    else:
+        mark_class = ScatterMega if use_gl else Scatter
+    return _draw_mark(mark_class, **kwargs)
 
 
 @_process_data()

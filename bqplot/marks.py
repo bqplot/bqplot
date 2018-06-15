@@ -172,7 +172,7 @@ class Mark(Widget):
     visible = Bool(True).tag(sync=True)
     selected_style = Dict().tag(sync=True)
     unselected_style = Dict().tag(sync=True)
-    selected = List(None, allow_none=True).tag(sync=True)
+    selected = Array(None, allow_none=True).tag(sync=True, **array_serialization)
 
     enable_hover = Bool(True).tag(sync=True)
     tooltip = Instance(DOMWidget, allow_none=True, default_value=None)\
@@ -522,8 +522,9 @@ class _ScatterBase(Mark):
         'opacity': {'dimension': 'opacity'},
         'rotation': {'dimension': 'rotation'}
     }).tag(sync=True)
-    default_opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
-        .tag(sync=True, display_name='Opacities')
+    default_opacities = Array(None, allow_none=True)\
+        .tag(sync=True, display_name='Opacities', **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
     hovered_style = Dict().tag(sync=True)
     unhovered_style = Dict().tag(sync=True)
     hovered_point = Int(None, allow_none=True).tag(sync=True)
@@ -709,6 +710,11 @@ class Scatter(_ScatterBase):
 
     _view_name = Unicode('Scatter').tag(sync=True)
     _model_name = Unicode('ScatterModel').tag(sync=True)
+
+@register_mark('bqplot.ScatterMega')
+class ScatterMega(Scatter):
+    _view_name = Unicode('ScatterMega').tag(sync=True)
+    _model_name = Unicode('ScatterMegaModel').tag(sync=True)
 
 
 @register_mark('bqplot.Label')
