@@ -35,20 +35,20 @@ async function create_widget(manager, name: string, id: string, args: Object) {
 }
 
 export
-async function create_figure_scatter(manager, x, y) {
+async function create_figure_scatter(manager, x, y, mega=false) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
     let scales = {x: 'IPY_MODEL_scale_x', y: 'IPY_MODEL_scale_y'}
     let color    = null;
-    let size     = {type: null, values: null};
-    let opacity  = {type: null, values: null};
-    let rotation = {type: null, values: null};
+    let size     = null;
+    let opacity  = null;
+    let rotation = null;
     let skew     = {type: null, values: null};
 
-    let scatterModel = await create_model_bqplot(manager, 'Scatter', 'scatter1', {scales: scales,
-        x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew,
-        visible: true, default_size: 64,
+    let scatterModel = await create_model_bqplot(manager, mega ? 'ScatterMega' : 'Scatter' , 'scatter1', {scales: scales,
+        x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew, colors: ['steelblue'],
+        visible: true, default_size: 64, selected_style: {}, unselected_style: {}, hovered_style: {}, unhovered_style: {},
         preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})
     let figureModel;
     try {

@@ -89,7 +89,9 @@ var loadedModules = [
     require("./GraphModel"),
     require("./Graph"),
     require("./Image"),
-    require("./ImageModel")
+    require("./ImageModel"),
+    require("./ScatterMega"),
+    require("./ScatterMegaModel"),
 ];
 
 for (var i in loadedModules) {

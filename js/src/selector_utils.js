@@ -27,8 +27,6 @@ function point_in_rectangle(point, x, y) {
     if (x.length == 0 && y.length == 0) { return false; }
 
     var is_inside = true;
-    x.sort(function(a, b){return a-b});
-    y.sort(function(a, b){return a-b});
 
     if (x.length != 0) {
         is_inside = is_inside && x[0] <= point[0] && point[0] <= x[1];

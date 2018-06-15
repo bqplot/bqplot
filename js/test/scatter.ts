@@ -38,10 +38,12 @@ describe("scatter >", () => {
         let objects = await create_figure_scatter(this.manager, x, y);
         let scatter = objects.scatter;
 
+        let getFills = () => scatter.d3el.selectAll(".object_grp .element")[0].map((el) => ((el.getAttribute('style')||'').match(/fill: (\w*)/)||[null,null])[1]);
+        expect(getFills()).to.deep.equal(['steelblue', 'steelblue'])
+
         scatter.model.set('unselected_style', {'fill': 'orange', 'stroke': 'none'})
         scatter.model.set('selected', [0])
-        let getFills = () => scatter.d3el.selectAll(".object_grp .element")[0].map((el) => ((el.getAttribute('style')||'').match(/fill: (\w*)/)||[null,null])[1]);
-        expect(getFills()).to.deep.equal([null, 'orange'])
+        expect(getFills()).to.deep.equal(['steelblue', 'orange'])
 
         scatter.model.set('colors', ['red'])
         expect(getFills()).to.deep.equal(['red', 'orange'])

@@ -108,9 +108,34 @@ var BaseBrushSelector = {
             // 2d brush
             var x = extent_x, y = extent_y;
         }
-        var point_selector = function(p) {
-            return sel_utils.point_in_rectangle(p, x, y);
-        };
+        if(x.length)
+            x.sort(function(a, b){return a-b});
+        if(y.length)
+            y.sort(function(a, b){return a-b});
+        var point_selector = function(xar, yar) {
+            if(typeof yar == "undefined") { // the 'old' method for backwards compatibility
+                var p = xar;
+                return sel_utils.point_in_rectangle(p, x, y);
+            }
+            var N = Math.min(xar.length, yar.length);
+            var mask = new Uint8Array(N);
+            // for performance we keep the if statement out of the loop
+            if(x.length && y.length) {
+                for(var i = 0; i < N; i++) {
+                    mask[i] = x[0] <= xar[i] && xar[i] <= x[1] && y[0] <= yar[i] && yar[i] <= y[1];
+                }
+                return mask;
+            } else if(x.length) {
+                for(var i = 0; i < N; i++) {
+                    mask[i] = x[0] <= xar[i] && xar[i] <= x[1]
+                }
+            } else { // (y.length)
+                for(var i = 0; i < N; i++) {
+                    mask[i] = y[0] <= yar[i] && yar[i] <= y[1];
+                }
+            };
+            return mask;
+        }
         var rect_selector = function(xy) {
             return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
         };
