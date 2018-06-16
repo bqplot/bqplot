@@ -124,6 +124,7 @@ var Label = scatterbase.ScatterBase.extend({
         var that = this;
         this.d3el.selectAll(".object_grp")
             .select("text")
+            .attr("dominant-baseline", "central")
             .style("font-size", function(d, i) {
                 return that.get_element_size(d);
             })
