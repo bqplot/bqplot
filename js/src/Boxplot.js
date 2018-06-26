@@ -385,11 +385,17 @@ var Boxplot = mark.Mark.extend({
         new_boxplots.append("path").attr("class", "median_line");
         new_boxplots.append("g").attr("class", "outliers");
 
+        var xOffset = 0;
+        var scaleX = this.scales.x;
+        if (scaleX.model.type === "ordinal") {
+            xOffset = scaleX.scale.rangeBand() / 2;
+        }
+
         selector.selectAll(".boxplot")
             .style("stroke", this.model.get("stroke"))
             .style("opacity", color)
             .attr ("transform", function (d, i) {
-                               return "translate(" + d.x + ", 0)";
+                return "translate(" + (d.x + xOffset) + ", 0)";
             });
 
        //Box
