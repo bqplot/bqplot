@@ -153,9 +153,12 @@ def show(key=None, display_toolbar=True):
     if display_toolbar:
         if not hasattr(figure, 'pyplot'):
             figure.pyplot = Toolbar(figure=figure)
-        display(VBox([figure, figure.pyplot]))
+        vbox = VBox([figure, figure.pyplot])
+        display(vbox)
+        return vbox
     else:
         display(figure)
+        return figure
 
 
 def figure(key=None, fig=None, **kwargs):
