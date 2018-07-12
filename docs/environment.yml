@@ -9,6 +9,7 @@ dependencies:
  - numpy
  - pandas
  - bqplot
+ - nbsphinx
  - pip:
     - jupyter_sphinx
     - ipywidgets>=6.0.0rc2

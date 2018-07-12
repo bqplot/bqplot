@@ -42,6 +42,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'nbsphinx',
     'jupyter_sphinx.embed_widgets',
 ]
 
@@ -51,7 +52,7 @@ autosummary_generate = True
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
-source_suffix = '.rst'
+source_suffix = ['.rst', '.ipynb']
 
 # Add dev disclaimer.
 if _release['version_info'][-1] == 'dev':
@@ -95,7 +96,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+exclude_patterns = ['**.ipynb_checkpoints']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -126,7 +127,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
