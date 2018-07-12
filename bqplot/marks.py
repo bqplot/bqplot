@@ -1707,7 +1707,7 @@ class Image(Mark):
         in the format (x0, x1)
     y: tuple (default: (0, 1))
         ordinates of the bottom and top side of the image
-        in the format (x0, x1)
+        in the format (y0, y1)
     """
     _view_name = Unicode('Image').tag(sync=True)
     _model_name = Unicode('ImageModel').tag(sync=True)
