@@ -23,7 +23,7 @@ Math.log10 = Math.log10 || function (x) {
     return Math.log(x) / Math.LN10;
 };
 
-var units_array = ["em", "ex", "px"];
+var UNITS_ARRAY = ["em", "ex", "px"];
 
 var Axis = widgets.WidgetView.extend({
 
@@ -35,21 +35,14 @@ var Axis = widgets.WidgetView.extend({
 
     render: function() {
         this.d3el.style("display", this.model.get("visible") ? "inline" : "none");
-
         this.parent = this.options.parent;
         this.margin = this.parent.margin;
-        this.vertical = this.model.get("orientation") === "vertical";
         this.height = this.parent.height - (this.margin.top + this.margin.bottom);
         this.width = this.parent.width - (this.margin.left + this.margin.right);
 
-        var scale_promise = this.set_scale(this.model.get("scale"));
-        this.side = this.model.get("side");
-        this.padding = this.model.get("padding");
-        this.num_ticks = this.model.get("num_ticks");
-        this.label_loc = this.model.get("label_location");
-        this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
+        var scale_promise = this.set_scale_promise(this.model.get("scale"));
+        var offset_promise = this.get_offset_promise();
 
-        var offset_promise = this.get_offset();
         var that = this;
         Promise.all([scale_promise, offset_promise]).then(function() {
             that.create_listeners();
@@ -60,6 +53,8 @@ var Axis = widgets.WidgetView.extend({
     },
 
     create_listeners: function() {
+        // Creates all event listeners
+
         this.listenTo(this.model, "change:scale", function(model, value) {
             this.update_scale(model.previous("scale"), value);
             // TODO: rescale_axis does too many things. Decompose
@@ -67,61 +62,69 @@ var Axis = widgets.WidgetView.extend({
             this.rescale_axis();
         }, this);
 
-        this.listenTo(this.model, "change:tick_values", this.set_tick_values, this);
-        this.listenTo(this.model, "change:tick_format", this.tickformat_changed, this);
-        this.listenTo(this.model, "change:tick_style", this.tickstyle_changed, this);
-        this.listenTo(this.model, "change:num_ticks", function(model, value) {
-            this.num_ticks = value;
-            this.set_tick_values();
-        }, this);
-        this.listenTo(this.model, "change:color", this.update_color, this);
-        this.model.on_some_change(["label", "label_color"], this.update_label, this);
-        this.model.on_some_change(["grid_color", "grid_lines"], this.update_grid_lines, this);
-        this.listenTo(this.model, "change:label_location", this.update_label_location, this);
-        this.listenTo(this.model, "change:label_offset", this.update_label_offset, this);
+        // Tick attributes
+        this.listenTo(this.model, "change:tick_values", this.update_label_settings, this);
+        this.listenTo(this.model, "change:tick_format", this.update_tick_format, this);
+        this.listenTo(this.model, "change:num_ticks", this.update_label_settings, this);
+        this.listenTo(this.model, "change:tick_rotate", this.apply_tick_styling, this);
+        this.listenTo(this.model, "change:tick_style", this.apply_tick_styling, this);
+
+        // Label attributes
+        var labels = ["label_location", "label_offset", "label", "label_color"]
+        this.model.on_some_change(labels, this.update_label_settings, this)
+
+        // Axis attributes
+        this.listenTo(this.model, "change:color", this.update_line_color, this);
         this.listenTo(this.model, "change:visible", this.update_visibility, this);
+        this.listenTo(this.model, "change:offset", this.update_offset, this);
+        this.model.on_some_change(["grid_color", "grid_lines"], this.update_grid_lines, this);
         this.model.on_some_change(["side", "orientation"], this.update_display, this);
-        this.listenTo(this.model, "change:offset", function() {
-            var offset_creation_promise = this.get_offset();
-            var that = this;
-            offset_creation_promise.then(function() {
-                that.set_scales_range();
-                that.update_offset_scale_domain();
-                that.g_axisline.attr("transform", that.get_axis_transform());
-                that.update_grid_lines();
-            });
-        }, this);
         this.parent.on("margin_updated", this.parent_margin_updated, this);
     },
 
+    update_offset: function() {
+        var offset_creation_promise = this.get_offset_promise();
+        var that = this;
+        offset_creation_promise.then(function() {
+            that.set_scales_range();
+            that.update_offset_scale_domain();
+            that.g_axisline.attr("transform", that.get_axis_transform());
+            that.update_grid_lines();
+        });
+    },
+
     update_display: function() {
-        this.side = this.model.get("side");
-        this.vertical = this.model.get("orientation") === "vertical";
-        if(this.vertical) {
-            this.axis.orient(this.side === "right" ? "right" : "left");
+        var side = this.model.get("side");
+        var is_vertical = this.model.get("orientation") === "vertical";
+
+        if(is_vertical) {
+            this.axis.orient(side === "right" ? "right" : "left");
         } else {
-            this.axis.orient(this.side === "top" ? "top" : "bottom");
+            this.axis.orient(side === "top" ? "top" : "bottom");
         }
-        this.label_offset = this.extract_label_offset(this.model.get("label_offset"));
         this.rescale_axis();
     },
 
-    set_tick_values: function(animate) {
+    update_label_settings: function(animate) {
+        // Sets specific tick values from "tick_values" parameter
+
         var tick_values = this.model.get_typed_field("tick_values");
         var useticks = [];
+        var num_ticks = this.model.get("num_ticks");
+
         if (tick_values !== undefined && tick_values !== null && tick_values.length > 0) {
-            this.axis.tickValues(this.get_ticks_from_array_or_length(tick_values));
-        } else if (this.num_ticks !== undefined && this.num_ticks !== null) {
-            this.axis.tickValues(this.get_ticks_from_array_or_length());
+            this.axis.tick_values(this.get_ticks_from_array_or_length(tick_values));
+        } else if (num_ticks !== undefined && num_ticks !== null) {
+            this.axis.tick_values(this.get_ticks_from_array_or_length());
         } else {
             if (this.axis_scale.model.type === "ordinal") {
-                this.axis.tickValues(this.axis_scale.scale.domain());
+                this.axis.tick_values(this.axis_scale.scale.domain());
             } else if (this.axis_scale.model.type === "log") {
                 var i, r;
                 var allticks = this.axis_scale.scale.ticks();
                 var oom = Math.abs(Math.log10(this.axis_scale.scale.domain()[1] / this.axis_scale.scale.domain()[0]));
                 if (oom < 2) {
-                    this.axis.tickValues(allticks);
+                    this.axis.tick_values(allticks);
                 } else if (oom < 7) {
                     useticks = [];
                     for (i = 0; i < allticks.length; i++) {
@@ -133,7 +136,7 @@ var Axis = widgets.WidgetView.extend({
                             useticks.push(allticks[i]);
                         }
                     }
-                    this.axis.tickValues(useticks);
+                    this.axis.tick_values(useticks);
                 } else {
                     useticks = [];
                     var s = Math.round(oom / 10);
@@ -143,63 +146,101 @@ var Axis = widgets.WidgetView.extend({
                             useticks.push(allticks[i]);
                         }
                     }
-                    this.axis.tickValues(useticks);
+                    this.axis.tick_values(useticks);
                 }
             } else {
-                this.axis.tickValues(this.axis_scale.scale.ticks());
+                this.axis.tick_values(this.axis_scale.scale.ticks());
             }
         }
         if(this.model.get("tick_format") === null ||
             this.model.get("tick_format") === undefined) {
                 if(this.axis_scale.type !== "ordinal") {
-                    // TODO: can be avoided if num_ticks and tickValues are
+                    // TODO: can be avoided if num_ticks and tick_values are
                     // not mentioned
-                    this.tick_format = this.guess_tick_format(this.axis.tickValues());
+                    this.tick_format = this.guess_tick_format(this.axis.tick_values());
                 }
         }
-        this.axis.tickFormat(this.tick_format);
+        this.axis.tick_format(this.tick_format);
 
 
         if(this.g_axisline) {
-             this.g_axisline
-                .transition("set_tick_values")
+            this.g_axisline
+                .transition("update_label_settings")
+                // .transition("set_tick_values")
                 .duration(animate === true ? this.parent.model.get("animation_duration") : 0)
                 .call(this.axis);
+
+            this.apply_tick_styling();
         }
     },
 
-    tickformat_changed: function() {
+    update_tick_format: function() {
+        // Sets tick format, then redraws axis
+
         this.tick_format = this.generate_tick_formatter();
-        this.axis.tickFormat(this.tick_format);
+        this.axis.tick_format(this.tick_format);
+
         if(this.g_axisline) {
             this.g_axisline.call(this.axis);
-        }
+        };
+        this.apply_tick_styling();
+
     },
 
-    tickstyle_changed: function() {
-        if(this.g_axisline) {
-            this.g_axisline.selectAll(".tick text")
-                .style(this.model.get("tick_style"));
-        }
+    apply_tick_styling: function () {
+        // Applies current tick styling to all displayed ticks
+
+        this.g_axisline.selectAll(".tick text")
+                .style(this.model.get("tick_style"))
+                .attr("transform", this.get_tick_transforms());
     },
 
-    update_axis_domain: function() {
-        var initial_range = (this.vertical) ?
-            this.parent.padded_range("y", this.axis_scale.model) : this.parent.padded_range("x", this.axis_scale.model);
-        var target_range = (this.vertical) ?
+    get_tick_transforms: function() {
+        // parses object and returns a string that can be passed to a D3 as a 
+        // set of options
+        // Note: Currently, only the `tick_rotate` attribute uses .transform()
+
+        var rotation = this.model.get("tick_rotate");
+        return `rotate(${rotation}) `;
+    },
+
+    update_scales: function() {
+        // Updates the domains of both scales
+
+        this.update_scale_domain();
+        this.update_offset_scale_domain();
+    },
+
+    update_scale_domain: function() {
+        // Sets the scale domain (Range of input values)
+
+        var is_vertical = this.model.get("orientation") === "vertical";
+
+        var initial_range = (is_vertical) ?
+            this.parent.padded_range("y", this.axis_scale.model) : 
+            this.parent.padded_range("x", this.axis_scale.model);
+
+        var target_range = (is_vertical) ?
             this.parent.range("y") : this.parent.range("x");
+
         this.axis_scale.expand_domain(initial_range, target_range);
         this.axis.scale(this.axis_scale.scale);
     },
 
     update_offset_scale_domain: function() {
+        // Sets the domain (range of input values) of the offset scale 
+
+        var is_vertical = this.model.get("orientation") === "vertical";
+
         if (this.offset_scale) {
-            var initial_range = (!this.vertical) ?
+            var initial_range = (!is_vertical) ?
                 this.parent.padded_range("y", this.offset_scale.model) :
                 this.parent.padded_range("x", this.offset_scale.model);
-            var target_range = (!this.vertical) ?
+
+            var target_range = (!is_vertical) ?
                 this.parent.range("y") :
                 this.parent.range("x");
+
             this.offset_scale.expand_domain(initial_range, target_range);
         }
     },
@@ -235,64 +276,70 @@ var Axis = widgets.WidgetView.extend({
     },
 
     set_scales_range: function() {
-        this.axis_scale.set_range((this.vertical) ?
+        var is_vertical = this.model.get("orientation") === "vertical";
+
+        this.axis_scale.set_range((is_vertical) ?
             [this.height, 0] : [0, this.width]);
         if(this.offset_scale) {
-            this.offset_scale.set_range((this.vertical) ?
+            this.offset_scale.set_range((is_vertical) ?
                 [0, this.width] : [this.height, 0]);
         }
     },
 
-    create_axis_line: function() {
-        if (this.vertical) {
+    create_axis: function() {
+        // Creates the initial D3 axis and sets it on this.axis
+
+        var is_vertical = this.model.get("orientation") === "vertical";
+        var side = this.model.get("side");
+
+        if (is_vertical) {
             this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-              .orient(this.side === "right" ? "right" : "left");
+                .orient(side === "right" ? "right" : "left");
         } else {
             this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-              .orient(this.side === "top" ? "top" : "bottom");
+                .orient(side === "top" ? "top" : "bottom");
         }
     },
 
     append_axis: function() {
-        this.create_axis_line();
-        this.update_axis_domain();
-        this.update_offset_scale_domain();
+        this.create_axis();
+        this.update_scales();
 
+        // Create initial SVG element
         this.g_axisline = this.d3el.append("g")
             .attr("class", "axis")
             .attr("transform", this.get_axis_transform())
             .call(this.axis);
 
+        // Create element for axis label
         this.g_axisline.append("text")
-            .attr("class", "axislabel")
-            .attr(this.get_label_attributes())
-            .style(this.get_text_styling())
-            .text(this.model.get("label"));
-
-        this.set_tick_values();
+            .attr("class", "axislabel");
+        
+        // Apply custom settings
+        this.update_label_settings();
         this.update_grid_lines();
-        this.tickstyle_changed();
-        this.update_color();
-        this.update_label();
+        this.update_line_color();
+        this.apply_tick_styling();
     },
 
-    get_offset: function() {
+    get_offset_promise: function() {
         /*
          * The offset may require the creation of a Scale, which is async
-         * Hence, get_offset returns a promise.
+         * Hence, get_offset_promise returns a promise.
          */
         var that = this;
         var return_promise = Promise.resolve();
         var offset = this.model.get("offset");
+        var is_vertical = this.model.get("orientation") === "vertical";
+
         if (offset.value !== undefined && offset.value !== null) {
             //If scale is undefined but, the value is defined, then we have
             //to
             if(offset.scale === undefined) {
-                this.offset_scale = (this.vertical) ?
+                this.offset_scale = (is_vertical) ?
                     this.parent.scale_x : this.parent.scale_y;
             } else {
-                var offset_scale_model = offset.scale;
-                return_promise = this.create_child_view(offset_scale_model)
+                return_promise = this.create_child_view(offset.scale)
                     .then(function(view) {
                         that.offset_scale = view;
                         if(that.offset_scale.model.type !== "ordinal") {
@@ -323,15 +370,19 @@ var Axis = widgets.WidgetView.extend({
     },
 
     get_basic_transform: function() {
-        if(this.vertical){
-            return (this.side === "right") ? this.width : 0;
+        var is_vertical = this.model.get("orientation") === "vertical";
+        var side = this.model.get("side");
+
+        if(is_vertical){
+            return (side === "right") ? this.width : 0;
         } else {
-            return (this.side === "top") ? 0 : this.height;
+            return (side === "top") ? 0 : this.height;
         }
     },
 
     get_axis_transform: function() {
-        if(this.vertical){
+        var is_vertical = this.model.get("orientation") === "vertical";
+        if(is_vertical){
             return "translate(" + this.process_offset() + ", 0)";
         } else {
             return "translate(0, " + this.process_offset() + ")";
@@ -353,46 +404,53 @@ var Axis = widgets.WidgetView.extend({
     },
 
     get_label_attributes: function() {
+        // Returns an object based on values of "label_location" and "label_offset"
+
         var label_x = 0;
-         if(this.vertical){
-             if(this.label_loc === "start") {
-                 label_x = -(this.height);
-             } else if(this.label_loc === "middle") {
-                 label_x = -(this.height) / 2;
-             }
-             if(this.side === "right") {
+        var label_location = this.model.get("label_location");
+        var label_offset = this.calculate_label_offset();
+        var is_vertical = this.model.get("orientation") === "vertical";
+        var side = this.model.get("side");
+
+         if (is_vertical){
+            if (label_location === "start") {
+                label_x = -(this.height);
+            } else if (label_location === "middle") {
+                label_x = -(this.height) / 2;
+            }
+            if(side === "right") {
                 return {
                     transform: "rotate(-90)",
                     x: label_x,
-                    y: this.label_offset,
+                    y: label_offset,
                     dy: "1ex",
                     dx: "0em"
                 };
-             } else {
-                 return {
+            } else {
+                return {
                      transform: "rotate(-90)",
                      x: label_x,
-                     y: this.label_offset,
+                     y: label_offset,
                      dy: "0em", dx: "0em"
-                 };
-             }
+                };
+            }
         } else {
-            if(this.label_loc === "middle") {
+            if(label_location === "middle") {
                 label_x = this.width / 2;
-            } else if (this.label_loc === "end") {
+            } else if (label_location === "end") {
                 label_x = this.width;
             }
-            if(this.side === "top") {
+            if(side === "top") {
                 return {
                     x: label_x,
-                    y: this.label_offset ,
+                    y: label_offset ,
                     dy: "0.75ex",
                     dx: "0em", transform: ""
                 };
             } else {
                 return {
                     x: label_x,
-                    y: this.label_offset,
+                    y: label_offset,
                     dy: "0.25ex",
                     dx: "0em", transform: ""
                 };
@@ -400,49 +458,33 @@ var Axis = widgets.WidgetView.extend({
         }
     },
 
-    get_text_styling: function() {
-        // This function returns the text styling based on the attributes
-        // of the axis. As of now, only the text-anchor attribute is set.
-        // More can be added :)
-        if(this.label_loc === "start")
-            return {"text-anchor" : "start"};
-        else if(this.label_loc === "end")
-            return {"text-anchor" : "end"};
-        else
-            return {"text-anchor" : "middle"};
-    },
+    update_label_settings: function() {
+        // Updates all label settings
 
-    update_label: function() {
+        // Text, location, and offset
         this.g_axisline.select("text.axislabel")
-            .text(this.model.get("label"));
-        this.d3el.selectAll(".axislabel").selectAll("text");
-        if(this.model.get("label_color") !== "" &&
-           this.model.get("label_color") !== null) {
-            this.g_axisline.select("text.axislabel")
-              .style("fill", this.model.get("label_color"));
-            this.d3el.selectAll(".axislabel").selectAll("text")
-              .style("fill", this.model.get("label_color"));
-        }
+            .text(this.model.get("label"))
+            .style("text-anchor", this.model.get("label_location"))
+            .attr(this.get_label_attributes());
+
+        // Color
+        var labelColor = this.model.get("label_color");
+        if (labelColor !== "" && labelColor !== null) {
+                this.g_axisline.select("text.axislabel")
+                    .style("fill", labelColor);
+        };
     },
 
-    update_label_location: function(model, value) {
-        this.label_loc = value;
-        this.g_axisline.select("text.axislabel")
-            .attr(this.get_label_attributes())
-            .style(this.get_text_styling());
-    },
-
-    update_label_offset: function(model, offset) {
-        this.label_offset = this.extract_label_offset(offset);
-        this.g_axisline.select("text.axislabel")
-          .attr("y", this.label_offset);
-    },
-
-    extract_label_offset: function(label_offset) {
+    calculate_label_offset: function() {
         // If the label offset is not defined, depending on the orientation
         // of the axis, an offset is set.
-        if(!label_offset) {
-            if(!this.vertical) {
+
+        var label_offset = this.model.get("label_offset");
+        var is_vertical = this.model.get("orientation") === "vertical";
+        var side = this.model.get("side");
+
+        if (!label_offset) {
+            if (!is_vertical) {
                 label_offset = "2em";
             } else {
                 label_offset = "4ex";
@@ -453,13 +495,15 @@ var Axis = widgets.WidgetView.extend({
         // notion of away and towards is different for left/right and
         // top/bottom axis.
         var index = -1;
-        for(var it = 0; (it < units_array.length && index === -1); it++) {
-            index = label_offset.indexOf(units_array[it]);
+        for (var i = 0; (i < UNITS_ARRAY.length && index === -1); i++) {
+            index = label_offset.indexOf(UNITS_ARRAY[i]);
         }
-        if(index === -1) {
+
+        if (index === -1) {
             return label_offset;
         }
-        if(this.side === "top" || this.side === "left") {
+
+        if (side === "top" || side === "left") {
             var num = -1 * parseInt(label_offset.substring(0, index));
             label_offset = num + label_offset.substring(index);
         }
@@ -500,12 +544,14 @@ var Axis = widgets.WidgetView.extend({
             .classed("short", grid_type === "none");
 
         this.g_axisline
-            .transition("update_grid_lines").duration(animation_duration)
-            .call(this.axis)
+                .transition("update_grid_lines").duration(animation_duration)
+                .call(this.axis)
             .selectAll(".tick line")
-            .attr(is_x ? "y1" : "x1",
-                  (this.offset_scale && grid_type !== "none") ? tickOffset : null)
-            .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null);
+                .attr(is_x ? "y1" : "x1",
+                      (this.offset_scale && grid_type !== "none") ? tickOffset : null)
+                .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null);
+
+        this.apply_tick_styling();
 
         if (this.model.get("grid_color")) {
             this.g_axisline
@@ -514,26 +560,20 @@ var Axis = widgets.WidgetView.extend({
         }
     },
 
-    update_color: function() {
-        if (this.model.get("color")) {
-            this.d3el.selectAll(".tick")
-                .selectAll("text")
-                .style("fill", this.model.get("color"));
-            this.d3el.selectAll(".domain")
-                .style("stroke", this.model.get("color"));
-        }
+    update_line_color: function() {
+        this.d3el.selectAll(".domain")
+            .style("stroke", this.model.get("color"));
     },
 
     redraw_axisline: function() {
         // TODO: This call might not be necessary
         // TODO: Doesn't do what it states.
         // Has to redraw from a clean slate
-        this.update_axis_domain();
-        this.update_offset_scale_domain();
+        this.update_scales();
 
         //animate axis and grid lines on domain changes
         var animate = true;
-        this.set_tick_values(animate);
+        this.update_label_settings(animate);
         this.update_grid_lines(animate);
     },
 
@@ -541,21 +581,16 @@ var Axis = widgets.WidgetView.extend({
         //function to be called when the range of the axis has been updated
         //or the axis has to be repositioned.
         this.set_scales_range();
-        //The following two calls to update domains are made as the domain
+        //The following calls to update domains are made as the domain
         //of the axis scale needs to be recalculated as the expansion due
         //to the padding depends on the size of the canvas because of the
         //presence of fixed pixel padding for the bounding box.
-        this.update_axis_domain();
-        this.update_offset_scale_domain();
-
-        this.g_axisline.attr("transform", this.get_axis_transform());
+        this.update_scales();
         this.g_axisline.call(this.axis);
-        this.g_axisline.select("text.axislabel")
-            .attr(this.get_label_attributes())
-            .style(this.get_text_styling());
-        // TODO: what follows is currently part of redraw_axisline
-        this.set_tick_values();
+        this.update_label_settings();
+        this.update_label_settings();
         this.update_grid_lines();
+        this.apply_tick_styling();
     },
 
     parent_margin_updated: function() {
@@ -578,17 +613,20 @@ var Axis = widgets.WidgetView.extend({
         // points in the array. This is the way it is done for ordinal
         // scales.
         var step, max;
+        var num_ticks = this.model.get("num_ticks");
+
+
         if(this.axis_scale.model.type === "ordinal") {
             data_array = this.axis_scale.scale.domain();
         }
-        if(this.num_ticks !== undefined && this.num_ticks !== null && this.num_ticks < 2) {
+        if(num_ticks !== undefined && num_ticks !== null && num_ticks < 2) {
             return [];
         }
         if(data_array) {
-            if(this.num_ticks == undefined || this.num_ticks == null || data_array.length <= this.num_ticks) {
+            if(num_ticks == undefined || num_ticks == null || data_array.length <= num_ticks) {
                 return data_array;
             } else {
-               step = Math.floor(data_array.length / (this.num_ticks - 1));
+               step = Math.floor(data_array.length / (num_ticks - 1));
                var indices = _.range(0, data_array.length, step);
                return indices.map(function(index) {
                    return data_array[index];
@@ -597,7 +635,7 @@ var Axis = widgets.WidgetView.extend({
         }
         var scale_range = this.axis_scale.scale.domain();
         var max_index = (this.axis_scale.scale.domain().length - 1);
-        step = (scale_range[max_index] - scale_range[0]) / (this.num_ticks - 1);
+        step = (scale_range[max_index] - scale_range[0]) / (num_ticks - 1);
         if(this.axis_scale.model.type === "date" ||
            this.axis_scale.model.type === "date_color_linear") {
         //For date scale, the dates have to be converted into milliseconds
@@ -615,7 +653,7 @@ var Axis = widgets.WidgetView.extend({
         }
     },
 
-    set_scale: function(model) {
+    set_scale_promise: function(model) {
         // Sets the child scale
         var that = this;
         if (this.axis_scale) { this.axis_scale.remove(); }
@@ -631,10 +669,10 @@ var Axis = widgets.WidgetView.extend({
         });
     },
 
-    update_scale: function(old, value) {
+    update_scale: function(old, scale) {
         // Called when the child scale changes
         this.axis_scale.off();
-        this.set_scale(value);
+        this.set_scale_promise(scale);
     },
 
     _get_digits: function(number) {
