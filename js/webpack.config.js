@@ -1,4 +1,4 @@
-var loaders = [
+var rules = [
     { test: /\.css$/, loader: "style-loader!css-loader" },
     { test: /\.less$/, loader: "style-loader!css-loader!less-loader" },
     { test: /\.json$/, loader: "json-loader" },
@@ -30,7 +30,7 @@ module.exports = [
         },
         devtool: 'source-map',
         module: {
-            loaders: loaders
+            rules: rules
         },
         externals: ['@jupyter-widgets/base']
     },
@@ -43,7 +43,7 @@ module.exports = [
         },
         devtool: 'source-map',
         module: {
-            loaders: loaders
+            rules: rules
         },
         externals: ['@jupyter-widgets/base']
     }
