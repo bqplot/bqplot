@@ -1,40 +1,41 @@
-// Karma configuration
-// Generated on Wed Jun 20 2018 16:46:14 GMT+0200 (CEST)
 var webpackConfig = require('./webpack.config.js');
+// add the .ts loader
+webpackConfig[1].module.rules.push({ test: /\.ts?$/, loader: 'ts-loader'})
+// remove the json loader (gives issues)
+webpackConfig[1].module.rules.splice(2, 1)
+
+var webpack = require('webpack');
 
 module.exports = function(config) {
   config.set({
     basePath: '',
-    frameworks: ['mocha', 'chai', 'sinon', 'karma-typescript'],
+    frameworks: ['mocha', 'chai', 'sinon'],
     files: [
         {pattern: 'test/**/*.ts'},
     ],
     exclude: ['**/embed.js'],
     preprocessors: {
-        'test/**/*.ts': "karma-typescript"
+        'test/**/*.ts': ['webpack', 'sourcemap']
+    },
+    webpack: {
+      module: webpackConfig[1].module,
+      devtool: 'source-map',
+      mode: 'development',
+      resolve: {
+            extensions: ['.ts', '.js']
+      },
+      plugins: [
+          // see https://github.com/webpack-contrib/karma-webpack/issues/109#issuecomment-224961264
+          new webpack.SourceMapDevToolPlugin({
+            filename: null, // if no value is provided the sourcemap is inlined
+            test: /\.(ts|js)($|\?)/i // process .js and .ts files only
+          })
+        ],
     },
     mime: {
       'text/x-typescript':  ['ts']
     },
-    preprocessors: {
-            "**/*.ts": "karma-typescript"
-    },
-    karmaTypescriptConfig: {
-        compilerOptions: {
-        // "noImplicitAny": true,
-        "lib": ["dom", "es5", "es2015.promise", "es2015.iterable"],
-        "noEmitOnError": true,
-        // "strictNullChecks": true,
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "target": "ES5",
-        "outDir": "lib",
-        "skipLibCheck": true,
-        "sourceMap": true,
-        "allowJs": true
-      }
-  },
-    reporters: ['progress', 'karma-typescript'],
+    reporters: ['progress'],
     port: 9876,
     colors: true,
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
