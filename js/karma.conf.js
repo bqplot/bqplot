@@ -11,7 +11,7 @@ module.exports = function(config) {
     basePath: '',
     frameworks: ['mocha', 'chai', 'sinon'],
     files: [
-        {pattern: 'test/**/*.ts'},
+        {pattern: 'test/index.ts'},
     ],
     exclude: ['**/embed.js'],
     preprocessors: {
