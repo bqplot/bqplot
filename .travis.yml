@@ -37,6 +37,7 @@ script:
         sh -e /etc/init.d/xvfb start || true;
         jupyter labextension install js @jupyter-widgets/jupyterlab-manager;
         python -m jupyterlab.selenium_check;
+        (cd js; ./node_modules/.bin/karma start)
       fi
 after_success:
     - coveralls

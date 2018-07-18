@@ -90,12 +90,6 @@ class DummyManager extends base.ManagerBase<HTMLElement> {
             } else {
                 return Promise.reject(`Cannot find class ${className}`)
             }
-        } else if (moduleName === 'test-widgets') {
-            if (testWidgets[className]) {
-                return Promise.resolve(testWidgets[className]);
-            } else {
-                return Promise.reject(`Cannot find class ${className}`)
-            }
         } else if(moduleName in this.library) {
             return Promise.resolve(this.library[moduleName][className]);
         } else {
