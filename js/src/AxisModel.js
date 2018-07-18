@@ -45,7 +45,8 @@ var AxisModel = basemodel.BaseModel.extend({
             color: null,
             label_offset: null,
             visible: true,
-            tick_style: {}
+            tick_style: {},
+            tick_rotate: 0
         });
     },
 
