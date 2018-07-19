@@ -35,7 +35,10 @@ module.exports = function(config) {
     mime: {
       'text/x-typescript':  ['ts']
     },
-    reporters: ['progress'],
+    mochaReporter: {
+       showDiff: true
+    },
+    reporters: ['progress', 'mocha'],
     port: 9876,
     colors: true,
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
