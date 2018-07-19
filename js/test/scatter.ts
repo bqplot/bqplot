@@ -15,10 +15,8 @@ describe("scatter >", () => {
     });
 
     it("create", async function() {
-        let x = {type: 'dontcare', values: [0, 1]}
-        let y = {type: 'dontcare', values: [2, 3]}
-        // let x = {dtype: 'float64', buffer: new DataView((new Float32Array([1,2])).buffer)}
-        // let y = {dtype: 'float32', buffer: new DataView((new Float32Array([1,2])).buffer)}
+        let x = {dtype: 'float32', value: new DataView((new Float32Array([0,1])).buffer)}
+        let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)}
         let objects = await create_figure_scatter(this.manager, x, y);
         let scatter = objects.scatter;
         let data = scatter.d3el.selectAll(".object_grp").data()

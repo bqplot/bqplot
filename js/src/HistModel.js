@@ -16,6 +16,7 @@
 var _ = require("underscore");
 var d3 = require("d3");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var HistModel = markmodel.MarkModel.extend({
 
@@ -166,6 +167,11 @@ var HistModel = markmodel.MarkModel.extend({
         return_val[num_bins] = max_val;
         return return_val;
     }
+}, {
+    serializers: _.extend({
+        sample: serialize.array_or_json,
+        count: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 module.exports = {

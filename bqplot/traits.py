@@ -123,7 +123,7 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
 
 # Array
 
-def array_from_json(value, obj=None):
+def array_from_json_classic(value, obj=None):
     if value is not None:
         if value.get('values') is not None:
             dtype = {
@@ -132,7 +132,7 @@ def array_from_json(value, obj=None):
             }.get(value.get('type'), object)
             return np.asarray(value['values'], dtype=dtype)
 
-def array_to_json(a, obj=None):
+def array_to_json_classic(a, obj=None):
     if a is not None:
         if np.issubdtype(a.dtype, np.floating):
             # replace nan with None
@@ -159,8 +159,56 @@ def array_to_json(a, obj=None):
     else:
         return dict(values=a, type=None)
 
-array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
+array_serialization_classic = dict(to_json=array_to_json_classic, from_json=array_from_json_classic)
 
+
+def array_from_json_binary(value, obj=None):
+    if value is not None:
+        # this will accept regular json data, like an array of values, which can be useful it you want
+        # to link bqplot to other libraries that use that
+        if isinstance(value, list):
+            return np.array(value)
+        elif 'value' in value:
+            ar = np.frombuffer(value['value'], dtype=value['dtype']).reshape(value['shape'])
+            if value.get('type') == 'date':
+                assert value['dtype'] == 'float64'
+                ar = ar.astype('datetime64[ms]')
+            return ar
+        # we could enable the 'classic' style if some of the front end is using the classis
+        # method
+        # if 'values' in value:
+        #     return np.asarray(value['values'], dtype=np.float64)
+
+
+def array_to_json_binary(ar, obj=None, force_contiguous=True):
+    if ar is None:
+        return None
+    if ar.dtype.kind in ['S', 'U']:  # strings to as plain json
+        return ar.tolist()
+    type = None
+    if ar.dtype.kind == 'M':
+        # since there is no support for int64, we'll use float64 but as ms
+        # resolution, since that is the resolution the js Date object understands
+        ar = ar.astype('datetime64[ms]').astype(np.float64)
+        type = 'date'
+    if ar.dtype.kind not in ['u', 'i', 'f']:  # ints and floats, and datetime
+        raise ValueError("unsupported dtype: %s" % (ar.dtype))
+    # if ar.dtype == np.float64:  # WebGL does not support float64, cast it here?
+    #     ar = ar.astype(np.float32)
+    if ar.dtype == np.int64:  # JS does not support int64
+        ar = ar.astype(np.int32)
+    if force_contiguous and not ar.flags["C_CONTIGUOUS"]:  # make sure it's contiguous
+        ar = np.ascontiguousarray(ar)
+    if not ar.dtype.isnative:
+        dtype = ar.dtype.newbyteorder()
+        ar = ar.astype(dtype)
+    return {'value':memoryview(ar), 'dtype':str(ar.dtype), 'shape':ar.shape, 'type': type}
+
+
+array_serialization_binary = dict(to_json=array_to_json_binary, from_json=array_from_json_binary)
+
+array_serialization = array_serialization_binary
+# array_serialization = array_serialization_classic
 # array validators
 
 def array_squeeze(trait, value):

@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var basemodel = require("./ScatterBaseModel");
+var serialize = require('./serialize')
 
 var ScatterModel = basemodel.ScatterBaseModel.extend({
 
@@ -73,6 +74,11 @@ var ScatterModel = basemodel.ScatterBaseModel.extend({
             data.unique_id = unique_ids[index];
         });
     },
+}, {
+    serializers: _.extend({
+        skew: serialize.array_or_json,
+        names: serialize.array_or_json,
+    }, basemodel.ScatterBaseModel.serializers)
 });
 
 module.exports = {

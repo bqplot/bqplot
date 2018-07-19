@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var ScatterBaseModel = markmodel.MarkModel.extend({
 
@@ -91,8 +92,8 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
                     color_scale.del_domain([], this.model_id + "_color");
                 }
             }
-
-            this.mark_data = x_data.map(function(d, i) {
+            // since x_data may be a TypedArray, explicitly use Array.map
+            this.mark_data = Array.prototype.map.call(x_data, function(d, i) {
                 return {
                     x: d,
                     y: y_data[i],
@@ -142,6 +143,15 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
             }
        }
     }
+}, {
+    serializers: _.extend({
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
+        color: serialize.array_or_json,
+        opacity: serialize.array_or_json,
+        size: serialize.array_or_json,
+        rotation: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 module.exports = {

@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var GridHeatMapModel = markmodel.MarkModel.extend({
 
@@ -155,6 +156,12 @@ var GridHeatMapModel = markmodel.MarkModel.extend({
         }
         this.modes = modes;
     }
+}, {
+    serializers: _.extend({
+        row: serialize.array_or_json,
+        column: serialize.array_or_json,
+        color: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 module.exports = {
