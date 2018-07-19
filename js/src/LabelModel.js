@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var basemodel = require("./ScatterBaseModel");
+var serialize = require('./serialize')
 
 var LabelModel = basemodel.ScatterBaseModel.extend({
 
@@ -54,6 +55,10 @@ var LabelModel = basemodel.ScatterBaseModel.extend({
                                    data.unique_id = "Label" + index;
         });
     },
+}, {
+    serializers: _.extend({
+        text: serialize.array_or_json,
+    }, basemodel.ScatterBaseModel.serializers)
 });
 
 module.exports = {

@@ -16,6 +16,7 @@
 var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
 var semver_range = "^" + require("../package.json").version;
+var serialize = require('./serialize.js')
 
 var BaseModel = widgets.WidgetModel.extend({
 
@@ -32,29 +33,15 @@ var BaseModel = widgets.WidgetModel.extend({
         // performs tpe conversions that you may require and returns you
         // the appropriate array.
         var value = this.get(param);
-        var return_value = [];
-        var that = this;
-        if(value.hasOwnProperty("type") &&
-           value.hasOwnProperty("values") &&
-           value.values !== null) {
-            if(value.type === "date") {
-                return_value = this.get(param).values;
-                if(return_value[0] instanceof Array) {
-                   return_value = return_value.map(function(val) {
-                       return val.map(function(elem) {
-                           return that.convert_to_date(elem);
-                       });
-                   });
-                } else {
-                    return_value = return_value.map(function(val) {
-                        return that.convert_to_date(val);
-                    });
-                }
-            } else {
-                return_value = this.get(param).values;
-            }
+        if(!value) {
+            return [];
         }
-        return return_value;
+        // we do the deserialization at the fly ftm
+        if(value.dtype && value.value) {
+            console.error('Missing (de)serializer for attribute ' +param  +' of '+this.attributes._model_name)
+            return serialize.array_or_json['deserialize'](value, this.manager)
+        }
+        return value;
     },
 
     set_typed_field: function(param, value, options) {
@@ -65,30 +52,30 @@ var BaseModel = widgets.WidgetModel.extend({
         var saved_value = value;
         var return_object = {};
         var that = this;
-        var current_type = this.get(param).type;
+        var current_type = this.get(param) ? this.get(param).type : undefined;
 
         if (saved_value[0] instanceof Array && saved_value[0][0] instanceof Date ||
             saved_value[0] instanceof Date) {
             current_type = "date";
         }
 
+        // dates are serialized using the timestamp only, some parts of the code
+        // use the Data objects, detect that and convert.
+        // also, we set the .type property of TypedArray, to keep track of it being a
+        // date array
+        var convert_to_date = function(x) {
+            var ar = new Float64Array(x.map(Number));
+            ar.type = 'date'
+            return ar;
+        }
         if(saved_value[0] instanceof Array) {
             if(current_type === "date")
-                saved_value = saved_value.map(function(val) {
-                    return val.map(function(elem) {
-                        return that.convert_to_json(elem);
-                    });
-                });
+                saved_value = saved_value.map(convert_to_date);
         } else {
             if(current_type === "date")
-                saved_value = saved_value.map(function(elem) {
-                    return that.convert_to_json(elem);
-                });
+                saved_value = convert_to_date(saved_value);
         }
-        // TODO: this is not good. Need to think of something better
-        return_object.type = current_type;
-        return_object.values = saved_value;
-        this.set(param, return_object, options);
+        this.set(param, saved_value, options);
     },
 
     get_date_elem: function(param) {

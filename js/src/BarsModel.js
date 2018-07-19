@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var BarsModel = markmodel.MarkModel.extend({
 
@@ -207,6 +208,12 @@ var BarsModel = markmodel.MarkModel.extend({
             range_scale.del_domain([], this.model_id + "_y");
         }
     }
+}, {
+    serializers: _.extend({
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
+        color: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 

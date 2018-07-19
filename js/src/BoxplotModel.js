@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var BoxplotModel = markmodel.MarkModel.extend({
 
@@ -103,6 +104,11 @@ var BoxplotModel = markmodel.MarkModel.extend({
             y_scale.del_domain([], this.model_id + "_y");
         }
     }
+}, {
+    serializers: _.extend({
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 

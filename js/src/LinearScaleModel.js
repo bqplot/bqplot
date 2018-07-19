@@ -110,7 +110,7 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
         // Takes an array and calculates the domain for the particular
         // view. If you have the domain already calculated on your side,
         // call set_domain function.
-        if(data_array.length === 0) {
+        if(!data_array || data_array.length === 0) {
            this.set_domain([], id);
            return;
         }

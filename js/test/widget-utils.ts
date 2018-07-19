@@ -40,7 +40,7 @@ async function create_figure_scatter(manager, x, y) {
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
     let scales = {x: 'IPY_MODEL_scale_x', y: 'IPY_MODEL_scale_y'}
-    let color    = {type: null, values: null};
+    let color    = null;
     let size     = {type: null, values: null};
     let opacity  = {type: null, values: null};
     let rotation = {type: null, values: null};

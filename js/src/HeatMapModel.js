@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var HeatMapModel = markmodel.MarkModel.extend({
 
@@ -89,6 +90,12 @@ var HeatMapModel = markmodel.MarkModel.extend({
     get_data_dict: function(data, index) {
         return data;
     },
+}, {
+    serializers: _.extend({
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
+        color: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 module.exports = {

@@ -51,6 +51,7 @@
   "dependencies": {
     "@jupyter-widgets/base": "^1.0.0",
     "d3": "^3.5.16",
+    "is-typedarray": "^1.0.0",
     "popper.js": "^1.0.0",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
