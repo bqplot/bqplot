@@ -63,22 +63,23 @@ var Axis = widgets.WidgetView.extend({
         }, this);
 
         // Tick attributes
-        this.listenTo(this.model, "change:tick_values", this.update_label_settings, this);
-        this.listenTo(this.model, "change:tick_format", this.update_tick_format, this);
-        this.listenTo(this.model, "change:num_ticks", this.update_label_settings, this);
+        this.listenTo(this.model, "change:tick_values", this.set_tick_values, this);
+        this.listenTo(this.model, "change:tick_format", this.tickformat_changed, this);
+        this.listenTo(this.model, "change:num_ticks", this.set_tick_values, this);
         this.listenTo(this.model, "change:tick_rotate", this.apply_tick_styling, this);
         this.listenTo(this.model, "change:tick_style", this.apply_tick_styling, this);
 
         // Label attributes
-        var labels = ["label_location", "label_offset", "label", "label_color"]
-        this.model.on_some_change(labels, this.update_label_settings, this)
+        this.model.on_some_change(["label", "label_color"], this.update_label, this);
 
         // Axis attributes
-        this.listenTo(this.model, "change:color", this.update_line_color, this);
-        this.listenTo(this.model, "change:visible", this.update_visibility, this);
-        this.listenTo(this.model, "change:offset", this.update_offset, this);
+        this.listenTo(this.model, "change:color", this.update_color, this);
         this.model.on_some_change(["grid_color", "grid_lines"], this.update_grid_lines, this);
+        this.listenTo(this.model, "change:label_location", this.update_label_location, this);
+        this.listenTo(this.model, "change:label_offset", this.update_label_offset, this);
+        this.listenTo(this.model, "change:visible", this.update_visibility, this);
         this.model.on_some_change(["side", "orientation"], this.update_display, this);
+        this.listenTo(this.model, "change:offset", this.update_offset, this);
         this.parent.on("margin_updated", this.parent_margin_updated, this);
     },
 
@@ -105,7 +106,7 @@ var Axis = widgets.WidgetView.extend({
         this.rescale_axis();
     },
 
-    update_label_settings: function(animate) {
+    set_tick_values: function(animate) {
         // Sets specific tick values from "tick_values" parameter
 
         var tick_values = this.model.get_typed_field("tick_values");
@@ -113,18 +114,18 @@ var Axis = widgets.WidgetView.extend({
         var num_ticks = this.model.get("num_ticks");
 
         if (tick_values !== undefined && tick_values !== null && tick_values.length > 0) {
-            this.axis.tick_values(this.get_ticks_from_array_or_length(tick_values));
+            this.axis.tickValues(this.get_ticks_from_array_or_length(tick_values));
         } else if (num_ticks !== undefined && num_ticks !== null) {
-            this.axis.tick_values(this.get_ticks_from_array_or_length());
+            this.axis.tickValues(this.get_ticks_from_array_or_length());
         } else {
             if (this.axis_scale.model.type === "ordinal") {
-                this.axis.tick_values(this.axis_scale.scale.domain());
+                this.axis.tickValues(this.axis_scale.scale.domain());
             } else if (this.axis_scale.model.type === "log") {
                 var i, r;
                 var allticks = this.axis_scale.scale.ticks();
                 var oom = Math.abs(Math.log10(this.axis_scale.scale.domain()[1] / this.axis_scale.scale.domain()[0]));
                 if (oom < 2) {
-                    this.axis.tick_values(allticks);
+                    this.axis.tickValues(allticks);
                 } else if (oom < 7) {
                     useticks = [];
                     for (i = 0; i < allticks.length; i++) {
@@ -136,7 +137,7 @@ var Axis = widgets.WidgetView.extend({
                             useticks.push(allticks[i]);
                         }
                     }
-                    this.axis.tick_values(useticks);
+                    this.axis.tickValues(useticks);
                 } else {
                     useticks = [];
                     var s = Math.round(oom / 10);
@@ -146,27 +147,24 @@ var Axis = widgets.WidgetView.extend({
                             useticks.push(allticks[i]);
                         }
                     }
-                    this.axis.tick_values(useticks);
+                    this.axis.tickValues(useticks);
                 }
             } else {
-                this.axis.tick_values(this.axis_scale.scale.ticks());
+                this.axis.tickValues(this.axis_scale.scale.ticks());
             }
         }
         if(this.model.get("tick_format") === null ||
             this.model.get("tick_format") === undefined) {
                 if(this.axis_scale.type !== "ordinal") {
-                    // TODO: can be avoided if num_ticks and tick_values are
-                    // not mentioned
-                    this.tick_format = this.guess_tick_format(this.axis.tick_values());
+                    this.tick_format = this.guess_tick_format(this.axis.tickValues());
                 }
         }
-        this.axis.tick_format(this.tick_format);
+        this.axis.tickFormat(this.tick_format);
 
 
         if(this.g_axisline) {
-            this.g_axisline
-                .transition("update_label_settings")
-                // .transition("set_tick_values")
+             this.g_axisline
+                .transition("set_tick_values")
                 .duration(animate === true ? this.parent.model.get("animation_duration") : 0)
                 .call(this.axis);
 
@@ -174,17 +172,13 @@ var Axis = widgets.WidgetView.extend({
         }
     },
 
-    update_tick_format: function() {
-        // Sets tick format, then redraws axis
-
+    tickformat_changed: function() {
         this.tick_format = this.generate_tick_formatter();
-        this.axis.tick_format(this.tick_format);
-
+        this.axis.tickFormat(this.tick_format);
         if(this.g_axisline) {
             this.g_axisline.call(this.axis);
-        };
+        }
         this.apply_tick_styling();
-
     },
 
     apply_tick_styling: function () {
@@ -201,7 +195,7 @@ var Axis = widgets.WidgetView.extend({
         // Note: Currently, only the `tick_rotate` attribute uses .transform()
 
         var rotation = this.model.get("tick_rotate");
-        return `rotate(${rotation}) `;
+        return `rotate(${rotation})`;
     },
 
     update_scales: function() {
@@ -313,13 +307,17 @@ var Axis = widgets.WidgetView.extend({
 
         // Create element for axis label
         this.g_axisline.append("text")
-            .attr("class", "axislabel");
-        
+            .attr("class", "axislabel")
+            .attr(this.get_label_attributes())
+            .style(this.get_text_styling())
+            .text(this.model.get("label"));
+
         // Apply custom settings
-        this.update_label_settings();
+        this.set_tick_values();
         this.update_grid_lines();
-        this.update_line_color();
+        this.update_color();
         this.apply_tick_styling();
+        this.update_label();
     },
 
     get_offset_promise: function() {
@@ -373,7 +371,7 @@ var Axis = widgets.WidgetView.extend({
         var is_vertical = this.model.get("orientation") === "vertical";
         var side = this.model.get("side");
 
-        if(is_vertical){
+        if (is_vertical){
             return (side === "right") ? this.width : 0;
         } else {
             return (side === "top") ? 0 : this.height;
@@ -458,21 +456,42 @@ var Axis = widgets.WidgetView.extend({
         }
     },
 
-    update_label_settings: function() {
-        // Updates all label settings
+    get_text_styling: function() {
+        // This function returns the text styling based on the attributes
+        // of the axis. As of now, only the text-anchor attribute is set.
+        // More can be added :)
+        var label_location = this.model.get("label_location");
+        if(label_location === "start")
+            return {"text-anchor" : "start"};
+        else if(label_location === "end")
+            return {"text-anchor" : "end"};
+        else
+            return {"text-anchor" : "middle"};
+    },
 
-        // Text, location, and offset
+    update_label: function() {
         this.g_axisline.select("text.axislabel")
-            .text(this.model.get("label"))
-            .style("text-anchor", this.model.get("label_location"))
-            .attr(this.get_label_attributes());
+            .text(this.model.get("label"));
+        this.d3el.selectAll(".axislabel").selectAll("text");
+        if(this.model.get("label_color") !== "" &&
+           this.model.get("label_color") !== null) {
+            this.g_axisline.select("text.axislabel")
+              .style("fill", this.model.get("label_color"));
+            this.d3el.selectAll(".axislabel").selectAll("text")
+              .style("fill", this.model.get("label_color"));
+        }
+    },
 
-        // Color
-        var labelColor = this.model.get("label_color");
-        if (labelColor !== "" && labelColor !== null) {
-                this.g_axisline.select("text.axislabel")
-                    .style("fill", labelColor);
-        };
+    update_label_location: function() {
+        this.g_axisline.select("text.axislabel")
+            .attr(this.get_label_attributes())
+            .style(this.get_text_styling());
+    },
+
+    update_label_offset: function(model, offset) {
+        this.label_offset = this.calculate_label_offset();
+        this.g_axisline.select("text.axislabel")
+          .attr("y", this.label_offset);
     },
 
     calculate_label_offset: function() {
@@ -544,12 +563,12 @@ var Axis = widgets.WidgetView.extend({
             .classed("short", grid_type === "none");
 
         this.g_axisline
-                .transition("update_grid_lines").duration(animation_duration)
-                .call(this.axis)
+            .transition("update_grid_lines").duration(animation_duration)
+            .call(this.axis)
             .selectAll(".tick line")
-                .attr(is_x ? "y1" : "x1",
-                      (this.offset_scale && grid_type !== "none") ? tickOffset : null)
-                .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null);
+            .attr(is_x ? "y1" : "x1",
+                  (this.offset_scale && grid_type !== "none") ? tickOffset : null)
+            .style("stroke-dasharray", grid_type === "dashed" ? ("5, 5") : null);
 
         this.apply_tick_styling();
 
@@ -560,9 +579,14 @@ var Axis = widgets.WidgetView.extend({
         }
     },
 
-    update_line_color: function() {
-        this.d3el.selectAll(".domain")
-            .style("stroke", this.model.get("color"));
+    update_color: function() {
+        if (this.model.get("color")) {
+            this.d3el.selectAll(".tick")
+                .selectAll("text")
+                .style("fill", this.model.get("color"));
+            this.d3el.selectAll(".domain")
+                .style("stroke", this.model.get("color"));
+        }
     },
 
     redraw_axisline: function() {
@@ -573,7 +597,7 @@ var Axis = widgets.WidgetView.extend({
 
         //animate axis and grid lines on domain changes
         var animate = true;
-        this.update_label_settings(animate);
+        this.set_tick_values(animate);
         this.update_grid_lines(animate);
     },
 
@@ -587,8 +611,11 @@ var Axis = widgets.WidgetView.extend({
         //presence of fixed pixel padding for the bounding box.
         this.update_scales();
         this.g_axisline.call(this.axis);
-        this.update_label_settings();
-        this.update_label_settings();
+        this.g_axisline.select("text.axislabel")
+            .attr(this.get_label_attributes())
+            .style(this.get_text_styling());
+        // TODO: what follows is currently part of redraw_axisline
+        this.set_tick_values();
         this.update_grid_lines();
         this.apply_tick_styling();
     },
@@ -614,7 +641,6 @@ var Axis = widgets.WidgetView.extend({
         // scales.
         var step, max;
         var num_ticks = this.model.get("num_ticks");
-
 
         if(this.axis_scale.model.type === "ordinal") {
             data_array = this.axis_scale.scale.domain();
