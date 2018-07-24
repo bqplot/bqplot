@@ -34,4 +34,36 @@ describe("scatter >", () => {
         expect(transforms).to.deep.equal([`translate(0,${height})`, `translate(${width},0)`])
 
     });
+    it("computed fill", async function() {
+        let x = {type: 'dontcare', values: [0, 1]}
+        let y = {type: 'dontcare', values: [2, 3]}
+        let objects = await create_figure_scatter(this.manager, x, y);
+        let scatter = objects.scatter;
+
+        scatter.model.set('unselected_style', {'fill': 'orange', 'stroke': 'none'})
+        scatter.model.set('selected', [0])
+        let getFills = () => scatter.d3el.selectAll(".object_grp .element")[0].map((el) => ((el.getAttribute('style')||'').match(/fill: (\w*)/)||[null,null])[1]);
+        expect(getFills()).to.deep.equal([null, 'orange'])
+
+        scatter.model.set('colors', ['red'])
+        expect(getFills()).to.deep.equal(['red', 'orange'])
+
+        scatter.model.set('selected_style', {'fill': 'green', 'stroke': 'none'})
+        scatter.model.set('selected', [0])
+        expect(getFills()).to.deep.equal(['green', 'orange'])
+
+        scatter.model.set('selected', [1])
+        expect(getFills()).to.deep.equal(['orange', 'green'])
+
+        scatter.model.set('unselected_style', {})
+        expect(getFills()).to.deep.equal(['red', 'green'])
+
+        scatter.model.set('colors', [])
+        expect(getFills()).to.deep.equal([null, 'green'])
+
+        scatter.model.set('selected_style', {})
+        expect(getFills()).to.deep.equal([null, null])
+
+
+    });
 });
