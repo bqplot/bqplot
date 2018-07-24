@@ -323,6 +323,9 @@ var ScatterBase = mark.Mark.extend({
                 } else if (interactions.click === "add") {
                     this.event_listeners.parent_clicked = this.add_element;
                     this.event_listeners.element_clicked = function() {};
+                } else if (interactions.click === "delete") {
+                    this.event_listeners.parent_clicked = function() {};
+                    this.event_listeners.element_clicked = this.delete_element;
                 } else if (interactions.click == 'select') {
    		            this.event_listeners.parent_clicked = this.reset_selection;
 		            this.event_listeners.element_clicked = this.scatter_click_handler;
@@ -726,6 +729,37 @@ var ScatterBase = mark.Mark.extend({
         // adding the point and saving the model automatically triggers a
         // draw which adds the new point because the data now has a new
         // point
+    },
+
+    delete_element: function(args) {
+        var data = args.data;
+        var index = args.index;
+
+        // Remove the point from model data
+        var x_data = [];
+        this.model.get_typed_field("x").forEach(function(d, i) {
+            if (i != index) { x_data.push(d); }
+        });
+        var y_data = [];
+        this.model.get_typed_field("y").forEach(function(d, i) {
+            if (i != index) { y_data.push(d); }
+        });
+        this.model.set_typed_field("x", x_data);
+        this.model.set_typed_field("y", y_data);
+        this.touch();
+
+        // // The following code updates the "selected" attribute
+        // // We do not need it now as it seems "selected" is lost on redraw anyway  
+        // var selected = this.model.get("selected");
+        // var new_selected = [];
+        // selected.forEach(function(el, i) {
+        //     if (el < index) { new_selected.push(el); }
+        //     else if (el > index) { new_selected.push(el - 1); }
+        // }
+        // this.model.set("selected",
+        //                ((new_selected.length === 0) ? null : new_selected),
+        //                {updated_view: this});
+        // this.touch();
     }
 });
 
