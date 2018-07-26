@@ -3,7 +3,6 @@ const path = require('path');
 var rules = [
     { test: /\.css$/, use: [{loader: "style-loader"}, {loader: "css-loader" }]},
     { test: /\.less$/, use: [{loader: "style-loader"}, {loader: "css-loader" }, {loader: "less-loader" }]},
-    // { test: /\.json$/, loader: "json-loader" },
     { test: /\.(jpg|png|gif)$/, use: "file" },
     // required to load font-awesome
     { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, use: "url?limit=10000&mimetype=application/font-woff" },
