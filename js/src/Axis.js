@@ -609,7 +609,9 @@ var Axis = widgets.WidgetView.extend({
         //of the axis scale needs to be recalculated as the expansion due
         //to the padding depends on the size of the canvas because of the
         //presence of fixed pixel padding for the bounding box.
+        this.update_axis_domain();
         this.update_scales();
+        this.g_axisline.attr("transform", this.get_axis_transform());
         this.g_axisline.call(this.axis);
         this.g_axisline.select("text.axislabel")
             .attr(this.get_label_attributes())
@@ -618,6 +620,15 @@ var Axis = widgets.WidgetView.extend({
         this.set_tick_values();
         this.update_grid_lines();
         this.apply_tick_styling();
+    },
+
+    update_axis_domain: function() {
+        var initial_range = (this.vertical) ?
+            this.parent.padded_range("y", this.axis_scale.model) : this.parent.padded_range("x", this.axis_scale.model);
+        var target_range = (this.vertical) ?
+            this.parent.range("y") : this.parent.range("x");
+        this.axis_scale.expand_domain(initial_range, target_range);
+        this.axis.scale(this.axis_scale.scale);
     },
 
     parent_margin_updated: function() {
