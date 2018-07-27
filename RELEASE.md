@@ -2,7 +2,6 @@ To release a new version of bqplot on PyPI:
 
 Update _version.py (set release version, remove 'dev')
 Update bqplot/js/package.json version
-Update bqplot/jslab/package.json version and bqplot dependency
 git clean -dfx
 python setup.py sdist
 python setup.py bdist_wheel --universal

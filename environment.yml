@@ -2,7 +2,7 @@ name: bqplot
 channels:
   - conda-forge
 dependencies:
-  - bqplot
+  - bqplot=0.11.0
   - scikit-learn
   - scipy
   - numpy>=1.13,<1.14  # prevent warning in pyplot demo re: dtypes
