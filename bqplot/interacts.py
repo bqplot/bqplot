@@ -389,7 +389,7 @@ class BrushSelector(TwoDSelector):
         in terms of the y_scale of the selector.
         This attribute changes while the selection is being made with the
         ``BrushSelector``.
-    selected_x: list
+    selected: list
         Readonly 2x2 array containing the coordinates 
         [[selected_x[0], selected_y[0]],
          [selected_x[1], selected_y[1]]]
