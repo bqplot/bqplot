@@ -747,19 +747,6 @@ var ScatterBase = mark.Mark.extend({
         this.model.set_typed_field("x", x_data);
         this.model.set_typed_field("y", y_data);
         this.touch();
-
-        // // The following code updates the "selected" attribute
-        // // We do not need it now as it seems "selected" is lost on redraw anyway  
-        // var selected = this.model.get("selected");
-        // var new_selected = [];
-        // selected.forEach(function(el, i) {
-        //     if (el < index) { new_selected.push(el); }
-        //     else if (el > index) { new_selected.push(el - 1); }
-        // }
-        // this.model.set("selected",
-        //                ((new_selected.length === 0) ? null : new_selected),
-        //                {updated_view: this});
-        // this.touch();
     }
 });
 
