@@ -121,10 +121,24 @@ var Boxplot = mark.Mark.extend({
             this.d3el, this.model.mark_data);
     },
 
+    get_box_width: function() {
+        var width = this.model.get("box_width");
+
+        // null box_width means auto calculated box width
+        if (!width) {
+            var plotWidth = this.parent.plotarea_width;
+            var maxWidth = plotWidth / 10.0;
+            width = plotWidth / (this.model.mark_data.length + 1) / 1.5;
+            width = Math.min(width, maxWidth);
+        }
+
+        return width;
+    },
+
     compute_view_padding: function() {
         //This function sets the padding for the view through the variables
         //x_padding and y_padding which are view specific paddings in pixel
-        var x_padding = this.model.get("box_width") / 2.0 + 1;
+        var x_padding = this.get_box_width() / 2.0 + 1;
         if (x_padding !== this.x_padding) {
             this.x_padding = x_padding;
             this.trigger("mark_padding_updated");
@@ -331,7 +345,7 @@ var Boxplot = mark.Mark.extend({
         this.draw_mark_paths(".boxplot", this.d3el, plotData);
         // Keep the pixel coordinates of the boxes, for interactions.
         this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
-        var width = this.model.get("box_width") / 2;
+        var width = this.get_box_width() / 2;
         this.pixel_coords = plotData.map(function(d) { return [[d.x - width, d.x + width],
                                                                [d.boxLower, d.boxUpper]] })
     },
@@ -385,15 +399,21 @@ var Boxplot = mark.Mark.extend({
         new_boxplots.append("path").attr("class", "median_line");
         new_boxplots.append("g").attr("class", "outliers");
 
+        var xOffset = 0;
+        var scaleX = this.scales.x;
+        if (scaleX.model.type === "ordinal") {
+            xOffset = scaleX.scale.rangeBand() / 2;
+        }
+
         selector.selectAll(".boxplot")
             .style("stroke", this.model.get("stroke"))
             .style("opacity", color)
             .attr ("transform", function (d, i) {
-                               return "translate(" + d.x + ", 0)";
+                return "translate(" + (d.x + xOffset) + ", 0)";
             });
 
        //Box
-        var width = this.model.get("box_width");
+        var width = this.get_box_width();
 
         selector.selectAll(".box")
             .style("fill", fillcolor)

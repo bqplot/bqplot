@@ -455,7 +455,7 @@ class OrdinalScale(Scale):
         the associated data type / domain type
     """
     rtype = 'Number'
-    dtype = np.str
+    dtype = np.str_
     domain = List().tag(sync=True)
 
     _view_name = Unicode('OrdinalScale').tag(sync=True)
@@ -552,7 +552,7 @@ class OrdinalColorScale(ColorScale):
         the associated data type / domain type
     """
     rtype = 'Color'
-    dtype = np.str
+    dtype = np.str_
     domain = List().tag(sync=True)
 
     _view_name = Unicode('OrdinalColorScale').tag(sync=True)

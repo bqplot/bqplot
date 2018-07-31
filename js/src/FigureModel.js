@@ -60,6 +60,20 @@ var FigureModel = basemodel.BaseModel.extend({
         });
     },
 
+    initialize: function() {
+        FigureModel.__super__.initialize.apply(this, arguments);
+        this.on("msg:custom", this.handle_custom_messages, this);
+    },
+
+    handle_custom_messages: function(msg) {
+        if (msg.type === 'save_png') {
+            this.trigger("save_png", msg.filename);
+        }
+        else if (msg.type === 'save_svg') {
+            this.trigger("save_svg", msg.filename);
+        }
+    },
+
     save_png: function() {
         // TODO: Any view of this Figure model will pick up this event
         // and render a png. Remove this eventually.

@@ -893,8 +893,9 @@ class Boxplot(Mark):
         list is too short, or the element of the list is set to None.
     outlier-color: color
         color for the outlier
-    box_width: int (default: 30)
-        width of the box in pixels. The minimum value is 5
+    box_width: int (default: None)
+        width of the box in pixels. The minimum value is 5.
+        If set to None, box_with is auto calculated
 
     Data Attributes
 
@@ -933,7 +934,7 @@ class Boxplot(Mark):
                                            display_name='Outlier fill color')
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
         .tag(sync=True, display_name='Opacities')
-    box_width = Int(30, min=5).tag(sync=True, display_name='Box Width')
+    box_width = Int(None, min=5, allow_none=True).tag(sync=True, display_name='Box Width')
 
     _view_name = Unicode('Boxplot').tag(sync=True)
     _model_name = Unicode('BoxplotModel').tag(sync=True)
@@ -1706,7 +1707,7 @@ class Image(Mark):
         in the format (x0, x1)
     y: tuple (default: (0, 1))
         ordinates of the bottom and top side of the image
-        in the format (x0, x1)
+        in the format (y0, y1)
     """
     _view_name = Unicode('Image').tag(sync=True)
     _model_name = Unicode('ImageModel').tag(sync=True)

@@ -24,12 +24,13 @@ var BaseBrushSelector = {
     brush_render: function() {
         var that = this;
         var scale_creation_promise = this.create_scales();
+        this.brushing = false;
         
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.brush = d3.svg.brush()
-                .on("brushstart", _.bind(that.brush_start, that))
-                .on("brush", _.bind(that.brush_move, that))
-                .on("brushend", _.bind(that.brush_end, that));
+              .on("brushstart", _.bind(that.brush_start, that))
+              .on("brush", _.bind(that.brush_move, that))
+              .on("brushend", _.bind(that.brush_end, that));
             that.set_brush_scale();
 
             that.d3el.attr("class", "selector brushintsel");
@@ -37,7 +38,7 @@ var BaseBrushSelector = {
             that.adjust_rectangle();
             that.color_change();
             that.create_listeners();
-            // that.selected_changed();
+            that.selected_changed();
         });
     },
 
@@ -50,6 +51,7 @@ var BaseBrushSelector = {
     brush_start: function () {
         this.model.set("brushing", true);
         this.touch();
+        this.brushing = true;
     },
 
     brush_move: function () {
@@ -61,18 +63,7 @@ var BaseBrushSelector = {
         var extent = this.brush.empty() ? [] : this.brush.extent();
         this.model.set("brushing", false);
         this.convert_and_save(extent);
-    },
-
-    reset: function() {
-        this.brush.clear();
-        this._update_brush();
-
-        this.model.set("selected", [], {js_ignore: true});
-        this.update_mark_selected();
-        this.touch();
-    },
-
-    reset_mark_selected: function() {
+        this.brushing = false;
     },
 
     scale_changed: function() {
@@ -84,12 +75,12 @@ var BaseBrushSelector = {
     adjust_rectangle: function() {
         if (this.model.get("orientation") == "vertical") {
             this.d3el.selectAll("rect")
-                .attr("x", 0)
-                .attr("width", this.width);
+              .attr("x", 0)
+              .attr("width", this.width);
         } else {
             this.d3el.selectAll("rect")
-                .attr("y", 0)
-                .attr("height", this.height);
+              .attr("y", 0)
+              .attr("height", this.height);
         }
     },
 
@@ -107,6 +98,7 @@ var BaseBrushSelector = {
             _.each(this.mark_views, function(mark_view) {
                 return mark_view.selector_changed();
             });
+            return;
         } if (extent_y === undefined) {
             // 1d brush
             var orient = this.model.get("orientation");
@@ -142,6 +134,19 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
     create_listeners: function() {
         BrushSelector.__super__.create_listeners.apply(this);
         this.listenTo(this.model, "change:color", this.color_change, this);
+        // Move these to BaseXYSelector
+        this.listenTo(this.model, "change:selected_x", this.selected_changed);
+        this.listenTo(this.model, "change:selected_y", this.selected_changed);
+    },
+
+    reset: function() {
+        // FIXME move this to BaseBrushSelector
+        this.brush.clear();
+        this._update_brush();
+        this.model.set("selected_x", {});
+        this.model.set("selected_y", {});
+        this.update_mark_selected();
+        this.touch();
     },
 
     convert_and_save: function(extent) {
@@ -161,19 +166,41 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
         extent_y = y_ordinal ? this.y_scale.invert_range(extent_y) : extent_y;
 
         this.update_mark_selected(pixel_extent_x, pixel_extent_y);
-        // TODO: The call to the function can be removed once _pack_models is
-        // changed
-        this.model.set("selected", [[extent_x[0], extent_y[0]],
-                                    [extent_x[1], extent_y[1]]],
-                       {js_ignore: true});
+        this.model.set_typed_field("selected_x", extent_x);
+        this.model.set_typed_field("selected_y", extent_y);
         this.touch();
+    },
+
+    selected_changed: function(model, value) {
+        if(this.brushing) {
+            return;
+        }
+        //reposition the interval selector and set the selected attribute.
+        var selected_x = this.model.get_typed_field("selected_x"),
+            selected_y = this.model.get_typed_field("selected_y");
+        if(selected_x.length === 0 || selected_y.length === 0) {
+            this.reset();
+        } else if(selected_x.length != 2 || selected_y.length != 2) {
+            // invalid value for selected. Ignoring the value
+            return;
+        } else {
+            var extent = [[selected_x[0], selected_y[0]],
+                          [selected_x[1], selected_y[1]]];
+            this.brush.extent(extent);
+            this._update_brush();
+            var pixel_extent_x = selected_x.map(this.x_scale.scale).sort(
+                function(a, b) { return a - b; });
+            var pixel_extent_y = selected_y.map(this.y_scale.scale).sort(
+                function(a, b) { return a - b; });
+            this.update_mark_selected(pixel_extent_x, pixel_extent_y);
+        }
     },
 
     relayout: function() {
         BrushSelector.__super__.relayout.apply(this);
         this.d3el.select(".background")
-            .attr("width", this.width)
-            .attr("height", this.height);
+          .attr("width", this.width)
+          .attr("height", this.height);
 
         this.set_x_range([this.x_scale]);
         this.set_y_range([this.y_scale]);
@@ -184,7 +211,7 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
 
     set_brush_scale: function() {
         this.brush.y(this.y_scale.scale)
-            .x(this.x_scale.scale);
+          .x(this.x_scale.scale);
     },
 
     update_xscale_domain: function() {
@@ -218,6 +245,15 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
         this.listenTo(this.model, "change:color", this.change_color, this);
     },
 
+    reset: function() {
+        this.brush.clear();
+        this._update_brush();
+
+        this.model.set("selected", {});
+        this.update_mark_selected();
+        this.touch();
+    },
+
     convert_and_save: function(extent) {
         if(extent.length === 0) {
             this.update_mark_selected([]);
@@ -229,7 +265,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
 
         this.update_mark_selected(pixel_extent);
 
-        this.model.set_typed_field("selected", extent, {js_ignore: true});
+        this.model.set_typed_field("selected", extent);
         this.touch();
     },
 
@@ -252,10 +288,8 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
             }
     },
 
-    selected_changed: function(model, value, options) {
-        if(options && options.js_ignore) {
-            //this change was most probably triggered from the js side and
-            //should be ignored.
+    selected_changed: function(model, value) {
+        if(this.brushing) {
             return;
         }
         //reposition the interval selector and set the selected attribute.
@@ -285,8 +319,8 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
 
         this.adjust_rectangle();
         this.d3el.select(".background")
-            .attr("width", this.width)
-            .attr("height", this.height);
+          .attr("width", this.width)
+          .attr("height", this.height);
 
         this.set_range([this.scale]);
     },
@@ -349,7 +383,7 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
                 delete selected[prev_label];
             }
         });
-        this.model.set("_selected", selected);
+        this.model.set_typed_field("_selected", selected);
         this.touch();
     },
 

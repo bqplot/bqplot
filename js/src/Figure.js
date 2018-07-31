@@ -165,6 +165,7 @@ var Figure = widgets.DOMWidgetView.extend({
 
         // TODO: remove the save png event mechanism.
         this.model.on("save_png", this.save_png, this);
+        this.model.on("save_svg", this.save_svg, this);
 
         var figure_scale_promise = this.create_figure_scales();
         var that = this;
@@ -216,7 +217,6 @@ var Figure = widgets.DOMWidgetView.extend({
                     //and not displayed.
                     that.relayout();
                 }
-                that.model.on("msg:custom", that.handle_custom_messages, that);
                 // In the classic notebook, we should relayout the figure on
                 // resize of the main window.
                 window.addEventListener('resize', function() {
@@ -225,12 +225,6 @@ var Figure = widgets.DOMWidgetView.extend({
             });
         });
     },
-
-	handle_custom_messages: function(msg) {
-      if (msg.type === 'save_png') {
-          this.save_png(msg.filename);
-	    }
-	},
 
     replace_dummy_nodes: function(views) {
         _.each(views, function(view) {
@@ -676,7 +670,8 @@ var Figure = widgets.DOMWidgetView.extend({
         return Figure.__super__.remove.apply(this, arguments);
     },
 
-    save_png: function(filename) {
+    get_svg: function() {
+        // Returns the outer html of the figure svg
 
         var  replaceAll = function (find, replace, str) {
             return str.replace(new RegExp(find, "g"), replace);
@@ -724,51 +719,68 @@ var Figure = widgets.DOMWidgetView.extend({
             // does not catch document's top-level properties.
             css += "svg { font-size: 10px; }\n";
             return css;
-       };
-
-       var svg2svg = function(node) {
-           // Creates a standalone SVG string from an inline SVG element
-           // containing all the computed style attributes.
-           var svg = node.cloneNode(true);
-           svg.setAttribute("version", "1.1");
-           svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-           svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-           svg.style.background = window.getComputedStyle(document.body).background;
-           var s = document.createElement("style");
-           s.setAttribute("type", "text/css");
-           s.innerHTML = "<![CDATA[\n" +
-               get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
-           var defs = document.createElement("defs");
-           defs.appendChild(s);
-           svg.insertBefore(defs, svg.firstChild);
-           // Getting the outer HTML
-           return svg.outerHTML;
-       };
-
-       var svg2png = function(xml, width, height) {
-            // Render a SVG data into a canvas and download as PNG.
-            var image = new Image();
-            image.onload = function() {
-                var canvas = document.createElement("canvas");
-                canvas.classList.add('bqplot');
-                canvas.width = width;
-                canvas.height = height;
-                var context = canvas.getContext("2d");
-                context.drawImage(image, 0, 0);
-                var a = document.createElement("a");
-                a.download = filename || "image.png";
-                a.href = canvas.toDataURL("image/png");
-                document.body.appendChild(a);
-                a.click();
-            };
-            image.src = "data:image/svg+xml;base64," + btoa(xml);
         };
 
+        var svg2svg = function(node) {
+            // Creates a standalone SVG string from an inline SVG element
+            // containing all the computed style attributes.
+            var svg = node.cloneNode(true);
+            svg.setAttribute("version", "1.1");
+            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+            svg.style.background = window.getComputedStyle(document.body).background;
+            var s = document.createElement("style");
+            s.setAttribute("type", "text/css");
+            s.innerHTML = "<![CDATA[\n" +
+                get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
+            var defs = document.createElement("defs");
+            defs.appendChild(s);
+            svg.insertBefore(defs, svg.firstChild);
+            // Getting the outer HTML
+            return svg.outerHTML;
+        };
         // Create standalone SVG string
         var svg = svg2svg(this.svg.node());
-        // Save to PNG
-        svg2png(svg, this.width, this.height);
-    }
+        return svg;
+    },
+
+
+    save_png: function(filename) {
+
+        var xml = this.get_svg();
+
+        // Render a SVG data into a canvas and download as PNG.
+        var image = new Image();
+        var that = this;
+        image.onload = function() {
+            var canvas = document.createElement("canvas");
+            canvas.classList.add('bqplot');
+            canvas.width = that.width;
+            canvas.height = that.height;
+            var context = canvas.getContext("2d");
+            context.drawImage(image, 0, 0);
+            var a = document.createElement("a");
+            a.download = filename || "bqplot.png";
+            a.href = canvas.toDataURL("bqplot/png");
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+        image.src = "data:image/svg+xml;base64," + btoa(xml);
+    },
+
+
+    save_svg: function(filename) {
+
+        var xml = this.get_svg();
+
+        var a = document.createElement("a");
+        a.download = filename || "bqplot.svg";
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(xml);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    },
 });
 
 

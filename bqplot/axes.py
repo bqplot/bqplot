@@ -111,6 +111,8 @@ class Axis(BaseAxis):
         Dictionary containing the CSS-style of the text for the ticks.
         For example: font-size of the text can be changed by passing
         `{'font-size': 14}`
+    tick_rotate: int (default: 0)
+        Degrees to rotate tick labels by.
     """
     icon = 'fa-arrows'
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal')\
@@ -136,6 +138,7 @@ class Axis(BaseAxis):
 
     visible = Bool(True).tag(sync=True)
     tick_style = Dict().tag(sync=True)
+    tick_rotate = Int(0).tag(sync=True)
 
     _view_name = Unicode('Axis').tag(sync=True)
     _model_name = Unicode('AxisModel').tag(sync=True)
