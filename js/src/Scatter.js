@@ -74,6 +74,7 @@ var Scatter = scatterbase.ScatterBase.extend({
                 } : "none");
             }
         }
+        this.apply_styles()
     },
 
     update_fill: function(model, fill) {

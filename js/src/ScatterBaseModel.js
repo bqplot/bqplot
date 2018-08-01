@@ -20,7 +20,7 @@ var markmodel = require("./MarkModel");
 var ScatterBaseModel = markmodel.MarkModel.extend({
 
     defaults: function() {
-        return _.extend({}, markmodel.MarkModel.prototype.defaults, {
+        return _.extend({}, markmodel.MarkModel.prototype.defaults(), {
         _model_name: "ScatterBaseModel",
         _view_name: "ScatterBase",
 
@@ -39,6 +39,8 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
             opacity: { dimension: "opacity" },
             rotation: { dimension: "rotation" }
         },
+        hovered_style: {},
+        unhovered_style: {},
         colors: [],
         default_opacities: [],
         enable_move: false,
