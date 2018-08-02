@@ -43,5 +43,11 @@ module.exports = {
 
     is_valid_time_format: function(format) {
         return time_format_regex.test(format);
+    },
+
+    typeset: function(svg) {
+        if (window.MathJax !== undefined) {
+            MathJax.Hub.Queue(['Typeset', MathJax.Hub, svg.node()]);
+        }
     }
 };
