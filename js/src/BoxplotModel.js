@@ -49,8 +49,8 @@ var BoxplotModel = markmodel.MarkModel.extend({
     },
 
     update_data: function() {
-        var x_data = this.get_typed_field("x");
-        var y_data = this.get_typed_field("y");
+        var x_data = this.get("x");
+        var y_data = this.get("y");
 
         y_data.forEach(function(elm) {
             elm.sort(function(a, b) {

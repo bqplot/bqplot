@@ -63,3 +63,63 @@ async function create_figure_scatter(manager, x, y) {
     await manager.display_view(undefined, figure);
     return {figure: figure, scatter: await figure.mark_views.views[0]}
 }
+
+
+export
+async function create_figure_lines(manager, x, y) {
+    let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
+    let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
+    let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
+    let scales = {x: 'IPY_MODEL_scale_x', y: 'IPY_MODEL_scale_y'}
+    let color    = null;
+    let size     = {type: null, values: null};
+    let opacity  = {type: null, values: null};
+    let rotation = {type: null, values: null};
+    let skew     = {type: null, values: null};
+
+    let linesModel = await create_model_bqplot(manager, 'Lines', 'lines1', {scales: scales,
+        x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew,
+        visible: true, default_size: 64,
+        preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})
+    let figureModel;
+    try {
+        figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'],
+            layout: 'IPY_MODEL_layout_figure1', _dom_classes: [],
+            figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
+            marks: ['IPY_MODEL_lines1']})
+    } catch(e) {
+        console.error('error', e)
+    }
+    let figure  = await create_view(manager, figureModel);
+    await manager.display_view(undefined, figure);
+    return {figure: figure, lines: await figure.mark_views.views[0]}
+}
+export
+async function create_figure_bars(manager, x, y) {
+    let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
+    let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
+    let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:0, max:3, allow_padding: false})
+    let scales = {x: 'IPY_MODEL_scale_x', y: 'IPY_MODEL_scale_y'}
+    let color    = null;
+    let size     = {type: null, values: null};
+    let opacity  = {type: null, values: null};
+    let rotation = {type: null, values: null};
+    let skew     = {type: null, values: null};
+
+    let barsModel = await create_model_bqplot(manager, 'Bars', 'bars1', {scales: scales,
+        x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew,
+        visible: true, default_size: 64,
+        preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})
+    let figureModel;
+    try {
+        figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'],
+            layout: 'IPY_MODEL_layout_figure1', _dom_classes: [],
+            figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
+            marks: ['IPY_MODEL_bars1']})
+    } catch(e) {
+        console.error('error', e)
+    }
+    let figure  = await create_view(manager, figureModel);
+    await manager.display_view(undefined, figure);
+    return {figure: figure, bars: await figure.mark_views.views[0]}
+}

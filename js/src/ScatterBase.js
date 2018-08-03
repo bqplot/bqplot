@@ -611,20 +611,14 @@ var ScatterBase = mark.Mark.extend({
             y_scale = this.scales.y;
 
         if (!this.model.get("restrict_y")){
-            var x_data = [];
-            this.model.get_typed_field("x").forEach(function(elem) {
-                x_data.push(elem);
-            });
-            x_data[i] = x_scale.scale.invert(d[0]);
-            this.model.set_typed_field("x", x_data);
+            var x = this.model.get('x').slice(); // copy
+            x[i] = x_scale.scale.invert(d[0]);
+            this.model.set("x", x);
         }
         if (!this.model.get("restrict_x")){
-            var y_data = [];
-            this.model.get_typed_field("y").forEach(function(elem) {
-                y_data.push(elem);
-            });
-            y_data[i] = y_scale.scale.invert(d[1]);
-            this.model.set_typed_field("y", y_data);
+            var y = this.model.get('y').slice()
+            y[i] = y_scale.scale.invert(d[1]);
+            this.model.set("y", y);
         }
         this.touch();
     },
@@ -714,17 +708,17 @@ var ScatterBase = mark.Mark.extend({
         var x_scale = this.scales.x, y_scale = this.scales.y;
         //add the new point to data
         var x_data = [];
-        this.model.get_typed_field("x").forEach(function(d) {
-            x_data.push(d);
-        });
-        var y_data = [];
-        this.model.get_typed_field("y").forEach(function(d) {
-            y_data.push(d);
-        });
-        x_data.push(x_scale.scale.invert(curr_pos[0]));
-        y_data.push(y_scale.scale.invert(curr_pos[1]));
-        this.model.set_typed_field("x", x_data);
-        this.model.set_typed_field("y", y_data);
+        var x = this.model.get('x');
+        var y = this.model.get('y');
+        // copy data and fill in the last value
+        var xn = new x.constructor(x.length+1)
+        var yn = new y.constructor(y.length+1)
+        xn.set(x)
+        yn.set(y)
+        xn[x.length] = x_scale.scale.invert(curr_pos[0]);
+        yn[y.length] = y_scale.scale.invert(curr_pos[1]);
+        this.model.set("x", xn);
+        this.model.set("y", yn);
         this.touch();
         // adding the point and saving the model automatically triggers a
         // draw which adds the new point because the data now has a new
@@ -737,15 +731,16 @@ var ScatterBase = mark.Mark.extend({
 
         // Remove the point from model data
         var x_data = [];
-        this.model.get_typed_field("x").forEach(function(d, i) {
-            if (i != index) { x_data.push(d); }
-        });
-        var y_data = [];
-        this.model.get_typed_field("y").forEach(function(d, i) {
-            if (i != index) { y_data.push(d); }
-        });
-        this.model.set_typed_field("x", x_data);
-        this.model.set_typed_field("y", y_data);
+        // copy data to avoid modifying in place (will not detect a change)
+        var x = this.model.get("x").slice();
+        var y = this.model.get("y").slice();
+        x.copyWithin(index, index+1, x.length);
+        y.copyWithin(index, index+1, y.length);
+        x = x.slice(0, x.length-1);
+        y = y.slice(0, x.length-1);
+
+        this.model.set("x", x);
+        this.model.set("y", y);
         this.touch();
     }
 });

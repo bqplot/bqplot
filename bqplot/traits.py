@@ -121,66 +121,23 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
         warnings.warn("Array could not be converted into a date")
         return array
 
-# Array
-
-def array_from_json_classic(value, obj=None):
-    if value is not None:
-        if value.get('values') is not None:
-            dtype = {
-                'date': np.datetime64,
-                'float': np.float64
-            }.get(value.get('type'), object)
-            return np.asarray(value['values'], dtype=dtype)
-
-def array_to_json_classic(a, obj=None):
-    if a is not None:
-        if np.issubdtype(a.dtype, np.floating):
-            # replace nan with None
-            dtype = 'float'
-            a = np.where(np.isnan(a), None, a)
-        elif a.dtype in (int, np.int64):
-            dtype = 'float'
-            a = a.astype(np.float64)
-        elif np.issubdtype(a.dtype, np.datetime64):
-            dtype = 'date'
-            a = a.astype(np.str).astype('object')
-            for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
-                # for every element in the nd array, forcing the conversion into
-                # the format specified here.
-                temp_x = pd.to_datetime(x.flatten()[0])
-                if pd.isnull(temp_x):
-                    x[...] = None
-                else:
-                    x[...] = temp_x.to_pydatetime().strftime(
-                        '%Y-%m-%dT%H:%M:%S.%f')
-        else:
-            dtype = a.dtype
-        return dict(values=a.tolist(), type=str(dtype))
-    else:
-        return dict(values=a, type=None)
-
-array_serialization_classic = dict(to_json=array_to_json_classic, from_json=array_from_json_classic)
-
-
-def array_from_json_binary(value, obj=None):
+def array_from_json(value, obj=None):
     if value is not None:
         # this will accept regular json data, like an array of values, which can be useful it you want
         # to link bqplot to other libraries that use that
         if isinstance(value, list):
-            return np.array(value)
+            if len(value) > 0 and isinstance(value[0], dict) and 'value' in value[0]:
+                return np.array([array_from_json(k) for k in value])
+            else:
+                return np.array(value)
         elif 'value' in value:
             ar = np.frombuffer(value['value'], dtype=value['dtype']).reshape(value['shape'])
             if value.get('type') == 'date':
                 assert value['dtype'] == 'float64'
                 ar = ar.astype('datetime64[ms]')
             return ar
-        # we could enable the 'classic' style if some of the front end is using the classis
-        # method
-        # if 'values' in value:
-        #     return np.asarray(value['values'], dtype=np.float64)
 
-
-def array_to_json_binary(ar, obj=None, force_contiguous=True):
+def array_to_json(ar, obj=None, force_contiguous=True):
     if ar is None:
         return None
     if ar.dtype.kind in ['S', 'U']:  # strings to as plain json
@@ -205,11 +162,7 @@ def array_to_json_binary(ar, obj=None, force_contiguous=True):
     return {'value':memoryview(ar), 'dtype':str(ar.dtype), 'shape':ar.shape, 'type': type}
 
 
-array_serialization_binary = dict(to_json=array_to_json_binary, from_json=array_from_json_binary)
-
-array_serialization = array_serialization_binary
-# array_serialization = array_serialization_classic
-# array validators
+array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
 
 def array_squeeze(trait, value):
     if len(value.shape) > 1:
@@ -226,6 +179,16 @@ def array_dimension_bounds(mindim=0, maxdim=np.inf):
             % (trait.name, trait.this_class, mindim, maxdim, value.shape))
         return value
     return validator
+
+def array_supported_kinds(kinds='biufM'):
+    def validator(trait, value):
+        if value.dtype.kind not in kinds:
+            raise TraitError('Array type not supported for trait %s of class %s: expected a \
+            array of kind in list %r and got an array of type %s (kind %s)'\
+            % (trait.name, trait.this_class, list(kinds), value.dtype, value.dtype.kind))
+        return value
+    return validator
+
 
 # DataFrame
 

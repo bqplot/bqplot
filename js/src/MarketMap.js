@@ -210,17 +210,17 @@ var MarketMap = figure.Figure.extend({
 
     update_data: function() {
         var that = this;
-        this.data = this.model.get_typed_field("names");
+        this.data = this.model.get("names") || [];
         this.ref_data = this.model.get("ref_data");
-        this.group_data = this.model.get_typed_field("groups");
+        this.group_data = this.model.get("groups");
         this.groups = _.uniq(this.group_data, true);
-        var display_text = this.model.get_typed_field("display_text");
-        display_text = (display_text === undefined || display_text.length === 0) ? this.data : display_text;
+        var display_text = this.model.get("display_text");
+        display_text = (display_text === null || display_text.length === 0) ? this.data : display_text;
 
         this.colors = this.model.get("colors");
         var num_colors = this.colors.length;
         this.colors_map = function(d) { return that.get_color(d, num_colors);};
-        var color_data = this.model.get_typed_field("color");
+        var color_data = this.model.get("color");
         var mapped_data = this.data.map(function(d, i) {
             return {
                 display: display_text[i],
@@ -247,7 +247,7 @@ var MarketMap = figure.Figure.extend({
 
     update_domains: function() {
         var color_scale_model = this.model.get("scales").color;
-        var color_data = this.model.get_typed_field("color");
+        var color_data = this.model.get("color");
         if(color_scale_model && color_data.length > 0) {
             color_scale_model.compute_and_set_domain(color_data, this.model.model_id);
         }

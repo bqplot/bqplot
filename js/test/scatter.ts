@@ -33,8 +33,8 @@ describe("scatter >", () => {
 
     });
     it("computed fill", async function() {
-        let x = {type: 'dontcare', values: [0, 1]}
-        let y = {type: 'dontcare', values: [2, 3]}
+        let x = [0, 1];
+        let y = [2, 3];
         let objects = await create_figure_scatter(this.manager, x, y);
         let scatter = objects.scatter;
 

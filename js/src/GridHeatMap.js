@@ -500,6 +500,7 @@ var GridHeatMap = mark.Mark.extend({
         var reversed_scale = false;
         var start_points = [];
         var widths = [];
+        data = Array.from(data); // copy to Array
         if(mode === "middle") {
             start_points = data.map(function(d) { return scale.scale(d); });
             widths = data.map(function(d) { return scale.scale.rangeBand(); });
