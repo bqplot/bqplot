@@ -50,9 +50,9 @@ var HeatMapModel = markmodel.MarkModel.extend({
         this.dirty = true;
         // Handling data updates
         this.mark_data = {
-            x: this.get_typed_field("x"),
-            y: this.get_typed_field("y"),
-            color: this.get_typed_field("color")
+            x: this.get("x"),
+            y: this.get("y"),
+            color: this.get("color")
         }
         this.update_domains();
         this.dirty = false;
@@ -65,7 +65,7 @@ var HeatMapModel = markmodel.MarkModel.extend({
         var scales = this.get("scales");
         var x_scale = scales.x, y_scale = scales.y;
         var color_scale = scales.color;
-        var flat_colors = [].concat.apply([], this.mark_data.color);
+        var flat_colors = [].concat.apply([], this.mark_data.color.map((x) => Array.prototype.slice.call(x, 0)));
 
         if(!this.get("preserve_domain").x) {
             x_scale.compute_and_set_domain(this.mark_data.x, this.model_id + "_x");

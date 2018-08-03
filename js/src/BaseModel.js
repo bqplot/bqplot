@@ -28,55 +28,6 @@ var BaseModel = widgets.WidgetModel.extend({
         });
     },
 
-    get_typed_field: function(param) {
-        // Function that reads in an array of a field that is typed. It
-        // performs tpe conversions that you may require and returns you
-        // the appropriate array.
-        var value = this.get(param);
-        if(!value) {
-            return [];
-        }
-        // we do the deserialization at the fly ftm
-        if(value.dtype && value.value) {
-            console.error('Missing (de)serializer for attribute ' +param  +' of '+this.attributes._model_name)
-            return serialize.array_or_json['deserialize'](value, this.manager)
-        }
-        return value;
-    },
-
-    set_typed_field: function(param, value, options) {
-        // function takes a value which has to be set for a typed field and
-        // performs the conversion needed before sending it across to
-        // Python. This **only** sets the attribute. The caller is
-        // responsible for calling save_changes
-        var saved_value = value;
-        var return_object = {};
-        var that = this;
-        var current_type = this.get(param) ? this.get(param).type : undefined;
-
-        if (saved_value[0] instanceof Array && saved_value[0][0] instanceof Date ||
-            saved_value[0] instanceof Date) {
-            current_type = "date";
-        }
-
-        // dates are serialized using the timestamp only, some parts of the code
-        // use the Data objects, detect that and convert.
-        // also, we set the .type property of TypedArray, to keep track of it being a
-        // date array
-        var convert_to_date = function(x) {
-            var ar = new Float64Array(x.map(Number));
-            ar.type = 'date'
-            return ar;
-        }
-        if(saved_value[0] instanceof Array) {
-            if(current_type === "date")
-                saved_value = saved_value.map(convert_to_date);
-        } else {
-            if(current_type === "date")
-                saved_value = convert_to_date(saved_value);
-        }
-        this.set(param, saved_value, options);
-    },
 
     get_date_elem: function(param) {
         return this.convert_to_date(this.get(param));

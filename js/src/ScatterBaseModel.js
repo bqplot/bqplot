@@ -65,8 +65,8 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
     },
 
     update_mark_data: function() {
-        var x_data = this.get_typed_field("x"),
-            y_data = this.get_typed_field("y"),
+        var x_data = this.get("x"),
+            y_data = this.get("y"),
             scales = this.get("scales"),
             x_scale = scales.x,
             y_scale = scales.y,
@@ -80,10 +80,10 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
             //length, throws an error on the JS side
             var min_len = Math.min(x_data.length, y_data.length);
             x_data = x_data.slice(0, min_len);
-            var color = this.get_typed_field("color"),
-                size = this.get_typed_field("size"),
-                opacity = this.get_typed_field("opacity"),
-                rotation = this.get_typed_field("rotation");
+            var color = this.get("color") || [],
+                size = this.get("size") || [],
+                opacity = this.get("opacity") || [],
+                rotation = this.get("rotation") || [];
 
             if(color_scale) {
                 if(!this.get("preserve_domain").color) {

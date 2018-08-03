@@ -51,8 +51,8 @@ from traittypes import Array
 from numpy import histogram
 
 from .scales import Scale, OrdinalScale, LinearScale
-from .traits import (Date, array_serialization,
-                     array_squeeze, array_dimension_bounds)
+from .traits import (Date, array_serialization, 
+                     array_squeeze, array_dimension_bounds, array_supported_kinds)
 from ._version import __frontend_version__
 from .colorschemes import CATEGORY10
 
@@ -360,11 +360,11 @@ class Lines(Mark):
     x = Array([]).tag(sync=True, scaled=True,
                       rtype='Number', atype='bqplot.Axis',
                       **array_serialization)\
-        .valid(array_squeeze, array_dimension_bounds(1, 2))
+        .valid(array_squeeze, array_dimension_bounds(1, 2), array_supported_kinds())
     y = Array([]).tag(sync=True, scaled=True,
                       rtype='Number', atype='bqplot.Axis',
                       **array_serialization)\
-        .valid(array_squeeze, array_dimension_bounds(1, 2))
+        .valid(array_squeeze, array_dimension_bounds(1, 2), array_supported_kinds())
     color = Array(None, allow_none=True).tag(sync=True,
                                              scaled=True,
                                              rtype='Color',
@@ -918,7 +918,7 @@ class Boxplot(Mark):
     # is undefined.
     y = Array([[]]).tag(sync=True, scaled=True, rtype='Number',
                         atype='bqplot.Axis', **array_serialization)\
-        .valid(array_dimension_bounds(1, 2))
+        .valid(array_dimension_bounds(1, 2), array_supported_kinds())
 
     # Other attributes
     scales_metadata = Dict({
@@ -1012,7 +1012,7 @@ class Bars(Mark):
     y = Array([]).tag(sync=True, scaled=True, rtype='Number',
                       atype='bqplot.Axis',
                       **array_serialization)\
-        .valid(array_squeeze, array_dimension_bounds(1, 2))
+        .valid(array_squeeze, array_dimension_bounds(1, 2), array_supported_kinds())
     color = Array(None, allow_none=True)\
         .tag(sync=True, scaled=True, rtype='Color',
              atype='bqplot.ColorAxis', **array_serialization)\

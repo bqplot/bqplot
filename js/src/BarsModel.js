@@ -63,12 +63,12 @@ var BarsModel = markmodel.MarkModel.extend({
     },
 
     update_data: function() {
-        var x_data = this.get_typed_field("x");
-        var y_data = this.get_typed_field("y");
+        var x_data = this.get("x");
+        var y_data = this.get("y");
         var scales = this.get("scales");
         var x_scale = scales.x;
         var y_scale = scales.y;
-        y_data = (y_data.length === 0 || y_data[0] instanceof Array) ?
+        y_data = (y_data.length === 0 || !_.isNumber(y_data[0])) ?
             y_data : [y_data];
         var that = this;
 
@@ -85,13 +85,15 @@ var BarsModel = markmodel.MarkModel.extend({
             x_data = x_data.slice(0, d3.min(y_data.map(function(d) {
                 return d.length;
             })));
-            this.mark_data = x_data.map(function (x_elem, index) {
+            // since x_data may be a TypedArray, explicitly use Array.map
+            this.mark_data = Array.prototype.map.call(x_data, function (x_elem, index) {
                 var data = {};
                 var y0 = that.base_value;
                 var y0_neg = that.base_value;
                 var y0_left = that.base_value;
                 data.key = x_elem;
-                data.values = y_data.map(function(y_elem, y_index) {
+                // since y_data may be a TypedArray, explicitly use Array.map
+                data.values = Array.prototype.map.call(y_data, function(y_elem, y_index) {
                     var value = y_elem[index] - that.base_value;
                     var positive = (value >= 0);
                     return {
@@ -147,7 +149,7 @@ var BarsModel = markmodel.MarkModel.extend({
         if(!this.mark_data) {
             return;
         }
-        var color = this.get_typed_field("color");
+        var color = this.get("color") || [];
         var color_scale = this.get("scales").color;
         var color_mode = this.get("color_mode");
         var apply_color_to_groups = ((color_mode === "group") ||

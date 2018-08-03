@@ -45,7 +45,7 @@ var LabelModel = basemodel.ScatterBaseModel.extend({
 
     update_mark_data: function() {
         LabelModel.__super__.update_mark_data.apply(this);
-        var text = this.get_typed_field("text");
+        var text = this.get("text");
 
         this.mark_data.forEach(function(d, i){ d.text = text[i]; });
     },
