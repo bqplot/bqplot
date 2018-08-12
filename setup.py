@@ -167,7 +167,7 @@ setup_args = {
     'version': version_ns['__version__'],
     'description': 'Interactive plotting for the Jupyter notebook, using d3.js and ipywidgets.',
     'long_description': LONG_DESCRIPTION,
-    'License': 'Apache',
+    'license': 'Apache',
     'include_package_data': True,
     'data_files': [
         ('share/jupyter/nbextensions/bqplot', [
