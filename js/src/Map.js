@@ -226,20 +226,13 @@ var Map = mark.Mark.extend({
 
     zoomed: function(that, reset) {
         if (!that.dragging) {
-            var t = reset ? [0, 0] : d3.event.translate;
             var s = reset ? 1 : d3.event.scale;
-            var h = that.height / 3;
-            var w = reset ? that.width : 2 * that.width;
-
-            t[0] = Math.min(that.width / 2 * (s - 1), Math.max(w / 2 * (1 - s), t[0]));
-            t[1] = Math.min(that.height / 2 * (s - 1) + this.height * s, Math.max(h / 2 * (1 - s) - that.width * s, t[1]));
-
+            var t = reset ? [0, 0] : [-that.width / 2 * (s - 1), -that.height / 2 * (s - 1)];
             that.zoom.translate(t);
             if (reset) {
                 that.zoom.scale(s);
             }
-            that.transformed_g.style("stroke-width", 1 / s)
-                .attr("transform", "translate(" + t + ")scale(" + s + ")");
+            that.map.attr("transform", "translate(" + t + ")scale(" + s + ")");
         }
     },
 
@@ -257,10 +250,7 @@ var Map = mark.Mark.extend({
             rotate[1] - d3.event.dy * k
         ]);
         var path = that.scales.projection.path;
-        that.fill_g.selectAll("path")
-            .attr("d", path);
-        that.stroke_g.selectAll("path")
-            .attr("d", path);
+        that.map.selectAll("path").attr("d", path);
     },
 
     dragended: function(that) {
