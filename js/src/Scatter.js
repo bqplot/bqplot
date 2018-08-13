@@ -152,8 +152,10 @@ var Scatter = scatterbase.ScatterBase.extend({
                 .transition("update_marker")
                 .duration(this.parent.model.get("animation_duration"))
                 .attr("d", this.dot.type(marker));
-            this.legend_el.select("path")
-                .attr("d", this.dot.type(marker));
+            if (this.legend_el) {
+                this.legend_el.select("path")
+                    .attr("d", this.dot.type(marker));
+            }
         }
     },
 
