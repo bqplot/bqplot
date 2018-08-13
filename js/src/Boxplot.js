@@ -283,6 +283,7 @@ var Boxplot = mark.Mark.extend({
 
     prepareBoxPlots: function () {
 
+        var auto_detect_outliers = this.model.get("auto_detect_outliers") !== false;
         var x_scale = this.scales.x;
         var y_scale = this.scales.y;
 
@@ -314,10 +315,9 @@ var Boxplot = mark.Mark.extend({
                var plotY = y_scale.scale(values[1][j]);
 
                // Find the outlier
-               if ( plotY > lowerBound || plotY  < upperBound) {
+               if (auto_detect_outliers && (plotY > lowerBound || plotY  < upperBound)) {
                     displayValue.outliers.push(plotY);
-               }
-               else {
+               } else {
                     // Find the whisker points max and min from normal data.
                     // ( exclude the outliers )
                     if ( plotY > displayValue.whiskerMin ) {

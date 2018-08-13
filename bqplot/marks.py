@@ -935,6 +935,7 @@ class Boxplot(Mark):
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
         .tag(sync=True, display_name='Opacities')
     box_width = Int(None, min=5, allow_none=True).tag(sync=True, display_name='Box Width')
+    auto_detect_outliers = Bool(True).tag(sync=True, display_name='Auto-detect Outliers')
 
     _view_name = Unicode('Boxplot').tag(sync=True)
     _model_name = Unicode('BoxplotModel').tag(sync=True)
