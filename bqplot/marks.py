@@ -896,6 +896,8 @@ class Boxplot(Mark):
     box_width: int (default: None)
         width of the box in pixels. The minimum value is 5.
         If set to None, box_with is auto calculated
+    auto_detect_outliers: bool (default: True)
+        Flag to toggle outlier auto-detection
 
     Data Attributes
 
