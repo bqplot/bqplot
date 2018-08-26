@@ -132,7 +132,7 @@ void main(void) {
     vec3 center_normalized = (center - domain_offset) / domain_scale;
     vec3 center_pixels = ((center_normalized*2.)-0.) * range_scale + range_offset;
 
-    float s = mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size);
+    float s = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size));
     float angle = SCALE_ROTATION(mix(rotation_previous, rotation, animation_time_rotation));
     vec3 model_pos = rotate_xy(position, 1.) * s + center_pixels;
 
