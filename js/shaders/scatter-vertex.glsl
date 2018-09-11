@@ -106,6 +106,8 @@ attribute vec3 color_previous;
 
 
 
+#define SCALE_X(x) scale_transform_linear(x, range_x, domain_x)
+#define SCALE_Y(x) scale_transform_linear(x, range_y, domain_y)
 #define SCALE_SIZE(x) scale_transform_linear(x, range_size, domain_size)
 #define SCALE_ROTATION(x) scale_transform_linear(x, range_rotation, domain_rotation)
 #define SCALE_OPACITY(x) scale_transform_linear(x, range_opacity, domain_opacity)
@@ -129,8 +131,12 @@ void main(void) {
     vec3 range_scale  = vec3(range_x.y, range_y.y, range_z.y) - range_offset;
 
     vec3 center = mix(vec3(x_previous, y_previous, 0), vec3(x, y, 0), animation_time);
-    vec3 center_normalized = (center - domain_offset) / domain_scale;
-    vec3 center_pixels = ((center_normalized*2.)-0.) * range_scale + range_offset;
+
+    // vec3 center_normalized = (center - domain_offset) / domain_scale;
+    // vec3 center_pixels = ((center_normalized*2.)-0.) * range_scale + range_offset;
+    vec3 center_pixels = vec3(SCALE_X(center.x), SCALE_Y(center.y), 0) * 2.;
+
+
 
     float s = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size));
     float angle = SCALE_ROTATION(mix(rotation_previous, rotation, animation_time_rotation));
