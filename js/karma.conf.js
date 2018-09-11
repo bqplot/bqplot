@@ -49,7 +49,7 @@ module.exports = function(config) {
     customLaunchers: {
       HeadlessChrome: {
         base: 'Chrome',
-        flags: ['--headless', '--disable-gpu', '--remote-debugging-port=9222']
+        flags: ['--headless', '--remote-debugging-port=9222']
       }
     },
     // if true, Karma captures browsers, runs the tests and exits
