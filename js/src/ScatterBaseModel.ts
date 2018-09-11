@@ -41,7 +41,7 @@ export class ScatterBaseModel extends MarkModel {
         hovered_style: {},
         unhovered_style: {},
         colors: ['steelblue'],
-        default_opacities: [],
+        default_opacities: null,
         enable_move: false,
         enable_delete: false,
         restrict_x: false,

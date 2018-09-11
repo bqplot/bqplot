@@ -223,7 +223,7 @@ export abstract class ScatterBase extends Mark {
 
     get_element_opacity(data, index) {
         const opacity_scale = this.scales.opacity;
-        const default_opacities = this.model.get("default_opacities");
+        const default_opacities = this.model.get("default_opacities") || [];
         const len = default_opacities.length;
         if(opacity_scale && data.opacity !== undefined) {
             return opacity_scale.scale(data.opacity);
