@@ -220,7 +220,7 @@ var ScatterBase = mark.Mark.extend({
 
     get_element_opacity: function(data, index) {
         var opacity_scale = this.scales.opacity;
-        var default_opacities = this.model.get("default_opacities");
+        var default_opacities = this.model.get("default_opacities") || [];
         var len = default_opacities.length;
         if(opacity_scale && data.opacity !== undefined) {
             return opacity_scale.scale(data.opacity);
