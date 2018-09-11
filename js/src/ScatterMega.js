@@ -535,6 +535,10 @@ var ScatterMega = mark.Mark.extend({
         if(this.scales.size) {
             this.scatter_material.uniforms['range_size'].value = this.scales.size.scale.range();
             this.scatter_material.uniforms['domain_size'].value = this.scales.size.scale.domain();
+        } else {
+            var size = this.model.get('default_size');
+            this.scatter_material.uniforms['range_size'].value = [0, size];
+            this.scatter_material.uniforms['domain_size'].value = [0, size];
         }
 
         if(this.scales.rotation) {
