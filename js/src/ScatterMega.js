@@ -212,22 +212,56 @@ var ScatterMega = mark.Mark.extend({
         ctx.stroke()
 
 
+        canvas_marker = this.canvas_markers.square = document.createElement('canvas');
+        canvas_marker.width  = width;
+        canvas_marker.height = height;
+
+        // 
+        var ctx = canvas_marker.getContext('2d');
+        ctx.lineWidth = 1.0;
+        ctx.strokeStyle = 'rgba(0, 255, 0, 1.0)';
+        ctx.fillStyle = 'rgba(255, 0, 0, 1.0)';
+
+        ctx.moveTo(0, 0);
+        ctx.rect(0, 0, width, height);
+        ctx.fill()
+        ctx.stroke()
+
 
         this.canvas_textures.circle = new THREE.CanvasTexture(this.canvas_markers.circle)
         this.canvas_textures.arrow = new THREE.CanvasTexture(this.canvas_markers.arrow)
+        this.canvas_textures.square = new THREE.CanvasTexture(this.canvas_markers.square)
         // canvas is always pre-multipled https://github.com/mrdoob/three.js/issues/1864
         this.canvas_textures.circle.premultiplyAlpha = true;
         this.canvas_textures.arrow.premultiplyAlpha = true;
+        this.canvas_textures.square.premultiplyAlpha = true;
+
+        var marker_geometry = this.marker_plane;
+        this.buffer_marker_geometry = new THREE.BufferGeometry().fromGeometry(marker_geometry);
+        this.marker_scale = 1;
         var sync_marker = () => {
             this.scatter_material.uniforms['texture'].value = this.canvas_textures[this.model.get('marker')]
-            console.log('marker', this.model.get('marker'))
-            this.update_scene()
+            this.scatter_material.defines['FAST_DRAW'] = 0;
+            var marker = this.model.get('marker');
+            var scale = 1;
+            var FAST_CIRCLE = 1;
+            var FAST_SQUARE = 2;
+            if(marker === 'circle') {
+                scale = 2 * Math.sqrt(Math.PI);
+                this.scatter_material.defines['FAST_DRAW'] = FAST_CIRCLE;
+            }
+            if(marker === 'square') {
+                scale = 2;
+                this.scatter_material.defines['FAST_DRAW'] = FAST_SQUARE;
+            }
+            this.marker_scale = scale;
+            if(this.mesh) // otherwise someone will call it later on
+                this.update_geometry()
         }
         sync_marker()
         this.listenTo(this.model, 'change:marker', sync_marker)
 
-        var marker_geometry = this.marker_plane;
-        this.buffer_marker_geometry = new THREE.BufferGeometry().fromGeometry(marker_geometry);
+        // marker_plane.scale(scale, scale, scale)
 
 
         return base_render_promise.then(() => {
@@ -426,6 +460,7 @@ var ScatterMega = mark.Mark.extend({
         this.instanced_geometry = new THREE.InstancedBufferGeometry();
         var vertices = this.buffer_marker_geometry.attributes.position.clone();
         this.instanced_geometry.addAttribute('position', vertices);
+        this.instanced_geometry.scale(this.marker_scale, this.marker_scale, this.marker_scale);
 
         var uv = this.buffer_marker_geometry.attributes.uv.clone();
         this.instanced_geometry.addAttribute('uv', uv);
@@ -460,7 +495,6 @@ var ScatterMega = mark.Mark.extend({
             this.mesh.geometry.dispose()
             this.mesh.geometry = this.instanced_geometry;
         }
-
         _.each(attributes_changed, (key) => {
             var property = "animation_time_" + key
             //console.log("animating", key)
