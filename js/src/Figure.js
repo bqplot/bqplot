@@ -38,7 +38,7 @@ var Figure = widgets.DOMWidgetView.extend({
         this.svg = d3.select(svg);
         this.svg_interaction = d3.select(svg_interaction);
         // a shared webgl context for all marks
-        this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, premultipliedAlpha: false});
+        this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, premultipliedAlpha: true});
         if(!this.renderer.capabilities.floatFragmentTextures) {
             console.error("you videocard/driver does not support float fragment textures, you may have limited functionality")
         }
