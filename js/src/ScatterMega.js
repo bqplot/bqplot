@@ -674,8 +674,8 @@ var ScatterMega = mark.Mark.extend({
     update_pixel_position: function(animate) {
         var x_scale = this.scales.x, y_scale = this.scales.y;
 
-        var x_data = this.model.get_typed_field("x")
-        var y_data = this.model.get_typed_field("y")
+        var x_data = this.model.get("x")
+        var y_data = this.model.get("y")
         var N = Math.min(x_data.length, y_data.length);
         // this.pixel_coords = _.map(_.range(N), (i) => {
         //         return [x_scale.scale(x_data[i]) + x_scale.offset,
@@ -707,7 +707,8 @@ var ScatterMega = mark.Mark.extend({
         var selection_mask = point_selector(this.pixel_x, this.pixel_y)
         var selected = new Uint32Array(selection_mask.length);
         var count = 0;
-        for(var i=0; i < selection_mask.length; i++) {
+        var N = selection_mask.length;
+        for(var i=0; i < N; i++) {
             if(selection_mask[i]) {
                 selected[count++] = i;
             }
