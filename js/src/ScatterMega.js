@@ -255,6 +255,7 @@ var ScatterMega = mark.Mark.extend({
                 this.scatter_material.defines['FAST_DRAW'] = FAST_SQUARE;
             }
             this.marker_scale = scale;
+            this.scatter_material.needsUpdate = true;
             if(this.mesh) // otherwise someone will call it later on
                 this.update_geometry()
         }
