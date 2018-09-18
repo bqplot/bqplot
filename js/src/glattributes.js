@@ -257,7 +257,12 @@ function GLAttributes(names, names_vec3, getter, sequence_index, names_vec4, def
     this.add_attributes = function(geometry, postfix) {
         var convert = (ar) => {
             if(ar.constructor.name == "Float64Array") {
-                ar = Float32Array.from(ar)
+                const N = ar.length;
+                var ar32 = new Float32Array(N);
+                for(var i = 0; i < N; i++) {
+                  ar32[i] = ar[i];
+                }
+                return ar32;
             }
             return ar
         }
