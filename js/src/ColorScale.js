@@ -19,7 +19,8 @@ var scale = require("./Scale");
 var ColorScale = scale.Scale.extend({
 
     render: function(){
-        this.create_d3_scale()
+        this.create_d3_scale();
+        this.update_extrapolation();
         if(this.model.domain.length > 0) {
             this.scale.domain(this.model.domain);
         }
@@ -35,6 +36,13 @@ var ColorScale = scale.Scale.extend({
     create_event_listeners: function() {
         ColorScale.__super__.create_event_listeners.apply(this);
         this.listenTo(this.model, "colors_changed", this.set_range, this);
+        this.model.on("change:extrapolation", function() {
+            this.update_extrapolation();
+            this.trigger("color_scale_range_changed"); }, this);
+    },
+
+    update_extrapolation: function() {
+        this.scale.clamp((this.model.get("extrapolation") === "constant"));
     },
 
     set_range: function() {

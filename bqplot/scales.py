@@ -483,6 +483,8 @@ class ColorScale(Scale):
         if not None, mid is the value corresponding to the mid color.
     scheme: string (default: 'RdYlGn')
         Colorbrewer color scheme of the color scale.
+    extrapolation: {'constant', 'linear'} (default: 'constant')
+        How to extrapolate values outside the [min, max] domain.
     rtype: string (class-level attribute)
         The range type of a color scale is 'Color'. This should not be modifed.
     dtype: type (class-level attribute)
@@ -497,6 +499,7 @@ class ColorScale(Scale):
     max = Float(None, allow_none=True).tag(sync=True)
     mid = Float(None, allow_none=True).tag(sync=True)
     scheme = Unicode('RdYlGn').tag(sync=True)
+    extrapolation = Enum(['constant', 'linear'], default_value='constant').tag(sync=True)
 
     _view_name = Unicode('ColorScale').tag(sync=True)
     _model_name = Unicode('ColorScaleModel').tag(sync=True)
