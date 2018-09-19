@@ -47,6 +47,16 @@ var GridHeatMap = mark.Mark.extend({
         });
     },
 
+    initialize_additional_scales: function() {
+        var color_scale = this.scales.color;
+        if(color_scale) {
+            this.listenTo(color_scale, "domain_changed", function() {
+                this.apply_styles();
+            });
+            color_scale.on("color_scale_range_changed", this.apply_styles, this);
+        }
+    },
+
     set_ranges: function() {
         var row_scale = this.scales.row;
         if(row_scale) {
