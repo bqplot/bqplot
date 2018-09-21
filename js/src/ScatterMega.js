@@ -891,6 +891,80 @@ var ScatterMega = mark.Mark.extend({
         return new Transition()
     },
 
+    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+        this.legend_el = elem.selectAll(".legend" + this.uuid)
+          .data([{}]);
+        var colors = this.model.get("colors"),
+            len = colors.length
+            stroke = this.model.get("stroke");
+
+        var that = this;
+        var rect_dim = inter_y_disp * 0.8;
+        var el_added = this.legend_el.enter()
+          .append("g")
+            .attr("class", "legend" + this.uuid)
+            .attr("transform", function(d, i) {
+                return "translate(0, " + (i * inter_y_disp + y_disp)  + ")";
+            })
+
+        this.draw_legend_elements(el_added, rect_dim)
+
+        this.legend_el.append("text")
+          .attr("class","legendtext")
+          .attr("x", rect_dim * 1.2)
+          .attr("y", rect_dim / 2)
+          .attr("dy", "0.35em")
+          .text(function(d, i) {
+              return that.model.get("labels")[i];
+          })
+          .style("fill", function(d, i) {
+              return colors[i % len];
+          });
+
+        var max_length = d3.max(this.model.get("labels"), function(d) {
+            return d.length;
+        });
+
+        this.legend_el.exit().remove();
+        return [1, max_length];
+    },
+
+    draw_legend_elements: function(elements_added, rect_dim) {
+        var colors = this.model.get("colors"),
+            len = colors.length,
+            stroke = this.model.get("stroke"),
+            fill   = this.model.get("fill");
+
+        elements_added.append("path")
+          .attr("transform", function(d, i) {
+              return "translate( " + rect_dim / 2 + ", " + rect_dim / 2 + ")";
+          })
+          .attr("d", this.dot.size(64))
+              .style("fill", fill   ? colors[0] : 'none')
+              .style("stroke", stroke ? stroke : colors[0])
+            ;
+    },
+
+    update_legend: function() {
+        if (this.legend_el) {
+            var colors = this.model.get("colors"),
+                len = colors.length,
+                stroke = this.model.get("stroke");
+                fill   = this.model.get("fill");
+            this.legend_el.select("path")
+              .style("fill", fill   ? colors[0] : 'none')
+              .style("stroke", stroke ? stroke : colors[0])
+            ;
+            this.legend_el.select("text")
+              .style("fill", fill ? colors[0] : "none")
+            ;
+            if (this.legend_el) {
+                this.legend_el.select("path")
+                    .attr("d", this.dot.type(this.model.get("marker")));
+            }
+        }
+    }
+
 
 });
 
