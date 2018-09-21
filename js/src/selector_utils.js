@@ -66,6 +66,7 @@ function seg_inter_seg(p, q) {
 
 module.exports = {
     point_in_lasso: lasso.point_in_lasso,
+    points_in_lasso: lasso.points_in_lasso,
     point_in_rectangle: point_in_rectangle,
     rect_inter_rect: rect_inter_rect,
     lasso_inter_rect: lasso_inter_rect,

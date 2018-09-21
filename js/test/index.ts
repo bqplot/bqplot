@@ -6,3 +6,4 @@ import './scatter.ts';
 import './lines.ts';
 import './bars.ts';
 import './utils.ts'
+import './lasso.ts'

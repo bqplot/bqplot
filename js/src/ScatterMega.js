@@ -740,6 +740,43 @@ var ScatterMega = mark.Mark.extend({
         this.trottled_selector_changed(point_selector, rect_selector)
     },
 
+    selector_update: function(point_selector, rect_selector) {
+        // not sure why selection isn't working yet
+        console.log('update selector')
+        this.ensure_pixel_position()
+        if(point_selector === undefined) {
+            this.model.set("selected", null);
+            this.touch();
+            return [];
+        }
+        var selection_mask_current = new Uint8Array(this.pixel_x.length)
+        var selection_current = this.model.get('selected')
+        if(selection_current) {
+            var N = selection_current.length;
+            for(var i = 0; i < N; i++) {
+                selection_mask_current[selection_current[i]] = 1;
+            }
+        }
+        var selection_mask_new = point_selector(this.pixel_x, this.pixel_y)
+        var selection_mask = new Uint8Array(this.pixel_x.length)
+        var N = selection_mask_current.length;
+        for(var i = 0; i < N; i++) {
+            selection_mask[i] = selection_mask_current[i] ^ selection_mask_new[i];
+        }
+
+        var selected = new Uint32Array(selection_mask.length);
+        var count = 0;
+        var N = selection_mask.length;
+        for(var i=0; i < N; i++) {
+            if(selection_mask[i]) {
+                selected[count++] = i;
+            }
+        }
+        selected = selected.slice(0, count);
+        this.model.set("selected", selected);
+        this.touch();
+    },
+
     _real_selector_changed: function(point_selector, rect_selector) {
         // not sure why selection isn't working yet
         this.ensure_pixel_position()

@@ -81,12 +81,21 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
     drag_start: function() {
         this.current_vertices = [];
         this.create_new_lasso();
+
     },
 
     drag_move: function() {
         this.current_vertices.push(d3.mouse(this.background.node()));
         this.d3el.select("#l" + this.lasso_counter)
             .attr("d", this.line(this.current_vertices));
+        var lasso_name = "l" + this.lasso_counter;
+        var N = this.current_vertices.length;
+        if(N > 2) {
+            var vertices = {'progresssive':
+                [this.current_vertices[0], this.current_vertices[N-2], this.current_vertices[N-1]]
+            }
+            this.update_mark_selected(vertices, true)
+        }
     },
 
     drag_end: function() {
@@ -100,7 +109,7 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
         this.update_mark_selected(this.all_vertices)
     },
 
-    update_mark_selected: function(vertices) {
+    update_mark_selected: function(vertices, progressive) {
 
         if(vertices === undefined || vertices.length === 0) {
             // Reset all the selected in marks
@@ -108,10 +117,27 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
                 return mark_view.selector_changed();
             });
         }
-        var point_selector = function(p) {
-            for (var l in vertices) {
-                if (sel_utils.point_in_lasso(p, vertices[l])) { return true; }
-            } return false;
+        var point_selector = function(x, y) {
+            if(typeof y == "undefined") { // the 'old' method for backwards compatibility
+                var p = x;
+                for (var l in vertices) {
+                    if (sel_utils.point_in_lasso(p, vertices[l])) { return true; }
+                } return false;
+            } else {
+                var N = x.length;
+                var mask = new Uint8Array(N);
+                mask.fill(0)
+                for (var l in vertices) {
+                    var vx = new Float64Array(_.pluck(vertices[l], 0));
+                    var vy = new Float64Array(_.pluck(vertices[l], 1));
+                    var new_mask = sel_utils.points_in_lasso(vx, vy, x, y).mask;
+                    for(var i = 0; i < N; i++) {
+                        mask[i] = mask[i] | new_mask[i];
+                    }
+
+                }
+                return mask;
+            }
         };
         var rect_selector = function(xy) {
             for (var l in vertices) {
@@ -120,7 +146,15 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
         };
 
         _.each(this.mark_views, function(mark_view) {
-            mark_view.selector_changed(point_selector, rect_selector);
+            // marks that have selector_update will only update in progessive updates
+            // the others only at the end
+            if(progressive) {
+                if(mark_view.selector_update)
+                    mark_view.selector_update(point_selector, rect_selector);
+            } else {
+                if(!mark_view.selector_update)
+                    mark_view.selector_changed(point_selector, rect_selector);
+            }
         }, this);
     },
 
