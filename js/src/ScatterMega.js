@@ -74,6 +74,11 @@ var ScatterMega = mark.Mark.extend({
 
         var el = this.d3el || this.el;
 
+        // only used for the legend
+        this.dot = bqSymbol()
+          .type(this.model.get("marker"))
+
+
         this.im = el.append("image")
             .attr("x", 0)
             .attr("y", 0)
@@ -139,8 +144,13 @@ var ScatterMega = mark.Mark.extend({
                 unhovered_stroke  : { type: "4f", value: [0., 1., 0., 1.0] },
                 unhovered_opacity    : {value: 1.0},
 
+                stroke_color_default: {type: "4f", value: [0, 0, 0, 0]},
+
                 colormap: { type: 't', value: null },
                 texture: { type: 't', value: null },
+                fill: {type: 'b', value: true },
+                stroke_width: {type: 'f', value: 1.5 },
+                marker_scale: {type: 'f', value: 1.0 }
             },
             vertexShader: require('raw-loader!../shaders/scatter-vertex.glsl'),
             fragmentShader: require('raw-loader!../shaders/scatter-fragment.glsl'),
@@ -240,19 +250,25 @@ var ScatterMega = mark.Mark.extend({
         this.buffer_marker_geometry = new THREE.BufferGeometry().fromGeometry(marker_geometry);
         this.marker_scale = 1;
         var sync_marker = () => {
+            this.dot.type(this.model.get("marker"))
             this.scatter_material.uniforms['texture'].value = this.canvas_textures[this.model.get('marker')]
             this.scatter_material.defines['FAST_DRAW'] = 0;
             var marker = this.model.get('marker');
             var scale = 1;
             var FAST_CIRCLE = 1;
             var FAST_SQUARE = 2;
+            var FAST_ARROW = 3;
             if(marker === 'circle') {
-                scale = 2 * Math.sqrt(Math.PI);
+                scale = 2.2;// * Math.sqrt(Math.PI);
                 this.scatter_material.defines['FAST_DRAW'] = FAST_CIRCLE;
             }
             if(marker === 'square') {
                 scale = 2;
                 this.scatter_material.defines['FAST_DRAW'] = FAST_SQUARE;
+            }
+            if(marker === 'arrow') {
+                scale = 2;
+                this.scatter_material.defines['FAST_DRAW'] = FAST_ARROW;
             }
             this.marker_scale = scale;
             this.scatter_material.needsUpdate = true;
@@ -461,7 +477,8 @@ var ScatterMega = mark.Mark.extend({
         this.instanced_geometry = new THREE.InstancedBufferGeometry();
         var vertices = this.buffer_marker_geometry.attributes.position.clone();
         this.instanced_geometry.addAttribute('position', vertices);
-        this.instanced_geometry.scale(this.marker_scale, this.marker_scale, this.marker_scale);
+        var scale = this.marker_scale;// + 2 * this.model.get('stroke_width')
+        this.scatter_material.uniforms.marker_scale.value = this.marker_scale;
 
         var uv = this.buffer_marker_geometry.attributes.uv.clone();
         this.instanced_geometry.addAttribute('uv', uv);
@@ -644,6 +661,33 @@ var ScatterMega = mark.Mark.extend({
         this.listenTo(this.model, "change:visible", sync_visible , this);
         sync_visible()
 
+        var sync_fill = () => {
+            this.scatter_material.uniforms.fill.value = this.model.get('fill')
+            this.update_scene()
+        }
+        this.listenTo(this.model, "change:fill", sync_fill, this);
+        sync_fill()
+
+        var sync_stroke_width = () => {
+            this.scatter_material.uniforms.stroke_width.value = this.model.get('stroke_width')
+            this.update_geometry()
+        }
+        this.listenTo(this.model, "change:stroke_width", sync_stroke_width, this);
+        sync_stroke_width()
+
+        var sync_stroke = () => {
+            if(this.model.get('stroke')) {
+                this.scatter_material.uniforms.stroke_color_default.value = color_to_array_rgba(this.model.get('stroke'));
+                this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = true;
+            } else {
+                this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = true;
+            }
+            this.update_scene()
+        }
+        this.listenTo(this.model, "change:stroke", sync_stroke, this);
+        sync_stroke()
+
+        this.listenTo(this.model, "change", this.update_legend, this);
 
         // many things to implement still
         // this.listenTo(this.model, "change:stroke", this.update_stroke, this);
@@ -692,7 +736,7 @@ var ScatterMega = mark.Mark.extend({
 
     selector_changed: function(point_selector, rect_selector) {
         if(!this.trottled_selector_changed)
-            this.trottled_selector_changed = _.throttle(this._real_selector_changed, 50)
+            this.trottled_selector_changed = _.throttle(this._real_selector_changed, 50, {leading: false})
         this.trottled_selector_changed(point_selector, rect_selector)
     },
 

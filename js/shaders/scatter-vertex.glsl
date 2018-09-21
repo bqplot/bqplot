@@ -13,6 +13,10 @@ uniform float animation_time_color;
 uniform float animation_time_rotation;
 uniform float animation_time_opacity;
 
+#ifdef HAS_DEFAULT_STROKE_COLOR
+uniform vec4 stroke_color_default;
+#endif
+
 uniform bool has_selection;
 uniform bool has_hover;
 
@@ -60,11 +64,16 @@ uniform vec2 range_size;
 uniform vec2 range_rotation;
 uniform vec2 range_opacity;
 
+uniform bool fill;
+uniform float stroke_width;
+uniform float marker_scale;
+
 varying vec4 fill_color;
 varying vec4 stroke_color;
 varying vec3 vertex_position;
 varying vec2 vertex_uv;
 varying vec2 vUv;
+varying float pixel_size;
 
 // #ifdef AS_LINE
 // attribute vec3 position_previous;
@@ -120,7 +129,6 @@ vec3 rotate_xy(vec3 x, float angle) {
 }
 
 void main(void) {
-    vUv = uv;
 
     vec3 animation_time = vec3(animation_time_x, animation_time_y, animation_time_z);
 
@@ -138,7 +146,10 @@ void main(void) {
 
 
 
-    float s = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size));
+    pixel_size = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size)) * marker_scale;
+    // we draw larger than the size for the stroke_width (on both side)
+    float s = pixel_size + 2.0 * stroke_width;
+    vUv = uv;
     float angle = SCALE_ROTATION(mix(rotation_previous, rotation, animation_time_rotation));
     vec3 model_pos = rotate_xy(position, 1.) * s + center_pixels;
 
@@ -157,9 +168,17 @@ void main(void) {
     // we don't have selected_color_previous, should we?
     // if(selected )
     color_rgba = mix(color_rgba_previous, color_rgba, animation_time_color);
-    color_rgba.a *= SCALE_OPACITY(mix(opacity_previous, opacity, animation_time_opacity));
     fill_color = color_rgba;
     stroke_color = color_rgba;
+
+    #ifdef HAS_DEFAULT_STROKE_COLOR
+    stroke_color = stroke_color_default;
+    #endif
+
+    float opacity_value = SCALE_OPACITY(mix(opacity_previous, opacity, animation_time_opacity));
+    fill_color.a *= opacity_value;
+    stroke_color.a *= opacity_value;
+
 
     if(has_selection) {
         if(has_selected_fill && selected > 0.5 )
