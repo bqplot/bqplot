@@ -146,8 +146,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
 
     empty_selection: function() {
         this.update_mark_selected();
-        this.model.set("selected_x", {});
-        this.model.set("selected_y", {});
+        this.model.set("selected_x", null);
+        this.model.set("selected_y", null);
         this.touch();
     },
 
@@ -169,6 +169,9 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
                    this.x_scale.invert_range(extent_x) : extent_x;
         extent_y = y_ordinal ?
                    this.y_scale.invert_range(extent_y) : extent_y;
+        extent_x = Float64Array.from(extent_x)
+        extent_y = Float64Array.from(extent_y)
+
         this.update_mark_selected(pixel_extent_x, pixel_extent_y);
         this.set_selected("selected_x", extent_x);
         this.set_selected("selected_y", extent_y);

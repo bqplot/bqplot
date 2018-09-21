@@ -18,6 +18,7 @@ var d3 = require("d3");
 var _ = require("underscore");
 var basemodel = require("./BaseModel");
 var semver_range = "^" + require("../package.json").version;
+var serialize = require('./serialize')
 
 var MarkModel = basemodel.BaseModel.extend({
 
@@ -118,7 +119,8 @@ var MarkModel = basemodel.BaseModel.extend({
 }, {
     serializers: _.extend({
         scales: { deserialize: widgets.unpack_models },
-        tooltip: { deserialize: widgets.unpack_models }
+        tooltip: { deserialize: widgets.unpack_models },
+        selected: serialize.array_or_json
     }, basemodel.BaseModel.serializers)
 });
 
