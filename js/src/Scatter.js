@@ -191,7 +191,7 @@ var Scatter = scatterbase.ScatterBase.extend({
 
     update_names: function(animate) {
         var that = this,
-            names = this.model.get_typed_field("names"),
+            names = this.model.get("names") || [],
             show_names = this.model.get("display_names") && names.length !== 0,
             animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
 

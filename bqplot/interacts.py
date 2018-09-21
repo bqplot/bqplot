@@ -45,6 +45,7 @@ from .scales import Scale, DateScale
 from .traits import Date, array_serialization
 from .marks import Lines
 from ._version import __frontend_version__
+import numpy as np
 
 
 def register_interaction(key=None):
@@ -389,10 +390,12 @@ class BrushSelector(TwoDSelector):
         in terms of the y_scale of the selector.
         This attribute changes while the selection is being made with the
         ``BrushSelector``.
-    selected: list
-        Readonly 2x2 array containing the coordinates 
+    selected: numpy.ndarray
+        A 2x2 array containing the coordinates 
         [[selected_x[0], selected_y[0]],
          [selected_x[1], selected_y[1]]]
+        Note that this is not a trait, but is implemented with a property
+        for backwards compatibility.
     brushing: bool (default: False)
         boolean attribute to indicate if the selector is being dragged.
         It is True when the selector is being moved and False when it is not.
@@ -412,10 +415,23 @@ class BrushSelector(TwoDSelector):
     @property
     def selected(self):
         if self.selected_x is None or len(self.selected_x) == 0:
-            return []
+            return np.array([])
         else:
-            return [[self.selected_x[0], self.selected_y[0]],
-                    [self.selected_x[1], self.selected_y[1]]]
+            return np.array([[self.selected_x[0], self.selected_y[0]],
+                             [self.selected_x[1], self.selected_y[1]]])
+
+    @selected.setter
+    def selected(self, value):
+        if len(value) == 0:
+            x = []
+            y = []
+        else:
+            (x0, y0), (x1, y1) = value
+            x = [x0, x1]
+            y = [y0, y1]
+        # with self.hold_sync():
+        self.selected_x = x
+        self.selected_y = y
 
     _view_name = Unicode('BrushSelector').tag(sync=True)
     _model_name = Unicode('BrushSelectorModel').tag(sync=True)

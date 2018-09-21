@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var LinesModel = markmodel.MarkModel.extend({
 
@@ -64,9 +65,9 @@ var LinesModel = markmodel.MarkModel.extend({
         this.dirty = true;
         // Handling data updates
         var that = this;
-        this.x_data = this.get_typed_field("x");
-        this.y_data = this.get_typed_field("y");
-        this.color_data = this.get_typed_field("color");
+        this.x_data = this.get("x");
+        this.y_data = this.get("y");
+        this.color_data = this.get("color") || [];
 
         var scales = this.get("scales");
         var x_scale = scales.x, y_scale = scales.y;
@@ -74,9 +75,9 @@ var LinesModel = markmodel.MarkModel.extend({
         if (this.x_data.length === 0 || this.y_data.length === 0) {
             this.mark_data = [];
         } else {
-            this.x_data = this.x_data[0] instanceof Array ?
+            this.x_data = !_.isNumber(this.x_data[0]) ?
                 this.x_data : [this.x_data];
-            this.y_data = this.y_data[0] instanceof Array ?
+            this.y_data = !_.isNumber(this.y_data[0]) ?
                 this.y_data : [this.y_data];
             curve_labels = this.get_labels();
 
@@ -87,7 +88,8 @@ var LinesModel = markmodel.MarkModel.extend({
                 this.mark_data = curve_labels.map(function(name, i) {
                     return {
                         name: name,
-                        values: that.y_data[i].map(function(d, j) {
+                        // since y_data may be a TypedArray, explicitly use Array.map
+                        values: Array.prototype.map.call(that.y_data[i], function(d, j) {
                             return {x: that.x_data[0][j], y: d,
                                     y0: that.y_data[Math.min(i + 1, y_length - 1)][j],
                                     sub_index: j};
@@ -181,6 +183,12 @@ var LinesModel = markmodel.MarkModel.extend({
     get_data_dict: function(data, index) {
         return data;
     },
+}, {
+    serializers: _.extend({
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
+        color: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 var FlexLineModel = LinesModel.extend({
@@ -218,8 +226,8 @@ var FlexLineModel = LinesModel.extend({
         this.dirty = true;
         // Handling data updates
         var that = this;
-        this.x_data = this.get_typed_field("x");
-        this.y_data = this.get_typed_field("y");
+        this.x_data = this.get("x");
+        this.y_data = this.get("y");
 
         var scales = this.get("scales");
         var x_scale = scales.x, y_scale = scales.y;
@@ -228,13 +236,13 @@ var FlexLineModel = LinesModel.extend({
             this.mark_data = [];
             this.data_len = 0;
         } else {
-            this.x_data = this.x_data[0] instanceof Array ?
+            this.x_data = !_.isNumber(this.x_data[0]) ?
                 this.x_data : [this.x_data];
-            this.y_data = this.y_data[0] instanceof Array ?
+            this.y_data = !_.isNumber(this.y_data[0]) ?
                 this.y_data : [this.y_data];
             curve_labels = this.get_labels();
-            var color_data = this.get_typed_field("color");
-            var width_data = this.get_typed_field("width");
+            var color_data = this.get("color") || [];
+            var width_data = this.get("width") || [];
             this.data_len = Math.min(this.x_data[0].length, this.y_data[0].length);
 
             this.mark_data = [{

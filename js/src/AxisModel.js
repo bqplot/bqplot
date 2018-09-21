@@ -17,6 +17,7 @@ var widgets = require("@jupyter-widgets/base");
 var d3 = require("d3");
 var _ = require("underscore");
 var basemodel = require("./BaseModel");
+var serialize = require('./serialize')
 var semver_range = "^" + require("../package.json").version;
 
 var AxisModel = basemodel.BaseModel.extend({
@@ -88,7 +89,8 @@ var AxisModel = basemodel.BaseModel.extend({
 }, {
     serializers: _.extend({
          scale: { deserialize: widgets.unpack_models },
-         offset: { deserialize: widgets.unpack_models }
+         offset: { deserialize: widgets.unpack_models },
+         tick_values: serialize.array_or_json,
     }, widgets.WidgetModel.serializers)
 });
 

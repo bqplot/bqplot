@@ -18,6 +18,9 @@ var d3 = require("d3");
 var _ = require("underscore");
 var popperreference = require("./PopperReference");
 var popper = require("popper.js");
+var THREE = require('three')
+
+THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl')
 
 if (popper.__esModule) {
     popper = popper.default;
@@ -28,12 +31,53 @@ var Figure = widgets.DOMWidgetView.extend({
     initialize : function() {
         // Internet Explorer does not support classList for svg elements
         this.el.classList.add("bqplot");
-        this.el.classList.add("figure");
         this.el.classList.add("jupyter-widgets");
 
         var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
-        this.el.appendChild(svg);
+        var svg_interaction = document.createElementNS(d3.ns.prefix.svg, "svg");
         this.svg = d3.select(svg);
+        this.svg_interaction = d3.select(svg_interaction);
+        // a shared webgl context for all marks
+        this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, premultipliedAlpha: true});
+        if(!this.renderer.capabilities.floatFragmentTextures) {
+            console.error("you videocard/driver does not support float fragment textures, you may have limited functionality")
+        }
+        var gl = this.renderer.context;
+        if(!gl.getExtension('OES_texture_float_linear')) {
+            console.error("you videocard/driver does not support float fragment linear interpolation, you may have limited functionality")
+        }
+        this.renderer.setSize(100, 100);
+        this.renderer.setClearAlpha(0);
+
+        this.overlay_container = document.createElement('div')
+        this.overlay_container.style = 'position: relative;'
+
+        this.svg_container = document.createElement('div')
+        this.svg_container.style = 'position: absolute;'
+        this.overlay_container.appendChild(this.svg_container);
+        this.svg_container.appendChild(svg)
+
+        this.svg_container.classList.add("bqplot");
+        this.svg_container.classList.add("figure");
+        this.svg_container.classList.add("jupyter-widgets");
+
+        this.overlay_container.appendChild(this.renderer.domElement);
+        // we're setting this style in render again, kept here for clarity
+        // this.renderer.domElement.style = 'position: absolute;'
+        this.renderer.domElement.classList.add("jupyter-widgets"); // make sure we have the same paddi fng
+
+        this.svg_interaction_container = document.createElement('div')
+        this.svg_interaction_container.style = 'position: absolute; pointer-events: none; '
+        this.overlay_container.appendChild(this.svg_interaction_container);
+        this.svg_interaction_container.appendChild(svg_interaction)
+
+        this.svg_interaction_container.classList.add("bqplot");
+        this.svg_interaction_container.classList.add("figure");
+        this.svg_interaction_container.classList.add("jupyter-widgets");
+
+
+        this.el.appendChild(this.overlay_container);
+
         Figure.__super__.initialize.apply(this, arguments);
     },
 
@@ -114,6 +158,9 @@ var Figure = widgets.DOMWidgetView.extend({
 
         this.fig = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+        this.fig_interaction = this.svg_interaction.append("g")
+            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+        this.renderer.domElement.style = 'position: absolute; pointer-events: none; left: ' + this.margin.left + 'px; top: '+ this.margin.top + 'px;'
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "tooltip_div");
         this.popper_reference = new popperreference.PositionReference({x: 0, y: 0, width: 20, height: 20});
@@ -132,10 +179,10 @@ var Figure = widgets.DOMWidgetView.extend({
 
         this.fig_axes = this.fig.append("g");
         this.fig_marks = this.fig.append("g");
-        this.interaction = this.fig.append("g");
+        this.interaction = this.fig_interaction.append("g");
 
         /*
-         * The following is the structure of the DOM element constructed
+         * The following was the structure of the DOM element constructed
          *
         <div class="bqplot figure jupyter-widgets">
             <svg>
@@ -145,6 +192,31 @@ var Figure = widgets.DOMWidgetView.extend({
                     <g class="svg-interaction"></g>
                 </g>
             </svg>
+        </div>
+
+        Since marks have to be drawn on top of the axes etc, we make an overlay canvas.
+        However, the interact part needs to be drawn on top of that, so we create another svg
+        for that.
+        When creating a screenshot/image, we collapse all this into one svg.
+
+        <div class="bqplot jupyter-widgets">
+            <div class="bqplot figure jupyter-widgets" style='position: absolute;'>
+                <svg>
+                    <g class="svg-figure" transform="margin translation">
+                        <g class="svg-axes"></g>
+                        <g class="svg-marks"></g>
+                    </g>
+                </svg>
+            </div>
+            <canvas style='position: absolute;'>
+            </canvas>
+            <div class="bqplot figure jupyter-widgets" style='position: absolute;'>
+                <svg>
+                    <g class="svg-figure" transform="margin translation">
+                        <g class="svg-interaction"></g>
+                    </g>
+                </svg>
+            </div>
         </div>
         */
 
@@ -477,6 +549,7 @@ var Figure = widgets.DOMWidgetView.extend({
     update_plotarea_dimensions: function() {
         this.plotarea_width = this.width - this.margin.left - this.margin.right;
         this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
+        this.renderer.setSize(this.plotarea_width, this.plotarea_height);
     },
 
     processPhosphorMessage: function(msg) {
@@ -721,66 +794,112 @@ var Figure = widgets.DOMWidgetView.extend({
             return css;
         };
 
-        var svg2svg = function(node) {
-            // Creates a standalone SVG string from an inline SVG element
-            // containing all the computed style attributes.
-            var svg = node.cloneNode(true);
-            svg.setAttribute("version", "1.1");
-            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-            svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-            svg.style.background = window.getComputedStyle(document.body).background;
-            var s = document.createElement("style");
-            s.setAttribute("type", "text/css");
-            s.innerHTML = "<![CDATA[\n" +
-                get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
-            var defs = document.createElement("defs");
-            defs.appendChild(s);
-            svg.insertBefore(defs, svg.firstChild);
-            // Getting the outer HTML
-            return svg.outerHTML;
+       var svg2svg = function(node, canvas, node_interaction, width, height) {
+           // Creates a standalone SVG string from an inline SVG element
+           // containing all the computed style attributes.
+           var svg = node.cloneNode(true);
+           svg.setAttribute("version", "1.1");
+           svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+           svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+           svg.style.background = window.getComputedStyle(document.body).background;
+           var s = document.createElement("style");
+           s.setAttribute("type", "text/css");
+           s.innerHTML = "<![CDATA[\n" +
+               get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
+           var defs = document.createElement("defs");
+           defs.appendChild(s);
+           // we put the svg interaction part after the marks
+           var g_root = svg.children[0];
+           var svg_interaction = node_interaction.cloneNode(true);
+           g_root.insertBefore(svg_interaction.children[0].children[0], g_root.children[3])
+
+           // and add the webgl canvas as an image
+           var data_url = canvas.toDataURL('image/png');
+           var marks = d3.select(g_root.children[2]);
+           marks.append("image")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", 1)
+                .attr("height", 1)
+                .attr("preserveAspectRatio", "none")
+                .attr("transform", "scale(" + width + ", " + height + ")")
+                .attr("href", data_url);
+
+           svg.insertBefore(defs, svg.firstChild);
+           // Getting the outer HTML
+           return svg.outerHTML;
         };
-        // Create standalone SVG string
-        var svg = svg2svg(this.svg.node());
-        return svg;
+        // Even though the canvas may display the rendering already, it is not guaranteed it can be read of the canvas
+        // or we have to set preserveDrawingBuffer to true, which may impact performance.
+        // Instead, we render again, and directly afterwards we do get the pixel data using canvas.toDataURL
+        return this.render_gl().then(() => {
+            // Create standalone SVG string
+            var svg = svg2svg(this.svg.node(), this.renderer.domElement, this.svg_interaction.node(), this.plotarea_width, this.plotarea_height);
+            return svg;
+            // Save to PNG
+            //svg2png(svg, this.width, this.height)
+        })
+
     },
 
-
     save_png: function(filename) {
+       
+       // Render a SVG data into a canvas and download as PNG.
+        this.get_svg().then((xml) => {
+            var image = new Image();
+            image.onload = () => {
+                var canvas = document.createElement("canvas");
+                canvas.classList.add('bqplot');
+                canvas.width = this.width;
+                canvas.height = this.height;
+                var context = canvas.getContext("2d");
+                context.drawImage(image, 0, 0);
+                var a = document.createElement("a");
+                a.download = filename || "image.png";
+                a.href = canvas.toDataURL("image/png");
+                document.body.appendChild(a);
+                a.click();
+            };
+            image.src = "data:image/svg+xml;base64," + btoa(xml);
+        })
+    },
 
-        var xml = this.get_svg();
-
-        // Render a SVG data into a canvas and download as PNG.
-        var image = new Image();
-        var that = this;
-        image.onload = function() {
-            var canvas = document.createElement("canvas");
-            canvas.classList.add('bqplot');
-            canvas.width = that.width;
-            canvas.height = that.height;
-            var context = canvas.getContext("2d");
-            context.drawImage(image, 0, 0);
+    save_svg: function(filename) {
+        this.get_svg().then((xml) => {
             var a = document.createElement("a");
-            a.download = filename || "bqplot.png";
-            a.href = canvas.toDataURL("bqplot/png");
+            a.download = filename || "bqplot.svg";
+            a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(xml);
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-        };
-        image.src = "data:image/svg+xml;base64," + btoa(xml);
+        });
     },
 
-
-    save_svg: function(filename) {
-
-        var xml = this.get_svg();
-
-        var a = document.createElement("a");
-        a.download = filename || "bqplot.svg";
-        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(xml);
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+    update_gl: function() {
+        if(!this._update_requested) {
+           this._update_requested = true
+           console.log('update gl')
+           requestAnimationFrame(() => this._update_gl())
+       }
     },
+
+    _update_gl: function() {
+        this.render_gl()
+        this._update_requested = false;
+    },
+
+    render_gl: function() {
+        return Promise.all(this.mark_views.views).then((views) => {
+            // render all marks that have a render_gl method
+            this.renderer.autoClear = false;
+            this.renderer.autoClearColor = new THREE.Color(0x000000)
+            this.renderer.clear()
+            let marks_gl = _.filter(views, (view) => view.render_gl)
+            _.each(marks_gl, (mark) => {
+                mark.render_gl()
+            })
+        });
+    }
 });
 
 

@@ -145,7 +145,9 @@ var HeatMap = mark.Mark.extend({
         // cells based on the parameters passed.
         //
         // data is the data for which the plot data is to be generated.
-        var scaled_data = data.map(this.scales.x.scale);
+        // since data may be a TypedArray, explicitly use Array.map
+        data = Array.from(data)
+        var scaled_data = Array.prototype.map.call(data, this.scales.x.scale);
         var x_padding = this.get_x_padding(scaled_data);
         var num_cols = data.length;
 
@@ -191,6 +193,7 @@ var HeatMap = mark.Mark.extend({
         // cells based on the parameters passed.
         //
         //  data is the data for which the plot data is to be generated.
+        data = Array.from(data)
         var scaled_data = data.map(this.scales.y.scale);
         var y_padding = this.get_y_padding(scaled_data);
         var num_rows = data.length;

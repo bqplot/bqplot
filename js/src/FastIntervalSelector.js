@@ -111,7 +111,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
         this.rect.attr("x", start);
         this.rect.attr("width", interval_size);
         var pixel_extent = [start, start + interval_size];
-        this.model.set_typed_field("selected",
+        this.set_selected("selected",
                                    this.scale.invert_range(pixel_extent));
         this.update_mark_selected(pixel_extent);
         this.touch();
@@ -165,7 +165,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
     reset: function() {
         this.rect.attr("x", 0)
           .attr("width", 0);
-        this.model.set_typed_field("selected", {});
+        this.model.set("selected", null);
         this.update_mark_selected();
         this.touch();
     },
@@ -187,7 +187,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected = this.model.get_typed_field("selected");
+        var selected = this.model.get("selected") || [];
         if(selected.length === 0) {
             this.reset();
         } else if (selected.length != 2) {

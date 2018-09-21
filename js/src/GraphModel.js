@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var GraphModel = markmodel.MarkModel.extend({
     defaults: function() {
@@ -47,9 +48,9 @@ var GraphModel = markmodel.MarkModel.extend({
 
     update_node_data: function() {
         var node_data = this.get("node_data"),
-            x = this.get_typed_field("x"),
-            y = this.get_typed_field("y"),
-            color = this.get_typed_field("color"),
+            x = this.get("x"),
+            y = this.get("y"),
+            color = this.get("color") || [],
 
             scales = this.get("scales"),
             x_scale = scales.x,
@@ -116,8 +117,8 @@ var GraphModel = markmodel.MarkModel.extend({
     update_link_data: function() {
         var link_color_scale = this.get("scales").link_color;
         this.link_data = this.get("link_data");
-        var link_matrix = this.get_typed_field("link_matrix");
-        var link_color = this.get_typed_field("link_color");
+        var link_matrix = this.get("link_matrix");
+        var link_color = this.get("link_color");
         var that = this;
 
         if (link_color_scale !== undefined && link_color.length > 0) {
@@ -173,6 +174,14 @@ var GraphModel = markmodel.MarkModel.extend({
             }
        }
     }
+}, {
+    serializers: _.extend({
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
+        color: serialize.array_or_json,
+        link_color: serialize.array_or_json,
+        link_matrix: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 module.exports = {

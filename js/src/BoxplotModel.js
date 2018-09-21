@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var BoxplotModel = markmodel.MarkModel.extend({
 
@@ -47,8 +48,8 @@ var BoxplotModel = markmodel.MarkModel.extend({
     },
 
     update_data: function() {
-        var x_data = this.get_typed_field("x");
-        var y_data = this.get_typed_field("y");
+        var x_data = this.get("x");
+        var y_data = this.get("y");
 
         y_data.forEach(function(elm) {
             elm.sort(function(a, b) {
@@ -102,6 +103,11 @@ var BoxplotModel = markmodel.MarkModel.extend({
             y_scale.del_domain([], this.model_id + "_y");
         }
     }
+}, {
+    serializers: _.extend({
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 

@@ -31,12 +31,14 @@ install:
   - source activate bqplot-test
   - pip install . coveralls
 script:
-    - nosetests --with-coverage --cover-package bqplot
+    - py.test --cov-report=term --cov=bqplot tests
     - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
         export DISPLAY=:99.0;
         sh -e /etc/init.d/xvfb start || true;
         jupyter labextension install js @jupyter-widgets/jupyterlab-manager;
         python -m jupyterlab.selenium_check;
+        (rm -rf js/node_modules);
+        (cd js; npm install);
         (cd js; ./node_modules/.bin/karma start)
       fi
 after_success:

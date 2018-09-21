@@ -47,6 +47,52 @@ function point_in_lasso(point, vertices) {
     return is_inside;
 }
 
+function points_in_lasso(vertx, verty, x, y) {
+    var meanx = 0;
+    var meany = 0;
+    var N = x.length;
+    var Nvert = vertx.length;
+    for(var i = 0; i < N; i++) {
+        meanx += x[i];
+        meany += y[i];
+    }
+    meanx /= N;
+    meany /= N;
+    var radius_squared = 0;
+    for(var i = 0; i < N; i++) {
+        var rx = x[i] - meanx;
+        var ry = y[i] - meany;
+        radius_squared = Math.max(radius_squared, rx*rx + ry*ry);
+    }
+    var mask = new Uint8Array(N);
+    var indices = new Uint32Array(N);
+    var count = 0;
+    console.log(meanx, meany, Math.sqrt(radius_squared))
+    for(var k = 0; k < N; k++){
+        var testx = x[k];
+        var testy = y[k];
+        var i, j, c = 0;
+        mask[k] = 0;
+        var distancesq = Math.pow(testx - meanx, 2) + Math.pow(testy - meany, 2);
+        if(distancesq < radius_squared)
+        {
+            for (i = 0, j = Nvert-1; i < Nvert; j = i++) {
+                if ( ((verty[i]>testy) != (verty[j]>testy)) &&
+                    (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
+                    c = !c;
+            }
+            mask[k] = c;
+            if(c)
+                indices[count++] = k;
+        }
+    }
+    indices = indices.slice(0, count);
+    return {mask: mask, indices: indices}
+}
+
+
+
 module.exports = {
     point_in_lasso: point_in_lasso,
+    points_in_lasso: points_in_lasso,
 }

@@ -86,7 +86,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         //update the index vertical line
         this.line.attr({x1: xpixel, x2: xpixel});
 
-        this.model.set_typed_field("selected", [this.invert_pixel(xpixel)]);
+        this.set_selected("selected", [this.invert_pixel(xpixel)]);
         _.each(this.mark_views, function(mark_view) {
              mark_view.invert_point(xpixel);
         });
@@ -107,7 +107,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         if(this.background !== undefined && this.background !== null) {
             this.background.on("click", _.bind(this.initial_click, this));
         }
-        this.model.set_typed_field("selected", {});
+        this.model.set("selected", null);
 
         _.each(this.mark_views, function(mark_view) {
             mark_view.invert_point();
@@ -130,7 +130,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected = this.model.get_typed_field("selected");
+        var selected = this.model.get("selected") || [];
         if(selected.length === 0) {
             this.reset();
         } else if (selected.length != 1) {

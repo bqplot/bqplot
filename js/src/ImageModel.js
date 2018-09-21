@@ -42,7 +42,7 @@ var ImageModel = markmodel.MarkModel.extend({
 
     update_data: function() {
         this.mark_data = {
-            x: this.get_typed_field("x"), y: this.get_typed_field("y")
+            x: this.get("x"), y: this.get("y")
         };
         this.update_domains();
         this.trigger("data_updated");

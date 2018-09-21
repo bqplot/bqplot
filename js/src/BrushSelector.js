@@ -108,9 +108,34 @@ var BaseBrushSelector = {
             // 2d brush
             var x = extent_x, y = extent_y;
         }
-        var point_selector = function(p) {
-            return sel_utils.point_in_rectangle(p, x, y);
-        };
+        if(x.length)
+            x.sort(function(a, b){return a-b});
+        if(y.length)
+            y.sort(function(a, b){return a-b});
+        var point_selector = function(xar, yar) {
+            if(typeof yar == "undefined") { // the 'old' method for backwards compatibility
+                var p = xar;
+                return sel_utils.point_in_rectangle(p, x, y);
+            }
+            var N = Math.min(xar.length, yar.length);
+            var mask = new Uint8Array(N);
+            // for performance we keep the if statement out of the loop
+            if(x.length && y.length) {
+                for(var i = 0; i < N; i++) {
+                    mask[i] = x[0] <= xar[i] && xar[i] <= x[1] && y[0] <= yar[i] && yar[i] <= y[1];
+                }
+                return mask;
+            } else if(x.length) {
+                for(var i = 0; i < N; i++) {
+                    mask[i] = x[0] <= xar[i] && xar[i] <= x[1]
+                }
+            } else { // (y.length)
+                for(var i = 0; i < N; i++) {
+                    mask[i] = y[0] <= yar[i] && yar[i] <= y[1];
+                }
+            };
+            return mask;
+        }
         var rect_selector = function(xy) {
             return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
         };
@@ -143,8 +168,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
         // FIXME move this to BaseBrushSelector
         this.brush.clear();
         this._update_brush();
-        this.model.set("selected_x", {});
-        this.model.set("selected_y", {});
+        this.model.set("selected_x", null);
+        this.model.set("selected_y", null);
         this.update_mark_selected();
         this.touch();
     },
@@ -164,10 +189,12 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
         
         extent_x = x_ordinal ? this.x_scale.invert_range(extent_x) : extent_x;
         extent_y = y_ordinal ? this.y_scale.invert_range(extent_y) : extent_y;
+        extent_x = Float64Array.from(extent_x)
+        extent_y = Float64Array.from(extent_y)
 
         this.update_mark_selected(pixel_extent_x, pixel_extent_y);
-        this.model.set_typed_field("selected_x", extent_x);
-        this.model.set_typed_field("selected_y", extent_y);
+        this.set_selected("selected_x", extent_x);
+        this.set_selected("selected_y", extent_y);
         this.touch();
     },
 
@@ -176,8 +203,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected_x = this.model.get_typed_field("selected_x"),
-            selected_y = this.model.get_typed_field("selected_y");
+        var selected_x = this.model.get("selected_x") || [],
+            selected_y = this.model.get("selected_y") || [];
         if(selected_x.length === 0 || selected_y.length === 0) {
             this.reset();
         } else if(selected_x.length != 2 || selected_y.length != 2) {
@@ -265,7 +292,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
 
         this.update_mark_selected(pixel_extent);
 
-        this.model.set_typed_field("selected", extent);
+        this.set_selected("selected", extent);
         this.touch();
     },
 
@@ -293,7 +320,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected = this.model.get_typed_field("selected");
+        var selected = this.model.get("selected") || [];
         if(selected.length === 0) {
             this.reset();
         } else if(selected.length != 2) {
@@ -383,7 +410,7 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
                 delete selected[prev_label];
             }
         });
-        this.model.set_typed_field("_selected", selected);
+        this.set_selected("_selected", selected);
         this.touch();
     },
 

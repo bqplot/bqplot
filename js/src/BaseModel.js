@@ -16,6 +16,7 @@
 var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
 var semver_range = "^" + require("../package.json").version;
+var serialize = require('./serialize.js')
 
 var BaseModel = widgets.WidgetModel.extend({
 
@@ -27,69 +28,6 @@ var BaseModel = widgets.WidgetModel.extend({
         });
     },
 
-    get_typed_field: function(param) {
-        // Function that reads in an array of a field that is typed. It
-        // performs tpe conversions that you may require and returns you
-        // the appropriate array.
-        var value = this.get(param);
-        var return_value = [];
-        var that = this;
-        if(value.hasOwnProperty("type") &&
-           value.hasOwnProperty("values") &&
-           value.values !== null) {
-            if(value.type === "date") {
-                return_value = this.get(param).values;
-                if(return_value[0] instanceof Array) {
-                   return_value = return_value.map(function(val) {
-                       return val.map(function(elem) {
-                           return that.convert_to_date(elem);
-                       });
-                   });
-                } else {
-                    return_value = return_value.map(function(val) {
-                        return that.convert_to_date(val);
-                    });
-                }
-            } else {
-                return_value = this.get(param).values;
-            }
-        }
-        return return_value;
-    },
-
-    set_typed_field: function(param, value, options) {
-        // function takes a value which has to be set for a typed field and
-        // performs the conversion needed before sending it across to
-        // Python. This **only** sets the attribute. The caller is
-        // responsible for calling save_changes
-        var saved_value = value;
-        var return_object = {};
-        var that = this;
-        var current_type = this.get(param).type;
-
-        if (saved_value[0] instanceof Array && saved_value[0][0] instanceof Date ||
-            saved_value[0] instanceof Date) {
-            current_type = "date";
-        }
-
-        if(saved_value[0] instanceof Array) {
-            if(current_type === "date")
-                saved_value = saved_value.map(function(val) {
-                    return val.map(function(elem) {
-                        return that.convert_to_json(elem);
-                    });
-                });
-        } else {
-            if(current_type === "date")
-                saved_value = saved_value.map(function(elem) {
-                    return that.convert_to_json(elem);
-                });
-        }
-        // TODO: this is not good. Need to think of something better
-        return_object.type = current_type;
-        return_object.values = saved_value;
-        this.set(param, return_object, options);
-    },
 
     get_date_elem: function(param) {
         return this.convert_to_date(this.get(param));

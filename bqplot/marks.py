@@ -51,8 +51,8 @@ from traittypes import Array
 from numpy import histogram
 
 from .scales import Scale, OrdinalScale, LinearScale
-from .traits import (Date, array_serialization,
-                     array_squeeze, array_dimension_bounds)
+from .traits import (Date, array_serialization, 
+                     array_squeeze, array_dimension_bounds, array_supported_kinds)
 from ._version import __frontend_version__
 from .colorschemes import CATEGORY10
 
@@ -172,7 +172,7 @@ class Mark(Widget):
     visible = Bool(True).tag(sync=True)
     selected_style = Dict().tag(sync=True)
     unselected_style = Dict().tag(sync=True)
-    selected = List(None, allow_none=True).tag(sync=True)
+    selected = Array(None, allow_none=True).tag(sync=True, **array_serialization)
 
     enable_hover = Bool(True).tag(sync=True)
     tooltip = Instance(DOMWidget, allow_none=True, default_value=None)\
@@ -360,11 +360,11 @@ class Lines(Mark):
     x = Array([]).tag(sync=True, scaled=True,
                       rtype='Number', atype='bqplot.Axis',
                       **array_serialization)\
-        .valid(array_squeeze, array_dimension_bounds(1, 2))
+        .valid(array_squeeze, array_dimension_bounds(1, 2), array_supported_kinds())
     y = Array([]).tag(sync=True, scaled=True,
                       rtype='Number', atype='bqplot.Axis',
                       **array_serialization)\
-        .valid(array_squeeze, array_dimension_bounds(1, 2))
+        .valid(array_squeeze, array_dimension_bounds(1, 2), array_supported_kinds())
     color = Array(None, allow_none=True).tag(sync=True,
                                              scaled=True,
                                              rtype='Color',
@@ -522,8 +522,9 @@ class _ScatterBase(Mark):
         'opacity': {'dimension': 'opacity'},
         'rotation': {'dimension': 'rotation'}
     }).tag(sync=True)
-    default_opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
-        .tag(sync=True, display_name='Opacities')
+    default_opacities = Array(None, allow_none=True)\
+        .tag(sync=True, display_name='Opacities', **array_serialization)\
+        .valid(array_squeeze, array_dimension_bounds(1, 1))
     hovered_style = Dict().tag(sync=True)
     unhovered_style = Dict().tag(sync=True)
     hovered_point = Int(None, allow_none=True).tag(sync=True)
@@ -709,6 +710,11 @@ class Scatter(_ScatterBase):
 
     _view_name = Unicode('Scatter').tag(sync=True)
     _model_name = Unicode('ScatterModel').tag(sync=True)
+
+@register_mark('bqplot.ScatterMega')
+class ScatterMega(Scatter):
+    _view_name = Unicode('ScatterMega').tag(sync=True)
+    _model_name = Unicode('ScatterMegaModel').tag(sync=True)
 
 
 @register_mark('bqplot.Label')
@@ -918,7 +924,7 @@ class Boxplot(Mark):
     # is undefined.
     y = Array([[]]).tag(sync=True, scaled=True, rtype='Number',
                         atype='bqplot.Axis', **array_serialization)\
-        .valid(array_dimension_bounds(1, 2))
+        .valid(array_dimension_bounds(1, 2), array_supported_kinds())
 
     # Other attributes
     scales_metadata = Dict({
@@ -1012,7 +1018,7 @@ class Bars(Mark):
     y = Array([]).tag(sync=True, scaled=True, rtype='Number',
                       atype='bqplot.Axis',
                       **array_serialization)\
-        .valid(array_squeeze, array_dimension_bounds(1, 2))
+        .valid(array_squeeze, array_dimension_bounds(1, 2), array_supported_kinds())
     color = Array(None, allow_none=True)\
         .tag(sync=True, scaled=True, rtype='Color',
              atype='bqplot.ColorAxis', **array_serialization)\
