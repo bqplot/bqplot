@@ -143,8 +143,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
         // FIXME move this to BaseBrushSelector
         this.brush.clear();
         this._update_brush();
-        this.model.set("selected_x", {});
-        this.model.set("selected_y", {});
+        this.model.set("selected_x", null);
+        this.model.set("selected_y", null);
         this.update_mark_selected();
         this.touch();
     },
@@ -164,6 +164,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
         
         extent_x = x_ordinal ? this.x_scale.invert_range(extent_x) : extent_x;
         extent_y = y_ordinal ? this.y_scale.invert_range(extent_y) : extent_y;
+        extent_x = Float64Array.from(extent_x)
+        extent_y = Float64Array.from(extent_y)
 
         this.update_mark_selected(pixel_extent_x, pixel_extent_y);
         this.set_selected("selected_x", extent_x);
