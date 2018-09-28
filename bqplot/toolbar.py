@@ -26,10 +26,10 @@ Toolbar
    Toolbar
 """
 
-from traitlets import Unicode, Instance, Bool
-from ipywidgets import DOMWidget, register, widget_serialization
+from traitlets import Unicode, Instance, Bool, CInt, List, Tuple
+from ipywidgets import Widget, DOMWidget, Button, register, widget_serialization
 
-from .interacts import PanZoom
+from .interacts import Interaction, PanZoom
 from .figure import Figure
 from ._version import __frontend_version__
 
@@ -74,6 +74,22 @@ class Toolbar(DOMWidget):
 
     _view_name = Unicode('Toolbar').tag(sync=True)
     _model_name = Unicode('ToolbarModel').tag(sync=True)
+    _view_module = Unicode('bqplot').tag(sync=True)
+    _model_module = Unicode('bqplot').tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
+
+class ToolbarWidget(Widget):
+    child = Instance(DOMWidget, allow_none=True).tag(sync=True, **widget_serialization)
+    actions = List(Tuple(Instance(Button), Unicode())).tag(sync=True, **widget_serialization)
+    toolbar_widgets = List(Instance(DOMWidget), allow_none=True).tag(sync=True, **widget_serialization)
+    interacts = List(Instance(Interaction)).tag(sync=True, **widget_serialization)
+    interact_index = CInt(None, allow_none=True).tag(sync=True)
+    interact = Instance(Interaction, default_value=None, allow_none=True).tag(sync=True,  **widget_serialization)
+
+    _view_name = Unicode('ToolbarWidget').tag(sync=True)
+    _model_name = Unicode('ToolbarWidgetModel').tag(sync=True)
     _view_module = Unicode('bqplot').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
