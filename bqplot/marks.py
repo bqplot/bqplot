@@ -1012,7 +1012,7 @@ class Bars(Mark):
     y = Array([]).tag(sync=True, scaled=True, rtype='Number',
                       atype='bqplot.Axis',
                       **array_serialization)\
-        .valid(array_squeeze, array_dimension_bounds(1, 2))
+        .valid(array_dimension_bounds(1, 2))
     color = Array(None, allow_none=True)\
         .tag(sync=True, scaled=True, rtype='Color',
              atype='bqplot.ColorAxis', **array_serialization)\
