@@ -14,6 +14,7 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
+var controls = require("@jupyter-widgets/controls");
 var phosphor_widget = require('@phosphor/widgets');
 var phosphor_messaging = require('@phosphor/messaging');
 var screenfull = require("screenfull")
@@ -66,10 +67,10 @@ var ToolbarWidgetModel = widgets.DOMWidgetModel.extend({
 }, {
     serializers: _.extend({
         child: { deserialize: widgets.unpack_models },
-        actions: { deserialize: widgets.unpack_models },
+        // actions: { deserialize: widgets.unpack_models },
         toolbar_widgets: { deserialize: widgets.unpack_models },
-        interacts: { deserialize: widgets.unpack_models },
-        interact: { deserialize: widgets.unpack_models },
+        // interacts: { deserialize: widgets.unpack_models },
+        // interact: { deserialize: widgets.unpack_models },
     }, widgets.DOMWidgetModel.serializers)
 });
 
@@ -102,45 +103,55 @@ var ToolbarWidget = widgets.DOMWidgetView.extend({
         this.el_content = document.createElement('div')
         this.el_toolbar.classList.add('jupyter-widgets')
         this.el_toolbar.classList.add('widget-container')
+        this.el_toolbar.classList.add('widget-toolbar')
         this.el.appendChild(this.el_toolbar)
         this.el.appendChild(this.el_content)
         
-        var toolbarWidgetsViewList = new widgets.ViewList((model, index) => {
-            var viewPromise = this.create_child_view(model);
-            viewPromise.then((view) => {
-                this.el_toolbar.appendChild(view.el)
-            })
+        // var toolbarWidgetsViewList = new widgets.ViewList((model, index) => {
+        //     var viewPromise = this.create_child_view(model);
+        //     viewPromise.then((view) => {
+        //         this.el_toolbar.appendChild(view.el)
+        //     })
 
-        }, () => {
+        // }, () => {
 
-        });
-        toolbarWidgetsViewList.update(this.model.get('toolbar_widgets'));
+        // });
+        // toolbarWidgetsViewList.update(this.model.get('toolbar_widgets'));
 
 
         var actionButtonViewList = new widgets.ViewList((model, index) => {
             var viewPromise = this.create_child_view(model);
             viewPromise.then((view) => {
-                // iew.listenTo(view.model, 'click', () => {
-                view.el.onclick = () => {
-                    console.log('click', index)
-                    var handler_name = this.model.get('actions')[index][1];
-                    if(this.childView[handler_name]) {
-                        this.childView[handler_name]()
-                    } else if(this[handler_name]) {
-                        this[handler_name]();
-                    } else if(!handler) {
-                        console.log('no event handler found for', handler_name);
-                        return;
+                if(view.el.nodeName === 'BUTTON') {
+                    view.el.onclick = () => {
+                        console.log('click', index)
+                        var action = model.get('default_action');
+                        if(!action)
+                            return;
+                        var command = action.get('command');
+                        if(!command)
+                            return;
+                        if(this.childView[command]) {
+                            this.childView[command]()
+                        } else if(this[command]) {
+                            this[command]();
+                        } else if(!handler) {
+                            console.log('no event handler found for command, sending event ', command);
+                            this.childView.trigger(command)
+                            return;
+                        }
                     }
-
                 }
                 this.el_toolbar.appendChild(view.el)
-            })
+                this.displayed.then(() => {
+                    view.trigger('displayed', this);
+                });
+            });
 
         }, () => {
 
         });
-        actionButtonViewList.update(this.model.get('actions').map((tuple) => tuple[0]));
+        actionButtonViewList.update(this.model.get('toolbar_widgets'));//.map((tuple) => tuple[0]));
 
 
 
@@ -149,6 +160,7 @@ var ToolbarWidget = widgets.DOMWidgetView.extend({
             this.el_content.appendChild(view.el)
             phosphor_messaging.MessageLoop.postMessage(view.pWidget, phosphor_widget.Widget.ResizeMessage.UnknownSize);
         })
+    }
 });
 
 
