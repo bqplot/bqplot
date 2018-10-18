@@ -896,6 +896,8 @@ class Boxplot(Mark):
     box_width: int (default: None)
         width of the box in pixels. The minimum value is 5.
         If set to None, box_with is auto calculated
+    auto_detect_outliers: bool (default: True)
+        Flag to toggle outlier auto-detection
 
     Data Attributes
 
@@ -935,6 +937,7 @@ class Boxplot(Mark):
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
         .tag(sync=True, display_name='Opacities')
     box_width = Int(None, min=5, allow_none=True).tag(sync=True, display_name='Box Width')
+    auto_detect_outliers = Bool(True).tag(sync=True, display_name='Auto-detect Outliers')
 
     _view_name = Unicode('Boxplot').tag(sync=True)
     _model_name = Unicode('BoxplotModel').tag(sync=True)

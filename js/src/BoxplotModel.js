@@ -34,7 +34,8 @@ var BoxplotModel = markmodel.MarkModel.extend({
             box_fill_color: "dodgerblue",
             outlier_fill_color: "gray",
             opacities: [],
-            box_width: null // auto calculate box width
+            box_width: null, // auto calculate box width
+            auto_detect_outliers: true
         });
     },
 
