@@ -91,6 +91,11 @@ var BaseBrushSelector = {
         this.d3el.call(this.brush.event);
     },
 
+    clear_brush: function() {
+        this.brush.clear();
+        this._update_brush();
+    },
+
     update_mark_selected: function(extent_x, extent_y) {
 
         if(extent_x === undefined || extent_x.length === 0) {
@@ -139,19 +144,16 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
         this.listenTo(this.model, "change:selected_y", this.selected_changed);
     },
 
-    reset: function() {
-        // FIXME move this to BaseBrushSelector
-        this.brush.clear();
-        this._update_brush();
+    empty_selection: function() {
+        this.update_mark_selected();
         this.model.set("selected_x", {});
         this.model.set("selected_y", {});
-        this.update_mark_selected();
         this.touch();
     },
 
     convert_and_save: function(extent) {
         if(extent.length === 0) {
-            this.update_mark_selected([]);
+            this.empty_selection();
             return;
         }
         var extent_x = [extent[0][0], extent[1][0]];
@@ -159,13 +161,16 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
 
         var x_ordinal = (this.x_scale.model.type === "ordinal"),
             y_ordinal = (this.y_scale.model.type === "ordinal");
-        var pixel_extent_x = x_ordinal ? extent_x : extent_x.map(this.x_scale.scale),
-            pixel_extent_y = y_ordinal ? extent_y : extent_y.map(this.y_scale.scale);
-        
-        extent_x = x_ordinal ? this.x_scale.invert_range(extent_x) : extent_x;
-        extent_y = y_ordinal ? this.y_scale.invert_range(extent_y) : extent_y;
-
+        var pixel_extent_x = x_ordinal ? extent_x :
+                             extent_x.map(this.x_scale.scale),
+            pixel_extent_y = y_ordinal ? extent_y :
+                             extent_y.map(this.y_scale.scale);
+        extent_x = x_ordinal ?
+                   this.x_scale.invert_range(extent_x) : extent_x;
+        extent_y = y_ordinal ?
+                   this.y_scale.invert_range(extent_y) : extent_y;
         this.update_mark_selected(pixel_extent_x, pixel_extent_y);
+
         this.model.set_typed_field("selected_x", extent_x);
         this.model.set_typed_field("selected_y", extent_y);
         this.touch();
@@ -179,7 +184,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
         var selected_x = this.model.get_typed_field("selected_x"),
             selected_y = this.model.get_typed_field("selected_y");
         if(selected_x.length === 0 || selected_y.length === 0) {
-            this.reset();
+            this.clear_brush();
+            this.update_mark_selected();
         } else if(selected_x.length != 2 || selected_y.length != 2) {
             // invalid value for selected. Ignoring the value
             return;
@@ -245,18 +251,15 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
         this.listenTo(this.model, "change:color", this.change_color, this);
     },
 
-    reset: function() {
-        this.brush.clear();
-        this._update_brush();
-
-        this.model.set("selected", {});
+    empty_selection: function() {
         this.update_mark_selected();
+        this.model.set("selected", {});
         this.touch();
     },
 
     convert_and_save: function(extent) {
         if(extent.length === 0) {
-            this.update_mark_selected([]);
+            this.empty_selection();
             return;
         }
         var ordinal = (this.scale.model.type === "ordinal");
@@ -264,7 +267,6 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
         extent = ordinal ? this.scale.invert_range(extent) : extent;
 
         this.update_mark_selected(pixel_extent);
-
         this.model.set_typed_field("selected", extent);
         this.touch();
     },
@@ -295,7 +297,8 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
         //reposition the interval selector and set the selected attribute.
         var selected = this.model.get_typed_field("selected");
         if(selected.length === 0) {
-            this.reset();
+            this.clear_brush();
+            this.update_mark_selected();
         } else if(selected.length != 2) {
             // invalid value for selected. Ignoring the value
             return;
