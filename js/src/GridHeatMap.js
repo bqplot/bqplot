@@ -314,7 +314,7 @@ var GridHeatMap = mark.Mark.extend({
         var that = this;
 
         var selected_cell_nums = this._cell_nums_from_indices(this.selected_indices);
-        var unsel_cell_nums = (selected_cell_nums === null) ? []
+        var unsel_cell_nums = (selected_cell_nums === null || selected_cell_nums.length === 0) ? []
                                 : _.difference(_.range(num_rows*num_cols), selected_cell_nums);
 
         this.selected_elements = this._filter_cells_by_cell_num(selected_cell_nums);
@@ -460,8 +460,6 @@ var GridHeatMap = mark.Mark.extend({
                 this.event_dispatcher("element_clicked");
             }, this));
 
-        var stroke = this.model.get("stroke");
-        var opacity = this.model.get("opacity");
         this.display_cells
             .attr({
                 "x": function(d, i) {
@@ -470,11 +468,8 @@ var GridHeatMap = mark.Mark.extend({
             })
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height",function(d) { return row_plot_data.widths[d.row_num]; })
-            .style("fill", function(d) { return that.get_element_fill(d); })
-            .style({
-                "stroke": stroke,
-                "opacity": opacity
-            });
+
+        this.apply_styles();
 
         this.display_cells.on("click", function(d, i) {
             return that.event_dispatcher("element_clicked", {
