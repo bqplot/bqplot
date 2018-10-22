@@ -13,332 +13,301 @@
  * limitations under the License.
  */
 
+:root {
+    --bq-content-font-color: var(--jp-content-font-color1);
+    --bq-plotarea-background-fill: var(--jp-layout-color1);
+    --bq-background: var(--jp-layout-color0);
+
+    --bq-axislabel-font: 14px sans-serif;
+
+    --bq-axis-rect-opacity: 1.0;
+    --bq-axis-tick-stroke-width: 1.0;
+    --bq-axis-tick-opacity: 1.0;
+    --bq-axis-tick-text-font: 12px sans-serif;
+
+    --bq-mark-tooltip-border-radius : 5px;
+    --bq-mark-tooltip--webkit-user-select: none;
+    --bq-mark-tooltip--moz-user-select: none;
+
+    --bq-mainheading-font: 16px sans-serif;
+    --bq-mainheading-font-size: large;
+
+    --bq-world-map-path-stroke-width: 0.25px;
+
+    --bq-pie-polyline-stroke-width: 1px;
+    --bq-pie-polyline-fill: none;
+
+    --bq-network-node-element-stroke: #000;
+    --bq-network-node-element-stroke-width: 1.5px;
+
+    --bq-network-link-fill: none;
+    --bq-network-link-stroke: #666;
+    --bq-network-link-stroke-width: 1.5px;
+
+    --bq-network-node-label-pointer-events: none;
+    --bq-network-node-label-font: 12px sans-serif;
+
+    --bq-selector-fill: var(--jp-layout-color4);
+
+    --bq-mark-tooltip-border: 2px solid whitesmoke;
+    --bq-mark-tooltip-box-shadow: 1px 1px 2px rgba(245, 245, 245, 0.8);
+    --bq-mark-tooltip-background-color: black;
+    --bq-mark-tooltip-td-border: thin solid whitesmoke;
+    --bq-mark-tooltip-table: black;
+
+    --bq-world-map-path-stroke: black;
+    --bq-world-map-path-fill: seagreen;
+
+    --bq-pie-polyline-opacity: .5;
+    --bq-pie-polyline-stroke: white;
+
+    --bq-network-node-element-fill: #666;
+    --bq-network-node-label-text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
+    --bq-linkarrow-fill: #ccc;
+}
+
+/* Ideally this should be in :root */
 .common() {
-    .bqplot {
-        box-sizing: border-box;
-        display: flex;
-        width: 640px;
-        height: 480px;
-    }
-    .bqplot > svg {
-        font: 11px sans-serif;
-        user-select: none;
-        -ms-user-select: none;
-        -khtml-user-select: none;
-        -khtml-user-select: none;
-        -webkit-user-select: none;
-        flex-grow: 1;
-        .axis {
-            line {
-                shape-rendering: crispEdges;
-                font: 10px sans-serif;
-                stroke-width: 1px;
-            }
-            path, line {fill: none;}
-            text.axislabel, tspan.axislabel {
-                text-anchor: end;
-                font: 14px sans-serif;
-            }
-            .tick text {
-                cursor: default;
-            }
-        }
-        .axis.axisbold path {
-            stroke-width: 3px;
-        }
+    --bq-axis-rect-stroke: var(--bq-tick-color);
+    --bq-axis-path-stroke: var(--bq-tick-color);
+    --bq-axis-tick-stroke: var(--bq-tick-color);
+    --bq-axis-tick-short-stroke: var(--bq-tick-color);
 
-        .axis.axisbold text,
-        .axis.axisbold text.axislabel {
-            font-weight: bolder;
-        }
+    --bq-mainheading-fill: var(--bq-content-font-color);
+    --bq-axislabel-fill: var(--bq-content-font-color);
 
-        text.mainheading {
-            text-anchor: middle;
-            font: 16px sans-serif;
+    --bq-stick-stroke: var(--bq-content-font-color);
+    --bq-stick-fill: var(--bq-content-font-color);
+    --bq-sticktext-fill: var(--bq-content-font-color);
+    --bq-default-stroke: var(--bq-content-font-color);
+}
+
+.gg {
+    --bq-axis-lines-color: var(--jp-ui-inverse-font-color2);
+    --bq-plotarea-background-fill: var(--jp-layout-color2);
+    --bq-tick-color: var(--bq-axis-lines-color);
+    --bq-axis-tick-text-fill: var(--jp-content-font-color2);
+
+    .common()
+}
+
+.classic {
+    --bq-axis-lines-color: var(--jp-ui-font-color3);
+    --bq-tick-color: var(--bq-axis-lines-color);
+    --bq-axis-tick-text-fill: var(--jp-ui-font-color2);
+
+    .common()
+}
+
+.bbg, [data-theme-light="false"] {
+    --bq-content-font-color: orange;
+
+    .common()
+   }
+
+.bqplot {
+    box-sizing: border-box;
+    display: flex;
+    width: 640px;
+    height: 480px;
+}
+.bqplot > svg {
+    background: var(--bq-background);
+    font: 11px sans-serif;
+    user-select: none;
+    -ms-user-select: none;
+    -khtml-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    flex-grow: 1;
+
+    .axis {
+        rect {
+            stroke: var(--bq-axis-rect-stroke);
+            opacity: var(--bq-axis-rect-opacity);
         }
-        .zeroLine {
+        .tick line {
+            stroke: var(--bq-axis-tick-stroke);
+            stroke-width: var(--bq-axis-tick-stroke-width);
+            opacity: var(--bq-axis-tick-opacity);
+        }
+        .tick.short line {
+            stroke: var(--bq-axis-tick-short-stroke);
+        }
+        .tick text {
+            fill: var(--bq-axis-tick-text-fill);
+            font: var(--bq-axis-tick-text-font);
+        }
+        line {
             shape-rendering: crispEdges;
+            font: 10px sans-serif;
+            stroke-width: 1px;
         }
-        .brushintsel, .intsel {
-            pointer-events: none;
+        path, line { fill: none; }
+
+        text.axislabel, tspan.axislabel {
+            text-anchor: end;
+            fill: var(--bq-axislabel-fill);
+            font: var(--bq-axislabel-font);
         }
-        .indsel {
+        .tick text {
+            cursor: default;
+        }
+    }
+    .axis.axisbold path {
+        stroke-width: 3px;
+    }
+    .axis.axisbold text,
+    .axis.axisbold text.axislabel {
+        font-weight: bolder;
+    }
+    .stick, .zeroLine {
+        stroke: var(--bq-stick-stroke);
+        fill: var(--bq-stick-fill);
+    }
+    .sticktext {
+        fill: var(--bq-sticktext-fill);
+    }
+    .bargroup, .boxplot, .slice {
+        rect, path, line {
+            stroke: var(--bq-default-stroke);
+        }
+    }
+    .zeroLine {
+        shape-rendering: crispEdges;
+    }
+    text.mainheading {
+        text-anchor: middle;
+        fill: var(--bq-mainheading-fill);
+        font: var(--bq-mainheading-font);
+        font-size: var(--bq-mainheading-font-size);
+    }
+    text.legendtext {
+        text-anchor: start;
+        font: 14px sans-serif;
+    }
+    .brushintsel, .intsel {
+        pointer-events: none;
+    }
+    .indsel {
+        stroke: red;
+    }
+    .brushintsel, .intsel {
+        fill-opacity: 0.2;
+        fill: var(--bq-selector-fill);
+    }
+    .intselmouse {
+        visibility: hidden;
+        pointer-events: all; /*none?*/
+    }
+    .multiselector {
+        .active {
+            pointer-events: all !important;
+            stroke: green;
+        }
+        .inactive {
+            pointer-events: none !important;
             stroke: red;
         }
-        .brushintsel, .intsel {
-            fill-opacity: 0.2;
-        }
-        .intselmouse {
-            visibility: hidden;
-            pointer-events: all;/*none?*/
-        }
-        text.legendtext {
-            text-anchor: start;
-            font: 14px sans-serif;
-        }
-        .multiselector {
-            .active {
-                pointer-events: all  !important;
-                stroke: green;
-            }
-            .inactive {
-                pointer-events: none !important;
-                stroke: red;
-            }
-            .visible {
-                pointer-events: visible !important;
-                stroke: red;
-            }
-        }
-        .lassoselector {
-           .selected {
-               opacity: 0.3;
-           }
-           path {
-               fill: none;
-               stroke: orange;
-               stroke-width: 4;
-           }
+        .visible {
+            pointer-events: visible !important;
+            stroke: red;
         }
     }
-    .tooltip_div {
-        z-index: 1001;
+    .lassoselector {
+       .selected {
+           opacity: 0.3;
+       }
+       path {
+           fill: none;
+           stroke: orange;
+           stroke-width: 4;
+       }
     }
-    .mark_tooltip {
-        pointer-events: none;
-        z-index: 1001;
-    }
-    .mark_tooltip table {
-        border-radius: 5px;
-    }
-    .mark_tooltip .tooltiptext {
-        text-align: center;
-        padding: 0.5em;
-    }
-    .world_map .hovered {
-        fill: Orange;
-        stroke: Orange;
-        stroke-width: 2.5px;
-    }
-
-    .world_map #container {
-        margin:10px 10%;
-        border:2px solid #000;
-        border-radius: 5px;
-        height:100%;
-        overflow:hidden;
-        background: #F0F8FF;
-    }
-
-    .world_map .graticule {
-        fill: none;
-        stroke: #bbb;
-        stroke-width: .5px;
-        stroke-opacity: .5;
-    }
-
-    .g_legend {
-        fill: none;
-    }
-
-}
-
-.theme-light, [data-theme-light="true"] {
-    .common();
-    .bqplot > svg {
-        .axis {
-            rect {
-                stroke: white;
-                opacity: 1.0;
-            }
-            .tick line {
-            	stroke: white;
-            	stroke-width: 1;
-                opacity: 1.0;
-            }
-            .tick.short line {
-            	stroke: #8B8B8B;
-            }
-            .tick text {
-                fill: #8B8B8B;
-                font: 12px sans-serif;
-            }
-        }
-        .stick, .zeroLine {
-            stroke: black;
-            fill: black;
-        }
-        .bargroup, .boxplot, .slice {
-            rect, path, line {
-                stroke: black;
-            }
-        }
-        .sticktext {
-            fill: black;
-        }
-        .brushintsel, .intsel {
-            fill: #000000;
-        }
-        text.axislabel, tspan.axislabel {
-            fill: black;
-            font: serif;
-        }
-        text.mainheading {
-            fill: black;
-            font: serif;
-            font-size: large;
-        }
-        .plotarea_background {
-            fill: #F7F7F7;
-        }
-    }
-    .mark_tooltip {
-        border: 2px solid black;
-        border-radius : 5px;
-        box-shadow: 1px 1px 2px rgba(10, 10, 10, 0.8);
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        background-color: #FCFCFC;
-    }
-    .mark_tooltip td{
-        border: thin solid black;
-    }
-    .mark_tooltip table {
-        background: #ececec;
-    }
-    .world_map path {
-        stroke: #FFF;
-        stroke-width: 0.25px;
-        fill: dodgerblue;
-    }
-
-    .pie polyline {
-        opacity: .3;
-        stroke: black;
-        stroke-width: 1px;
-        fill: none;
-    }
-    .network .node .element {
-        fill: #ccc;
-        stroke: #000;
-        stroke-width: 1.5px;
-    }
-
-    .network .link {
-        fill: none;
-        stroke: #666;
-        stroke-width: 1.5px;
-    }
-
-    .network .node .label {
-        font: 12px sans-serif;
-        pointer-events: none;
-        text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-    }
-
-    .linkarrow {
-        fill: #000;
+    .plotarea_background {
+        fill: var(--bq-plotarea-background-fill);
     }
 }
+.tooltip_div {
+    z-index: 1001;
+}
+.mark_tooltip {
+    pointer-events: none;
+    z-index: 1001;
+    border: var(--bq-mark-tooltip-border);
+    border-radius : var(--bq-mark-tooltip-border-radius);
+    box-shadow: var(--bq-mark-tooltip-box-shadow);
+    -webkit-user-select: var(--bq-mark-tooltip--webkit-user-select);
+    -moz-user-select: var(--bq-mark-tooltip--moz-user-select);
+    background-color: var(--bq-mark-tooltip-background-color);
+}
+.mark_tooltip td{
+    border: var(--bq-mark-tooltip-td-border);
+}
+.mark_tooltip table {
+    border-radius: 5px;
+    background: var(--bq-mark-tooltip-background);
+}
+.mark_tooltip .tooltiptext {
+    text-align: center;
+    padding: 0.5em;
+}
+.world_map path {
+    stroke: var(--bq-world-map-path-stroke);
+    stroke-width: var(--bq-world-map-path-stroke-width);
+    fill: var(--bq-world-map-path-fill);;
+}
+.world_map .hovered {
+    fill: Orange;
+    stroke: Orange;
+    stroke-width: 2.5px;
+}
 
-/* by default, activate theme-light*/
-.theme-light();
+.world_map #container {
+    margin:10px 10%;
+    border:2px solid #000;
+    border-radius: 5px;
+    height:100%;
+    overflow:hidden;
+    background: #F0F8FF;
+}
 
-.theme-dark, [data-theme-light="false"] {
-    .common();
-    .bqplot > svg {
-        background: #1a1a1a;
-        .axis {
-            rect {
-                stroke: #1A1A1A;
-            }
-            path {
-                stroke: #b3b3b3;
-            }
-            .tick line {
-                stroke: #3b3b3b;
-            }
-            .tick.short line {
-                stroke: #B3B3B3;
-            }
-            .tick text {
-                fill: #B3B3B3;
-            }
-        }
-        .stick, .zeroLine {
-            stroke: white;
-            fill: white;
-        }
-        .bargroup, .slice {
-            rect, path, line {
-                stroke: white;
-            }
-        }
-        .sticktext {
-            fill: white;
-        }
-        .brushintsel, .intsel {
-            fill: #ffffff;
-        }
-        text.axislabel, tspan.axislabel, text.mainheading {
-            fill: orange;
-        }
-        .plotarea_background {
-            fill: #1a1a1a;
-        }
-    }
-    .mark_tooltip {
-        border: 2px solid whitesmoke;
-        border-radius : 5px;
-        box-shadow: 1px 1px 2px rgba(245, 245, 245, 0.8);
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        background-color: black;
-    }
-    .mark_tooltip td{
-        border: thin solid whitesmoke;
-    }
-    .mark_tooltip table {
-        background: black;
-    }
-    .world_map path {
-        stroke: black;
-        stroke-width: 0.25px;
-        fill: seagreen;
-    }
+.world_map .graticule {
+    fill: none;
+    stroke: #bbb;
+    stroke-width: .5px;
+    stroke-opacity: .5;
+}
 
-    .pie polyline {
-        opacity: .5;
-        stroke: white;
-        stroke-width: 1px;
-        fill: none;
-    }
+.g_legend {
+    fill: none;
+}
 
-    .network .node .element {
-        fill: #666;
-        stroke: #000;
-        stroke-width: 1.5px;
-    }
+.pie polyline {
+    opacity: var(--bq-pie-polyline-opacity);
+    stroke: var(--bq-pie-polyline-stroke);
+    stroke-width: var(--bq-pie-polyline-stroke-width);
+    fill: var(--bq-pie-polyline-fill);
+}
 
-    .network .node .element {
-        fill: #666;
-        stroke: #000;
-        stroke-width: 1.5px;
-    }
+.network .node .element {
+    fill: var(--bq-network-node-element-fill);
+    stroke: var(--bq-network-node-element-stroke);
+    stroke-width: var(--bq-network-node-element-stroke-width);
+}
 
-    .network .link {
-        fill: none;
-        stroke: #666;
-        stroke-width: 1.5px;
-    }
+.network .link {
+    fill: var(--bq-network-link-fill);
+    stroke: var(--bq-network-link-stroke);
+    stroke-width: var(--bq-network-link-stroke-width);
+}
 
-    .network .node .label {
-        font: 12px sans-serif;
-        pointer-events: none;
-        text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
-    }
+.network .node .label {
+    font: var(--bq-network-node-label-font);
+    pointer-events: var(--bq-network-node-label-pointer-events);
+    text-shadow: var(--bq-network-node-label-text-shadow);
+}
 
-    .linkarrow {
-        fill: #ccc;
-    }
+.linkarrow {
+    fill: var(--bq-linkarrow-fill);
 }
