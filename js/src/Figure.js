@@ -33,6 +33,7 @@ var Figure = widgets.DOMWidgetView.extend({
         this.el.classList.add("bqplot");
         this.el.classList.add("figure");
         this.el.classList.add("jupyter-widgets");
+        this.change_theme();
 
         var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
         var svg_interaction = document.createElementNS(d3.ns.prefix.svg, "svg");
@@ -304,6 +305,7 @@ var Figure = widgets.DOMWidgetView.extend({
             this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio)
             this.update_gl()
         })
+        this.listenTo(this.model, "change:theme", this.change_theme, this);
     },
 
     title_style_updated: function() {
@@ -912,7 +914,12 @@ var Figure = widgets.DOMWidgetView.extend({
                 mark.render_gl()
             })
         });
-    }
+    },
+
+    change_theme: function() {
+        this.el.classList.remove(this.model.previous("theme"));
+        this.el.classList.add(this.model.get("theme"));
+    },
 });
 
 
