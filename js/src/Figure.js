@@ -849,17 +849,26 @@ var Figure = widgets.DOMWidgetView.extend({
 
     },
 
-    save_png: function(filename) {
+    save_png: function(filename, scale) {
        
-       // Render a SVG data into a canvas and download as PNG.
+            // scale up the underlying canvas for high dpi screens
+            // such that image is of the same quality
+            scale = scale || window.devicePixelRatio;
+    
+            // Render a SVG data into a canvas and download as PNG.
+
+    // Render a SVG data into a canvas and download as PNG.
         this.get_svg().then((xml) => {
             var image = new Image();
             image.onload = () => {
                 var canvas = document.createElement("canvas");
                 canvas.classList.add('bqplot');
-                canvas.width = this.width;
-                canvas.height = this.height;
+                canvas.width = this.width * scale;
+                canvas.height = this.height * scale;
+                canvas.style.width = this.width;
+                canvas.style.height = this.height;
                 var context = canvas.getContext("2d");
+                context.scale(scale, scale);
                 context.drawImage(image, 0, 0);
                 var a = document.createElement("a");
                 a.download = filename || "image.png";

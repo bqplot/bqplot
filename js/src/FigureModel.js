@@ -67,7 +67,7 @@ var FigureModel = basemodel.BaseModel.extend({
 
     handle_custom_messages: function(msg) {
         if (msg.type === 'save_png') {
-            this.trigger("save_png", msg.filename);
+            this.trigger("save_png", msg.filename, msg.scale);
         }
         else if (msg.type === 'save_svg') {
             this.trigger("save_svg", msg.filename);
