@@ -13,4 +13,5 @@ dependencies:
     - pytest-cov  # test dependency
     - jupyterlab  # test dependency
     - selenium  # test dependency
+    - mock  # test dependency
     - nose

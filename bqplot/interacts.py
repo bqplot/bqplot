@@ -37,7 +37,7 @@ Interacts
 """
 
 from traitlets import (Bool, Int, Float, Unicode, Dict,
-                       Instance, List, Enum)
+                       Instance, List, Enum, observe)
 from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization, register
 
@@ -394,8 +394,6 @@ class BrushSelector(TwoDSelector):
         A 2x2 array containing the coordinates 
         [[selected_x[0], selected_y[0]],
          [selected_x[1], selected_y[1]]]
-        Note that this is not a trait, but is implemented with a property
-        for backwards compatibility.
     brushing: bool (default: False)
         boolean attribute to indicate if the selector is being dragged.
         It is True when the selector is being moved and False when it is not.
@@ -409,29 +407,37 @@ class BrushSelector(TwoDSelector):
     brushing = Bool().tag(sync=True)
     selected_x = Array(None, allow_none=True).tag(sync=True, **array_serialization)
     selected_y = Array(None, allow_none=True).tag(sync=True, **array_serialization)
+    selected = Array(None, allow_none=True)
     color = Color(None, allow_none=True).tag(sync=True)
 
-    # This is for backward compatibility
-    @property
-    def selected(self):
-        if self.selected_x is None or len(self.selected_x) == 0:
-            return np.array([])
+    # This is for backward compatibility for code that relied on selected
+    # instead of select_x and selected_y
+    @observe('selected_x', 'selected_y')
+    def _set_selected(self, change):
+        if self.selected_x is None or len(self.selected_x) == 0 or \
+           self.selected_y is None or len(self.selected_y) == 0:
+            self.selected = None
         else:
-            return np.array([[self.selected_x[0], self.selected_y[0]],
+            self.selected = np.array([[self.selected_x[0], self.selected_y[0]],
                              [self.selected_x[1], self.selected_y[1]]])
 
-    @selected.setter
-    def selected(self, value):
-        if len(value) == 0:
-            x = []
-            y = []
+    @observe('selected')
+    def _set_selected_xy(self, change):
+        value = self.selected
+        if self.selected is None or len(self.selected) == 0:
+            # if we set either selected_x OR selected_y to None
+            # we don't want to set the other to None as well
+            if not (self.selected_x is None or len(self.selected_x) == 0
+                 or self.selected_y is None or len(self.selected_y) == 0):
+                self.selected_x = None
+                self.selected_y = None
         else:
             (x0, y0), (x1, y1) = value
             x = [x0, x1]
             y = [y0, y1]
-        # with self.hold_sync():
-        self.selected_x = x
-        self.selected_y = y
+            with self.hold_sync():
+                self.selected_x = x
+                self.selected_y = y
 
     _view_name = Unicode('BrushSelector').tag(sync=True)
     _model_name = Unicode('BrushSelectorModel').tag(sync=True)
