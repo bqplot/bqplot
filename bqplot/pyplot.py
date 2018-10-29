@@ -726,7 +726,7 @@ def plot(*args, **kwargs):
         if marker and not line_style:
             kwargs['marker'] = marker
             if color:
-                kwargs['default_colors'] = [color]
+                kwargs['colors'] = [color]
             return _draw_mark(Scatter, **kwargs)
         else:  # draw lines in all other cases
             kwargs['line_style'] = line_style or 'solid'
