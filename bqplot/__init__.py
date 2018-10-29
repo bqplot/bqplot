@@ -52,7 +52,7 @@ into visual properties (typically a number of pixels, a color, etc.).  ::
 .. automodule:: bqplot.scales
 .. automodule:: bqplot.marks
 .. automodule:: bqplot.axes
-.. automodule:: bqplot.market_map
+.. automodule:: bqplot.tile_map
 .. automodule:: bqplot.interacts
 .. automodule:: bqplot.traits
 .. automodule:: bqplot.toolbar

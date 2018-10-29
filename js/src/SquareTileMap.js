@@ -17,7 +17,7 @@ var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
 var d3 = require("d3");
 
-var SquareMarketMap = widgets.DOMWidgetView.extend({
+var SquareTileMap = widgets.DOMWidgetView.extend({
 
     render: function() {
         this.width = this.model.get("width");
@@ -83,5 +83,5 @@ var SquareMarketMap = widgets.DOMWidgetView.extend({
 });
 
 module.exports = {
-    SquareMarketMap: SquareMarketMap
+    SquareTileMap: SquareTileMap
 };

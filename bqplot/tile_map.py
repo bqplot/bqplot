@@ -15,16 +15,16 @@
 r"""
 
 ==========
-Market Map
+Tile Map
 ==========
 
-.. currentmodule:: bqplot.market_map
+.. currentmodule:: bqplot.tile_map
 
 .. autosummary::
    :toctree: _generate/
 
-   MarketMap
-   SquareMarketMap
+   TileMap
+   SquareTileMap
 """
 
 from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance, Float
@@ -39,7 +39,7 @@ from .marks import CATEGORY10
 from ._version import __frontend_version__
 
 
-class MarketMap(DOMWidget):
+class TileMap(DOMWidget):
 
     """Waffle wrapped map.
 
@@ -119,11 +119,11 @@ class MarketMap(DOMWidget):
         Colors for each of the groups which are cycled over to cover all the
         groups
     title: string
-        Title of the Market Map
+        Title of the Tile Map
     title_style: dict
-        CSS style for the title of the Market Map
+        CSS style for the title of the Tile Map
     stroke: color
-        Stroke of each of the cells of the market map
+        Stroke of each of the cells of the tile map
     group_stroke: color
         Stroke of the border for the group of cells corresponding to a group
     selected_stroke: color
@@ -204,7 +204,7 @@ class MarketMap(DOMWidget):
         .tag(sync=True, **widget_serialization)
 
     def __init__(self, **kwargs):
-        super(MarketMap, self).__init__(**kwargs)
+        super(TileMap, self).__init__(**kwargs)
         self._hover_handlers = CallbackDispatcher()
         self.on_msg(self._handle_custom_msgs)
 
@@ -221,20 +221,20 @@ class MarketMap(DOMWidget):
         if isinstance(a, pd.DataFrame) or isinstance(b, pd.DataFrame):
             return pd.DataFrame.equals(a, b)
 
-        return super(MarketMap, self)._compare(a, b)
+        return super(TileMap, self)._compare(a, b)
 
-    _view_name = Unicode('MarketMap').tag(sync=True)
-    _model_name = Unicode('MarketMapModel').tag(sync=True)
+    _view_name = Unicode('TileMap').tag(sync=True)
+    _model_name = Unicode('TileMapModel').tag(sync=True)
     _view_module = Unicode('bqplot').tag(sync=True)
     _model_module = Unicode('bqplot').tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
 
 
-class SquareMarketMap(MarketMap):
+class SquareTileMap(TileMap):
     margin = Dict(dict(top=50, right=50, left=50, bottom=50)).tag(sync=True)
     data = Dict().tag(sync=True)
     mode = Enum(['squarify', 'slice', 'dice', 'slice-dice'],
                 default_value='squarify').tag(sync=True)
 
-    _view_name = Unicode('SquareMarketMap').tag(sync=True)
+    _view_name = Unicode('SquareTileMap').tag(sync=True)
