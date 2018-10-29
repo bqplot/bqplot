@@ -24,7 +24,7 @@ if (popper.__esModule) {
     popper = popper.default;
 }
 
-var MarketMap = figure.Figure.extend({
+var TileMap = figure.Figure.extend({
 
     render: function(options) {
         this.id = widgets.uuid();
@@ -352,8 +352,8 @@ var MarketMap = figure.Figure.extend({
 
     show_groups: function(model, value) {
         this.fig_names.style("display", (value ? "inline" : "none"));
-        this.fig_map.selectAll(".market_map_text").style("opacity", (value ? 0.2 : 1));
-        this.fig_map.selectAll(".market_map_rect").style("stroke-opacity", (value ? 0.2 : 1));
+        this.fig_map.selectAll(".tile_map_text").style("opacity", (value ? 0.2 : 1));
+        this.fig_map.selectAll(".tile_map_rect").style("stroke-opacity", (value ? 0.2 : 1));
     },
 
     draw_map: function() {
@@ -394,10 +394,10 @@ var MarketMap = figure.Figure.extend({
             new_groups.append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
-                .classed("market_map_rect", true);
+                .classed("tile_map_rect", true);
 
             new_groups.append("text")
-                .classed("market_map_text", true)
+                .classed("tile_map_text", true)
                 .style({"text-anchor": "middle", 'fill' :'black', "pointer-events": "none"})
                 .style(that.model.get("font_style"));
 
@@ -408,9 +408,9 @@ var MarketMap = figure.Figure.extend({
                 .on("mousemove", function(data) { that.mousemove_handler(data); })
                 .on("mouseout", function(data, ind) { that.mouseout_handler(data, (element_count + ind), this);})
                 .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
-                .attr("id", function(data) { return "market_map_element_" + data.name;});
+                .attr("id", function(data) { return "tile_map_element_" + data.name;});
 
-            groups.selectAll(".market_map_rect")
+            groups.selectAll(".tile_map_rect")
                 .attr("width", that.column_width)
                 .attr("height", that.row_height)
                 .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
@@ -419,7 +419,7 @@ var MarketMap = figure.Figure.extend({
                         color_scale.scale(elem.color) :
                         that.colors_map(i);}});
 
-            groups.selectAll(".market_map_text")
+            groups.selectAll(".tile_map_text")
                 .attr("x", that.column_width / 2.0)
                 .attr("y", that.row_height / 2.0)
                 .text(function(data, j) { return data.display; })
@@ -476,7 +476,7 @@ var MarketMap = figure.Figure.extend({
     },
 
     update_font_style: function(model, value) {
-        this.svg.selectAll(".market_map_text")
+        this.svg.selectAll(".tile_map_text")
             .style(value);
     },
 
@@ -529,7 +529,7 @@ var MarketMap = figure.Figure.extend({
             this.clear_selected();
         else{
             selected.forEach(function(data) {
-                var cell_id = "market_map_element_" + data;
+                var cell_id = "tile_map_element_" + data;
                 that.fig_click.select("#click_" + cell_id)
                     .remove();
                 if(that.fig_map.selectAll("#"+ cell_id)[0].length == 1) {
@@ -1039,5 +1039,5 @@ var MarketMap = figure.Figure.extend({
 });
 
 module.exports = {
-    MarketMap: MarketMap,
+    TileMap: TileMap,
 };

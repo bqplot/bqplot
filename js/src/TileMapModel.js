@@ -19,12 +19,12 @@ var d3 = require("d3");
 var basemodel = require("./BaseModel");
 var semver_range = "^" + require("../package.json").version;
 
-var MarketMapModel = basemodel.BaseModel.extend({
+var TileMapModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.BaseModel.prototype.defaults(), {
-            _model_name: "MarketMapModel",
-            _view_name: "MarketMap",
+            _model_name: "TileMapModel",
+            _view_name: "TileMap",
             _model_module: "bqplot",
             _view_module: "bqplot",
             _model_module_version: semver_range,
@@ -82,5 +82,5 @@ var MarketMapModel = basemodel.BaseModel.extend({
 });
 
 module.exports = {
-    MarketMapModel: MarketMapModel
+    TileMapModel: TileMapModel
 };
