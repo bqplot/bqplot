@@ -18,6 +18,7 @@ var d3 = require("d3");
 var _ = require("underscore");
 var popperreference = require("./PopperReference");
 var popper = require("popper.js");
+var utils = require("./utils.js")
 
 if (popper.__esModule) {
     popper = popper.default;
@@ -149,19 +150,28 @@ var Figure = widgets.DOMWidgetView.extend({
         */
 
         this.clip_path = this.svg.append("svg:defs")
-          .append("svg:clipPath")
+            .append("svg:clipPath")
           .attr("id", this.clip_id)
-          .append("rect")
+            .append("rect")
           .attr("x", 0)
           .attr("y", 0)
           .attr("width", this.plotarea_width)
           .attr("height", this.plotarea_height);
+
+        // this.title = this.fig.append("foreignObject")
+        //   .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
+        //     .append("xhtml:text")
+        //   .attr("class", "mainheading")
+        //   .text(this.model.get("title"))
+        //   .style(this.model.get("title_style"));
 
         this.title = this.fig.append("text")
           .attr("class", "mainheading")
           .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
           .text(this.model.get("title"))
           .style(this.model.get("title_style"));
+
+        utils.typeset(this.title);
 
         // TODO: remove the save png event mechanism.
         this.model.on("save_png", this.save_png, this);
@@ -655,6 +665,7 @@ var Figure = widgets.DOMWidgetView.extend({
 
     update_title: function(model, title) {
         this.title.text(this.model.get("title"));
+        utils.typeset(this.title);
     },
 
     remove: function() {
