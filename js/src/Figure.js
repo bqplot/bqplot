@@ -160,7 +160,6 @@ var Figure = widgets.DOMWidgetView.extend({
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.fig_interaction = this.svg_interaction.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-        this.layout_webgl_canvas()
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "tooltip_div");
         this.popper_reference = new popperreference.PositionReference({x: 0, y: 0, width: 20, height: 20});
