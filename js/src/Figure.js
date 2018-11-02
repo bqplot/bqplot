@@ -160,7 +160,7 @@ var Figure = widgets.DOMWidgetView.extend({
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.fig_interaction = this.svg_interaction.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-        this.renderer.domElement.style = 'position: absolute; pointer-events: none; left: ' + this.margin.left + 'px; top: '+ this.margin.top + 'px;'
+        this.layout_webgl_canvas()
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "tooltip_div");
         this.popper_reference = new popperreference.PositionReference({x: 0, y: 0, width: 20, height: 20});
@@ -549,7 +549,6 @@ var Figure = widgets.DOMWidgetView.extend({
     update_plotarea_dimensions: function() {
         this.plotarea_width = this.width - this.margin.left - this.margin.right;
         this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
-        this.renderer.setSize(this.plotarea_width, this.plotarea_height);
     },
 
     processPhosphorMessage: function(msg) {
@@ -603,8 +602,17 @@ var Figure = widgets.DOMWidgetView.extend({
 
             that.trigger("margin_updated");
             that.update_legend();
+            that.layout_webgl_canvas()
         });
 
+    },
+
+    layout_webgl_canvas: function() {
+        this.renderer.domElement.style = 'position: absolute; pointer-events: none; ' +
+                                         'left: ' + this.margin.left + 'px; ' +
+                                         'top: '+ this.margin.top + 'px;'
+        this.renderer.setSize(this.plotarea_width, this.plotarea_height);
+        this.update_gl();
     },
 
     update_legend: function() {
