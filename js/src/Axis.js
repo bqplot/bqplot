@@ -23,6 +23,7 @@ Math.log10 = Math.log10 || function (x) {
     return Math.log(x) / Math.LN10;
 };
 
+var DATESCALE_WIDTH_THRESHOLD = 500;
 var UNITS_ARRAY = ["em", "ex", "px"];
 
 var Axis = widgets.WidgetView.extend({
@@ -120,6 +121,14 @@ var Axis = widgets.WidgetView.extend({
         } else {
             if (this.axis_scale.model.type === "ordinal") {
                 this.axis.tickValues(this.axis_scale.scale.domain());
+            } else if (this.axis_scale.model.type === "date") {
+                // Reduce number of suggested ticks if figure width is below the
+                // threshold. Note: "undefined" will result in the D3 default
+                // setting
+                var numDateTicks = (this.width < DATESCALE_WIDTH_THRESHOLD) ? 
+                                        5 : 
+                                        undefined;
+                this.axis.tickValues(this.axis_scale.scale.ticks(numDateTicks));
             } else if (this.axis_scale.model.type === "log") {
                 var i, r;
                 var allticks = this.axis_scale.scale.ticks();
