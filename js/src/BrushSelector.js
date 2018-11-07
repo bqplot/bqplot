@@ -146,8 +146,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
 
     empty_selection: function() {
         this.update_mark_selected();
-        this.model.set("selected_x", {});
-        this.model.set("selected_y", {});
+        this.model.set("selected_x", null);
+        this.model.set("selected_y", null);
         this.touch();
     },
 
@@ -169,10 +169,12 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
                    this.x_scale.invert_range(extent_x) : extent_x;
         extent_y = y_ordinal ?
                    this.y_scale.invert_range(extent_y) : extent_y;
-        this.update_mark_selected(pixel_extent_x, pixel_extent_y);
+        extent_x = Float64Array.from(extent_x)
+        extent_y = Float64Array.from(extent_y)
 
-        this.model.set_typed_field("selected_x", extent_x);
-        this.model.set_typed_field("selected_y", extent_y);
+        this.update_mark_selected(pixel_extent_x, pixel_extent_y);
+        this.set_selected("selected_x", extent_x);
+        this.set_selected("selected_y", extent_y);
         this.touch();
     },
 
@@ -181,8 +183,8 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected_x = this.model.get_typed_field("selected_x"),
-            selected_y = this.model.get_typed_field("selected_y");
+        var selected_x = this.model.get("selected_x") || [],
+            selected_y = this.model.get("selected_y") || [];
         if(selected_x.length === 0 || selected_y.length === 0) {
             this.clear_brush();
             this.update_mark_selected();
@@ -267,7 +269,8 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
         extent = ordinal ? this.scale.invert_range(extent) : extent;
 
         this.update_mark_selected(pixel_extent);
-        this.model.set_typed_field("selected", extent);
+
+        this.set_selected("selected", extent);
         this.touch();
     },
 
@@ -295,7 +298,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected = this.model.get_typed_field("selected");
+        var selected = this.model.get("selected") || [];
         if(selected.length === 0) {
             this.clear_brush();
             this.update_mark_selected();
@@ -386,7 +389,7 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
                 delete selected[prev_label];
             }
         });
-        this.model.set_typed_field("_selected", selected);
+        this.set_selected("_selected", selected);
         this.touch();
     },
 

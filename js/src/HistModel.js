@@ -16,6 +16,7 @@
 var _ = require("underscore");
 var d3 = require("d3");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var HistModel = markmodel.MarkModel.extend({
 
@@ -52,7 +53,7 @@ var HistModel = markmodel.MarkModel.extend({
     },
 
     update_data: function() {
-        var x_data = this.get_typed_field("sample");
+        var x_data = this.get("sample");
         var scales = this.get("scales");
         var x_scale = scales.sample;
 
@@ -78,7 +79,8 @@ var HistModel = markmodel.MarkModel.extend({
             x_data = x_data.filter(function(d) {
                 return (d <= that.max_x && d >= that.min_x);
             });
-            var x_data_ind = x_data.map(function (d,i) {
+            // since x_data may be a TypedArray, explicitly use Array.map
+            var x_data_ind =  Array.prototype.map.call(x_data, function (d,i) {
                 return {index: i, value: d};
             });
 
@@ -96,7 +98,7 @@ var HistModel = markmodel.MarkModel.extend({
         this.normalize_data(false);
 
         this.set("midpoints", this.x_mid);
-        this.set_typed_field("count", this.count);
+        this.set("count", new Float64Array(this.count));
 
         this.update_domains();
         this.save_changes();
@@ -123,7 +125,7 @@ var HistModel = markmodel.MarkModel.extend({
         this.mark_data.forEach(function(el, it) { el['y'] = that.count[it]; });
 
         if (save_and_update) {
-            this.set_typed_field("count", this.count);
+            this.set("count", new Float64Array(this.count));
             this.update_domains();
             this.save_changes();
             this.trigger("data_updated");
@@ -166,6 +168,11 @@ var HistModel = markmodel.MarkModel.extend({
         return_val[num_bins] = max_val;
         return return_val;
     }
+}, {
+    serializers: _.extend({
+        sample: serialize.array_or_json,
+        count: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 module.exports = {

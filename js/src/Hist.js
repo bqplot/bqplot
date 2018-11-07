@@ -454,7 +454,7 @@ var Hist = mark.Mark.extend({
             return [];
         }
 
-        var x_data = this.model.get_typed_field("sample");
+        var x_data = this.model.get("sample");
         var num_intervals = intervals.length;
         var selected = _.filter(_.range(x_data.length), function(index) {
             var elem = x_data[index];
@@ -503,7 +503,7 @@ var Hist = mark.Mark.extend({
         var idx_start = d3.max([0, d3.bisectLeft(this.bin_pixels, start_pixel) - 1]);
         var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.bin_pixels, end_pixel)]);
 
-        var x_data = this.model.get_typed_field("sample");
+        var x_data = this.model.get("sample");
         var that = this;
         return _.filter(_.range(x_data.length), function(iter) {
             return (x_data[iter] >= that.model.x_bins[idx_start] &&
@@ -514,7 +514,7 @@ var Hist = mark.Mark.extend({
     calc_bar_indices_from_data_idx: function(selected) {
         //function to calculate bar indices for a given list of data
         //indices
-        var x_data = this.model.get_typed_field("sample");
+        var x_data = this.model.get("sample");
         var data = selected.map(function(idx) {
             return x_data[idx];
         });

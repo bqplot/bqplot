@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var utils = require("./utils");
 var interaction = require("./Interaction");
+var convert_dates = require('./utils').convert_dates;
 
 var HandDraw = interaction.Interaction.extend({
 
@@ -68,7 +69,7 @@ var HandDraw = interaction.Interaction.extend({
         if (this.active) {
             this.mouse_entry(true);
             var lines_model = this.model.get("lines");
-            lines_model.set_typed_field("y", utils.deepCopy(lines_model.y_data));
+            lines_model.set("y", convert_dates(utils.deepCopy(lines_model.y_data)));
             this.lines_view.touch();
             this.active = false;
             this.d3el.on("mousemove", null);

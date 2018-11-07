@@ -109,7 +109,7 @@ var Axis = widgets.WidgetView.extend({
     set_tick_values: function(animate) {
         // Sets specific tick values from "tick_values" parameter
 
-        var tick_values = this.model.get_typed_field("tick_values");
+        var tick_values = this.model.get("tick_values");
         var useticks = [];
         var num_ticks = this.model.get("num_ticks");
 

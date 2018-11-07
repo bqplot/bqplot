@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var basemodel = require("./ScatterBaseModel");
+var serialize = require('./serialize')
 
 var ScatterModel = basemodel.ScatterBaseModel.extend({
 
@@ -50,14 +51,14 @@ var ScatterModel = basemodel.ScatterBaseModel.extend({
 
     update_mark_data: function() {
         ScatterModel.__super__.update_mark_data.apply(this);
-        var skew = this.get_typed_field("skew");
+        var skew = this.get("skew") || [];
 
         this.mark_data.forEach(function(d, i){ d.skew = skew[i]; });
     },
 
     update_unique_ids: function() {
-        var names = this.get_typed_field("names");
-        var show_labels = (names.length !== 0);
+        var names = this.get("names");
+        var show_labels = (names != null && names.length !== 0);
         names = (show_labels) ? names : this.mark_data.map(function(data, index) {
             return "Dot" + index;
         });
@@ -73,6 +74,11 @@ var ScatterModel = basemodel.ScatterBaseModel.extend({
             data.unique_id = unique_ids[index];
         });
     },
+}, {
+    serializers: _.extend({
+        skew: serialize.array_or_json,
+        names: serialize.array_or_json,
+    }, basemodel.ScatterBaseModel.serializers)
 });
 
 module.exports = {

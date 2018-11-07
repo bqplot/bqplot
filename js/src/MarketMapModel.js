@@ -17,6 +17,7 @@ var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
 var d3 = require("d3");
 var basemodel = require("./BaseModel");
+var serialize = require('./serialize');
 var semver_range = "^" + require("../package.json").version;
 
 var MarketMapModel = basemodel.BaseModel.extend({
@@ -77,7 +78,11 @@ var MarketMapModel = basemodel.BaseModel.extend({
         axes: { deserialize: widgets.unpack_models },
         tooltip_widget: { deserialize: widgets.unpack_models },
         style: { deserialize: widgets.unpack_models },
-        layout:  { deserialize: widgets.unpack_models }
+        layout:  { deserialize: widgets.unpack_models },
+        names: serialize.array_or_json,
+        groups: serialize.array_or_json,
+        display_text: serialize.array_or_json,
+        color: serialize.array_or_json,
     }, basemodel.BaseModel.serializers)
 });
 

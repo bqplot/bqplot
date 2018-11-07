@@ -121,47 +121,48 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
         warnings.warn("Array could not be converted into a date")
         return array
 
-# Array
-
 def array_from_json(value, obj=None):
     if value is not None:
-        if value.get('values') is not None:
-            dtype = {
-                'date': np.datetime64,
-                'float': np.float64
-            }.get(value.get('type'), object)
-            return np.asarray(value['values'], dtype=dtype)
+        # this will accept regular json data, like an array of values, which can be useful it you want
+        # to link bqplot to other libraries that use that
+        if isinstance(value, list):
+            if len(value) > 0 and isinstance(value[0], dict) and 'value' in value[0]:
+                return np.array([array_from_json(k) for k in value])
+            else:
+                return np.array(value)
+        elif 'value' in value:
+            ar = np.frombuffer(value['value'], dtype=value['dtype']).reshape(value['shape'])
+            if value.get('type') == 'date':
+                assert value['dtype'] == 'float64'
+                ar = ar.astype('datetime64[ms]')
+            return ar
 
-def array_to_json(a, obj=None):
-    if a is not None:
-        if np.issubdtype(a.dtype, np.floating):
-            # replace nan with None
-            dtype = 'float'
-            a = np.where(np.isnan(a), None, a)
-        elif a.dtype in (int, np.int64):
-            dtype = 'float'
-            a = a.astype(np.float64)
-        elif np.issubdtype(a.dtype, np.datetime64):
-            dtype = 'date'
-            a = a.astype(np.str).astype('object')
-            for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
-                # for every element in the nd array, forcing the conversion into
-                # the format specified here.
-                temp_x = pd.to_datetime(x.flatten()[0])
-                if pd.isnull(temp_x):
-                    x[...] = None
-                else:
-                    x[...] = temp_x.to_pydatetime().strftime(
-                        '%Y-%m-%dT%H:%M:%S.%f')
-        else:
-            dtype = a.dtype
-        return dict(values=a.tolist(), type=str(dtype))
-    else:
-        return dict(values=a, type=None)
+def array_to_json(ar, obj=None, force_contiguous=True):
+    if ar is None:
+        return None
+    if ar.dtype.kind in ['S', 'U']:  # strings to as plain json
+        return ar.tolist()
+    type = None
+    if ar.dtype.kind == 'M':
+        # since there is no support for int64, we'll use float64 but as ms
+        # resolution, since that is the resolution the js Date object understands
+        ar = ar.astype('datetime64[ms]').astype(np.float64)
+        type = 'date'
+    if ar.dtype.kind not in ['u', 'i', 'f']:  # ints and floats, and datetime
+        raise ValueError("unsupported dtype: %s" % (ar.dtype))
+    # if ar.dtype == np.float64:  # WebGL does not support float64, cast it here?
+    #     ar = ar.astype(np.float32)
+    if ar.dtype == np.int64:  # JS does not support int64
+        ar = ar.astype(np.int32)
+    if force_contiguous and not ar.flags["C_CONTIGUOUS"]:  # make sure it's contiguous
+        ar = np.ascontiguousarray(ar)
+    if not ar.dtype.isnative:
+        dtype = ar.dtype.newbyteorder()
+        ar = ar.astype(dtype)
+    return {'value':memoryview(ar), 'dtype':str(ar.dtype), 'shape':ar.shape, 'type': type}
+
 
 array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
-
-# array validators
 
 def array_squeeze(trait, value):
     if len(value.shape) > 1:
@@ -178,6 +179,16 @@ def array_dimension_bounds(mindim=0, maxdim=np.inf):
             % (trait.name, trait.this_class, mindim, maxdim, value.shape))
         return value
     return validator
+
+def array_supported_kinds(kinds='biufM'):
+    def validator(trait, value):
+        if value.dtype.kind not in kinds:
+            raise TraitError('Array type not supported for trait %s of class %s: expected a \
+            array of kind in list %r and got an array of type %s (kind %s)'\
+            % (trait.name, trait.this_class, list(kinds), value.dtype, value.dtype.kind))
+        return value
+    return validator
+
 
 # DataFrame
 

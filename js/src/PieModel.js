@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var PieModel = markmodel.MarkModel.extend({
 
@@ -59,10 +60,10 @@ var PieModel = markmodel.MarkModel.extend({
     },
 
     update_data: function() {
-        var sizes = this.get_typed_field("sizes");
-        var color = this.get_typed_field("color");
+        var sizes = this.get("sizes");
+        var color = this.get("color") || [];
         var labels = this.get("labels");
-        this.mark_data = sizes.map(function(d, i) {
+        this.mark_data = Array.prototype.map.call(sizes, function(d, i) {
             return {
                 size: d,
                 color: color[i],
@@ -98,7 +99,7 @@ var PieModel = markmodel.MarkModel.extend({
         if(!this.mark_data) {
             return;
         }
-        var color = this.get_typed_field("color");
+        var color = this.get("color");
         var color_scale = this.get("scales").color;
         if(color_scale) {
             if(!this.get("preserve_domain").color) {
@@ -138,6 +139,11 @@ var PieModel = markmodel.MarkModel.extend({
     get_data_dict: function(data, index) {
         return data.data;
     }
+}, {
+    serializers: _.extend({
+        sizes: serialize.array_or_json,
+        color: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 module.exports = {

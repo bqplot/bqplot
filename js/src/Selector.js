@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var interaction = require("./Interaction");
+var convert_dates = require('./utils').convert_dates;
 
 var BaseSelector = interaction.Interaction.extend({
 
@@ -81,6 +82,10 @@ var BaseSelector = interaction.Interaction.extend({
     selected_changed: function() {
         //inherited classes should implement this function
     },
+
+    set_selected: function(name, value) {
+        this.model.set(name, convert_dates(value))
+    }
 });
 
 var BaseXSelector = BaseSelector.extend({

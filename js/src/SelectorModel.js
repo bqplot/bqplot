@@ -17,6 +17,7 @@ var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
 var basemodel = require("./BaseModel");
 var semver_range = "^" + require("../package.json").version;
+var serialize = require('./serialize')
 
 var SelectorModel = basemodel.BaseModel.extend({
 
@@ -72,11 +73,15 @@ var FastIntervalSelectorModel = OneDSelectorModel.extend({
         return _.extend(OneDSelectorModel.prototype.defaults(), {
             _model_name: "FastIntervalSelectorModel",
             _view_name: "FastIntervalSelector",
-            selected: {},
+            selected: null,
             color: null,
             size: null
         });
     },
+}, {
+    serializers: _.extend({
+        selected: serialize.array_or_json,
+    }, OneDSelectorModel.serializers)
 });
 
 var IndexSelectorModel = OneDSelectorModel.extend({
@@ -85,11 +90,15 @@ var IndexSelectorModel = OneDSelectorModel.extend({
         return _.extend(OneDSelectorModel.prototype.defaults(), {
             _model_name: "IndexSelectorModel",
             _view_name: "IndexSelector",
-            selected: {},
+            selected: null,
             line_width: 2,
             color: null
         });
     },
+}, {
+    serializers: _.extend({
+        selected: serialize.array_or_json,
+    }, OneDSelectorModel.serializers)
 });
 
 var BrushIntervalSelectorModel = OneDSelectorModel.extend({
@@ -99,11 +108,15 @@ var BrushIntervalSelectorModel = OneDSelectorModel.extend({
             _model_name: "BrushIntervalSelectorModel",
             _view_name: "BrushIntervalSelector",
             brushing: false,
-            selected: {},
+            selected: null,
             color: null,
             orientation: "horizontal"
         });
     }
+}, {
+    serializers: _.extend({
+        selected: serialize.array_or_json,
+    }, OneDSelectorModel.serializers)
 });
 
 var BrushSelectorModel = TwoDSelectorModel.extend({
@@ -114,11 +127,16 @@ var BrushSelectorModel = TwoDSelectorModel.extend({
             _view_name: "BrushSelector",
             clear: false,
             brushing: false,
-            selected_x: {},
-            selected_y: {},
+            selected_x: null,
+            selected_y: null,
             color: null
         });
     }
+}, {
+    serializers: _.extend({
+        selected_x: serialize.array_or_json,
+        selected_y: serialize.array_or_json,
+    }, TwoDSelectorModel.serializers)
 });
 
 var MultiSelectorModel = OneDSelectorModel.extend({

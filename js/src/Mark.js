@@ -224,9 +224,9 @@ var Mark = widgets.WidgetView.extend({
 
         this.set_default_style(all_indices);
 
-        this.set_style_on_elements(this.selected_style, this.selected_indices);
+        this.set_style_on_elements(this.selected_style, Array.from(this.selected_indices || []));
         var unselected_indices = (!this.selected_indices) ?
-            [] : _.difference(all_indices, this.selected_indices);
+            [] : _.difference(all_indices, Array.from(this.selected_indices));
         this.set_style_on_elements(this.unselected_style, unselected_indices);
     },
 

@@ -16,6 +16,7 @@
 var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize')
 
 var OHLCModel = markmodel.MarkModel.extend({
 
@@ -56,8 +57,8 @@ var OHLCModel = markmodel.MarkModel.extend({
     },
 
     update_data: function() {
-        var x_data = this.get_typed_field("x");
-        var y_data = this.get_typed_field("y");
+        var x_data = this.get("x");
+        var y_data = this.get("y");
         var format = this.get("format");
 
         // Local private function to report errors in format
@@ -199,6 +200,11 @@ var OHLCModel = markmodel.MarkModel.extend({
         });
         return return_val;
     },
+}, {
+    serializers: _.extend({
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
+    }, markmodel.MarkModel.serializers)
 });
 
 module.exports = {
