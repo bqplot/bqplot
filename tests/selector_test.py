@@ -1,6 +1,8 @@
 import bqplot
 from mock import Mock
 import numpy as np
+from bqplot.traits import _array_equal
+
 
 def test_brush_selector():
     selector = bqplot.interacts.BrushSelector()
@@ -44,23 +46,23 @@ def test_brush_selector():
     assert selector.selected_y is None
 
     selector.selected = [[np.nan, 4], [5, 6]]
-    assert selector.selected_x is None
-    assert selector.selected_y.tolist() == [4, 6]
+    assert _array_equal(selector.selected_x.tolist(), [np.nan, 5])
+    assert _array_equal(selector.selected_y.tolist(), [4, 6])
 
     selector.selected = [[3, np.nan], [5, 6]]
-    assert selector.selected_x.tolist() == [3, 5]
-    assert selector.selected_y is None
+    assert _array_equal(selector.selected_x.tolist(), [3, 5])
+    assert _array_equal(selector.selected_y.tolist(), [np.nan, 6])
 
     selector.selected = [3, 4], [5, 6]
-    assert selector.selected_x.tolist() == [3, 5]
-    assert selector.selected_y.tolist() == [4, 6]
+    assert _array_equal(selector.selected_x.tolist(), [3, 5])
+    assert _array_equal(selector.selected_y.tolist(), [4, 6])
     selector.selected_x = [3, np.nan]
-    assert selector.selected_x is None
-    assert selector.selected_y.tolist() == [4, 6]
+    assert _array_equal(selector.selected_x.tolist(), [3, np.nan])
+    assert _array_equal(selector.selected_y.tolist(), [4, 6])
     selector.selected = [3, 4], [5, 6]
-    assert selector.selected_x.tolist() == [3, 5]
-    assert selector.selected_y.tolist() == [4, 6]
+    assert _array_equal(selector.selected_x.tolist(), [3, 5])
+    assert _array_equal(selector.selected_y.tolist(), [4, 6])
 
     selector.selected_y = [4, np.nan]
-    assert selector.selected_x.tolist() == [3, 5]
-    assert selector.selected_y is None
+    assert _array_equal(selector.selected_x.tolist(), [3, 5])
+    assert _array_equal(selector.selected_y.tolist(), [4, np.nan])

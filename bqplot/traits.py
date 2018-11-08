@@ -223,3 +223,10 @@ def series_to_json(value, obj):
     return value.to_dict()
 
 series_serialization = dict(to_json=series_to_json, from_json=series_from_json)
+
+def _array_equal(a, b):
+    """Really tests if arrays are equal, where nan == nan == True"""
+    try:
+        return np.allclose(a, b, 0, 0, equal_nan=True)
+    except (TypeError, ValueError):
+        return False
