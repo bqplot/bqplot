@@ -1,5 +1,8 @@
 import bqplot
 import numpy as np
+from bqplot.traits import array_to_json
+import pytest
+
 
 def test_binary_serialize_1d(figure):
     x = np.arange(10, dtype=np.float64)
@@ -60,3 +63,14 @@ def test_binary_serialize_text():
 
     assert label2.text.tolist() == label.text.tolist()
 
+def test_dtype_with_str():
+    # dtype object is not supported
+    text = np.array(['foo', None, 'bar'])
+    assert text.dtype == np.object
+    with pytest.raises(ValueError, match='.*unsupported dtype: object.*'), pytest.warns(UserWarning):
+        array_to_json(text)
+    # but if they contain all strings, it should convert them.
+    # This is for backward compatibility of expecting pandas dataframe
+    # string columns to work (which are of dtype==np.object)
+    text[1] = 'foobar'
+    assert array_to_json(text) == ['foo', 'foobar', 'bar']
