@@ -436,8 +436,8 @@ class BrushSelector(TwoDSelector):
             x = [x0, x1]
             y = [y0, y1]
             with self.hold_sync():
-                self.selected_x = x
-                self.selected_y = y
+                self.selected_x = None if np.isnan(x).any() else x
+                self.selected_y = None if np.isnan(y).any() else y
 
     _view_name = Unicode('BrushSelector').tag(sync=True)
     _model_name = Unicode('BrushSelectorModel').tag(sync=True)
