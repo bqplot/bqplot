@@ -161,7 +161,7 @@ class Figure(DOMWidget):
     def _default_scale_y(self):
         return LinearScale(min=0, max=1, allow_padding=False)
 
-    def save_png(self, filename='bqplot.png'):
+    def save_png(self, filename='bqplot.png', scale=None):
         '''
         Saves the Figure as a PNG file
 
@@ -169,8 +169,10 @@ class Figure(DOMWidget):
         ----------
         filename: str (default: 'bqplot.png')
             name of the saved file
+        scale: float (default: None)
+            Scale up the png resolution when scale > 1, when not given base this on the screen pixel ratio.
         '''
-        self.send({"type": "save_png", "filename": filename})
+        self.send({'type': 'save_png', 'filename': filename, 'scale': scale})
 
     def save_svg(self, filename='bqplot.svg'):
         '''
