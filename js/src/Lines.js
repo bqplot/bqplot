@@ -189,36 +189,39 @@ var Lines = mark.Mark.extend({
         // update curve colors
         var curves = this.d3el.selectAll(".curve")
         curves.select(".line")
-            .style("opacity", function(d, i) { return opacities[i]; })
-            .style("stroke", function(d, i) {
-                return that.get_element_color(d, i) || fill_color[i];
-            })
-            .style("fill", function(d, i) {
-                return fill === "inside" ? that.get_fill_color(d, i) : "";
-            });
+          .style("opacity", function(d, i) { return opacities[i]; })
+          .style("stroke", function(d, i) {
+              return that.get_element_color(d, i) || fill_color[i];
+          })
+          .style("fill", function(d, i) {
+              return fill === "inside" ? that.get_fill_color(d, i) : "";
+          })
+          .style("fill-opacity", function(d, i) {
+              return fill === "inside" ? fill_opacities[i] : "";
+          });
         curves.select(".area")
-            .style("fill", function(d, i) { return that.get_fill_color(d, i); })
-            .style("opacity", function(d, i) { return fill_opacities[i]; });
+          .style("fill", function(d, i) { return that.get_fill_color(d, i); })
+          .style("opacity", function(d, i) { return fill_opacities[i]; });
         this.update_marker_style();
         // update legend style
         if (this.legend_el){
             this.legend_el.select(".line")
-                .style("stroke", function(d, i) {
-                    return that.get_element_color(d, i) || fill_color[i];
-                })
-                .style("opacity", function(d, i) { return opacities[i]; })
-                .style("fill", function(d, i) {
-                    return that.model.get("fill") === "none" ?
-                        "" : that.get_fill_color(d, i);
-                })
+              .style("stroke", function(d, i) {
+                  return that.get_element_color(d, i) || fill_color[i];
+              })
+              .style("opacity", function(d, i) { return opacities[i]; })
+              .style("fill", function(d, i) {
+                  return that.model.get("fill") === "none" ?
+                      "" : that.get_fill_color(d, i);
+              });
             this.legend_el.select(".dot")
-                .style("stroke", function(d, i) {
-                    return that.get_element_color(d, i) || fill_color[i];
-                })
-                .style("opacity", function(d, i) { return opacities[i]; })
-                .style("fill", function(d, i) {
-                    return that.get_element_color(d, i) || fill_color[i];
-                });
+              .style("stroke", function(d, i) {
+                  return that.get_element_color(d, i) || fill_color[i];
+              })
+              .style("opacity", function(d, i) { return opacities[i]; })
+              .style("fill", function(d, i) {
+                  return that.get_element_color(d, i) || fill_color[i];
+              });
             this.legend_el.select("text")
               .style("fill", function(d, i) {
                   return that.get_element_color(d, i) || fill_color[i];
