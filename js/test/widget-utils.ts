@@ -46,7 +46,7 @@ async function create_figure_scatter(manager, x, y, mega=false) {
     let rotation = null;
     let skew     = {type: null, values: null};
 
-    let scatterModel = await create_model_bqplot(manager, mega ? 'ScatterMega' : 'Scatter' , 'scatter1', {scales: scales,
+    let scatterModel = await create_model_bqplot(manager, mega ? 'ScatterGL' : 'Scatter' , 'scatter1', {scales: scales,
         x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew, colors: ['steelblue'],
         visible: true, default_size: 64, selected_style: {}, unselected_style: {}, hovered_style: {}, unhovered_style: {},
         preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})

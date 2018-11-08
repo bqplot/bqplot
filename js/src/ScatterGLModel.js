@@ -18,12 +18,12 @@ var _ = require("underscore");
 var basemodel = require("./MarkModel");
 var serialize = require("./serialize");
 
-var ScatterMegaModel = basemodel.MarkModel.extend({
+var ScatterGLModel = basemodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.MarkModel.prototype.defaults(), {
-            _model_name: "ScatterMegaModel",
-            _view_name: "ScatterMega",
+            _model_name: "ScatterGLModel",
+            _view_name: "ScatterGL",
             x: [],
             y: [],
             color: null,
@@ -43,7 +43,7 @@ var ScatterMegaModel = basemodel.MarkModel.extend({
     },
 
     initialize: function() {
-        ScatterMegaModel.__super__.initialize.apply(this, arguments);
+        ScatterGLModel.__super__.initialize.apply(this, arguments);
         this.update_domains()
     },
 
@@ -78,5 +78,5 @@ var ScatterMegaModel = basemodel.MarkModel.extend({
 });
 
 module.exports = {
-    ScatterMegaModel: ScatterMegaModel
+    ScatterGLModel: ScatterGLModel
 };

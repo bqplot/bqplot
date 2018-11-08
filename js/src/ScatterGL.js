@@ -60,10 +60,10 @@ var create_colormap =  function(scale) {
 
 
 
-var ScatterMega = mark.Mark.extend({
+var ScatterGL = mark.Mark.extend({
 
     render: function() {
-        var base_render_promise = ScatterMega.__super__.render.apply(this);
+        var base_render_promise = ScatterGL.__super__.render.apply(this);
 
         this.previous_values = {}
         this.attributes_changed = {}
@@ -625,7 +625,7 @@ var ScatterMega = mark.Mark.extend({
     },
 
     create_listeners: function() {
-        ScatterMega.__super__.create_listeners.apply(this);
+        ScatterGL.__super__.create_listeners.apply(this);
         this.listenTo(this.model, "change:x", () => {
             this.push_array('x')
             this.update_geometry(['x', 'size'], [() => this.push_array('x')])
@@ -969,5 +969,5 @@ var ScatterMega = mark.Mark.extend({
 });
 
 module.exports = {
-    ScatterMega: ScatterMega
+    ScatterGL: ScatterGL
 };

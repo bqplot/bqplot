@@ -56,7 +56,7 @@ from numpy import arange, issubdtype, array, column_stack, shape
 from .figure import Figure
 from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
-from .marks import (Lines, Scatter, ScatterMega, Hist, Bars, OHLC, Pie, Map, Image,
+from .marks import (Lines, Scatter, ScatterGL, Hist, Bars, OHLC, Pie, Map, Image,
                     Label, HeatMap, GridHeatMap, topo_load, Boxplot, Bins)
 from .toolbar import Toolbar
 from .interacts import (BrushIntervalSelector, FastIntervalSelector,
@@ -65,7 +65,7 @@ from .interacts import (BrushIntervalSelector, FastIntervalSelector,
 from traitlets.utils.sentinel import Sentinel
 import functools
 
-SCATTER_SIZE_LIMIT = 10*1000 # above this limit, ScatterMega will be used by default
+SCATTER_SIZE_LIMIT = 10*1000 # above this limit, ScatterGL will be used by default
 
 Keep = Sentinel('Keep', 'bqplot.pyplot', '''
         Used in bqplot.pyplot to specify that the same scale should be used for
@@ -840,9 +840,9 @@ def scatter(x, y, use_gl=None, **kwargs):
     kwargs['x'] = x
     kwargs['y'] = y
     if use_gl is None:
-        mark_class = ScatterMega if len(x) >= SCATTER_SIZE_LIMIT else Scatter
+        mark_class = ScatterGL if len(x) >= SCATTER_SIZE_LIMIT else Scatter
     else:
-        mark_class = ScatterMega if use_gl else Scatter
+        mark_class = ScatterGL if use_gl else Scatter
     return _draw_mark(mark_class, **kwargs)
 
 
