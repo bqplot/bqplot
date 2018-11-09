@@ -970,7 +970,12 @@ var ScatterGL = mark.Mark.extend({
                     .attr("d", this.dot.type(this.model.get("marker")));
             }
         }
-    }
+    },
+
+    relayout: function() {
+        this.set_ranges();
+        this.update_position();
+    },
 
 
 });
