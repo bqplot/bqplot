@@ -56,7 +56,8 @@ var FigureModel = basemodel.BaseModel.extend({
             padding_x: 0.0,
             padding_y: 0.025,
             legend_location: "top-right",
-            animation_duration: 0
+            animation_duration: 0,
+            pixel_ratio: null
         });
     },
 

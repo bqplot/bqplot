@@ -85,6 +85,9 @@ class Figure(DOMWidget):
         CSS style to be applied to the title of the figure
     animation_duration: nonnegative int (default: 0)
         Duration of transition on change of data attributes, in milliseconds.
+    pixel_ratio:
+        Pixel ratio of the WebGL canvas (2 on retina screens). Set to 1 for better performance,
+        but less crisp edges. If set to None it will use the browser's window.devicePixelRatio.
 
     Layout Attributes
 
@@ -141,6 +144,7 @@ class Figure(DOMWidget):
 
     min_aspect_ratio = Float(0.01).tag(sync=True)
     max_aspect_ratio = Float(100).tag(sync=True)
+    pixel_ratio = Float(None, allow_none=True).tag(sync=True)
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60))\
         .tag(sync=True)
