@@ -315,6 +315,10 @@ var Figure = widgets.DOMWidgetView.extend({
         this.listenTo(this.model, "change:layout", this.change_layout, this);
         this.listenTo(this.model, "change:legend_style", this.legend_style_updated, this);
         this.listenTo(this.model, "change:legend_text", this.legend_text_updated, this);
+        this.listenTo(this.model, "change:pixel_ratio", () => {
+            this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio)
+            this.update_gl()
+        })
     },
 
     title_style_updated: function() {
