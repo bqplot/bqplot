@@ -87,7 +87,7 @@ class Figure(DOMWidget):
         Duration of transition on change of data attributes, in milliseconds.
     pixel_ratio:
         Pixel ratio of the WebGL canvas (2 on retina screens). Set to 1 for better performance,
-        but less crisp edges. If set to None it will choose use the browser's window.devicePixelRatio.
+        but less crisp edges. If set to None it will use the browser's window.devicePixelRatio.
 
     Layout Attributes
 
