@@ -142,11 +142,12 @@ void main(void) {
 
     // vec3 center_normalized = (center - domain_offset) / domain_scale;
     // vec3 center_pixels = ((center_normalized*2.)-0.) * range_scale + range_offset;
+    // times 2 because the normalized coordinates go from [-1, 1]
     vec3 center_pixels = vec3(SCALE_X(center.x), SCALE_Y(center.y), 0) * 2.;
 
 
-
-    pixel_size = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size)) * marker_scale;
+    // times 4 because of the normalized coordinates, and radius vs diameter use
+    pixel_size = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size)) * marker_scale * 4.;
     // we draw larger than the size for the stroke_width (on both side)
     float s = pixel_size + 2.0 * stroke_width;
     vUv = uv;

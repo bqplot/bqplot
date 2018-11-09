@@ -259,11 +259,12 @@ var ScatterGL = mark.Mark.extend({
             var FAST_SQUARE = 2;
             var FAST_ARROW = 3;
             if(marker === 'circle') {
-                scale = 2.2;// * Math.sqrt(Math.PI);
+                // same as in ./Markers.js
+                scale = 1/Math.sqrt(Math.PI);
                 this.scatter_material.defines['FAST_DRAW'] = FAST_CIRCLE;
             }
             if(marker === 'square') {
-                scale = 2;
+                scale = 1/2.;
                 this.scatter_material.defines['FAST_DRAW'] = FAST_SQUARE;
             }
             if(marker === 'arrow') {
@@ -680,7 +681,7 @@ var ScatterGL = mark.Mark.extend({
                 this.scatter_material.uniforms.stroke_color_default.value = color_to_array_rgba(this.model.get('stroke'));
                 this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = true;
             } else {
-                this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = true;
+                this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = false;
             }
             this.update_scene()
         }
