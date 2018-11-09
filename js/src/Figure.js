@@ -31,12 +31,15 @@ var Figure = widgets.DOMWidgetView.extend({
     initialize : function() {
         // Internet Explorer does not support classList for svg elements
         this.el.classList.add("bqplot");
+        this.el.classList.add("figure");
         this.el.classList.add("jupyter-widgets");
 
         var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
         var svg_interaction = document.createElementNS(d3.ns.prefix.svg, "svg");
+        svg_interaction.style = 'position: absolute; width: 100%; height: 100%;'
         this.svg = d3.select(svg);
         this.svg_interaction = d3.select(svg_interaction);
+
         // a shared webgl context for all marks
         this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, premultipliedAlpha: true});
         if(!this.renderer.capabilities.floatFragmentTextures) {
@@ -48,35 +51,11 @@ var Figure = widgets.DOMWidgetView.extend({
         }
         this.renderer.setSize(100, 100);
         this.renderer.setClearAlpha(0);
+        this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio)
 
-        this.overlay_container = document.createElement('div')
-        this.overlay_container.style = 'position: relative;'
-
-        this.svg_container = document.createElement('div')
-        this.svg_container.style = 'position: absolute;'
-        this.overlay_container.appendChild(this.svg_container);
-        this.svg_container.appendChild(svg)
-
-        this.svg_container.classList.add("bqplot");
-        this.svg_container.classList.add("figure");
-        this.svg_container.classList.add("jupyter-widgets");
-
-        this.overlay_container.appendChild(this.renderer.domElement);
-        // we're setting this style in render again, kept here for clarity
-        // this.renderer.domElement.style = 'position: absolute;'
-        this.renderer.domElement.classList.add("jupyter-widgets"); // make sure we have the same paddi fng
-
-        this.svg_interaction_container = document.createElement('div')
-        this.svg_interaction_container.style = 'position: absolute; pointer-events: none; '
-        this.overlay_container.appendChild(this.svg_interaction_container);
-        this.svg_interaction_container.appendChild(svg_interaction)
-
-        this.svg_interaction_container.classList.add("bqplot");
-        this.svg_interaction_container.classList.add("figure");
-        this.svg_interaction_container.classList.add("jupyter-widgets");
-
-
-        this.el.appendChild(this.overlay_container);
+        this.el.appendChild(svg);
+        this.el.appendChild(this.renderer.domElement);
+        this.el.appendChild(svg_interaction)
 
         Figure.__super__.initialize.apply(this, arguments);
     },
@@ -198,24 +177,20 @@ var Figure = widgets.DOMWidgetView.extend({
         for that.
         When creating a screenshot/image, we collapse all this into one svg.
 
-        <div class="bqplot jupyter-widgets">
-            <div class="bqplot figure jupyter-widgets" style='position: absolute;'>
-                <svg>
-                    <g class="svg-figure" transform="margin translation">
-                        <g class="svg-axes"></g>
-                        <g class="svg-marks"></g>
-                    </g>
-                </svg>
-            </div>
+        <div class="bqplot figure jupyter-widgets">
+            <svg>
+                <g class="svg-figure" transform="margin translation">
+                    <g class="svg-axes"></g>
+                    <g class="svg-marks"></g>
+                </g>
+            </svg>
             <canvas style='position: absolute;'>
             </canvas>
-            <div class="bqplot figure jupyter-widgets" style='position: absolute;'>
-                <svg>
-                    <g class="svg-figure" transform="margin translation">
-                        <g class="svg-interaction"></g>
-                    </g>
-                </svg>
-            </div>
+            <svg style='position: absolute;'>
+                <g class="svg-figure" transform="margin translation">
+                    <g class="svg-interaction"></g>
+                </g>
+            </svg>
         </div>
         */
 
@@ -585,6 +560,8 @@ var Figure = widgets.DOMWidgetView.extend({
             // transform figure
             that.fig.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
+            that.fig_interaction.attr("transform", "translate(" + that.margin.left + "," +
+                                                      that.margin.top + ")");
             that.title.attr({
                 x: (0.5 * (that.plotarea_width)),
                 y: -(that.margin.top / 2.0),
@@ -905,6 +882,8 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     render_gl: function() {
+        if(this.mark_views === undefined)
+            this.update_gl() // we got call to soon, maybe next frame?
         return Promise.all(this.mark_views.views).then((views) => {
             // render all marks that have a render_gl method
             this.renderer.autoClear = false;
