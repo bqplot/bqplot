@@ -70,7 +70,7 @@ var ScatterGL = mark.Mark.extend({
         this.transitions = []
         this.invalidated_pixel_position = true;;
         this._update_requested = false;
-        window.last_scatter_mega = this;
+        window.last_scatter_gl = this;
 
         var el = this.d3el || this.el;
 
