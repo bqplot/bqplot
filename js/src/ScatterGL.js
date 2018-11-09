@@ -860,7 +860,7 @@ var ScatterGL = mark.Mark.extend({
         var Transition = function() {
             //this.objects = []
             this.time_start = (new Date()).getTime();
-            this.duration = 1000;//that.model.get("animation"); // TODO: get this from figure
+            this.duration = that.parent.model.get("animation_duration");
             this.cancelled = false;
             this.called_on_done = false
             this.set = function(obj) {
@@ -887,7 +887,13 @@ var ScatterGL = mark.Mark.extend({
                 console.log('u', dt, u)
                 that.update_scene()
             }
-            that.transitions.push(this)
+            if(!this.duration) {
+                f.apply(context, [1]);
+                on_done.apply(context)
+                that.update_scene()
+            } else {
+                that.transitions.push(this)
+            }
         }
         return new Transition()
     },
