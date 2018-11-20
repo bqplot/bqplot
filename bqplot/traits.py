@@ -131,7 +131,10 @@ def array_from_json(value, obj=None):
             else:
                 return np.array(value)
         elif 'value' in value:
+            # this should not work
             ar = np.frombuffer(value['value'], dtype=value['dtype']).reshape(value['shape'])
+            # this should
+            # ar = np.asarray(value['value'], dtype=value['dtype']).reshape(value['shape'])
             if value.get('type') == 'date':
                 assert value['dtype'] == 'float64'
                 ar = ar.astype('datetime64[ms]')
