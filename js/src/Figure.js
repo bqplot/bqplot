@@ -688,6 +688,8 @@ var Figure = widgets.DOMWidgetView.extend({
 
     set_interaction: function(model) {
         if (model) {
+            // Capture all interactions with the svg overlay
+            this.svg_interaction.style("pointer-events", "all");
             // Sets the child interaction
             var that = this;
             model.state_change.then(function() {
@@ -704,6 +706,8 @@ var Figure = widgets.DOMWidgetView.extend({
                 });
             });
         } else {
+            // Let interactions pass through to the marks
+            this.svg_interaction.style("pointer-events", "none");
             if (this.interaction_view) {
                 this.interaction_view.remove();
             }
