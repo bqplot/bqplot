@@ -112,7 +112,6 @@
     height: 480px;
 }
 .bqplot > svg {
-    background: var(--bq-background);
     font: 11px sans-serif;
     user-select: none;
     -ms-user-select: none;
@@ -120,6 +119,10 @@
     -khtml-user-select: none;
     -webkit-user-select: none;
     flex-grow: 1;
+
+    .svg-figure {
+        background: var(--bq-background);
+    }
 
     .axis {
         rect {
