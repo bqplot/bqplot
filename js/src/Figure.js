@@ -33,9 +33,12 @@ var Figure = widgets.DOMWidgetView.extend({
         this.el.classList.add("bqplot");
         this.el.classList.add("figure");
         this.el.classList.add("jupyter-widgets");
+        this.change_theme();
 
         var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
+        svg.classList.add("svg-figure");
         var svg_interaction = document.createElementNS(d3.ns.prefix.svg, "svg");
+        svg_interaction.classList.add("svg-interaction");
         svg_interaction.style = 'position: absolute; width: 100%; height: 100%;'
         this.svg = d3.select(svg);
         this.svg_interaction = d3.select(svg_interaction);
@@ -188,16 +191,16 @@ var Figure = widgets.DOMWidgetView.extend({
         When creating a screenshot/image, we collapse all this into one svg.
 
         <div class="bqplot figure jupyter-widgets">
-            <svg>
-                <g class="svg-figure" transform="margin translation">
+            <svg class="svg-figure">
+                <g transform="margin translation">
                     <g class="svg-axes"></g>
                     <g class="svg-marks"></g>
                 </g>
             </svg>
             <canvas style='position: absolute;'>
             </canvas>
-            <svg style='position: absolute;'>
-                <g class="svg-figure" transform="margin translation">
+            <svg class="svg-interaction" style='position: absolute;'>
+                <g transform="margin translation">
                     <g class="svg-interaction"></g>
                 </g>
             </svg>
@@ -304,6 +307,7 @@ var Figure = widgets.DOMWidgetView.extend({
             this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio)
             this.update_gl()
         })
+        this.listenTo(this.model, "change:theme", this.change_theme, this);
     },
 
     title_style_updated: function() {
@@ -912,7 +916,12 @@ var Figure = widgets.DOMWidgetView.extend({
                 mark.render_gl()
             })
         });
-    }
+    },
+
+    change_theme: function() {
+        this.el.classList.remove(this.model.previous("theme"));
+        this.el.classList.add(this.model.get("theme"));
+    },
 });
 
 

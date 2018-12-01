@@ -137,6 +137,7 @@ class Figure(DOMWidget):
     background_style = Dict().tag(sync=True)
     legend_style = Dict().tag(sync=True)
     legend_text = Dict().tag(sync=True)
+    theme = Enum(['classic', 'gg'], default_value='classic').tag(sync=True)
 
     # min width is based on hardcoded padding values
     layout = LayoutTraitType(kw=dict(min_width='125px'))\
