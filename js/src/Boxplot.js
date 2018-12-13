@@ -405,7 +405,7 @@ var Boxplot = mark.Mark.extend({
             xOffset = scaleX.scale.rangeBand() / 2;
         }
 
-        selector.selectAll(".boxplot")
+        selector.selectAll(".boxplot").data(plotData)
             .style("stroke", this.model.get("stroke"))
             .style("opacity", color)
             .attr ("transform", function (d, i) {
@@ -415,7 +415,7 @@ var Boxplot = mark.Mark.extend({
        //Box
         var width = this.get_box_width();
 
-        selector.selectAll(".box")
+        selector.selectAll(".box").data(plotData)
             .style("fill", fillcolor)
             .attr("x", -width /2)
             .attr("width", width)
@@ -427,7 +427,7 @@ var Boxplot = mark.Mark.extend({
             });
 
         //Median line
-        selector.selectAll(".median_line")
+        selector.selectAll(".median_line").data(plotData)
             .style("stroke-width", 2)
             .attr("d", function(d, i) {
 
@@ -440,7 +440,7 @@ var Boxplot = mark.Mark.extend({
 
           //Max and Min Whiskers
           //Max to top of the Box
-          selector.selectAll(".whisker_max")
+          selector.selectAll(".whisker_max").data(plotData)
               .attr("d", function(d, i) {
 
               var x = 0;
@@ -453,7 +453,7 @@ var Boxplot = mark.Mark.extend({
               return  "5,5";
            });
 
-          selector.selectAll(".whisker_max_end")
+          selector.selectAll(".whisker_max_end").data(plotData)
               .attr("d", function(d, i) {
 
               var x = 0;
@@ -465,7 +465,7 @@ var Boxplot = mark.Mark.extend({
 
           //Min to the bottom of the box
           //Max to top of the Box
-          selector.selectAll(".whisker_min")
+          selector.selectAll(".whisker_min").data(plotData)
               .attr("d", function(d, i) {
 
               var x = 0;
@@ -478,7 +478,7 @@ var Boxplot = mark.Mark.extend({
               return  "5,5";
           });
 
-          selector.selectAll(".whisker_min_end")
+          selector.selectAll(".whisker_min_end").data(plotData)
               .attr("d", function(d, i) {
 
               var x = 0;
@@ -495,7 +495,7 @@ var Boxplot = mark.Mark.extend({
           //Individual outlier drawing spec
           outliers.enter().append("circle").attr("class", "outlier");
 
-          selector.selectAll(".outlier")
+          selector.selectAll(".outlier").data(plotData)
               .style("fill", this.model.get("outlier_fill_color"))
               .attr("class", "outlier")
               .attr("cx", 0)
