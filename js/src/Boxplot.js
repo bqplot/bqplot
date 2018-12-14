@@ -282,6 +282,7 @@ var Boxplot = mark.Mark.extend({
     },
 
     prepareBoxPlots: function () {
+        // Sets plot data on this.plotData and this.outlierData
 
         var auto_detect_outliers = this.model.get("auto_detect_outliers") !== false;
         var x_scale = this.scales.x;
@@ -290,6 +291,7 @@ var Boxplot = mark.Mark.extend({
        // convert the domain data to the boxes to be drawn on the screen
        // find the quantiles, min/max and outliers for the box plot
         this.plotData = [];
+        this.outlierData = [];
         for(var i = 0; i<this.model.mark_data.length; ++i) {
             var values = this.model.mark_data[i];
 
@@ -306,7 +308,6 @@ var Boxplot = mark.Mark.extend({
             var lowerBound = displayValue.boxLower + 1.5 * iqr;
             var upperBound = displayValue.boxUpper - 1.5 * iqr;
 
-            displayValue.outliers = [];
             displayValue.whiskerMax = Number.MAX_VALUE;
             displayValue.whiskerMin = Number.MIN_VALUE;
 
@@ -316,7 +317,8 @@ var Boxplot = mark.Mark.extend({
 
                // Find the outlier
                if (auto_detect_outliers && (plotY > lowerBound || plotY  < upperBound)) {
-                    displayValue.outliers.push(plotY);
+                   this.outlierData.push({x: x_scale.scale(values[0]),
+                                          y: plotY});
                } else {
                     // Find the whisker points max and min from normal data.
                     // ( exclude the outliers )
@@ -329,7 +331,6 @@ var Boxplot = mark.Mark.extend({
                     }
                }
             }
-
             this.plotData.push(displayValue);
         }
     },
@@ -337,21 +338,22 @@ var Boxplot = mark.Mark.extend({
     draw: function() {
         this.set_ranges();
         var x_scale = this.scales.x;
-        // get the visual representation of boxplots
+        // get the visual representation of boxplots, set as state
         this.prepareBoxPlots();
-        var plotData = this.plotData;
 
         // Draw the visual elements with data which was bound
-        this.draw_mark_paths(".boxplot", this.d3el, plotData);
+        this.draw_mark_paths(".boxplot", this.d3el);
         // Keep the pixel coordinates of the boxes, for interactions.
         this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
         var width = this.get_box_width() / 2;
-        this.pixel_coords = plotData.map(function(d) { return [[d.x - width, d.x + width],
-                                                               [d.boxLower, d.boxUpper]] })
+        this.pixel_coords = this.plotData.map(function(d) { return [[d.x - width, d.x + width],
+                                                                    [d.boxLower, d.boxUpper]] })
     },
 
-    draw_mark_paths: function(parentClass, selector, plotData) {
+    draw_mark_paths: function(parentClass, selector) {
         var that = this;
+        var plotData = this.plotData;
+        var outlierData = this.outlierData;
 
         var mark_max_width = this.calculate_mark_max_width();
         var color = this.model.get("color");
@@ -488,25 +490,29 @@ var Boxplot = mark.Mark.extend({
               return "M"  + (x - width/2) + "," +  minY +  " L" + (x + width/2) + "," +  minY;
           });
 
+          boxplot.exit().remove();
+
           // Add the outliers group
-          var outliers = selector.selectAll(".outliers").selectAll("circle")
-              .data(function(d) { return d.outliers;});
+          var outliers = selector.selectAll(".outlier")
+              .data(outlierData);
 
-          //Individual outlier drawing spec
-          outliers.enter().append("circle").attr("class", "outlier");
+          // Add/remove elements as needed
+          outliers.enter()
+            .append("circle")
+              .attr("class", "outlier");
+          outliers.exit()
+            .remove();
 
-          selector.selectAll(".outlier").data(plotData)
+          // Set outlier data
+          selector.selectAll(".outlier").data(outlierData)
               .style("fill", this.model.get("outlier_fill_color"))
-              .attr("class", "outlier")
-              .attr("cx", 0)
+              .attr("cx", function(d) {
+                return d.x + xOffset;
+              })
               .attr("r", 3)
               .attr("cy", function(d) {
-                return (d);
+                return d.y;
               });
-
-          outliers.exit().remove();
-
-          boxplot.exit().remove();
 
           this.apply_styles(this.selected_indices);
     },
