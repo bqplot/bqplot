@@ -66,10 +66,8 @@ var PieModel = markmodel.MarkModel.extend({
             return {
                 size: d,
                 color: color[i],
-                // since labels are used as join keys create default labels
-                // for missing labels. Using == to check for *both* undefined and null
                 // jshint eqnull: true
-                label: labels[i] == null ? 'S' + (i + 1) : labels[i],
+                label: labels[i] == null ? "" : labels[i],
                 index: i
             };
         });
@@ -84,12 +82,8 @@ var PieModel = markmodel.MarkModel.extend({
         }
         var labels = this.get("labels");
         this.mark_data.forEach(function(data, index) {
-            // since labels are used as join keys create default labels
-            // for missing labels. Using == to check for *both* undefined and null
             // jshint eqnull: true
-            data.label = labels[index] == null ?
-                         'S' + (index + 1) :
-                         labels[index];
+            data.label = labels[index] == null ? "" : labels[index];
         });
         this.trigger("labels_updated");
     },
