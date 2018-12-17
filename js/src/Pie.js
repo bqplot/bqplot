@@ -56,8 +56,6 @@ var Pie = mark.Mark.extend({
             that.create_tooltip();
         });
 
-        this.join_key = function(d) { return d.data.label; };
-
         return base_creation_promise.then(function() {
             that.event_listeners = {};
             that.process_interactions();
@@ -131,7 +129,11 @@ var Pie = mark.Mark.extend({
         this.model.on_some_change(["display_values", "values_format"],
                                   this.update_values, this);
 
-        this.listenTo(this.model, "labels_updated", this.update_values, this);
+        this.listenTo(this.model, "labels_updated", function() {
+            var animate = true;
+            this.draw(animate);
+        }, this);
+
         this.listenTo(this.model, "change:selected", function() {
             this.selected_indices = this.model.get("selected");
             this.apply_styles();
@@ -252,7 +254,7 @@ var Pie = mark.Mark.extend({
                 .transition("update_radii").duration(animation_duration)
                 .attr("transform", function(d) {
                     var pos = that.outer_arc.centroid(d);
-                    pos[0] = radius * (that.is_mid_angle_left(d) ? -1 : 1);
+                    pos[0] = radius * (that.mid_angle_location(d) === "left" ? -1 : 1);
                     return "translate(" + pos + ")";
                 });
 
@@ -260,69 +262,22 @@ var Pie = mark.Mark.extend({
                 .transition("update_radii").duration(animation_duration)
                 .attr("points", function(d) {
                     var pos = that.outer_arc.centroid(d);
-                    pos[0] = radius * 0.95 * (that.is_mid_angle_left(d) ? -1 : 1);
+                    pos[0] = radius * 0.95 * (that.mid_angle_location(d) === "left" ? -1 : 1);
                     return [that.arc.centroid(d), that.outer_arc.centroid(d), pos];
                 });
         }
     },
 
-    outer_join: function(first, second) {
-        var common_keys = d3.set(first.concat(second).map(function(d) {
-            return d.label;
-        })).values().sort();
-
-        // convert first array to map keyed with label
-        var first_map = {};
-        first.forEach(function(d) { first_map[d.label] = d; });
-
-        // convert second array to map keyed with label
-        var second_map = {};
-        second.forEach(function(d) { second_map[d.label] = d; });
-
-        // create new first array with missing labels filled with 0
-        var new_first = [],
-            new_second = []
-        common_keys.forEach(function(d) {
-            if(d in first_map) {
-                new_first.push(first_map[d]);
-            } else {
-                var missing_d = utils.deepCopy(second_map[d]);
-                missing_d.size = 0;
-                new_first.push(missing_d);
-            }
-
-            if(d in second_map) {
-                new_second.push(second_map[d]);
-            } else {
-                var missing_d = utils.deepCopy(first_map[d]);
-                missing_d.size = 0;
-                new_second.push(missing_d);
-            }
-        });
-
-        return {first: new_first, second: new_second};
-    },
-
-    is_mid_angle_left: function(arc_data) {
-        // decides if the mid angle of the arc is toward left or right (to aid the
-        // placement of label text and polylines)
+    mid_angle_location: function(arc_data) {
+        // decides if the location of the mid angle of the arc is toward left or right (to aid the
+        // placement of label text)
         var mid_angle = (arc_data.startAngle + arc_data.endAngle) / 2;
-        return mid_angle > Math.PI || (mid_angle < 0 && mid_angle > -Math.PI);
+        return (mid_angle > Math.PI || (mid_angle < 0 && mid_angle > -Math.PI)) ? "left" : "right";
     },
 
     draw: function(animate) {
         this.set_ranges();
         this.position_center(animate);
-        var new_data = this.model.mark_data;
-
-        var old_data = this.pie_g.select(".slices").selectAll("path.slice")
-            .data().map(function(d) { return d.data; });
-        if (old_data.length === 0) {
-            old_data = new_data;
-        }
-        var joined = this.outer_join(old_data, new_data);
-        var was = joined.first;
-        var is = joined.second;
 
         var pie = d3.layout.pie()
             .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
@@ -335,47 +290,36 @@ var Pie = mark.Mark.extend({
         var animation_duration = animate === true ?
             this.parent.model.get("animation_duration") : 0;
 
+        // update pie slices
         var slices = this.pie_g.select(".slices")
             .selectAll("path.slice")
-            .data(pie(was), this.join_key);
+            .data(pie(this.model.mark_data));
 
         slices.enter()
             .insert("path")
             .attr("class", "slice")
-            .style("fill", function(d, i) {
-                return that.get_colors(i);
+            .style("fill", function(d) {
+                return that.get_colors(d.data.index);
             })
             .each(function(d) {
                 this._current = d;
             });
 
-        slices = this.pie_g.select(".slices")
-            .selectAll("path.slice")
-            .data(pie(is), this.join_key);
-
         slices.transition("draw").duration(animation_duration)
             .attrTween("d", function(d) {
                 var interpolate = d3.interpolate(this._current, d);
-                var _this = this;
-                return function(t) {
-                    _this._current = interpolate(t);
-                    return that.arc(_this._current);
-                };
+                this._current = d;
+                return function(t) { return that.arc(interpolate(t)); };
             });
-
-        slices = this.pie_g.select(".slices")
-            .selectAll("path.slice")
-            .data(pie(new_data), this.join_key);
 
         slices.exit()
             .transition("draw")
-            .delay(animation_duration)
-            .duration(0)
             .remove();
 
+        // update labels
         var labels = this.pie_g.select(".labels")
             .selectAll("text")
-            .data(pie(was), this.join_key);
+            .data(pie(this.model.mark_data));
 
         labels.enter()
             .append("text")
@@ -388,15 +332,12 @@ var Pie = mark.Mark.extend({
                 this._current = d;
             });
 
-        labels = this.pie_g.select(".labels")
-            .selectAll("text")
-            .data(pie(is), this.join_key);
-
         var label_trans = labels.transition("draw")
             .duration(animation_duration)
             .style("opacity", function(d) {
                 return d.data.value === 0 ? 0 : 1;
             });
+
         var display_labels = this.model.get("display_labels");
 
         if(display_labels === "inside") {
@@ -404,7 +345,7 @@ var Pie = mark.Mark.extend({
                 return "translate(" + that.arc.centroid(d) + ")";
             })
             .style("text-anchor", "middle");
-        } else if(display_labels === "outside") {
+        } else if (display_labels === "outside") {
             label_trans.attrTween("transform", function(d) {
                 var interpolate = d3.interpolate(this._current, d);
                 var _this = this;
@@ -413,7 +354,7 @@ var Pie = mark.Mark.extend({
                     _this._current = d2;
                     var pos = that.outer_arc.centroid(d2);
                     pos[0] = that.model.get("radius") *
-                        (that.is_mid_angle_left(d2) ?  -1 : 1);
+                        (that.mid_angle_location(d) === "left" ?  -1 : 1);
                     return "translate(" + pos + ")";
                 };
             })
@@ -421,24 +362,18 @@ var Pie = mark.Mark.extend({
                 var interpolate = d3.interpolate(this._current, d);
                 return function(t) {
                     var d2 = interpolate(t);
-                    return that.is_mid_angle_left(d2) ? "end":"start";
+                    return that.mid_angle_location(d2) === "left" ? "end" : "start";
                 };
             });
         }
 
-        labels = this.pie_g.select(".labels")
-            .selectAll("text")
-            .data(pie(new_data), this.join_key);
-
-        labels.exit()
-            .transition("draw").delay(animation_duration)
-            .remove();
+        labels.exit().remove();
 
         // for labels which are displayed outside draw the polylines
-        if(display_labels === "outside") {
+        if (display_labels === "outside") {
             var polylines = this.pie_g.select(".lines")
                 .selectAll("polyline")
-                .data(pie(was), this.join_key);
+                .data(pie(this.model.mark_data));
 
             polylines.enter()
                 .append("polyline")
@@ -447,14 +382,13 @@ var Pie = mark.Mark.extend({
                     this._current = d;
                 });
 
-            polylines = this.pie_g.select(".lines")
-                .selectAll("polyline")
-                .data(pie(is), this.join_key);
-
             polylines.transition("draw")
                 .duration(animation_duration)
                 .style("opacity", function(d) {
                     return d.data.value === 0 ? 0 : 0.5;
+                })
+                .style("visibility", function(d) {
+                    return d.data.label === "" ? "hidden" : "visible";
                 })
                 .attrTween("points", function(d) {
                     this._current = this._current;
@@ -465,21 +399,13 @@ var Pie = mark.Mark.extend({
                         _this._current = d2;
                         var pos = that.outer_arc.centroid(d2);
                         pos[0] = that.model.get("radius") * 0.95 *
-                            (that.is_mid_angle_left(d2) ? -1 : 1);
+                            (that.mid_angle_location(d2) === "left" ? -1 : 1);
                         return [that.arc.centroid(d2), that.outer_arc.centroid(d2), pos];
                     };
                 });
 
-            polylines = this.pie_g.select(".lines")
-                .selectAll("polyline")
-                .data(pie(new_data), this.join_key);
-
-            polylines.exit()
-                .transition("draw").delay(animation_duration)
-                .remove();
+            polylines.exit().remove();
         }
-
-        slices.order();
 
         slices.on("click", function(d, i) {
             return that.event_dispatcher("element_clicked", {data: d, index: i});
