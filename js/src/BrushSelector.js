@@ -25,7 +25,7 @@ var BaseBrushSelector = {
         var that = this;
         var scale_creation_promise = this.create_scales();
         this.brushing = false;
-        
+
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.brush = d3.svg.brush()
               .on("brushstart", _.bind(that.brush_start, that))
@@ -253,7 +253,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
 
     empty_selection: function() {
         this.update_mark_selected();
-        this.model.set("selected", {});
+        this.model.set("selected", []);
         this.touch();
     },
 
