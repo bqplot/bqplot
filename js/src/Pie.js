@@ -377,16 +377,12 @@ var Pie = mark.Mark.extend({
 
             polylines.enter()
                 .append("polyline")
-                .style("opacity", 0)
                 .each(function(d) {
                     this._current = d;
                 });
 
             polylines.transition("draw")
                 .duration(animation_duration)
-                .style("opacity", function(d) {
-                    return d.data.value === 0 ? 0 : 0.5;
-                })
                 .style("visibility", function(d) {
                     return d.data.label === "" ? "hidden" : "visible";
                 })
