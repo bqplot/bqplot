@@ -51,7 +51,7 @@ from traittypes import Array
 from numpy import histogram
 
 from .scales import Scale, OrdinalScale, LinearScale
-from .traits import (Date, array_serialization, 
+from .traits import (Date, array_serialization,
                      array_squeeze, array_dimension_bounds, array_supported_kinds)
 from ._version import __frontend_version__
 from .colorschemes import CATEGORY10
@@ -1333,7 +1333,7 @@ class Pie(Mark):
     display_values = Bool(False).tag(sync=True)
     values_format = Unicode(default_value='.1f').tag(sync=True)
     label_color = Color(None, allow_none=True).tag(sync=True)
-    font_size = Unicode(default_value='10px').tag(sync=True)
+    font_size = Unicode(default_value='12px').tag(sync=True)
     font_weight = Enum(['bold', 'normal', 'bolder'],
                        default_value='normal').tag(sync=True)
 

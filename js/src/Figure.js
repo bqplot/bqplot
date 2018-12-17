@@ -849,11 +849,11 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     save_png: function(filename, scale) {
-       
+
             // scale up the underlying canvas for high dpi screens
             // such that image is of the same quality
             scale = scale || window.devicePixelRatio;
-    
+
             // Render a SVG data into a canvas and download as PNG.
 
     // Render a SVG data into a canvas and download as PNG.
@@ -893,7 +893,6 @@ var Figure = widgets.DOMWidgetView.extend({
     update_gl: function() {
         if(!this._update_requested) {
            this._update_requested = true
-           console.log('update gl')
            requestAnimationFrame(() => this._update_gl())
        }
     },

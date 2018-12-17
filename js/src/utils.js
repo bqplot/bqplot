@@ -15,7 +15,7 @@
 
 var d3 = require("d3");
 var isTypedArray = require('is-typedarray');
-var _ = require('underscore') 
+var _ = require('underscore')
 
 // the following is a regex to match all valid time formats that can be
 // generated with d3 as of 2nd March 2015. If new formats are added to d3
@@ -31,7 +31,7 @@ var deepCopy = function (obj) {
         return obj.slice()
     else if(_.isArray(obj)) {
         return obj.map(x => deepCopy(x))
-    } else if(_.isNumber(obj)) {
+    } else if(_.isNumber(obj) || _.isString(obj)) {
         return obj;
     } else {
         var newobj = {}
