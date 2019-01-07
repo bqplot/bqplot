@@ -165,7 +165,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
     reset: function() {
         this.rect.attr("x", 0)
           .attr("width", 0);
-        this.model.set_typed_field("selected", {});
+        this.model.set_typed_field("selected", []);
         this.update_mark_selected();
         this.touch();
     },

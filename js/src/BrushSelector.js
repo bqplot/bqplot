@@ -253,7 +253,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
 
     empty_selection: function() {
         this.update_mark_selected();
-        this.model.set("selected", []);
+        this.model.set_typed_field("selected", []);
         this.touch();
     },
 
