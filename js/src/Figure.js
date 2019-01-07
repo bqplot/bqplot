@@ -745,7 +745,11 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
 
-    save_png: function(filename) {
+    save_png: function(filename, scale) {
+
+        // scale up the underlying canvas for high dpi screens
+        // such that image is of the same quality
+        scale = scale || window.devicePixelRatio;
 
         var xml = this.get_svg();
 
@@ -755,9 +759,12 @@ var Figure = widgets.DOMWidgetView.extend({
         image.onload = function() {
             var canvas = document.createElement("canvas");
             canvas.classList.add('bqplot');
-            canvas.width = that.width;
-            canvas.height = that.height;
+            canvas.width = that.width * scale;
+            canvas.height = that.height * scale;
+            canvas.style.width = this.width;
+            canvas.style.height = this.height;
             var context = canvas.getContext("2d");
+            context.scale(scale, scale);
             context.drawImage(image, 0, 0);
             var a = document.createElement("a");
             a.download = filename || "bqplot.png";
