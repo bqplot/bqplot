@@ -14,7 +14,8 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"),
+                           require("d3-selection-multi"));
 var _ = require("underscore");
 var utils = require("./utils");
 
@@ -29,7 +30,7 @@ var UNITS_ARRAY = ["em", "ex", "px"];
 var Axis = widgets.WidgetView.extend({
 
     initialize : function() {
-        this.setElement(document.createElementNS(d3.ns.prefix.svg, "g"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
         Axis.__super__.initialize.apply(this, arguments);
     },
@@ -194,7 +195,7 @@ var Axis = widgets.WidgetView.extend({
         // Applies current tick styling to all displayed ticks
 
         this.g_axisline.selectAll(".tick text")
-                .style(this.model.get("tick_style"))
+                .styles(this.model.get("tick_style"))
                 .attr("transform", this.get_tick_transforms());
     },
 
@@ -252,7 +253,7 @@ var Axis = widgets.WidgetView.extend({
         if(this.axis_scale.model.type === "date" ||
            this.axis_scale.model.type === "date_color_linear") {
             if(this.model.get("tick_format")) {
-                return d3.time.format(this.model.get("tick_format"));
+                return d3.timeFormat(this.model.get("tick_format"));
             } else {
                 return this.guess_tick_format();
             }
@@ -263,7 +264,7 @@ var Axis = widgets.WidgetView.extend({
                 //check the instance of the elements in the domain and
                 //apply the format depending on that.
                 if(utils.is_valid_time_format(tick_format)) {
-                    return d3.time.format(tick_format);
+                    return d3.timeFormat(tick_format);
                 } else {
                     return d3.format(tick_format);
                 }
@@ -296,11 +297,11 @@ var Axis = widgets.WidgetView.extend({
         var side = this.model.get("side");
 
         if (is_vertical) {
-            this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                .orient(side === "right" ? "right" : "left");
+            this.axis = side === "right" ? d3.axisRight(this.axis_scale.scale)
+                                         : d3.axisLeft(this.axis_scale.scale);
         } else {
-            this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                .orient(side === "top" ? "top" : "bottom");
+            this.axis = side === "top" ? d3.axisTop(this.axis_scale.scale)
+                                       : d3.axisBottom(this.axis_scale.scale);
         }
     },
 
@@ -317,8 +318,8 @@ var Axis = widgets.WidgetView.extend({
         // Create element for axis label
         this.g_axisline.append("text")
             .attr("class", "axislabel")
-            .attr(this.get_label_attributes())
-            .style(this.get_text_styling())
+            .attrs(this.get_label_attributes())
+            .styles(this.get_text_styling())
             .text(this.model.get("label"));
 
         // Apply custom settings
@@ -562,7 +563,7 @@ var Axis = widgets.WidgetView.extend({
         }
 
         if (grid_type !== "none") {
-            this.axis.innerTickSize(tickSize).outerTickSize(6);
+            this.axis.tickSizeInner(tickSize).tickSizeOuter(6);
         } else {
             this.axis.tickSize(6);
         }
@@ -624,7 +625,7 @@ var Axis = widgets.WidgetView.extend({
         this.g_axisline.call(this.axis);
         this.g_axisline.select("text.axislabel")
             .attr(this.get_label_attributes())
-            .style(this.get_text_styling());
+            .styles(this.get_text_styling());
         // TODO: what follows is currently part of redraw_axisline
         this.set_tick_values();
         this.update_grid_lines();

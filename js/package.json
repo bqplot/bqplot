@@ -51,7 +51,8 @@
   },
   "dependencies": {
     "@jupyter-widgets/base": "^1.0.0",
-    "d3": "^3.5.16",
+    "d3": "^5.7.0",
+    "d3-selection-multi": "^1.0.1",
     "is-typedarray": "^1.0.0",
     "popper.js": "^1.0.0",
     "topojson": "^1.6.24",

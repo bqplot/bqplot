@@ -14,7 +14,7 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 var _ = require("underscore");
 var popperreference = require("./PopperReference");
 var popper = require("popper.js");
@@ -35,9 +35,9 @@ var Figure = widgets.DOMWidgetView.extend({
         this.el.classList.add("jupyter-widgets");
         this.change_theme();
 
-        var svg = document.createElementNS(d3.ns.prefix.svg, "svg");
+        var svg = document.createElementNS(d3.namespaces.svg, "svg");
         svg.classList.add("svg-figure");
-        var svg_interaction = document.createElementNS(d3.ns.prefix.svg, "svg");
+        var svg_interaction = document.createElementNS(d3.namespaces.svg, "svg");
         svg_interaction.classList.add("svg-interaction");
         svg_interaction.style = 'position: absolute; width: 100%; height: 100%;'
         this.svg = d3.select(svg);
@@ -163,8 +163,8 @@ var Figure = widgets.DOMWidgetView.extend({
           .attr("class", "plotarea_background")
           .attr("x", 0).attr("y", 0)
           .attr("width", this.plotarea_width)
-          .attr("height", this.plotarea_height)
-          .on("click", function() { that.trigger("bg_clicked"); })
+          .attr("height", this.plotarea_height);
+        this.bg.on("click", function() { that.trigger("bg_clicked"); })
           .style("pointer-events", "inherit")
           .style(this.model.get("background_style"));
 
@@ -218,9 +218,12 @@ var Figure = widgets.DOMWidgetView.extend({
 
         this.title = this.fig.append("text")
           .attr("class", "mainheading")
-          .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
-          .text(this.model.get("title"))
-          .style(this.model.get("title_style"));
+          .attr("x", 0.5 * (this.plotarea_width))
+          .attr("y", -(this.margin.top / 2.0))
+          .attr("dy", "1em")
+          .styles(this.model.get("title_style"));
+
+        this.title.text(this.model.get("title"));
 
         // TODO: remove the save png event mechanism.
         this.model.on("save_png", this.save_png, this);
@@ -482,7 +485,7 @@ var Figure = widgets.DOMWidgetView.extend({
             model.on("data_updated redraw_legend", that.update_legend, that);
         });
 
-        var dummy_node = that.fig_marks.node().appendChild(document.createElementNS(d3.ns.prefix.svg, "g"));
+        var dummy_node = that.fig_marks.node().appendChild(document.createElementNS(d3.namespaces.svg, "g"));
 
         return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
             view.dummy_node = dummy_node;
@@ -580,7 +583,7 @@ var Figure = widgets.DOMWidgetView.extend({
                                                       that.margin.top + ")");
             that.fig_interaction.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
-            that.title.attr({
+            that.title.attrs({
                 x: (0.5 * (that.plotarea_width)),
                 y: -(that.margin.top / 2.0),
                 dy: "1em"
@@ -654,9 +657,9 @@ var Figure = widgets.DOMWidgetView.extend({
                 legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
                                                           String(coords[1]) + ") ");
 
-                legend_g.selectAll("text.legendtext").style(that.model.get("legend_text"));
+                legend_g.selectAll("text.legendtext").styles(that.model.get("legend_text"));
 
-                legend_g.selectAll(".axis").selectAll("rect").style(that.model.get("legend_style"));
+                legend_g.selectAll(".axis").selectAll("rect").styles(that.model.get("legend_style"));
 
             });
         }

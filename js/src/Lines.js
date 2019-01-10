@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"), require("d3-shape"), require("d3-transition"));
 var mark = require("./Mark");
 var markers = require("./Markers");
 var utils = require("./utils");
@@ -239,9 +239,9 @@ var Lines = mark.Mark.extend({
     },
 
     update_path_style: function() {
-        var interpolation = this.model.get("interpolation");
-        this.line.interpolate(interpolation);
-        this.area.interpolate(interpolation);
+        var interpolation = this.get_interpolation();
+        this.line.curve(interpolation);
+        this.area.curve(interpolation);
         var that = this;
         this.d3el.selectAll(".curve").select(".line")
           .attr("d", function(d) {
@@ -252,7 +252,7 @@ var Lines = mark.Mark.extend({
           .duration(0) //FIXME
           .attr("d", function(d) { return that.area(d.values); });
         if (this.legend_el) {
-            this.legend_line.interpolate(interpolation);
+            this.legend_line.curve(interpolation);
             this.legend_el.selectAll("path")
               .attr("d", this.legend_line(this.legend_path_data) + this.path_closure());
         }
@@ -321,7 +321,7 @@ var Lines = mark.Mark.extend({
             opacities = this.model.get("opacities");
 
         this.legend_line = d3.svg.line()
-            .interpolate(this.model.get("interpolation"))
+            .curve(this.get_interpolation())
             .x(function(d) { return d[0]; })
             .y(function(d) { return d[1]; });
 
@@ -506,17 +506,17 @@ var Lines = mark.Mark.extend({
           .duration(animation_duration)
           .attr("d", function(d, i) {
             return that.area(d.values);
-        });
+          });
 
 
         curves_sel.select(".curve_label")
-          .transition("update_line_xy")
-          .duration(animation_duration)
           .attr("transform", function(d) {
               var last_xy = d.values[d.values.length - 1];
               return "translate(" + x_scale.scale(last_xy.x) +
                               "," + y_scale.scale(last_xy.y) + ")";
-          });
+          })
+          .transition("update_line_xy")
+          .duration(animation_duration);
 
         this.update_dots_xy(animate);
         this.x_pixels = (this.model.mark_data.length > 0) ? this.model.mark_data[0].values.map(function(el)
@@ -529,6 +529,17 @@ var Lines = mark.Mark.extend({
             this.model.mark_data[0].values.map(function(el) {
                 return [x_scale.scale(el.x) + x_scale.offset, y_scale.scale(el.y) + y_scale.offset];
             }) : [];
+    },
+
+    get_interpolation: function() {
+        var curve_types = {
+            linear: d3.curveLinear,
+            basis: d3.curveBasis,
+            cardinal: d3.curve,
+            monotone: d3.curveMonotoneY
+        };
+
+        return curve_types[this.model.get("interpolation")];
     },
 
     draw: function(animate) {
@@ -564,12 +575,12 @@ var Lines = mark.Mark.extend({
 
         this.draw_dots();
 
-        this.line = d3.svg.line()
-          .interpolate(this.model.get("interpolation"))
+        this.line = d3.line()
+          .curve(this.get_interpolation())
           .defined(function(d) { return d.y !== null && isFinite(y_scale.scale(d.y)); });
 
-        this.area = d3.svg.area()
-          .interpolate(this.model.get("interpolation"))
+        this.area = d3.area()
+          .curve(this.get_interpolation())
           .defined(function(d) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
 
         // Having a transition on exit is complicated. Please refer to

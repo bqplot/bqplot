@@ -122,6 +122,12 @@ function symbolSkew() {
     return 0.5;
 }
 
+function constant(x) {
+    return function() {
+        return x;
+    }
+}
+
 var bqSymbol = function() {
     var type = symbolType,
         size = symbolSize;
@@ -134,21 +140,21 @@ var bqSymbol = function() {
 
     symbol.type = function(x) {
         if (!arguments.length) return type;
-        type = d3.functor(x);
+        type = constant(x);
         return symbol;
     };
 
     // size of symbol in square pixels
     symbol.size = function(x) {
         if (!arguments.length) return size;
-        size = d3.functor(x);
+        size = constant(x);
         return symbol;
     };
 
     // skew of symbol, in [0, 1]
     symbol.skew = function(x) {
         if (!arguments.length) return skew;
-        skew = d3.functor(x);
+        skew = constant(x);
         return symbol;
     };
 
