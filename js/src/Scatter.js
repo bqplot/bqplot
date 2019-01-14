@@ -14,7 +14,7 @@
  */
 var scatterbase = require("./ScatterBase");
 var markers = require("./Markers");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"));
 
 var bqSymbol = markers.symbol;
 
@@ -234,7 +234,8 @@ var Scatter = scatterbase.ScatterBase.extend({
 
         elements_added.append("path").attr("class", "dot element");
         elements_added.append("text").attr("class", "dot_text");
-        elements.select("path").transition("draw_elements")
+        elements.select("path")
+            .transition("draw_elements")
             .duration(animation_duration)
             .attr("d", this.dot
                 .size(function(d) { return that.get_element_size(d); })

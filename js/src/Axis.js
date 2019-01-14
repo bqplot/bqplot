@@ -15,7 +15,7 @@
 
 var widgets = require("@jupyter-widgets/base");
 var d3 = Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"),
-                           require("d3-selection-multi"));
+                           require("d3-selection-multi"), require("d3-time-format"));
 var _ = require("underscore");
 var utils = require("./utils");
 
@@ -624,7 +624,7 @@ var Axis = widgets.WidgetView.extend({
         this.g_axisline.attr("transform", this.get_axis_transform());
         this.g_axisline.call(this.axis);
         this.g_axisline.select("text.axislabel")
-            .attr(this.get_label_attributes())
+            .attrs(this.get_label_attributes())
             .styles(this.get_text_styling());
         // TODO: what follows is currently part of redraw_axisline
         this.set_tick_values();

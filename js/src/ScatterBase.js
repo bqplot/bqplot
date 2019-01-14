@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-drag"));
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
@@ -24,10 +24,10 @@ var ScatterBase = mark.Mark.extend({
         var base_creation_promise = ScatterBase.__super__.render.apply(this);
 
         var that = this;
-        this.drag_listener = d3.behavior.drag()
-          .on("dragstart", function(d, i) { return that.drag_start(d, i, this); })
+        this.drag_listener = d3.drag()
+          .on("start", function(d, i) { return that.drag_start(d, i, this); })
           .on("drag", function(d, i) { return that.on_drag(d, i, this); })
-          .on("dragend", function(d, i) { return that.drag_ended(d, i, this); });
+          .on("end", function(d, i) { return that.drag_ended(d, i, this); });
 
         this.selected_style = this.model.get("selected_style");
         this.unselected_style = this.model.get("unselected_style");

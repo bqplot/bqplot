@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-scale"));
 var _ = require("underscore");
 var scale = require("./Scale");
 
 var OrdinalScale = scale.Scale.extend({
 
     render: function() {
-        this.scale = d3.scale.ordinal();
+        this.scale = d3.scaleBand();
         this.scale.domain(this.model.domain);
         this.offset = 0;
         this.create_event_listeners();
@@ -28,8 +28,8 @@ var OrdinalScale = scale.Scale.extend({
 
     set_range: function(range, padding) {
        padding = (padding === undefined) ? 0 : padding;
-       this.scale.rangeBands(range, padding, padding / 2.0);
-       this.offset = (this.scale.domain().length === 0) ? 0 : this.scale.rangeBand() / 2.0;
+       this.scale.range(range, padding, padding / 2.0);
+       this.offset = (this.scale.domain().length === 0) ? 0 : this.scale.range() / 2.0;
     },
 
     expand_domain: function(old_range, new_range) {
@@ -43,10 +43,10 @@ var OrdinalScale = scale.Scale.extend({
         // happens, the labels are placed at the center of the bins
 
         var unpadded_scale = this.scale.copy();
-        unpadded_scale.rangeBands(old_range);
+        unpadded_scale.range(old_range);
         var outer_padding = (unpadded_scale.range().length > 0) ?
-            Math.abs((new_range[1] - old_range[1]) / unpadded_scale.rangeBand()) : 0;
-        this.scale.rangeBands(new_range, 0.0, outer_padding);
+            Math.abs((new_range[1] - old_range[1]) / unpadded_scale.bandwidth()) : 0;
+        this.scale.range(new_range, 0.0, outer_padding);
     },
 
     invert: function(pixel) {
@@ -55,7 +55,7 @@ var OrdinalScale = scale.Scale.extend({
         var that = this;
         var domain = this.scale.domain();
         var pixel_vals = domain.map(function(d) { 
-            return that.scale(d) + that.scale.rangeBand() / 2;
+            return that.scale(d) + that.scale.bandwidth() / 2;
         });
         var abs_diff = pixel_vals.map(function(d) {
             return Math.abs(pixel - d);
@@ -69,7 +69,7 @@ var OrdinalScale = scale.Scale.extend({
         var that = this;
         var domain = this.scale.domain();
         var pixel_vals = domain.map(function(d) {
-            return that.scale(d) + that.scale.rangeBand() / 2;
+            return that.scale(d) + that.scale.bandwidth() / 2;
         });
         var indices = _.range(pixel_vals.length);
         var filtered_ind = indices.filter(function(ind) { 

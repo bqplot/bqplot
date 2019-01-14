@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-collection"));
 
 var pi = Math.PI,
     radian = pi / 180,
@@ -128,6 +128,10 @@ function constant(x) {
     }
 }
 
+function functor(x) {
+    return typeof x === "function" ? x : constant(x);
+}
+
 var bqSymbol = function() {
     var type = symbolType,
         size = symbolSize;
@@ -140,21 +144,21 @@ var bqSymbol = function() {
 
     symbol.type = function(x) {
         if (!arguments.length) return type;
-        type = constant(x);
+        type = functor(x);
         return symbol;
     };
 
     // size of symbol in square pixels
     symbol.size = function(x) {
         if (!arguments.length) return size;
-        size = constant(x);
+        size = functor(x);
         return symbol;
     };
 
     // skew of symbol, in [0, 1]
     symbol.skew = function(x) {
         if (!arguments.length) return skew;
-        skew = constant(x);
+        skew = functor(x);
         return symbol;
     };
 

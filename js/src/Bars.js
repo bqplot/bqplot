@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-scale"));
 var _ = require("underscore");
 var mark = require("./Mark");
 var utils = require("./utils");
@@ -87,8 +87,8 @@ var Bars = mark.Mark.extend({
 
     set_internal_scales: function() {
         // Two scales to draw the bars.
-        this.x = d3.scale.ordinal();
-        this.x1 = d3.scale.ordinal();
+        this.x = d3.scaleOrdinal();
+        this.x1 = d3.scaleOrdinal();
     },
 
     adjust_offset: function() {
