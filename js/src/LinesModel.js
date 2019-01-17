@@ -17,6 +17,7 @@ var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize')
+var utils = require('./utils')
 
 var LinesModel = markmodel.MarkModel.extend({
 
@@ -75,9 +76,9 @@ var LinesModel = markmodel.MarkModel.extend({
         if (this.x_data.length === 0 || this.y_data.length === 0) {
             this.mark_data = [];
         } else {
-            this.x_data = !_.isNumber(this.x_data[0]) ?
+            this.x_data = utils.is_array(this.x_data[0]) ?
                 this.x_data : [this.x_data];
-            this.y_data = !_.isNumber(this.y_data[0]) ?
+            this.y_data = utils.is_array(this.y_data[0]) ?
                 this.y_data : [this.y_data];
             curve_labels = this.get_labels();
 
