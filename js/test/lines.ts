@@ -12,6 +12,27 @@ describe("lines >", () => {
         this.manager = new DummyManager({bqplot: bqplot});
     });
 
+    it("create 1d ordinal", async function() {
+        let x = ['a', 'b']
+        let scale_x = await create_model_bqplot(this.manager, 'OrdinalScale', 'scale_x_ordinal', {allow_padding: false, domain: []})
+        let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)}
+        let objects = await create_figure_lines(this.manager, x, y, {'x': 'IPY_MODEL_scale_x_ordinal'});
+        let lines = objects.lines;
+        let data = lines.d3el.selectAll(".curve").data()
+        expect(data[0].values[0].x).to.equal('a')
+        expect(data[0].values[1].x).to.equal('b')
+        expect(data[0].values[0].y).to.equal(2)
+        expect(data[0].values[1].y).to.equal(3)
+
+        lines.update_line_xy()
+        d3.timer.flush() // this makes sure the animations are all executed
+        var paths = lines.d3el.selectAll(".curve path.line")[0].map((el) => el.getAttribute('d'));
+        var width = objects.figure.plotarea_width;
+        var height = objects.figure.plotarea_height;
+        expect(paths).to.deep.equal([`M${width*1/4},${height}L${width*3/4},0`])
+
+    });
+
     it("create 1d", async function() {
         let x = {dtype: 'float32', value: new DataView((new Float32Array([0,1])).buffer)}
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)}

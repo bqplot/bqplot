@@ -6,6 +6,10 @@ def scale_x():
     return bqplot.LinearScale(min=0, max=1, allow_padding=False)
 
 @pytest.fixture
+def scale_ordinal():
+    return bqplot.OrdinalScale(min=0, max=1, allow_padding=False)
+
+@pytest.fixture
 def scale_y():
     return bqplot.LinearScale(min=2, max=3, allow_padding=False)
 
