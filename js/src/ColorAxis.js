@@ -332,12 +332,16 @@ var ColorBar = axis.Axis.extend({
 
     set_axisline_domain: function() {
         var domain = this.axis_scale.scale.domain();
-        var mid = this.axis_scale.model.mid;
-        if (mid === undefined || mid === null) {
-            this.axis_line_scale.domain([domain[0], domain[domain.length-1]]);
+        if (this.ordinal) {
+            this.axis_line_scale.domain(domain);
         } else {
-            this.axis_line_scale.domain([domain[0], mid, domain[domain.length-1]]);
-        }
+            var mid = this.axis_scale.model.mid;
+            if (mid === undefined || mid === null) {
+                this.axis_line_scale.domain([domain[0], domain[domain.length-1]]);
+            } else {
+                this.axis_line_scale.domain([domain[0], mid, domain[domain.length-1]]);
+            }
+        } 
     },
 
     redraw_axis: function() {
