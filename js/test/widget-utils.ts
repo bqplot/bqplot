@@ -66,18 +66,19 @@ async function create_figure_scatter(manager, x, y) {
 
 
 export
-async function create_figure_lines(manager, x, y) {
+async function create_figure_lines(manager, x, y, default_scales={}) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
     let scales = {x: 'IPY_MODEL_scale_x', y: 'IPY_MODEL_scale_y'}
+    let scales_mark = {x: default_scales['x'] || 'IPY_MODEL_scale_x', y: default_scales['y'] || 'IPY_MODEL_scale_y'}
     let color    = null;
     let size     = {type: null, values: null};
     let opacity  = {type: null, values: null};
     let rotation = {type: null, values: null};
     let skew     = {type: null, values: null};
 
-    let linesModel = await create_model_bqplot(manager, 'Lines', 'lines1', {scales: scales,
+    let linesModel = await create_model_bqplot(manager, 'Lines', 'lines1', {scales: scales_mark,
         x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew,
         visible: true, default_size: 64,
         preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})

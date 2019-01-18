@@ -186,7 +186,7 @@ def array_dimension_bounds(mindim=0, maxdim=np.inf):
         return value
     return validator
 
-def array_supported_kinds(kinds='biufM'):
+def array_supported_kinds(kinds='biufMSU'):
     def validator(trait, value):
         if value.dtype.kind not in kinds:
             raise TraitError('Array type not supported for trait %s of class %s: expected a \

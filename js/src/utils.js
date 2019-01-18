@@ -81,5 +81,8 @@ module.exports = {
 
     is_valid_time_format: function(format) {
         return time_format_regex.test(format);
+    },
+    is_array: function(x) {
+        return (x instanceof Array) || isTypedArray(x)
     }
 };

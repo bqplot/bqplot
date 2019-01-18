@@ -30,6 +30,10 @@ def test_lines(scales):
     assert lines.x[0][1] == 1
     assert lines.x[1][1] == 1
 
+def test_lines_ordinal(scale_ordinal, scale_y):
+    scales = {'x': scale_ordinal, 'y': scale_y}
+    lines = bqplot.Lines(x=list('ABC'), y=[1, 2, 3], scales=scales)
+
 
 def test_bars(scales):
     with pytest.raises(TraitError, match='.*type object.*'):
