@@ -163,10 +163,10 @@ var Figure = widgets.DOMWidgetView.extend({
           .attr("class", "plotarea_background")
           .attr("x", 0).attr("y", 0)
           .attr("width", this.plotarea_width)
-          .attr("height", this.plotarea_height);
-        this.bg.on("click", function() { that.trigger("bg_clicked"); })
-          .style("pointer-events", "inherit")
-          .style(this.model.get("background_style"));
+          .attr("height", this.plotarea_height)
+          .styles(this.model.get("background_style"))
+          .style("pointer-events", "inherit");
+        this.bg.on("click", function() { that.trigger("bg_clicked"); });
 
         this.fig_axes = this.fig.append("g");
         this.fig_marks = this.fig.append("g");

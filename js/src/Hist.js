@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"));
 var utils = require("./utils");
 var mark = require("./Mark");
 
@@ -177,7 +177,7 @@ var Hist = mark.Mark.extend({
             y_scale = this.scales.count;
         this.d3el.selectAll(".bargroup")
             .attr("transform", function(d) {
-              return "translate(" + x_scale.scale(d.x) +
+              return "translate(" + x_scale.scale(d.x0) +
                               "," + y_scale.scale(d.y) + ")";
             });
         var bar_width = this.calculate_bar_width();
@@ -218,7 +218,8 @@ var Hist = mark.Mark.extend({
           .attr("class", "rect")
           .attr("x", 2)
           .attr("width", 0)
-          .attr("height", 0);
+          .attr("height", 0)
+          .style("fill", fill_color);
 
         bar_groups.attr("transform", function(d) {
               return "translate(" + x_scale.scale(d.x) + "," +
