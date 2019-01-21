@@ -85,10 +85,10 @@ var BaseBrushSelector = {
     },
 
     _update_brush: function() {
-        // Programmatically setting the brush does not redraw it. It is
-        // being redrawn below
+        // Redraw the brush
         this.brushsel = this.d3el.call(this.brush);
-        this.d3el.call(this.brush.event);
+        // Trigger brushstart-move-end events
+        // this.d3el.call(this.brush.event);
     },
 
     clear_brush: function() {
