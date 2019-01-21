@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-scale"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
 var _ = require("underscore");
 var mark = require("./Mark");
 var utils = require("./utils");
@@ -87,8 +87,8 @@ var Bars = mark.Mark.extend({
 
     set_internal_scales: function() {
         // Two scales to draw the bars.
-        this.x = d3.scaleOrdinal();
-        this.x1 = d3.scaleOrdinal();
+        this.x = d3.scaleBand();
+        this.x1 = d3.scaleBand();
     },
 
     adjust_offset: function() {
@@ -99,9 +99,9 @@ var Bars = mark.Mark.extend({
         var dom_scale = this.dom_scale;
         if(dom_scale.model.type !== "ordinal") {
             if (this.model.get("align")==="center") {
-                this.dom_offset = -(this.x.rangeBand() / 2).toFixed(2);
+                this.dom_offset = -(this.x.bandwidth() / 2).toFixed(2);
             } else if (this.model.get("align") === "left") {
-                this.dom_offset = -(this.x.rangeBand()).toFixed(2);
+                this.dom_offset = -(this.x.bandwidth()).toFixed(2);
             } else {
                 this.dom_offset = 0;
             }
@@ -109,9 +109,9 @@ var Bars = mark.Mark.extend({
             if (this.model.get("align")==="center") {
                 this.dom_offset = 0;
             } else if (this.model.get("align")==="left") {
-                this.dom_offset = -(this.x.rangeBand() / 2);
+                this.dom_offset = -(this.x.bandwidth() / 2);
             } else {
-                this.dom_offset = (this.x.rangeBand() / 2);
+                this.dom_offset = (this.x.bandwidth() / 2);
             }
         }
     },
@@ -237,9 +237,10 @@ var Bars = mark.Mark.extend({
 
         this.draw_zero_line();
 
-        this.x.rangeRoundBands(this.set_x_range(), this.padding);
+        this.x.rangeRound(this.set_x_range());
+        this.x.padding(this.padding);
         this.adjust_offset();
-        this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
+        this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
         this.draw_bars();
     },
 
@@ -301,17 +302,19 @@ var Bars = mark.Mark.extend({
         } else {
             this.x.domain(dom_scale.scale.domain());
         }
-        this.x.rangeRoundBands(this.set_x_range(), this.padding);
+        this.x.rangeRound(this.set_x_range());
+        this.x.padding(this.padding);
         this.adjust_offset();
-        this.x1.rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
+        this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
 
         if(this.model.mark_data.length > 0) {
             this.x1.domain(_.range(this.model.mark_data[0].values.length))
-                .rangeRoundBands([0, this.x.rangeBand().toFixed(2)]);
+                .rangeRound([0, this.x.bandwidth().toFixed(2)]);
         }
-        bar_groups.enter()
+        bar_groups = bar_groups.enter()
           .append("g")
-          .attr("class", "bargroup");
+          .attr("class", "bargroup")
+          .merge(bar_groups);
         // The below function sorts the DOM elements so that the order of
         // the DOM elements matches the order of the data they are bound
         // to. This is required to maintain integrity with selection.
@@ -388,7 +391,7 @@ var Bars = mark.Mark.extend({
         if (is_stacked) {
             bars_sel.transition("draw_bars").duration(animation_duration)
                 .attr(dom, 0)
-                .attr(dom_control, this.x.rangeBand().toFixed(2))
+                .attr(dom_control, this.x.bandwidth().toFixed(2))
                 .attr(rang, function(d) {
                     return (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0);
                 })
@@ -400,7 +403,7 @@ var Bars = mark.Mark.extend({
               .attr(dom, function(datum, index) {
                     return that.x1(index);
               })
-              .attr(dom_control, this.x1.rangeBand().toFixed(2))
+              .attr(dom_control, this.x1.bandwidth().toFixed(2))
               .attr(rang, function(d) {
                   return d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
               })
@@ -419,7 +422,7 @@ var Bars = mark.Mark.extend({
                     (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0) :
                     d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
                 rect_coords[dom_control] = is_stacked ?
-                    that.x.rangeBand() : that.x1.rangeBand();
+                    that.x.bandwidth() : that.x1.bandwidth();
                 rect_coords[rang_control] = is_stacked ?
                     Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1)) :
                     Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y_ref)));
@@ -601,7 +604,7 @@ var Bars = mark.Mark.extend({
     set_x_range: function() {
         var dom_scale = this.dom_scale;
         if(dom_scale.model.type === "ordinal") {
-            return dom_scale.scale.rangeExtent();
+            return dom_scale.scale.range();
         } else {
             return [dom_scale.scale(d3.min(this.x.domain())),
                     dom_scale.scale(d3.max(this.x.domain()))];
