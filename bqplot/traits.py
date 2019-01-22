@@ -144,15 +144,16 @@ def array_to_json(a, obj=None):
         elif np.issubdtype(a.dtype, np.datetime64):
             dtype = 'date'
             a = a.astype(np.str).astype('object')
-            for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
-                # for every element in the nd array, forcing the conversion into
-                # the format specified here.
-                temp_x = pd.to_datetime(x.flatten()[0])
-                if pd.isnull(temp_x):
-                    x[...] = None
-                else:
-                    x[...] = temp_x.to_pydatetime().strftime(
-                        '%Y-%m-%dT%H:%M:%S.%f')
+            if a.size:
+                for x in np.nditer(a, flags=['refs_ok'], op_flags=['readwrite']):
+                    # for every element in the nd array, forcing the conversion into
+                    # the format specified here.
+                    temp_x = pd.to_datetime(x.flatten()[0])
+                    if pd.isnull(temp_x):
+                        x[...] = None
+                    else:
+                        x[...] = temp_x.to_pydatetime().strftime(
+                            '%Y-%m-%dT%H:%M:%S.%f')
         else:
             dtype = a.dtype
         return dict(values=a.tolist(), type=str(dtype))
