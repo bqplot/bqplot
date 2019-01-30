@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-brush"), require("d3-selection"));
 var _ = require("underscore");
 var selector = require("./Selector");
 var utils = require("./utils");
@@ -27,10 +27,10 @@ var BaseBrushSelector = {
         this.brushing = false;
 
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
-            that.brush = d3.svg.brush()
-              .on("brushstart", _.bind(that.brush_start, that))
+            that.brush = d3.brush()
+              .on("start", _.bind(that.brush_start, that))
               .on("brush", _.bind(that.brush_move, that))
-              .on("brushend", _.bind(that.brush_end, that));
+              .on("end", _.bind(that.brush_end, that));
             that.set_brush_scale();
 
             that.d3el.attr("class", "selector brushintsel");

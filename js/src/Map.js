@@ -14,7 +14,7 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"), require("d3-zoom"));
 var _ = require("underscore");
 var mark = require("./Mark");
 var utils = require("./utils");
@@ -101,7 +101,7 @@ var Map = mark.Mark.extend({
             this.stroke_g.selectAll("path")
                 .style("stroke", this.model.get("stroke_color"));
         }
-        this.zoom = d3.behavior.zoom()
+        this.zoom = d3.zoom()
             .scaleExtent([1, 8])
             .on("zoom", function() {
                that.zoomed(that, false);

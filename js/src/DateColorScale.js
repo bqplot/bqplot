@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-scale"));
 var colorscale = require("./ColorScale");
 
 var DateColorScale = colorscale.ColorScale.extend({
 
     create_d3_scale: function(){
-        this.scale = d3.time.scale();
+        this.scale = d3.scaleTime();
     }
 });
 

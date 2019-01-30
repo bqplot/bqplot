@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
 var mark = require("./Mark");
 var utils = require("./utils");
 var _ = require("underscore");
@@ -38,15 +38,15 @@ var Pie = mark.Mark.extend({
         var display_labels = this.model.get("display_labels");
 
         if(display_labels === "outside") {
-            this.arc = d3.svg.arc()
+            this.arc = d3.arc()
                 .outerRadius(radius * 0.8)
                 .innerRadius(inner_radius * 0.8);
 
-            this.outer_arc = d3.svg.arc()
+            this.outer_arc = d3.arc()
                 .innerRadius(radius * 0.9)
                 .outerRadius(radius * 0.9);
         } else {
-            this.arc = d3.svg.arc()
+            this.arc = d3.arc()
                 .outerRadius(radius)
                 .innerRadius(inner_radius);
         }
@@ -279,7 +279,7 @@ var Pie = mark.Mark.extend({
         this.set_ranges();
         this.position_center(animate);
 
-        var pie = d3.layout.pie()
+        var pie = d3.pie()
             .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
             .endAngle(this.model.get("end_angle") * 2 * Math.PI/360)
             .value(function(d) { return d.size; });

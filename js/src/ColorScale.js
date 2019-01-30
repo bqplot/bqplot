@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+var d3 = Object.assign({}, require("d3-scale"));
 var _ = require("underscore");
 var scale = require("./Scale");
 
@@ -30,7 +31,7 @@ var ColorScale = scale.Scale.extend({
     },
 
     create_d3_scale: function(){
-        this.scale = d3.scale.linear();
+        this.scale = d3.scaleLinear();
     },
 
     create_event_listeners: function() {

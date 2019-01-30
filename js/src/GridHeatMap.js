@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
@@ -434,9 +434,9 @@ var GridHeatMap = mark.Mark.extend({
 
         this.display_rows = this.d3el.selectAll(".heatmaprow")
             .data(_.range(num_rows));
-        this.display_rows.enter().append("g")
-            .attr("class", "heatmaprow");
-        this.display_rows
+        this.display_rows = this.display_rows.enter().append("g")
+            .attr("class", "heatmaprow")
+            .merge(this.display_rows)
             .attr("transform", function(d) {
                 return "translate(0, " + row_plot_data.start[d] + ")";
             });
@@ -453,19 +453,12 @@ var GridHeatMap = mark.Mark.extend({
         this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
             return data_array[i];
         });
-        this.display_cells.enter()
+        this.display_cells = this.display_cells.enter()
             .append("rect")
             .attr("class", "heatmapcell")
-            .on("click", _.bind(function() {
-                this.event_dispatcher("element_clicked");
-            }, this));
-
-        this.display_cells
-            .attr({
-                "x": function(d, i) {
-                    return column_plot_data.start[i];
-                }, "y": 0
-            })
+            .merge(this.display_cells)
+            .attr("x", function(d, i) {return column_plot_data.start[i]; })
+            .attr("y", 0)
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height",function(d) { return row_plot_data.widths[d.row_num]; })
 
@@ -503,7 +496,7 @@ var GridHeatMap = mark.Mark.extend({
         data = Array.from(data); // copy to Array
         if(mode === "middle") {
             start_points = data.map(function(d) { return scale.scale(d); });
-            widths = data.map(function(d) { return scale.scale.rangeBand(); });
+            widths = data.map(function(d) { return scale.scale.bandwidth(); });
 
             return {"start": start_points, "widths": widths};
         }

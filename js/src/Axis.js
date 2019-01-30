@@ -872,7 +872,8 @@ var Axis = widgets.WidgetView.extend({
             return this.linear_sc_format(ticks);
         } else if (this.axis_scale.model.type == "date" ||
                    this.axis_scale.model.type == "date_color_linear") {
-            return d3.time.format.multi(this.date_sc_format(ticks));
+            return this.axis_scale.scale.tickFormat(this.date_sc_format(ticks));
+            //return d3.timeFormat.multi(this.date_sc_format(ticks));
         } else if (this.axis_scale.model.type == "log") {
             return this.log_sc_format(ticks);
         }

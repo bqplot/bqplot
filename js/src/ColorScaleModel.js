@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
 var _ = require("underscore");
 var linearscalemodel = require("./LinearScaleModel");
 var colorutils = require("./ColorUtils");
@@ -64,7 +64,7 @@ var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
     create_domain: function(min, mid, max, n_colors) {
         // Domain ranges from min to max, with the same number of
         // elements as the color range
-        var scale = d3.scale.linear()
+        var scale = d3.scaleLinear()
 
         if (mid === undefined || mid === null){
             scale.domain([0, n_colors - 1]).range([min, max]);
