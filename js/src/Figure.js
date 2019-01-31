@@ -644,8 +644,8 @@ var Figure = widgets.DOMWidgetView.extend({
                     legend_g.insert("g", ":first-child")
                       .attr("class", "axis")
                     .append("rect")
-                      .attr({"y": (legend_height + 2) / 2.0,
-                             "x": (-0.5 * (legend_height + 2))})
+                      .attr("y", (legend_height + 2) / 2.0)
+                      .attr("x", (-0.5 * (legend_height + 2)))
                       .attr("width", (max_label_len + 2) + "em")
                       .attr("height", (count * (legend_height + 2)));
 

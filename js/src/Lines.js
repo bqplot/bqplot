@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = Object.assign({}, require("d3-selection"), require("d3-shape"), require("d3-transition"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-shape"), require("d3-transition"));
 var mark = require("./Mark");
 var markers = require("./Markers");
 var utils = require("./utils");
@@ -320,7 +320,7 @@ var Lines = mark.Mark.extend({
             fill_colors = this.model.get("fill_colors"),
             opacities = this.model.get("opacities");
 
-        this.legend_line = d3.svg.line()
+        this.legend_line = d3.line()
             .curve(this.get_interpolation())
             .x(function(d) { return d[0]; })
             .y(function(d) { return d[1]; });
@@ -496,26 +496,26 @@ var Lines = mark.Mark.extend({
 
         curves_sel.select(".line")
           .transition("update_line_xy")
-          .duration(animation_duration)
           .attr("d", function(d) {
               return that.line(d.values) + that.path_closure();
-          });
+          })
+          .duration(animation_duration);
 
         curves_sel.select(".area")
           .transition("update_line_xy")
-          .duration(animation_duration)
           .attr("d", function(d, i) {
             return that.area(d.values);
-          });
+          })
+          .duration(animation_duration);
 
 
         curves_sel.select(".curve_label")
+          .transition("update_line_xy")
           .attr("transform", function(d) {
               var last_xy = d.values[d.values.length - 1];
               return "translate(" + x_scale.scale(last_xy.x) +
                               "," + y_scale.scale(last_xy.y) + ")";
           })
-          .transition("update_line_xy")
           .duration(animation_duration);
 
         this.update_dots_xy(animate);

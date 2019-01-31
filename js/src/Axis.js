@@ -494,8 +494,8 @@ var Axis = widgets.WidgetView.extend({
 
     update_label_location: function() {
         this.g_axisline.select("text.axislabel")
-            .attr(this.get_label_attributes())
-            .style(this.get_text_styling());
+            .attrs(this.get_label_attributes())
+            .styles(this.get_text_styling());
     },
 
     update_label_offset: function(model, offset) {

@@ -15,6 +15,7 @@
 
 var widgets = require("@jupyter-widgets/base");
 var d3 = Object.assign({}, require("d3-selection"), require("d3-zoom"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var mark = require("./Mark");
 var utils = require("./utils");
@@ -122,7 +123,7 @@ var Map = mark.Mark.extend({
         if (!this.model.get("hover_highlight")) {
             return;
         }
-        var el = d3.select(d3.event.target);
+        var el = d3.select(d3.getEvent().target);
         if(this.is_hover_element(el)) {
             var data = el.data()[0];
             var idx = this.model.get("selected");
@@ -153,7 +154,7 @@ var Map = mark.Mark.extend({
         if (!this.model.get("hover_highlight")) {
             return;
         }
-        var el = d3.select(d3.event.target);
+        var el = d3.select(d3.getEvent().target);
         if(this.is_hover_element(el)) {
             var that = this;
             el.transition("mouseout_handler")
@@ -168,7 +169,7 @@ var Map = mark.Mark.extend({
     },
 
     click_handler: function() {
-        var el = d3.select(d3.event.target);
+        var el = d3.select(d3.getEvent().target);
         if(this.is_hover_element(el)) {
             var data = el.data()[0];
             var idx = this.model.get("selected");
@@ -213,8 +214,8 @@ var Map = mark.Mark.extend({
     },
 
     zoomed: function(that, reset) {
-        var t = reset ? [0, 0] : d3.event.translate;
-        var s = reset ? 1 : d3.event.scale;
+        var t = reset ? [0, 0] : d3.getEvent().translate;
+        var s = reset ? 1 : d3.getEvent().scale;
         var h = that.height / 3;
         var w = reset ? that.width : 2 * that.width;
 

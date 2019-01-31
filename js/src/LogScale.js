@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-scale"));
 var linearscale = require("./LinearScale");
 
 var LogScale = linearscale.LinearScale.extend({
     render: function() {
-        this.scale = d3.scale.log();
+        this.scale = d3.scaleLog();
         if(this.model.domain.length > 0) {
             this.scale.domain(this.model.domain);
         }

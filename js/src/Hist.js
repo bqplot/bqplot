@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = Object.assign({}, require("d3-selection"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
 var utils = require("./utils");
 var mark = require("./Mark");
 
