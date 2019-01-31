@@ -398,7 +398,10 @@ var MarketMap = figure.Figure.extend({
 
             new_groups.append("text")
                 .classed("market_map_text", true)
-                .style({"text-anchor": "middle", 'fill' :'black', "pointer-events": "none"})
+                .style({"text-anchor": "middle",
+                        "fill" : "black",
+                        "pointer-events": "none",
+                        "dominant-baseline": "central"})
                 .style(that.model.get("font_style"));
 
             // Update the attributes of the entire set of nodes
