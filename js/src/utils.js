@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
 var isTypedArray = require('is-typedarray');
 var _ = require('underscore')
 
@@ -74,7 +74,7 @@ module.exports = {
         } else {
             pivot = d3.max(array);
         }
-        return [d3.scale.linear().range([first, pivot]), d3.scale.linear().range([pivot, end])];
+        return [d3.scaleLinear().range([first, pivot]), d3.scaleLinear().range([pivot, end])];
     },
 
     deepCopy: deepCopy,

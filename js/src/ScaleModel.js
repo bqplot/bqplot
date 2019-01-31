@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
 var _ = require("underscore");
 var basemodel = require("./BaseModel");
 var semver_range = "^" + require("../package.json").version;

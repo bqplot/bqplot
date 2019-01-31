@@ -15,7 +15,7 @@
 
 var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-hierarchy"), require("d3-scale"), require("d3-selection"));
 
 var SquareMarketMap = widgets.DOMWidgetView.extend({
 
@@ -31,7 +31,7 @@ var SquareMarketMap = widgets.DOMWidgetView.extend({
         this.colors = this.model.get('colors');
         this.mode = this.model.get('mode');
 
-        var color= d3.scale.category10();
+        var color= d3.scaleOrdinal(d3.schemeCategory10);
         var that = this;
         this.d3el.append("div")
             .style("position", "relative")
@@ -42,7 +42,7 @@ var SquareMarketMap = widgets.DOMWidgetView.extend({
 
         this.margin = this.model.get("margin");
 
-        this.tree_map = d3.layout.treemap()
+        this.tree_map = d3.treemap()
             .size([this.width, this.height])
             .sticky(true)
             .padding(null)

@@ -14,6 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
@@ -150,7 +151,7 @@ var GridHeatMap = mark.Mark.extend({
         var idx = this.model.get("selected") ? utils.deepCopy(this.model.get("selected")) : [];
         var selected = utils.deepCopy(this._cell_nums_from_indices(idx));
         var elem_index = selected.indexOf(index);
-        var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
         //TODO: This is a shim for when accelKey is supported by chrome.
         // index of slice i. Checking if it is already present in the
         // list
@@ -165,7 +166,7 @@ var GridHeatMap = mark.Mark.extend({
             }
             idx.push([row, column]);
             selected.push(that._cell_nums_from_indices([[row, column]])[0]);
-            if(d3.event.shiftKey) {
+            if(d3.getEvent().shiftKey) {
                 //If shift is pressed and the element is already
                 //selected, do not do anything
                 if(elem_index > -1) {
@@ -196,10 +197,10 @@ var GridHeatMap = mark.Mark.extend({
             ((idx.length === 0) ? null : idx),
             {updated_view: this});
         this.touch();
-        if(!d3.event) {
-            d3.event = window.event;
+        if(!d3.getEvent()) {
+            d3.getEvent() = window.event;
         }
-        var e = d3.event;
+        var e = d3.getEvent();
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }

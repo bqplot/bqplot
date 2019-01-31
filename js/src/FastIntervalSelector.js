@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"));
 var baseselector = require("./Selector");
 var mark = require("./Mark");
 var sel_utils = require("./selector_utils");

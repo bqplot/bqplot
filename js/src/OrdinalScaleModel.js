@@ -14,7 +14,6 @@
  */
 
 var _ = require("underscore");
-var d3 = require("d3");
 var scalemodel = require("./ScaleModel");
 
 var OrdinalScaleModel = scalemodel.ScaleModel.extend({

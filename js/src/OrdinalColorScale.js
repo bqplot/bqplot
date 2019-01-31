@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
 var ordinalscale = require("./OrdinalScale");
 var colurutils = require("./ColorUtils");
 

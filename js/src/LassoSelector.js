@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-drag"), require("d3-selection"), require("d3-shape"));
 var _ = require("underscore");
 var utils = require("./utils");
 var baseselector = require("./Selector");
@@ -29,10 +29,10 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
 
         var that = this;
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
-            var drag = d3.behavior.drag()
-                .on("dragstart", _.bind(that.drag_start, that))
+            var drag = d3.drag()
+                .on("start", _.bind(that.drag_start, that))
                 .on("drag", _.bind(that.drag_move, that))
-                .on("dragend", _.bind(that.drag_end, that));
+                .on("end", _.bind(that.drag_end, that));
 
             d3.select(window).on("keydown", _.bind(that.keydown, that));
 

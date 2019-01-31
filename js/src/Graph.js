@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-force"), require("d3-selection"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
@@ -222,7 +223,7 @@ var Graph = mark.Mark.extend({
         this.d3el.selectAll(".node").remove();
         this.d3el.selectAll(".link").remove();
 
-        this.force_layout = d3.layout.force()
+        this.force_layout = d3.forceSimulation()
             .size([this.parent.width, this.parent.height])
             .linkDistance(this.model.get("link_distance"));
 
@@ -266,7 +267,7 @@ var Graph = mark.Mark.extend({
 
         this.nodes
             .append(function(d) {
-                return document.createElementNS(d3.ns.prefix.svg, d.shape);
+                return document.createElementNS(d3.namespaces.svg, d.shape);
             })
             .attr("class", "element")
             .each(function(d) {
@@ -411,7 +412,7 @@ var Graph = mark.Mark.extend({
         var selected = idx ? utils.deepCopy(idx) : [];
         var elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
 
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
@@ -436,10 +437,10 @@ var Graph = mark.Mark.extend({
                        ((selected.length === 0) ? null : selected),
                        {updated_view: this});
         this.touch();
-        if(!d3.event) {
-            d3.event = window.event;
+        if(!d3.getEvent()) {
+            d3.getEvent() = window.event;
         }
-        var e = d3.event;
+        var e = d3.getEvent();
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }
@@ -543,7 +544,7 @@ var Graph = mark.Mark.extend({
     },
 
     selected_deleter: function() {
-        d3.event.stopPropagation();
+        d3.getEvent().stopPropagation();
         return;
     },
 

@@ -14,7 +14,7 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"), require("d3-time-format"));
 var utils = require("./utils");
 var _ = require("underscore");
 
@@ -47,7 +47,7 @@ var Tooltip = widgets.DOMWidgetView.extend({
                 return function(d) { return d; };
             } else {
                 if(utils.is_valid_time_format(fmt)) {
-                    return d3.time.format(fmt);
+                    return d3.timeFormat(fmt);
                 }
                 else {
                     return d3.format(fmt);
