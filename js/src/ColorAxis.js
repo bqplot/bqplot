@@ -177,7 +177,7 @@ var ColorBar = axis.Axis.extend({
                 });
             }
         } else {
-            colorBar = colorBar.append("g")
+            colorBar.append("g")
                 .attr("class", "g-defs")
                 .append("defs")
                 .append("linearGradient")
@@ -198,8 +198,7 @@ var ColorBar = axis.Axis.extend({
                     },
                     "stop-color": function(d,i) { return that.colors[i]; },
                     "stop-opacity": 1
-                })
-                .merge(colorBar);
+                });
 
             colorBar.append("g")
                 .attr("class", "g-rect axis")

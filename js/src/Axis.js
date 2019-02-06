@@ -97,14 +97,7 @@ var Axis = widgets.WidgetView.extend({
     },
 
     update_display: function() {
-        var side = this.model.get("side");
-        var is_vertical = this.model.get("orientation") === "vertical";
-
-        if(is_vertical) {
-            this.axis.orient(side === "right" ? "right" : "left");
-        } else {
-            this.axis.orient(side === "top" ? "top" : "bottom");
-        }
+        this.create_axis();
         this.rescale_axis();
     },
 

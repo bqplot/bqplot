@@ -15,7 +15,7 @@
 
 var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
-var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-select"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var figure = require("./Figure");
 var popperreference = require("./PopperReference");

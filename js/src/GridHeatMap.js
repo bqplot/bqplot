@@ -197,10 +197,11 @@ var GridHeatMap = mark.Mark.extend({
             ((idx.length === 0) ? null : idx),
             {updated_view: this});
         this.touch();
-        if(!d3.getEvent()) {
-            d3.getEvent() = window.event;
-        }
         var e = d3.getEvent();
+        if(!e)
+        {
+            e = window.event;
+        }
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }

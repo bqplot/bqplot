@@ -209,6 +209,8 @@ var Hist = mark.Mark.extend({
         var bar_groups = this.d3el.selectAll(".bargroup")
             .data(this.model.mark_data);
 
+        bar_groups.exit().remove();
+
         var bars_added = bar_groups.enter()
           .append("g")
           .attr("class","bargroup");
@@ -220,7 +222,7 @@ var Hist = mark.Mark.extend({
           .attr("width", 0)
           .attr("height", 0);
 
-        bar_groups = bar_groups.merge(bars_added);
+        bar_groups = bars_added.merge(bar_groups);
 
         bar_groups.attr("transform", function(d) {
               return "translate(" + x_scale.scale(d.x0) + "," +
@@ -242,7 +244,6 @@ var Hist = mark.Mark.extend({
               return y_scale.scale(0) - y_scale.scale(d.y);
           });
 
-        bar_groups.exit().remove();
 
         //bin_pixels contains the pixel values of the start points of each
         //of the bins and the end point of the last bin.
