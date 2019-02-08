@@ -33,6 +33,8 @@ import numpy as np
 import pandas as pd
 import warnings
 import datetime as dt
+import six
+import warnings
 
 # Date
 
@@ -146,6 +148,20 @@ def array_from_json(value, obj=None):
 def array_to_json(ar, obj=None, force_contiguous=True):
     if ar is None:
         return None
+    if ar.dtype.kind in ['O']:
+        has_strings = False
+        all_strings = True  # empty array we can interpret as an empty list
+        for el in ar:
+            if isinstance(el, six.string_types):
+                has_strings = True
+            else:
+                all_strings = False
+        if all_strings:
+            ar = ar.astype('U')
+        else:
+            if has_strings:
+                warnings.warn('Your array contains mixed strings and other types')
+
     if ar.dtype.kind in ['S', 'U']:  # strings to as plain json
         return ar.tolist()
     type = None
