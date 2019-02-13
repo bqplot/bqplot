@@ -111,11 +111,20 @@
     width: 640px;
     height: 480px;
 }
+.bqplot > .svg-background {
+    position: absolute;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
 .bqplot > canvas {
     position: absolute;
     pointer-events: none;
+    z-index: 1;
 }
 .bqplot > svg {
+    z-index: 2;
     font: 11px sans-serif;
     user-select: none;
     -ms-user-select: none;
