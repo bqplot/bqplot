@@ -612,8 +612,7 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     layout_webgl_canvas() {
-        this.renderer.domElement.style = 'position: absolute; pointer-events: none; ' +
-                                         'left: ' + this.margin.left + 'px; ' +
+        this.renderer.domElement.style = 'left: ' + this.margin.left + 'px; ' +
                                          'top: '+ this.margin.top + 'px;'
         this.renderer.setSize(this.plotarea_width, this.plotarea_height);
         this.update_gl();
