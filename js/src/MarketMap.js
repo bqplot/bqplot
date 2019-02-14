@@ -73,7 +73,14 @@ var MarketMap = figure.Figure.extend({
             .attr("class", "mark_tooltip")
             .style("opacity", 0)
             .style("pointer-events", "none")
-        this.popper_reference = new popperreference.ElementReference(this.svg.node());
+
+        var freeze_tooltip_loc = this.model.get("freeze_tooltip_location");
+        if (freeze_tooltip_loc) {
+            this.popper_reference = new popperreference.ElementReference(this.svg.node());
+        } else {
+            this.popper_reference = new popperreference.PositionReference({x: 0, y: 0, width: 20, height: 20});
+        }
+
         this.popper = new popper(this.popper_reference, this.tooltip_div.node(), {
             placement: 'auto',
         });
