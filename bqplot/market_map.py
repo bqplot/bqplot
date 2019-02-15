@@ -81,6 +81,9 @@ class MarketMap(DOMWidget):
     tooltip_formats: list
         formats for each of the fields for the tooltip data. Order should match
         the order of the tooltip_fields
+    freeze_tooltip_location: bool (default: False)
+        if True, freezes the location of the tooltip. If False, tootip will
+        follow the mouse
     show_groups: bool
         attribute to determine if the groups should be displayed. If set to
         True, the finer elements are blurred
@@ -192,7 +195,7 @@ class MarketMap(DOMWidget):
 
     stroke = Color('white').tag(sync=True)
     group_stroke = Color('black').tag(sync=True)
-    selected_stroke = Color('dodgerblue', allow_none=True).tag(sync=True)
+    selected_stroke = Color('orangered', allow_none=True).tag(sync=True)
     hovered_stroke = Color('orangered', allow_none=True).tag(sync=True)
     font_style = Dict().tag(sync=True)
     title_style = Dict().tag(sync=True)
@@ -202,6 +205,7 @@ class MarketMap(DOMWidget):
     enable_select = Bool(True).tag(sync=True)
     tooltip_widget = Instance(DOMWidget, allow_none=True, default_value=None)\
         .tag(sync=True, **widget_serialization)
+    freeze_tooltip_location = Bool(False).tag(sync=True)
 
     def __init__(self, **kwargs):
         super(MarketMap, self).__init__(**kwargs)
