@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = Object.assign({}, require("d3-selection"));
+var d3 = Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 var baseselector = require("./Selector");
 var mark = require("./Mark");
 var sel_utils = require("./selector_utils");
@@ -56,7 +56,8 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
               .attr("width", that.size)
               .attr("height", that.height)
               .attr("pointer-events", "none")
-              .attr("display", "none");
+              .attr("display", "none")
+              .attr("fill-opacity", "0.3");
 
             that.color_change();
             that.selected_changed();
@@ -197,7 +198,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
             var pixels = selected.map(this.scale.scale);
             pixels = pixels.sort(function(a, b) { return a - b; });
 
-            this.rect.attr({
+            this.rect.attrs({
                 x: pixels[0],
                 width: (pixels[1] - pixels[0])
             }).style("display", "inline");
