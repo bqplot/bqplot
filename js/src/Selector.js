@@ -21,7 +21,7 @@ var convert_dates = require('./utils').convert_dates;
 var BaseSelector = interaction.Interaction.extend({
 
     initialize: function() {
-        this.setElement(document.createElementNS(d3.namespace.svg, "g"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
         interaction.Interaction.__super__.initialize.apply(this, arguments);
     },
