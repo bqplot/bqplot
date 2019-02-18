@@ -368,16 +368,18 @@ var Lines = mark.Mark.extend({
                 .style("fill", function(d, i) { return that.get_element_color(d, i); });
         }
 
-        this.legend_el.append("text")
-          .attr("class", "legendtext")
-          .attr("x", rect_dim * 1.2)
-          .attr("y", rect_dim / 2)
-          .attr("dy", "0.35em")
-          .text(function(d, i) { return curve_labels[i]; })
-          .style("fill", function(d, i) {
+        legend.append("text")
+            .attr("class", "legendtext")
+            .attr("x", rect_dim * 1.2)
+            .attr("y", rect_dim / 2)
+            .attr("dy", "0.35em")
+            .text(function(d, i) { return curve_labels[i]; })
+            .style("fill", function(d, i) {
               return that.get_element_color(d, i) || fill_colors[i];
-          })
-          .style("opacity", function(d, i) { return opacities[i]; });
+            })
+            .style("opacity", function(d, i) { return opacities[i]; });
+
+        legend.merge(this.legend_el);
 
         var max_length = d3.max(curve_labels, function(d) {
             return d.length;

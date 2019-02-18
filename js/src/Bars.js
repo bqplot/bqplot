@@ -510,7 +510,7 @@ var Bars = mark.Mark.extend({
 
         var that = this;
         var rect_dim = inter_y_disp * 0.8;
-        this.legend_el.enter()
+        var legend = this.legend_el.enter()
           .append("g")
             .attr("class", "legend" + this.uuid)
             .attr("transform", function(d, i) {
@@ -524,29 +524,31 @@ var Bars = mark.Mark.extend({
             }, this))
             .on("click", _.bind(function() {
                 this.event_dispatcher("legend_clicked");
-            }, this))
-          .append("rect")
+            }, this));
+
+        legend.append("rect")
             .classed("legendrect", true)
             .style("fill", function(d,i) {
                 return (d.color !== undefined && color_scale !== undefined) ?
                     color_scale.scale(d.color) : that.get_colors(d.color_index);
-            }).attr({
-                x: 0,
-                y: 0,
-                width: rect_dim,
-                height: rect_dim,
+            })
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", rect_dim)
+            .attr("height", rect_dim);
+
+        legend.append("text")
+            .attr("class","legendtext")
+            .attr("x", rect_dim * 1.2)
+            .attr("y", rect_dim / 2)
+            .attr("dy", "0.35em")
+            .text(function(d, i) { return that.model.get("labels")[i]; })
+            .style("fill", function(d,i) {
+                return (d.color !== undefined && color_scale !== undefined) ?
+                    color_scale.scale(d.color) : that.get_colors(d.color_index);
             });
 
-        this.legend_el.append("text")
-         .attr("class","legendtext")
-          .attr("x", rect_dim * 1.2)
-          .attr("y", rect_dim / 2)
-          .attr("dy", "0.35em")
-          .text(function(d, i) { return that.model.get("labels")[i]; })
-          .style("fill", function(d,i) {
-              return (d.color !== undefined && color_scale !== undefined) ?
-                  color_scale.scale(d.color) : that.get_colors(d.color_index);
-          });
+        legend.merge(this.legend_el);
 
         var max_length = d3.max(this.model.get("labels"), function(d) {
             return d.length;

@@ -333,7 +333,7 @@ var Hist = mark.Mark.extend({
 
         var that = this;
         var rect_dim = inter_y_disp * 0.8;
-        this.legend_el.enter()
+        var new_legend = this.legend_el.enter()
           .append("g")
             .attr("class", "legend" + this.uuid)
             .attr("transform", function(d, i) {
@@ -347,19 +347,18 @@ var Hist = mark.Mark.extend({
             }, this))
             .on("click", _.bind(function() {
                this.event_dispatcher("legend_clicked");
-            }, this))
-          .append("rect")
+            }, this));
+
+        new_legend.append("rect")
             .style("fill", function(d, i) {
                 return that.get_colors(i);
             })
-            .attr({
-                x: 0,
-                y: 0,
-                width: rect_dim,
-                height: rect_dim
-            });
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", rect_dim)
+            .attr("height", rect_dim);
 
-        this.legend_el.append("text")
+        new_legend.append("text")
           .attr("class","legendtext")
           .attr("x", rect_dim * 1.2)
           .attr("y", rect_dim / 2)
@@ -371,6 +370,8 @@ var Hist = mark.Mark.extend({
               return that.get_colors(i);
           });
 
+        new_legend.merge(this.legend_el);
+        
         var max_length = d3.max(this.model.get("labels"), function(d) {
             return d.length;
         });
