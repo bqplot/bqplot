@@ -15,7 +15,8 @@
 
 var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
-var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"),
+                       require("d3-selection-multi"), require("d3-shape"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var figure = require("./Figure");
 var popperreference = require("./PopperReference");
@@ -71,9 +72,8 @@ var MarketMap = figure.Figure.extend({
 
         // code for tool tip to be displayed
         this.tooltip_div = d3.select(document.createElement("div"))
-            .attr("class", "mark_tooltip")
-            .style("opacity", 0)
-            .style("pointer-events", "none")
+            .attr("class", "mark_tooltip");
+        this.tooltip_div.styles({"opacity": 0, "pointer-events": "none"});
         this.popper_reference = new popperreference.ElementReference(this.svg.node());
         this.popper = new popper(this.popper_reference, this.tooltip_div.node(), {
             placement: 'auto',
@@ -88,9 +88,9 @@ var MarketMap = figure.Figure.extend({
 
         this.title = this.fig.append("text")
           .attr("class", "mainheading")
-          .attr({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
-          .text(this.model.get("title"))
-          .style(this.model.get("title_style"));
+          .attrs({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
+          .text(this.model.get("title"));
+        this.title.style(this.model.get("title_style"));
 
         var scale_creation_promise = this.create_scale_views();
         scale_creation_promise.then(function() {
@@ -187,7 +187,7 @@ var MarketMap = figure.Figure.extend({
             // transform figure
             that.fig.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
-            that.title.attr({
+            that.title.attrs({
                 x: (0.5 * (that.plotarea_width)),
                 y: -(that.margin.top / 2.0),
                 dy: "1em"
@@ -367,14 +367,15 @@ var MarketMap = figure.Figure.extend({
         var color_scale = this.scales.color;
 
         var that = this;
-        this.rect_groups.enter()
+        this.rect_groups = this.rect_groups.enter()
             .append("g")
             .attr("class", "element_group")
-            .attr("transform", function(d, i) { return that.get_group_transform(i); });
+            .attr("transform", function(d, i) { return that.get_group_transform(i); })
+            .merge(this.rect_groups);
 
         this.rect_groups.exit().remove();
         this.end_points = [];
-        this.rect_groups[0].forEach(function(d, i) {
+        this.rect_groups.nodes().forEach(function(d, i) {
             var data = that.grouped_data[that.groups[i]];
             var color = that.colors_map(i);
             var return_arr = that.get_new_cords();
@@ -399,11 +400,10 @@ var MarketMap = figure.Figure.extend({
 
             new_groups.append("text")
                 .classed("market_map_text", true)
-                .style({"text-anchor": "middle",
-                        "fill" : "black",
-                        "pointer-events": "none",
-                        "dominant-baseline": "central"})
+                .styles({"text-anchor": "middle", 'fill' :'black', "pointer-events": "none"})
                 .style(that.model.get("font_style"));
+
+            groups = new_groups.merge(groups);
 
             // Update the attributes of the entire set of nodes
             groups.attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
@@ -418,7 +418,7 @@ var MarketMap = figure.Figure.extend({
                 .attr("width", that.column_width)
                 .attr("height", that.row_height)
                 .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
-                .style({'stroke': that.model.get("stroke"), "fill": function(elem, j) {
+                .styles({'stroke': that.model.get("stroke"), "fill": function(elem, j) {
                     return (color_scale && elem.color !== undefined && elem.color !== null) ?
                         color_scale.scale(elem.color) :
                         that.colors_map(i);}});
@@ -441,7 +441,7 @@ var MarketMap = figure.Figure.extend({
                 .attr("y", min_y)
                 .append("xhtml:div")
                 .attr("class", "names_div")
-                .style({"display": "flex", "flex-direction": "row", "align-content": "center", "align-items": "center", "width": "100%",
+                .styles({"display": "flex", "flex-direction": "row", "align-content": "center", "align-items": "center", "width": "100%",
                        "height": "100%", "justify-content": "center", "word-wrap": "break-word", "font": "24px sans-serif", "color": "black"})
                 .text(that.groups[i]);
         });
@@ -451,7 +451,7 @@ var MarketMap = figure.Figure.extend({
     draw_group_names: function() {
         // Get all the bounding rects of the paths around each of the
         // sectors. Get their client bounding rect.
-        var paths = this.svg.selectAll(".bounding_path")[0];
+        var paths = this.svg.selectAll(".bounding_path").nodes();
         var clientRects = paths.map(function(path) { return path.getBoundingClientRect(); });
         var text_elements = this.fig_names.selectAll(".names_object").data(clientRects);
         text_elements.attr("width", function(d) { return d.width;})
@@ -465,14 +465,14 @@ var MarketMap = figure.Figure.extend({
             .data(this.groups);
         var color_scale = this.scales.color;
 
-        this.rect_groups[0].forEach(function(d, i) {
+        this.rect_groups.nodes().forEach(function(d, i) {
             var data = that.grouped_data[that.groups[i]];
             var color = that.colors_map(i);
             var groups = d3.select(d)
                 .selectAll(".rect_element")
                 .data(data)
                 .select('rect')
-                .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j)
+                .styles({'stroke': that.model.get('stroke'), 'fill': function(elem, j)
                        { return (color_scale && elem.color !== undefined && elem.color !== null) ?
                            color_scale.scale(elem.color) :
                            that.colors_map(i);}});
@@ -488,14 +488,14 @@ var MarketMap = figure.Figure.extend({
         var that = this;
         var color_scale = this.scales.color;
         if(this.rect_groups !== undefined && this.rect_groups !== null) {
-            this.rect_groups[0].forEach(function(d, i) {
+            this.rect_groups.nodes().forEach(function(d, i) {
                 var data = that.grouped_data[that.groups[i]];
                 var color = that.colors_map(i);
                 var groups = d3.select(d)
                     .selectAll(".rect_element")
                     .data(data)
                     .select('rect')
-                    .style({'stroke': that.model.get('stroke'), 'fill': function(elem, j) {
+                    .styles({'stroke': that.model.get('stroke'), 'fill': function(elem, j) {
                         return (color_scale && elem.color !== undefined &&
                                elem.color !== null) ?
                             color_scale.scale(elem.color) :
@@ -557,7 +557,7 @@ var MarketMap = figure.Figure.extend({
             .attr("y", 0)
             .attr("width", this.column_width)
             .attr("height", this.row_height)
-            .style({'stroke': this.selected_stroke, 'stroke-width': '4px', 'fill': 'none'});
+            .styles({'stroke': this.selected_stroke, 'stroke-width': '4px', 'fill': 'none'});
     },
 
     mouseover_handler: function(data, id, cell) {
@@ -570,7 +570,7 @@ var MarketMap = figure.Figure.extend({
                 .attr("y", 0)
                 .attr("width", this.column_width)
                 .attr("height", this.row_height)
-                .style({'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none',
+                .styles({'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none',
                         'pointer-events': 'none'
                     });
             this.show_tooltip(d3.event, data);
@@ -582,7 +582,7 @@ var MarketMap = figure.Figure.extend({
         this.selected_stroke = value;
         var that = this;
         this.fig_click.selectAll("rect")
-            .style({'stroke': value});
+            .styles({'stroke': value});
     },
 
     update_hovered_stroke: function(model, value) {
@@ -606,8 +606,7 @@ var MarketMap = figure.Figure.extend({
         } else {
             var tooltip_div = this.tooltip_div;
             tooltip_div.transition()
-                .style("opacity", 0.9)
-                .style("display", null);
+                .styles({"opacity": 0.9, "display": null});
 
             this.move_tooltip();
             tooltip_div.select("table").remove();
@@ -646,8 +645,7 @@ var MarketMap = figure.Figure.extend({
     hide_tooltip: function() {
          this.tooltip_div.style("pointer-events", "none");
          this.tooltip_div.transition()
-            .style("opacity", 0)
-            .style("display", "none");
+            .styles({"opacity": 0, "display": "none"});
         this.popper.disableEventListeners();
     },
 
@@ -1015,8 +1013,8 @@ var MarketMap = figure.Figure.extend({
         if(editing_copy.length > 0)
             values.push(editing_copy[0]);
         values.push(end_points[0]);
-        var line = d3.svg.line()
-            .interpolate('linear')
+        var line = d3.line()
+            .curve(d3.curveLinear)
             .x(function(d) { return d.x;})
             .y(function(d) { return d.y;});
         var bounding_path = d3.select(elem)
