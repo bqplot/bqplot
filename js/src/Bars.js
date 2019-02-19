@@ -357,6 +357,12 @@ var Bars = mark.Mark.extend({
         var bar_groups = this.d3el.selectAll(".bargroup");
         var bars_sel = bar_groups.selectAll(".bar");
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        // We need two different transitions because draw_bars can be called in the following cases:
+        // - after the scale has been updated, in that case animate === false
+        // - after the data has been updated, in that case animate === true
+        // However, if we use the same transition, the animation_duration won't be updated and the
+        // "immediate" transition will always be used...
+        var transition_name = animate === true ? "update_bars" : "draw_bars";
         var that = this;
         var orient = this.model.get("orientation");
 
@@ -389,7 +395,7 @@ var Bars = mark.Mark.extend({
         }
         var is_stacked = (this.model.get("type") === "stacked");
         if (is_stacked) {
-            bars_sel.transition("draw_bars").duration(animation_duration)
+            bars_sel.transition(transition_name).duration(animation_duration)
                 .attr(dom, 0)
                 .attr(dom_control, this.x.bandwidth().toFixed(2))
                 .attr(rang, function(d) {
@@ -399,7 +405,7 @@ var Bars = mark.Mark.extend({
                     return Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1));
                 });
         } else {
-            bars_sel.transition("draw_bars").duration(animation_duration)
+            bars_sel.transition(transition_name).duration(animation_duration)
               .attr(dom, function(datum, index) {
                     return that.x1(index);
               })
@@ -408,7 +414,7 @@ var Bars = mark.Mark.extend({
                   return d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
               })
               .attr(rang_control, function(d) {
-                  return Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y_ref)));
+                  return Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y)));
               });
         }
 
