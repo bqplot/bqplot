@@ -97,8 +97,9 @@ var Axis = widgets.WidgetView.extend({
     },
 
     update_display: function() {
-        this.create_axis();
-        this.rescale_axis();
+        this.g_axisline.remove();
+        this.set_scales_range();
+        this.append_axis();
     },
 
     set_tick_values: function(animate) {

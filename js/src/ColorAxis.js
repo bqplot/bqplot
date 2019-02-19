@@ -72,13 +72,17 @@ var ColorBar = axis.Axis.extend({
         this.side = this.model.get("side");
         this.vertical = this.model.get("orientation") === "vertical";
         if(this.vertical) {
-            this.axis = side === "right" ? d3.axisRight(this.axis_scale.scale)
-                                         : d3.axisLeft(this.axis_scale.scale);
+            this.axis = this.side === "right" ? d3.axisRight(this.axis_scale.scale)
+                                              : d3.axisLeft(this.axis_scale.scale);
         }
         else {
-            this.axis = side === "top" ? d3.axisTop(this.axis_scale.scale)
-                                       : d3.axisBottom(this.axis_scale.scale);
+            this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale)
+                                            : d3.axisBottom(this.axis_scale.scale);
         }
+        this.g_axisline.remove();
+        this.g_axisline = this.d3el.select("#colorBarG" + this.cid)
+            .append("g")
+            .attr("class", "axis");
         this.rescale_axis();
         this.d3el.select("#colorBarG" + this.cid)
             .attr("transform", this.get_colorbar_transform());

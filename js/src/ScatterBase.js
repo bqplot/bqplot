@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-drag"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-drag"));
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
