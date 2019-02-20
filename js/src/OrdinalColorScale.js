@@ -13,13 +13,16 @@
  * limitations under the License.
  */
 
-var ordinalscale = require("./OrdinalScale");
+var d3 = Object.assign({}, require("d3-scale"));
+var scale = require("./Scale");
 var colurutils = require("./ColorUtils");
 
-var OrdinalColorScale = ordinalscale.OrdinalScale.extend({
+var OrdinalColorScale = scale.Scale.extend({
 
     render: function(){
-        OrdinalColorScale.__super__.render.apply(this);
+        this.scale = d3.scaleOrdinal();
+        this.scale.domain(this.model.domain);
+        this.create_event_listeners();
         this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
         this.listenTo(this.model, "set_ticks", this.model_ticks_changed, this);
         this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);

@@ -106,7 +106,7 @@ var ColorBar = axis.Axis.extend({
             if(that.axis_scale.model.type === "date_color_linear") {
                 that.axis_line_scale = d3.scaleTime().nice();
             } else if(that.axis_scale.model.type === "ordinal") {
-                that.axis_line_scale = d3.scaleOrdinal();
+                that.axis_line_scale = d3.scaleBand();
                 that.ordinal = true;
             } else {
                 that.axis_line_scale = d3.scaleLinear();
@@ -139,8 +139,15 @@ var ColorBar = axis.Axis.extend({
         this.g_axisline = colorBar.append("g")
             .attr("class", "axis");
 
-        this.axis = d3.axisBottom()
-            .tickFormat(this.tick_format);
+        if(this.vertical) {
+            this.axis = this.side === "right" ? d3.axisRight(this.axis_scale.scale)
+                                              : d3.axisLeft(this.axis_scale.scale);
+        }
+        else {
+            this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale)
+                                            : d3.axisBottom(this.axis_scale.scale);
+        }
+        this.axis = this.axis.tickFormat(this.tick_format);
         this.redraw_axisline();
     },
 
@@ -256,7 +263,7 @@ var ColorBar = axis.Axis.extend({
         var range = (this.vertical) ?
             [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
         if(this.ordinal) {
-            this.axis_line_scale.rangeRound(range, 0.05);
+            this.axis_line_scale.rangeRound(range).padding(0.05);
         } else {
             var mid = this.axis_scale.model.mid;
             if (mid === undefined || mid === null) {
