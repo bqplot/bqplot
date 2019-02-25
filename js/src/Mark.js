@@ -14,7 +14,7 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 
@@ -258,7 +258,7 @@ var Mark = widgets.WidgetView.extend({
             } else {
                 this.tooltip_div.style("pointer-events", "all");
             }
-            var transition = this.tooltip_div.style(this.model.get("tooltip_style"))
+            var transition = this.tooltip_div.styles(this.model.get("tooltip_style"))
                 .style("display", null);
             this.parent.popper.enableEventListeners();
             this.move_tooltip();

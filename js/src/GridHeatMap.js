@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var utils = require("./utils");
@@ -230,7 +230,7 @@ var GridHeatMap = mark.Mark.extend({
             return;
         }
         elements = (!elements || elements.length === 0) ? this._filter_cells_by_index(indices) : elements;
-        elements.style(style);
+        elements.styles(style);
     },
 
     set_default_style: function(indices, elements) {
@@ -281,7 +281,7 @@ var GridHeatMap = mark.Mark.extend({
         for(var key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.style(clearing_style);
+        elements.styles(clearing_style);
     },
 
     _filter_cells_by_cell_num: function(cell_numbers) {

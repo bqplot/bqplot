@@ -112,7 +112,7 @@ var HistModel = markmodel.MarkModel.extend({
         if (this.get("normalized")) {
             var x_width = 1;
             if(this.mark_data.length > 0) {
-                x_width = this.mark_data[0].dx;
+                x_width = this.mark_data[0].x1 - this.mark_data[0].x0;
             }
 
             var sum = this.count.reduce(function(a, b) { return a + b; }, 0);

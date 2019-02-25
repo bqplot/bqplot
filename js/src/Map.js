@@ -105,13 +105,13 @@ var Map = mark.Mark.extend({
         this.zoom = d3.zoom()
             .scaleExtent([1, 8])
             .on("zoom", function() {
-               that.zoomed(that, false);
+               that.zoomed(that);
             });
         this.parent.bg.call(this.zoom);
 
         this.parent.bg.on("dblclick.zoom", null);
         this.parent.bg.on("dblclick", function() {
-            that.zoomed(that, true);
+            that.reset_zoom(that);
         });
     },
 
@@ -213,21 +213,18 @@ var Map = mark.Mark.extend({
         }
     },
 
-    zoomed: function(that, reset) {
-        var t = reset ? [0, 0] : d3.getEvent().translate;
-        var s = reset ? 1 : d3.getEvent().scale;
+    reset_zoom: function(that) {
+        that.zoom.transform(that.parent.bg, d3.zoomIdentity);
+    },
+
+    zoomed: function(that) {
+        var tr = d3.getEvent().transform;
         var h = that.height / 3;
-        var w = reset ? that.width : 2 * that.width;
-
-        t[0] = Math.min(that.width / 2 * (s - 1), Math.max(w / 2 * (1 - s), t[0]));
-        t[1] = Math.min(that.height / 2 * (s - 1) + this.height * s, Math.max(h / 2 * (1 - s) - that.width * s, t[1]));
-
-        that.zoom.translate(t);
-        if (reset) {
-            that.zoom.scale(s);
-        }
-        that.transformed_g.style("stroke-width", 1 / s)
-            .attr("transform", "translate(" + t + ")scale(" + s + ")");
+        var w = 2 * that.width;
+        tr.x = Math.min(that.width / 2 * (tr.k -1), Math.max(w / 2  * (1 - tr.k), tr.x));
+        tr.y = Math.min(that.height / 2 * (tr.k - 1) + this.height * tr.k, Math.max(h / 2 * (1 - tr.k) - that.width * tr.k, tr.y));
+        that.transformed_g.style("stroke-width", 1 / tr.k)
+            .attr("transform", tr);
     },
 
     create_listeners: function() {
@@ -337,7 +334,7 @@ var Map = mark.Mark.extend({
         for (var i=0; i<temp.length; i++) {
             if(select.indexOf(temp[i].id) > -1) {
                 that.highlight_g.append(function() {
-                    return nodes[0][i].cloneNode(true);
+                    return nodes.nodes()[i].cloneNode(true);
                 }).attr("id", temp[i].id)
                 .style("fill-opacity", function() {
                     if (that.validate_color(that.model.get("selected_styles").selected_fill)) {
