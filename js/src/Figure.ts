@@ -807,10 +807,10 @@ export class Figure extends widgets.DOMWidgetView {
             return css;
         };
 
-       const svg2svg = function(node, canvas, node_interaction, width, height) {
+       const svg2svg = function(node_background, canvas, node_foreground, width, height) {
            // Creates a standalone SVG string from an inline SVG element
            // containing all the computed style attributes.
-           const svg = node.cloneNode(true);
+           const svg = node_foreground.cloneNode(true);
            svg.setAttribute("version", "1.1");
            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
            svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
@@ -818,13 +818,18 @@ export class Figure extends widgets.DOMWidgetView {
            const s = document.createElement("style");
            s.setAttribute("type", "text/css");
            s.innerHTML = "<![CDATA[\n" +
-               get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
+               get_css(node_foreground, ["\.theme-dark", "\.theme-light", ".bqplot > ", ":root"]) + "\n" +
+               get_css(node_background, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n" +
+               "]]>";
            const defs = document.createElement("defs");
            defs.appendChild(s);
-           // we put the svg interaction part after the marks
+           // we put the svg background part before the marks
            const g_root = svg.children[0];
-           const svg_interaction = node_interaction.cloneNode(true);
-           g_root.insertBefore(svg_interaction.children[0].children[0], g_root.children[3])
+           const svg_background = node_background.cloneNode(true);
+           // first the axes
+           g_root.insertBefore(svg_background.children[0].children[1], g_root.children[0])
+           // and the background as first element
+           g_root.insertBefore(svg_background.children[0].children[0], g_root.children[0])
 
            // and add the webgl canvas as an image
            const data_url = canvas.toDataURL('image/png');
@@ -847,7 +852,7 @@ export class Figure extends widgets.DOMWidgetView {
         // Instead, we render again, and directly afterwards we do get the pixel data using canvas.toDataURL
         return this.render_gl().then(() => {
             // Create standalone SVG string
-            const svg = svg2svg(this.svg.node(), this.renderer.domElement, this.svg_interaction.node(), this.plotarea_width, this.plotarea_height);
+            const svg = svg2svg(this.svg_background.node(), this.renderer.domElement, this.svg.node(), this.plotarea_width, this.plotarea_height);
             return svg;
             // Save to PNG
             //svg2png(svg, this.width, this.height)
@@ -855,34 +860,40 @@ export class Figure extends widgets.DOMWidgetView {
 
     }
 
+    get_rendered_canvas(scale) {
+        // scale up the underlying canvas for high dpi screens
+        // such that image is of the same quality
+        scale = scale || window.devicePixelRatio;
+        // Render a SVG data into a canvas and
+        return this.get_svg().then((xml) => {
+            return new Promise((accept) => {
+                const image = new Image();
+                image.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.classList.add('bqplot');
+                    canvas.width = this.width * scale;
+                    canvas.height = this.height * scale;
+                    canvas.style.width = this.width;
+                    canvas.style.height = this.height;
+                    const context = canvas.getContext("2d");
+                    context.scale(scale, scale);
+                    context.drawImage(image, 0, 0);
+                    accept(canvas)
+                };
+                image.src = "data:image/svg+xml;base64," + btoa(xml);
+            });
+        });
+    }
+
     save_png(filename, scale) {
+        // Render a SVG data into a canvas and download as PNG.
 
-            // scale up the underlying canvas for high dpi screens
-            // such that image is of the same quality
-            scale = scale || window.devicePixelRatio;
-
-            // Render a SVG data into a canvas and download as PNG.
-
-    // Render a SVG data into a canvas and download as PNG.
-        this.get_svg().then((xml) => {
-            const image = new Image();
-            image.onload = () => {
-                const canvas = document.createElement("canvas");
-                canvas.classList.add('bqplot');
-                canvas.width = this.width * scale;
-                canvas.height = this.height * scale;
-                canvas.style.width = this.width;
-                canvas.style.height = this.height;
-                const context = canvas.getContext("2d");
-                context.scale(scale, scale);
-                context.drawImage(image, 0, 0);
-                const a = document.createElement("a");
-                a.download = filename || "image.png";
-                a.href = canvas.toDataURL("image/png");
-                document.body.appendChild(a);
-                a.click();
-            };
-            image.src = "data:image/svg+xml;base64," + btoa(xml);
+        this.get_rendered_canvas(scale).then((canvas) => {
+            const a = document.createElement("a");
+            a.download = filename || "image.png";
+            a.href = canvas.toDataURL("image/png");
+            document.body.appendChild(a);
+            a.click();
         })
     }
 
