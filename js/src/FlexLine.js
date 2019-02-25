@@ -101,33 +101,29 @@ var FlexLine = lines.Lines.extend({
         var curves_sel = this.d3el.selectAll(".curve")
             .data(this.model.mark_data, function(d, i) { return d.name; });
 
-        curves_sel.enter().append("g")
-            .attr("class", "curve");
-
         curves_sel.exit()
             .transition("draw")
             .duration(this.parent.model.get("animation_duration"))
             .remove();
 
+        curves_sel = curves_sel.enter().append("g")
+            .attr("class", "curve")
+            .merge(curves_sel);
+
         var x_scale = this.scales.x, y_scale = this.scales.y;
 
         var that = this;
-        curves_sel[0].forEach(function(elem, index) {
+        curves_sel.nodes().forEach(function(elem, index) {
             var lines = d3.select(elem).selectAll("line")
                 .data(that.model.mark_data[index].values);
-            lines.enter().append("line");
+            lines = lines.enter().append("line").merge(lines);
             lines.attr("class", "line-elem")
-                .attr({
-                    x1: function(d) { return x_scale.scale(d.x1); },
-                    x2: function(d) { return x_scale.scale(d.x2); },
-                    y1: function(d) { return y_scale.scale(d.y1); },
-                    y2: function(d) { return y_scale.scale(d.y2); }
-                })
-                .attr("stroke", function(d) {
-                    return that.get_element_color(d);
-                }).attr("stroke-width", function(d) {
-                    return that.get_element_width(d);
-                });
+                .attr("x1", function(d) { return x_scale.scale(d.x1); })
+                .attr("x2", function(d) { return x_scale.scale(d.x2); })
+                .attr("y1", function(d) { return y_scale.scale(d.y1); })
+                .attr("y2", function(d) { return y_scale.scale(d.y2); })
+                .attr("stroke", function(d) { return that.get_element_color(d); })
+                .attr("stroke-width", function(d) { return that.get_element_width(d); });
         });
     },
 
@@ -157,12 +153,10 @@ var FlexLine = lines.Lines.extend({
         this.d3el.selectAll(".curve").selectAll(".line-elem")
             .transition("relayout")
             .duration(this.parent.model.get("animation_duration"))
-            .attr({
-                x1: function(d) { return x_scale.scale(d.x1); },
-                x2: function(d) { return x_scale.scale(d.x2); },
-                y1: function(d) { return y_scale.scale(d.y1); },
-                y2: function(d) { return y_scale.scale(d.y2); },
-        });
+            .attr("x1", function(d) { return x_scale.scale(d.x1); })
+            .attr("x2", function(d) { return x_scale.scale(d.x2); })
+            .attr("y1", function(d) { return y_scale.scale(d.y1); })
+            .attr("y2", function(d) { return y_scale.scale(d.y2); });
     },
 
     create_labels: function() {

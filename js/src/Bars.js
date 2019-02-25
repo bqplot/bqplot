@@ -311,6 +311,11 @@ var Bars = mark.Mark.extend({
             this.x1.domain(_.range(this.model.mark_data[0].values.length))
                 .rangeRound([0, this.x.bandwidth().toFixed(2)]);
         }
+
+        // Since we will assign the enter and update selection of bar_groups to
+        // itself, we may remove exit selection first.
+        bar_groups.exit().remove();
+        
         bar_groups = bar_groups.enter()
           .append("g")
           .attr("class", "bargroup")
@@ -324,7 +329,6 @@ var Bars = mark.Mark.extend({
             return that.event_dispatcher("element_clicked",
                                          {"data": d, "index": i});
         });
-        bar_groups.exit().remove();
 
         var bars_sel = bar_groups.selectAll(".bar")
           .data(function(d) {
