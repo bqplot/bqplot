@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-array"), require("d3-force"), require("d3-selection"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-force"), require("d3-selection"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var utils = require("./utils");
@@ -132,13 +132,11 @@ var Graph = mark.Mark.extend({
             });
 
             if (this.force_layout) {
-                 this.force_layout
-                    .nodes(this.model.mark_data)
-                    .links(this.model.link_data)
-                    .start();
+                this.force_layout.nodes(this.model.mark_data)
+                    .force("link", d3.forceLink(this.model.link_data).distance(this.model.get("link_distance")));
 
                 if (this.links) {
-                    this.links.data(this.force_layout.links());
+                    this.links.data(this.model.link_data);
                 }
                 if (this.nodes) {
                     this.nodes.data(this.force_layout.nodes());
@@ -223,10 +221,6 @@ var Graph = mark.Mark.extend({
         this.d3el.selectAll(".node").remove();
         this.d3el.selectAll(".link").remove();
 
-        this.force_layout = d3.forceSimulation()
-            .size([this.parent.width, this.parent.height])
-            .linkDistance(this.model.get("link_distance"));
-
         if (x_scale && y_scale) {
             //set x and y on mark data manually
             this.model.mark_data.forEach(function(d) {
@@ -235,21 +229,24 @@ var Graph = mark.Mark.extend({
             });
         }
 
-        this.force_layout
-            .nodes(this.model.mark_data)
-            .links(this.model.link_data);
+        var box = this.parent.fig.node().getBBox();
+        var width = box.width;
+        var height = box.height;
+        this.force_layout = d3.forceSimulation()
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("forceX", d3.forceX().strength(0.1).x(width / 2))
+            .force("forceY", d3.forceY().strength(0.1).y(height / 2));
 
         if (!x_scale && !y_scale) {
             this.force_layout
-                .charge(this.model.get("charge"))
+                .force("charge", d3.forceManyBody().strength(this.model.get("charge")))
                 .on("tick", _.bind(this.tick, this))
-                .start();
         }
 
         var directed = this.model.get("directed");
 
         this.links = this.d3el.selectAll(".link")
-            .data(this.force_layout.links())
+            .data(this.model.link_data)
             .enter().append("path")
             .attr("class", "link")
             .style("stroke", function(d) {
@@ -258,12 +255,19 @@ var Graph = mark.Mark.extend({
             .style("stroke-width", function(d) { return d.link_width; })
             .attr("marker-mid", directed ? "url(#arrow)" : null);
 
+        this.force_layout.nodes(this.model.mark_data)
+            .force("link", d3.forceLink(this.model.link_data).distance(this.model.get("link_distance")));
+
         var that = this;
         this.nodes = this.d3el.selectAll(".node")
             .data(this.force_layout.nodes())
             .enter().append("g")
             .attr("class", "node")
-            .call(this.force_layout.drag);
+            .call(d3.drag()
+                .on("start", _.bind(that.dragstarted, that))
+                .on("drag", _.bind(that.dragged, that))
+                .on("end", _.bind(that.dragended, that)));
+
 
         this.nodes
             .append(function(d) {
@@ -320,6 +324,28 @@ var Graph = mark.Mark.extend({
         this.nodes.on("mouseout", _.bind(function() {
             this.reset_hover();
         }, this));
+    },
+
+
+    dragstarted: function(d) {
+        if (!d3.getEvent().active) {
+            this.force_layout.alphaTarget(.4).restart();
+        }
+        d.fx = d.x;
+        d.fy = d.y;
+    },
+
+    dragged: function(d) {
+        d.fx = d3.getEvent().x;
+        d.fy = d3.getEvent().y;
+    },
+
+    dragended: function(d) {
+        if (!d3.getEvent().active) {
+            this.force_layout.alphaTarget(.4);
+        }
+        d.fx = null;
+        d.fy = null;
     },
 
     color_scale_updated: function() {

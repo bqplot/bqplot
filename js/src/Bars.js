@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-selection-multi"));
 var _ = require("underscore");
 var mark = require("./Mark");
 var utils = require("./utils");
@@ -586,7 +586,7 @@ var Bars = mark.Mark.extend({
         for(var key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.selectAll(".bar").style(clearing_style);
+        elements.selectAll(".bar").styles(clearing_style);
     },
 
     set_style_on_elements: function(style, indices) {
