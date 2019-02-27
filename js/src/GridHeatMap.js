@@ -198,8 +198,7 @@ var GridHeatMap = mark.Mark.extend({
             {updated_view: this});
         this.touch();
         var e = d3.getEvent();
-        if(!e)
-        {
+        if(!e) {
             e = window.event;
         }
         if(e.cancelBubble !== undefined) { // IE

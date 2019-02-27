@@ -268,7 +268,6 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
 
     set_brush_scale: function() {
         var extent = this.brush.extent();
-        console.log(extent);
         if (this.model.get("orientation") == "vertical") {
             this.brush.extent([[extent[0][0], this.scale.scale()[0]],
                                [extent[1][0], this.scale.scale()[1]]]);

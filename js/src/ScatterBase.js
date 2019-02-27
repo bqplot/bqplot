@@ -673,7 +673,7 @@ var ScatterBase = mark.Mark.extend({
         this.send({
             event: "drag",
             origin: {x: d.x, y: d.y},
-	    point: {
+            point: {
                 x: x_scale.invert(d[0]),
                 y: y_scale.invert(d[1])
             },
