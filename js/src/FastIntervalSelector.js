@@ -56,8 +56,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
               .attr("width", that.size)
               .attr("height", that.height)
               .attr("pointer-events", "none")
-              .attr("display", "none")
-              .attr("fill-opacity", "0.3");
+              .attr("display", "none");
 
             that.color_change();
             that.selected_changed();

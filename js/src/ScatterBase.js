@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var utils = require("./utils");
@@ -578,7 +578,7 @@ var ScatterBase = mark.Mark.extend({
         for(var key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.style(clearing_style);
+        elements.styles(clearing_style);
     },
 
     set_style_on_elements: function(style, indices) {
@@ -595,7 +595,7 @@ var ScatterBase = mark.Mark.extend({
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        elements.style(style);
+        elements.styles(style);
     },
 
     compute_view_padding: function() {
