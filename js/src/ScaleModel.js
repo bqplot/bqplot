@@ -62,6 +62,13 @@ var ScaleModel = basemodel.BaseModel.extend({
             delete this.domains[id];
             this.update_domain();
         }
+    },
+
+    get_domain_slice_in_order: function(){
+        if(this.reverse)
+            return this.domain.slice().reverse();
+        else
+            return this.domain.slice();
     }
 });
 

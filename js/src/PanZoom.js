@@ -82,12 +82,12 @@ var PanZoom = interaction.Interaction.extend({
         this.previous_pos = d3.mouse(this.el);
         // A copy of the original domains is required to avoid additional
         // drift when Paning.
-        this.domains = {
+        this.domains_in_order = {
             "x": (scales.x || []).map(function(s) {
-                return s.domain.slice(0);
+                return s.get_domain_slice_in_order();
             }),
             "y": (scales.y || []).map(function(s) {
-                return s.domain.slice(0);
+                return s.get_domain_slice_in_order();
             }),
         };
     },
@@ -109,7 +109,7 @@ var PanZoom = interaction.Interaction.extend({
             var that = this;
             this.scale_promises.then(function(scale_views) {
                 var xscale_views = scale_views.x;
-                var xdomains = that.domains.x;
+                var xdomains = that.domains_in_order.x;
                 var xdiffs = xscale_views.map(function(view) {
                     if (view.scale.invert) {
                         // Categorical scales don't have an inversion.
@@ -129,7 +129,7 @@ var PanZoom = interaction.Interaction.extend({
                 }
 
                 var yscale_views = scale_views.y;
-                var ydomains = that.domains.y;
+                var ydomains = that.domains_in_order.y;
                 var ydiffs = yscale_views.map(function(view) {
                     if (view.scale.invert) {
                         // Categorical scales don't have an inversion.
@@ -146,6 +146,7 @@ var PanZoom = interaction.Interaction.extend({
                     // TODO? Only do this on mouseup?
                     yscale_views[i].touch();
                 }
+
             });
         }
     },
@@ -172,7 +173,7 @@ var PanZoom = interaction.Interaction.extend({
                     });
                     var factor = Math.exp(-delta * 0.001);
                     for (i=0; i<xscale_views.length; i++) {
-                        domain = scales.x[i].domain;
+                        domain = scales.x[i].get_domain_slice_in_order();
                         min = domain[0];
                         max = domain[1];
                         that.set_scale_attribute(scales.x[i], "min",
@@ -188,7 +189,7 @@ var PanZoom = interaction.Interaction.extend({
                         return view.scale.invert(mouse_pos[1]);
                     });
                     for (i=0; i<yscale_views.length; i++) {
-                        domain = scales.y[i].domain;
+                        domain = scales.y[i].get_domain_slice_in_order();
                         min = domain[0];
                         max = domain[1];
                         that.set_scale_attribute(scales.y[i], "min",
