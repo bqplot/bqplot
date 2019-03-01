@@ -59,7 +59,10 @@ var FlexLine = lines.Lines.extend({
             .on("mouseout", _.bind(this.make_axis_non_bold, this))
         .append("line")
             .style("stroke", function(d,i) { return that.get_colors(i); })
-            .attr({x1: 0, x2: rect_dim, y1: rect_dim / 2 , y2: rect_dim / 2});
+            .attr("x1", 0)
+            .attr("x2", rect_dim)
+            .attr("y1", rect_dim / 2)
+            .attr("y2", rect_dim / 2);
 
         g_elements.append("text")
             .attr("class","legendtext")

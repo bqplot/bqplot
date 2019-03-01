@@ -22,9 +22,7 @@ var HandDraw = interaction.Interaction.extend({
 
     render: function() {
         HandDraw.__super__.render.apply(this);
-        this.d3el.style({
-            cursor: "crosshair"
-        });
+        this.d3el.style("cursor", "crosshair");
         this.active = false;
 
         // Register the mouse callback when the mark view promises are

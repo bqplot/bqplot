@@ -215,16 +215,23 @@
     }
     .multiselector {
         .active {
-            pointer-events: all !important;
-            stroke: green;
+            .selection {
+                pointer-events: all !important;
+                stroke: green;
+            }
         }
         .inactive {
-            pointer-events: none !important;
-            stroke: red;
+            .selection {
+                pointer-events: none !important;
+                stroke: red;
+            }
         }
         .visible {
-            pointer-events: visible !important;
-            stroke: red;
+            .selection
+            {
+                pointer-events: visible !important;
+                stroke: red;
+            }
         }
     }
     .lassoselector {

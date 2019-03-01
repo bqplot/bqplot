@@ -14,7 +14,7 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = Object.assign({}, require("d3-selection"), require("d3-time-format"));
+var d3 = Object.assign({}, require("d3-selection"), require("d3-format"), require("d3-time-format"));
 var utils = require("./utils");
 var _ = require("underscore");
 

@@ -28,7 +28,7 @@ var BaseBrushSelector = {
 
     color_change: function() {
         if (this.model.get("color") !== null) {
-            this.brushsel.style("fill", this.model.get("color"));
+            this.brushsel.select(".selection").style("fill", this.model.get("color"));
         }
     },
 
@@ -144,13 +144,10 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
             var pixel_extent_x = [d0[0][0], d0[1][0]];
             var pixel_extent_y = [d0[1][1], d0[0][1]];
         
-            var x_ordinal = (this.x_scale.model.type === "ordinal");
-            var y_ordinal = (this.y_scale.model.type === "ordinal");
-
-            var extent_x = x_ordinal ? pixel_extent_x :
-                            pixel_extent_x.map(this.x_scale.scale.invert);
-            var extent_y = y_ordinal ? pixel_extent_y :
-                            pixel_extent_y.map(this.y_scale.scale.invert);
+            var extent_x = pixel_extent_x.map(this.x_scale.scale.invert).sort(
+                function(a, b) { return a - b; });
+            var extent_y = pixel_extent_y.map(this.y_scale.scale.invert).sort(
+                function(a, b) { return a - b; });
 
             this.update_mark_selected(pixel_extent_x, pixel_extent_y);
             this.set_selected("selected_x", extent_x);
@@ -248,9 +245,8 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
             this.empty_selection();
         } else {
             var pixel_extent = e.selection;
-            var ordinal = (this.scale.model.type === "ordinal");
-            var extent = ordinal ? pixel_extent : pixel_extent.map(this.scale.scale.invert);
-        
+            var extent = pixel_extent.map(this.scale.scale.invert).sort(
+                function(a, b) { return a - b; });
             this.update_mark_selected(pixel_extent);
 
             this.set_selected("selected", extent);
@@ -370,10 +366,11 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
         var that = this;
         var index = this.curr_index;
 
-        var brush = d3.svg.brush()
-          .on("brushstart", function() { that.brush_start(); })
+        var vertical = (this.model.get("orientation") == "vertical");
+        var brush = (vertical ? d3.brushY() : d3.brushX())
+          .on("start", function() { that.brush_start(); })
           .on("brush", function() { that.brush_move(index, this); })
-          .on("brushend", function() { that.brush_end(index, this); });
+          .on("end", function() { that.brush_end(index, this); });
 
         var new_brush_g = this.d3el.append("g")
           .attr("class", "selector brushintsel active");
@@ -387,10 +384,8 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
           .style("display", "none");
 
         if (this.model.get("orientation") == "vertical") {
-            brush.y(this.scale.scale);
             new_brush_g.select("text").attr("x", 30);
         } else {
-            brush.x(this.scale.scale);
             new_brush_g.select("text").attr("y", 30);
         }
         new_brush_g.call(brush);
@@ -448,31 +443,26 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
     },
 
     brush_move: function(item, brush_g) {
-        var brush = d3.getEvent().target;
-        var extent = brush.empty() ? this.scale.scale.domain() : brush.extent();
+        var sel = d3.getEvent().selection;
         var hide_names = !(this.model.get("show_names"));
         d3.select(brush_g).select("text")
-          .style("display", ((brush.empty() || hide_names) ? "none" : "inline"));
-        this.set_text_location(brush_g, extent);
-        this.convert_and_save(extent, item);
+          .style("display", ((!sel || hide_names) ? "none" : "inline"));
+        this.set_text_location(brush_g, sel);
+        this.convert_and_save(sel, item);
     },
 
     set_text_location: function(brush_g, extent) {
+        var vertical = (this.model.get("orientation") == "vertical");
+        var orient = vertical ? "y" : "x";
         var mid = (extent[0] + extent[1]) / 2;
-        if(this.scale.model.type === "date") {
-            mid = new Date((extent[0].getTime() + extent[1].getTime()) / 2);
-        }
-        var orient = (this.model.get("orientation") == "vertical") ? "y" : "x";
         d3.select(brush_g).select("text")
-          .attr(orient, this.scale.scale(mid));
+          .attr(orient, mid);
     },
 
     brush_end: function (item, brush_g) {
-        var brush = d3.getEvent().target;
-        var extent = brush.empty() ?
-            this.scale.scale.domain() : brush.extent();
+        var sel = d3.getEvent().selection;
         this.model.set("brushing", false);
-        this.convert_and_save(extent, item);
+        this.convert_and_save(sel, item);
     },
 
     reset: function() {
@@ -485,13 +475,18 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
     },
 
     convert_and_save: function(extent, item) {
-        var that = this;
-        var selected = utils.deepCopy(this.model.get("_selected"));
-        selected[this.get_label(item)] = extent;
-        var pixel_extent = extent.map(this.scale.scale);
-        this.update_mark_selected(pixel_extent);
-        this.model.set("_selected", selected);
-        this.touch();
+        if(!extent) {
+            this.update_mark_selected();
+            this.model.set("_selected", {});
+            this.touch();
+        } else {
+            var that = this;
+            var selected = utils.deepCopy(this.model.get("_selected"));
+            selected[this.get_label(item)] = extent.map(this.scale.scale.invert);
+            this.update_mark_selected(extent);
+            this.model.set("_selected", selected);
+            this.touch();
+        }
     },
 
     scale_changed: function() {

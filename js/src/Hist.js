@@ -252,7 +252,7 @@ var Hist = mark.Mark.extend({
         });
         // pixel coords contains the [x0, x1] and [y0, y1] of each bin
         this.pixel_coords = this.model.mark_data.map(function(d) {
-            var x = x_scale.scale(d.x);
+            var x = x_scale.scale(d.x0);
             return [[x, x+bar_width], [0, d.y].map(y_scale.scale)];
         });
         this.update_stroke_and_opacities();
