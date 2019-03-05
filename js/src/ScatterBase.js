@@ -288,16 +288,16 @@ var ScatterBase = mark.Mark.extend({
         this.update_position(animate);
 
         this.set_drag_behavior();
-        elements.on("click", _.bind(function(d, i) {
+        elements_added.on("click", _.bind(function(d, i) {
             this.event_dispatcher("element_clicked",
 			      {"data": d, "index": i});
         }, this));
-	    elements.on("mouseover", _.bind(function(d, i) {
-		    this.scatter_hover_handler({"data": d, "index": i});
-	    }, this));
-	    elements.on("mouseout", _.bind(function() {
-		    this.reset_hover();
-	    }, this));
+	elements_added.on("mouseover", _.bind(function(d, i) {
+	    this.scatter_hover_handler({"data": d, "index": i});
+	}, this));
+	elements_added.on("mouseout", _.bind(function() {
+	    this.reset_hover();
+	}, this));
 
         this.draw_elements(animate, elements_added)
 
@@ -333,7 +333,7 @@ var ScatterBase = mark.Mark.extend({
                 } else if (interactions.click == 'select') {
    		            this.event_listeners.parent_clicked = this.reset_selection;
 		            this.event_listeners.element_clicked = this.scatter_click_handler;
-	            }
+	        }
             } else {
                 this.reset_click();
             }
@@ -741,7 +741,7 @@ var ScatterBase = mark.Mark.extend({
         x.copyWithin(index, index+1, x.length);
         y.copyWithin(index, index+1, y.length);
         x = x.slice(0, x.length-1);
-        y = y.slice(0, x.length-1);
+        y = y.slice(0, y.length-1);
 
         this.model.set("x", x);
         this.model.set("y", y);
