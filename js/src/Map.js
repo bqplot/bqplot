@@ -107,6 +107,18 @@ var Map = mark.Mark.extend({
                that.zoomed(that, false);
             });
         this.parent.bg.call(this.zoom);
+        that.dragging = false;
+        this.drag = d3.behavior.drag()
+            .on("dragstart", function() {
+                that.dragstarted(that);
+            })
+            .on("drag", function() {
+                that.dragged(that);
+            })
+            .on("dragend", function() {
+                that.dragended(that);
+            });
+        this.parent.bg.call(this.drag);
 
         this.parent.bg.on("dblclick.zoom", null);
         this.parent.bg.on("dblclick", function() {
@@ -213,20 +225,36 @@ var Map = mark.Mark.extend({
     },
 
     zoomed: function(that, reset) {
-        var t = reset ? [0, 0] : d3.event.translate;
-        var s = reset ? 1 : d3.event.scale;
-        var h = that.height / 3;
-        var w = reset ? that.width : 2 * that.width;
-
-        t[0] = Math.min(that.width / 2 * (s - 1), Math.max(w / 2 * (1 - s), t[0]));
-        t[1] = Math.min(that.height / 2 * (s - 1) + this.height * s, Math.max(h / 2 * (1 - s) - that.width * s, t[1]));
-
-        that.zoom.translate(t);
-        if (reset) {
-            that.zoom.scale(s);
+        if (!that.dragging) {
+            var s = reset ? 1 : d3.event.scale;
+            var t = reset ? [0, 0] : [-that.width / 2 * (s - 1), -that.height / 2 * (s - 1)];
+            that.zoom.translate(t);
+            if (reset) {
+                that.zoom.scale(s);
+            }
+            that.map.attr("transform", "translate(" + t + ")scale(" + s + ")");
         }
-        that.transformed_g.style("stroke-width", 1 / s)
-            .attr("transform", "translate(" + t + ")scale(" + s + ")");
+    },
+
+    dragstarted: function(that) {
+        that.dragging = true;
+    },
+
+    dragged: function(that) {
+        var projection = that.scales.projection.scale;
+        const rotate = projection.rotate();
+        const sensitivity = 58;
+        const k = sensitivity / projection.scale();
+        projection.rotate([
+            rotate[0] + d3.event.dx * k,
+            rotate[1] - d3.event.dy * k
+        ]);
+        var path = that.scales.projection.path;
+        that.map.selectAll("path").attr("d", path);
+    },
+
+    dragended: function(that) {
+        that.dragging = false;
     },
 
     create_listeners: function() {
