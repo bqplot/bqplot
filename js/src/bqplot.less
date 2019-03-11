@@ -215,22 +215,31 @@
     }
     .multiselector {
         .active {
+            pointer-events: all;
             .selection {
-                pointer-events: all !important;
                 stroke: green;
+            }
+            .overlay {
+                pointer-events: all;
             }
         }
         .inactive {
+            pointer-events: none;
             .selection {
-                pointer-events: none !important;
                 stroke: red;
+            }
+            .overlay {
+                pointer-events: none;
             }
         }
         .visible {
+            pointer-events: all;
             .selection
             {
-                pointer-events: visible !important;
                 stroke: red;
+            }
+            .overlay {
+                pointer-events: none;
             }
         }
     }

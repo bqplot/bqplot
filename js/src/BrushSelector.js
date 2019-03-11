@@ -328,6 +328,8 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
         var scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.d3el.attr("class", "multiselector");
+            that.d3el.attr("width", that.width);
+            that.d3el.attr("height", that.height);
             that.create_brush();
             that.selecting_brush = false;
             that.create_listeners();
@@ -371,6 +373,7 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
           .on("start", function() { that.brush_start(); })
           .on("brush", function() { that.brush_move(index, this); })
           .on("end", function() { that.brush_end(index, this); });
+        brush.extent([[0, 0], [this.width, this.height]]);
 
         var new_brush_g = this.d3el.append("g")
           .attr("class", "selector brushintsel active");
@@ -395,37 +398,23 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
 
         var old_handler = new_brush_g.on("mousedown.brush");
         new_brush_g.on("mousedown.brush", function() {
-            add_remove_classes(that.d3el.selectAll(".selector"), ["inactive"], ["visible"]);
-            add_remove_classes(d3.select(this), ["active"], ["inactive"]);
-            old_handler.call(this);
-            // Replacement for "Accel" modifier.
-            d3.select(this).on("mousedown.brush", function() {
-                var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
-                if(d3.getEvent().shiftKey && accelKey && d3.getEvent().altKey) {
-                    that.reset();
-                } else if(accelKey) {
-                    add_remove_classes(d3.select(this), ["inactive"], ["active"]);
-                    that.create_brush(d3.getEvent());
-                } else if(d3.getEvent().shiftKey && that.selecting_brush === false) {
-                    add_remove_classes(that.d3el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
-                    that.selecting_brush = true;
-                } else {
-                    add_remove_classes(that.d3el.selectAll(".selector"), ["inactive"], ["visible"]);
-                    add_remove_classes(d3.select(this), ["active"], ["inactive"]);
-                    old_handler.call(this);
-                    that.selecting_brush = false;
-                }
-            });
+            var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
+            if(d3.getEvent().shiftKey && accelKey) {
+                that.reset();
+            } else if(accelKey) {
+                add_remove_classes(d3.select(this), ["inactive"], ["active"]);
+                that.create_brush(d3.getEvent());
+            } else if(d3.getEvent().shiftKey && that.selecting_brush === false) {
+                add_remove_classes(that.d3el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
+                that.selecting_brush = true;
+            } else {
+                add_remove_classes(that.d3el.selectAll(".selector"), ["inactive"], ["visible"]);
+                add_remove_classes(d3.select(this), ["active"], ["inactive"]);
+                old_handler.call(this);
+                that.selecting_brush = false;
+            }
         });
         this.curr_index = this.curr_index + 1;
-        /* if(this.curr_index > 1) {
-            // Have to create a duplicate event and re dispatch it for the
-            // event to get triggered on the new brush.
-            // if curr_index === 1, then it is the first brush being
-            // created. So no duplicate event needs to dispatched.
-            var duplicate_event = new event.constructor(event.type, event);
-            new_brush_g.node().dispatchEvent(duplicate_event);
-        } */
     },
 
     get_label: function(index, arr) {
@@ -451,6 +440,12 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
         this.convert_and_save(sel, item);
     },
 
+    brush_end: function (item, brush_g) {
+        var sel = d3.getEvent().selection;
+        this.model.set("brushing", false);
+        this.convert_and_save(sel, item);
+    },
+    
     set_text_location: function(brush_g, extent) {
         var vertical = (this.model.get("orientation") == "vertical");
         var orient = vertical ? "y" : "x";
@@ -459,11 +454,6 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
           .attr(orient, mid);
     },
 
-    brush_end: function (item, brush_g) {
-        var sel = d3.getEvent().selection;
-        this.model.set("brushing", false);
-        this.convert_and_save(sel, item);
-    },
 
     reset: function() {
         this.d3el.selectAll(".selector")

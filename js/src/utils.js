@@ -33,6 +33,8 @@ var deepCopy = function (obj) {
         return obj.map(x => deepCopy(x))
     } else if(_.isNumber(obj) || _.isString(obj)) {
         return obj;
+    } else if(_.isDate(obj)) {
+        return new Date(obj.getTime());
     } else {
         var newobj = {}
         for(key in obj) {
