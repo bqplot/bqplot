@@ -34,13 +34,37 @@ var Image = mark.Mark.extend({
             .attr("preserveAspectRatio", "none");
         this.update_image();
 
+        this.event_metadata = {
+            "mouse_over": {
+                "msg_name": "hover",
+                "lookup_data": false,
+                "hit_test": true
+            },
+            "legend_clicked":  {
+                "msg_name": "legend_click",
+                "hit_test": true
+            },
+            "element_clicked": {
+                "msg_name": "element_click",
+                "lookup_data": false,
+                "hit_test": false
+            },
+            "parent_clicked": {
+                "msg_name": "background_click",
+                "hit_test": false
+            }
+        };
+
         var that = this;
         return base_render_promise.then(function() {
+            that.event_listeners = {};
+            that.reset_click();
             that.create_listeners();
             that.listenTo(that.parent, "margin_updated", function() {
                 that.draw();
             });
         });
+
     },
 
     set_positional_scales: function() {
@@ -98,6 +122,28 @@ var Image = mark.Mark.extend({
         this.draw(true);
     },
 
+    img_send_message: function(event_name, data) {
+        // For the moment, use a custom function instead of overriding the
+        // event_dispatcher from Mark.js. The data you want from an image
+        // click is very different than other marks. We are not trying to
+        // to find out which image was clicked in the way that Scatter
+        // or Lines returns returns the position of the dot or line on
+        // (or near) which the user clicked.
+        //
+        // Here we want to return the location of the mouse click.
+        var event_data = this.event_metadata[event_name];
+        var data_message = {
+            "click_x": this.scales.x.invert(d3.mouse(this.el)[0]),
+            "click_y": this.scales.y.invert(d3.mouse(this.el)[1])
+            };
+            // how to get access to raw event: data.data.clientY};
+        // for (var datum in data.data) {
+        //     data_message[datum] = data.data[datum];
+        // }
+        ;
+        this.send({event: event_data.msg_name, data: data_message});
+    },
+
     draw: function(animate) {
         this.set_ranges()
 
@@ -118,6 +164,10 @@ var Image = mark.Mark.extend({
                 var sx = x_scaled[1] - x_scaled[0];
                 var sy = y_scaled[0] - y_scaled[1];
                 return "translate(" + tx + "," + ty + ") scale(" + sx + ", " + sy + ")"});
+        el.on("click", _.bind(function(d, i) {
+            this.img_send_message("element_clicked",
+                  {"data": d3.event, "index": i});
+        }, this));
     },
 });
 
