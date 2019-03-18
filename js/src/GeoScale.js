@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-geo"));
 var widgets = require("@jupyter-widgets/base");
 
 var GeoScale = widgets.WidgetView.extend({
@@ -24,7 +24,7 @@ var GeoScale = widgets.WidgetView.extend({
     },
 
     set_projection: function() {
-        this.path = d3.geo.path().projection(this.model.projection);
+        this.path = d3.geoPath().projection(this.model.projection);
         this.scale = this.model.projection;
     },
 

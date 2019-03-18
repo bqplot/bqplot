@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-drag"), require("d3-selection"), require("d3-shape"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var utils = require("./utils");
 var baseselector = require("./Selector");
@@ -23,16 +24,16 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
     render: function() {
         LassoSelector.__super__.render.apply(this);
         var scale_creation_promise = this.create_scales();
-        this.line = d3.svg.line();
+        this.line = d3.line();
         this.all_vertices = {};
         this.lasso_counter = 0;
 
         var that = this;
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
-            var drag = d3.behavior.drag()
-                .on("dragstart", _.bind(that.drag_start, that))
+            var drag = d3.drag()
+                .on("start", _.bind(that.drag_start, that))
                 .on("drag", _.bind(that.drag_move, that))
-                .on("dragend", _.bind(that.drag_end, that));
+                .on("end", _.bind(that.drag_end, that));
 
             d3.select(window).on("keydown", _.bind(that.keydown, that));
 
@@ -131,7 +132,7 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
 
     keydown: function() {
        // delete key pressed
-       if (d3.event.keyCode === 46) {
+       if (d3.getEvent().keyCode === 46) {
            // Delete selected lassos
            var lassos_to_delete = this.d3el.selectAll(".selected");
            // Update the lasso vertices

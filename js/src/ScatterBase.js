@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
@@ -24,10 +25,13 @@ var ScatterBase = mark.Mark.extend({
         var base_creation_promise = ScatterBase.__super__.render.apply(this);
 
         var that = this;
-        this.drag_listener = d3.behavior.drag()
-          .on("dragstart", function(d, i) { return that.drag_start(d, i, this); })
+        this.drag_listener = d3.drag()
+          .subject(function(d) {
+              return {x: that.x_scale.scale(d.x), y: that.y_scale.scale(d.y)};
+          })
+          .on("start", function(d, i) { return that.drag_start(d, i, this); })
           .on("drag", function(d, i) { return that.on_drag(d, i, this); })
-          .on("dragend", function(d, i) { return that.drag_ended(d, i, this); });
+          .on("end", function(d, i) { return that.drag_ended(d, i, this); });
 
         this.selected_style = this.model.get("selected_style");
         this.unselected_style = this.model.get("unselected_style");
@@ -284,16 +288,16 @@ var ScatterBase = mark.Mark.extend({
         this.update_position(animate);
 
         this.set_drag_behavior();
-        elements.on("click", _.bind(function(d, i) {
+        elements_added.on("click", _.bind(function(d, i) {
             this.event_dispatcher("element_clicked",
 			      {"data": d, "index": i});
         }, this));
-	    elements.on("mouseover", _.bind(function(d, i) {
-		    this.scatter_hover_handler({"data": d, "index": i});
-	    }, this));
-	    elements.on("mouseout", _.bind(function() {
-		    this.reset_hover();
-	    }, this));
+	elements_added.on("mouseover", _.bind(function(d, i) {
+	    this.scatter_hover_handler({"data": d, "index": i});
+	}, this));
+	elements_added.on("mouseout", _.bind(function() {
+	    this.reset_hover();
+	}, this));
 
         this.draw_elements(animate, elements_added)
 
@@ -329,7 +333,7 @@ var ScatterBase = mark.Mark.extend({
                 } else if (interactions.click == 'select') {
    		            this.event_listeners.parent_clicked = this.reset_selection;
 		            this.event_listeners.element_clicked = this.scatter_click_handler;
-	            }
+	        }
             } else {
                 this.reset_click();
             }
@@ -396,7 +400,7 @@ var ScatterBase = mark.Mark.extend({
         // index of bar i. Checking if it is already present in the list.
         var elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
 
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
@@ -421,10 +425,10 @@ var ScatterBase = mark.Mark.extend({
                        ((selected.length === 0) ? null : selected),
                        {updated_view: this});
         this.touch();
-        if(!d3.event) {
-            d3.event = window.event;
+        var e = d3.getEvent();
+        if(!e) {
+            e = window.event;
         }
-        var e = d3.event;
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }
@@ -574,7 +578,7 @@ var ScatterBase = mark.Mark.extend({
         for(var key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.style(clearing_style);
+        elements.styles(clearing_style);
     },
 
     set_style_on_elements: function(style, indices) {
@@ -591,7 +595,7 @@ var ScatterBase = mark.Mark.extend({
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        elements.style(style);
+        elements.styles(style);
     },
 
     compute_view_padding: function() {
@@ -659,8 +663,8 @@ var ScatterBase = mark.Mark.extend({
         var restrict_x = this.model.get("restrict_x"),
             restrict_y = this.model.get("restrict_y");
         if (restrict_x && restrict_y) { return; }
-        if (!restrict_y) { d[0] = d3.event.x; }
-        if (!restrict_x) { d[1] = d3.event.y; }
+        if (!restrict_y) { d[0] = d3.getEvent().x; }
+        if (!restrict_x) { d[1] = d3.getEvent().y; }
 
         d3.select(dragged_node)
           .attr("transform", function() {
@@ -669,7 +673,7 @@ var ScatterBase = mark.Mark.extend({
         this.send({
             event: "drag",
             origin: {x: d.x, y: d.y},
-	        point: {
+            point: {
                 x: x_scale.invert(d[0]),
                 y: y_scale.invert(d[1])
             },
@@ -697,7 +701,7 @@ var ScatterBase = mark.Mark.extend({
     },
 
     selected_deleter: function() {
-        d3.event.stopPropagation();
+        d3.getEvent().stopPropagation();
         return;
     },
 
@@ -737,7 +741,7 @@ var ScatterBase = mark.Mark.extend({
         x.copyWithin(index, index+1, x.length);
         y.copyWithin(index, index+1, y.length);
         x = x.slice(0, x.length-1);
-        y = y.slice(0, x.length-1);
+        y = y.slice(0, y.length-1);
 
         this.model.set("x", x);
         this.model.set("y", y);

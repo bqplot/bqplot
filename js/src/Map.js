@@ -14,7 +14,8 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"), require("d3-zoom"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var mark = require("./Mark");
 var utils = require("./utils");
@@ -101,16 +102,16 @@ var Map = mark.Mark.extend({
             this.stroke_g.selectAll("path")
                 .style("stroke", this.model.get("stroke_color"));
         }
-        this.zoom = d3.behavior.zoom()
+        this.zoom = d3.zoom()
             .scaleExtent([1, 8])
             .on("zoom", function() {
-               that.zoomed(that, false);
+               that.zoomed(that);
             });
         this.parent.bg.call(this.zoom);
 
         this.parent.bg.on("dblclick.zoom", null);
         this.parent.bg.on("dblclick", function() {
-            that.zoomed(that, true);
+            that.reset_zoom(that);
         });
     },
 
@@ -122,7 +123,7 @@ var Map = mark.Mark.extend({
         if (!this.model.get("hover_highlight")) {
             return;
         }
-        var el = d3.select(d3.event.target);
+        var el = d3.select(d3.getEvent().target);
         if(this.is_hover_element(el)) {
             var data = el.data()[0];
             var idx = this.model.get("selected");
@@ -153,7 +154,7 @@ var Map = mark.Mark.extend({
         if (!this.model.get("hover_highlight")) {
             return;
         }
-        var el = d3.select(d3.event.target);
+        var el = d3.select(d3.getEvent().target);
         if(this.is_hover_element(el)) {
             var that = this;
             el.transition("mouseout_handler")
@@ -168,7 +169,7 @@ var Map = mark.Mark.extend({
     },
 
     click_handler: function() {
-        var el = d3.select(d3.event.target);
+        var el = d3.select(d3.getEvent().target);
         if(this.is_hover_element(el)) {
             var data = el.data()[0];
             var idx = this.model.get("selected");
@@ -212,21 +213,18 @@ var Map = mark.Mark.extend({
         }
     },
 
-    zoomed: function(that, reset) {
-        var t = reset ? [0, 0] : d3.event.translate;
-        var s = reset ? 1 : d3.event.scale;
+    reset_zoom: function(that) {
+        that.zoom.transform(that.parent.bg, d3.zoomIdentity);
+    },
+
+    zoomed: function(that) {
+        var tr = d3.getEvent().transform;
         var h = that.height / 3;
-        var w = reset ? that.width : 2 * that.width;
-
-        t[0] = Math.min(that.width / 2 * (s - 1), Math.max(w / 2 * (1 - s), t[0]));
-        t[1] = Math.min(that.height / 2 * (s - 1) + this.height * s, Math.max(h / 2 * (1 - s) - that.width * s, t[1]));
-
-        that.zoom.translate(t);
-        if (reset) {
-            that.zoom.scale(s);
-        }
-        that.transformed_g.style("stroke-width", 1 / s)
-            .attr("transform", "translate(" + t + ")scale(" + s + ")");
+        var w = 2 * that.width;
+        tr.x = Math.min(that.width / 2 * (tr.k -1), Math.max(w / 2  * (1 - tr.k), tr.x));
+        tr.y = Math.min(that.height / 2 * (tr.k - 1) + this.height * tr.k, Math.max(h / 2 * (1 - tr.k) - that.width * tr.k, tr.y));
+        that.transformed_g.style("stroke-width", 1 / tr.k)
+            .attr("transform", tr);
     },
 
     create_listeners: function() {
@@ -336,7 +334,7 @@ var Map = mark.Mark.extend({
         for (var i=0; i<temp.length; i++) {
             if(select.indexOf(temp[i].id) > -1) {
                 that.highlight_g.append(function() {
-                    return nodes[0][i].cloneNode(true);
+                    return nodes.nodes()[i].cloneNode(true);
                 }).attr("id", temp[i].id)
                 .style("fill-opacity", function() {
                     if (that.validate_color(that.model.get("selected_styles").selected_fill)) {

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-geo"));
 var _ = require("underscore");
 var scalemodel = require("./ScaleModel");
 
@@ -46,7 +46,7 @@ var MercatorModel = GeoScaleModel.extend({
     },
 
     create_projection: function() {
-        this.projection = d3.geo.mercator()
+        this.projection = d3.geoMercator()
             .center(this.get("center"))
             .scale(this.get("scale_factor"))
             .rotate(this.get("rotate"));
@@ -80,7 +80,7 @@ var AlbersModel = GeoScaleModel.extend({
     },
 
     create_projection: function() {
-        this.projection = d3.geo.albers()
+        this.projection = d3.geoAlbers()
             .rotate(this.get("rotate"))
             .center(this.get("center"))
             .parallels(this.get("parallels"))
@@ -112,7 +112,7 @@ var AlbersUSAModel = GeoScaleModel.extend({
     },
 
     create_projection: function() {
-        this.projection = d3.geo.albersUsa()
+        this.projection = d3.geoAlbersUsa()
             .scale(this.get("scale_factor"))
             .translate(this.get("translate"));
         this.attribute_changed();
@@ -140,7 +140,7 @@ var EquiRectangularModel = GeoScaleModel.extend({
     },
 
     create_projection: function() {
-        this.projection = d3.geo.equirectangular()
+        this.projection = d3.geoEquirectangular()
             .center(this.get("center"))
             .scale(this.get("scale_factor"));
         this.attribute_changed();
@@ -172,7 +172,7 @@ var OrthographicModel = GeoScaleModel.extend({
     },
 
     create_projection: function() {
-        this.projection = d3.geo.orthographic()
+        this.projection = d3.geoOrthographic()
             .center(this.get("center"))
             .scale(this.get("scale_factor"))
             .clipAngle(this.get("clip_angle"))
@@ -206,7 +206,7 @@ var GnomonicModel = GeoScaleModel.extend({
     },
 
     create_projection: function() {
-        this.projection = d3.geo.gnomonic()
+        this.projection = d3.geoGnomonic()
             .clipAngle(this.get("clip_angle"))
             .scale(this.get("scale_factor"))
             .precision(this.get("precision"));
@@ -239,7 +239,7 @@ var StereographicModel = GeoScaleModel.extend({
     },
 
     create_projection: function() {
-        this.projection = d3.geo.stereographic()
+        this.projection = d3.geoStereographic()
             .scale(this.get("scale_factor"))
             .rotate(this.get("rotate"))
             .clipAngle(this.get("clip_angle"))

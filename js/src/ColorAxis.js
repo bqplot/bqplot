@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-axis"), require("d3-scale"), require("d3-selection"),
+                       require("d3-selection-multi"));
 var _ = require("underscore");
 var utils = require("./utils");
 var axis = require("./Axis");
@@ -70,6 +71,18 @@ var ColorBar = axis.Axis.extend({
     update_display: function() {
         this.side = this.model.get("side");
         this.vertical = this.model.get("orientation") === "vertical";
+        if(this.vertical) {
+            this.axis = this.side === "right" ? d3.axisRight(this.axis_scale.scale)
+                                              : d3.axisLeft(this.axis_scale.scale);
+        }
+        else {
+            this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale)
+                                            : d3.axisBottom(this.axis_scale.scale);
+        }
+        this.g_axisline.remove();
+        this.g_axisline = this.d3el.select("#colorBarG" + this.cid)
+            .append("g")
+            .attr("class", "axis");
         this.rescale_axis();
         this.d3el.select("#colorBarG" + this.cid)
             .attr("transform", this.get_colorbar_transform());
@@ -91,12 +104,12 @@ var ColorBar = axis.Axis.extend({
             that.axis_scale = view;
             // TODO: eventually removes what follows
             if(that.axis_scale.model.type === "date_color_linear") {
-                that.axis_line_scale = d3.time.scale().nice();
+                that.axis_line_scale = d3.scaleTime().nice();
             } else if(that.axis_scale.model.type === "ordinal") {
-                that.axis_line_scale = d3.scale.ordinal();
+                that.axis_line_scale = d3.scaleBand();
                 that.ordinal = true;
             } else {
-                that.axis_line_scale = d3.scale.linear();
+                that.axis_line_scale = d3.scaleLinear();
             }
         });
     },
@@ -113,9 +126,9 @@ var ColorBar = axis.Axis.extend({
                 .append("tspan")
                 .attr("id", "text_elem")
                 .attr("dy", "0.5ex")
-                .text(this.model.get("label"))
                 .attr("class", "axislabel")
-                .style("text-anchor", this.vertical ? "middle" : "end");
+                .style("text-anchor", this.vertical ? "middle" : "end")
+                .text(this.model.get("label"));
         }
         var colorBar = this.d3el.append("g")
             .attr("id","colorBarG" + this.cid);
@@ -126,8 +139,15 @@ var ColorBar = axis.Axis.extend({
         this.g_axisline = colorBar.append("g")
             .attr("class", "axis");
 
-        this.axis = d3.svg.axis()
-            .tickFormat(this.tick_format);
+        if(this.vertical) {
+            this.axis = this.side === "right" ? d3.axisRight(this.axis_scale.scale)
+                                              : d3.axisLeft(this.axis_scale.scale);
+        }
+        else {
+            this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale)
+                                            : d3.axisBottom(this.axis_scale.scale);
+        }
+        this.axis = this.axis.tickFormat(this.tick_format);
         this.redraw_axisline();
     },
 
@@ -150,12 +170,13 @@ var ColorBar = axis.Axis.extend({
                 .selectAll("rect")
                 .data(this.colors);
 
-            rects.enter()
+            rects = rects.enter()
                 .append("rect")
                 .attr("y", 0)
                 .attr("height", this.bar_height)
                 .attr("width", bar_width)
-                .style("fill", function(d) { return d; });
+                .style("fill", function(d) { return d; })
+                .merge(rects);
 
             if(this.vertical) {
                 rects.attr("x", function(d, i) {
@@ -171,7 +192,7 @@ var ColorBar = axis.Axis.extend({
                 .attr("class", "g-defs")
                 .append("defs")
                 .append("linearGradient")
-                .attr({
+                .attrs({
                     id : "colorBarGradient" + this.cid,
                     x1 : "0%",
                     y1 : "0%",
@@ -182,7 +203,7 @@ var ColorBar = axis.Axis.extend({
                 .data(this.colors)
                 .enter()
                 .append("stop")
-                .attr({
+                .attrs({
                     "offset": function(d,i) {
                         return colorSpacing * (i) + "%";
                     },
@@ -193,7 +214,7 @@ var ColorBar = axis.Axis.extend({
             colorBar.append("g")
                 .attr("class", "g-rect axis")
                 .append("rect")
-                .attr({
+                .attrs({
                     "width": this.get_color_bar_width(),
                     "height": this.bar_height,
                     x: (this.vertical) ? -(this.height - 2 * this.x_offset) : 0,
@@ -242,7 +263,7 @@ var ColorBar = axis.Axis.extend({
         var range = (this.vertical) ?
             [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
         if(this.ordinal) {
-            this.axis_line_scale.rangeRoundBands(range, 0.05);
+            this.axis_line_scale.rangeRound(range).padding(0.05);
         } else {
             var mid = this.axis_scale.model.mid;
             if (mid === undefined || mid === null) {
@@ -313,8 +334,7 @@ var ColorBar = axis.Axis.extend({
             // array to a three element one, the range of the axis has to
             // be changed accordingly.
             this.set_axisline_scale_range();
-            this.axis.orient(this.side)
-                .scale(this.axis_line_scale);
+            this.axis.scale(this.axis_line_scale);
             this.set_tick_values();
 
             var transform;

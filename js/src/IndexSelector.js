@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"));
 var _ = require("underscore");
 var baseselector = require("./Selector");
 
@@ -84,7 +84,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         var mouse_pos = d3.mouse(this.background.node());
         var xpixel = mouse_pos[0];
         //update the index vertical line
-        this.line.attr({x1: xpixel, x2: xpixel});
+        this.line.attr("x1", xpixel).attr("x2", xpixel);
 
         this.set_selected("selected", [this.invert_pixel(xpixel)]);
         _.each(this.mark_views, function(mark_view) {
@@ -101,7 +101,9 @@ var IndexSelector = baseselector.BaseXSelector.extend({
     reset: function() {
         this.active = false;
         if(this.line !== undefined && this.line !== null) {
-            this.line.attr({x1: 0, x2: 0, visibility: "hidden"});
+            this.line.attr("x1", 0)
+                     .attr("x2", 0)
+                     .attr("visibility", "hidden");
         }
 
         if(this.background !== undefined && this.background !== null) {
@@ -139,7 +141,9 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         } else {
             var pixel = this.scale.scale(selected[0]);
             if(this.line !== undefined && this.line !== null) {
-                this.line.attr({x1: pixel, x2: pixel, visibility: "visible"});
+                this.line.attr("x1", 0)
+                         .attr("x2", 0)
+                         .attr("visibility", "visible");
             }
             //the selected may be called before the index selector is
             //active for the first time.

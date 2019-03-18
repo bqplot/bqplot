@@ -15,7 +15,8 @@
 
 var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var interaction = require("./Interaction");
 
 // TODO avoid code duplication for 'x' and 'y'
@@ -26,7 +27,7 @@ var PanZoom = interaction.Interaction.extend({
         PanZoom.__super__.render.apply(this);
         var that = this;
         this.d3el
-          .style({"cursor": "move"})
+          .style("cursor", "move")
           .on("mousedown", function() { that.mousedown(); })
           .on("mousemove", function() { that.mousemove(); })
           .on("mouseup", function() { that.mouseup(); })
@@ -152,9 +153,9 @@ var PanZoom = interaction.Interaction.extend({
 
     mousewheel: function() {
         if (this.model.get("allow_zoom")) {
-            d3.event.preventDefault();
+            d3.getEvent().preventDefault();
             // With Firefox, wheelDelta is undefined.
-            var delta = d3.event.wheelDelta || d3.event.detail * (-40);
+            var delta = d3.getEvent().wheelDelta || d3.getEvent().detail * (-40);
             var mouse_pos = d3.mouse(this.el);
             if (delta) {
                 if (delta > 0) {

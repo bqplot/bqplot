@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
 var utils = require("./utils");
 var mark = require("./Mark");
 
@@ -177,7 +177,7 @@ var Hist = mark.Mark.extend({
             y_scale = this.scales.count;
         this.d3el.selectAll(".bargroup")
             .attr("transform", function(d) {
-              return "translate(" + x_scale.scale(d.x) +
+              return "translate(" + x_scale.scale(d.x0) +
                               "," + y_scale.scale(d.y) + ")";
             });
         var bar_width = this.calculate_bar_width();
@@ -209,6 +209,8 @@ var Hist = mark.Mark.extend({
         var bar_groups = this.d3el.selectAll(".bargroup")
             .data(this.model.mark_data);
 
+        bar_groups.exit().remove();
+
         var bars_added = bar_groups.enter()
           .append("g")
           .attr("class","bargroup");
@@ -220,8 +222,10 @@ var Hist = mark.Mark.extend({
           .attr("width", 0)
           .attr("height", 0);
 
+        bar_groups = bars_added.merge(bar_groups);
+
         bar_groups.attr("transform", function(d) {
-              return "translate(" + x_scale.scale(d.x) + "," +
+              return "translate(" + x_scale.scale(d.x0) + "," +
                                     y_scale.scale(d.y) + ")";
           });
 
@@ -240,7 +244,6 @@ var Hist = mark.Mark.extend({
               return y_scale.scale(0) - y_scale.scale(d.y);
           });
 
-        bar_groups.exit().remove();
 
         //bin_pixels contains the pixel values of the start points of each
         //of the bins and the end point of the last bin.
@@ -249,7 +252,7 @@ var Hist = mark.Mark.extend({
         });
         // pixel coords contains the [x0, x1] and [y0, y1] of each bin
         this.pixel_coords = this.model.mark_data.map(function(d) {
-            var x = x_scale.scale(d.x);
+            var x = x_scale.scale(d.x0);
             return [[x, x+bar_width], [0, d.y].map(y_scale.scale)];
         });
         this.update_stroke_and_opacities();
@@ -330,7 +333,7 @@ var Hist = mark.Mark.extend({
 
         var that = this;
         var rect_dim = inter_y_disp * 0.8;
-        this.legend_el.enter()
+        var new_legend = this.legend_el.enter()
           .append("g")
             .attr("class", "legend" + this.uuid)
             .attr("transform", function(d, i) {
@@ -344,19 +347,18 @@ var Hist = mark.Mark.extend({
             }, this))
             .on("click", _.bind(function() {
                this.event_dispatcher("legend_clicked");
-            }, this))
-          .append("rect")
+            }, this));
+
+        new_legend.append("rect")
             .style("fill", function(d, i) {
                 return that.get_colors(i);
             })
-            .attr({
-                x: 0,
-                y: 0,
-                width: rect_dim,
-                height: rect_dim
-            });
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", rect_dim)
+            .attr("height", rect_dim);
 
-        this.legend_el.append("text")
+        new_legend.append("text")
           .attr("class","legendtext")
           .attr("x", rect_dim * 1.2)
           .attr("y", rect_dim / 2)
@@ -368,6 +370,8 @@ var Hist = mark.Mark.extend({
               return that.get_colors(i);
           });
 
+        new_legend.merge(this.legend_el);
+        
         var max_length = d3.max(this.model.get("labels"), function(d) {
             return d.length;
         });

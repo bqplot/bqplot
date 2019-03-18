@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
 var _ = require("underscore");
 var mark = require("./Mark");
 
@@ -251,7 +251,7 @@ var OHLC = mark.Mark.extend({
             this.d3el.selectAll(".stick").attr( "transform", function(d, i) {
                 return "translate(" + ((x_scale.scale(that.model.mark_data[i][0]) !== undefined ?
                                         x_scale.scale(that.model.mark_data[i][0]) : x_max) +
-                                        x_scale.scale.rangeBand()/2) + "," +
+                                        x_scale.scale.bandwidth()/2) + "," +
                                       (y_scale.scale(d.y[y_index]) + y_scale.offset) + ")";
             });
         } else {
@@ -352,7 +352,7 @@ var OHLC = mark.Mark.extend({
             offset_in_x_units = data_point + min_x_difference;
 
             if(x_scale.model.type === "ordinal") {
-                scaled_mark_widths[i] = x_scale.scale.rangeBand() * 0.75;
+                scaled_mark_widths[i] = x_scale.scale.bandwidth() * 0.75;
             } else {
                 scaled_mark_widths[i] = (x_scale.scale(offset_in_x_units) -
                                          x_scale.scale(data_point)) *

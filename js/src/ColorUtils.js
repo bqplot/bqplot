@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
 var _ = require("underscore");
 var colorbrewer = require("./colorbrewer");
 var utils = require("./utils");
@@ -58,12 +58,12 @@ var get_linear_scale = function(scheme) {
     var color_index = get_max_index(color_set).toString();
 
     var colors = color_set[color_index];
-    var scale = d3.scale.linear().range(colors);
+    var scale = d3.scaleLinear().range(colors);
     return scale;
 };
 
 var get_ordinal_scale = function(scheme, num_steps) {
-    var scale = d3.scale.ordinal();
+    var scale = d3.scaleOrdinal();
     scale.range(this.cycle_colors_from_scheme(scheme, num_steps));
     return scale;
 };

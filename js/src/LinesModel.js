@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"), require("d3-array"));
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
-var serialize = require('./serialize')
-var utils = require('./utils')
+var serialize = require('./serialize');
+var utils = require('./utils');
 
 var LinesModel = markmodel.MarkModel.extend({
 
@@ -33,8 +33,8 @@ var LinesModel = markmodel.MarkModel.extend({
                 y: { orientation: "vertical", dimension: "y" },
                 color: { dimension: "color" }
             },
-            colors: d3.scale.category10().range(),
-            fill_colors: d3.scale.category10().range(),
+            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
+            fill_colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
             stroke_width: 2.0,
             labels_visibility: "none",
             curves_subset: [],
@@ -207,8 +207,8 @@ var FlexLineModel = LinesModel.extend({
                 y: { orientation: "vertical", dimension: "y" },
                 color: { dimension: "color" }
             },
-            colors: d3.scale.category10().range(),
-            fill_colors: d3.scale.category10().range(),
+            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
+            fill_colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
             stroke_width: 2.0,
             labels_visibility: "none",
             curves_subset: [],

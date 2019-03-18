@@ -14,7 +14,8 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"),
+                           require("d3-selection-multi"), require("d3-time"), require("d3-time-format"));
 var _ = require("underscore");
 var utils = require("./utils");
 
@@ -29,7 +30,7 @@ var UNITS_ARRAY = ["em", "ex", "px"];
 var Axis = widgets.WidgetView.extend({
 
     initialize : function() {
-        this.setElement(document.createElementNS(d3.ns.prefix.svg, "g"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
         Axis.__super__.initialize.apply(this, arguments);
     },
@@ -96,15 +97,9 @@ var Axis = widgets.WidgetView.extend({
     },
 
     update_display: function() {
-        var side = this.model.get("side");
-        var is_vertical = this.model.get("orientation") === "vertical";
-
-        if(is_vertical) {
-            this.axis.orient(side === "right" ? "right" : "left");
-        } else {
-            this.axis.orient(side === "top" ? "top" : "bottom");
-        }
-        this.rescale_axis();
+        this.g_axisline.remove();
+        this.set_scales_range();
+        this.append_axis();
     },
 
     set_tick_values: function(animate) {
@@ -194,7 +189,7 @@ var Axis = widgets.WidgetView.extend({
         // Applies current tick styling to all displayed ticks
 
         this.g_axisline.selectAll(".tick text")
-                .style(this.model.get("tick_style"))
+                .styles(this.model.get("tick_style"))
                 .attr("transform", this.get_tick_transforms());
     },
 
@@ -252,7 +247,7 @@ var Axis = widgets.WidgetView.extend({
         if(this.axis_scale.model.type === "date" ||
            this.axis_scale.model.type === "date_color_linear") {
             if(this.model.get("tick_format")) {
-                return d3.time.format(this.model.get("tick_format"));
+                return d3.timeFormat(this.model.get("tick_format"));
             } else {
                 return this.guess_tick_format();
             }
@@ -263,7 +258,7 @@ var Axis = widgets.WidgetView.extend({
                 //check the instance of the elements in the domain and
                 //apply the format depending on that.
                 if(utils.is_valid_time_format(tick_format)) {
-                    return d3.time.format(tick_format);
+                    return d3.timeFormat(tick_format);
                 } else {
                     return d3.format(tick_format);
                 }
@@ -296,11 +291,11 @@ var Axis = widgets.WidgetView.extend({
         var side = this.model.get("side");
 
         if (is_vertical) {
-            this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                .orient(side === "right" ? "right" : "left");
+            this.axis = side === "right" ? d3.axisRight(this.axis_scale.scale)
+                                         : d3.axisLeft(this.axis_scale.scale);
         } else {
-            this.axis = d3.svg.axis().scale(this.axis_scale.scale)
-                .orient(side === "top" ? "top" : "bottom");
+            this.axis = side === "top" ? d3.axisTop(this.axis_scale.scale)
+                                       : d3.axisBottom(this.axis_scale.scale);
         }
     },
 
@@ -317,8 +312,8 @@ var Axis = widgets.WidgetView.extend({
         // Create element for axis label
         this.g_axisline.append("text")
             .attr("class", "axislabel")
-            .attr(this.get_label_attributes())
-            .style(this.get_text_styling())
+            .attrs(this.get_label_attributes())
+            .styles(this.get_text_styling())
             .text(this.model.get("label"));
 
         // Apply custom settings
@@ -493,8 +488,8 @@ var Axis = widgets.WidgetView.extend({
 
     update_label_location: function() {
         this.g_axisline.select("text.axislabel")
-            .attr(this.get_label_attributes())
-            .style(this.get_text_styling());
+            .attrs(this.get_label_attributes())
+            .styles(this.get_text_styling());
     },
 
     update_label_offset: function(model, offset) {
@@ -562,7 +557,7 @@ var Axis = widgets.WidgetView.extend({
         }
 
         if (grid_type !== "none") {
-            this.axis.innerTickSize(tickSize).outerTickSize(6);
+            this.axis.tickSizeInner(tickSize).tickSizeOuter(6);
         } else {
             this.axis.tickSize(6);
         }
@@ -623,8 +618,8 @@ var Axis = widgets.WidgetView.extend({
         this.g_axisline.attr("transform", this.get_axis_transform());
         this.g_axisline.call(this.axis);
         this.g_axisline.select("text.axislabel")
-            .attr(this.get_label_attributes())
-            .style(this.get_text_styling());
+            .attrs(this.get_label_attributes())
+            .styles(this.get_text_styling());
         // TODO: what follows is currently part of redraw_axisline
         this.set_tick_values();
         this.update_grid_lines();
@@ -813,38 +808,71 @@ var Axis = widgets.WidgetView.extend({
         ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
         // diff is the difference between ticks in milliseconds
         var diff = Math.abs(ticks[1] - ticks[0]);
-        var div = 1000;
 
-        if(Math.floor(diff / div) === 0) {
-            //diff is less than a second
-            return [[".%L", function(d) { return d.getMilliseconds(); }],
-            [":%S", function(d) { return d.getSeconds(); }],
-            ["%I:%M", function(d) { return true; }]];
-        } else if (Math.floor(diff / (div *= 60)) === 0) {
-            //diff is less than a minute
-             return [[":%S", function(d) { return d.getSeconds(); }],
-             ["%I:%M", function(d) { return true; }]];
-        } else if (Math.floor(diff / (div *= 60)) === 0) {
-            // diff is less than an hour
-            return [["%I:%M", function(d) { return d.getMinutes(); }],
-            ["%I %p", function(d) { return true; }]];
-        } else if (Math.floor(diff / (div *= 24)) === 0) {
-            //diff is less than a day
-             return [["%I %p", function(d) { return d.getHours(); }],
-             ["%b %d", function(d) { return true; }]];
-        } else if (Math.floor(diff / (div *= 27)) === 0) {
-            //diff is less than a month
-            return [["%b %d", function(d) { return d.getDate() !== 1; }],
-                    ["%b %Y", function(d) { return true; }]];
-        } else if (Math.floor(diff / (div *= 12)) === 0) {
-            //diff is less than a year
-            return [["%b %d", function(d) { return d.getDate() !== 1; }],
-                    ["%b %Y", function() { return true;}]];
-        } else {
-            //diff is more than a year
-            return  [["%b %d", function(d) { return d.getDate() !== 1; }],
-                     ["%b %Y", function(d) { return d.getMonth();}],
-                     ["%Y", function() { return true; }]];
+        var format_millisecond = d3.timeFormat(".%L"),
+            format_second = d3.timeFormat(":%S"),
+            format_minute = d3.timeFormat("%I:%M"),
+            format_hour = d3.timeFormat("%I %p"),
+            format_day = d3.timeFormat("%b %d"),
+            format_month = d3.timeFormat("%b %Y"),
+            format_year = d3.timeFormat("%Y");
+
+        return function(date) {
+            var div = 1000;
+            if(Math.floor(diff / div) === 0) {
+                //diff is less than a second
+                if(d3.timeSecond(date) < date) {
+                    return format_millisecond(date);
+                } else if(d3.timeMinute(date) < date) {
+                    return format_second(date);
+                } else {
+                    return format_minute(date);
+                }
+            } else if (Math.floor(diff / (div *= 60)) === 0) {
+                //diff is less than a minute
+                if(d3.timeMinute(date) < date) {
+                    return format_second(date);
+                } else {
+                    return format_minute(date);
+                }
+            } else if (Math.floor(diff / (div *= 60)) === 0) {
+                // diff is less than an hour
+                if(d3.timeHour(date) < date) {
+                    return format_minute(date);
+                } else {
+                    return format_hour(date);
+                }
+            } else if (Math.floor(diff / (div *= 24)) === 0) {
+                //diff is less than a day
+                if(d3.timeDay(date) < date) {
+                    return format_hour(date);
+                } else {
+                    return format_day(date);
+                }
+            } else if (Math.floor(diff / (div *= 27)) === 0) {
+                //diff is less than a month
+                if(d3.timeMonth(date) < date) {
+                    return format_day(date);
+                } else {
+                    return format_month(date);
+                }
+            } else if (Math.floor(diff / (div *= 12)) === 0) {
+                //diff is less than a year
+                if(d3.timeMonth(date) < date) {
+                    return format_day(date);
+                } else {
+                    return format_month(date);
+                }
+            } else {
+                //diff is more than a year
+                if(d3.timeMonth(date) < date) {
+                    return format_day(date);
+                } else if (d3.timeYear(date) < date) {
+                    return format_month(date);
+                } else {
+                    return format_year(date);
+                }
+            }
         }
     },
 
@@ -871,7 +899,7 @@ var Axis = widgets.WidgetView.extend({
             return this.linear_sc_format(ticks);
         } else if (this.axis_scale.model.type == "date" ||
                    this.axis_scale.model.type == "date_color_linear") {
-            return d3.time.format.multi(this.date_sc_format(ticks));
+            return this.date_sc_format(ticks);
         } else if (this.axis_scale.model.type == "log") {
             return this.log_sc_format(ticks);
         }

@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
@@ -150,7 +151,7 @@ var GridHeatMap = mark.Mark.extend({
         var idx = this.model.get("selected") ? utils.deepCopy(this.model.get("selected")) : [];
         var selected = utils.deepCopy(this._cell_nums_from_indices(idx));
         var elem_index = selected.indexOf(index);
-        var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
         //TODO: This is a shim for when accelKey is supported by chrome.
         // index of slice i. Checking if it is already present in the
         // list
@@ -165,7 +166,7 @@ var GridHeatMap = mark.Mark.extend({
             }
             idx.push([row, column]);
             selected.push(that._cell_nums_from_indices([[row, column]])[0]);
-            if(d3.event.shiftKey) {
+            if(d3.getEvent().shiftKey) {
                 //If shift is pressed and the element is already
                 //selected, do not do anything
                 if(elem_index > -1) {
@@ -196,10 +197,10 @@ var GridHeatMap = mark.Mark.extend({
             ((idx.length === 0) ? null : idx),
             {updated_view: this});
         this.touch();
-        if(!d3.event) {
-            d3.event = window.event;
+        var e = d3.getEvent();
+        if(!e) {
+            e = window.event;
         }
-        var e = d3.event;
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }
@@ -228,7 +229,7 @@ var GridHeatMap = mark.Mark.extend({
             return;
         }
         elements = (!elements || elements.length === 0) ? this._filter_cells_by_index(indices) : elements;
-        elements.style(style);
+        elements.styles(style);
     },
 
     set_default_style: function(indices, elements) {
@@ -279,7 +280,7 @@ var GridHeatMap = mark.Mark.extend({
         for(var key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.style(clearing_style);
+        elements.styles(clearing_style);
     },
 
     _filter_cells_by_cell_num: function(cell_numbers) {
@@ -434,9 +435,9 @@ var GridHeatMap = mark.Mark.extend({
 
         this.display_rows = this.d3el.selectAll(".heatmaprow")
             .data(_.range(num_rows));
-        this.display_rows.enter().append("g")
-            .attr("class", "heatmaprow");
-        this.display_rows
+        this.display_rows = this.display_rows.enter().append("g")
+            .attr("class", "heatmaprow")
+            .merge(this.display_rows)
             .attr("transform", function(d) {
                 return "translate(0, " + row_plot_data.start[d] + ")";
             });
@@ -453,19 +454,12 @@ var GridHeatMap = mark.Mark.extend({
         this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
             return data_array[i];
         });
-        this.display_cells.enter()
+        this.display_cells = this.display_cells.enter()
             .append("rect")
             .attr("class", "heatmapcell")
-            .on("click", _.bind(function() {
-                this.event_dispatcher("element_clicked");
-            }, this));
-
-        this.display_cells
-            .attr({
-                "x": function(d, i) {
-                    return column_plot_data.start[i];
-                }, "y": 0
-            })
+            .merge(this.display_cells)
+            .attr("x", function(d, i) {return column_plot_data.start[i]; })
+            .attr("y", 0)
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height",function(d) { return row_plot_data.widths[d.row_num]; })
 
@@ -503,7 +497,7 @@ var GridHeatMap = mark.Mark.extend({
         data = Array.from(data); // copy to Array
         if(mode === "middle") {
             start_points = data.map(function(d) { return scale.scale(d); });
-            widths = data.map(function(d) { return scale.scale.rangeBand(); });
+            widths = data.map(function(d) { return scale.scale.bandwidth(); });
 
             return {"start": start_points, "widths": widths};
         }

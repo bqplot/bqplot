@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"));
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize')

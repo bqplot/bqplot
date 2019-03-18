@@ -14,13 +14,13 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"));
 var _ = require("underscore");
 
 var Interaction = widgets.WidgetView.extend({
 
     initialize : function() {
-        this.setElement(document.createElementNS(d3.ns.prefix.svg, "rect"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "rect"));
         this.d3el = d3.select(this.el);
         Interaction.__super__.initialize.apply(this, arguments);
     },

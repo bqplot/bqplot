@@ -14,7 +14,6 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
 

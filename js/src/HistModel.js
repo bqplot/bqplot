@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize')
 
@@ -32,7 +32,7 @@ var HistModel = markmodel.MarkModel.extend({
             },
             bins: 10,
             midpoints: [],
-            colors: d3.scale.category10().range(),
+            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
             stroke: null,
             opacities: [],
             normalized: false
@@ -89,7 +89,7 @@ var HistModel = markmodel.MarkModel.extend({
                 return 0.5 * (d + that.x_bins[i - 1]);
             }).slice(1);
 
-            this.mark_data = d3.layout.histogram().bins(this.x_bins).value(function(d) {
+            this.mark_data = d3.histogram().thresholds(this.x_bins).value(function(d) {
                 return d.value;
             })(x_data_ind);
             //adding index attribute to mark_data of the model
@@ -112,7 +112,7 @@ var HistModel = markmodel.MarkModel.extend({
         if (this.get("normalized")) {
             var x_width = 1;
             if(this.mark_data.length > 0) {
-                x_width = this.mark_data[0].dx;
+                x_width = this.mark_data[0].x1 - this.mark_data[0].x0;
             }
 
             var sum = this.count.reduce(function(a, b) { return a + b; }, 0);

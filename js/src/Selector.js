@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-selection"));
 var _ = require("underscore");
 var interaction = require("./Interaction");
 var convert_dates = require('./utils').convert_dates;
@@ -21,7 +21,7 @@ var convert_dates = require('./utils').convert_dates;
 var BaseSelector = interaction.Interaction.extend({
 
     initialize: function() {
-        this.setElement(document.createElementNS(d3.ns.prefix.svg, "g"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
         interaction.Interaction.__super__.initialize.apply(this, arguments);
     },

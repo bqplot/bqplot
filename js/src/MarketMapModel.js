@@ -15,7 +15,7 @@
 
 var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-scale"));
 var basemodel = require("./BaseModel");
 var serialize = require('./serialize');
 var semver_range = "^" + require("../package.json").version;
@@ -48,7 +48,7 @@ var MarketMapModel = basemodel.BaseModel.extend({
             rows: 0,
 
             row_groups: 1,
-            colors: d3.scale.category20().range(),
+            colors: d3.scaleOrdinal(d3.schemeCategory20).range(),
             scales: {},
             axes: [],
             color: [],

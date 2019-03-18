@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-scale"));
 var scale = require("./Scale");
 
 var LinearScale = scale.Scale.extend({
 
     render: function() {
-        this.scale = d3.scale.linear();
+        this.scale = d3.scaleLinear();
         if(this.model.domain.length > 0)
             this.scale.domain(this.model.domain);
         this.offset = 0;

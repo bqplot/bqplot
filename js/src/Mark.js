@@ -14,13 +14,14 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 
 var Mark = widgets.WidgetView.extend({
 
     initialize : function() {
-        this.setElement(document.createElementNS(d3.ns.prefix.svg, "g"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
         Mark.__super__.initialize.apply(this, arguments);
     },
@@ -257,7 +258,7 @@ var Mark = widgets.WidgetView.extend({
             } else {
                 this.tooltip_div.style("pointer-events", "all");
             }
-            var transition = this.tooltip_div.style(this.model.get("tooltip_style"))
+            var transition = this.tooltip_div.styles(this.model.get("tooltip_style"))
                 .style("display", null);
             this.parent.popper.enableEventListeners();
             this.move_tooltip();
@@ -266,8 +267,8 @@ var Mark = widgets.WidgetView.extend({
 
     move_tooltip: function(mouse_events) {
         if(this.tooltip_view) {
-            this.parent.popper_reference.x = d3.event.clientX;
-            this.parent.popper_reference.y = d3.event.clientY;
+            this.parent.popper_reference.x = d3.getEvent().clientX;
+            this.parent.popper_reference.y = d3.getEvent().clientY;
             this.parent.popper.scheduleUpdate();
         }
     },
@@ -285,7 +286,7 @@ var Mark = widgets.WidgetView.extend({
         //the argument controls pointer interactions with the tooltip. a
         //true value enables pointer interactions while a false value
         //disables them
-        var el = d3.select(d3.event.target);
+        var el = d3.select(d3.getEvent().target);
         if(this.is_hover_element(el)) {
             var data = el.data()[0];
             var clicked_data = this.model.get_data_dict(data, data.index);
@@ -331,7 +332,7 @@ var Mark = widgets.WidgetView.extend({
             var data = null;
             if(event_data.hit_test) {
                 //do a hit test to check valid element
-                var el = d3.select(d3.event.target);
+                var el = d3.select(d3.getEvent().target);
                 if(this.is_hover_element(el)) {
                     data = el.data()[0];
                     if(event_data.lookup_data) {
@@ -371,7 +372,7 @@ var Mark = widgets.WidgetView.extend({
 
     mouse_over: function() {
         if(this.model.get("enable_hover")) {
-            var el = d3.select(d3.event.target);
+            var el = d3.select(d3.getEvent().target);
             if(this.is_hover_element(el)) {
                 var data = el.data()[0];
                 //make tooltip visible
@@ -388,7 +389,7 @@ var Mark = widgets.WidgetView.extend({
 
     mouse_out: function() {
         if(this.model.get("enable_hover")) {
-            var el = d3.select(d3.event.target);
+            var el = d3.select(d3.getEvent().target);
             if(this.is_hover_element(el)) {
                 var data = el.data()[0];
                 var hovered_data = this.model.get_data_dict(data, data.index);
@@ -404,7 +405,7 @@ var Mark = widgets.WidgetView.extend({
 
     mouse_move: function() {
         if(this.model.get("enable_hover") &&
-            this.is_hover_element(d3.select(d3.event.target))) {
+            this.is_hover_element(d3.select(d3.getEvent().target))) {
             this.move_tooltip();
         }
     },

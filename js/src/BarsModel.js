@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize')
@@ -34,7 +34,7 @@ var BarsModel = markmodel.MarkModel.extend({
             },
             color_mode: "auto",
             type: "stacked",
-            colors: d3.scale.category10().range(),
+            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
             padding: 0.05,
             stroke: null,
             base: 0.0,
