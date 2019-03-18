@@ -15,7 +15,7 @@
 
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
-var serialize = require('./serialize')
+var serialize = require('./serialize');
 
 var ScatterBaseModel = markmodel.MarkModel.extend({
 

@@ -16,6 +16,7 @@
 var widgets = require("@jupyter-widgets/base");
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
+var serialize = require('./serialize');
 
 var ImageModel = markmodel.MarkModel.extend({
 
@@ -74,6 +75,8 @@ var ImageModel = markmodel.MarkModel.extend({
 }, {
     serializers: _.extend({
         image: { deserialize: widgets.unpack_models },
+        x: serialize.array_or_json,
+        y: serialize.array_or_json,
     }, markmodel.MarkModel.serializers)
 });
 
