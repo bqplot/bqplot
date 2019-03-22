@@ -367,7 +367,7 @@ var Graph = mark.Mark.extend({
 
     process_interactions: function() {
         Graph.__super__.process_interactions.apply(this);
-        var interactions = this.model.get("interactions");
+        const interactions = this.model.get("interactions");
 
         if(interactions.click !== undefined &&
            interactions.click !== null) {
