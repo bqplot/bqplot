@@ -430,7 +430,7 @@ var Pie = mark.Mark.extend({
         for(var key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.style(clearing_style);
+        elements.styles(clearing_style);
     },
 
     set_style_on_elements: function(style, indices) {
@@ -443,7 +443,7 @@ var Pie = mark.Mark.extend({
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        elements.style(style);
+        elements.styles(style);
     },
 
     set_default_style: function(indices) {
