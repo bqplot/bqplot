@@ -163,8 +163,6 @@ var Bars = mark.Mark.extend({
                 this.event_listeners.parent_clicked = this.reset_selection;
                 this.event_listeners.element_clicked = this.bar_click_handler;
             }
-        } else {
-            this.reset_click();
         }
 
     },

@@ -332,8 +332,6 @@ var ScatterBase = mark.Mark.extend({
                     this.event_listeners.element_clicked = this.scatter_click_handler;
                     break;
             }
-        } else {
-            this.reset_click();
         }
     },
 
