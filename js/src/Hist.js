@@ -15,6 +15,9 @@
 
 var _ = require("underscore");
 var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
+// Hack to fix problem with webpack providing multiple d3 objects
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+
 var utils = require("./utils");
 var mark = require("./Mark");
 
@@ -268,13 +271,13 @@ var Hist = mark.Mark.extend({
         // index of bar i. Checking if it is already present in the list.
         var elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
             // pressed, remove the element from the list
             selected.splice(elem_index, 1);
         } else {
-            if(d3.event.shiftKey) {
+            if(d3.getEvent().shiftKey) {
                 //If shift is pressed and the element is already
                 //selected, do not do anything
                 if(elem_index > -1) {
@@ -314,9 +317,6 @@ var Hist = mark.Mark.extend({
                                      this.calc_data_indices(selected)),
                                     {updated_view: this});
         this.touch();
-        if(!d3.event) {
-            d3.event = window.event;
-        }
         var e = d3.event;
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
@@ -371,7 +371,7 @@ var Hist = mark.Mark.extend({
           });
 
         new_legend.merge(this.legend_el);
-        
+
         var max_length = d3.max(this.model.get("labels"), function(d) {
             return d.length;
         });

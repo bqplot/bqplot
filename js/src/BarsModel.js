@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-scale-chromatic"));
 var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize')
@@ -21,6 +21,7 @@ var serialize = require('./serialize')
 var BarsModel = markmodel.MarkModel.extend({
 
     defaults: function() {
+        console.log(d3.schemeCategory10, require("d3-array"), require("d3-scale"));
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
             _model_name: "BarsModel",
             _view_name: "Bars",
