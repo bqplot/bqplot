@@ -46,7 +46,6 @@ export class OHLCModel extends MarkModel {
         this.on("change:format", this.update_format, this);
         this.px = { o: -1, h: -1, l: -1, c: -1 };
         this.mark_data = [];
-        this.display_el_classes = ["stick_body"] ;
         this.update_data();
         this.update_domains();
         this.update_format();
