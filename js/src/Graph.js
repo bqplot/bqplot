@@ -510,7 +510,7 @@ var Graph = mark.Mark.extend({
         for(var key in style_dict) {
             clearing_style[key] = null;
         }
-        nodes.style(clearing_style);
+        nodes.styles(clearing_style);
     },
 
     set_style_on_elements: function(style, indices) {
@@ -527,7 +527,7 @@ var Graph = mark.Mark.extend({
         nodes = nodes.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        nodes.style(style);
+        nodes.styles(style);
     },
 
     compute_view_padding: function() {

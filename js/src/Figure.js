@@ -314,21 +314,21 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     title_style_updated: function() {
-        this.title.style(this.model.get("title_style"));
+        this.title.styles(this.model.get("title_style"));
     },
 
     background_style_updated: function() {
-        this.bg.style(this.model.get("background_style"));
+        this.bg.styles(this.model.get("background_style"));
     },
 
     legend_style_updated: function() {
         this.fig_marks.selectAll(".g_legend").selectAll(".axis").selectAll("rect")
-            .style(this.model.get("legend_style"));
+            .styles(this.model.get("legend_style"));
     },
 
     legend_text_updated: function() {
         this.fig_marks.selectAll(".g_legend").selectAll("text.legendtext")
-            .style(this.model.get("legend_text"));
+            .styles(this.model.get("legend_text"));
     },
 
     create_figure_scales: function() {

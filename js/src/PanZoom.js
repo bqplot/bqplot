@@ -79,7 +79,7 @@ var PanZoom = interaction.Interaction.extend({
     mousedown: function () {
         var scales = this.model.get("scales");
         this.active = true;
-        this.d3el.style({"cursor": "move"});
+        this.d3el.styles({"cursor": "move"});
         this.previous_pos = d3.mouse(this.el);
         // A copy of the original domains is required to avoid additional
         // drift when Paning.
@@ -159,9 +159,9 @@ var PanZoom = interaction.Interaction.extend({
             var mouse_pos = d3.mouse(this.el);
             if (delta) {
                 if (delta > 0) {
-                    this.d3el.style({"cursor": "zoom-in"});
+                    this.d3el.styles({"cursor": "zoom-in"});
                 } else {
-                    this.d3el.style({"cursor": "zoom-out"});
+                    this.d3el.styles({"cursor": "zoom-out"});
                 }
                 var scales = this.model.get("scales");
                 var that = this;
