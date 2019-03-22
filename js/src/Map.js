@@ -249,54 +249,31 @@ var Map = mark.Mark.extend({
     },
 
     process_interactions: function() {
-        var interactions = this.model.get("interactions");
-        if(_.isEmpty(interactions)) {
-            //set all the event listeners to blank functions
-            this.reset_interactions();
-        }
-        else {
-            if(interactions.click !== undefined &&
-               interactions.click !== null) {
-                if(interactions.click === "tooltip") {
-                    this.event_listeners.element_clicked = function() {
-                        return this.refresh_tooltip(true);
-                    };
-                    this.event_listeners.parent_clicked = this.hide_tooltip;
-                } else if (interactions.click === "select") {
-                    this.event_listeners.parent_clicked = this.reset_selection;
-                    this.event_listeners.element_clicked = this.click_handler;
-                }
-            } else {
-                this.reset_click();
-            }
-            if(interactions.hover !== undefined &&
-              interactions.hover !== null) {
-                if(interactions.hover === "tooltip") {
-                    this.event_listeners.mouse_over = function() {
-                        this.mouseover_handler();
-                        return this.refresh_tooltip();
-                    };
-                    this.event_listeners.mouse_move = this.move_tooltip;
-                    this.event_listeners.mouse_out = function() {
-                        this.mouseout_handler();
-                        return this.hide_tooltip();
-                    };
-                }
-            } else {
-                this.reset_hover();
-            }
-            if(interactions.legend_click !== undefined &&
-              interactions.legend_click !== null) {
-                if(interactions.legend_click === "tooltip") {
-                    this.event_listeners.legend_clicked = function() {
-                        return this.refresh_tooltip(true);
-                    };
-                    this.event_listeners.parent_clicked = this.hide_tooltip;
-                }
-            } else {
-                this.event_listeners.legend_clicked = function() {};
+        Map.__super__.process_interactions.apply(this);
+        const interactions = this.model.get("interactions");
+
+        if(interactions.click !== undefined &&
+           interactions.click !== null) {
+            if (interactions.click === "select") {
+                this.event_listeners.parent_clicked = this.reset_selection;
+                this.event_listeners.element_clicked = this.click_handler;
             }
         }
+        if(interactions.hover !== undefined &&
+          interactions.hover !== null) {
+            if(interactions.hover === "tooltip") {
+                this.event_listeners.mouse_over = function() {
+                    this.mouseover_handler();
+                    return this.refresh_tooltip();
+                };
+                this.event_listeners.mouse_move = this.move_tooltip;
+                this.event_listeners.mouse_out = function() {
+                    this.mouseout_handler();
+                    return this.hide_tooltip();
+                };
+            }
+        }
+
     },
 
     change_selected_fill: function() {
