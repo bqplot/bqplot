@@ -245,6 +245,16 @@ class Mark(Widget):
         self._legend_hover_handlers = CallbackDispatcher()
         self._element_click_handlers = CallbackDispatcher()
         self._bg_click_handlers = CallbackDispatcher()
+
+        self._name_to_handler = {
+            'hover': self._hover_handlers,
+            'click': self._click_handlers,
+            'legend_click': self._legend_click_handlers,
+            'legend_hover': self._legend_hover_handlers,
+            'element_click': self._element_click_handlers,
+            'background_click': self._bg_click_handlers
+        }
+
         self.on_msg(self._handle_custom_msgs)
 
     def on_hover(self, callback, remove=False):
@@ -266,18 +276,12 @@ class Mark(Widget):
         self._bg_click_handlers.register_callback(callback, remove=remove)
 
     def _handle_custom_msgs(self, _, content, buffers=None):
-        if content.get('event', '') == 'hover':
-            self._hover_handlers(self, content)
-        if content.get('event', '') == 'click':
-            self._click_handlers(self, content)
-        elif content.get('event', '') == 'legend_click':
-            self._legend_click_handlers(self, content)
-        elif content.get('event', '') == 'legend_hover':
-            self._legend_hover_handlers(self, content)
-        elif content.get('event', '') == 'element_click':
-            self._element_click_handlers(self, content)
-        elif content.get('event', '') == 'background_click':
-            self._bg_click_handlers(self, content)
+        try:
+            handler = self._name_to_handler[content['event']]
+        except KeyError:
+            return
+
+        handler(self, content)
 
 
 @register_mark('bqplot.Lines')
@@ -540,6 +544,12 @@ class _ScatterBase(Mark):
         self._drag_end_handlers = CallbackDispatcher()
         super(_ScatterBase, self).__init__(**kwargs)
 
+        self._name_to_handler.update({
+            'drag_start': self._drag_start_handlers,
+            'drag_end': self._drag_end_handlers,
+            'drag': self._drag_handlers
+        })
+
     def on_drag_start(self, callback, remove=False):
         self._drag_start_handlers.register_callback(callback, remove=remove)
 
@@ -548,18 +558,6 @@ class _ScatterBase(Mark):
 
     def on_drag_end(self, callback, remove=False):
         self._drag_end_handlers.register_callback(callback, remove=remove)
-
-    def _handle_custom_msgs(self, _, content, buffers=None):
-        event = content.get('event', '')
-
-        if event == 'drag_start':
-            self._drag_start_handlers(self, content)
-        elif event == 'drag':
-            self._drag_handlers(self, content)
-        elif event == 'drag_end':
-            self._drag_end_handlers(self, content)
-
-        super(_ScatterBase, self)._handle_custom_msgs(self, content)
 
 
 @register_mark('bqplot.Scatter')
