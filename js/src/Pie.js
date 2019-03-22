@@ -14,6 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
+// Hack to fix problem with webpack providing multiple d3 objects
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var mark = require("./Mark");
 var utils = require("./utils");
 var _ = require("underscore");
@@ -462,13 +464,13 @@ var Pie = mark.Mark.extend({
             // index of slice i. Checking if it is already present in the list.
         var elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
             // pressed, remove the element from the list
             selected.splice(elem_index, 1);
         } else {
-            if(d3.event.shiftKey) {
+            if(d3.getEvent().shiftKey) {
                 //If shift is pressed and the element is already
                 //selected, do not do anything
                 if(elem_index > -1) {
@@ -500,10 +502,7 @@ var Pie = mark.Mark.extend({
             ((selected.length === 0) ? null : selected),
             {updated_view: this});
         this.touch();
-        if(!d3.event) {
-            d3.event = window.event;
-        }
-        var e = d3.event;
+        var e = d3.getEvent();
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }
