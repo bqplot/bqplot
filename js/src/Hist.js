@@ -277,7 +277,7 @@ var Hist = mark.Mark.extend({
                                      this.calc_data_indices(selected)),
                                     {updated_view: this});
         this.touch();
-        var e = d3.event;
+        var e = d3.getEvent();
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }
