@@ -21,7 +21,6 @@ var serialize = require('./serialize')
 var BarsModel = markmodel.MarkModel.extend({
 
     defaults: function() {
-        console.log(d3.schemeCategory10, require("d3-array"), require("d3-scale"));
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
             _model_name: "BarsModel",
             _view_name: "Bars",
