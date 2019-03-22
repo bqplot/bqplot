@@ -265,7 +265,8 @@ var Pie = mark.Mark.extend({
             })
             .each(function(d) {
                 this._current = d;
-            });
+            }).on("click", function(d, i) {
+            return that.event_dispatcher("element_clicked", {data: d, index: i});});
 
         slices.transition("draw").duration(animation_duration)
             .attrTween("d", function(d) {
@@ -364,10 +365,6 @@ var Pie = mark.Mark.extend({
 
             polylines.exit().remove();
         }
-
-        slices.on("click", function(d, i) {
-            return that.event_dispatcher("element_clicked", {data: d, index: i});
-        });
 
         this.update_labels();
         this.update_values();
