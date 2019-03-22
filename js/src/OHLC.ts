@@ -22,6 +22,7 @@ import { OHLCModel } from './OHLCModel';
 export class OHLC extends Mark {
 
     render() {
+        this.display_el_classes = ["stick_body"] ;
         const base_creation_promise = super.render();
 
         const that = this;
