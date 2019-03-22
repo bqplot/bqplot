@@ -222,7 +222,6 @@ var Mark = widgets.WidgetView.extend({
     },
 
     apply_styles: function(style_arr) {
-        console.log("Apply styles");
         if(style_arr === undefined || style_arr == null) {
             style_arr = [this.selected_style, this.unselected_style];
         }
