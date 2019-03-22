@@ -56,8 +56,6 @@ export class MarkModel extends widgets.WidgetModel {
         // certain functions of views on that model might check the value
         // of `this.dirty` before rendering
         this.dirty = false;
-        this.display_el_classes = ["mark"]; //classes on the element which
-        //trigger the tooltip to be displayed when they are hovered over
         this.update_scales();
     }
 
@@ -126,7 +124,6 @@ export class MarkModel extends widgets.WidgetModel {
     };
 
     dirty: boolean;
-    display_el_classes: Array<string>;
     mark_data: any;
 
 }

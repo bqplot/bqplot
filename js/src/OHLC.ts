@@ -23,6 +23,7 @@ const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 export class OHLC extends Mark {
 
     render() {
+        this.display_el_classes = ["stick_body"] ;
         const base_creation_promise = super.render();
         this.selected_indices = this.model.get("selected");
         this.selected_style = this.model.get("selected_style");
