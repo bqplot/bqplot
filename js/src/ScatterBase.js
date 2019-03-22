@@ -312,61 +312,28 @@ var ScatterBase = mark.Mark.extend({
     draw_elements: function(animate, elements_added) {},
 
     process_interactions: function() {
+        ScatterBase.__super__.process_interactions.apply(this);
+
         var interactions = this.model.get("interactions");
-        if(_.isEmpty(interactions)) {
-            //set all the event listeners to blank functions
-            this.reset_interactions();
-        } else {
-            if(interactions.click !== undefined &&
-               interactions.click !== null) {
-                if(interactions.click === "tooltip") {
-                    this.event_listeners.element_clicked = function() {
-                        return this.refresh_tooltip(true);
-                    };
-                    this.event_listeners.parent_clicked = this.hide_tooltip;
-                } else if (interactions.click === "add") {
+
+        if(interactions.click !== undefined &&
+           interactions.click !== null) {
+            switch (interactions.click){
+                case "add":
                     this.event_listeners.parent_clicked = this.add_element;
                     this.event_listeners.element_clicked = function() {};
-                } else if (interactions.click === "delete") {
+                    break;
+                case "delete":
                     this.event_listeners.parent_clicked = function() {};
                     this.event_listeners.element_clicked = this.delete_element;
-                } else if (interactions.click == 'select') {
-   		            this.event_listeners.parent_clicked = this.reset_selection;
-		            this.event_listeners.element_clicked = this.scatter_click_handler;
-	        }
-            } else {
-                this.reset_click();
+                    break;
+                case "select":
+                    this.event_listeners.parent_clicked = this.reset_selection;
+                    this.event_listeners.element_clicked = this.scatter_click_handler;
+                    break;
             }
-            if(interactions.hover !== undefined &&
-              interactions.hover !== null) {
-                if(interactions.hover === "tooltip") {
-                    this.event_listeners.mouse_over = this.refresh_tooltip;
-                    this.event_listeners.mouse_move = this.move_tooltip;
-                    this.event_listeners.mouse_out = this.hide_tooltip;
-                }
-            } else {
-                this.reset_hover();
-            }
-            if(interactions.legend_click !== undefined &&
-              interactions.legend_click !== null) {
-                if(interactions.legend_click === "tooltip") {
-                    this.event_listeners.legend_clicked = function() {
-                        return this.refresh_tooltip(true);
-                    };
-                    this.event_listeners.parent_clicked = this.hide_tooltip;
-                }
-            } else {
-                this.event_listeners.legend_clicked = function() {};
-            }
-            if(interactions.legend_hover !== undefined &&
-              interactions.legend_hover !== null) {
-                if(interactions.legend_hover === "highlight_axes") {
-                    this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
-                    this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
-                }
-            } else {
-                this.reset_legend_hover();
-            }
+        } else {
+            this.reset_click();
         }
     },
 

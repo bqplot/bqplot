@@ -484,7 +484,7 @@ var Lines = mark.Mark.extend({
         this.area
           .x(function(d) { return x_scale.scale(d.x) + x_scale.offset; })
           .y1(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
-        
+
         if (fill == "bottom") {
             this.area.y0(this.parent.plotarea_height);
         } else if (fill == "top") {
@@ -676,45 +676,6 @@ var Lines = mark.Mark.extend({
         this.compute_view_padding();
         this.d3el.selectAll(".dot").attr("d", this.dot.size(marker_size));
     },
-
-    process_interactions: function() {
-        var interactions = this.model.get("interactions");
-        if(_.isEmpty(interactions)) {
-            //set all the event listeners to blank functions
-            this.reset_interactions();
-        } else {
-            if(interactions.click !== undefined &&
-              interactions.click !== null) {
-                if(interactions.click === "tooltip") {
-                    this.event_listeners.element_clicked = function() {
-                        return this.refresh_tooltip(true);
-                    };
-                    this.event_listeners.parent_clicked = this.hide_tooltip;
-                }
-            } else {
-                this.reset_click();
-            }
-            if(interactions.hover !== undefined &&
-              interactions.hover !== null) {
-                if(interactions.hover === "tooltip") {
-                    this.event_listeners.mouse_over = this.refresh_tooltip;
-                    this.event_listeners.mouse_move = this.move_tooltip;
-                    this.event_listeners.mouse_out = this.hide_tooltip;
-                }
-            } else {
-                this.reset_hover();
-            }
-            if(interactions.legend_hover !== undefined &&
-              interactions.legend_hover !== null) {
-                if(interactions.legend_hover === "highlight_axes") {
-                    this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
-                    this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
-                }
-            } else {
-                this.reset_legend_hover();
-            }
-        }
-    }
 });
 
 module.exports = {
