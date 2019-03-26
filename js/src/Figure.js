@@ -75,17 +75,20 @@ var Figure = widgets.DOMWidgetView.extend({
         var width_undefined = (suggested_width === undefined || isNaN(suggested_width) || suggested_width <= 0);
         var height_undefined = (suggested_height === undefined || isNaN(suggested_height) || suggested_width <= 0);
 
+        var margin_width = this.margin ?  (this.margin.left + this.margin.right) : 0;
+        var margin_height = this.margin ? (this.margin.top + this.margin.bottom) : 0;
+
         if (width_undefined && height_undefined) {
             // Same as the defaults in bqplot.less
             suggested_height = 480;
             suggested_width = 640;
         } else if (height_undefined) {
-            suggested_height = suggested_width / min_ratio;
+            suggested_height = (suggested_width - margin_width) / min_ratio + margin_height;
         } else if (width_undefined) {
-            suggested_width = suggested_height * min_ratio;
+            suggested_width = (suggested_height - margin_height) * min_ratio + margin_width;
         }
 
-        var ratio = suggested_width / suggested_height;
+        var ratio = (suggested_width - margin_width) / (suggested_height - margin_height);
         if (ratio <= max_ratio && ratio >= min_ratio) {
             // If the available width and height are within bounds in terms
             // of aspect ration, use all the space available.
@@ -96,13 +99,13 @@ var Figure = widgets.DOMWidgetView.extend({
             // Use all vertical space and compute width based on maximum
             // aspect ratio.
             return_value["height"] = suggested_height;
-            return_value["width"] = suggested_height * max_ratio;
+            return_value["width"] = (suggested_height - margin_height) * max_ratio + margin_width;
          } else { // ratio < min_ratio
             // The available space is too oblong vertically.
             // Use all horizontal space and compute height based on minimum
             // aspect ratio.
             return_value["width"] = suggested_width;
-            return_value["height"] = suggested_width / min_ratio;
+            return_value["height"] = (suggested_width - margin_width) / min_ratio + margin_height;
         }
         return return_value;
     },
@@ -247,7 +250,7 @@ var Figure = widgets.DOMWidgetView.extend({
             that.axis_views.update(that.model.get("axes"));
 
             // TODO: move to the model
-            that.model.on_some_change(["fig_margin", "min_aspect_ration", "max_aspect_ratio", "preserve_aspect"], that.relayout, that);
+            that.model.on_some_change(["fig_margin", "min_aspect_ratio", "max_aspect_ratio", "preserve_aspect"], that.relayout, that);
             that.model.on_some_change(["padding_x", "padding_y"], function() {
                 this.figure_padding_x = this.model.get("padding_x");
                 this.figure_padding_y = this.model.get("padding_y");
