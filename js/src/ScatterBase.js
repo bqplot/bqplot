@@ -138,7 +138,9 @@ var ScatterBase = mark.Mark.extend({
         if (color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
                 var animate = true;
-                this.color_scale_updated(animate);
+                if (!this.model.dirty) {
+                    this.color_scale_updated(animate);
+                }
             });
             color_scale.on("color_scale_range_changed",
                             this.color_scale_updated, this);

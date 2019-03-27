@@ -84,13 +84,6 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
                 opacity = this.get("opacity") || [],
                 rotation = this.get("rotation") || [];
 
-            if(color_scale) {
-                if(!this.get("preserve_domain").color) {
-                    color_scale.compute_and_set_domain(color, this.model_id + "_color");
-                } else {
-                    color_scale.del_domain([], this.model_id + "_color");
-                }
-            }
             // since x_data may be a TypedArray, explicitly use Array.map
             this.mark_data = Array.prototype.map.call(x_data, function(d, i) {
                 return {
@@ -130,7 +123,7 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
 
        var scales = this.get("scales");
        for (var key in scales) {
-            if(scales.hasOwnProperty(key) && key != "color") {
+            if(scales.hasOwnProperty(key)) {
                 var scale = scales[key];
                 if(!this.get("preserve_domain")[key]) {
                     scale.compute_and_set_domain(this.mark_data.map(function(elem) {
