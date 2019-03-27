@@ -311,27 +311,21 @@ var ScatterBase = mark.Mark.extend({
 
     draw_elements: function(animate, elements_added) {},
 
-    process_interactions: function() {
-        ScatterBase.__super__.process_interactions.apply(this);
-
-        const interactions = this.model.get("interactions");
-
-        if(interactions.click !== undefined &&
-           interactions.click !== null) {
-            switch (interactions.click){
-                case "add":
-                    this.event_listeners.parent_clicked = this.add_element;
-                    this.event_listeners.element_clicked = function() {};
-                    break;
-                case "delete":
-                    this.event_listeners.parent_clicked = function() {};
-                    this.event_listeners.element_clicked = this.delete_element;
-                    break;
-                case "select":
-                    this.event_listeners.parent_clicked = this.reset_selection;
-                    this.event_listeners.element_clicked = this.scatter_click_handler;
-                    break;
-            }
+    process_click: function(interaction) {
+        ScatterBase.__super__.process_click.apply(this, [interaction]);
+        switch (interaction){
+            case "add":
+                this.event_listeners.parent_clicked = this.add_element;
+                this.event_listeners.element_clicked = function() {};
+                break;
+            case "delete":
+                this.event_listeners.parent_clicked = function() {};
+                this.event_listeners.element_clicked = this.delete_element;
+                break;
+            case "select":
+                this.event_listeners.parent_clicked = this.reset_selection;
+                this.event_listeners.element_clicked = this.scatter_click_handler;
+                break;
         }
     },
 

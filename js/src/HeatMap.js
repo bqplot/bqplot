@@ -98,8 +98,6 @@ var HeatMap = mark.Mark.extend({
 
     click_handler: function (args) {},
 
-    process_interactions: function (args) {},
-
     relayout: function() {
         this.set_ranges();
         this.compute_view_padding();

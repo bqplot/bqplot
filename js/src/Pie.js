@@ -146,17 +146,13 @@ var Pie = mark.Mark.extend({
         });
     },
 
-    process_interactions: function() {
-        Pie.__super__.process_interactions.apply(this);
-        const interactions = this.model.get("interactions");
-
-        if(interactions.click !== undefined &&
-          interactions.click !== null) {
-            if (interactions.click === "select") {
-                this.event_listeners.parent_clicked = this.reset_selection;
-                this.event_listeners.element_clicked = this.click_handler;
-            }
+    process_click: function(interaction) {
+        Pie.__super__.process_click.apply(this, [interaction]);
+        if (interaction === "select") {
+            this.event_listeners.parent_clicked = this.reset_selection;
+            this.event_listeners.element_clicked = this.click_handler;
         }
+
     },
 
     relayout: function() {

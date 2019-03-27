@@ -372,50 +372,73 @@ var Mark = widgets.WidgetView.extend({
         this.event_listeners.mouse_out = function() {};
     },
 
+    reset_legend_click: function() {
+        this.event_listeners.legend_clicked = function() {};
+    },
+
     reset_legend_hover: function() {
         this.event_listeners.legend_mouse_over = function() {};
         this.event_listeners.legend_mouse_out = function() {};
     },
 
+    process_click: function(interaction){
+        const that = this;
+        if(interaction === "tooltip") {
+            this.event_listeners.element_clicked = function() {
+                return that.refresh_tooltip(true);
+            };
+            this.event_listeners.parent_clicked = this.hide_tooltip;
+        }
+    },
+
+    process_hover: function(interaction){
+        if(interaction === "tooltip") {
+            this.event_listeners.mouse_over = this.refresh_tooltip;
+            this.event_listeners.mouse_move = this.move_tooltip;
+            this.event_listeners.mouse_out = this.hide_tooltip;
+        }
+    },
+
+    process_legend_click: function(interaction) {
+        const that = this;
+        if(interaction === "tooltip") {
+            this.event_listeners.legend_clicked = function() {
+                return that.refresh_tooltip(true);
+            };
+            this.event_listeners.parent_clicked = this.hide_tooltip;
+        }
+    },
+
+    process_legend_hover: function(interaction){
+        if(interaction === "highlight_axes") {
+            this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
+            this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
+        }
+    },
+
     process_interactions: function() {
         //configure default interactions
         const interactions = this.model.get("interactions");
-        const that = this;
+
         if (is_defined(interactions.click)) {
-            if(interactions.click === "tooltip") {
-                this.event_listeners.element_clicked = function() {
-                    return that.refresh_tooltip(true);
-                };
-                this.event_listeners.parent_clicked = this.hide_tooltip;
-            }
+            this.process_click(interactions.click);
         } else {
             this.reset_click();
         }
+
         if(is_defined(interactions.hover)) {
-            if(interactions.hover === "tooltip") {
-                this.event_listeners.mouse_over = this.refresh_tooltip;
-                this.event_listeners.mouse_move = this.move_tooltip;
-                this.event_listeners.mouse_out = this.hide_tooltip;
-            }
+            this.process_hover(interactions.hover);
         } else {
             this.reset_hover();
         }
 
         if(is_defined(interactions.legend_click)) {
-            if(interactions.legend_click === "tooltip") {
-                this.event_listeners.legend_clicked = function() {
-                    return that.refresh_tooltip(true);
-                };
-                this.event_listeners.parent_clicked = this.hide_tooltip;
-            }
+            this.process_legend_click(interactions.legend_click);
         } else {
-            this.event_listeners.legend_clicked = function() {};
+            this.reset_legend_click();
         }
         if(is_defined(interactions.legend_hover)) {
-            if(interactions.legend_hover === "highlight_axes") {
-                this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
-                this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
-            }
+            this.process_legend_hover(interactions.legend_hover);
         } else {
             this.reset_legend_hover();
         }
