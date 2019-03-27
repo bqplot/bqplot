@@ -14,6 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
+// Hack to fix problem with webpack providing multiple d3 objects
+d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var mark = require("./Mark");
 var utils = require("./utils");
 var _ = require("underscore");
@@ -144,57 +146,13 @@ var Pie = mark.Mark.extend({
         });
     },
 
-    process_interactions: function() {
-        var interactions = this.model.get("interactions");
-        if(_.isEmpty(interactions)) {
-            //set all the event listeners to blank functions
-            this.reset_interactions();
-        } else {
-            if(interactions.click !== undefined &&
-              interactions.click !== null) {
-                if(interactions.click === "tooltip") {
-                    this.event_listeners.element_clicked = function() {
-                        return this.refresh_tooltip(true);
-                    };
-                    this.event_listeners.parent_clicked = this.hide_tooltip;
-                } else if (interactions.click === "select") {
-                    this.event_listeners.parent_clicked = this.reset_selection;
-                    this.event_listeners.element_clicked = this.click_handler;
-                }
-            } else {
-                this.reset_click();
-            }
-            if(interactions.hover !== undefined &&
-              interactions.hover !== null) {
-                if(interactions.hover === "tooltip") {
-                    this.event_listeners.mouse_over = this.refresh_tooltip;
-                    this.event_listeners.mouse_move = this.move_tooltip;
-                    this.event_listeners.mouse_out = this.hide_tooltip;
-                }
-            } else {
-                this.reset_hover();
-            }
-            if(interactions.legend_click !== undefined &&
-              interactions.legend_click !== null) {
-                if(interactions.legend_click === "tooltip") {
-                    this.event_listeners.legend_clicked = function() {
-                        return this.refresh_tooltip(true);
-                    };
-                    this.event_listeners.parent_clicked = this.hide_tooltip;
-                }
-            } else {
-                this.event_listeners.legend_clicked = function() {};
-            }
-            if(interactions.legend_hover !== undefined &&
-              interactions.legend_hover !== null) {
-                if(interactions.legend_hover === "highlight_axes") {
-                    this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
-                    this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
-                }
-            } else {
-                this.reset_legend_hover();
-            }
+    process_click: function(interaction) {
+        Pie.__super__.process_click.apply(this, [interaction]);
+        if (interaction === "select") {
+            this.event_listeners.parent_clicked = this.reset_selection;
+            this.event_listeners.element_clicked = this.click_handler;
         }
+
     },
 
     relayout: function() {
@@ -303,7 +261,8 @@ var Pie = mark.Mark.extend({
             })
             .each(function(d) {
                 this._current = d;
-            });
+            }).on("click", function(d, i) {
+            return that.event_dispatcher("element_clicked", {data: d, index: i});});
 
         slices.transition("draw").duration(animation_duration)
             .attrTween("d", function(d) {
@@ -403,10 +362,6 @@ var Pie = mark.Mark.extend({
             polylines.exit().remove();
         }
 
-        slices.on("click", function(d, i) {
-            return that.event_dispatcher("element_clicked", {data: d, index: i});
-        });
-
         this.update_labels();
         this.update_values();
         this.apply_styles();
@@ -470,7 +425,7 @@ var Pie = mark.Mark.extend({
         for(var key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.style(clearing_style);
+        elements.styles(clearing_style);
     },
 
     set_style_on_elements: function(style, indices) {
@@ -483,7 +438,7 @@ var Pie = mark.Mark.extend({
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        elements.style(style);
+        elements.styles(style);
     },
 
     set_default_style: function(indices) {
@@ -502,13 +457,13 @@ var Pie = mark.Mark.extend({
             // index of slice i. Checking if it is already present in the list.
         var elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3.event.ctrlKey || d3.event.metaKey;
+        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
             // pressed, remove the element from the list
             selected.splice(elem_index, 1);
         } else {
-            if(d3.event.shiftKey) {
+            if(d3.getEvent().shiftKey) {
                 //If shift is pressed and the element is already
                 //selected, do not do anything
                 if(elem_index > -1) {
@@ -540,10 +495,7 @@ var Pie = mark.Mark.extend({
             ((selected.length === 0) ? null : selected),
             {updated_view: this});
         this.touch();
-        if(!d3.event) {
-            d3.event = window.event;
-        }
-        var e = d3.event;
+        var e = d3.getEvent();
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }

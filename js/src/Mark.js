@@ -18,6 +18,13 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var _ = require("underscore");
 
+
+// Check that value is defined and not null
+function is_defined(value){
+    return value !== null && value !== undefined;
+};
+
+
 var Mark = widgets.WidgetView.extend({
 
     initialize : function() {
@@ -365,9 +372,76 @@ var Mark = widgets.WidgetView.extend({
         this.event_listeners.mouse_out = function() {};
     },
 
+    reset_legend_click: function() {
+        this.event_listeners.legend_clicked = function() {};
+    },
+
     reset_legend_hover: function() {
         this.event_listeners.legend_mouse_over = function() {};
         this.event_listeners.legend_mouse_out = function() {};
+    },
+
+    process_click: function(interaction){
+        const that = this;
+        if(interaction === "tooltip") {
+            this.event_listeners.element_clicked = function() {
+                return that.refresh_tooltip(true);
+            };
+            this.event_listeners.parent_clicked = this.hide_tooltip;
+        }
+    },
+
+    process_hover: function(interaction){
+        if(interaction === "tooltip") {
+            this.event_listeners.mouse_over = this.refresh_tooltip;
+            this.event_listeners.mouse_move = this.move_tooltip;
+            this.event_listeners.mouse_out = this.hide_tooltip;
+        }
+    },
+
+    process_legend_click: function(interaction) {
+        const that = this;
+        if(interaction === "tooltip") {
+            this.event_listeners.legend_clicked = function() {
+                return that.refresh_tooltip(true);
+            };
+            this.event_listeners.parent_clicked = this.hide_tooltip;
+        }
+    },
+
+    process_legend_hover: function(interaction){
+        if(interaction === "highlight_axes") {
+            this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
+            this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
+        }
+    },
+
+    process_interactions: function() {
+        //configure default interactions
+        const interactions = this.model.get("interactions");
+
+        if (is_defined(interactions.click)) {
+            this.process_click(interactions.click);
+        } else {
+            this.reset_click();
+        }
+
+        if(is_defined(interactions.hover)) {
+            this.process_hover(interactions.hover);
+        } else {
+            this.reset_hover();
+        }
+
+        if(is_defined(interactions.legend_click)) {
+            this.process_legend_click(interactions.legend_click);
+        } else {
+            this.reset_legend_click();
+        }
+        if(is_defined(interactions.legend_hover)) {
+            this.process_legend_hover(interactions.legend_hover);
+        } else {
+            this.reset_legend_hover();
+        }
     },
 
     mouse_over: function() {

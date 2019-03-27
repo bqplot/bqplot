@@ -90,7 +90,7 @@ var MarketMap = figure.Figure.extend({
           .attr("class", "mainheading")
           .attrs({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
           .text(this.model.get("title"));
-        this.title.style(this.model.get("title_style"));
+        this.title.styles(this.model.get("title_style"));
 
         var scale_creation_promise = this.create_scale_views();
         scale_creation_promise.then(function() {
@@ -169,7 +169,7 @@ var MarketMap = figure.Figure.extend({
 
     update_title: function(model, value) {
         this.title.text(this.model.get("title"))
-           .style(this.model.get("title_style"));
+           .styles(this.model.get("title_style"));
     },
 
     relayout: function() {
@@ -401,7 +401,7 @@ var MarketMap = figure.Figure.extend({
             new_groups.append("text")
                 .classed("market_map_text", true)
                 .styles({"text-anchor": "middle", 'fill' :'black', "pointer-events": "none"})
-                .style(that.model.get("font_style"));
+                .styles(that.model.get("font_style"));
 
             groups = new_groups.merge(groups);
 
@@ -481,7 +481,7 @@ var MarketMap = figure.Figure.extend({
 
     update_font_style: function(model, value) {
         this.svg.selectAll(".market_map_text")
-            .style(value);
+            .styles(value);
     },
 
     update_map_colors: function() {

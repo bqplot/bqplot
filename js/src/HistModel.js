@@ -14,7 +14,7 @@
  */
 
 var _ = require("underscore");
-var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
+var d3 = Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-scale-chromatic"));
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize')
 

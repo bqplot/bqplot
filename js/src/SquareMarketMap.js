@@ -54,14 +54,14 @@ var SquareMarketMap = widgets.DOMWidgetView.extend({
             .enter().append("div")
             .attr("class", "node")
             .call(this.position)
-            .style({
+            .styles({
                 "background": function(d, i) {
                     return d.children ? color(d.name): null;
                 },
                 "border": "solid white"
             })
             .text(function(d) { return d.children ? null : d.name; })
-            .style({
+            .styles({
                 'font': '11px sans-serif',
                 'position': 'absolute',
                 'text-align': 'center',
