@@ -268,7 +268,11 @@ var Figure = widgets.DOMWidgetView.extend({
             that.model.on("change:title", that.update_title, that);
 
             that.model.on("change:interaction", function(model, value) {
-                this.set_interaction(value);
+                Promise.all(that.mark_views.views).then((views) => {
+                    // Like above:
+                    // This has to be done after the marks are created
+                    this.set_interaction(value);
+                })
             }, that);
 
             that.displayed.then(function(args) {
