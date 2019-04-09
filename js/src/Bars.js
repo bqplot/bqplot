@@ -414,7 +414,7 @@ var Bars = mark.Mark.extend({
         var stroke = this.model.get("stroke");
         var opacities = this.model.get("opacities");
         this.d3el.selectAll(".bar")
-            .style("stroke", stroke)
+            .style("stroke", stroke || "none")
             .style("opacity", function(d, i) {
             return opacities[i];
         });
