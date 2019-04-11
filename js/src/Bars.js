@@ -356,10 +356,12 @@ var Bars = mark.Mark.extend({
             });
         }
         var is_stacked = (this.model.get("type") === "stacked");
+        var band_width = 1.0;
         if (is_stacked) {
+            band_width = Math.max(1.0, this.x.bandwidth());
             bars_sel.transition(transition_name).duration(animation_duration)
                 .attr(dom, 0)
-                .attr(dom_control, this.x.bandwidth().toFixed(2))
+                .attr(dom_control, band_width.toFixed(2))
                 .attr(rang, function(d) {
                     return (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0);
                 })
@@ -367,11 +369,12 @@ var Bars = mark.Mark.extend({
                     return Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1));
                 });
         } else {
+            band_width = Math.max(1.0, this.x1.bandwidth());
             bars_sel.transition(transition_name).duration(animation_duration)
               .attr(dom, function(datum, index) {
                     return that.x1(index);
               })
-              .attr(dom_control, this.x1.bandwidth().toFixed(2))
+              .attr(dom_control, band_width.toFixed(2))
               .attr(rang, function(d) {
                   return d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
               })
@@ -389,8 +392,7 @@ var Bars = mark.Mark.extend({
                 rect_coords[rang] = is_stacked ?
                     (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0) :
                     d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
-                rect_coords[dom_control] = is_stacked ?
-                    that.x.bandwidth() : that.x1.bandwidth();
+                rect_coords[dom_control] = band_width;
                 rect_coords[rang_control] = is_stacked ?
                     Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1)) :
                     Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y_ref)));
