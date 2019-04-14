@@ -49,6 +49,7 @@ This package depends on the following packages:
 - `traittypes` (Version >=0.2.1, <0.3)
 - `numpy`
 - `pandas`
+- `nodejs`
 
 ### Installation
 
