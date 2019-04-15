@@ -17,9 +17,9 @@
  * shapes are contained within selectors.
  */
 
-var lasso = require("./lasso_test");
+export { point_in_lasso } from './lasso_test';
 
-function point_in_rectangle(point, x, y) {
+export function point_in_rectangle(point, x, y) {
     // Checks whether `point` is within the rectangle of coordinates
     // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
     // If one of x or y is undefined, treat them as [-inf, inf]
@@ -39,12 +39,12 @@ function point_in_rectangle(point, x, y) {
     return is_inside;
 }
 
-function rect_inter_rect(x0, y0, x1, y1) {
+export function rect_inter_rect(x0, y0, x1, y1) {
     // Checks whether two rectangles intersect
     return seg_inter_seg(x0, x1) && seg_inter_seg(y0, y1);
 }
 
-function lasso_inter_rect(x, y, vertices) {
+export function lasso_inter_rect(x, y, vertices) {
     // checks whether the lasso intersects the rectangle of coordinates
     // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
 
@@ -64,11 +64,4 @@ function seg_inter_seg(p, q) {
     q.sort(function(a, b){return a-b});
     return ((p[0] < q[0] != p[0] < q[1]) || (p[1] < q[0] != p[1] < q[1]) ||
             (q[0] < p[0] != q[0] < p[1]) || (q[1] < p[0] != q[1] < p[1]));
-}
-
-module.exports = {
-    point_in_lasso: lasso.point_in_lasso,
-    point_in_rectangle: point_in_rectangle,
-    rect_inter_rect: rect_inter_rect,
-    lasso_inter_rect: lasso_inter_rect,
 }
