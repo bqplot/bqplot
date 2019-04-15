@@ -1,5 +1,6 @@
-var _ = require('underscore')
-var isTypedArray = require('is-typedarray');
+
+import _ from 'underscore';
+import isTypedArray from 'is-typedarray';
 
 var typesToArray = {
     int8: Int8Array,
@@ -40,8 +41,6 @@ function deserialize_typed_array(data, manager) {
     if(data.shape && data.shape.length >= 2) {
         if(data.shape.length > 2)
             throw new Error("only arrays with rank 1 or 2 supported")
-        var offset = 0;
-        var shape = data.shape;
         var arrays = []
         // slice the 1d typed arrays in multiple arrays and put them in a
         // regular array
@@ -96,7 +95,7 @@ function deserialize_array_or_json(data, manager) {
     }
     else if(_.isArray(data)) {
         if(data.length == 0) {
-            arrays = []
+            /* no-op */
         } else {
             if(_.isArray(data[0])) { // 2d array
                 value = _.map(data, function(data1d) { return deserialize_array_or_json(data1d, manager)})
@@ -105,7 +104,7 @@ function deserialize_array_or_json(data, manager) {
             }
         }
     } else if(data.value && data.dtype) { // binary data
-        value = deserialize_typed_array(data)
+        value = deserialize_typed_array(data, undefined)
     } else {
         console.error('not sure what the data is')
     }
