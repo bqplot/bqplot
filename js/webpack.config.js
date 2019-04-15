@@ -14,7 +14,7 @@ var rules = [
 
 module.exports = [
     {// Notebook extension
-        entry: './src/extension.js',
+        entry: './lib/extension.js',
         output: {
             filename: 'extension.js',
             path: path.resolve(__dirname, '../bqplot/static'),
@@ -23,7 +23,7 @@ module.exports = [
         externals: ['@jupyter-widgets/base']
     },
     {// bqplot bundle for the notebook
-        entry: './src/index-embed.js',
+        entry: './lib/index-embed.js',
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, '../bqplot/static'),
@@ -36,7 +36,7 @@ module.exports = [
         externals: ['@jupyter-widgets/base']
     },
     {// embeddable bqplot bundle
-        entry: './src/index-embed.js',
+        entry: './lib/index-embed.js',
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, './dist/'),
