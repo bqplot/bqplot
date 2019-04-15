@@ -8,19 +8,17 @@
       "module": "commonjs",
       "moduleResolution": "node",
       "noEmitOnError": true,
-      "noImplicitAny": true,
+      // "noImplicitAny": true,
       "noUnusedLocals": true,
       "preserveWatchOutput": true,
-      "strict": true,
+      // "strict": true,
       "strictNullChecks": false,
       "target": "es2015",
       "types": [],
       "sourceMap": true,
       "allowJs": true,
-
       "outDir": "lib",
       "rootDir": "src"
-      
     },
     "include": [
         "./src/**/*"
