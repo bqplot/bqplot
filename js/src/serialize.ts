@@ -123,7 +123,4 @@ function serialize_array_or_json(data, manager) {
     }
 }
 
-module.exports = {
-    array_or_json: { deserialize: deserialize_array_or_json, serialize: serialize_array_or_json },
-    //ndarray: { deserialize: deserialize_ndarray, serialize: serialize_ndarray },
-}
+export const array_or_json = { deserialize: deserialize_array_or_json, serialize: serialize_array_or_json };
