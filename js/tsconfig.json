@@ -1,24 +1,23 @@
 {
     "compilerOptions": {
-      // "composite": true,
-      "incremental": true,
+      "allowJs": true,
       // "declaration": true,
       "esModuleInterop": true,
+      "incremental": true,
       "lib": ["es2015", "dom"],
       "module": "commonjs",
       "moduleResolution": "node",
       "noEmitOnError": true,
       // "noImplicitAny": true,
       "noUnusedLocals": true,
+      "outDir": "lib",
       "preserveWatchOutput": true,
+      "rootDir": "src",
+      "sourceMap": true,
       // "strict": true,
       "strictNullChecks": false,
       "target": "es2015",
-      "types": [],
-      "sourceMap": true,
-      "allowJs": true,
-      "outDir": "lib",
-      "rootDir": "src"
+      // "types": [],
     },
     "include": [
         "./src/**/*"
