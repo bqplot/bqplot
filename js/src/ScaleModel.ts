@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
+import _ from 'underscore'
 var basemodel = require("./BaseModel");
 var semver_range = "^" + require("../package.json").version;
 
-var ScaleModel = basemodel.BaseModel.extend({
+export const ScaleModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.BaseModel.prototype.defaults(), {
@@ -71,6 +71,3 @@ var ScaleModel = basemodel.BaseModel.extend({
     }
 });
 
-module.exports = {
-    ScaleModel: ScaleModel
-};
