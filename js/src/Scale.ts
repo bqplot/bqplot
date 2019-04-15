@@ -15,7 +15,7 @@
 
 var widgets = require("@jupyter-widgets/base");
 
-var Scale = widgets.WidgetView.extend({
+export const Scale = widgets.WidgetView.extend({
 
     render: function() {
         this.offset = 0;
@@ -61,6 +61,3 @@ var Scale = widgets.WidgetView.extend({
     }
 });
 
-module.exports = {
-    Scale: Scale
-};
