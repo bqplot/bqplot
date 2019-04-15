@@ -1,4 +1,5 @@
 // import all tests here, otherwise if we include them in karma.conf.js it will all be separate bundles
+// Triggering tests
 import "../css/bqplot.css";
 import './binary_serialization.ts';
 import './scales.ts';
