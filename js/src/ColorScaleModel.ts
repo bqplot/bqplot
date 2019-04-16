@@ -14,11 +14,11 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
-var _ = require("underscore");
 var linearscalemodel = require("./LinearScaleModel");
 var colorutils = require("./ColorUtils");
+import _ from 'underscore';
 
-var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
+export const ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
 
     set_init_state: function() {
         this.type = "color_linear";
@@ -37,11 +37,11 @@ var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
         // Compute domain min and max
         var that = this;
         var min = (!this.min_from_data) ?
-            this.min : d3.min(_.map(this.domains, function(d) {
+            this.min : d3.min(_.map(this.domains, function(d: any[]) {
                 return d.length > 0 ? d[0] : that.global_max;
             }));
         var max = (!this.max_from_data) ?
-            this.max : d3.max(_.map(this.domains, function(d) {
+            this.max : d3.max(_.map(this.domains, function(d: any []) {
                 return d.length > 0 ? d[d.length-1] : that.global_min;
             }));
         var prev_mid = this.mid;
@@ -74,7 +74,7 @@ var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
         }
 
         var domain = [];
-        for (i = 0; i < n_colors; i++) {
+        for (let i = 0; i < n_colors; i++) {
             var j = this.reverse ? n_colors-1-i : i;
             domain.push(scale(j));
         }
@@ -93,6 +93,3 @@ var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
     }
 });
 
-module.exports = {
-    ColorScaleModel: ColorScaleModel
-};
