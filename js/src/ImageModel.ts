@@ -18,7 +18,7 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-exports const ImageModel = markmodel.MarkModel.extend({
+export const ImageModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {

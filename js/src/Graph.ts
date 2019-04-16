@@ -19,7 +19,7 @@ import * as _ from 'underscore';
 import * as utils from './utils';
 import * as mark from './Mark';
 
-exports const Graph = mark.Mark.extend({
+export const Graph = mark.Mark.extend({
     render: function() {
         var base_creation_promise = Graph.__super__.render.apply(this);
 

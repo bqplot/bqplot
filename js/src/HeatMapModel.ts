@@ -17,7 +17,7 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-exports const HeatMapModel = markmodel.MarkModel.extend({
+export const HeatMapModel = markmodel.MarkModel.extend({
 
     defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
         _model_name: "HeatMapModel",
