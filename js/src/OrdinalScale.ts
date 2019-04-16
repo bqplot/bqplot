@@ -14,10 +14,10 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"));
-var _ = require("underscore");
 var scale = require("./Scale");
+import _ from 'underscore';
 
-var OrdinalScale = scale.Scale.extend({
+export const OrdinalScale = scale.Scale.extend({
 
     render: function() {
         this.scale = d3.scaleBand();
@@ -80,6 +80,3 @@ var OrdinalScale = scale.Scale.extend({
     }
 });
 
-module.exports = {
-    OrdinalScale: OrdinalScale
-};
