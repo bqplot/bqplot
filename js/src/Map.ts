@@ -16,11 +16,11 @@
 var widgets = require("@jupyter-widgets/base");
 var d3 = Object.assign({}, require("d3-selection"), require("d3-zoom"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var _ = require("underscore");
 var mark = require("./Mark");
 var utils = require("./utils");
+import * as _ from 'underscore';
 
-var Map = mark.Mark.extend({
+export const Map = mark.Mark.extend({
 
     render: function() {
         var base_render_promise = Map.__super__.render.apply(this);
@@ -378,13 +378,8 @@ var Map = mark.Mark.extend({
         }
     },
 
-    is_object_empty: function(object) {
-        var is_empty = true;
-        for(var keys in object) {
-            is_empty = false;
-            break;
-        }
-        return is_empty;
+    is_object_empty: function(object: any) {
+        return object.keys(object).length === 0 && object.constructor === Object;
     },
 
     hoverfill: function(d, j) {
@@ -420,6 +415,3 @@ var Map = mark.Mark.extend({
     },
 });
 
-module.exports = {
-    Map: Map,
-};
