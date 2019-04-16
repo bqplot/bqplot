@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize');
+import _ from 'underscore';
 
-var ScatterBaseModel = markmodel.MarkModel.extend({
+export const ScatterBaseModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend({}, markmodel.MarkModel.prototype.defaults(), {
@@ -64,12 +64,8 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
     },
 
     update_mark_data: function() {
-        var x_data = this.get("x"),
-            y_data = this.get("y"),
-            scales = this.get("scales"),
-            x_scale = scales.x,
-            y_scale = scales.y,
-            color_scale = scales.color;
+        var x_data = this.get("x");
+        var y_data = this.get("y");
 
         if (x_data.length === 0 || y_data.length === 0) {
             this.mark_data = [];
@@ -146,6 +142,3 @@ var ScatterBaseModel = markmodel.MarkModel.extend({
     }, markmodel.MarkModel.serializers)
 });
 
-module.exports = {
-    ScatterBaseModel: ScatterBaseModel
-};
