@@ -17,7 +17,7 @@ import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
 
-export var Interaction = widgets.WidgetView.extend({
+export const Interaction = widgets.WidgetView.extend({
 
     initialize : function() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "rect"));
@@ -55,7 +55,7 @@ export var Interaction = widgets.WidgetView.extend({
     },
 
     remove: function() {
-        _.each(this.mark_views, function(mark) { mark.invert_range(); });
+        _.each(this.mark_views, function(mark: any) { mark.invert_range(); });
         this.d3el.remove();
         Interaction.__super__.remove.apply(this);
     }
