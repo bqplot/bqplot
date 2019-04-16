@@ -16,7 +16,7 @@
 var d3 = Object.assign({}, require("d3-scale"));
 var linearscale = require("./LinearScale");
 
-var LogScale = linearscale.LinearScale.extend({
+export const LogScale = linearscale.LinearScale.extend({
     render: function() {
         this.scale = d3.scaleLog();
         if(this.model.domain.length > 0) {
@@ -27,6 +27,3 @@ var LogScale = linearscale.LinearScale.extend({
     }
 });
 
-module.exports = {
-    LogScale: LogScale
-};
