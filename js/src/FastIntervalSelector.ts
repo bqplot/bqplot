@@ -16,10 +16,9 @@
 import * as _ from 'underscore';
 var d3 = Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 import * as baseselector from './Selector';
-import * as mark from './Mark';
 import * as sel_utils from './selector_utils';
 
-var FastIntervalSelector = baseselector.BaseXSelector.extend({
+export const FastIntervalSelector = baseselector.BaseXSelector.extend({
 
     render: function() {
         FastIntervalSelector.__super__.render.apply(this);
@@ -122,7 +121,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
 
         if(extent_x === undefined || extent_x.length === 0) {
             // Reset all the selected in marks
-            _.each(this.mark_views, function(mark_view) {
+            _.each(this.mark_views, function(mark_view: any) {
                 return mark_view.selector_changed();
             });
         } if (extent_y === undefined) {
@@ -141,7 +140,7 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
             return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
         };
 
-        _.each(this.mark_views, function(mark_view) {
+        _.each(this.mark_views, function(mark_view: any) {
             mark_view.selector_changed(point_selector, rect_selector);
         }, this);
     },
@@ -219,6 +218,3 @@ var FastIntervalSelector = baseselector.BaseXSelector.extend({
     },
 });
 
-module.exports = {
-    FastIntervalSelector: FastIntervalSelector
-};
