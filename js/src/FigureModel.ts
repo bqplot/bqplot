@@ -18,7 +18,7 @@ import * as _ from 'underscore';
 import * as basemodel from './BaseModel';
 var semver_range = "^" + require("../package.json").version;
 
-var FigureModel = basemodel.BaseModel.extend({
+export const FigureModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.BaseModel.prototype.defaults(), {
@@ -89,7 +89,3 @@ var FigureModel = basemodel.BaseModel.extend({
         layout:  { deserialize: widgets.unpack_models },
     }, basemodel.BaseModel.serializers)
 });
-
-module.exports = {
-    FigureModel: FigureModel
-};

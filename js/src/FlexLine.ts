@@ -17,14 +17,13 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
 import * as _ from 'underscore';
 import * as lines from './Lines';
 
-var FlexLine = lines.Lines.extend({
+export const FlexLine = lines.Lines.extend({
 
     render: function() {
         var base_render_promise = lines.Lines.__super__.render.apply(this);
         var that = this;
 
         return base_render_promise.then(function() {
-            var x_scale = that.scales.x, y_scale = that.scales.y;
             that.create_listeners();
             that.draw();
         });
@@ -152,7 +151,6 @@ var FlexLine = lines.Lines.extend({
 
         var x_scale = this.scales.x, y_scale = this.scales.y;
 
-        var that = this;
         this.d3el.selectAll(".curve").selectAll(".line-elem")
             .transition("relayout")
             .duration(this.parent.model.get("animation_duration"))
@@ -166,7 +164,3 @@ var FlexLine = lines.Lines.extend({
         //do nothing
     }
 });
-
-module.exports = {
-    FlexLine: FlexLine
-};

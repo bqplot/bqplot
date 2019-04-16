@@ -19,8 +19,6 @@ import * as _ from 'underscore';
 import * as utils from './utils';
 import * as mark from './Mark';
 
-var min_size = 10;
-
 var Graph = mark.Mark.extend({
     render: function() {
         var base_creation_promise = Graph.__super__.render.apply(this);
@@ -122,7 +120,6 @@ var Graph = mark.Mark.extend({
             y_scale = this.scales.y;
         this.set_ranges();
 
-        var that = this;
         if (x_scale && y_scale) {
             // set x and y positions on mark data manually
             // and redraw the force layout
@@ -214,7 +211,6 @@ var Graph = mark.Mark.extend({
         this.set_ranges();
         var x_scale = this.scales.x,
             y_scale = this.scales.y,
-            color_scale = this.scales.color,
             link_color_scale = this.scales.link_color;
 
         // clean up the old graph
@@ -406,9 +402,7 @@ var Graph = mark.Mark.extend({
     },
 
     click_handler: function(args) {
-        var data = args.data;
         var index = args.index;
-        var that = this;
         var idx = this.model.get("selected");
         var selected = idx ? utils.deepCopy(idx) : [];
         var elem_index = selected.indexOf(index);
