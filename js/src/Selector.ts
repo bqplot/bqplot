@@ -14,11 +14,11 @@
  */
 
 var d3 = Object.assign({}, require("d3-selection"));
-var _ = require("underscore");
 var interaction = require("./Interaction");
 var convert_dates = require('./utils').convert_dates;
+import _ from 'underscore';
 
-var BaseSelector = interaction.Interaction.extend({
+export const BaseSelector = interaction.Interaction.extend({
 
     initialize: function() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
@@ -88,7 +88,7 @@ var BaseSelector = interaction.Interaction.extend({
     }
 });
 
-var BaseXSelector = BaseSelector.extend({
+export const BaseXSelector = BaseSelector.extend({
 
     create_scales: function() {
         if(this.scale) {
@@ -124,7 +124,7 @@ var BaseXSelector = BaseSelector.extend({
     },
 });
 
-var BaseXYSelector = BaseSelector.extend({
+export const BaseXYSelector = BaseSelector.extend({
 
     create_scales: function() {
         var that = this;
@@ -186,8 +186,3 @@ var BaseXYSelector = BaseSelector.extend({
     }
 });
 
-module.exports = {
-    BaseSelector: BaseSelector,
-    BaseXSelector: BaseXSelector,
-    BaseXYSelector: BaseXYSelector
-};
