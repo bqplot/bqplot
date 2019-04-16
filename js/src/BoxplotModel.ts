@@ -18,7 +18,7 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-var BoxplotModel = markmodel.MarkModel.extend({
+export const BoxplotModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -77,8 +77,6 @@ var BoxplotModel = markmodel.MarkModel.extend({
         var scales = this.get("scales");
         var x_scale = scales.x;
         var y_scale = scales.y;
-        var size_scale = scales.size;
-        var opacity_scale = scales.opacity;
 
         if(!this.get("preserve_domain").x && this.mark_data) {
             x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -110,8 +108,3 @@ var BoxplotModel = markmodel.MarkModel.extend({
         y: serialize.array_or_json,
     }, markmodel.MarkModel.serializers)
 });
-
-
-module.exports = {
-    BoxplotModel: BoxplotModel
-};

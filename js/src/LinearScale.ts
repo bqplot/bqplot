@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-scale"));
+import d3Scale from 'd3-scale';
 import * as scale from './Scale';
 
 export const LinearScale = scale.Scale.extend({
 
     render: function() {
-        this.scale = d3.scaleLinear();
+        this.scale = d3Scale.scaleLinear();
         if(this.model.domain.length > 0)
             this.scale.domain(this.model.domain);
         this.offset = 0;
@@ -46,7 +46,7 @@ export const LinearScale = scale.Scale.extend({
         }));
     },
 
-    invert: function(pixel) {
+    invert: function(pixel): number {
         return this.scale.invert(pixel);
     },
 

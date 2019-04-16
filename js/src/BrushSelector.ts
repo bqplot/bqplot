@@ -20,7 +20,7 @@ import * as selector from './Selector';
 import * as utils from './utils';
 import * as sel_utils from './selector_utils';
 
-var BaseBrushSelector = {
+export const BaseBrushSelector = {
 
     brush_render: function() {
         this.brushing = false;
@@ -69,7 +69,7 @@ var BaseBrushSelector = {
 
         if(extent_x === undefined || extent_x.length === 0) {
             // Reset all the selected in marks
-            _.each(this.mark_views, function(mark_view) {
+            _.each(this.mark_views, function(mark_view: any) {
                 return mark_view.selector_changed();
             });
             return;
@@ -89,13 +89,13 @@ var BaseBrushSelector = {
             return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
         };
 
-        _.each(this.mark_views, function(mark_view) {
+        _.each(this.mark_views, function(mark_view: any) {
             mark_view.selector_changed(point_selector, rect_selector);
         }, this);
     },
 }
 
-var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
+export const BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
 
     render: function() {
         BrushSelector.__super__.render.apply(this);
@@ -145,9 +145,9 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
             var pixel_extent_y = [d0[1][1], d0[0][1]];
         
             var extent_x = pixel_extent_x.map(this.x_scale.scale.invert).sort(
-                function(a, b) { return a - b; });
+                (a: number, b: number) => a - b);
             var extent_y = pixel_extent_y.map(this.y_scale.scale.invert).sort(
-                function(a, b) { return a - b; });
+                (a: number, b: number) => a - b);
 
             this.update_mark_selected(pixel_extent_x, pixel_extent_y);
             this.set_selected("selected_x", extent_x);
@@ -202,7 +202,7 @@ var BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).extend({
     },
 });
 
-var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
+export const BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
 
     render: function() {
         BrushIntervalSelector.__super__.render.apply(this);
@@ -246,7 +246,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
         } else {
             var pixel_extent = e.selection;
             var extent = pixel_extent.map(this.scale.scale.invert).sort(
-                function(a, b) { return a - b; });
+                (a, b) => a - b);
             this.update_mark_selected(pixel_extent);
 
             this.set_selected("selected", extent);
@@ -277,7 +277,7 @@ var BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSelector).ext
             var extent = [selected[0], selected[1]];
             this.brush.extent(extent);
             var pixel_extent = extent.map(this.scale.scale).sort(
-                function(a, b) { return a - b; });
+                (a: number, b: number) => a - b);
             this.update_mark_selected(pixel_extent);
         }
     },
@@ -470,7 +470,6 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
             this.model.set("_selected", {});
             this.touch();
         } else {
-            var that = this;
             var selected = utils.deepCopy(this.model.get("_selected"));
             selected[this.get_label(item)] = extent.map(this.scale.scale.invert);
             this.update_mark_selected(extent);
