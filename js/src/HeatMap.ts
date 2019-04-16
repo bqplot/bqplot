@@ -15,7 +15,6 @@
 
 var d3 = Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
-import * as utils from './utils';
 import * as mark from './Mark';
 
 var HeatMap = mark.Mark.extend({

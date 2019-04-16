@@ -133,7 +133,7 @@ var HistModel = markmodel.MarkModel.extend({
     },
 
     get_data_dict: function(data, index) {
-        var return_dict = {};
+        var return_dict : any = {};
         return_dict.midpoint = this.x_mid[index];
         return_dict.bin_start = this.x_bins[index];
         return_dict.bin_end = this.x_bins[index + 1];
