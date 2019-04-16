@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import d3Scale from 'd3-scale';
+import * as d3Scale from 'd3-scale';
 import * as scale from './Scale';
 
 export const LinearScale = scale.Scale.extend({
