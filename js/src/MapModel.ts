@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var topojson = require("topojson");
+import * as _ from 'underscore';
 
-var MapModel = markmodel.MarkModel.extend({
+export const MapModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -107,6 +107,3 @@ var MapModel = markmodel.MarkModel.extend({
     }
 });
 
-module.exports = {
-    MapModel: MapModel
-};
