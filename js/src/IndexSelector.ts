@@ -87,7 +87,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         this.line.attr("x1", xpixel).attr("x2", xpixel);
 
         this.set_selected("selected", [this.invert_pixel(xpixel)]);
-        _.each(this.mark_views, function(mark_view) {
+        _.each(this.mark_views, function(mark_view: any) {
              mark_view.invert_point(xpixel);
         });
         this.touch();
@@ -111,7 +111,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
         }
         this.model.set("selected", null);
 
-        _.each(this.mark_views, function(mark_view) {
+        _.each(this.mark_views, function(mark_view: any) {
             mark_view.invert_point();
         });
         this.touch();
@@ -148,7 +148,7 @@ var IndexSelector = baseselector.BaseXSelector.extend({
             //the selected may be called before the index selector is
             //active for the first time.
             this.background.on("click", _.bind(this.click, this));
-            _.each(this.mark_views, function(mark_view) {
+            _.each(this.mark_views, function(mark_view: any) {
                 mark_view.invert_point(pixel);
             });
         }
