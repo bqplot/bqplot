@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
-var markmodel = require("./MarkModel");
-var serialize = require('./serialize')
+import * as _ from 'underscore';
+import * as markmodel from './MarkModel';
+import * as serialize from './serialize';
 
-var GraphModel = markmodel.MarkModel.extend({
+export var GraphModel = markmodel.MarkModel.extend({
     defaults: function() {
         return _.extend({}, markmodel.MarkModel.prototype.defaults, {
         _model_name: "GraphModel",
@@ -52,12 +52,10 @@ var GraphModel = markmodel.MarkModel.extend({
             color = this.get("color") || [],
 
             scales = this.get("scales"),
-            x_scale = scales.x,
-            y_scale = scales.y,
             color_scale = scales.color;
 
         function get_shape_attrs(shape, attrs) {
-            var new_attrs = {};
+            var new_attrs: any = {};
             switch (shape) {
                 case "circle":
                     new_attrs.r = attrs.r || 15;
@@ -182,7 +180,3 @@ var GraphModel = markmodel.MarkModel.extend({
         link_matrix: serialize.array_or_json,
     }, markmodel.MarkModel.serializers)
 });
-
-module.exports = {
-    GraphModel: GraphModel
-};
