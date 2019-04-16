@@ -14,10 +14,10 @@
  */
 
 var d3 = Object.assign({}, require("d3-geo"));
-var _ = require("underscore");
 var scalemodel = require("./ScaleModel");
+import _ from 'underscore';
 
-var GeoScaleModel = scalemodel.ScaleModel.extend({
+export const GeoScaleModel = scalemodel.ScaleModel.extend({
 
     defaults: function() {
         return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
@@ -27,7 +27,7 @@ var GeoScaleModel = scalemodel.ScaleModel.extend({
     }
 });
 
-var MercatorModel = GeoScaleModel.extend({
+export const MercatorModel = GeoScaleModel.extend({
 
     defaults: function() {
         return _.extend(GeoScaleModel.prototype.defaults(), {
@@ -58,7 +58,7 @@ var MercatorModel = GeoScaleModel.extend({
     }
 });
 
-var AlbersModel = GeoScaleModel.extend({
+export const AlbersModel = GeoScaleModel.extend({
 
     defaults: function() {
         return _.extend(GeoScaleModel.prototype.defaults(), {
@@ -94,7 +94,7 @@ var AlbersModel = GeoScaleModel.extend({
     }
 });
 
-var AlbersUSAModel = GeoScaleModel.extend({
+export const AlbersUSAModel = GeoScaleModel.extend({
 
     defaults: function() {
         return _.extend(GeoScaleModel.prototype.defaults(), {
@@ -123,7 +123,7 @@ var AlbersUSAModel = GeoScaleModel.extend({
     }
 });
 
-var EquiRectangularModel = GeoScaleModel.extend({
+export const EquiRectangularModel = GeoScaleModel.extend({
 
     defaults: function() {
         return _.extend(GeoScaleModel.prototype.defaults(), {
@@ -151,7 +151,7 @@ var EquiRectangularModel = GeoScaleModel.extend({
     }
 });
 
-var OrthographicModel = GeoScaleModel.extend({
+export const OrthographicModel = GeoScaleModel.extend({
 
     defaults: function() {
         return _.extend(GeoScaleModel.prototype.defaults(), {
@@ -186,7 +186,7 @@ var OrthographicModel = GeoScaleModel.extend({
     }
 });
 
-var GnomonicModel = GeoScaleModel.extend({
+export const GnomonicModel = GeoScaleModel.extend({
 
     defaults: function() {
         return _.extend(GeoScaleModel.prototype.defaults(), {
@@ -218,7 +218,7 @@ var GnomonicModel = GeoScaleModel.extend({
     }
 });
 
-var StereographicModel = GeoScaleModel.extend({
+export const StereographicModel = GeoScaleModel.extend({
 
     defaults: function() {
         return _.extend(GeoScaleModel.prototype.defaults(), {
@@ -253,13 +253,3 @@ var StereographicModel = GeoScaleModel.extend({
     }
 });
 
-module.exports = {
-    GeoScaleModel: GeoScaleModel,
-    MercatorModel: MercatorModel,
-    AlbersModel: AlbersModel,
-    AlbersUSAModel: AlbersUSAModel,
-    EquiRectangularModel: EquiRectangularModel,
-    OrthographicModel: OrthographicModel,
-    GnomonicModel: GnomonicModel,
-    StereographicModel: StereographicModel
-};
