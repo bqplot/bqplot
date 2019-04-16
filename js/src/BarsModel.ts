@@ -18,7 +18,7 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-var BarsModel = markmodel.MarkModel.extend({
+export const BarsModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -65,9 +65,6 @@ var BarsModel = markmodel.MarkModel.extend({
     update_data: function() {
         var x_data = this.get("x");
         var y_data = this.get("y");
-        var scales = this.get("scales");
-        var x_scale = scales.x;
-        var y_scale = scales.y;
         y_data = (y_data.length === 0 || !_.isNumber(y_data[0])) ?
             y_data : [y_data];
         var that = this;
@@ -87,7 +84,7 @@ var BarsModel = markmodel.MarkModel.extend({
             })));
             // since x_data may be a TypedArray, explicitly use Array.map
             this.mark_data = Array.prototype.map.call(x_data, function (x_elem, index) {
-                var data = {};
+                var data: any = {};
                 var y0 = that.base_value;
                 var y0_neg = that.base_value;
                 var y0_left = that.base_value;
@@ -174,7 +171,6 @@ var BarsModel = markmodel.MarkModel.extend({
             return;
         }
         var scales = this.get("scales");
-        var orient = this.get("orientation");
         var dom_scale = scales.x;
         var range_scale = scales.y;
 
@@ -217,8 +213,3 @@ var BarsModel = markmodel.MarkModel.extend({
         color: serialize.array_or_json,
     }, markmodel.MarkModel.serializers)
 });
-
-
-module.exports = {
-    BarsModel: BarsModel
-};
