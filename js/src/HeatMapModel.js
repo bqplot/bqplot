@@ -15,7 +15,7 @@
 
 import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
-var serialize = require('./serialize')
+import * as serialize from './serialize';
 
 var HeatMapModel = markmodel.MarkModel.extend({
 

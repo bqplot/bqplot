@@ -16,7 +16,7 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as basemodel from './BaseModel';
 var semver_range = "^" + require("../package.json").version;
-var serialize = require('./serialize')
+import * as serialize from './serialize';
 import _ from 'underscore';
 
 export const SelectorModel = basemodel.BaseModel.extend({

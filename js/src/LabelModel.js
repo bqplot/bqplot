@@ -15,7 +15,7 @@
 
 import * as _ from 'underscore';
 import * as basemodel from './ScatterBaseModel';
-var serialize = require('./serialize')
+import * as serialize from './serialize';
 
 var LabelModel = basemodel.ScatterBaseModel.extend({
 

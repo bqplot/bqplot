@@ -15,7 +15,7 @@
 
 var d3 = Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"));
 import * as markmodel from './MarkModel';
-var serialize = require('./serialize')
+import * as serialize from './serialize';
 import _ from 'underscore';
 
 export const PieModel = markmodel.MarkModel.extend({

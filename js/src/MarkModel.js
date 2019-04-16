@@ -17,7 +17,7 @@ import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
 import * as basemodel from './BaseModel';
 var semver_range = "^" + require("../package.json").version;
-var serialize = require('./serialize')
+import * as serialize from './serialize';
 
 export var MarkModel = basemodel.BaseModel.extend({
 

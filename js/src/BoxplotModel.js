@@ -16,7 +16,7 @@
 var d3 = Object.assign({}, require("d3-array"));
 import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
-var serialize = require('./serialize')
+import * as serialize from './serialize';
 
 var BoxplotModel = markmodel.MarkModel.extend({
 
