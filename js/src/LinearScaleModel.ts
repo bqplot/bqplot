@@ -14,10 +14,10 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"));
-var _ = require("underscore");
 var scalemodel = require("./ScaleModel");
+import _ from 'underscore';
 
-var LinearScaleModel = scalemodel.ScaleModel.extend({
+export const LinearScaleModel = scalemodel.ScaleModel.extend({
 
     defaults: function() {
         return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
@@ -72,35 +72,35 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
 
     update_domain: function() {
         var that = this;
-        var min = (!this.min_from_data) ?
-            this.min : d3.min(_.map(this.domains, function(d) {
+        const min = (!this.min_from_data) ?
+            this.min : d3.min(_.map(this.domains, function(d: any[]) {
                 return d.length > 0 ? d[0] : that.global_max;
             }));
-        var max = (!this.max_from_data) ?
-            this.max : d3.max(_.map(this.domains, function(d) {
+        const max = (!this.max_from_data) ?
+            this.max : d3.max(_.map(this.domains, function(d: any[]) {
                 return d.length > 1 ? d[1] : that.global_min;
             }));
-        var mid = (min + max) * 0.5,
-            new_width = (max - min) * 0.5 / this.get("mid_range");
-            prev_domain = this.domain,
-            min_index = (this.reverse) ? 1 : 0,
-            prev_min = prev_domain[min_index],
-            prev_max = prev_domain[1 - min_index],
-            prev_mid = (prev_max + prev_min) * 0.5,
-            min_width = (prev_max - prev_min) * 0.5 * this.get("min_range");
+        const mid = (min + max) * 0.5;
+        const new_width = (max - min) * 0.5 / this.get("mid_range");
+        const prev_domain = this.domain;
+        const min_index = (this.reverse) ? 1 : 0;
+        const prev_min = prev_domain[min_index];
+        const prev_max = prev_domain[1 - min_index];
+        const prev_mid = (prev_max + prev_min) * 0.5;
+        const min_width = (prev_max - prev_min) * 0.5 * this.get("min_range");
 
-        var stabilized = this.get("stabilized");
+        const stabilized = this.get("stabilized");
 
         // If the scale is stabilized, only update if the new min/max is without
         // a certain range, else update as soon as the new min/max is different.
-        var update_domain = stabilized ?
+        const update_domain = stabilized ?
             (!(min >= prev_min) || !(min <= prev_mid-min_width) ||
              !(max <= prev_max) || !(max >= prev_mid+min_width)) :
             (min !== prev_min || max !== prev_max);
 
         if (update_domain) {
-            var new_min = stabilized ? mid - new_width : min,
-                new_max = stabilized ? mid + new_width : max;
+            const new_min = stabilized ? mid - new_width : min;
+            const new_max = stabilized ? mid + new_width : max;
             this.domain = (this.reverse) ? [new_max, new_min] : [new_min, new_max];
             this.trigger("domain_changed", this.domain);
         }
@@ -122,6 +122,3 @@ var LinearScaleModel = scalemodel.ScaleModel.extend({
     }
 });
 
-module.exports = {
-    LinearScaleModel: LinearScaleModel,
-};
