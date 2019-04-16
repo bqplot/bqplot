@@ -17,7 +17,7 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
 import * as _ from 'underscore';
 import * as mark from './Mark';
 
-var Boxplot = mark.Mark.extend({
+export const Boxplot = mark.Mark.extend({
 
     render: function() {
         var base_creation_promise = Boxplot.__super__.render.apply(this);
@@ -238,10 +238,9 @@ var Boxplot = mark.Mark.extend({
 
     //FIXME: should use the selected_style logic
     update_selected_colors: function(selected_indices) {
-        var that = this;
         var stroke = this.model.get("stroke");
         var selected_stroke = stroke;
-        var boxplot_sel = this.d3el.selectAll(".boxplot")
+        this.d3el.selectAll(".boxplot")
             .style("stroke", function(d, i) {
                 return (selected_indices.indexOf(i) > -1) ? selected_stroke : stroke;
             })
@@ -295,7 +294,7 @@ var Boxplot = mark.Mark.extend({
         for(var i = 0; i<this.model.mark_data.length; ++i) {
             var values = this.model.mark_data[i];
 
-            var displayValue = {};
+            var displayValue: any = {};
 
             displayValue.x         = x_scale.scale(values[0]);
             displayValue.boxUpper  = y_scale.scale(d3.quantile(values[1], 0.75));
@@ -346,21 +345,20 @@ var Boxplot = mark.Mark.extend({
         // Keep the pixel coordinates of the boxes, for interactions.
         this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
         var width = this.get_box_width() / 2;
-        this.pixel_coords = this.plotData.map(function(d) { return [[d.x - width, d.x + width],
-                                                                    [d.boxLower, d.boxUpper]] })
+        this.pixel_coords = this.plotData.map(function(d) {
+            return [[d.x - width, d.x + width],
+                    [d.boxLower, d.boxUpper]]
+        });
     },
 
     draw_mark_paths: function(parentClass, selector) {
-        var that = this;
         var plotData = this.plotData;
         var outlierData = this.outlierData;
 
-        var mark_max_width = this.calculate_mark_max_width();
         var color = this.model.get("color");
         var boxplot = this.d3el.selectAll(parentClass).data(plotData);
 
         var fillcolor = this.model.get("box_fill_color");
-        var start_time = this.model.get("start_time");
         // Create new
         var new_boxplots = boxplot.enter()
             .append("g")
@@ -555,7 +553,6 @@ var Boxplot = mark.Mark.extend({
 
     draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         var stroke = this.model.get("stroke");
-        var colors = this.model.get("colors");
         this.rect_dim = inter_y_disp * 0.8;
         var that = this;
 
@@ -593,8 +590,3 @@ var Boxplot = mark.Mark.extend({
         return [1, max_length];
     }
 });
-
-
-module.exports = {
-    Boxplot: Boxplot
-};

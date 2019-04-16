@@ -16,7 +16,6 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
 var semver_range = "^" + require("../package.json").version;
-var serialize = require('./serialize.js')
 
 export var BaseModel = widgets.WidgetModel.extend({
 
