@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"));
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 import _ from 'underscore';

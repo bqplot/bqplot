@@ -15,8 +15,8 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
-var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"),
-                       require("d3-selection-multi"), require("d3-shape"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 import * as figure from './Figure';
 import * as popperreference from './PopperReference';

@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-geo"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-geo"));
 import * as scalemodel from './ScaleModel';
 import _ from 'underscore';
 

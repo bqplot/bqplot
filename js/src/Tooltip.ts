@@ -14,7 +14,8 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-var d3 = Object.assign({}, require("d3-selection"), require("d3-format"), require("d3-time-format"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-selection"), require("d3-format"), require("d3-time-format"));
 import * as utils from './utils';
 import _ from 'underscore';
 

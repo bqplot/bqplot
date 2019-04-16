@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-selection"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-selection"));
 import * as interaction from './Interaction';
 var convert_dates = require('./utils').convert_dates;
 import _ from 'underscore';

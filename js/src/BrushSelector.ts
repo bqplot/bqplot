@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-brush"), require("d3-selection"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-brush"), require("d3-selection"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as selector from './Selector';

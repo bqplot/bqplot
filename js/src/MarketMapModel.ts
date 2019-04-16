@@ -15,7 +15,8 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
-var d3 = Object.assign({}, require("d3-scale"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-scale"));
 import * as basemodel from './BaseModel';
 import * as serialize from './serialize';
 var semver_range = "^" + require("../package.json").version;

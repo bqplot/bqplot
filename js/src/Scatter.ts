@@ -14,7 +14,8 @@
  */
 import * as scatterbase from './ScatterBase';
 import * as markers from './Markers';
-var d3 = Object.assign({}, require("d3-selection"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-selection"));
 
 var bqSymbol: any = markers.symbol;
 

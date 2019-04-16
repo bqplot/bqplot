@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-array"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-array"));
 import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';

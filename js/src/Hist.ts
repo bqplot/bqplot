@@ -14,7 +14,8 @@
  */
 
 import * as _ from 'underscore';
-var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-array"), require("d3-selection"));
 // Hack to fix problem with webpack providing multiple d3 objects
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 

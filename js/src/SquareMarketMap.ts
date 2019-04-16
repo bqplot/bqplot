@@ -14,7 +14,8 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-var d3 = Object.assign({}, require("d3-hierarchy"), require("d3-scale"), require("d3-selection"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-hierarchy"), require("d3-scale"), require("d3-selection"));
 import _ from 'underscore';
 
 export const SquareMarketMap = widgets.DOMWidgetView.extend({

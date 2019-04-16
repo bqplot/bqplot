@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-scale"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-scale"));
 import * as colorscale from './ColorScale';
 
 export const DateColorScale = colorscale.ColorScale.extend({

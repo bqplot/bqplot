@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
 // Hack to fix problem with webpack providing multiple d3 objects
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 import * as mark from './Mark';

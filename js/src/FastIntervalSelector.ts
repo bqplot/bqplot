@@ -14,7 +14,8 @@
  */
 
 import * as _ from 'underscore';
-var d3 = Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 import * as baseselector from './Selector';
 import * as sel_utils from './selector_utils';
 

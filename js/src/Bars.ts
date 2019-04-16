@@ -13,7 +13,9 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-selection-multi"));
+import * as d3 from 'd3';
+// import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-selection-multi"));
 // Hack to fix problem with webpack providing multiple d3 objects
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 

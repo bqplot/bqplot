@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-var d3 = Object.assign({}, require("d3"));
+import * as d3 from 'd3';
+// var d3 =Object.assign({}, require("d3"));
 import * as mark from './Mark';
 import * as _ from 'underscore';
 
