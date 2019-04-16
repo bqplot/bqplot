@@ -14,6 +14,8 @@
   },
   "scripts": {
     "build": "tsc && webpack && lessc less/bqplot.less css/bqplot.css",
+    "build:js": "tsc",
+    "watch:js": "tsc --watch",
     "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
