@@ -14,11 +14,11 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"));
-var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize')
+import _ from 'underscore';
 
-var PieModel = markmodel.MarkModel.extend({
+export const PieModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -140,6 +140,3 @@ var PieModel = markmodel.MarkModel.extend({
     }, markmodel.MarkModel.serializers)
 });
 
-module.exports = {
-    PieModel: PieModel
-};
