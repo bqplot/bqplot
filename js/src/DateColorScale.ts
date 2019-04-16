@@ -16,13 +16,10 @@
 var d3 = Object.assign({}, require("d3-scale"));
 var colorscale = require("./ColorScale");
 
-var DateColorScale = colorscale.ColorScale.extend({
+export const DateColorScale = colorscale.ColorScale.extend({
 
     create_d3_scale: function(){
         this.scale = d3.scaleTime();
     }
 });
 
-module.exports = {
-    DateColorScale: DateColorScale
-};
