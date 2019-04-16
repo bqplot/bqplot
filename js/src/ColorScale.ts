@@ -14,10 +14,10 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"));
-var _ = require("underscore");
 var scale = require("./Scale");
+import _ from 'underscore';
 
-var ColorScale = scale.Scale.extend({
+export const ColorScale = scale.Scale.extend({
 
     render: function(){
         this.create_d3_scale();
@@ -52,6 +52,3 @@ var ColorScale = scale.Scale.extend({
     },
 });
 
-module.exports = {
-    ColorScale: ColorScale,
-};
