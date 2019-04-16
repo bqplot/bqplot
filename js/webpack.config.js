@@ -20,7 +20,8 @@ module.exports = [
             path: path.resolve(__dirname, '../bqplot/static'),
             libraryTarget: 'amd'
         },
-        externals: ['@jupyter-widgets/base']
+        externals: ['@jupyter-widgets/base'],
+        mode: 'production'
     },
     {// bqplot bundle for the notebook
         entry: './lib/index-embed.js',
@@ -33,7 +34,8 @@ module.exports = [
         module: {
             rules: rules
         },
-        externals: ['@jupyter-widgets/base']
+        externals: ['@jupyter-widgets/base'],
+        mode: 'production'
     },
     {// embeddable bqplot bundle
         entry: './lib/index-embed.js',
@@ -46,6 +48,7 @@ module.exports = [
         module: {
             rules: rules
         },
-        externals: ['@jupyter-widgets/base']
+        externals: ['@jupyter-widgets/base'],
+        mode: 'production'
     }
 ];
