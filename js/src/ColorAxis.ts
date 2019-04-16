@@ -16,9 +16,9 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-axis"), require("d3-scale"), require("d3-selection"), require("d3-selection-multi"));
 import * as axis from './Axis';
-import _ from 'underscore';
+import * as _ from 'underscore';
 
-export const ColorBar = axis.Axis.extend({
+const ColorBar = axis.Axis.extend({
 
     render: function() {
         this.parent = this.options.parent;
@@ -368,3 +368,4 @@ export const ColorBar = axis.Axis.extend({
     }
 });
 
+export { ColorBar as ColorAxis };
