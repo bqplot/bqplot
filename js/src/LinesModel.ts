@@ -14,12 +14,12 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"), require("d3-array"));
-var _ = require("underscore");
 var markmodel = require("./MarkModel");
 var serialize = require('./serialize');
 var utils = require('./utils');
+import * as _ from 'underscore';
 
-var LinesModel = markmodel.MarkModel.extend({
+export const LinesModel = markmodel.MarkModel.extend({
 
     defaults: function () {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -70,8 +70,6 @@ var LinesModel = markmodel.MarkModel.extend({
         this.y_data = this.get("y");
         this.color_data = this.get("color") || [];
 
-        var scales = this.get("scales");
-        var x_scale = scales.x, y_scale = scales.y;
         var curve_labels = this.get("labels");
         if (this.x_data.length === 0 || this.y_data.length === 0) {
             this.mark_data = [];
@@ -192,7 +190,7 @@ var LinesModel = markmodel.MarkModel.extend({
     }, markmodel.MarkModel.serializers)
 });
 
-var FlexLineModel = LinesModel.extend({
+export const FlexLineModel = LinesModel.extend({
 
     defaults: function() {
         return _.extend(LinesModel.prototype.defaults(), {
@@ -230,8 +228,6 @@ var FlexLineModel = LinesModel.extend({
         this.x_data = this.get("x");
         this.y_data = this.get("y");
 
-        var scales = this.get("scales");
-        var x_scale = scales.x, y_scale = scales.y;
         var curve_labels = this.get("labels");
         if (this.x_data.length === 0 || this.y_data.length === 0) {
             this.mark_data = [];
@@ -312,7 +308,3 @@ var FlexLineModel = LinesModel.extend({
     }
 });
 
-module.exports = {
-    LinesModel: LinesModel,
-    FlexLineModel: FlexLineModel
-};
