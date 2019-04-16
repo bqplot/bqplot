@@ -18,7 +18,7 @@ import * as _ from 'underscore';
 import * as basemodel from './BaseModel';
 var semver_range = "^" + require("../package.json").version;
 
-var HandDrawModel = basemodel.BaseModel.extend({
+export const HandDrawModel = basemodel.BaseModel.extend({
 
 	defaults: function() {
         return _.extend(widgets.WidgetModel.prototype.defaults(), {
@@ -40,7 +40,3 @@ var HandDrawModel = basemodel.BaseModel.extend({
         lines:  { deserialize: widgets.unpack_models },
     }, basemodel.BaseModel.serializers)
 });
-
-module.exports = {
-    HandDrawModel: HandDrawModel
-};

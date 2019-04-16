@@ -17,7 +17,7 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-var GridHeatMapModel = markmodel.MarkModel.extend({
+export const GridHeatMapModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -63,7 +63,6 @@ var GridHeatMapModel = markmodel.MarkModel.extend({
         this.rows = this.get("row");
         this.columns = this.get("column");
 
-        var num_rows = this.colors.length;
         var num_cols = this.colors[0].length;
         var flat_colors = [].concat.apply([], this.colors.map((x) => Array.prototype.slice.call(x, 0)));
 
@@ -123,7 +122,7 @@ var GridHeatMapModel = markmodel.MarkModel.extend({
     identify_modes: function() {
         //based on the data, identify the mode in which the heatmap should
         //be plotted.
-        var modes = {};
+        var modes : any = {};
         var scales = this.get("scales");
         var row_scale = scales.row;
         var column_scale = scales.column;
@@ -161,7 +160,3 @@ var GridHeatMapModel = markmodel.MarkModel.extend({
         color: serialize.array_or_json,
     }, markmodel.MarkModel.serializers)
 });
-
-module.exports = {
-    GridHeatMapModel: GridHeatMapModel
-};

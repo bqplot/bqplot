@@ -18,7 +18,7 @@ import * as utils from './utils';
 import * as interaction from './Interaction';
 var convert_dates = require('./utils').convert_dates;
 
-var HandDraw = interaction.Interaction.extend({
+export const HandDraw = interaction.Interaction.extend({
 
     render: function() {
         HandDraw.__super__.render.apply(this);
@@ -97,7 +97,7 @@ var HandDraw = interaction.Interaction.extend({
             var newx = scale_x.invert(mouse_pos[0]);
             var newy = scale_y.invert(mouse_pos[1]);
             var oldx = scale_x.invert(this.previous_pos[0]);
-            var oldy = scale_y.invert(this.previous_pos[1]);
+            scale_y.invert(this.previous_pos[1]);
             var old_index = this.nns(lines_model.x_data[xindex], oldx);
             var new_index = this.nns(lines_model.x_data[xindex], newx);
             var min = Math.min(old_index, new_index);
@@ -169,7 +169,3 @@ var HandDraw = interaction.Interaction.extend({
         this.line_index = this.model.get("line_index");
     },
 });
-
-module.exports = {
-    HandDraw: HandDraw,
-};
