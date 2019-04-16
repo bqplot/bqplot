@@ -15,11 +15,10 @@
 
 var d3 = Object.assign({}, require("d3-axis"), require("d3-scale"), require("d3-selection"),
                        require("d3-selection-multi"));
-var _ = require("underscore");
-var utils = require("./utils");
 var axis = require("./Axis");
+import _ from 'underscore';
 
-var ColorBar = axis.Axis.extend({
+export const ColorBar = axis.Axis.extend({
 
     render: function() {
         this.parent = this.options.parent;
@@ -117,7 +116,6 @@ var ColorBar = axis.Axis.extend({
     append_axis: function() {
         // The label is allocated a space of 100px. If the label
         // occupies more than 100px then you are out of luck.
-        var that = this;
         if(this.model.get("label") !== undefined && this.model.get("label") !== null) {
             this.d3el.append("g")
                 .attr("transform", this.get_label_transform())
@@ -370,6 +368,3 @@ var ColorBar = axis.Axis.extend({
     }
 });
 
-module.exports = {
-    ColorAxis: ColorBar
-};
