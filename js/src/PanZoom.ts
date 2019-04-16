@@ -14,14 +14,14 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
 var d3 = Object.assign({}, require("d3-selection"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var interaction = require("./Interaction");
+import _ from 'underscore';
 
 // TODO avoid code duplication for 'x' and 'y'
 
-var PanZoom = interaction.Interaction.extend({
+export const PanZoom = interaction.Interaction.extend({
 
     render: function() {
         PanZoom.__super__.render.apply(this);
@@ -219,6 +219,3 @@ var PanZoom = interaction.Interaction.extend({
     }
 });
 
-module.exports = {
-    PanZoom: PanZoom
-};
