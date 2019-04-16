@@ -19,7 +19,7 @@ import * as _ from 'underscore';
 import * as utils from './utils';
 import * as mark from './Mark';
 
-var GridHeatMap = mark.Mark.extend({
+export const GridHeatMap = mark.Mark.extend({
 
     render: function() {
         var base_render_promise = GridHeatMap.__super__.render.apply(this);
@@ -142,7 +142,6 @@ var GridHeatMap = mark.Mark.extend({
     },
 
     click_handler: function (args) {
-        var data = args.data;
         var num_cols = this.model.colors[0].length;
         var index = args.row_num * num_cols + args.column_num;
         var row = args.row_num;
@@ -312,7 +311,6 @@ var GridHeatMap = mark.Mark.extend({
         this.clear_style(this.anchor_style);
 
         this.set_default_style([], this.display_cells);
-        var that = this;
 
         var selected_cell_nums = this._cell_nums_from_indices(this.selected_indices);
         var unsel_cell_nums = (selected_cell_nums === null || selected_cell_nums.length === 0) ? []
@@ -491,7 +489,6 @@ var GridHeatMap = mark.Mark.extend({
         // is to be generated. mode refers to the expansion of the data to
         // generate the plotting data and start is a boolean indicating the
         // alignment of the data w.r.t the cells.
-        var reversed_scale = false;
         var start_points = [];
         var widths = [];
         data = Array.from(data); // copy to Array
@@ -553,7 +550,7 @@ var GridHeatMap = mark.Mark.extend({
                     // the start of the array. Hence it has to be added to
                     // the start_points and the last start_point can be
                     // removed.
-                    start_points.splice(0, 0, Math.abs(0, 0, bounds));
+                    start_points.splice(0, 0, Math.abs(bounds));
                     widths.splice(0, 0, start_points[1] - start_points[0]);
                     start_points.splice(-1, 1);
                 } else {
@@ -603,7 +600,3 @@ var GridHeatMap = mark.Mark.extend({
 
     },
 });
-
-module.exports = {
-    GridHeatMap: GridHeatMap,
-};
