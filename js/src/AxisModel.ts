@@ -14,12 +14,12 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
 var basemodel = require("./BaseModel");
 var serialize = require('./serialize')
 var semver_range = "^" + require("../package.json").version;
+import _ from 'underscore';
 
-var AxisModel = basemodel.BaseModel.extend({
+export const AxisModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(widgets.WidgetModel.prototype.defaults(), {
@@ -74,8 +74,7 @@ var AxisModel = basemodel.BaseModel.extend({
     },
 
     validate_orientation: function() {
-        var orientation = this.get("orientation"),
-            side = this.get("side");
+        const side = this.get("side");
         if (side) {
             if(side === "left" || side === "right") {
                 this.set("orientation", "vertical");
@@ -93,7 +92,7 @@ var AxisModel = basemodel.BaseModel.extend({
     }, widgets.WidgetModel.serializers)
 });
 
-var ColorAxisModel = AxisModel.extend({
+export const ColorAxisModel = AxisModel.extend({
 
     defaults: function() {
         return _.extend(AxisModel.prototype.defaults(), {
@@ -103,8 +102,3 @@ var ColorAxisModel = AxisModel.extend({
     }
 });
 
-
-module.exports = {
-    AxisModel: AxisModel,
-    ColorAxisModel: ColorAxisModel
-};
