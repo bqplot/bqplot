@@ -14,12 +14,12 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
 var basemodel = require("./BaseModel");
 var semver_range = "^" + require("../package.json").version;
 var serialize = require('./serialize')
+import _ from 'underscore';
 
-var SelectorModel = basemodel.BaseModel.extend({
+export const SelectorModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.BaseModel.prototype.defaults(), {
@@ -37,7 +37,7 @@ var SelectorModel = basemodel.BaseModel.extend({
     }, basemodel.BaseModel.serializers)
 });
 
-var OneDSelectorModel = SelectorModel.extend({
+export const OneDSelectorModel = SelectorModel.extend({
 
     defaults: function() {
         return _.extend(SelectorModel.prototype.defaults(), {
@@ -51,7 +51,7 @@ var OneDSelectorModel = SelectorModel.extend({
     }, SelectorModel.serializers),
 });
 
-var TwoDSelectorModel = SelectorModel.extend({
+export const TwoDSelectorModel = SelectorModel.extend({
 
     defaults: function() {
         return _.extend(SelectorModel.prototype.defaults(), {
@@ -67,7 +67,7 @@ var TwoDSelectorModel = SelectorModel.extend({
     }, SelectorModel.serializers)
 });
 
-var FastIntervalSelectorModel = OneDSelectorModel.extend({
+export const FastIntervalSelectorModel = OneDSelectorModel.extend({
 
     defaults: function() {
         return _.extend(OneDSelectorModel.prototype.defaults(), {
@@ -84,7 +84,7 @@ var FastIntervalSelectorModel = OneDSelectorModel.extend({
     }, OneDSelectorModel.serializers)
 });
 
-var IndexSelectorModel = OneDSelectorModel.extend({
+export const IndexSelectorModel = OneDSelectorModel.extend({
 
     defaults: function() {
         return _.extend(OneDSelectorModel.prototype.defaults(), {
@@ -101,7 +101,7 @@ var IndexSelectorModel = OneDSelectorModel.extend({
     }, OneDSelectorModel.serializers)
 });
 
-var BrushIntervalSelectorModel = OneDSelectorModel.extend({
+export const BrushIntervalSelectorModel = OneDSelectorModel.extend({
 
     defaults: function() {
         return _.extend(OneDSelectorModel.prototype.defaults(), {
@@ -119,7 +119,7 @@ var BrushIntervalSelectorModel = OneDSelectorModel.extend({
     }, OneDSelectorModel.serializers)
 });
 
-var BrushSelectorModel = TwoDSelectorModel.extend({
+export const BrushSelectorModel = TwoDSelectorModel.extend({
 
     defaults: function() {
         return _.extend(TwoDSelectorModel.prototype.defaults(), {
@@ -139,7 +139,7 @@ var BrushSelectorModel = TwoDSelectorModel.extend({
     }, TwoDSelectorModel.serializers)
 });
 
-var MultiSelectorModel = OneDSelectorModel.extend({
+export const MultiSelectorModel = OneDSelectorModel.extend({
 
     defaults: function() {
         return _.extend(OneDSelectorModel.prototype.defaults(), {
@@ -154,7 +154,7 @@ var MultiSelectorModel = OneDSelectorModel.extend({
     }
 });
 
-var LassoSelectorModel = TwoDSelectorModel.extend({
+export const LassoSelectorModel = TwoDSelectorModel.extend({
 
     defaults: function() {
         return _.extend(OneDSelectorModel.prototype.defaults(), {
@@ -165,14 +165,3 @@ var LassoSelectorModel = TwoDSelectorModel.extend({
     }
 });
 
-module.exports = {
-    SelectorModel: SelectorModel,
-    OneDSelectorModel: OneDSelectorModel,
-    TwoDSelectorModel: TwoDSelectorModel,
-    FastIntervalSelectorModel: FastIntervalSelectorModel,
-    IndexSelectorModel: IndexSelectorModel,
-    BrushIntervalSelectorModel: BrushIntervalSelectorModel,
-    BrushSelectorModel: BrushSelectorModel,
-    MultiSelectorModel: MultiSelectorModel,
-    LassoSelectorModel: LassoSelectorModel
-};
