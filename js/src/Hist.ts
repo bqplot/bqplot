@@ -153,7 +153,6 @@ var Hist = mark.Mark.extend({
         this.set_ranges();
         var colors = this.model.get("colors");
         var fill_color = colors[0];
-        var select_color = (colors.length > 1) ? colors[1] : "red";
 
         var indices = [];
         this.model.mark_data.forEach(function(d, i) {
@@ -217,7 +216,6 @@ var Hist = mark.Mark.extend({
     },
 
     bar_click_handler: function (args) {
-        var data = args.data;
         var index = args.index;
         //code repeated from bars. We should unify the two.
         var that = this;
@@ -356,7 +354,7 @@ var Hist = mark.Mark.extend({
         var colors = this.model.get("colors");
         var select_color = colors.length > 1 ? colors[1] : "red";
         var fill_color = colors[0];
-        var bars_sel = this.d3el.selectAll(".bargroup");
+        this.d3el.selectAll(".bargroup");
         var that = this;
         _.difference(_.range(0, this.model.num_bins), indices)
             .forEach(function(d) {
@@ -378,7 +376,6 @@ var Hist = mark.Mark.extend({
         }
 
         var bar_width = this.calculate_bar_width();
-        var x_scale = this.scales.sample;
 
         //adding "bar_width / 2.0" to bin_pixels as we need to select the
         //bar whose center is closest to the current location of the mouse.
@@ -457,8 +454,6 @@ var Hist = mark.Mark.extend({
     calc_data_indices_from_data_range: function(start_pixel, end_pixel) {
         //Input is pixel values and output is the list of indices for which
         //the `sample` value lies in the interval
-        var x_scale = this.scales.sample;
-
         var idx_start = d3.max([0, d3.bisectLeft(this.bin_pixels, start_pixel) - 1]);
         var idx_end = d3.min([this.model.num_bins, d3.bisectRight(this.bin_pixels, end_pixel)]);
 

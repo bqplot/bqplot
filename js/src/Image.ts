@@ -15,7 +15,6 @@
 
 var d3 = Object.assign({}, require("d3"));
 import * as mark from './Mark';
-import * as utils from './utils';
 import * as _ from 'underscore';
 
 
@@ -24,8 +23,6 @@ var Image = mark.Mark.extend({
     render: function() {
         var base_render_promise = Image.__super__.render.apply(this);
         var el = this.d3el || this.el;
-        window.last_el = el;
-        window.last_image = this;
         this.im = el.append("image")
             .attr("x", 0)
             .attr("y", 0)
@@ -150,7 +147,6 @@ var Image = mark.Mark.extend({
         var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
         var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
 
-        var that = this;
         var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
         var el = this.d3el || this.el;
         var x_scaled = this.model.mark_data["x"].map(x_scale.scale),
