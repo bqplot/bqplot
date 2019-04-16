@@ -14,10 +14,10 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"));
-var _ = require("underscore");
 var linearscale = require("./LinearScale");
+import _ from 'underscore';
 
-var DateScale = linearscale.LinearScale.extend({
+export const DateScale = linearscale.LinearScale.extend({
     render: function() {
         this.scale = d3.scaleTime();
         if(this.model.domain.length > 0)
@@ -27,6 +27,3 @@ var DateScale = linearscale.LinearScale.extend({
     },
 });
 
-module.exports = {
-    DateScale: DateScale,
-};
