@@ -15,7 +15,7 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-drag"), require("d3-selection"), require("d3-shape"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as baseselector from './Selector';
 import * as sel_utils from './selector_utils';
@@ -132,7 +132,7 @@ export const LassoSelector = baseselector.BaseXYSelector.extend({
 
     keydown: function() {
        // delete key pressed
-       if (d3.getEvent().keyCode === 46) {
+       if (d3GetEvent().keyCode === 46) {
            // Delete selected lassos
            var lassos_to_delete = this.d3el.selectAll(".selected");
            // Update the lasso vertices

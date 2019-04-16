@@ -90,7 +90,7 @@ export const HistModel = markmodel.MarkModel.extend({
                 return 0.5 * (d + that.x_bins[i - 1]);
             }).slice(1);
 
-            this.mark_data = d3.histogram().thresholds(this.x_bins).value(function(d) {
+            this.mark_data = d3.histogram().thresholds(this.x_bins).value(function(d: any) {
                 return d.value;
             })(x_data_ind);
             //adding index attribute to mark_data of the model
@@ -153,7 +153,7 @@ export const HistModel = markmodel.MarkModel.extend({
         // y-domain change is handled by this function.
         var y_scale = this.get("scales").count;
         if(!this.get("preserve_domain").count) {
-            y_scale.set_domain([0, d3.max(this.mark_data, function(d) {
+            y_scale.set_domain([0, d3.max(this.mark_data, function(d: any): number {
                 return d.y;
             }) * 1.05], this.model_id + "_count");
         }

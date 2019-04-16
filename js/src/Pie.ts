@@ -16,7 +16,7 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
 // Hack to fix problem with webpack providing multiple d3 objects
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as mark from './Mark';
 import * as utils from './utils';
 import _ from 'underscore';
@@ -241,7 +241,7 @@ export const Pie = mark.Mark.extend({
         var pie = d3.pie()
             .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
             .endAngle(this.model.get("end_angle") * 2 * Math.PI/360)
-            .value(function(d) { return d.size; });
+            .value(function(d: any) { return d.size; });
 
         if(!this.model.get("sort")) { pie.sort(null); }
 
@@ -453,17 +453,17 @@ export const Pie = mark.Mark.extend({
         var index = args.index;
         var that = this;
         var idx = this.model.get("selected");
-        var selected = idx ? utils.deepCopy(idx) : [];
+        var selected: number[] = idx ? utils.deepCopy(idx) : [];
             // index of slice i. Checking if it is already present in the list.
         var elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
+        var accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
             // pressed, remove the element from the list
             selected.splice(elem_index, 1);
         } else {
-            if(d3.getEvent().shiftKey) {
+            if(d3GetEvent().shiftKey) {
                 //If shift is pressed and the element is already
                 //selected, do not do anything
                 if(elem_index > -1) {
@@ -495,7 +495,7 @@ export const Pie = mark.Mark.extend({
             ((selected.length === 0) ? null : selected),
             {updated_view: this});
         this.touch();
-        var e = d3.getEvent();
+        var e = d3GetEvent();
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }

@@ -19,7 +19,7 @@ import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
 import * as basemodel from './BaseModel';
 import * as serialize from './serialize';
-var semver_range = "^" + require("../package.json").version;
+import { semver_range } from './version';
 
 export const MarketMapModel = basemodel.BaseModel.extend({
 
@@ -49,7 +49,7 @@ export const MarketMapModel = basemodel.BaseModel.extend({
             rows: 0,
 
             row_groups: 1,
-            colors: d3.scaleOrdinal(d3.schemeCategory20).range(),
+            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
             scales: {},
             axes: [],
             color: [],

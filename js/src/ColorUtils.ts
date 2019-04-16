@@ -51,7 +51,7 @@ export function cycle_colors_from_scheme(scheme, num_steps) {
     } else if (color_index in color_set) {
         return color_set[color_index];
     } else {
-        var color_index = get_max_index(color_set).toString();
+        color_index = get_max_index(color_set).toString();
         return this.cycle_colors(color_set[color_index], num_steps);
     }
 }

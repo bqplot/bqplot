@@ -16,8 +16,9 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
 import * as d3 from 'd3';
+import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+
 import * as figure from './Figure';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
@@ -379,7 +380,7 @@ export const MarketMap = figure.Figure.extend({
             var element_count = that.running_sums[i];
 
             var groups = d3.select(d)
-                .selectAll(".rect_element")
+                .selectAll<SVGGElement, undefined>(".rect_element")
                 .data(data);
 
             // Appending the <g> <rect> and <text> elements to the newly
@@ -393,10 +394,15 @@ export const MarketMap = figure.Figure.extend({
                 .attr("y", 0)
                 .classed("market_map_rect", true);
 
-            new_groups.append("text")
+            let text = new_groups.append("text")
                 .classed("market_map_text", true)
-                .styles({"text-anchor": "middle", 'fill' :'black', "pointer-events": "none"})
-                .styles(that.model.get("font_style"));
+                .style("text-anchor", "middle")
+                .style('fill', 'black')
+                .style("pointer-events", "none");
+            let fontStyle = that.model.get("font_style");
+            for (let i in Object.keys(fontStyle)) {
+                text.style(i, fontStyle[i]);
+            }
 
             groups = new_groups.merge(groups);
 
@@ -407,28 +413,30 @@ export const MarketMap = figure.Figure.extend({
                 .on("mousemove", function(data) { that.mousemove_handler(data); })
                 .on("mouseout", function(data, ind) { that.mouseout_handler(data, (element_count + ind), this);})
                 .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
-                .attr("id", function(data) { return "market_map_element_" + data.name;});
+                .attr("id", function(data: any) { return "market_map_element_" + data.name;});
 
             groups.selectAll(".market_map_rect")
                 .attr("width", that.column_width)
                 .attr("height", that.row_height)
                 .style("stroke-opacity", (that.model.get("show_groups") ? 0.2 : 1.0))
-                .styles({'stroke': that.model.get("stroke"), "fill": function(elem, j) {
+                .style('stroke', that.model.get("stroke"))
+                .style("fill", function(elem: any, j) {
                     return (color_scale && elem.color !== undefined && elem.color !== null) ?
                         color_scale.scale(elem.color) :
-                        that.colors_map(i);}});
+                        that.colors_map(i);
+                    });
 
             groups.selectAll(".market_map_text")
                 .attr("x", that.column_width / 2.0)
                 .attr("y", that.row_height / 2.0)
-                .text(function(data, j) { return data.display; })
+                .text(function(data: any, j) { return data.display; })
                 .style("opacity", (that.model.get("show_groups") ? 0.2 : 1.0));
 
             // Removing the old nodes
             groups.exit().remove();
             that.create_bounding_path(d, ends);
-            var min_x = d3.min(ends, function(end_point) { return end_point.x;});
-            var min_y = d3.min(ends, function(end_point) { return end_point.y;});
+            var min_x = d3.min(ends, function(end_point: any) { return end_point.x;});
+            var min_y = d3.min(ends, function(end_point: any) { return end_point.y;});
 
             that.fig_names.append("foreignObject")
                 .attr("class", "names_object")
@@ -466,10 +474,12 @@ export const MarketMap = figure.Figure.extend({
                 .selectAll(".rect_element")
                 .data(data)
                 .select('rect')
-                .styles({'stroke': that.model.get('stroke'), 'fill': function(elem, j)
-                       { return (color_scale && elem.color !== undefined && elem.color !== null) ?
+                .style('stroke', that.model.get('stroke'))
+                .style('fill', function(elem: any, j) {
+                    return (color_scale && elem.color !== undefined && elem.color !== null) ?
                            color_scale.scale(elem.color) :
-                           that.colors_map(i);}});
+                           that.colors_map(i);
+                });
         });
     },
 
@@ -488,11 +498,13 @@ export const MarketMap = figure.Figure.extend({
                     .selectAll(".rect_element")
                     .data(data)
                     .select('rect')
-                    .styles({'stroke': that.model.get('stroke'), 'fill': function(elem, j) {
+                    .style('stroke', that.model.get('stroke'))
+                    .style('fill', function(elem: any, j) {
                         return (color_scale && elem.color !== undefined &&
                                elem.color !== null) ?
                             color_scale.scale(elem.color) :
-                            that.colors_map(i);}});
+                            that.colors_map(i);
+                    });
             });
         }
     },
@@ -946,8 +958,8 @@ export const MarketMap = figure.Figure.extend({
             var filtered_array = editing_copy.filter(function(elem) { return elem[prop] == match; });
             if(filtered_array.length > 0) {
                 iter++;
-                var min_elem = d3.min(filtered_array, function(elem) { return elem[other_prop]; });
-                var max_elem = d3.max(filtered_array, function(elem) { return elem[other_prop]; });
+                var min_elem = d3.min(filtered_array, function(elem) { return elem[other_prop] as number; });
+                var max_elem = d3.max(filtered_array, function(elem) { return elem[other_prop] as number; });
                 if(min_elem < dim && max_elem > dim) {
                     if(prop == 'y') {
                         if(this.x_direction == 1) {
@@ -970,7 +982,7 @@ export const MarketMap = figure.Figure.extend({
                         } else if(greater_arr.length == 1) {
                             final_val = max_elem;
                         } else {
-                            final_val = d3.max(lesser_arr, function(elem) {return elem[other_prop]; });
+                            final_val = d3.max(lesser_arr, function(elem) {return elem[other_prop] as number; });
                         }
                     }
                 } else {
@@ -1004,8 +1016,8 @@ export const MarketMap = figure.Figure.extend({
         values.push(end_points[0]);
         var line = d3.line()
             .curve(d3.curveLinear)
-            .x(function(d) { return d.x;})
-            .y(function(d) { return d.y;});
+            .x(function(d: any) { return d.x;})
+            .y(function(d: any) { return d.y;});
         var bounding_path = d3.select(elem)
             .append('path')
             .attr("class", "bounding_path")

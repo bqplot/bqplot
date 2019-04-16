@@ -15,7 +15,7 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as utils from './utils';
 import * as mark from './Mark';
 import _ from 'underscore';
@@ -27,7 +27,7 @@ export const ScatterBase = mark.Mark.extend({
 
         var that = this;
         this.drag_listener = d3.drag()
-          .subject(function(d) {
+          .subject((d: any) => {
               return {x: that.x_scale.scale(d.x), y: that.y_scale.scale(d.y)};
           })
           .on("start", function(d, i) { return that.drag_start(d, i, this); })
@@ -354,7 +354,7 @@ export const ScatterBase = mark.Mark.extend({
         // index of bar i. Checking if it is already present in the list.
         var elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
+        var accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
 
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
@@ -379,7 +379,7 @@ export const ScatterBase = mark.Mark.extend({
                        ((selected.length === 0) ? null : selected),
                        {updated_view: this});
         this.touch();
-        var e = d3.getEvent();
+        var e = d3GetEvent();
         if(!e) {
             e = window.event;
         }
@@ -449,7 +449,7 @@ export const ScatterBase = mark.Mark.extend({
               return colors[i % len];
           });
 
-        var max_length = d3.max(this.model.get("labels"), function(d) {
+        var max_length = d3.max(this.model.get("labels"), function(d: any) {
             return d.length;
         });
 
@@ -616,8 +616,8 @@ export const ScatterBase = mark.Mark.extend({
         var restrict_x = this.model.get("restrict_x"),
             restrict_y = this.model.get("restrict_y");
         if (restrict_x && restrict_y) { return; }
-        if (!restrict_y) { d[0] = d3.getEvent().x; }
-        if (!restrict_x) { d[1] = d3.getEvent().y; }
+        if (!restrict_y) { d[0] = d3GetEvent().x; }
+        if (!restrict_x) { d[1] = d3GetEvent().y; }
 
         d3.select(dragged_node)
           .attr("transform", function() {
@@ -654,7 +654,7 @@ export const ScatterBase = mark.Mark.extend({
     },
 
     selected_deleter: function() {
-        d3.getEvent().stopPropagation();
+        d3GetEvent().stopPropagation();
         return;
     },
 

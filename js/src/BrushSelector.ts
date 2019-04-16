@@ -15,7 +15,7 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-brush"), require("d3-selection"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as selector from './Selector';
 import * as utils from './utils';
@@ -136,7 +136,7 @@ export const BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).e
     },
 
     convert_and_save: function() {
-        var e = d3.getEvent();
+        var e = d3GetEvent();
         if(!e.sourceEvent) return;
         if(!e.selection) {
             this.empty_selection();
@@ -240,7 +240,7 @@ export const BrushIntervalSelector = selector.BaseXSelector.extend(BaseBrushSele
     },
 
     convert_and_save: function() {
-        var e = d3.getEvent();
+        var e = d3GetEvent();
         if(!e.sourceEvent) return;
         if(!e.selection) {
             this.empty_selection();
@@ -399,13 +399,13 @@ export const MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).ex
 
         var old_handler = new_brush_g.on("mousedown.brush");
         new_brush_g.on("mousedown.brush", function() {
-            var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
-            if(d3.getEvent().shiftKey && accelKey) {
+            var accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
+            if(d3GetEvent().shiftKey && accelKey) {
                 that.reset();
             } else if(accelKey) {
                 add_remove_classes(d3.select(this), ["inactive"], ["active"]);
-                that.create_brush(d3.getEvent());
-            } else if(d3.getEvent().shiftKey && that.selecting_brush === false) {
+                that.create_brush(d3GetEvent());
+            } else if(d3GetEvent().shiftKey && that.selecting_brush === false) {
                 add_remove_classes(that.d3el.selectAll(".selector"), ["visible"], ["active", "inactive"]);
                 that.selecting_brush = true;
             } else {
@@ -433,7 +433,7 @@ export const MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).ex
     },
 
     brush_move: function(item, brush_g) {
-        var sel = d3.getEvent().selection;
+        var sel = d3GetEvent().selection;
         var hide_names = !(this.model.get("show_names"));
         d3.select(brush_g).select("text")
           .style("display", ((!sel || hide_names) ? "none" : "inline"));
@@ -442,7 +442,7 @@ export const MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).ex
     },
 
     brush_end: function (item, brush_g) {
-        var sel = d3.getEvent().selection;
+        var sel = d3GetEvent().selection;
         this.model.set("brushing", false);
         this.convert_and_save(sel, item);
     },

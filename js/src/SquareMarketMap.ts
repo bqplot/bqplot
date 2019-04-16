@@ -42,12 +42,14 @@ export const SquareMarketMap = widgets.DOMWidgetView.extend({
 
         this.margin = this.model.get("margin");
 
+        // TODO: it seems we have to rewrite this code for d3 v5. `sticky` and `mode` are not the same anymore.
         this.tree_map = d3.treemap()
             .size([this.width, this.height])
-            .sticky(true)
+            // .sticky(true)
             .padding(null)
-            .mode(this.mode)
-            .value(function(d) {return d.size;});
+            // .mode(this.mode)
+            // .value(function(d) {return d.size;});
+            ;
 
         this.d3el.datum(sector_data).selectAll(".node")
             .data(this.tree_map.nodes)

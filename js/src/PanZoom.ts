@@ -16,7 +16,7 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as interaction from './Interaction';
 import _ from 'underscore';
 
@@ -155,9 +155,9 @@ export const PanZoom = interaction.Interaction.extend({
 
     mousewheel: function() {
         if (this.model.get("allow_zoom")) {
-            d3.getEvent().preventDefault();
+            d3GetEvent().preventDefault();
             // With Firefox, wheelDelta is undefined.
-            var delta = d3.getEvent().wheelDelta || d3.getEvent().detail * (-40);
+            var delta = d3GetEvent().wheelDelta || d3GetEvent().detail * (-40);
             var mouse_pos = d3.mouse(this.el);
             if (delta) {
                 if (delta > 0) {

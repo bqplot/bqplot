@@ -14,7 +14,7 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-var semver_range = "^" + require("../package.json").version;
+import {semver_range} from './version';
 import _ from 'underscore';
 
 export const TooltipModel = widgets.DOMWidgetModel.extend({

@@ -15,7 +15,7 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-force"), require("d3-selection"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as utils from './utils';
 import * as mark from './Mark';
@@ -325,7 +325,7 @@ export const Graph = mark.Mark.extend({
 
 
     dragstarted: function(d) {
-        if (!d3.getEvent().active) {
+        if (!d3GetEvent().active) {
             this.force_layout.alphaTarget(.4).restart();
         }
         d.fx = d.x;
@@ -333,12 +333,12 @@ export const Graph = mark.Mark.extend({
     },
 
     dragged: function(d) {
-        d.fx = d3.getEvent().x;
-        d.fy = d3.getEvent().y;
+        d.fx = d3GetEvent().x;
+        d.fy = d3GetEvent().y;
     },
 
     dragended: function(d) {
-        if (!d3.getEvent().active) {
+        if (!d3GetEvent().active) {
             this.force_layout.alphaTarget(.4);
         }
         d.fx = null;
@@ -408,7 +408,7 @@ export const Graph = mark.Mark.extend({
         var selected = idx ? utils.deepCopy(idx) : [];
         var elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
+        var accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
 
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
@@ -433,7 +433,7 @@ export const Graph = mark.Mark.extend({
                        ((selected.length === 0) ? null : selected),
                        {updated_view: this});
         this.touch();
-        var e = d3.getEvent();
+        var e = d3GetEvent();
         if(!e) {
             e = window.event;
         }
@@ -540,7 +540,7 @@ export const Graph = mark.Mark.extend({
     },
 
     selected_deleter: function() {
-        d3.getEvent().stopPropagation();
+        d3GetEvent().stopPropagation();
         return;
     },
 

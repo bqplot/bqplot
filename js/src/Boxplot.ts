@@ -583,7 +583,7 @@ export const Boxplot = mark.Mark.extend({
             .text(function(d, i) { return that.model.get("labels")[i]; })
             .style("fill", stroke);
 
-        var max_length = d3.max(this.model.get("labels"), function(d) {
+        var max_length = d3.max(this.model.get("labels"), function(d: any[]) {
             return d.length;
         });
 

@@ -16,7 +16,7 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 
 // Check that value is defined and not null
@@ -272,8 +272,8 @@ export const Mark = widgets.WidgetView.extend({
 
     move_tooltip: function(mouse_events) {
         if(this.tooltip_view) {
-            this.parent.popper_reference.x = d3.getEvent().clientX;
-            this.parent.popper_reference.y = d3.getEvent().clientY;
+            this.parent.popper_reference.x = d3GetEvent().clientX;
+            this.parent.popper_reference.y = d3GetEvent().clientY;
             this.parent.popper.scheduleUpdate();
         }
     },
@@ -291,9 +291,9 @@ export const Mark = widgets.WidgetView.extend({
         //the argument controls pointer interactions with the tooltip. a
         //true value enables pointer interactions while a false value
         //disables them
-        var el = d3.select(d3.getEvent().target);
+        var el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
-            var data = el.data()[0];
+            var data: any = el.data()[0];
             var clicked_data = this.model.get_data_dict(data, data.index);
             this.trigger("update_tooltip", clicked_data);
             this.show_tooltip(tooltip_interactions);
@@ -337,7 +337,7 @@ export const Mark = widgets.WidgetView.extend({
             var data = null;
             if(event_data.hit_test) {
                 //do a hit test to check valid element
-                var el = d3.select(d3.getEvent().target);
+                var el = d3.select(d3GetEvent().target);
                 if(this.is_hover_element(el)) {
                     data = el.data()[0];
                     if(event_data.lookup_data) {
@@ -444,9 +444,9 @@ export const Mark = widgets.WidgetView.extend({
 
     mouse_over: function() {
         if(this.model.get("enable_hover")) {
-            var el = d3.select(d3.getEvent().target);
+            var el = d3.select(d3GetEvent().target);
             if(this.is_hover_element(el)) {
-                var data = el.data()[0];
+                var data: any = el.data()[0];
                 //make tooltip visible
                 var hovered_data = this.model.get_data_dict(data, data.index);
                 this.trigger("update_tooltip", hovered_data);
@@ -461,9 +461,9 @@ export const Mark = widgets.WidgetView.extend({
 
     mouse_out: function() {
         if(this.model.get("enable_hover")) {
-            var el = d3.select(d3.getEvent().target);
+            var el = d3.select(d3GetEvent().target);
             if(this.is_hover_element(el)) {
-                var data = el.data()[0];
+                var data: any = el.data()[0];
                 var hovered_data = this.model.get_data_dict(data, data.index);
                 // make tooltip invisible
                 this.hide_tooltip();
@@ -477,7 +477,7 @@ export const Mark = widgets.WidgetView.extend({
 
     mouse_move: function() {
         if(this.model.get("enable_hover") &&
-            this.is_hover_element(d3.select(d3.getEvent().target))) {
+            this.is_hover_element(d3.select(d3GetEvent().target))) {
             this.move_tooltip();
         }
     },

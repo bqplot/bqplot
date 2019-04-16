@@ -187,18 +187,18 @@ export const BarsModel = markmodel.MarkModel.extend({
 
         if(!this.get("preserve_domain").y) {
             if(this.get("type") === "stacked") {
-                range_scale.compute_and_set_domain([d3.min(this.mark_data, function(c) { return c.neg_max; }),
-                                                d3.max(this.mark_data, function(c) { return c.pos_max; }), this.base_value],
+                range_scale.compute_and_set_domain([d3.min(this.mark_data, function(c: any) { return c.neg_max; }),
+                                                d3.max(this.mark_data, function(c: any) { return c.pos_max; }), this.base_value],
                                                 this.model_id + "_y");
             } else {
                 var min = d3.min(this.mark_data,
-                    function(c) {
-                        return d3.min(c.values, function(val) {
+                    function(c: any) {
+                        return d3.min(c.values, function(val: any) {
                             return val.y_ref;
                         });
                     });
-                var max = d3.max(this.mark_data, function(c) {
-                    return d3.max(c.values, function(val) {
+                var max = d3.max(this.mark_data, function(c: any) {
+                    return d3.max(c.values, function(val: any) {
                         return val.y_ref;
                     });
                 });

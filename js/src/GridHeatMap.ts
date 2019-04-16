@@ -15,7 +15,8 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as utils from './utils';
 import * as mark from './Mark';
@@ -151,7 +152,7 @@ export const GridHeatMap = mark.Mark.extend({
         var idx = this.model.get("selected") ? utils.deepCopy(this.model.get("selected")) : [];
         var selected = utils.deepCopy(this._cell_nums_from_indices(idx));
         var elem_index = selected.indexOf(index);
-        var accelKey = d3.getEvent().ctrlKey || d3.getEvent().metaKey;
+        var accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
         //TODO: This is a shim for when accelKey is supported by chrome.
         // index of slice i. Checking if it is already present in the
         // list
@@ -166,7 +167,7 @@ export const GridHeatMap = mark.Mark.extend({
             }
             idx.push([row, column]);
             selected.push(that._cell_nums_from_indices([[row, column]])[0]);
-            if(d3.getEvent().shiftKey) {
+            if(d3GetEvent().shiftKey) {
                 //If shift is pressed and the element is already
                 //selected, do not do anything
                 if(elem_index > -1) {
@@ -197,7 +198,7 @@ export const GridHeatMap = mark.Mark.extend({
             ((idx.length === 0) ? null : idx),
             {updated_view: this});
         this.touch();
-        var e = d3.getEvent();
+        var e = d3GetEvent();
         if(!e) {
             e = window.event;
         }
@@ -574,12 +575,12 @@ export const GridHeatMap = mark.Mark.extend({
             });
 
             var is_positive = (start_points[1] - start_points[0]) > 0;
-            var bound = (is_positive) ? d3.min(scale.scale.range()) : d3.max(scale.scale.range());
+            var bound: number = (is_positive) ? d3.min(scale.scale.range() as number[]) : d3.max(scale.scale.range() as number[]);
             start_points.splice(0, 0, bound);
             widths = start_points.slice(1).map(function(d, ind) {
                 return Math.abs(d - start_points[ind]);
             });
-            bound = (is_positive) ? d3.max(scale.scale.range()) : d3.min(scale.scale.range());
+            bound = (is_positive) ? d3.max(scale.scale.range() as number[]) : d3.min(scale.scale.range() as number[]);
             widths[widths.length] = Math.abs(bound - start_points.slice(-1)[0]);
             return {"start": start_points, "widths": widths};
         }

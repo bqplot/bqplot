@@ -16,7 +16,7 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-zoom"));
-d3.getEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as mark from './Mark';
 import * as utils from './utils';
@@ -124,9 +124,9 @@ export const Map = mark.Mark.extend({
         if (!this.model.get("hover_highlight")) {
             return;
         }
-        var el = d3.select(d3.getEvent().target);
+        var el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
-            var data = el.data()[0];
+            var data: any = el.data()[0];
             var idx = this.model.get("selected");
             var select = idx ? utils.deepCopy(idx) : [];
             var node = this.highlight_g.append(function() {
@@ -155,7 +155,7 @@ export const Map = mark.Mark.extend({
         if (!this.model.get("hover_highlight")) {
             return;
         }
-        var el = d3.select(d3.getEvent().target);
+        var el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
             var that = this;
             el.transition("mouseout_handler")
@@ -170,9 +170,9 @@ export const Map = mark.Mark.extend({
     },
 
     click_handler: function() {
-        var el = d3.select(d3.getEvent().target);
+        var el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
-            var data = el.data()[0];
+            var data: any = el.data()[0];
             var idx = this.model.get("selected");
             var selected = idx ? utils.deepCopy(idx) : [];
             var elem_index = selected.indexOf(data.id);
@@ -219,7 +219,7 @@ export const Map = mark.Mark.extend({
     },
 
     zoomed: function(that) {
-        var tr = d3.getEvent().transform;
+        var tr = d3GetEvent().transform;
         var h = that.height / 3;
         var w = 2 * that.width;
         tr.x = Math.min(that.width / 2 * (tr.k -1), Math.max(w / 2  * (1 - tr.k), tr.x));

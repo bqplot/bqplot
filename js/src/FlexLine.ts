@@ -71,7 +71,7 @@ export const FlexLine = lines.Lines.extend({
             .attr("dy", "0.35em")
             .text(function(d, i) {return that.model.get("labels")[i]; })
             .style("fill", function(d,i) { return that.get_colors(i); });
-        var max_length = d3.max(this.model.get("labels"), function(d) {
+        var max_length = d3.max(this.model.get("labels"), function(d: any[]) {
             return d.length;
         });
 
@@ -117,14 +117,14 @@ export const FlexLine = lines.Lines.extend({
 
         var that = this;
         curves_sel.nodes().forEach(function(elem, index) {
-            var lines = d3.select(elem).selectAll("line")
+            var lines = d3.select(elem).selectAll<SVGLineElement, undefined>("line")
                 .data(that.model.mark_data[index].values);
             lines = lines.enter().append("line").merge(lines);
             lines.attr("class", "line-elem")
-                .attr("x1", function(d) { return x_scale.scale(d.x1); })
-                .attr("x2", function(d) { return x_scale.scale(d.x2); })
-                .attr("y1", function(d) { return y_scale.scale(d.y1); })
-                .attr("y2", function(d) { return y_scale.scale(d.y2); })
+                .attr("x1", function(d: any) { return x_scale.scale(d.x1); })
+                .attr("x2", function(d: any) { return x_scale.scale(d.x2); })
+                .attr("y1", function(d: any) { return y_scale.scale(d.y1); })
+                .attr("y2", function(d: any) { return y_scale.scale(d.y2); })
                 .attr("stroke", function(d) { return that.get_element_color(d); })
                 .attr("stroke-width", function(d) { return that.get_element_width(d); });
         });

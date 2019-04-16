@@ -379,7 +379,7 @@ export const Lines = mark.Mark.extend({
 
         legend.merge(this.legend_el);
 
-        var max_length = d3.max(curve_labels, function(d) {
+        var max_length = d3.max(curve_labels, function(d: any) {
             return d.length;
         });
         this.legend_el.exit().remove();
@@ -535,7 +535,7 @@ export const Lines = mark.Mark.extend({
         var curve_types = {
             linear: d3.curveLinear,
             basis: d3.curveBasis,
-            cardinal: d3.curve,
+            cardinal: d3.curveCardinal,
             monotone: d3.curveMonotoneY
         };
 
@@ -576,11 +576,11 @@ export const Lines = mark.Mark.extend({
 
         this.line = d3.line()
           .curve(this.get_interpolation())
-          .defined(function(d) { return d.y !== null && isFinite(y_scale.scale(d.y)); });
+          .defined(function(d: any) { return d.y !== null && isFinite(y_scale.scale(d.y)); });
 
         this.area = d3.area()
           .curve(this.get_interpolation())
-          .defined(function(d) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
+          .defined(function(d: any) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
 
         // Having a transition on exit is complicated. Please refer to
         // Scatter.js for detailed explanation.

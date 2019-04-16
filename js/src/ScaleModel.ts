@@ -15,7 +15,7 @@
 
 import _ from 'underscore'
 import * as basemodel from './BaseModel';
-var semver_range = "^" + require("../package.json").version;
+import { semver_range } from './version';
 
 export const ScaleModel = basemodel.BaseModel.extend({
 
