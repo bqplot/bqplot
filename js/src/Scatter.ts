@@ -19,7 +19,7 @@ var d3 = Object.assign({}, require("d3-selection"));
 var bqSymbol = markers.symbol;
 
 
-var Scatter = scatterbase.ScatterBase.extend({
+export const Scatter = scatterbase.ScatterBase.extend({
 
     render: function() {
 
@@ -325,6 +325,3 @@ var Scatter = scatterbase.ScatterBase.extend({
     },
 });
 
-module.exports = {
-    Scatter: Scatter
-};
