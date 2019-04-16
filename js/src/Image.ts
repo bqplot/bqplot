@@ -18,7 +18,7 @@ import * as mark from './Mark';
 import * as _ from 'underscore';
 
 
-var Image = mark.Mark.extend({
+exports const Image = mark.Mark.extend({
 
     render: function() {
         var base_render_promise = Image.__super__.render.apply(this);
@@ -166,7 +166,3 @@ var Image = mark.Mark.extend({
         }, this));
     },
 });
-
-module.exports = {
-    Image: Image
-};
