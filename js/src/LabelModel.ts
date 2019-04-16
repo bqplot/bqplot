@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
 var basemodel = require("./ScatterBaseModel");
 var serialize = require('./serialize')
+import * as _ from 'underscore';
 
-var LabelModel = basemodel.ScatterBaseModel.extend({
+export const LabelModel = basemodel.ScatterBaseModel.extend({
 
     defaults: function () {
         return _.extend(basemodel.ScatterBaseModel.prototype.defaults(), {
@@ -60,6 +60,3 @@ var LabelModel = basemodel.ScatterBaseModel.extend({
     }, basemodel.ScatterBaseModel.serializers)
 });
 
-module.exports = {
-    LabelModel: LabelModel
-};
