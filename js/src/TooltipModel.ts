@@ -14,10 +14,10 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
 var semver_range = "^" + require("../package.json").version;
+import _ from 'underscore';
 
-var TooltipModel = widgets.DOMWidgetModel.extend({
+export const TooltipModel = widgets.DOMWidgetModel.extend({
 
     defaults: function() {
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
@@ -36,6 +36,3 @@ var TooltipModel = widgets.DOMWidgetModel.extend({
     }
 });
 
-module.exports = {
-    TooltipModel: TooltipModel
-};
