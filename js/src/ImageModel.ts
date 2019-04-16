@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
-var markmodel = require("./MarkModel");
-var serialize = require('./serialize');
+import * as widgets from '@jupyter-widgets/base';
+import * as _ from 'underscore';
+import * as markmodel from './MarkModel';
+import * as serialize from './serialize';
 
 var ImageModel = markmodel.MarkModel.extend({
 
