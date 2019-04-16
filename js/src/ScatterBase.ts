@@ -15,11 +15,11 @@
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var _ = require("underscore");
 var utils = require("./utils");
 var mark = require("./Mark");
+import _ from 'underscore';
 
-var ScatterBase = mark.Mark.extend({
+export const ScatterBase = mark.Mark.extend({
 
     render: function() {
         var base_creation_promise = ScatterBase.__super__.render.apply(this);
@@ -275,11 +275,6 @@ var ScatterBase = mark.Mark.extend({
 
     draw: function(animate) {
         this.set_ranges();
-        var x_scale = this.scales.x, y_scale = this.scales.y;
-        var that = this,
-            fill = this.model.get("fill");
-
-        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         var elements = this.d3el.selectAll(".object_grp")
             .data(this.model.mark_data, function(d) { return d.unique_id; });
@@ -338,7 +333,6 @@ var ScatterBase = mark.Mark.extend({
 	},
 
 	scatter_hover_handler: function(args) {
-	    var data = args.data;
         var index = args.index;
 
         this.model.set("hovered_point",
@@ -353,9 +347,7 @@ var ScatterBase = mark.Mark.extend({
     },
 
     scatter_click_handler: function(args) {
-        var data = args.data;
         var index = args.index;
-        var that = this;
         var idx = this.model.get("selected");
         var selected = idx ? utils.deepCopy(idx) : [];
         // index of bar i. Checking if it is already present in the list.
@@ -473,7 +465,6 @@ var ScatterBase = mark.Mark.extend({
             return;
         }
 
-        var x_scale = this.scales.x;
         var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
         var sel_index = abs_diff.indexOf(d3.min(abs_diff));
 
@@ -672,7 +663,6 @@ var ScatterBase = mark.Mark.extend({
 
         var x_scale = this.scales.x, y_scale = this.scales.y;
         //add the new point to data
-        var x_data = [];
         var x = this.model.get('x');
         var y = this.model.get('y');
         // copy data and fill in the last value
@@ -691,11 +681,8 @@ var ScatterBase = mark.Mark.extend({
     },
 
     delete_element: function(args) {
-        var data = args.data;
         var index = args.index;
 
-        // Remove the point from model data
-        var x_data = [];
         // copy data to avoid modifying in place (will not detect a change)
         var x = this.model.get("x").slice();
         var y = this.model.get("y").slice();
@@ -710,6 +697,3 @@ var ScatterBase = mark.Mark.extend({
     }
 });
 
-module.exports = {
-    ScatterBase: ScatterBase
-};
