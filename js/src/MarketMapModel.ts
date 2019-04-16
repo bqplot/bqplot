@@ -20,7 +20,7 @@ import * as basemodel from './BaseModel';
 import * as serialize from './serialize';
 var semver_range = "^" + require("../package.json").version;
 
-var MarketMapModel = basemodel.BaseModel.extend({
+export const MarketMapModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.BaseModel.prototype.defaults(), {
@@ -86,6 +86,3 @@ var MarketMapModel = basemodel.BaseModel.extend({
     }, basemodel.BaseModel.serializers)
 });
 
-module.exports = {
-    MarketMapModel: MarketMapModel
-};

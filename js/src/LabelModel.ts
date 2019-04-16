@@ -17,7 +17,7 @@ import * as _ from 'underscore';
 import * as basemodel from './ScatterBaseModel';
 import * as serialize from './serialize';
 
-var LabelModel = basemodel.ScatterBaseModel.extend({
+export const LabelModel = basemodel.ScatterBaseModel.extend({
 
     defaults: function () {
         return _.extend(basemodel.ScatterBaseModel.prototype.defaults(), {
@@ -60,6 +60,3 @@ var LabelModel = basemodel.ScatterBaseModel.extend({
     }, basemodel.ScatterBaseModel.serializers)
 });
 
-module.exports = {
-    LabelModel: LabelModel
-};

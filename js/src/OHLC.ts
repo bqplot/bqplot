@@ -17,7 +17,7 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
 import * as _ from 'underscore';
 import * as mark from './Mark';
 
-var OHLC = mark.Mark.extend({
+export const OHLC = mark.Mark.extend({
 
     render: function() {
         var base_creation_promise = OHLC.__super__.render.apply(this);
@@ -129,7 +129,6 @@ var OHLC = mark.Mark.extend({
     },
 
     update_selected_colors: function(idx_start, idx_end) {
-        var stick_sel = this.d3el.selectAll(".stick");
         var current_range = _.range(idx_start, idx_end + 1);
         if(current_range.length == this.model.mark_data.length) {
             current_range = [];
@@ -188,8 +187,6 @@ var OHLC = mark.Mark.extend({
     },
 
     invert_point: function(pixel) {
-        var x_scale = this.scales.x;
-        var point = 0;
         var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
         var sel_index = abs_diff.indexOf(d3.min(abs_diff));
         this.update_selected_colors(sel_index, sel_index);
@@ -472,8 +469,6 @@ var OHLC = mark.Mark.extend({
          */
         var that = this;
         var min_distance = Number.POSITIVE_INFINITY;
-        var sum = 0;
-        var average_height = 0;
         var scales = this.model.get("scales");
         var x_scale = scales.x;
 
@@ -508,7 +503,6 @@ var OHLC = mark.Mark.extend({
         var stroke = this.model.get("stroke");
         var colors = this.model.get("colors");
         var up_color = (colors[0] ? colors[0] : "none");
-        var down_color = (colors[1] ? colors[1] : "none");
         this.rect_dim = inter_y_disp * 0.8;
         var that = this;
 
@@ -582,6 +576,3 @@ var OHLC = mark.Mark.extend({
     }
 });
 
-module.exports = {
-    OHLC: OHLC
-};

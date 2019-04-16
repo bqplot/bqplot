@@ -18,7 +18,7 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-var OHLCModel = markmodel.MarkModel.extend({
+export const OHLCModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -90,7 +90,6 @@ var OHLCModel = markmodel.MarkModel.extend({
             y_data = [];
         } else {
             // Verify that OHLC data is valid
-            var that = this;
             var px = this.px;
             if((this.px.h !== -1 &&
                !y_data.every(function(d) {
@@ -121,7 +120,6 @@ var OHLCModel = markmodel.MarkModel.extend({
         if(!this.mark_data) {
             return;
         }
-        var that = this;
         var scales = this.get("scales");
         var x_scale = scales.x, y_scale = scales.y;
         var min_x_dist = Number.POSITIVE_INFINITY;
@@ -192,9 +190,10 @@ var OHLCModel = markmodel.MarkModel.extend({
 
     get_data_dict: function(data, index) {
         var that = this;
-        var return_val ={};
-        return_val.index = index;
-        return_val.x = data.x;
+        var return_val = {
+            index: index,
+            x: data.x
+        };
         ["open", "low", "high", "close"].forEach(function(str) {
             return_val[str] = data.y[that.px[str.substr(0, 1)]];
         });
@@ -207,6 +206,3 @@ var OHLCModel = markmodel.MarkModel.extend({
     }, markmodel.MarkModel.serializers)
 });
 
-module.exports = {
-    OHLCModel: OHLCModel,
-};

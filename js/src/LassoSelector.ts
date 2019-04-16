@@ -16,11 +16,10 @@
 var d3 = Object.assign({}, require("d3-drag"), require("d3-selection"), require("d3-shape"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
-import * as utils from './utils';
 import * as baseselector from './Selector';
 import * as sel_utils from './selector_utils';
 
-var LassoSelector = baseselector.BaseXYSelector.extend({
+export const LassoSelector = baseselector.BaseXYSelector.extend({
     render: function() {
         LassoSelector.__super__.render.apply(this);
         var scale_creation_promise = this.create_scales();
@@ -105,7 +104,7 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
 
         if(vertices === undefined || vertices.length === 0) {
             // Reset all the selected in marks
-            _.each(this.mark_views, function(mark_view) {
+            _.each(this.mark_views, function(mark_view: any) {
                 return mark_view.selector_changed();
             });
         }
@@ -120,7 +119,7 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
             } return false;
         };
 
-        _.each(this.mark_views, function(mark_view) {
+        _.each(this.mark_views, function(mark_view: any) {
             mark_view.selector_changed(point_selector, rect_selector);
         }, this);
     },
@@ -154,7 +153,3 @@ var LassoSelector = baseselector.BaseXYSelector.extend({
     },
 });
 
-
-module.exports = {
-    LassoSelector: LassoSelector
-};

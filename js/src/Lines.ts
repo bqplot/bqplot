@@ -17,11 +17,10 @@ import * as _ from 'underscore';
 var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-shape"), require("d3-transition"));
 import * as mark from './Mark';
 import * as markers from './Markers';
-import * as utils from './utils';
 
 var bqSymbol = markers.symbol;
 
-var Lines = mark.Mark.extend({
+export const Lines = mark.Mark.extend({
 
     render: function() {
         var base_render_promise = Lines.__super__.render.apply(this);
@@ -139,7 +138,7 @@ var Lines = mark.Mark.extend({
     },
 
     update_labels: function() {
-        var curves_sel = this.d3el.selectAll(".curve")
+        this.d3el.selectAll(".curve")
           .data(this.model.mark_data)
           .select(".curve_label")
           .text(function(d) { return d.name; });
@@ -285,7 +284,6 @@ var Lines = mark.Mark.extend({
             return;
         }
 
-        var x_scale = this.scales.x;
         var index = Math.min(this.bisect(this.x_pixels, pixel),
           Math.max((this.x_pixels.length - 1), 0));
         this.model.set("selected", [index]);
@@ -293,7 +291,6 @@ var Lines = mark.Mark.extend({
     },
 
     update_multi_range: function(brush_extent) {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
         var x_start = brush_extent[0];
         var x_end = brush_extent[1];
 
@@ -568,7 +565,6 @@ var Lines = mark.Mark.extend({
 
         var fill = this.model.get("fill"),
             area = (fill === "top" || fill === "bottom" || fill === "between");
-        var that = this;
         curves_sel.select(".line")
           .attr("id", function(d, i) { return "curve" + (i+1); })
           .on("click", _.bind(function() {
@@ -597,7 +593,6 @@ var Lines = mark.Mark.extend({
 
     draw_dots: function() {
         if (this.model.get("marker")) {
-            var that = this;
             var dots = this.d3el.selectAll(".curve").selectAll(".dot")
                 .data(function(d, i) {
                     return d.values.map(function(e) {
@@ -610,7 +605,6 @@ var Lines = mark.Mark.extend({
 
     update_dots_xy: function(animate) {
         if (this.model.get("marker")) {
-            var that = this;
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var dots = this.d3el.selectAll(".curve").selectAll(".dot");
@@ -678,6 +672,3 @@ var Lines = mark.Mark.extend({
     },
 });
 
-module.exports = {
-    Lines: Lines
-};

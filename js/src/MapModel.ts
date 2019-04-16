@@ -17,7 +17,7 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as topojson from 'topojson';
 
-var MapModel = markmodel.MarkModel.extend({
+export const MapModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -107,6 +107,3 @@ var MapModel = markmodel.MarkModel.extend({
     }
 });
 
-module.exports = {
-    MapModel: MapModel
-};

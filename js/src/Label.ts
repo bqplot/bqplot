@@ -17,7 +17,7 @@ var d3 = Object.assign({}, require("d3-selection"));
 import * as scatterbase from './ScatterBase';
 
 
-var Label = scatterbase.ScatterBase.extend({
+export const Label = scatterbase.ScatterBase.extend({
 
     create_listeners: function() {
         Label.__super__.create_listeners.apply(this);
@@ -29,8 +29,6 @@ var Label = scatterbase.ScatterBase.extend({
 
     update_default_opacities: function(animate) {
         if (!this.model.dirty) {
-            var default_opacities = this.model.get("default_opacities");
-            var len_opac = default_opacities.length;
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             // update opacity scale range?
@@ -57,14 +55,6 @@ var Label = scatterbase.ScatterBase.extend({
                     return that.get_element_size(d);
                 });
         }
-    },
-
-    create_listeners: function() {
-        Label.__super__.create_listeners.apply(this);
-        this.model.on_some_change(["font_weight", "default_size", "colors",
-                                   "align", "font_unit"], this.update_style, this);
-        this.model.on_some_change(["x", "y", "x_offset", "y_offset",
-                                   "rotate_angle"], this.update_position, this);
     },
 
     relayout: function() {
@@ -106,10 +96,6 @@ var Label = scatterbase.ScatterBase.extend({
         var that = this;
         var x_scale = this.x_scale;
         var y_scale = this.y_scale;
-        var x = (x_scale.model.type === "date") ?
-            this.model.get_date_elem("x") : this.model.get("x");
-        var y = (y_scale.model.type === "date") ?
-            this.model.get_date_elem("y") : this.model.get("y");
         var x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");
         this.d3el.selectAll(".object_grp")
@@ -189,8 +175,4 @@ var Label = scatterbase.ScatterBase.extend({
           .style("font-size", this.get_element_size(d));
     },
 });
-
-module.exports = {
-    Label: Label
-};
 

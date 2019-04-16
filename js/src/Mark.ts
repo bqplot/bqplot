@@ -18,14 +18,13 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 
-
 // Check that value is defined and not null
 function is_defined(value){
     return value !== null && value !== undefined;
 };
 
 
-export var Mark = widgets.WidgetView.extend({
+export const Mark = widgets.WidgetView.extend({
 
     initialize : function() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
@@ -39,7 +38,6 @@ export var Mark = widgets.WidgetView.extend({
         this.parent = this.options.parent;
         this.uuid = widgets.uuid();
         var scale_creation_promise = this.set_scale_views();
-        var that = this;
         this.listenTo(this.model, "scales_updated", function() {
             this.set_scale_views().then(_.bind(this.draw, this));
         }, this);
@@ -157,13 +155,13 @@ export var Mark = widgets.WidgetView.extend({
     },
 
     highlight_axes: function() {
-        _.each(this.model.get("scales"), function(model) {
+        _.each(this.model.get("scales"), function(model: any) {
             model.trigger("highlight_axis");
         });
     },
 
     unhighlight_axes: function() {
-        _.each(this.model.get("scales"), function(model) {
+        _.each(this.model.get("scales"), function(model: any) {
             model.trigger("unhighlight_axis");
         });
     },
@@ -259,13 +257,12 @@ export var Mark = widgets.WidgetView.extend({
         //mouse_events is a boolean to enable mouse_events or not.
         //If this property has never been set, it will default to false.
         if(this.tooltip_view) {
-            var mouse_pos = d3.mouse(this.parent.el);
             if(mouse_events === undefined || mouse_events === null || (!(mouse_events))) {
                 this.tooltip_div.style("pointer-events", "none");
             } else {
                 this.tooltip_div.style("pointer-events", "all");
             }
-            var transition = this.tooltip_div.styles(this.model.get("tooltip_style"))
+            this.tooltip_div.styles(this.model.get("tooltip_style"))
                 .style("display", null);
             this.parent.popper.enableEventListeners();
             this.move_tooltip();
