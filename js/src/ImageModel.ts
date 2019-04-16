@@ -24,8 +24,8 @@ var ImageModel = markmodel.MarkModel.extend({
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
             _model_name: "ImageModel",
             _view_name: "Image",
-            x: (0.0, 1.0),
-            y: (0.0, 1.0),
+            x: [0.0, 1.0],
+            y: [0.0, 1.0],
             scales_metadata: {
                 'x': {'orientation': 'horizontal', 'dimension': 'x'},
                 'y': {'orientation': 'vertical', 'dimension': 'y'},

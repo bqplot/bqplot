@@ -18,7 +18,7 @@ import * as _ from 'underscore';
 var semver_range = "^" + require("../package.json").version;
 var serialize = require('./serialize.js')
 
-var BaseModel = widgets.WidgetModel.extend({
+export var BaseModel = widgets.WidgetModel.extend({
 
     defaults: function() {
         return _.extend(widgets.WidgetModel.prototype.defaults(), {
@@ -64,6 +64,3 @@ var BaseModel = widgets.WidgetModel.extend({
     }
 });
 
-module.exports = {
-    BaseModel: BaseModel
-};

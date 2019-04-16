@@ -77,7 +77,7 @@ export function getCustomRange(array) {
     return [d3.scaleLinear().range([first, pivot]), d3.scaleLinear().range([pivot, end])];
 }
 
-export function is_vlaie_time_format(format) {
+export function is_valid_time_format(format) {
     return time_format_regex.test(format);
 }
 

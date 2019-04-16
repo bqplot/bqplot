@@ -19,7 +19,7 @@ import * as basemodel from './BaseModel';
 var semver_range = "^" + require("../package.json").version;
 var serialize = require('./serialize')
 
-var MarkModel = basemodel.BaseModel.extend({
+export var MarkModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.BaseModel.prototype.defaults(), {
@@ -123,6 +123,3 @@ var MarkModel = basemodel.BaseModel.extend({
     }, basemodel.BaseModel.serializers)
 });
 
-module.exports = {
-    MarkModel: MarkModel
-};

@@ -25,7 +25,7 @@ function is_defined(value){
 };
 
 
-var Mark = widgets.WidgetView.extend({
+export var Mark = widgets.WidgetView.extend({
 
     initialize : function() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
@@ -493,6 +493,3 @@ var Mark = widgets.WidgetView.extend({
     },
 });
 
-module.exports = {
-    Mark: Mark
-};

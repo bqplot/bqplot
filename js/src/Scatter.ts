@@ -16,7 +16,7 @@ import * as scatterbase from './ScatterBase';
 import * as markers from './Markers';
 var d3 = Object.assign({}, require("d3-selection"));
 
-var bqSymbol = markers.symbol;
+var bqSymbol: any = markers.symbol;
 
 
 export const Scatter = scatterbase.ScatterBase.extend({

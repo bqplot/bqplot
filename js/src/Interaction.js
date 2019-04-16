@@ -17,7 +17,7 @@ import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
 
-var Interaction = widgets.WidgetView.extend({
+export var Interaction = widgets.WidgetView.extend({
 
     initialize : function() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "rect"));
@@ -61,6 +61,3 @@ var Interaction = widgets.WidgetView.extend({
     }
 });
 
-module.exports = {
-    Interaction: Interaction
-};
