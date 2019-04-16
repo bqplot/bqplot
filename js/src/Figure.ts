@@ -17,14 +17,10 @@ import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 import * as _ from 'underscore';
 import * as popperreference from './PopperReference';
-import * as popper from 'popper.js';
-var THREE = require('three')
+import popper from 'popper.js';
+import * as THREE from 'three';
 
 THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl')
-
-if (popper.__esModule) {
-    popper = popper.default;
-}
 
 export const Figure = widgets.DOMWidgetView.extend({
 
@@ -37,7 +33,7 @@ export const Figure = widgets.DOMWidgetView.extend({
 
         var svg = document.createElementNS(d3.namespaces.svg, "svg");
         svg.classList.add("svg-figure");
-        var svg_interaction = document.createElementNS(d3.namespaces.svg, "svg");
+        var svg_interaction: any = document.createElementNS(d3.namespaces.svg, "svg");
         svg_interaction.classList.add("svg-interaction");
         svg_interaction.style = 'position: absolute; width: 100%; height: 100%;'
         this.svg = d3.select(svg);
@@ -293,7 +289,7 @@ export const Figure = widgets.DOMWidgetView.extend({
     },
 
     replace_dummy_nodes: function(views) {
-        _.each(views, function(view) {
+        _.each(views, function(view: any) {
             if (view.dummy_node !== null) {
                 view.dummy_node.parentNode.replaceChild(view.el, view.dummy_node);
                 view.dummy_node = null;
@@ -524,17 +520,17 @@ export const Figure = widgets.DOMWidgetView.extend({
         this.y_padding_arr = {};
 
         var that = this;
-        _.forEach(this.x_pad_dict, function(dict, scale_id) {
+        _.forEach(this.x_pad_dict, function(dict: any, scale_id) {
             max = 0;
-            _.forEach(dict, function(value, key) {
+            _.forEach(dict, function(value: any, key) {
                 max = Math.max(max, value);
             });
             that.x_padding_arr[scale_id] = max;
         });
 
-        _.forEach(this.y_pad_dict, function(dict, scale_id) {
+        _.forEach(this.y_pad_dict, function(dict: any, scale_id) {
             max = 0;
-            _.forEach(dict, function(value, key) {
+            _.forEach(dict, function(value: any, key) {
                 max = Math.max(max, value);
             });
             that.y_padding_arr[scale_id] = max;
@@ -619,8 +615,6 @@ export const Figure = widgets.DOMWidgetView.extend({
     update_legend: function() {
         this.fig_marks.selectAll(".g_legend").remove();
 
-        var num_series = this.model.get("marks").length;
-        var legend_disp = 30 + num_series * 7;
         var legend_height = 14;
         var legend_width = 24;
         var legend_location = this.model.get("legend_location");
@@ -634,7 +628,7 @@ export const Figure = widgets.DOMWidgetView.extend({
 
         if(this.mark_views !== undefined && this.mark_views !== null) {
             Promise.all(this.mark_views.views).then(function(views) {
-                views.forEach(function(mark_view) {
+                views.forEach(function(mark_view: any) {
                     if(mark_view.model.get("display_legend")) {
                         var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
                         count = count + child_count[0];
@@ -773,7 +767,7 @@ export const Figure = widgets.DOMWidgetView.extend({
             var sheets = document.styleSheets;
             var selector;
             for (var i = 0; i < sheets.length; i++) {
-                var rules = sheets[i].cssRules;
+                var rules: any = (sheets[i] as CSSStyleSheet).cssRules;
                 if (rules) {
                     for (var j = 0; j < rules.length; j++) {
                         var rule = rules[j];
@@ -792,7 +786,8 @@ export const Figure = widgets.DOMWidgetView.extend({
                                     for (var r = 0; r < regs.length; r++) {
                                         selector = replaceAll(regs[r], "", selector);
                                     }
-                                    css += selector + " { " + rule.style.cssText + " }\n";
+                                    css += `${selector} { ${rule.style.cssText} }
+                                    `;
                                 }
                             } else if (rule.cssText.match(/^@font-face/)) {
                                 css += rule.cssText + "\n";
@@ -917,8 +912,8 @@ export const Figure = widgets.DOMWidgetView.extend({
             this.renderer.autoClear = false;
             this.renderer.autoClearColor = new THREE.Color(0x000000)
             this.renderer.clear()
-            let marks_gl = _.filter(views, (view) => view.render_gl)
-            _.each(marks_gl, (mark) => {
+            let marks_gl = _.filter(views, (view: any) => view.render_gl)
+            _.each(marks_gl, (mark: any) => {
                 mark.render_gl()
             })
         });
