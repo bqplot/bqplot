@@ -14,10 +14,10 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
 var semver_range = "^" + require("../package.json").version;
+import _ from 'underscore';
 
-var ToolbarModel = widgets.DOMWidgetModel.extend({
+export const ToolbarModel = widgets.DOMWidgetModel.extend({
 
     defaults: function() {
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
@@ -81,7 +81,6 @@ var ToolbarModel = widgets.DOMWidgetModel.extend({
          * interaction back to its previous value.
          */
         var figure = this.get("figure");
-        var panning = this.get("_panning");
         if (figure) {
             figure.set("interaction", this.cached_interaction);
             figure.save_changes();
@@ -121,7 +120,7 @@ var ToolbarModel = widgets.DOMWidgetModel.extend({
             view_module: "bqplot",
             view_module_version: figure.get("_view_module_version")
         }).then(function(model) {
-            return Promise.all(figure.get("marks")).then(function(marks) {
+            return Promise.all(figure.get("marks")).then(function(marks: any[]) {
                 var x_scales = [], y_scales = [];
                 for (var i=0; i<marks.length; ++i) {
                     var preserve_domain = marks[i].get("preserve_domain");
@@ -152,7 +151,7 @@ var ToolbarModel = widgets.DOMWidgetModel.extend({
     }, widgets.DOMWidgetModel.serializers)
 });
 
-var Toolbar = widgets.DOMWidgetView.extend({
+export const Toolbar = widgets.DOMWidgetView.extend({
 
     render: function() {
         var that = this;
@@ -225,7 +224,3 @@ var Toolbar = widgets.DOMWidgetView.extend({
     }
 });
 
-module.exports = {
-    Toolbar: Toolbar,
-    ToolbarModel: ToolbarModel
-};
