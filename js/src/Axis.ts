@@ -16,18 +16,18 @@
 var widgets = require("@jupyter-widgets/base");
 var d3 = Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"),
                            require("d3-selection-multi"), require("d3-time"), require("d3-time-format"));
-var _ = require("underscore");
 var utils = require("./utils");
+import _ from 'underscore';
 
 // Polyfill for Math.log10 in IE11
 Math.log10 = Math.log10 || function (x) {
     return Math.log(x) / Math.LN10;
 };
 
-var DATESCALE_WIDTH_THRESHOLD = 500;
-var UNITS_ARRAY = ["em", "ex", "px"];
+const DATESCALE_WIDTH_THRESHOLD = 500;
+const UNITS_ARRAY = ["em", "ex", "px"];
 
-var Axis = widgets.WidgetView.extend({
+export const Axis = widgets.WidgetView.extend({
 
     initialize : function() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
@@ -780,9 +780,6 @@ var Axis = widgets.WidgetView.extend({
         var precision = Math.abs(max_digits - diff_digits);
         // difference in the number of digits. The number of digits we have
         // to display is the diff above + 1.
-        var limit = 6;
-        // limit is a choice of the max number of digits that are
-        // represented
         if(max_digits >= 0 && diff_digits > 0) {
             if(max_digits <= 6) {
             // format the number as an integer
@@ -906,7 +903,3 @@ var Axis = widgets.WidgetView.extend({
     }
 });
 
-
-module.exports = {
-    Axis: Axis
-};
