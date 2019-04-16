@@ -143,7 +143,7 @@ export const BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).e
             var d0 = e.selection;
             var pixel_extent_x = [d0[0][0], d0[1][0]];
             var pixel_extent_y = [d0[1][1], d0[0][1]];
-        
+
             var extent_x = pixel_extent_x.map(this.x_scale.scale.invert).sort(
                 (a: number, b: number) => a - b);
             var extent_y = pixel_extent_y.map(this.y_scale.scale.invert).sort(
@@ -188,7 +188,7 @@ export const BrushSelector = selector.BaseXYSelector.extend(BaseBrushSelector).e
 
         this.set_x_range([this.x_scale]);
         this.set_y_range([this.y_scale]);
-        
+
         this.brush.extent([[0, 0], [this.width, this.height]]);
         var range_x = this.model.get("selected_x").map(this.x_scale.scale).sort(
             function(a, b) { return a - b; });
@@ -316,7 +316,7 @@ var add_remove_classes = function(selection, add_classes, remove_classes) {
     }
 };
 
-var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
+exports const MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
 
     render: function() {
         MultiSelector.__super__.render.apply(this);
@@ -445,7 +445,7 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
         this.model.set("brushing", false);
         this.convert_and_save(sel, item);
     },
-    
+
     set_text_location: function(brush_g, extent) {
         var vertical = (this.model.get("orientation") == "vertical");
         var orient = vertical ? "y" : "x";
@@ -509,10 +509,3 @@ var MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
         MultiSelector.__super__.remove.apply(this);
     }
 });
-
-
-module.exports = {
-    BrushSelector: BrushSelector,
-    BrushIntervalSelector: BrushIntervalSelector,
-    MultiSelector: MultiSelector
-};

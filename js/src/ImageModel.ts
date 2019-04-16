@@ -18,7 +18,7 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-var ImageModel = markmodel.MarkModel.extend({
+exports const ImageModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
@@ -79,7 +79,3 @@ var ImageModel = markmodel.MarkModel.extend({
         y: serialize.array_or_json,
     }, markmodel.MarkModel.serializers)
 });
-
-module.exports = {
-    ImageModel: ImageModel
-};

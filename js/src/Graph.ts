@@ -19,7 +19,7 @@ import * as _ from 'underscore';
 import * as utils from './utils';
 import * as mark from './Mark';
 
-var Graph = mark.Mark.extend({
+exports const Graph = mark.Mark.extend({
     render: function() {
         var base_creation_promise = Graph.__super__.render.apply(this);
 
@@ -620,7 +620,3 @@ var Graph = mark.Mark.extend({
         }
     },
 });
-
-module.exports = {
-    Graph: Graph
-};

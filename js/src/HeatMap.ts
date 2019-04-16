@@ -17,7 +17,7 @@ var d3 = Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
 import * as mark from './Mark';
 
-var HeatMap = mark.Mark.extend({
+exports const HeatMap = mark.Mark.extend({
 
     render: function() {
         var base_render_promise = HeatMap.__super__.render.apply(this);
@@ -239,7 +239,3 @@ var HeatMap = mark.Mark.extend({
         return this.scales.color.scale(color);
     },
 });
-
-module.exports = {
-    HeatMap: HeatMap,
-};

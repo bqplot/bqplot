@@ -21,7 +21,7 @@ d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 import * as utils from './utils';
 import * as mark from './Mark';
 
-var Hist = mark.Mark.extend({
+exports const Hist = mark.Mark.extend({
 
     render: function() {
         var base_creation_promise = Hist.__super__.render.apply(this);
@@ -496,7 +496,3 @@ var Hist = mark.Mark.extend({
         this.touch();
     }
 });
-
-module.exports = {
-    Hist: Hist
-};
