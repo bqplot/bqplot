@@ -18,9 +18,9 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var mark = require("./Mark");
 var utils = require("./utils");
-var _ = require("underscore");
+import _ from 'underscore';
 
-var Pie = mark.Mark.extend({
+export const Pie = mark.Mark.extend({
     render: function() {
         var base_creation_promise = Pie.__super__.render.apply(this);
         this.selected_indices = this.model.get("selected");
@@ -404,7 +404,7 @@ var Pie = mark.Mark.extend({
         var display_values = this.model.get("display_values");
         var values_format = d3.format(this.model.get("values_format"));
 
-        var labels = this.pie_g.selectAll(".labels text")
+        this.pie_g.selectAll(".labels text")
             .text(function(d) {
                 return d.data.label +
                     (display_values ? ": " + values_format(d.data.size) : "");
@@ -449,7 +449,6 @@ var Pie = mark.Mark.extend({
     },
 
     click_handler: function (args) {
-        var data = args.data;
         var index = args.index;
         var that = this;
         var idx = this.model.get("selected");
@@ -530,6 +529,3 @@ var Pie = mark.Mark.extend({
     }
 });
 
-module.exports = {
-    Pie: Pie
-};
