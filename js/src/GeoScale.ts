@@ -16,7 +16,7 @@
 var d3 = Object.assign({}, require("d3-geo"));
 var widgets = require("@jupyter-widgets/base");
 
-var GeoScale = widgets.WidgetView.extend({
+export const GeoScale = widgets.WidgetView.extend({
 
     render: function() {
         this.set_projection();
@@ -34,34 +34,24 @@ var GeoScale = widgets.WidgetView.extend({
     }
 });
 
-var Mercator = GeoScale.extend({
+export const Mercator = GeoScale.extend({
 });
 
-var Albers = GeoScale.extend({
+export const Albers = GeoScale.extend({
 });
 
-var AlbersUSA = GeoScale.extend({
+export const AlbersUSA = GeoScale.extend({
 });
 
-var EquiRectangular = GeoScale.extend({
+export const EquiRectangular = GeoScale.extend({
 });
 
-var Orthographic = GeoScale.extend({
+export const Orthographic = GeoScale.extend({
 });
 
-var Gnomonic = GeoScale.extend({
+export const Gnomonic = GeoScale.extend({
 });
 
-var Stereographic = GeoScale.extend({
+export const Stereographic = GeoScale.extend({
 });
 
-module.exports = {
-    GeoScale: GeoScale,
-    Mercator: Mercator,
-    Albers: Albers,
-    AlbersUSA: AlbersUSA,
-    EquiRectangular: EquiRectangular,
-    Orthographic: Orthographic,
-    Gnomonic: Gnomonic,
-    Stereographic: Stereographic,
-};
