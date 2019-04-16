@@ -16,7 +16,7 @@
 var d3 = Object.assign({}, require("d3-scale"));
 var scale = require("./Scale");
 
-var LinearScale = scale.Scale.extend({
+export const LinearScale = scale.Scale.extend({
 
     render: function() {
         this.scale = d3.scaleLinear();
@@ -57,6 +57,3 @@ var LinearScale = scale.Scale.extend({
     }
 });
 
-module.exports = {
-    LinearScale: LinearScale
-};
