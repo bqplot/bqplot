@@ -16,9 +16,9 @@
 var widgets = require("@jupyter-widgets/base");
 var d3 = Object.assign({}, require("d3-selection"), require("d3-format"), require("d3-time-format"));
 var utils = require("./utils");
-var _ = require("underscore");
+import _ from 'underscore';
 
-var Tooltip = widgets.DOMWidgetView.extend({
+export const Tooltip = widgets.DOMWidgetView.extend({
 
     initialize: function() {
         this.d3el = d3.select(this.el);
@@ -94,6 +94,3 @@ var Tooltip = widgets.DOMWidgetView.extend({
     }
 });
 
-module.exports = {
-    Tooltip: Tooltip
-};
