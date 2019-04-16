@@ -28,7 +28,7 @@ var circleSymbol = function(size) {
         "Z";
 };
 
-var bqSymbolTypes = d3.map({
+const bqSymbolTypes = d3.map({
     "circle": circleSymbol,
     "cross": function(size,e) {
         var r = Math.sqrt(size / 5) / 2;
@@ -132,9 +132,9 @@ function functor(x) {
     return typeof x === "function" ? x : constant(x);
 }
 
-var bqSymbol = function() {
+const bqSymbol = function() {
     var type = symbolType,
-        size = symbolSize;
+        size = symbolSize,
         skew = symbolSkew;
 
     function symbol(d,i) {
@@ -165,7 +165,6 @@ var bqSymbol = function() {
     return symbol;
 };
 
-module.exports = {
-    symbol: bqSymbol,
-    types: bqSymbolTypes.keys()
-};
+export const types = bqSymbolTypes.keys();
+export { bqSymbol as symbol };
+
