@@ -14,11 +14,11 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
 var basemodel = require("./BaseModel");
 var semver_range = "^" + require("../package.json").version;
+import _ from 'underscore';
 
-var PanZoomModel = basemodel.BaseModel.extend({
+export const PanZoomModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.BaseModel.prototype.defaults(), {
@@ -44,7 +44,7 @@ var PanZoomModel = basemodel.BaseModel.extend({
         var that = this;
         widgets.resolvePromisesDict(this.get("scales")).then(function(scales) {
             _.each(Object.keys(scales), function(k) {
-                _.each(scales[k], function(s, i) {
+                _.each(scales[k], function(s: any, i) {
                     s.set_state(that.scales_states[k][i]);
                 }, that);
             }, that);
@@ -69,6 +69,3 @@ var PanZoomModel = basemodel.BaseModel.extend({
     }, basemodel.BaseModel.serializers)
 });
 
-module.exports = {
-    PanZoomModel: PanZoomModel
-};
