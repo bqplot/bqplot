@@ -246,7 +246,7 @@ export const Bars = mark.Mark.extend({
               return d.key;
           });
 
-        var dom_scale = this.dom_scale = this.range_scale[0];
+        var dom_scale = this.dom_scale;
         // this.x is the ordinal scale used to draw the bars. If a linear
         // scale is given, then the ordinal scale is created from the
         // linear scale.
