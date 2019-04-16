@@ -14,19 +14,19 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
 var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"),
                        require("d3-selection-multi"), require("d3-shape"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 var figure = require("./Figure");
 var popperreference = require("./PopperReference");
 var popper = require("popper.js");
+import * as _ from 'underscore';
 
 if (popper.__esModule) {
     popper = popper.default;
 }
 
-var MarketMap = figure.Figure.extend({
+export const MarketMap = figure.Figure.extend({
 
     render: function(options) {
         this.id = widgets.uuid();
@@ -377,7 +377,6 @@ var MarketMap = figure.Figure.extend({
         this.end_points = [];
         this.rect_groups.nodes().forEach(function(d, i) {
             var data = that.grouped_data[that.groups[i]];
-            var color = that.colors_map(i);
             var return_arr = that.get_new_cords();
             var ends = that.get_end_points(return_arr[2], data.length, return_arr[0], return_arr[1], return_arr[3], return_arr[4]);
             ends.forEach(function(point) { that.end_points.push(point); });
@@ -431,7 +430,7 @@ var MarketMap = figure.Figure.extend({
 
             // Removing the old nodes
             groups.exit().remove();
-            var path = that.create_bounding_path(d, ends);
+            that.create_bounding_path(d, ends);
             var min_x = d3.min(ends, function(end_point) { return end_point.x;});
             var min_y = d3.min(ends, function(end_point) { return end_point.y;});
 
@@ -467,8 +466,7 @@ var MarketMap = figure.Figure.extend({
 
         this.rect_groups.nodes().forEach(function(d, i) {
             var data = that.grouped_data[that.groups[i]];
-            var color = that.colors_map(i);
-            var groups = d3.select(d)
+            d3.select(d)
                 .selectAll(".rect_element")
                 .data(data)
                 .select('rect')
@@ -490,8 +488,7 @@ var MarketMap = figure.Figure.extend({
         if(this.rect_groups !== undefined && this.rect_groups !== null) {
             this.rect_groups.nodes().forEach(function(d, i) {
                 var data = that.grouped_data[that.groups[i]];
-                var color = that.colors_map(i);
-                var groups = d3.select(d)
+                d3.select(d)
                     .selectAll(".rect_element")
                     .data(data)
                     .select('rect')
@@ -580,7 +577,6 @@ var MarketMap = figure.Figure.extend({
 
     update_selected_stroke: function(model, value) {
         this.selected_stroke = value;
-        var that = this;
         this.fig_click.selectAll("rect")
             .styles({'stroke': value});
     },
@@ -598,7 +594,6 @@ var MarketMap = figure.Figure.extend({
     },
 
     show_tooltip: function(event, data) {
-        var mouse_pos = d3.mouse(this.el);
         var that = this;
         if(!this.tooltip_view && (!this.tooltip_fields || this.tooltip_fields.length == 0))
         {
@@ -935,8 +930,6 @@ var MarketMap = figure.Figure.extend({
     },
 
     create_bounding_path: function(elem, end_points) {
-        var start_x = end_points[0].x;
-        var start_y = end_points[0].y;
         var values = [];
         var editing_copy = end_points.slice();
         values.push(end_points[0]);
@@ -1040,6 +1033,3 @@ var MarketMap = figure.Figure.extend({
     },
 });
 
-module.exports = {
-    MarketMap: MarketMap,
-};
