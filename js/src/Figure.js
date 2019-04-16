@@ -26,7 +26,7 @@ if (popper.__esModule) {
     popper = popper.default;
 }
 
-var Figure = widgets.DOMWidgetView.extend({
+export const Figure = widgets.DOMWidgetView.extend({
 
     initialize : function() {
         // Internet Explorer does not support classList for svg elements
@@ -929,8 +929,3 @@ var Figure = widgets.DOMWidgetView.extend({
         this.el.classList.add(this.model.get("theme"));
     },
 });
-
-
-module.exports = {
-    Figure: Figure
-};

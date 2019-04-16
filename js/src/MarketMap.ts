@@ -20,11 +20,7 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 import * as figure from './Figure';
 import * as popperreference from './PopperReference';
-import * as popper from 'popper.js';
-
-if (popper.__esModule) {
-    popper = popper.default;
-}
+import popper from 'popper.js';
 
 export const MarketMap = figure.Figure.extend({
 
