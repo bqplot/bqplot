@@ -13,29 +13,10 @@
  * limitations under the License.
  */
 
-/* Generated from this typescript code:
-class ElementReference {
-    constructor(elt) {
-        this.elt = elt;
-    }
-    getBoundingClientRect() {
-        return this.elt.getBoundingClientRect();
-    }
-    get clientWidth() {
-        return this.elt.clientWidth;
-    }
-    get clientHeight() {
-        return this.elt.clientHeight;
-    }
-
-    elt: HTMLElement;
-}
-*/
-
 /**
  * A delegate reference for the popper js library
  */
-var ElementReference = (function () {
+export const ElementReference = (function () {
     function ElementReference(elt) {
         this.elt = elt;
     }
@@ -59,43 +40,10 @@ var ElementReference = (function () {
     return ElementReference;
 }());
 
-
-
-/* Generated from the Typescript code:
-
-class PositionReference {
-    constructor({ x, y, width, height }) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-    getBoundingClientRect() {
-        let halfwidth = this.width / 2;
-        let halfheight = this.height / 2;
-        return {
-            left: this.x - halfwidth,
-            right: this.x + halfwidth,
-            top: this.y - halfheight,
-            bottom: this.y + halfheight,
-            width: this.width,
-            height: this.height
-        }
-    }
-    get clientWidth() { return this.width; }
-    get clientHeight() { return this.height; }
-
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}
-*/
-
 /**
  * A reference for a specific position.
  */
-var PositionReference = (function () {
+export const PositionReference = (function () {
     function PositionReference(_a) {
         var x = _a.x, y = _a.y, width = _a.width, height = _a.height;
         this.x = x;
@@ -128,8 +76,3 @@ var PositionReference = (function () {
     return PositionReference;
 }());
 
-
-module.exports = {
-    ElementReference: ElementReference,
-    PositionReference: PositionReference
-};
