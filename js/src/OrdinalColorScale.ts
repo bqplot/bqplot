@@ -14,8 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"));
-var scale = require("./Scale");
-var colurutils = require("./ColorUtils");
+import * as scale from './Scale';
+import * as colurutils from './ColorUtils';
 
 export const OrdinalColorScale = scale.Scale.extend({
 

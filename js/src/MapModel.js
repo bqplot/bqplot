@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
-var markmodel = require("./MarkModel");
-var topojson = require("topojson");
+import * as _ from 'underscore';
+import * as markmodel from './MarkModel';
+import * as topojson from 'topojson';
 
 var MapModel = markmodel.MarkModel.extend({
 

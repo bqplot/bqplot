@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var linearscalemodel = require("./LinearScaleModel");
+import * as linearscalemodel from './LinearScaleModel';
 import _ from 'underscore';
 
 export const DateScaleModel = linearscalemodel.LinearScaleModel.extend({

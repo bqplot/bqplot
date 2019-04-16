@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"));
-var colorscale = require("./ColorScale");
+import * as colorscale from './ColorScale';
 
 export const DateColorScale = colorscale.ColorScale.extend({
 

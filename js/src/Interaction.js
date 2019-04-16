@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-selection"));
-var _ = require("underscore");
+import * as _ from 'underscore';
 
 var Interaction = widgets.WidgetView.extend({
 

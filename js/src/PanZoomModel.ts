@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
-var basemodel = require("./BaseModel");
+import * as widgets from '@jupyter-widgets/base';
+import * as basemodel from './BaseModel';
 var semver_range = "^" + require("../package.json").version;
 import _ from 'underscore';
 

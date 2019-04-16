@@ -14,8 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
-var linearscalemodel = require("./LinearScaleModel");
-var colorutils = require("./ColorUtils");
+import * as linearscalemodel from './LinearScaleModel';
+import * as colorutils from './ColorUtils';
 import _ from 'underscore';
 
 export const ColorScaleModel = linearscalemodel.LinearScaleModel.extend({

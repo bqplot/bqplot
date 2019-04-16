@@ -17,9 +17,9 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-scale"), require("d3
 // Hack to fix problem with webpack providing multiple d3 objects
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 
-var _ = require("underscore");
-var mark = require("./Mark");
-var utils = require("./utils");
+import * as _ from 'underscore';
+import * as mark from './Mark';
+import * as utils from './utils';
 
 var Bars = mark.Mark.extend({
 

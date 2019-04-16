@@ -14,7 +14,7 @@
  */
 
 import _ from 'underscore';
-var linearscalemodel = require("./LinearScaleModel");
+import * as linearscalemodel from './LinearScaleModel';
 
 export const LogScaleModel = linearscalemodel.LinearScaleModel.extend({
 

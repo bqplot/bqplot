@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-geo"));
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 
 export const GeoScale = widgets.WidgetView.extend({
 

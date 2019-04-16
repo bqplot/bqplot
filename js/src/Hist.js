@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
+import * as _ from 'underscore';
 var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
 // Hack to fix problem with webpack providing multiple d3 objects
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
 
-var utils = require("./utils");
-var mark = require("./Mark");
+import * as utils from './utils';
+import * as mark from './Mark';
 
 var Hist = mark.Mark.extend({
 

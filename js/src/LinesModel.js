@@ -14,10 +14,10 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"), require("d3-array"));
-var _ = require("underscore");
-var markmodel = require("./MarkModel");
-var serialize = require('./serialize');
-var utils = require('./utils');
+import * as _ from 'underscore';
+import * as markmodel from './MarkModel';
+import * as serialize from './serialize';
+import * as utils from './utils';
 
 var LinesModel = markmodel.MarkModel.extend({
 

@@ -14,8 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"));
-var _ = require("underscore");
-var markmodel = require("./MarkModel");
+import * as _ from 'underscore';
+import * as markmodel from './MarkModel';
 var serialize = require('./serialize')
 
 var OHLCModel = markmodel.MarkModel.extend({

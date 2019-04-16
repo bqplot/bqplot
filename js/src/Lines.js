@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
+import * as _ from 'underscore';
 var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-shape"), require("d3-transition"));
-var mark = require("./Mark");
-var markers = require("./Markers");
-var utils = require("./utils");
+import * as mark from './Mark';
+import * as markers from './Markers';
+import * as utils from './utils';
 
 var bqSymbol = markers.symbol;
 

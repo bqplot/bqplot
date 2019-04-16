@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var colorscale = require("./ColorScaleModel");
+import * as colorscale from './ColorScaleModel';
 import _ from 'underscore';
 
 export const DateColorScaleModel = colorscale.ColorScaleModel.extend({

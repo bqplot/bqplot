@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-hierarchy"), require("d3-scale"), require("d3-selection"));
 import _ from 'underscore';
 

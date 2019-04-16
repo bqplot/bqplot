@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var basemodel = require("./ScatterBaseModel");
+import * as basemodel from './ScatterBaseModel';
 var serialize = require('./serialize')
 import _ from 'underscore';
 

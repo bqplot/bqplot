@@ -14,8 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
-var _ = require("underscore");
-var mark = require("./Mark");
+import * as _ from 'underscore';
+import * as mark from './Mark';
 
 var Boxplot = mark.Mark.extend({
 

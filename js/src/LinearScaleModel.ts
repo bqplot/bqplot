@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"));
-var scalemodel = require("./ScaleModel");
+import * as scalemodel from './ScaleModel';
 import _ from 'underscore';
 
 export const LinearScaleModel = scalemodel.ScaleModel.extend({

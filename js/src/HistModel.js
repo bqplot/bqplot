@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
+import * as _ from 'underscore';
 var d3 = Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-scale-chromatic"));
-var markmodel = require("./MarkModel");
+import * as markmodel from './MarkModel';
 var serialize = require('./serialize')
 
 var HistModel = markmodel.MarkModel.extend({

@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"));
-var linearscale = require("./LinearScale");
+import * as linearscale from './LinearScale';
 import _ from 'underscore';
 
 export const DateScale = linearscale.LinearScale.extend({

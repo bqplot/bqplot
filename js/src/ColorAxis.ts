@@ -15,7 +15,7 @@
 
 var d3 = Object.assign({}, require("d3-axis"), require("d3-scale"), require("d3-selection"),
                        require("d3-selection-multi"));
-var axis = require("./Axis");
+import * as axis from './Axis';
 import _ from 'underscore';
 
 export const ColorBar = axis.Axis.extend({

@@ -15,10 +15,10 @@
 
 var d3 = Object.assign({}, require("d3-drag"), require("d3-selection"), require("d3-shape"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var _ = require("underscore");
-var utils = require("./utils");
-var baseselector = require("./Selector");
-var sel_utils = require("./selector_utils");
+import * as _ from 'underscore';
+import * as utils from './utils';
+import * as baseselector from './Selector';
+import * as sel_utils from './selector_utils';
 
 var LassoSelector = baseselector.BaseXYSelector.extend({
     render: function() {

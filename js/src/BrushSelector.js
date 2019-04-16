@@ -15,10 +15,10 @@
 
 var d3 = Object.assign({}, require("d3-brush"), require("d3-selection"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var _ = require("underscore");
-var selector = require("./Selector");
-var utils = require("./utils");
-var sel_utils = require("./selector_utils");
+import * as _ from 'underscore';
+import * as selector from './Selector';
+import * as utils from './utils';
+import * as sel_utils from './selector_utils';
 
 var BaseBrushSelector = {
 

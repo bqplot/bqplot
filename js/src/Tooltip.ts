@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-selection"), require("d3-format"), require("d3-time-format"));
-var utils = require("./utils");
+import * as utils from './utils';
 import _ from 'underscore';
 
 export const Tooltip = widgets.DOMWidgetView.extend({

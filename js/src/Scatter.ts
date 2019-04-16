@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var scatterbase = require("./ScatterBase");
-var markers = require("./Markers");
+import * as scatterbase from './ScatterBase';
+import * as markers from './Markers';
 var d3 = Object.assign({}, require("d3-selection"));
 
 var bqSymbol = markers.symbol;

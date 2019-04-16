@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"));
-var scale = require("./Scale");
+import * as scale from './Scale';
 
 export const LinearScale = scale.Scale.extend({
 

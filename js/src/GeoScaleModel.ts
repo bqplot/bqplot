@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-geo"));
-var scalemodel = require("./ScaleModel");
+import * as scalemodel from './ScaleModel';
 import _ from 'underscore';
 
 export const GeoScaleModel = scalemodel.ScaleModel.extend({

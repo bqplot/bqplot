@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"));
-var linearscale = require("./LinearScale");
+import * as linearscale from './LinearScale';
 
 export const LogScale = linearscale.LinearScale.extend({
     render: function() {

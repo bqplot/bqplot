@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-selection"), require("d3-zoom"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var _ = require("underscore");
-var mark = require("./Mark");
-var utils = require("./utils");
+import * as _ from 'underscore';
+import * as mark from './Mark';
+import * as utils from './utils';
 
 var Map = mark.Mark.extend({
 

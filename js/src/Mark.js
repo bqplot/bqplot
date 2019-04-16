@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var _ = require("underscore");
+import * as _ from 'underscore';
 
 
 // Check that value is defined and not null

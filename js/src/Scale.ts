@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 
 export const Scale = widgets.WidgetView.extend({
 

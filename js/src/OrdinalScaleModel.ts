@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var scalemodel = require("./ScaleModel");
+import * as scalemodel from './ScaleModel';
 import _ from 'underscore';
 
 export const OrdinalScaleModel = scalemodel.ScaleModel.extend({

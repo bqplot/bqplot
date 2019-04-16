@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-selection"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var interaction = require("./Interaction");
+import * as interaction from './Interaction';
 import _ from 'underscore';
 
 // TODO avoid code duplication for 'x' and 'y'

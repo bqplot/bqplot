@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"));
-var markmodel = require("./MarkModel");
+import * as markmodel from './MarkModel';
 var serialize = require('./serialize')
 import _ from 'underscore';
 

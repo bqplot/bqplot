@@ -14,8 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-selection"));
-var _ = require("underscore");
-var lines = require("./Lines");
+import * as _ from 'underscore';
+import * as lines from './Lines';
 
 var FlexLine = lines.Lines.extend({
 

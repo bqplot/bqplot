@@ -15,8 +15,8 @@
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var utils = require("./utils");
-var mark = require("./Mark");
+import * as utils from './utils';
+import * as mark from './Mark';
 import _ from 'underscore';
 
 export const ScatterBase = mark.Mark.extend({

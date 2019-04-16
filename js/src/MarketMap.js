@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
+import * as widgets from '@jupyter-widgets/base';
+import * as _ from 'underscore';
 var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"),
                        require("d3-selection-multi"), require("d3-shape"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var figure = require("./Figure");
-var popperreference = require("./PopperReference");
-var popper = require("popper.js");
+import * as figure from './Figure';
+import * as popperreference from './PopperReference';
+import * as popper from 'popper.js';
 
 if (popper.__esModule) {
     popper = popper.default;

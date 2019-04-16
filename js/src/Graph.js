@@ -15,9 +15,9 @@
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-force"), require("d3-selection"));
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var _ = require("underscore");
-var utils = require("./utils");
-var mark = require("./Mark");
+import * as _ from 'underscore';
+import * as utils from './utils';
+import * as mark from './Mark';
 
 var min_size = 10;
 

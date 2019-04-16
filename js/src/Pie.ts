@@ -16,8 +16,8 @@
 var d3 = Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
 // Hack to fix problem with webpack providing multiple d3 objects
 d3.getEvent = function(){return require("d3-selection").event}.bind(this);
-var mark = require("./Mark");
-var utils = require("./utils");
+import * as mark from './Mark';
+import * as utils from './utils';
 import _ from 'underscore';
 
 export const Pie = mark.Mark.extend({

@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
-var basemodel = require("./BaseModel");
+import * as widgets from '@jupyter-widgets/base';
+import * as _ from 'underscore';
+import * as basemodel from './BaseModel';
 var semver_range = "^" + require("../package.json").version;
 
 var HandDrawModel = basemodel.BaseModel.extend({

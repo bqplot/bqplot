@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-var bqplot = require('./index');
+import * as bqplot from './index';
 require("../css/bqplot.css");
 
-var base = require('@jupyter-widgets/base');
+import * as base from '@jupyter-widgets/base';
 
 /**
  * The widget manager provider.

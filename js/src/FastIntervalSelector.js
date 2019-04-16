@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
+import * as _ from 'underscore';
 var d3 = Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
-var baseselector = require("./Selector");
-var mark = require("./Mark");
-var sel_utils = require("./selector_utils");
+import * as baseselector from './Selector';
+import * as mark from './Mark';
+import * as sel_utils from './selector_utils';
 
 var FastIntervalSelector = baseselector.BaseXSelector.extend({
 

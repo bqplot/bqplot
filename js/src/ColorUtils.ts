@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-array"), require("d3-scale"));
-var colorbrewer = require("./colorbrewer");
+import * as colorbrewer from './colorbrewer';
 import _ from 'underscore';
 
 const default_scheme = 'RdYlGn'

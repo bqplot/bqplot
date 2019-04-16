@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-var widgets = require("@jupyter-widgets/base");
+import * as widgets from '@jupyter-widgets/base';
 var d3 = Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
-var _ = require("underscore");
-var popperreference = require("./PopperReference");
-var popper = require("popper.js");
+import * as _ from 'underscore';
+import * as popperreference from './PopperReference';
+import * as popper from 'popper.js';
 var THREE = require('three')
 
 THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl')

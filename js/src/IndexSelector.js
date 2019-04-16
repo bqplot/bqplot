@@ -14,8 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-selection"));
-var _ = require("underscore");
-var baseselector = require("./Selector");
+import * as _ from 'underscore';
+import * as baseselector from './Selector';
 
 var IndexSelector = baseselector.BaseXSelector.extend({
 

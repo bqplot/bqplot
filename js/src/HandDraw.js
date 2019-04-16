@@ -14,8 +14,8 @@
  */
 
 var d3 = Object.assign({}, require("d3-selection"));
-var utils = require("./utils");
-var interaction = require("./Interaction");
+import * as utils from './utils';
+import * as interaction from './Interaction';
 var convert_dates = require('./utils').convert_dates;
 
 var HandDraw = interaction.Interaction.extend({

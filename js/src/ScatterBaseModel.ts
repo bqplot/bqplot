@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-var markmodel = require("./MarkModel");
-var serialize = require('./serialize');
+import * as markmodel from './MarkModel';
+import * as serialize from './serialize';
 import _ from 'underscore';
 
 export const ScatterBaseModel = markmodel.MarkModel.extend({

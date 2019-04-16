@@ -14,7 +14,7 @@
  */
 
 var d3 = Object.assign({}, require("d3-selection"));
-var scatterbase = require("./ScatterBase");
+import * as scatterbase from './ScatterBase';
 
 
 var Label = scatterbase.ScatterBase.extend({

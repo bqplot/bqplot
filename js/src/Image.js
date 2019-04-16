@@ -14,9 +14,9 @@
  */
 
 var d3 = Object.assign({}, require("d3"));
-var mark = require("./Mark");
-var utils = require("./utils");
-var _ = require("underscore");
+import * as mark from './Mark';
+import * as utils from './utils';
+import * as _ from 'underscore';
 
 
 var Image = mark.Mark.extend({
