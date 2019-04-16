@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-var _ = require("underscore");
+import _ from 'underscore';
 var linearscalemodel = require("./LinearScaleModel");
 
-var LogScaleModel = linearscalemodel.LinearScaleModel.extend({
+export const LogScaleModel = linearscalemodel.LinearScaleModel.extend({
 
     defaults: function() {
         return _.extend(linearscalemodel.LinearScaleModel.prototype.defaults(), {
@@ -38,6 +38,3 @@ var LogScaleModel = linearscalemodel.LinearScaleModel.extend({
 
 });
 
-module.exports = {
-    LogScaleModel: LogScaleModel
-};
