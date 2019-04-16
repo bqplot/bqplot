@@ -14,13 +14,13 @@
  */
 
 var widgets = require("@jupyter-widgets/base");
-var _ = require("underscore");
 var d3 = Object.assign({}, require("d3-scale"));
 var basemodel = require("./BaseModel");
 var serialize = require('./serialize');
 var semver_range = "^" + require("../package.json").version;
+import * as _ from 'underscore';
 
-var MarketMapModel = basemodel.BaseModel.extend({
+export const MarketMapModel = basemodel.BaseModel.extend({
 
     defaults: function() {
         return _.extend(basemodel.BaseModel.prototype.defaults(), {
@@ -86,6 +86,3 @@ var MarketMapModel = basemodel.BaseModel.extend({
     }, basemodel.BaseModel.serializers)
 });
 
-module.exports = {
-    MarketMapModel: MarketMapModel
-};
