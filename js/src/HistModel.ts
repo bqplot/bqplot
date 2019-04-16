@@ -18,7 +18,7 @@ var d3 = Object.assign({}, require("d3-array"), require("d3-scale"), require("d3
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-exports const HistModel = markmodel.MarkModel.extend({
+export const HistModel = markmodel.MarkModel.extend({
 
     defaults: function() {
         return _.extend(markmodel.MarkModel.prototype.defaults(), {

@@ -316,7 +316,7 @@ var add_remove_classes = function(selection, add_classes, remove_classes) {
     }
 };
 
-exports const MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
+export const MultiSelector = selector.BaseXSelector.extend(BaseBrushSelector).extend({
 
     render: function() {
         MultiSelector.__super__.render.apply(this);

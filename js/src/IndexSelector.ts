@@ -17,7 +17,7 @@ var d3 = Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
 import * as baseselector from './Selector';
 
-exports const IndexSelector = baseselector.BaseXSelector.extend({
+export const IndexSelector = baseselector.BaseXSelector.extend({
 
     render : function() {
         IndexSelector.__super__.render.apply(this);
