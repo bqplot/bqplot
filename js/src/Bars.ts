@@ -21,7 +21,7 @@ import * as _ from 'underscore';
 import * as mark from './Mark';
 import * as utils from './utils';
 
-var Bars = mark.Mark.extend({
+export const Bars = mark.Mark.extend({
 
     render: function() {
         this.padding = this.model.get("padding");
@@ -49,7 +49,8 @@ var Bars = mark.Mark.extend({
     },
 
     set_scale_orientation: function() {
-        var orient = this.model.get("orientation");
+        // TODO: we should probably use this.model.get("orientation")?
+        // var orient = this.model.get("orientation");
         this.dom_scale = this.scales.x; //(orient === "vertical") ? this.scales.x : this.scales.y;
         this.range_scale = this.scales.y; //(orient === "vertical") ? this.scales.y : this.scales.x;
     },
@@ -191,8 +192,6 @@ var Bars = mark.Mark.extend({
         this.set_ranges();
         this.compute_view_padding();
 
-        var range_scale = this.range_scale;
-
         this.draw_zero_line();
 
         this.x.rangeRound(this.set_x_range());
@@ -241,14 +240,13 @@ var Bars = mark.Mark.extend({
 
     draw: function(animate) {
         this.set_ranges();
-        var colors = this.model.get("colors");
         var that = this;
         var bar_groups = this.d3el.selectAll(".bargroup")
           .data(this.model.mark_data, function(d) {
               return d.key;
           });
 
-        var dom_scale = this.dom_scale, range_scale = this.range_scale;
+        var dom_scale = this.dom_scale, _ = this.range_scale;
         // this.x is the ordinal scale used to draw the bars. If a linear
         // scale is given, then the ordinal scale is created from the
         // linear scale.
@@ -584,7 +582,6 @@ var Bars = mark.Mark.extend({
     },
 
     bar_click_handler: function (args) {
-        var data = args.data;
         var index = args.index;
         var that = this;
         var idx = this.model.get("selected");
@@ -674,7 +671,7 @@ var Bars = mark.Mark.extend({
                 } else {
                     if (this.model.get("align") === "left" ||
                         this.model.get("align") === "right") {
-                        x_padding = ( this.x.rangeBand() / 2 ).toFixed(2);
+                        x_padding = parseFloat(( this.x.rangeBand() / 2 ).toFixed(2));
                     }
                 }
             }
@@ -694,8 +691,3 @@ var Bars = mark.Mark.extend({
         }
     }
 });
-
-
-module.exports = {
-    Bars: Bars
-};
