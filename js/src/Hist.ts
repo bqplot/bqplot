@@ -20,12 +20,13 @@ import * as d3 from 'd3';
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 
 import * as utils from './utils';
-import * as mark from './Mark';
+import { Mark } from './Mark';
+import { HistModel } from './HistModel'
 
-export const Hist = mark.Mark.extend({
+export class Hist extends Mark {
 
-    render: function() {
-        var base_creation_promise = Hist.__super__.render.apply(this);
+    render() {
+        var base_creation_promise = super.render();
         this.bars_selected = [];
 
         this.display_el_classes = ["rect", "legendtext"];
@@ -43,9 +44,9 @@ export const Hist = mark.Mark.extend({
             that.draw();
             that.update_selected(that.model, that.model.get("selected"));
         });
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var x_scale = this.scales.sample;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
@@ -54,9 +55,9 @@ export const Hist = mark.Mark.extend({
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         // In the case of Hist, a change in the "sample" scale triggers
         // a full "update_data" instead of a simple redraw.
         var x_scale = this.scales.sample,
@@ -67,34 +68,34 @@ export const Hist = mark.Mark.extend({
         this.listenTo(y_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
-    },
+    }
 
-    create_listeners: function() {
-        Hist.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
         this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
             .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
             .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
 
-        this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
-        this.listenTo(this.model, "data_updated", this.draw, this);
-        this.listenTo(this.model, "change:colors",this.update_colors,this);
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip);
+        this.listenTo(this.model, "data_updated", this.draw);
+        this.listenTo(this.model, "change:colors",this.update_colors);
         this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
-        this.listenTo(this.model, "change:selected", this.update_selected, this);
+        this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
-    },
+    }
 
-    process_click: function(interaction) {
-        Hist.__super__.process_click.apply(this, [interaction]);
+    process_click(interaction) {
+        super.process_click(interaction);
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.bar_click_handler;
         }
-    },
+    }
 
-    update_colors: function(model, colors) {
+    update_colors(model, colors) {
         this.d3el.selectAll(".bargroup").selectAll("rect")
           .style("fill", this.get_colors(0));
         if (model.get("labels") && colors.length > 1) {
@@ -107,9 +108,9 @@ export const Hist = mark.Mark.extend({
             this.legend_el.selectAll("text")
               .style("fill", this.get_colors(0));
         }
-    },
+    }
 
-    update_stroke_and_opacities: function() {
+    update_stroke_and_opacities() {
         var stroke = this.model.get("stroke");
         var opacities = this.model.get("opacities");
         this.d3el.selectAll(".rect")
@@ -117,9 +118,9 @@ export const Hist = mark.Mark.extend({
           .style("opacity", function(d, i) {
                 return opacities[i];
           });
-    },
+    }
 
-    calculate_bar_width: function() {
+    calculate_bar_width() {
         var x_scale = this.scales.sample;
         var bar_width = (x_scale.scale(this.model.max_x) -
                          x_scale.scale(this.model.min_x)) / this.model.num_bins;
@@ -127,9 +128,9 @@ export const Hist = mark.Mark.extend({
             bar_width -= 2;
         }
         return bar_width;
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
 
         var x_scale = this.scales.sample,
@@ -148,9 +149,9 @@ export const Hist = mark.Mark.extend({
           .attr("height", function(d) {
               return y_scale.scale(0) - y_scale.scale(d.y);
           });
-    },
+    }
 
-    draw: function() {
+    draw() {
         this.set_ranges();
         var colors = this.model.get("colors");
         var fill_color = colors[0];
@@ -214,9 +215,9 @@ export const Hist = mark.Mark.extend({
             return [[x, x+bar_width], [0, d.y].map(y_scale.scale)];
         });
         this.update_stroke_and_opacities();
-    },
+    }
 
-    bar_click_handler: function (args) {
+    bar_click_handler (args) {
         var index = args.index;
         //code repeated from bars. We should unify the two.
         var that = this;
@@ -279,9 +280,9 @@ export const Hist = mark.Mark.extend({
             e.stopPropagation();
         }
         e.preventDefault();
-    },
+    }
 
-    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+    draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         this.legend_el = elem.selectAll(".legend" + this.uuid)
             .data([this.model.mark_data[0]]);
 
@@ -332,14 +333,14 @@ export const Hist = mark.Mark.extend({
 
         this.legend_el.exit().remove();
         return [1, max_length];
-    },
+    }
 
-    reset_colors: function(index, color) {
+    reset_colors(index, color) {
         var rects = this.d3el.selectAll("#rect"+index);
         rects.style("fill", color);
-    },
+    }
 
-    update_selected: function(model, value) {
+    update_selected(model, value) {
         if(value === undefined || value === null || value.length === 0) {
             //reset the color of everything if selected is blank
             this.update_selected_colors([]);
@@ -348,9 +349,9 @@ export const Hist = mark.Mark.extend({
             var indices = this.calc_bar_indices_from_data_idx(value);
             this.update_selected_colors(indices);
         }
-    },
+    }
 
-    update_selected_colors: function(indices) {
+    update_selected_colors(indices) {
         // listen to changes of selected and draw itself
         var colors = this.model.get("colors");
         var select_color = colors.length > 1 ? colors[1] : "red";
@@ -364,9 +365,9 @@ export const Hist = mark.Mark.extend({
         indices.forEach(function(d) {
             that.d3el.selectAll("#rect" + d).style("fill", select_color);
         });
-    },
+    }
 
-    invert_point: function(pixel) {
+    invert_point(pixel) {
         // Sets the selected to the data contained in the bin closest
         // to the value of the pixel.
         // Used by Index Selector.
@@ -386,9 +387,9 @@ export const Hist = mark.Mark.extend({
         var sel_index = abs_diff.indexOf(d3.min(abs_diff));
         this.model.set("selected", this.calc_data_indices([sel_index]));
         this.touch();
-    },
+    }
 
-    selector_changed: function(point_selector, rect_selector) {
+    selector_changed(point_selector, rect_selector) {
         if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
@@ -401,9 +402,9 @@ export const Hist = mark.Mark.extend({
         });
         this.model.set("selected", this.calc_data_indices(selected_bins));
         this.touch();
-    },
+    }
 
-    calc_data_indices: function(indices) {
+    calc_data_indices(indices) {
         //input is a list of indices corresponding to the bars. Output is
         //the list of indices in the data
         var intervals = this.reduce_intervals(indices);
@@ -424,9 +425,9 @@ export const Hist = mark.Mark.extend({
             return false;
         });
         return selected;
-    },
+    }
 
-    reduce_intervals: function(indices) {
+    reduce_intervals(indices) {
         //for a series of indices, reduces them to the minimum possible
         //intervals on which the search can be performed.
         //return value is an array of arrays containing the start and end
@@ -450,9 +451,9 @@ export const Hist = mark.Mark.extend({
                             this.model.x_bins[end_index + 1]]);
         }
         return intervals;
-    },
+    }
 
-    calc_data_indices_from_data_range: function(start_pixel, end_pixel) {
+    calc_data_indices_from_data_range(start_pixel, end_pixel) {
         //Input is pixel values and output is the list of indices for which
         //the `sample` value lies in the interval
         var idx_start = d3.max([0, d3.bisectLeft(this.bin_pixels, start_pixel) - 1]);
@@ -464,9 +465,9 @@ export const Hist = mark.Mark.extend({
             return (x_data[iter] >= that.model.x_bins[idx_start] &&
                     x_data[iter] <= that.model.x_bins[idx_end]);
         });
-    },
+    }
 
-    calc_bar_indices_from_data_idx: function(selected) {
+    calc_bar_indices_from_data_idx(selected) {
         //function to calculate bar indices for a given list of data
         //indices
         var x_data = this.model.get("sample");
@@ -489,11 +490,30 @@ export const Hist = mark.Mark.extend({
         bar_indices.sort();
         bar_indices = _.uniq(bar_indices, true);
         return bar_indices;
-    },
+    }
 
-    reset_selection: function() {
+    reset_selection() {
         this.bars_selected = [];
         this.model.set("selected", null);
         this.touch();
     }
-});
+
+    clear_style(style_dict, indices?, elements?) {
+    }
+
+    compute_view_padding() {
+    }
+
+    set_default_style(indices, elements?) {
+    }
+
+    set_style_on_elements(style, indices, elements?) {
+    }
+
+    bars_selected: Array<number>;
+    legend_el: any;
+    bin_pixels: Array<number>;
+    pixel_coords: Array<Array<number>>;
+
+    model: HistModel;
+}
