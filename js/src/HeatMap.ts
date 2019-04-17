@@ -16,12 +16,12 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
-import * as mark from './Mark';
+import { Mark } from './Mark';
 
-export const HeatMap = mark.Mark.extend({
+export class HeatMap extends Mark {
 
-    render: function() {
-        var base_render_promise = HeatMap.__super__.render.apply(this);
+    render() {
+        var base_render_promise = super.render();
         var that = this;
 
         // TODO: create_listeners is put inside the promise success handler
@@ -48,9 +48,9 @@ export const HeatMap = mark.Mark.extend({
             that.compute_view_padding();
             that.draw();
         });
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var x_scale = this.scales.x;
         if(x_scale) {
             var x_range = this.parent.padded_range("x", x_scale.model);
@@ -60,9 +60,9 @@ export const HeatMap = mark.Mark.extend({
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         var x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
@@ -70,9 +70,9 @@ export const HeatMap = mark.Mark.extend({
         this.listenTo(y_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
-    },
+    }
 
-    initialize_additional_scales: function() {
+    initialize_additional_scales() {
         var color_scale = this.scales.color;
         if(color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
@@ -80,35 +80,35 @@ export const HeatMap = mark.Mark.extend({
             });
             color_scale.on("color_scale_range_changed", this.draw, this);
         }
-    },
+    }
 
-    create_listeners: function() {
-        HeatMap.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
 
         this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
             .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
             .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
-        this.listenTo(this.model, "data_updated", this.draw, this);
-        this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
+        this.listenTo(this.model, "data_updated", this.draw);
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip);
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
         this.listenTo(this.model, "change:interactions", this.process_interactions);
-    },
+    }
 
-    click_handler: function (args) {},
+    click_handler (args) {}
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
         this.compute_view_padding();
         this.draw();
-    },
+    }
 
-    draw_canvas: function() {
+    draw_canvas() {
         this.image.attr("href", this.canvas.toDataURL("image/png"));
-    },
+    }
 
-    draw: function() {
+    draw() {
         this.set_ranges();
         var that = this;
 
@@ -136,9 +136,9 @@ export const HeatMap = mark.Mark.extend({
             .attr("x", x_plot_data.x0)
             .attr("y", y_plot_data.y0);
         this.draw_canvas();
-    },
+    }
 
-    get_x_plotting_data: function(data) {
+    get_x_plotting_data(data) {
         // This function returns the starting points and widths of the
         // cells based on the parameters passed.
         //
@@ -176,17 +176,17 @@ export const HeatMap = mark.Mark.extend({
             "start": start_points,
             "x0": x0
         };
-    },
+    }
 
-    get_x_padding: function(scaled_data) {
+    get_x_padding(scaled_data) {
         var num_cols = scaled_data.length;
         return {
             left: (scaled_data[1] - scaled_data[0]) * 0.5,
             right: (scaled_data[num_cols-1] - scaled_data[num_cols-2]) * 0.5
         };
-    },
+    }
 
-    get_y_plotting_data: function(data) {
+    get_y_plotting_data(data) {
         // This function returns the starting points and heights of the
         // cells based on the parameters passed.
         //
@@ -223,20 +223,35 @@ export const HeatMap = mark.Mark.extend({
             "start": start_points,
             "y0": y0
         };
-    },
+    }
 
-    get_y_padding: function(scaled_data) {
+    get_y_padding(scaled_data) {
         var num_rows = scaled_data.length;
         return {
             bottom: -(scaled_data[1] - scaled_data[0]) * 0.5,
             top: -(scaled_data[num_rows-1] - scaled_data[num_rows-2]) * 0.5
         };
-    },
+    }
 
-    get_element_fill: function(color) {
+    get_element_fill(color) {
         if (color === null) {
             return this.model.get("null_color")
         }
         return this.scales.color.scale(color);
-    },
-});
+    }
+
+    clear_style(style_dict, indices?, elements?) {
+    }
+
+    compute_view_padding() {
+    }
+
+    set_default_style(indices, elements?) {
+    }
+
+    set_style_on_elements(style, indices, elements?) {
+    }
+
+    image: any;
+    canvas: any;
+}
