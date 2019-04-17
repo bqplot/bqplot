@@ -1,18 +1,25 @@
 {
-"compilerOptions": {
-    // "noImplicitAny": true,
-    "lib": ["dom", "es5", "es2015.promise", "es2015.iterable"],
-    "noEmitOnError": true,
-    // "strictNullChecks": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "ES5",
-    "outDir": "lib",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "allowJs": true
-  },
-  "include": [
+    "compilerOptions": {
+      "allowJs": true,
+      // "declaration": true,
+      "esModuleInterop": true,
+      "incremental": true,
+      "lib": ["es2015", "dom"],
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "noEmitOnError": true,
+      // "noImplicitAny": true,
+      "noUnusedLocals": true,
+      "outDir": "lib",
+      "preserveWatchOutput": true,
+      "rootDir": "src",
+      "sourceMap": true,
+      // "strict": true,
+      "strictNullChecks": false,
+      "target": "es2015",
+      // "types": [],
+    },
+    "include": [
         "./src/**/*"
     ]
 }
