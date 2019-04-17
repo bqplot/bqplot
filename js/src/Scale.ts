@@ -14,6 +14,7 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
+import { ScaleModel } from './ScaleModel';
 
 export class Scale extends widgets.WidgetView {
 
@@ -65,10 +66,6 @@ export class Scale extends widgets.WidgetView {
     scale: any;
 
     // Overriding super class
-    model: widgets.WidgetModel & {
-        domain: any,
-        set_domain: any,
-        compute_and_set_domain: any
-    };
+    model: widgets.WidgetModel & ScaleModel;
 }
 

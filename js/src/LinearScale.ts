@@ -14,19 +14,19 @@
  */
 
 import * as d3Scale from 'd3-scale';
-import * as scale from './Scale';
+import { Scale } from './Scale';
 
-export const LinearScale = scale.Scale.extend({
+export class LinearScale extends Scale {
 
-    render: function() {
+    render() {
         this.scale = d3Scale.scaleLinear();
         if(this.model.domain.length > 0)
             this.scale.domain(this.model.domain);
         this.offset = 0;
         this.create_event_listeners();
-    },
+    }
 
-    expand_domain: function(old_range, new_range) {
+    expand_domain(old_range, new_range) {
         // If you have a current range and then a new range and want to
         // expand the domain to expand to the new range but keep it
         // consistent with the previous one, this is the function you use.
@@ -44,16 +44,16 @@ export const LinearScale = scale.Scale.extend({
         this.scale.domain(new_range.map(function(limit) {
             return unpadded_scale.invert(limit);
         }));
-    },
+    }
 
-    invert: function(pixel): number {
+    invert(pixel): number {
         return this.scale.invert(pixel);
-    },
+    }
 
-    invert_range: function(pixels) {
+    invert_range(pixels) {
         //Pixels is a non-decreasing array of pixel values
         var that = this;
         return pixels.map(function(pix) { return that.invert(pix); });
     }
-});
+}
 

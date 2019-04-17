@@ -15,16 +15,15 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
-import * as linearscale from './LinearScale';
-import _ from 'underscore';
+import { LinearScale } from './LinearScale';
 
-export const DateScale = linearscale.LinearScale.extend({
-    render: function() {
+export class DateScale extends LinearScale {
+    render() {
         this.scale = d3.scaleTime();
         if(this.model.domain.length > 0)
             this.scale.domain(this.model.domain);
         this.offset = 0;
         this.create_event_listeners();
-    },
-});
+    }
+}
 
