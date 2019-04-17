@@ -193,7 +193,7 @@ export const OHLC = mark.Mark.extend({
         this.update_selected_colors(sel_index, sel_index);
         this.model.set("selected", [sel_index]);
         this.touch();
-        return sel_index;
+        return;
     },
 
     draw: function() {

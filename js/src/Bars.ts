@@ -213,10 +213,6 @@ export class Bars extends mark.Mark {
         var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
         this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
         this.touch();
-
-        // TODO: this return is probably wrong? We put it in since the base
-        // class has this function returning an array.
-        return []
     }
 
     selector_changed(point_selector, rect_selector) {
