@@ -16,43 +16,49 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-geo"));
 import * as widgets from '@jupyter-widgets/base';
+import { GeoScaleModel } from './GeoScaleModel'
 
-export const GeoScale = widgets.WidgetView.extend({
+export class GeoScale extends widgets.WidgetView {
 
-    render: function() {
+    render() {
         this.set_projection();
         this.listenTo(this.model, "attribute_changed", this.reset_scale);
-    },
+    }
 
-    set_projection: function() {
+    set_projection() {
         this.path = d3.geoPath().projection(this.model.projection);
         this.scale = this.model.projection;
-    },
+    }
 
-    reset_scale: function() {
+    reset_scale() {
         this.set_projection();
         this.trigger("domain_changed", null);
     }
-});
 
-export const Mercator = GeoScale.extend({
-});
+    path: any;
+    scale: any;
 
-export const Albers = GeoScale.extend({
-});
+    model: GeoScaleModel;
+}
 
-export const AlbersUSA = GeoScale.extend({
-});
+export class Mercator extends GeoScale {
+}
 
-export const EquiRectangular = GeoScale.extend({
-});
+export class Albers extends GeoScale {
+}
 
-export const Orthographic = GeoScale.extend({
-});
+export class AlbersUSA extends GeoScale {
+}
 
-export const Gnomonic = GeoScale.extend({
-});
+export class EquiRectangular extends GeoScale {
+}
 
-export const Stereographic = GeoScale.extend({
-});
+export class Orthographic extends GeoScale {
+}
+
+export class Gnomonic extends GeoScale {
+}
+
+export class Stereographic extends GeoScale {
+}
 

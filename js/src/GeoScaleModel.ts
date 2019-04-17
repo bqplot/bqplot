@@ -25,12 +25,20 @@ export class GeoScaleModel extends ScaleModel {
             _view_name: "GeoScale"
         };
     }
+
+    compute_and_set_domain(data_array, id) {
+    }
+    
+    update_domain() {
+    }
+
+    projection: any;
 }
 
 export class MercatorModel extends GeoScaleModel {
 
     defaults() {
-        return {...GeoScaleModel.prototype.defaults()
+        return {...GeoScaleModel.prototype.defaults(),
             _model_name: "MercatorModel",
             _view_name: "Mercator",
             scale_factor: 190.0,
@@ -39,8 +47,8 @@ export class MercatorModel extends GeoScaleModel {
         };
     }
 
-    initialize() {
-        super.initialize();
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["scale_factor", "center", "rotate"], this.create_projection, this);
         this.create_projection();
     }
@@ -72,8 +80,8 @@ export class AlbersModel extends GeoScaleModel {
         };
     }
 
-    initialize() {
-        super.initialize();
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["rotate", "center", "parallels", "scale_factor", "precision"],
             this.create_projection, this);
         this.create_projection();
@@ -105,8 +113,8 @@ export class AlbersUSAModel extends GeoScaleModel {
         };
     }
 
-    initialize() {
-        AlbersUSAModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["scale_factor", "translate"], this.create_projection, this);
         this.create_projection();
     }
@@ -123,18 +131,18 @@ export class AlbersUSAModel extends GeoScaleModel {
     }
 }
 
-export class EquiRectangularModel extends GeoScaleModel.extend({
+export class EquiRectangularModel extends GeoScaleModel {
 
     defaults() {
-        return _.extend(GeoScaleModel.prototype.defaults(), {
+        return {...GeoScaleModel.prototype.defaults(),
             _model_name: "EquiRectangularModel",
             _view_name: "EquiRectangular",
             scale_factor: 145.0
-        });
+        };
     }
 
-    initialize() {
-        EquiRectangularModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["scale_factor", "center"], this.create_projection, this);
         this.create_projection();
     }
@@ -149,12 +157,12 @@ export class EquiRectangularModel extends GeoScaleModel.extend({
     attribute_changed() {
         this.trigger("attribute_changed");
     }
-});
+}
 
-export class OrthographicModel = GeoScaleModel.extend({
+export class OrthographicModel extends GeoScaleModel {
 
     defaults() {
-        return _.extend(GeoScaleModel.prototype.defaults(), {
+        return {...GeoScaleModel.prototype.defaults(),
             _model_name: "OrthographicModel",
             _view_name: "Orthographic",
             scale_factor: 145.0,
@@ -162,11 +170,11 @@ export class OrthographicModel = GeoScaleModel.extend({
             rotate: [0, 0],
             clip_angle: 90.0,
             precision: 0.1
-        });
+        };
     }
 
-    initialize() {
-        OrthographicModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["scale_factor", "center", "clip_angle", "rotate", "precision"], this.create_projection, this);
         this.create_projection();
     }
@@ -184,23 +192,23 @@ export class OrthographicModel = GeoScaleModel.extend({
     attribute_changed() {
         this.trigger("attribute_changed");
     }
-});
+}
 
-export class GnomonicModel = GeoScaleModel.extend({
+export class GnomonicModel extends GeoScaleModel {
 
     defaults() {
-        return _.extend(GeoScaleModel.prototype.defaults(), {
+        return {...GeoScaleModel.prototype.defaults(),
             _model_name: "GnomonicModel",
             _view_name: "Gnomonic",
             scale_factor: 145.0,
            center: [0, 60],
            precision: 0.1,
            clip_angle: 89.999
-        });
+        };
     }
 
-    initialize() {
-        GnomonicModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["scale_factor", "precision", "clip_angle"], this.create_projection, this);
         this.create_projection();
     }
@@ -216,12 +224,12 @@ export class GnomonicModel = GeoScaleModel.extend({
     attribute_changed() {
         this.trigger("attribute_changed");
     }
-});
+}
 
-export class StereographicModel = GeoScaleModel.extend({
+export class StereographicModel extends GeoScaleModel {
 
     defaults() {
-        return _.extend(GeoScaleModel.prototype.defaults(), {
+        return {...GeoScaleModel.prototype.defaults(),
             _model_name: "StereographicModel",
             _view_name: "StereographicModel",
             scale_factor: 245,
@@ -229,11 +237,11 @@ export class StereographicModel = GeoScaleModel.extend({
             precision: 0.1,
             rotate: [96, 0],
             clip_angle: 179.9999
-        });
+        };
     }
 
-    initialize() {
-        StereographicModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["scale_factor", "center", "clip_angle", "rotate", "precision"], this.create_projection, this);
         this.create_projection();
     }
@@ -251,5 +259,5 @@ export class StereographicModel = GeoScaleModel.extend({
     attribute_changed() {
         this.trigger("attribute_changed");
     }
-});
+}
 
