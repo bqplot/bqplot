@@ -13,28 +13,28 @@
  * limitations under the License.
  */
 
+import * as _ from 'underscore';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-scale"));
-import * as linearscalemodel from './LinearScaleModel';
+import { LinearScaleModel } from './LinearScaleModel';
 import * as colorutils from './ColorUtils';
-import _ from 'underscore';
 
-export const ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
+export class ColorScaleModel extends LinearScaleModel {
 
-    set_init_state: function() {
+    set_init_state() {
         this.type = "color_linear";
         this.color_range = [];
         this.mid = null;
-    },
+    }
 
-    set_listeners: function() {
-        ColorScaleModel.__super__.set_listeners.apply(this, arguments);
+    set_listeners() {
+        super.set_listeners();
         this.on_some_change(["colors", "scheme"], this.colors_changed, this);
         this.on("change:mid", this.update_domain, this);
         this.colors_changed();
-    },
+    }
 
-    update_domain: function() {
+    update_domain() {
         // Compute domain min and max
         var that = this;
         var min = (!this.min_from_data) ?
@@ -60,9 +60,9 @@ export const ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
             this.domain = this.create_domain(min, this.mid, max, n_colors);
             this.trigger("domain_changed", this.domain);
         }
-    },
+    }
 
-    create_domain: function(min, mid, max, n_colors) {
+    create_domain(min, mid, max, n_colors) {
         // Domain ranges from min to max, with the same number of
         // elements as the color range
         var scale = d3.scaleLinear()
@@ -80,9 +80,9 @@ export const ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
             domain.push(scale(j));
         }
         return domain;
-    },
+    }
 
-    colors_changed: function() {
+    colors_changed() {
         var colors = this.get("colors");
         this.color_range = colors.length > 0 ? colors : 
             colorutils.get_linear_scale_range(this.get("scheme"));
@@ -92,5 +92,8 @@ export const ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
         // on the view, so ideally we could get rid of this
         this.trigger("colors_changed");
     }
-});
+
+    color_range: Array<number>;
+    mid: number;
+}
 

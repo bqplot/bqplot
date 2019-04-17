@@ -14,15 +14,14 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import * as basemodel from './BaseModel';
+import { BaseModel } from './BaseModel';
 import * as serialize from './serialize';
 import { semver_range } from './version';
-import _ from 'underscore';
 
-export const AxisModel = basemodel.BaseModel.extend({
+export class AxisModel extends BaseModel {
 
-    defaults: function() {
-        return _.extend(widgets.WidgetModel.prototype.defaults(), {
+    defaults() {
+        return {...widgets.WidgetModel.prototype.defaults(),
             _model_name: "AxisModel",
             _view_name: "Axis",
             _model_module: "bqplot",
@@ -47,18 +46,18 @@ export const AxisModel = basemodel.BaseModel.extend({
             visible: true,
             tick_style: {},
             tick_rotate: 0
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        AxisModel.__super__.initialize.apply(this, arguments);
+    initialize() {
+        super.initialize();
         this.on("change:side", this.validate_orientation, this);
         this.on("change:orientation", this.validate_side, this);
         this.validate_orientation();
         this.validate_side();
-    },
+    }
 
-    validate_side: function() {
+    validate_side() {
         var orientation = this.get("orientation"),
             side = this.get("side");
         if(orientation === "vertical") {
@@ -71,9 +70,9 @@ export const AxisModel = basemodel.BaseModel.extend({
             }
         }
         this.save_changes();
-    },
+    }
 
-    validate_orientation: function() {
+    validate_orientation() {
         const side = this.get("side");
         if (side) {
             if(side === "left" || side === "right") {
@@ -84,21 +83,22 @@ export const AxisModel = basemodel.BaseModel.extend({
             this.save_changes();
         }
     }
-}, {
-    serializers: _.extend({
-         scale: { deserialize: widgets.unpack_models },
-         offset: { deserialize: widgets.unpack_models },
-         tick_values: serialize.array_or_json,
-    }, widgets.WidgetModel.serializers)
-});
 
-export const ColorAxisModel = AxisModel.extend({
+    static serializers = {
+        ...widgets.WidgetModel.serializers,
+        scale: { deserialize: widgets.unpack_models },
+        offset: { deserialize: widgets.unpack_models },
+        tick_values: serialize.array_or_json,
+    };
+}
 
-    defaults: function() {
-        return _.extend(AxisModel.prototype.defaults(), {
+export class ColorAxisModel extends AxisModel {
+
+    defaults() {
+        return {...AxisModel.prototype.defaults(),
             _model_name: "ColorAxisModel",
             _view_name: "ColorAxis"
-        });
+        };
     }
-});
+}
 

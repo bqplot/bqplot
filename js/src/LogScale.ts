@@ -15,10 +15,10 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
-import * as linearscale from './LinearScale';
+import { LinearScale } from './LinearScale';
 
-export const LogScale = linearscale.LinearScale.extend({
-    render: function() {
+export class LogScale extends LinearScale {
+    render() {
         this.scale = d3.scaleLog();
         if(this.model.domain.length > 0) {
             this.scale.domain(this.model.domain);
@@ -26,5 +26,5 @@ export const LogScale = linearscale.LinearScale.extend({
         this.offset = 0;
         this.create_event_listeners();
     }
-});
+}
 

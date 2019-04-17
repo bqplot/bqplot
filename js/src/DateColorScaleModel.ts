@@ -13,32 +13,31 @@
  * limitations under the License.
  */
 
-import * as colorscale from './ColorScaleModel';
-import _ from 'underscore';
+import { ColorScaleModel } from './ColorScaleModel';
 
-export const DateColorScaleModel = colorscale.ColorScaleModel.extend({
+export class DateColorScaleModel extends ColorScaleModel {
 
-    defaults: function() {
-        return _.extend(colorscale.ColorScaleModel.prototype.defaults(), {
+    defaults() {
+        return {...ColorScaleModel.prototype.defaults(),
             _model_name: "DateColorScaleModel",
             _view_name: "DateColorScale"
-        });
-    },
+        };
+    }
 
-    set_init_state: function() {
+    set_init_state() {
         this.type = "date_color_linear";
         this.color_range = [];
         this.mid = null;
         this.global_min = (new Date()).setTime(0);
         this.global_max = new Date();
-    },
+    }
 
-    min_max_changed: function() {
+    min_max_changed() {
         this.min = this.get_date_elem("min");
         this.max = this.get_date_elem("max");
         this.min_from_data = (this.min === null);
         this.max_from_data = (this.max === null);
         this.update_domain();
     }
-});
+}
 

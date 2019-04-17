@@ -15,12 +15,12 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
-import * as colorscale from './ColorScale';
+import { ColorScale } from './ColorScale';
 
-export const DateColorScale = colorscale.ColorScale.extend({
+export class DateColorScale extends ColorScale {
 
-    create_d3_scale: function(){
+    create_d3_scale() {
         this.scale = d3.scaleTime();
     }
-});
+}
 

@@ -16,13 +16,13 @@
 import * as _ from 'underscore';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
-import * as baseselector from './Selector';
+import { BaseXSelector } from './Selector';
 import * as sel_utils from './selector_utils';
 
-export const FastIntervalSelector = baseselector.BaseXSelector.extend({
+export class FastIntervalSelector extends BaseXSelector {
 
-    render: function() {
-        FastIntervalSelector.__super__.render.apply(this);
+    render() {
+        super.render();
         this.freeze_but_move = true;
         this.freeze_dont_move = false;
         this.active = false;
@@ -62,31 +62,31 @@ export const FastIntervalSelector = baseselector.BaseXSelector.extend({
             that.selected_changed();
             that.create_listeners();
         });
-    },
+    }
 
-    create_listeners: function() {
-        FastIntervalSelector.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
         this.listenTo(this.model, "change:color", this.color_change, this);
-    },
+    }
 
-    color_change: function() {
+    color_change() {
         if(this.model.get("color") !== null) {
             this.rect.style("fill", this.model.get("color"));
         }
-    },
+    }
 
-    click: function () {
+    click () {
         this.active = true;
         this.rect.style("display", "inline");
         this.freeze_but_move = this.model.get("size") ?
             true : !this.freeze_but_move;
-    },
+    }
 
-    dblclick: function () {
+    dblclick () {
         this.freeze_dont_move = !this.freeze_dont_move;
-    },
+    }
 
-    mousemove: function() {
+    mousemove() {
         if (this.freeze_dont_move || !this.active) {
             return;
         }
@@ -113,12 +113,12 @@ export const FastIntervalSelector = baseselector.BaseXSelector.extend({
         var pixel_extent = [start, start + interval_size];
         this.set_selected("selected",
                                    this.scale.invert_range(pixel_extent));
-        this.update_mark_selected(pixel_extent);
+        this.update_mark_selected(pixel_extent, undefined);
         this.touch();
         this.dirty = false;
-    },
+    }
 
-    update_mark_selected: function(extent_x, extent_y) {
+    update_mark_selected(extent_x, extent_y) {
 
         if(extent_x === undefined || extent_x.length === 0) {
             // Reset all the selected in marks
@@ -144,15 +144,15 @@ export const FastIntervalSelector = baseselector.BaseXSelector.extend({
         _.each(this.mark_views, function(mark_view: any) {
             mark_view.selector_changed(point_selector, rect_selector);
         }, this);
-    },
+    }
 
-    scale_changed: function() {
+    scale_changed() {
         this.reset();
         this.create_scale();
-    },
+    }
 
-    relayout: function() {
-        FastIntervalSelector.__super__.relayout.apply(this);
+    relayout() {
+        super.relayout();
 
         this.adjust_rectangle();
         this.background
@@ -160,25 +160,25 @@ export const FastIntervalSelector = baseselector.BaseXSelector.extend({
           .attr("height", this.height);
 
         this.set_range([this.scale]);
-    },
+    }
 
-    reset: function() {
+    reset() {
         this.rect.attr("x", 0)
           .attr("width", 0);
         this.model.set("selected", null);
-        this.update_mark_selected();
+        this.update_mark_selected(undefined, undefined);
         this.touch();
-    },
+    }
 
-    update_scale_domain: function(ignore_gui_update) {
+    update_scale_domain(ignore_gui_update) {
         // Call the base class function to update the scale.
-        FastIntervalSelector.__super__.update_scale_domain.apply(this);
+        super.update_scale_domain();
         if(ignore_gui_update !== true) {
             this.selected_changed();
         }
-    },
+    }
 
-    selected_changed: function(model, value) {
+    selected_changed() {
         //TODO: should the size get overridden if it was set previously and
         //then selected was changed from the python side?
         if(this.dirty) {
@@ -202,11 +202,11 @@ export const FastIntervalSelector = baseselector.BaseXSelector.extend({
                 width: (pixels[1] - pixels[0])
             }).style("display", "inline");
             this.active = true;
-            this.update_mark_selected(pixels)
+            this.update_mark_selected(pixels, undefined)
         }
-    },
+    }
 
-    adjust_rectangle: function() {
+    adjust_rectangle() {
         if (this.model.get("orientation") == "vertical") {
             this.d3el.selectAll("rect")
               .attr("x", 0)
@@ -216,6 +216,6 @@ export const FastIntervalSelector = baseselector.BaseXSelector.extend({
               .attr("y", 0)
               .attr("height", this.height);
         }
-    },
-});
+    }
+}
 

@@ -13,28 +13,27 @@
  * limitations under the License.
  */
 
-import _ from 'underscore';
-import * as linearscalemodel from './LinearScaleModel';
+import * as _ from 'underscore';
+import { LinearScaleModel } from './LinearScaleModel';
 
-export const LogScaleModel = linearscalemodel.LinearScaleModel.extend({
+export class LogScaleModel extends LinearScaleModel {
 
-    defaults: function() {
-        return _.extend(linearscalemodel.LinearScaleModel.prototype.defaults(), {
+    defaults() {
+        return {...LinearScaleModel.prototype.defaults(),
             _model_name: "LogScaleModel",
             _view_name: "LogScale",
             domain: []
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        LogScaleModel.__super__.initialize.apply(this, arguments);
-    },
+    initialize() {
+        super.initialize();
+    }
 
-    set_init_state: function() {
+    set_init_state() {
         this.type = "log";
         this.global_min = Number.MIN_VALUE;
         this.global_max = Number.POSITIVE_INFINITY;
     }
-
-});
+}
 

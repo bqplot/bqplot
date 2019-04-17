@@ -14,13 +14,13 @@
  */
 
 import _ from 'underscore'
-import * as basemodel from './BaseModel';
+import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 
-export const ScaleModel = basemodel.BaseModel.extend({
+export class ScaleModel extends BaseModel {
 
-    defaults: function() {
-        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+    defaults() {
+        return {...BaseModel.prototype.defaults(), 
             _model_name: "ScaleModel",
              _view_name: "Scale",
             _model_module: "bqplot",
@@ -29,45 +29,48 @@ export const ScaleModel = basemodel.BaseModel.extend({
             _view_module_version: semver_range,
             reverse: false,
             allow_padding: true
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        ScaleModel.__super__.initialize.apply(this, arguments);
+    initialize() {
+        super.initialize();
         this.domains = {};
         this.domain = [];
         this.set_init_state();
         this.set_listeners();
-    },
+    }
 
-    set_init_state: function() {
+    set_init_state() {
         this.type = "base";
-    },
+    }
 
-    set_listeners: function() {
+    set_listeners() {
         // Function to be implementd by inherited classes.
-    },
+    }
 
-    set_domain: function(domain, id) {
+    set_domain(domain, id) {
         // Call function only if you have computed the domain yourself. If
         // you want the scale to compute the domain based on the data for
         // your scale view, then call compute_and_set_domain
         this.domains[id] = domain;
         this.update_domain();
-    },
+    }
 
-    del_domain: function(domain, id) {
+    del_domain(domain, id) {
         if(this.domains[id] !== undefined) {
             delete this.domains[id];
             this.update_domain();
         }
-    },
+    }
 
-    get_domain_slice_in_order: function(){
+    get_domain_slice_in_order() {
         if(this.reverse)
             return this.domain.slice().reverse();
         else
             return this.domain.slice();
     }
-});
+
+    domains: any;
+    domain: Array<number>;
+}
 
