@@ -16,13 +16,13 @@
 import * as _ from 'underscore';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-scale-chromatic"));
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export const HistModel = markmodel.MarkModel.extend({
+export class HistModel extends MarkModel {
 
-    defaults: function() {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...MarkModel.prototype.defaults(),
             _model_name: "HistModel",
             _view_name: "Hist",
             sample: [],
@@ -37,12 +37,12 @@ export const HistModel = markmodel.MarkModel.extend({
             stroke: null,
             opacities: [],
             normalized: false
-        });
-    },
+        };
+    }
 
-    initialize: function() {
+    initialize(attributes, options) {
         // TODO: should not need to set this.data
-        HistModel.__super__.initialize.apply(this, arguments);
+        super.initialize(attributes, options);
         this.mark_data = [];
         // For the histogram, changing the "sample" scale changes the "count" values being plotted.
         // Hence, on change of the value of "preserve_domain", we must call the "update_data"
@@ -51,9 +51,9 @@ export const HistModel = markmodel.MarkModel.extend({
         this.update_data();
         this.on("change:normalized", function() { this.normalize_data(true); }, this);
         this.normalize_data(true);
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         var x_data = this.get("sample");
         var scales = this.get("scales");
         var x_scale = scales.sample;
@@ -104,9 +104,9 @@ export const HistModel = markmodel.MarkModel.extend({
         this.update_domains();
         this.save_changes();
         this.trigger("data_updated");
-    },
+    }
 
-    normalize_data: function(save_and_update) {
+    normalize_data(save_and_update) {
 
 
         this.count = this.mark_data.map(function(d) { return d.length; });
@@ -131,9 +131,9 @@ export const HistModel = markmodel.MarkModel.extend({
             this.save_changes();
             this.trigger("data_updated");
         }
-    },
+    }
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         var return_dict : any = {};
         return_dict.midpoint = this.x_mid[index];
         return_dict.bin_start = this.x_bins[index];
@@ -141,9 +141,9 @@ export const HistModel = markmodel.MarkModel.extend({
         return_dict.index = index;
         return_dict.count = this.count[index];
         return return_dict;
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if(!this.mark_data) {
             return;
         }
@@ -157,9 +157,9 @@ export const HistModel = markmodel.MarkModel.extend({
                 return d.y;
             }) * 1.05], this.model_id + "_count");
         }
-    },
+    }
 
-    create_uniform_bins: function(min_val, max_val, num_bins) {
+    create_uniform_bins(min_val, max_val, num_bins) {
         var diff = max_val - min_val;
         var step_size = (diff) / num_bins;
         var return_val = [];
@@ -169,9 +169,17 @@ export const HistModel = markmodel.MarkModel.extend({
         return_val[num_bins] = max_val;
         return return_val;
     }
-}, {
-    serializers: _.extend({
+
+    static serializers = {
+        ...MarkModel.serializers,
         sample: serialize.array_or_json,
-        count: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        count: serialize.array_or_json
+    };
+
+    num_bins: number;
+    x_bins: Array<any>;
+    x_mid: Array<any>;
+    count: Array<number>;
+    min_x: number;
+    max_x: number;
+}
