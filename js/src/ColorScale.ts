@@ -15,7 +15,6 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
-import * as widgets from '@jupyter-widgets/base';
 import { Scale } from './Scale';
 import { ColorScaleModel } from './ColorScaleModel';
 
@@ -54,6 +53,6 @@ export class ColorScale extends Scale {
     }
 
     // Overriding super class
-    model: widgets.WidgetModel & ColorScaleModel;
+    model: ColorScaleModel;
 }
 
