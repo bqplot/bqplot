@@ -60,8 +60,15 @@ export class Scale extends widgets.WidgetView {
         // consistent with the previous one, this is the function you use.
     }
 
+
     offset: number;
     scale: any;
-    model: any;
+
+    // Overriding super class
+    model: widgets.WidgetModel & {
+        domain: any,
+        set_domain: any,
+        compute_and_set_domain: any
+    };
 }
 

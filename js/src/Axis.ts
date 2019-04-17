@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import * as widgets from '@jupyter-widgets/base';
+import { WidgetView } from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-time"), require("d3-time-format"));
@@ -28,7 +28,7 @@ Math.log10 = Math.log10 || function (x) {
 const DATESCALE_WIDTH_THRESHOLD = 500;
 const UNITS_ARRAY = ["em", "ex", "px"];
 
-export class Axis extends widgets.WidgetView {
+export class Axis extends WidgetView {
 
     initialize() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
