@@ -71,6 +71,7 @@ export abstract class BaseSelector extends interaction.Interaction {
     abstract reset();
 
     abstract selected_changed();
+    abstract create_scales();
 
     set_selected(name, value) {
         this.model.set(name, convert_dates(value))
