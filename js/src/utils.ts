@@ -85,18 +85,3 @@ export function is_valid_time_format(format) {
 export function is_array(x) {
     return (x instanceof Array) || isTypedArray(x)
 }
-
-/**
- * Apply mixin properties to a constructor.
- *
- * From the TypeScript manual:
- * https://www.typescriptlang.org/docs/handbook/mixins.html
- */
-export function applyMixins(derivedCtor: any, baseCtors: any[]) {
-    baseCtors.forEach(baseCtor => {
-        Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
-            Object.defineProperty(derivedCtor.prototype, name, Object.getOwnPropertyDescriptor(baseCtor.prototype, name));
-        });
-    });
-}
-

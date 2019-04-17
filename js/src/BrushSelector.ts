@@ -20,10 +20,18 @@ import * as _ from 'underscore';
 import * as selector from './Selector';
 import * as utils from './utils';
 import * as sel_utils from './selector_utils';
-import { DOMWidgetView } from '@jupyter-widgets/base';
 
-export abstract class BrushMixin extends selector.BaseSelector {
+// TODO: examine refactoring the two abstract base classes belowing using a more
+// up-to-date mixin pattern. See
+// https://www.bryntum.com/blog/the-mixin-pattern-in-typescript-all-you-need-to-know/
+// and
+// https://github.com/Microsoft/TypeScript/issues/9110#issuecomment-239235909
 
+// For now, since it's not clear what mixin approach we should use with abstract
+// classes, we provide two children classes with the same functionality. If you
+// change one, make sure to change the other correspondingly.
+
+abstract class BrushMixinXYSelector extends selector.BaseXYSelector {
     brush_render() {
         this.brushing = false;
     }
@@ -100,8 +108,7 @@ export abstract class BrushMixin extends selector.BaseSelector {
 
     abstract convert_and_save(extent?, item?);
 
-    reset() { }
-
+    brush: any;
     brushing: boolean;
     brushsel: any;
 
@@ -109,7 +116,92 @@ export abstract class BrushMixin extends selector.BaseSelector {
     mark_views: any;
 }
 
-export class BrushSelector extends selector.BaseXYSelector implements BrushMixin {
+abstract class BrushMixinXSelector extends selector.BaseXSelector {
+    brush_render() {
+        this.brushing = false;
+    }
+
+    color_change() {
+        if (this.model.get("color") !== null) {
+            this.brushsel.select(".selection").style("fill", this.model.get("color"));
+        }
+    }
+
+    brush_start () {
+        this.model.set("brushing", true);
+        this.touch();
+        this.brushing = true;
+    }
+
+    brush_move () {
+        this.convert_and_save();
+    }
+
+    brush_end () {
+        this.model.set("brushing", false);
+        this.convert_and_save();
+        this.brushing = false;
+    }
+
+    scale_changed() {
+        this.create_scales();
+
+        // TODO: an implementation is never called
+        // this.set_brush_scale();
+    }
+
+    adjust_rectangle() {
+        if (this.model.get("orientation") == "vertical") {
+            this.d3el.selectAll("rect")
+              .attr("x", 0)
+              .attr("width", this.width);
+        } else {
+            this.d3el.selectAll("rect")
+              .attr("y", 0)
+              .attr("height", this.height);
+        }
+    }
+
+    update_mark_selected(extent_x?, extent_y?) {
+
+        if(extent_x === undefined || extent_x.length === 0) {
+            // Reset all the selected in marks
+            _.each(this.mark_views, function(mark_view: any) {
+                return mark_view.selector_changed();
+            });
+            return;
+        } if (extent_y === undefined) {
+            // 1d brush
+            var orient = this.model.get("orientation");
+            var x = (orient == "vertical") ? [] : extent_x,
+                y = (orient == "vertical") ? extent_x : [];
+        } else {
+            // 2d brush
+            var x = extent_x, y = extent_y;
+        }
+        var point_selector = function(p) {
+            return sel_utils.point_in_rectangle(p, x, y);
+        };
+        var rect_selector = function(xy) {
+            return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
+        };
+
+        _.each(this.mark_views, function(mark_view: any) {
+            mark_view.selector_changed(point_selector, rect_selector);
+        }, this);
+    }
+
+    abstract convert_and_save(extent?, item?);
+
+    brush: any
+    brushing: boolean;
+    brushsel: any;
+
+    // TODO: should this be mark_views_promises?
+    mark_views: any;
+}
+
+export class BrushSelector extends BrushMixinXYSelector {
 
     render() {
         super.render.apply(this);
@@ -215,25 +307,11 @@ export class BrushSelector extends selector.BaseXYSelector implements BrushMixin
     // TODO: check that we've properly overridden the mixin.
     adjust_rectangle() {
     }
-
-    // From the BrushMixin
-    // adjust_rectangle: () => void;
-    brush_end: () => void;
-    brush_move: () => void;
-    brush_render: () => void;
-    brush_start: () => void;
-    brush: any;
-    brushing: boolean;
-    brushsel: any;
-    color_change: () => void;
-    reset: () => void;
-    scale_changed: () => void;
-    update_mark_selected: (extent_x?, extent_y?) => void;
+    reset() { }
 }
-utils.applyMixins(BrushSelector, [BrushMixin]);
 
 
-export class BrushIntervalSelector extends selector.BaseXSelector implements BrushMixin {
+export class BrushIntervalSelector extends BrushMixinXSelector {
 
     render() {
         super.render();
@@ -330,21 +408,8 @@ export class BrushIntervalSelector extends selector.BaseXSelector implements Bru
         this.brushsel = this.d3el.call(this.brush);
     }
 
-    // From the BrushMixin
-    adjust_rectangle: () => void;
-    brush_end: () => void;
-    brush_move: () => void;
-    brush_render: () => void;
-    brush_start: () => void;
-    brush: any;
-    brushing: boolean;
-    brushsel: any;
-    color_change: () => void;
-    reset: () => void;
-    scale_changed: () => void;
-    update_mark_selected: (extent_x?, extent_y?) => void;
+    reset() { }
 }
-utils.applyMixins(BrushIntervalSelector, [BrushMixin]);
 
 
 function add_remove_classes(selection, add_classes, remove_classes) {
@@ -363,7 +428,7 @@ function add_remove_classes(selection, add_classes, remove_classes) {
     }
 };
 
-export class MultiSelector extends selector.BaseXSelector implements BrushMixin {
+export class MultiSelector extends BrushMixinXSelector {
 
     render() {
         super.render.apply(this);
@@ -562,18 +627,4 @@ export class MultiSelector extends selector.BaseXSelector implements BrushMixin 
     curr_index: number;
     selecting_brush: boolean;
     names: any;
-
-    // From the BrushMixin
-    adjust_rectangle: () => void;
-    // brush_end: () => void;
-    // brush_move: () => void;
-    brush_render: () => void;
-    // brush_start: () => void;
-    brush: any;
-    brushing: boolean;
-    brushsel: any;
-    // color_change: () => void;
-    update_mark_selected: (extent_x?, extent_y?) => void;
-    
 }
-utils.applyMixins(MultiSelector, [BrushMixin]);
