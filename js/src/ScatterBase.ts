@@ -288,14 +288,14 @@ export const ScatterBase = mark.Mark.extend({
         this.set_drag_behavior();
         elements_added.on("click", _.bind(function(d, i) {
             this.event_dispatcher("element_clicked",
-			      {"data": d, "index": i});
+                  {"data": d, "index": i});
         }, this));
-	elements_added.on("mouseover", _.bind(function(d, i) {
-	    this.scatter_hover_handler({"data": d, "index": i});
-	}, this));
-	elements_added.on("mouseout", _.bind(function() {
-	    this.reset_hover();
-	}, this));
+    elements_added.on("mouseover", _.bind(function(d, i) {
+        this.scatter_hover_handler({"data": d, "index": i});
+    }, this));
+    elements_added.on("mouseout", _.bind(function() {
+        this.reset_hover();
+    }, this));
 
         this.draw_elements(animate, elements_added)
 
@@ -327,18 +327,18 @@ export const ScatterBase = mark.Mark.extend({
         }
     },
 
-	reset_hover: function() {
-	    this.model.set("hovered_point", null);
-	    this.hovered_index = null;
-	    this.touch();
-	},
+    reset_hover: function() {
+        this.model.set("hovered_point", null);
+        this.hovered_index = null;
+        this.touch();
+    },
 
-	scatter_hover_handler: function(args) {
+    scatter_hover_handler: function(args) {
         var index = args.index;
 
         this.model.set("hovered_point",
                        index, {updated_view: this});
-	    this.touch();
+        this.touch();
     },
 
     reset_selection: function() {
@@ -390,7 +390,7 @@ export const ScatterBase = mark.Mark.extend({
             e.stopPropagation();
         }
         e.preventDefault();
-	},
+    },
 
     // Hovered Style related functions
     hovered_style_updated: function(model, style) {
@@ -697,4 +697,3 @@ export const ScatterBase = mark.Mark.extend({
         this.touch();
     }
 });
-
