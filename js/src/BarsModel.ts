@@ -20,10 +20,10 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 
-export const BarsModel = markmodel.MarkModel.extend({
+export class BarsModel extends markmodel.MarkModel {
 
-    defaults: function() {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...markmodel.MarkModel.prototype.defaults(),
             _model_name: "BarsModel",
             _view_name: "Bars",
             x: [],
@@ -43,10 +43,10 @@ export const BarsModel = markmodel.MarkModel.extend({
             opacities: [],
             orientation: "vertical",
             align: "center"
-        });
-    },
+        };
+    }
 
-    initialize: function() {
+    initialize() {
         BarsModel.__super__.initialize.apply(this, arguments);
         this.is_y_2d = false;
         this.on_some_change(["x", "y", "base"], this.update_data, this);
@@ -62,9 +62,9 @@ export const BarsModel = markmodel.MarkModel.extend({
         this.update_data();
         this.update_color();
         this.update_domains();
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         var x_data = this.get("x");
         var y_data = this.get("y");
         y_data = (y_data.length === 0 || !_.isNumber(y_data[0])) ?
@@ -134,13 +134,13 @@ export const BarsModel = markmodel.MarkModel.extend({
         }
         this.update_domains();
         this.trigger("data_updated");
-    },
+    }
 
-    get_data_dict: function(data, index, sub_index) {
+    get_data_dict(data, index, sub_index) {
         return data;
-    },
+    }
 
-    update_color: function() {
+    update_color() {
         //Function to update the color attribute for the data. In scatter,
         //this is taken care of by the update_data itself. This is separate
         //in bars because update data does a lot more complex calculations
@@ -166,9 +166,9 @@ export const BarsModel = markmodel.MarkModel.extend({
                     color_scale.del_domain([], this.model_id + "_color");
                 }
         }
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if(!this.mark_data) {
             return;
         }
@@ -208,10 +208,11 @@ export const BarsModel = markmodel.MarkModel.extend({
             range_scale.del_domain([], this.model_id + "_y");
         }
     }
-}, {
-    serializers: _.extend({
+
+    static serializers = {
+        ...markmodel.MarkModel.serializers,
         x: serialize.array_or_json,
         y: serialize.array_or_json,
-        color: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        color: serialize.array_or_json
+    };
+}
