@@ -222,7 +222,7 @@ export abstract class Mark extends widgets.WidgetView {
         this.set_style_on_elements(new_style, indices);
     }
 
-    apply_styles(style_arr) {
+    apply_styles(style_arr?) {
         if(style_arr === undefined || style_arr == null) {
             style_arr = [this.selected_style, this.unselected_style];
         }
@@ -508,8 +508,10 @@ export abstract class Mark extends widgets.WidgetView {
     y_padding: any;
 
     // Overriding super class
-    model: widgets.WidgetModel & {
-        mark_data: any,
-        get_data_dict: any
-    };
+    model: markModel;
 }
+
+export type markModel = widgets.WidgetModel & {
+    mark_data: any,
+    get_data_dict: any
+};

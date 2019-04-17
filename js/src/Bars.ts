@@ -23,11 +23,11 @@ import * as _ from 'underscore';
 import * as mark from './Mark';
 import * as utils from './utils';
 
-export const Bars = mark.Mark.extend({
+export class Bars extends mark.Mark {
 
-    render: function() {
+    render() {
         this.padding = this.model.get("padding");
-        var base_creation_promise = Bars.__super__.render.apply(this);
+        var base_creation_promise = super.render.apply(this);
         this.set_internal_scales();
         this.selected_indices = this.model.get("selected");
         this.selected_style = this.model.get("selected_style");
@@ -48,16 +48,16 @@ export const Bars = mark.Mark.extend({
             that.compute_view_padding();
             that.draw();
         });
-    },
+    }
 
-    set_scale_orientation: function() {
+    set_scale_orientation() {
         // TODO: we should probably use this.model.get("orientation")?
         // var orient = this.model.get("orientation");
         this.dom_scale = this.scales.x; //(orient === "vertical") ? this.scales.x : this.scales.y;
         this.range_scale = this.scales.y; //(orient === "vertical") ? this.scales.y : this.scales.x;
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var orient = this.model.get("orientation");
         this.set_scale_orientation();
         var dom_scale = this.dom_scale,
@@ -75,9 +75,9 @@ export const Bars = mark.Mark.extend({
         // Changes based on the data.
         this.dom_offset = 0;
         this.range_offset = (orient === "vertical") ? range_scale.offset: -range_scale.offset;
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         var x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) {
@@ -89,15 +89,15 @@ export const Bars = mark.Mark.extend({
                 this.draw();
             }
         });
-    },
+    }
 
-    set_internal_scales: function() {
+    set_internal_scales() {
         // Two scales to draw the bars.
         this.x = d3.scaleBand();
         this.x1 = d3.scaleBand();
-    },
+    }
 
-    adjust_offset: function() {
+    adjust_offset() {
         // In the case of a linear scale, and when plotting ordinal data,
         // the value have to be negatively offset by half of the width of
         // the bars, because ordinal scales give the values corresponding
@@ -120,10 +120,10 @@ export const Bars = mark.Mark.extend({
                 this.dom_offset = (this.x.bandwidth() / 2);
             }
         }
-    },
+    }
 
-    create_listeners: function() {
-        Bars.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners.apply(this);
         this.d3el
           .on("mouseover", _.bind(function() {
               this.event_dispatcher("mouse_over");
@@ -139,39 +139,39 @@ export const Bars = mark.Mark.extend({
             //animate bars on data update
             var animate = true;
             this.draw(animate);
-        }, this);
-        this.listenTo(this.model, "change:colors", this.update_colors, this);
-        this.listenTo(this.model, "colors_updated", this.update_colors, this);
-        this.listenTo(this.model, "change:type", this.update_type, this);
-        this.listenTo(this.model, "change:align", this.realign, this);
-        this.listenTo(this.model, "change:orientation", this.relayout, this)
+        });
+        this.listenTo(this.model, "change:colors", this.update_colors);
+        this.listenTo(this.model, "colors_updated", this.update_colors);
+        this.listenTo(this.model, "change:type", this.update_type);
+        this.listenTo(this.model, "change:align", this.realign);
+        this.listenTo(this.model, "change:orientation", this.relayout)
         // FIXME: These are expensive calls for changing padding and align
-        this.listenTo(this.model, "change:padding", this.relayout, this)
-        this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
+        this.listenTo(this.model, "change:padding", this.relayout)
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip);
         this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
-    },
+    }
 
-    process_click: function(interaction) {
-        Bars.__super__.process_click.apply(this, [interaction]);
+    process_click(interaction) {
+        super.process_click.apply(this, [interaction]);
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.bar_click_handler;
         }
 
-    },
+    }
 
-    realign: function() {
+    realign() {
         //TODO: Relayout is an expensive call on realigning. Need to change
         //this.
         this.relayout();
-    },
+    }
 
-    draw_zero_line: function() {
+    draw_zero_line() {
         this.set_scale_orientation();
         var range_scale = this.range_scale;
         var orient = this.model.get("orientation");
@@ -188,9 +188,9 @@ export const Bars = mark.Mark.extend({
               .attr("y1", 0)
               .attr("y2", this.parent.plotarea_height);
         }
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
         this.compute_view_padding();
 
@@ -201,9 +201,9 @@ export const Bars = mark.Mark.extend({
         this.adjust_offset();
         this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
         this.draw_bars();
-    },
+    }
 
-    invert_point: function(pixel) {
+    invert_point(pixel) {
         if(pixel === undefined) {
             this.model.set("selected", null);
             this.touch();
@@ -213,9 +213,13 @@ export const Bars = mark.Mark.extend({
         var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
         this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
         this.touch();
-    },
 
-    selector_changed: function(point_selector, rect_selector) {
+        // TODO: this return is probably wrong? We put it in since the base
+        // class has this function returning an array.
+        return []
+    }
+
+    selector_changed(point_selector, rect_selector) {
         if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
@@ -233,14 +237,14 @@ export const Bars = mark.Mark.extend({
         });
         this.model.set("selected", selected_groups);
         this.touch();
-    },
+    }
 
-    update_selected: function(model, value) {
+    update_selected(model, value) {
         this.selected_indices = value;
         this.apply_styles();
-    },
+    }
 
-    draw: function(animate) {
+    draw(animate?: boolean) {
         this.set_ranges();
         var that = this;
         var bar_groups = this.d3el.selectAll(".bargroup")
@@ -313,9 +317,9 @@ export const Bars = mark.Mark.extend({
           .attr("class", "zeroLine");
 
         this.draw_zero_line();
-    },
+    }
 
-    draw_bars: function(animate) {
+    draw_bars(animate?: boolean) {
         var bar_groups = this.d3el.selectAll(".bargroup");
         var bars_sel = bar_groups.selectAll(".bar");
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
@@ -403,16 +407,16 @@ export const Bars = mark.Mark.extend({
         this.x_pixels = this.model.mark_data.map(function(el) {
             return dom_scale.scale(el.key) + dom_scale.offset;
         });
-    },
+    }
 
-    update_type: function(model, value) {
+    update_type(model, value) {
         // We need to update domains here as the y_domain needs to be
         // changed when we switch from stacked to grouped.
         this.model.update_domains();
         this.draw();
-    },
+    }
 
-    update_stroke_and_opacities: function() {
+    update_stroke_and_opacities() {
         var stroke = this.model.get("stroke");
         var opacities = this.model.get("opacities");
         this.d3el.selectAll(".bar")
@@ -420,9 +424,9 @@ export const Bars = mark.Mark.extend({
             .style("opacity", function(d, i) {
             return opacities[i];
         });
-    },
+    }
 
-    update_colors: function() {
+    update_colors() {
         //the following if condition is to handle the case of single
         //dimensional data.
         //if y is 1-d, each bar should be of 1 color.
@@ -458,9 +462,9 @@ export const Bars = mark.Mark.extend({
                     color_scale.scale(d.color) : that.get_colors(d.color_index);
             });
         }
-    },
+    }
 
-    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+    draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         if(!(this.model.is_y_2d) &&
            (this.model.get("colors").length !== 1 &&
             this.model.get("color_mode") !== "element")) {
@@ -526,9 +530,9 @@ export const Bars = mark.Mark.extend({
 
         this.legend_el.exit().remove();
         return [this.model.mark_data[0].values.length, max_length];
-    },
+    }
 
-    clear_style: function(style_dict, indices) {
+    clear_style(style_dict, indices) {
         // Function to clear the style of a dict on some or all the elements of the
         // chart. If indices is null, clears the style on all elements. If
         // not, clears on only the elements whose indices are mathcing.
@@ -547,9 +551,9 @@ export const Bars = mark.Mark.extend({
             clearing_style[key] = null;
         }
         elements.selectAll(".bar").styles(clearing_style);
-    },
+    }
 
-    set_style_on_elements: function(style, indices) {
+    set_style_on_elements(style, indices) {
         // If the index array is undefined or of length=0, exit the
         // function without doing anything
         if(indices === undefined || indices === null || indices.length === 0) {
@@ -564,16 +568,16 @@ export const Bars = mark.Mark.extend({
             return indices.indexOf(index) !== -1;
         });
         elements.selectAll(".bar").styles(style);
-    },
+    }
 
-    set_default_style: function(indices) {
+    set_default_style(indices) {
         // For all the elements with index in the list indices, the default
         // style is applied.
         this.update_colors();
         this.update_stroke_and_opacities();
-    },
+    }
 
-    set_x_range: function() {
+    set_x_range() {
         var dom_scale = this.dom_scale;
         if(dom_scale.model.type === "ordinal") {
             return dom_scale.scale.range();
@@ -581,9 +585,9 @@ export const Bars = mark.Mark.extend({
             return [dom_scale.scale(d3.min(this.x.domain())),
                     dom_scale.scale(d3.max(this.x.domain()))];
         }
-    },
+    }
 
-    bar_click_handler: function (args) {
+    bar_click_handler (args) {
         var index = args.index;
         var that = this;
         var idx = this.model.get("selected");
@@ -644,15 +648,15 @@ export const Bars = mark.Mark.extend({
             e.stopPropagation();
         }
         e.preventDefault();
-    },
+    }
 
-    reset_selection: function() {
+    reset_selection() {
         this.model.set("selected", null);
         this.selected_indices = null;
         this.touch();
-    },
+    }
 
-    compute_view_padding: function() {
+    compute_view_padding() {
         // //This function returns a dictionary with keys as the scales and
         // //value as the pixel padding required for the rendering of the
         // //mark.
@@ -692,4 +696,22 @@ export const Bars = mark.Mark.extend({
             }
         }
     }
-});
+
+    dom_offset: any;
+    dom_scale: any;
+    legend_el: any;
+    padding: any;
+    pixel_coords: any;
+    range_offset: any;
+    range_scale: any;
+    x_pixels: any;
+    x: any;
+    x1: any;
+
+        // Overriding super class
+        model: mark.markModel & {
+            base_value: any;
+            update_domains: any;
+            is_y_2d: any;
+        };
+}
