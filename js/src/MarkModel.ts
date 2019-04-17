@@ -14,15 +14,14 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import * as _ from 'underscore';
-import * as basemodel from './BaseModel';
+import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 import * as serialize from './serialize';
 
-export const MarkModel = basemodel.BaseModel.extend({
+export class MarkModel extends BaseModel {
 
-    defaults: function() {
-        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+    defaults() {
+        return {...BaseModel.prototype.defaults(),
             _model_name: "MarkModel",
             _model_module: "bqplot",
             _view_module: "bqplot",
@@ -44,13 +43,13 @@ export const MarkModel = basemodel.BaseModel.extend({
             tooltip_style: { opacity: 0.9 },
             interactions: { hover: "tooltip" },
             tooltip_location: "mouse"
-        });
-    },
+        };
+    }
 
     // These two attributes are the pixel values which should be appended
     // to the area of the plot to make sure that the entire mark is visible
-    initialize: function() {
-        MarkModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on("change:scales", this.update_scales, this);
         this.once("destroy", this.handle_destroy, this);
         // `this.dirty` is set to `true` before starting computations that
@@ -61,27 +60,27 @@ export const MarkModel = basemodel.BaseModel.extend({
         this.display_el_classes = ["mark"]; //classes on the element which
         //trigger the tooltip to be displayed when they are hovered over
         this.update_scales();
-    },
+    }
 
-    update_data : function() {
+    update_data() {
         // Update_data is typically overloaded in each mark
         // it triggers the "data_updated" event
         this.update_domains();
         this.trigger("data_updated");
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         // update_domains is typically overloaded in each mark to update
         // the domains related to its scales
-    },
+    }
 
-    update_scales: function() {
+    update_scales() {
         this.unregister_all_scales(this.previous("scales"));
         this.trigger("scales_updated");
         this.update_domains();
-    },
+    }
 
-    unregister_all_scales: function(scales) {
+    unregister_all_scales(scales) {
         // disassociates the mark with the scale
         this.dirty = true;
         for (var key in scales) {
@@ -89,13 +88,13 @@ export const MarkModel = basemodel.BaseModel.extend({
         }
         this.dirty = false;
         //TODO: Check if the views are being removed
-    },
+    }
 
-    handle_destroy: function() {
+    handle_destroy() {
         this.unregister_all_scales(this.get("scales"));
-    },
+    }
 
-    get_key_for_dimension: function(dimension) {
+    get_key_for_dimension(dimension) {
         var scales_metadata = this.get("scales_metadata");
         for (var scale in scales_metadata) {
             if(scales_metadata[scale].dimension === dimension) {
@@ -103,9 +102,9 @@ export const MarkModel = basemodel.BaseModel.extend({
             }
         }
         return null;
-    },
+    }
 
-    get_key_for_orientation: function(orientation) {
+    get_key_for_orientation(orientation) {
         var scales_metadata = this.get("scales_metadata");
         for (var scale in scales_metadata) {
             if(scales_metadata[scale].orientation === orientation) {
@@ -115,11 +114,21 @@ export const MarkModel = basemodel.BaseModel.extend({
         return null;
     }
 
-}, {
-    serializers: _.extend({
+    // TODO make this abstract
+    get_data_dict(data, index) {
+        return data;
+    }
+
+    static serializers = {
+        ...BaseModel.serializers,
         scales: { deserialize: widgets.unpack_models },
         tooltip: { deserialize: widgets.unpack_models },
         selected: serialize.array_or_json
-    }, basemodel.BaseModel.serializers)
-});
+    };
+
+    dirty: boolean;
+    display_el_classes: Array<string>; 
+    mark_data: any;
+
+}
 
