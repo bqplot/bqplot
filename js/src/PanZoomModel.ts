@@ -40,10 +40,10 @@ export class PanZoomModel extends basemodel.BaseModel {
         this.snapshot_scales();
     }
 
-    async reset_scales() {
+    reset_scales() {
         widgets.resolvePromisesDict(this.get("scales")).then((scales: any) => {
-            _.each(Object.keys(scales), function(k) {
-                _.each(scales[k], function(s: any, i) {
+            _.each(Object.keys(scales), (k) => {
+                _.each(scales[k], (s: any, i) => {
                     s.set_state(this.scales_states[k][i]);
                 }, this);
             }, this);
@@ -54,7 +54,7 @@ export class PanZoomModel extends basemodel.BaseModel {
         // Save the state of the scales.
         widgets.resolvePromisesDict(this.get("scales")).then((scales: any) => {
             this.scales_states = Object.keys(scales).reduce((obj, key) => {
-                obj[key] = scales[key].map(function(s) {
+                obj[key] = scales[key].map((s) => {
                     return s.get_state()
                 });
                 return obj;
