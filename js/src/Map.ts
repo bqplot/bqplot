@@ -380,7 +380,7 @@ export const Map = mark.Mark.extend({
     },
 
     is_object_empty: function(object: any) {
-        return object.keys(object).length === 0 && object.constructor === Object;
+        return Object.keys(object).length === 0 && object.constructor === Object;
     },
 
     hoverfill: function(d, j) {
