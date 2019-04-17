@@ -216,7 +216,7 @@ export abstract class Mark extends widgets.WidgetView {
         this.style_updated(style, unselected_indices);
     }
 
-    style_updated(new_style, indices) {
+    style_updated(new_style, indices, elements?) {
         // reset the style of the elements and apply the new style
         this.set_default_style(indices);
         this.set_style_on_elements(new_style, indices);
@@ -240,11 +240,11 @@ export abstract class Mark extends widgets.WidgetView {
     }
 
     // Abstract functions which have to be overridden by the specific mark
-    abstract clear_style(style_dict, indices?);
+    abstract clear_style(style_dict, indices?, elements?);
 
-    abstract set_default_style(indices?);
+    abstract set_default_style(indices, elements?);
 
-    abstract set_style_on_elements(style, indices?);
+    abstract set_style_on_elements(style, indices, elements?);
 
     /**
      * This function sets the x and y view paddings for the mark using the

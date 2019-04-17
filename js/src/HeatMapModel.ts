@@ -13,28 +13,29 @@
  * limitations under the License.
  */
 
-import * as _ from 'underscore';
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export const HeatMapModel = markmodel.MarkModel.extend({
+export class HeatMapModel extends MarkModel {
 
-    defaults: _.extend({}, markmodel.MarkModel.prototype.defaults, {
-        _model_name: "HeatMapModel",
-        _view_name: "HeatMap",
-        x: [],
-        y: [],
-        color: null,
-        scales_metadata: {
-            x: { orientation: "horizontal", dimension: "x" },
-            y: { orientation: "vertical", dimension: "y" },
-            color: { dimension: "color" }
-        },
-        null_color: "black",
-    }),
+    defaults() {
+        return {...MarkModel.prototype.defaults(),
+            _model_name: "HeatMapModel",
+            _view_name: "HeatMap",
+            x: [],
+            y: [],
+            color: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" }
+            },
+            null_color: "black"
+        };
+    }
 
-    initialize: function() {
-        HeatMapModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["x", "y", "color"], this.update_data, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
         // on_some_change depends on the GLOBAL backbone on("change") handler which
@@ -43,9 +44,9 @@ export const HeatMapModel = markmodel.MarkModel.extend({
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
         this.update_domains();
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         this.dirty = true;
         // Handling data updates
         this.mark_data = {
@@ -56,9 +57,9 @@ export const HeatMapModel = markmodel.MarkModel.extend({
         this.update_domains();
         this.dirty = false;
         this.trigger("data_updated");
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if (!this.mark_data) { return; }
 
         var scales = this.get("scales");
@@ -84,15 +85,16 @@ export const HeatMapModel = markmodel.MarkModel.extend({
                 color_scale.del_domain([], this.model_id + "_color");
             }
         }
-    },
+    }
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         return data;
-    },
-}, {
-    serializers: _.extend({
+    }
+
+    static serializers = {
+        ...MarkModel.serializers,
         x: serialize.array_or_json,
         y: serialize.array_or_json,
-        color: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        color: serialize.array_or_json
+    };
+}

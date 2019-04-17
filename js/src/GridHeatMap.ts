@@ -19,12 +19,13 @@ import * as d3 from 'd3';
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as utils from './utils';
-import * as mark from './Mark';
+import { Mark} from './Mark';
+import { GridHeatMapModel } from './GridHeatMapModel'
 
-export const GridHeatMap = mark.Mark.extend({
+export class GridHeatMap extends Mark {
 
-    render: function() {
-        var base_render_promise = GridHeatMap.__super__.render.apply(this);
+    render() {
+        var base_render_promise = super.render();
         var that = this;
 
         // TODO: create_listeners is put inside the promise success handler
@@ -48,9 +49,9 @@ export const GridHeatMap = mark.Mark.extend({
             that.compute_view_padding();
             that.draw();
         });
-    },
+    }
 
-    initialize_additional_scales: function() {
+    initialize_additional_scales() {
         var color_scale = this.scales.color;
         if(color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
@@ -58,9 +59,9 @@ export const GridHeatMap = mark.Mark.extend({
             });
             color_scale.on("color_scale_range_changed", this.apply_styles, this);
         }
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var row_scale = this.scales.row;
         if(row_scale) {
             // The y_range is reversed because we want the first row
@@ -73,9 +74,9 @@ export const GridHeatMap = mark.Mark.extend({
         if(col_scale) {
             col_scale.set_range(this.parent.padded_range("x", col_scale.model));
         }
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         var x_scale = this.scales.column, y_scale = this.scales.row;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
@@ -83,9 +84,9 @@ export const GridHeatMap = mark.Mark.extend({
         this.listenTo(y_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
-    },
+    }
 
-    expand_scale_domain: function(scale, data, mode, start) {
+    expand_scale_domain(scale, data, mode, start) {
         // This function expands the domain so that the heatmap has the
         // minimum area needed to draw itself.
         var current_pixels, min_diff;
@@ -124,26 +125,26 @@ export const GridHeatMap = mark.Mark.extend({
             var new_start = current_pixels[0] - min_diff;
             return [scale.invert(new_start), scale.invert(new_end)];
         }
-    },
+    }
 
-    create_listeners: function() {
-        GridHeatMap.__super__.create_listeners.apply(this);
-        this.listenTo(this.model, "change:stroke", this.update_stroke, this);
-        this.listenTo(this.model, "change:opacity", this.update_opacity, this);
+    create_listeners() {
+        super.create_listeners();
+        this.listenTo(this.model, "change:stroke", this.update_stroke);
+        this.listenTo(this.model, "change:opacity", this.update_opacity);
 
         this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
             .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
             .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
-        this.listenTo(this.model, "data_updated", this.draw, this);
-        this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
+        this.listenTo(this.model, "data_updated", this.draw);
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip);
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
-    },
+    }
 
-    click_handler: function (args) {
+    click_handler (args) {
         var num_cols = this.model.colors[0].length;
         var index = args.row_num * num_cols + args.column_num;
         var row = args.row_num;
@@ -212,14 +213,14 @@ export const GridHeatMap = mark.Mark.extend({
         this.selected_indices = idx;
         this.apply_styles();
 
-    },
+    }
 
-    update_selected: function(model, value) {
+    update_selected(model, value) {
         this.selected_indices = value;
         this.apply_styles();
-    },
+    }
 
-    set_style_on_elements: function(style, indices, elements) {
+    set_style_on_elements(style, indices, elements) {
         // If the index array is undefined or of length=0, exit the
         // function without doing anything
         if(!indices || indices.length === 0 && (!elements || elements.length === 0) ) {
@@ -229,11 +230,11 @@ export const GridHeatMap = mark.Mark.extend({
         if(Object.keys(style).length === 0) {
             return;
         }
-        elements = (!elements || elements.length === 0) ? this._filter_cells_by_index(indices) : elements;
+        elements = (!elements || elements.length === 0) ? this._filter_cells_by_cell_num(this._cell_nums_from_indices(indices)) : elements;
         elements.styles(style);
-    },
+    }
 
-    set_default_style: function(indices, elements) {
+    set_default_style(indices, elements) {
         // For all the elements with index in the list indices, the default
         // style is applied.
         //
@@ -241,7 +242,7 @@ export const GridHeatMap = mark.Mark.extend({
         if(!indices || indices.length === 0 && (!elements || elements.length === 0) ) {
             return;
         }
-        elements = (!elements || elements.length === 0) ? this._filter_cells_by_index(indices) : elements;
+        elements = (!elements || elements.length === 0) ? this._filter_cells_by_cell_num(this._cell_nums_from_indices(indices)) : elements;
         var stroke = this.model.get("stroke");
         var opacity = this.model.get("opacity");
         var that = this;
@@ -251,9 +252,9 @@ export const GridHeatMap = mark.Mark.extend({
           })
           .style("opacity", opacity)
           .style("stroke", stroke);
-    },
+    }
 
-    clear_style: function(style_dict, indices, elements) {
+    clear_style(style_dict, indices?, elements?) {
         // Function to clear the style of a dict on some or all the elements of the
         // chart.If indices is null, clears the style on all elements. If
         // not, clears on only the elements whose indices are mathcing.
@@ -271,7 +272,7 @@ export const GridHeatMap = mark.Mark.extend({
 
         if(!elements || elements.length === 0) {
             if(indices) {
-                elements = this._filter_cells_by_index(indices);
+                elements = this._filter_cells_by_cell_num(this._cell_nums_from_indices(indices));
             } else {
                 elements = this.display_cells;
             }
@@ -282,29 +283,29 @@ export const GridHeatMap = mark.Mark.extend({
             clearing_style[key] = null;
         }
         elements.styles(clearing_style);
-    },
+    }
 
-    _filter_cells_by_cell_num: function(cell_numbers) {
+    _filter_cells_by_cell_num(cell_numbers) {
         if (cell_numbers === null || cell_numbers === undefined) {
             return [];
         }
         return this.display_cells.filter(function(el) {
            return (cell_numbers.indexOf(el._cell_num) !== -1);});
-    },
+    }
 
-    selected_style_updated: function(model, style) {
+    selected_style_updated(model, style) {
         this.selected_style = style;
         this.clear_style(model.previous("selected_style"), this.selected_indices, this.selected_elements);
         this.style_updated(style, this.selected_indices, this.selected_elements);
-    },
+    }
 
-    unselected_style_updated: function(model, style) {
+    unselected_style_updated(model, style) {
         this.unselected_style = style;
         this.clear_style(model.previous("unselected_style"), [], this.unselected_elements);
         this.style_updated(style, [], this.unselected_elements);
-    },
+    }
 
-    apply_styles: function() {
+    apply_styles() {
         var num_rows = this.model.colors.length;
         var num_cols = this.model.colors[0].length;
 
@@ -329,15 +330,15 @@ export const GridHeatMap = mark.Mark.extend({
             this.anchor_element = this._filter_cells_by_cell_num(anchor_num);
             this.set_style_on_elements(this.anchor_style, [], this.anchor_element);
         }
-    },
+    }
 
-    style_updated: function(new_style, indices, elements) {
+    style_updated(new_style, indices, elements) {
         // reset the style of the elements and apply the new style
         this.set_default_style(indices, elements);
         this.set_style_on_elements(new_style, indices, elements);
-    },
+    }
 
-    reset_selection: function() {
+    reset_selection() {
         this.model.set("selected", null);
         this.touch();
         this.selected_indices = null;
@@ -346,29 +347,29 @@ export const GridHeatMap = mark.Mark.extend({
         this.clear_style(this.anchor_style);
 
         this.set_default_style([], this.display_cells);
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
         this.compute_view_padding();
         //TODO: The call to draw has to be changed to something less
         //expensive.
         this.draw();
-    },
+    }
 
-    _cell_nums_from_indices: function(indices) {
+    _cell_nums_from_indices(indices) {
         if(indices === null || indices === undefined) {
             return null;
         }
         var num_cols = this.model.colors[0].length;
         return indices.map(function(i) { return i[0] * num_cols + i[1];});
-    },
+    }
 
-    invert_point: function(pixel) {
+    invert_point(pixel) {
         // For now, an index selector is not supported for the heatmap
-    },
+    }
 
-    selector_changed: function(point_selector, rect_selector) {
+    selector_changed(point_selector, rect_selector) {
         if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
@@ -391,9 +392,9 @@ export const GridHeatMap = mark.Mark.extend({
         selected = _.flatten(selected, true);
         this.model.set("selected", selected);
         this.touch();
-    },
+    }
 
-    draw: function() {
+    draw() {
         this.set_ranges();
 
         var that = this;
@@ -473,17 +474,17 @@ export const GridHeatMap = mark.Mark.extend({
                 column_num: d.column_num
             });
         });
-    },
+    }
 
-    update_stroke: function(model, value) {
+    update_stroke(model, value) {
         this.display_cells.style("stroke", value);
-    },
+    }
 
-    update_opacity: function(model, value) {
+    update_opacity(model, value) {
         this.display_cells.style("opacity", value);
-    },
+    }
 
-    get_tile_plotting_data: function(scale, data, mode, start) {
+    get_tile_plotting_data(scale, data, mode, start) {
         // This function returns the starting points and widths of the
         // cells based on the parameters passed.
         //
@@ -584,21 +585,34 @@ export const GridHeatMap = mark.Mark.extend({
             widths[widths.length] = Math.abs(bound - start_points.slice(-1)[0]);
             return {"start": start_points, "widths": widths};
         }
-    },
+    }
 
-    get_element_fill: function(dat) {
+    get_element_fill(dat) {
         if (dat.color === null) {
             return this.model.get("null_color")
         }
         return this.scales.color.scale(dat.color);
-    },
+    }
 
-    process_click: function(interaction) {
-        GridHeatMap.__super__.process_click.apply(this, [interaction]);
+    process_click(interaction) {
+        super.process_click(interaction);
         if (interaction === 'select') {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.click_handler;
         }
+    }
 
-    },
-});
+    compute_view_padding() {
+    }
+
+    anchor_style: any;
+    anchor_cell_index: any;
+    display_cells: any;
+    selected_elements: any;
+    unselected_elements: any;
+    anchor_element: any;
+    row_pixels: any;
+    column_pixels: any;
+    display_rows: any;
+    model: GridHeatMapModel;
+}
