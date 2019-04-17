@@ -17,10 +17,10 @@ import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as topojson from 'topojson';
 
-export const MapModel = markmodel.MarkModel.extend({
+export class MapModel extends markmodel.MarkModel {
 
-    defaults: function() {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...markmodel.MarkModel.prototype.defaults(),
             _model_name: "MapModel",
             _view_name: "Map",
 
@@ -45,20 +45,20 @@ export const MapModel = markmodel.MarkModel.extend({
                 selected_stroke_width: 2.0
             },
             map_data: undefined
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        MapModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on("change:map_data", this.update_data, this);
         this.on("change:color", this.color_data_updated, this);
         this.update_data();
         this.update_domains();
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         this.dirty = true;
-        var data = this.get("map_data");
+        const data = this.get("map_data");
         if (data.type == 'Topology') {
             this.geodata = topojson.feature(data, data.objects.subunits).features;
         } else {
@@ -67,43 +67,43 @@ export const MapModel = markmodel.MarkModel.extend({
         this.color_data_updated();
         this.dirty = false;
         this.trigger("data_updated");
-    },
+    }
 
-    update_properties: function(d) {
+    update_properties(d) {
         if (!d.properties) {
             d.properties = {"color": this.color_data[d.id]};
         } else {
             d.properties.color = this.color_data[d.id];
         }
-    },
+    }
 
-    color_data_updated: function() {
-        var that = this;
+    color_data_updated() {
         this.update_domains();
-        this.geodata.map(function(d) {
-            return that.update_properties(d)
+        this.geodata.map((d) => {
+            return this.update_properties(d)
         });
-    },
+    }
 
-    update_domains: function() {
-        var scales = this.get("scales");
-        var that = this;
-        var color_scale = scales.color;
+    update_domains() {
+        const scales = this.get("scales");
+        const color_scale = scales.color;
         this.color_data = this.get("color");
         if(color_scale !== null && color_scale !== undefined) {
             if(!this.get("preserve_domain").color) {
                 color_scale.compute_and_set_domain(
-                    Object.keys(this.color_data).map(function (d) {
-                        return that.color_data[d];
+                    Object.keys(this.color_data).map((d) => {
+                        return this.color_data[d];
                     }), this.model_id + "_color");
             } else {
                 color_scale.del_domain([], this.model_id + "_color");
             }
         }
-    },
+    }
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         return _.extend(data.properties, {'id': data.id});
     }
-});
 
+    geodata: any;
+    color_data: any;
+};

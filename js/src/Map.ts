@@ -16,15 +16,17 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-zoom"));
-const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
+const d3GetEvent = () => { return require("d3-selection").event };
 import * as _ from 'underscore';
 import * as mark from './Mark';
+import { MapModel } from './MapModel';
 import * as utils from './utils';
 
-export const Map = mark.Mark.extend({
+export class Map extends mark.Mark {
 
-    render: function() {
-        var base_render_promise = Map.__super__.render.apply(this);
+    render() {
+        var base_render_promise = super.render();
+
         this.map = this.d3el.append("svg")
             .attr("viewBox", "0 0 1200 980");
         this.width = this.parent.plotarea_width;
@@ -32,47 +34,46 @@ export const Map = mark.Mark.extend({
         this.map_id = widgets.uuid();
         this.enable_hover = this.model.get("enable_hover");
         this.display_el_classes = ["event_layer"];
-        var that = this;
-        this.displayed.then(function() {
-            that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
-            that.create_tooltip();
+        this.displayed.then(() => {
+            this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+            this.create_tooltip();
         });
-        return base_render_promise.then(function() {
-            that.event_listeners = {};
-            that.process_interactions();
-            that.create_listeners();
-            that.draw();
+
+        return base_render_promise.then(() => {
+            this.event_listeners = {};
+            this.process_interactions();
+            this.create_listeners();
+            this.draw();
         });
-    },
+    }
 
-    set_ranges: function() {
-    },
+    set_ranges() {
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         var geo_scale = this.scales.projection;
-        this.listenTo(geo_scale, "domain_changed", function() {
+        this.listenTo(geo_scale, "domain_changed", () => {
             if (!this.model.dirty) { this.draw(); }
         });
-    },
+    }
 
-    initialize_additional_scales: function() {
+    initialize_additional_scales() {
         var color_scale = this.scales.color;
         if(color_scale) {
-            this.listenTo(color_scale, "domain_changed", function() {
+            this.listenTo(color_scale, "domain_changed", () => {
                 this.update_style();
             });
             color_scale.on("color_scale_range_changed",
                            this.update_style, this);
         }
-    },
+    }
 
-    remove_map: function() {
+    remove_map() {
         d3.selectAll(".world_map.map" + this.map_id).remove();
-    },
+    }
 
-    draw: function() {
+    draw() {
         this.set_ranges();
-        var that = this;
         this.remove_map();
         this.transformed_g = this.map.append("g")
             .attr("class", "world_map map" + this.map_id);
@@ -82,22 +83,22 @@ export const Map = mark.Mark.extend({
         var projection = this.scales.projection;
         //Bind data and create one path per GeoJSON feature
         this.fill_g.selectAll("path")
-            .data(that.model.geodata)
+            .data(this.model.geodata)
             .enter()
             .append("path")
             .attr("d", projection.path)
-            .style("fill", function(d, i) {
-                return that.fill_g_colorfill(d, i);
+            .style("fill", (d, i) => {
+                return this.fill_g_colorfill(d, i);
             });
         this.stroke_g.selectAll("path")
-            .data(that.model.geodata)
+            .data(this.model.geodata)
             .enter()
             .append("path")
             .attr("class", "event_layer")
             .attr("d", projection.path)
             .style("fill-opacity", 0.0)
-            .on("click", function(d, i) {
-                return that.event_dispatcher("element_clicked", {"data": d, "index": i});
+            .on("click", (d, i) => {
+                return this.event_dispatcher("element_clicked", {"data": d, "index": i});
             });
         if(this.validate_color(this.model.get("stroke_color"))) {
             this.stroke_g.selectAll("path")
@@ -105,22 +106,22 @@ export const Map = mark.Mark.extend({
         }
         this.zoom = d3.zoom()
             .scaleExtent([1, 8])
-            .on("zoom", function() {
-               that.zoomed(that);
+            .on("zoom", () => {
+               this.zoomed(this);
             });
         this.parent.bg.call(this.zoom);
 
         this.parent.bg.on("dblclick.zoom", null);
-        this.parent.bg.on("dblclick", function() {
-            that.reset_zoom(that);
+        this.parent.bg.on("dblclick", () => {
+            this.reset_zoom(this);
         });
-    },
+    }
 
-    validate_color: function(color) {
+    validate_color(color) {
         return color !== "";
-    },
+    }
 
-    mouseover_handler: function() {
+    mouseover_handler() {
         if (!this.model.get("hover_highlight")) {
             return;
         }
@@ -129,7 +130,7 @@ export const Map = mark.Mark.extend({
             var data: any = el.data()[0];
             var idx = this.model.get("selected");
             var select = idx ? utils.deepCopy(idx) : [];
-            var node = this.highlight_g.append(function() {
+            var node = this.highlight_g.append(() => {
                 return el.node().cloneNode(true);
             });
             node.classed("hovered", true);
@@ -140,36 +141,34 @@ export const Map = mark.Mark.extend({
                 node.style("stroke", this.model.get("hovered_styles").hovered_stroke)
                     .style("stroke-width", this.model.get("hovered_styles").hovered_stroke_width);
             }
-            var that = this;
             if(this.validate_color(this.model.get("hovered_styles").hovered_fill) &&
                 select.indexOf(data.id) === -1) {
                 node.style("fill-opacity", 1.0)
-                    .style("fill", function() {
-                        return that.model.get("hovered_styles").hovered_fill;
+                    .style("fill", () => {
+                        return this.model.get("hovered_styles").hovered_fill;
                     });
             }
         }
-    },
+    }
 
-    mouseout_handler: function() {
+    mouseout_handler() {
         if (!this.model.get("hover_highlight")) {
             return;
         }
         var el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
-            var that = this;
             el.transition("mouseout_handler")
-            .style("fill", function(d, i) {
-                return that.fill_g_colorfill(d, i);
+            .style("fill", (d, i) => {
+                return this.fill_g_colorfill(d, i);
             })
-            .style("stroke", function(d, i) {
-                return that.hoverfill(d, i);
+            .style("stroke", (d, i) => {
+                return this.hoverfill(d, i);
             });
-            that.highlight_g.selectAll(".hovered").remove();
+            this.highlight_g.selectAll(".hovered").remove();
         }
-    },
+    }
 
-    click_handler: function() {
+    click_handler() {
         var el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
             var data: any = el.data()[0];
@@ -185,7 +184,7 @@ export const Map = mark.Mark.extend({
                 d3.select(choice).remove();
             } else {
                 this.highlight_g.selectAll(".hovered").remove();
-                this.highlight_g.append(function() {
+                this.highlight_g.append(() => {
                     return el.node().cloneNode(true);
                 })
                 .attr("id", "c" + data.id)
@@ -212,13 +211,13 @@ export const Map = mark.Mark.extend({
             {updated_view: this});
         this.touch();
         }
-    },
+    }
 
-    reset_zoom: function(that) {
+    reset_zoom(that) {
         that.zoom.transform(that.parent.bg, d3.zoomIdentity);
-    },
+    }
 
-    zoomed: function(that) {
+    zoomed(that) {
         var tr = d3GetEvent().transform;
         var h = that.height / 3;
         var w = 2 * that.width;
@@ -226,55 +225,52 @@ export const Map = mark.Mark.extend({
         tr.y = Math.min(that.height / 2 * (tr.k - 1) + this.height * tr.k, Math.max(h / 2 * (1 - tr.k) - that.width * tr.k, tr.y));
         that.transformed_g.style("stroke-width", 1 / tr.k)
             .attr("transform", tr);
-    },
+    }
 
-    create_listeners: function() {
-        var that = this;
-        this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
-            .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
-            .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
+    create_listeners() {
+        this.d3el.on("mouseover", () => { this.event_dispatcher("mouse_over"); })
+            .on("mousemove", () => { this.event_dispatcher("mouse_move"); })
+            .on("mouseout", () => { this.event_dispatcher("mouse_out"); });
 
-        this.listenTo(this.model, "data_updated", this.draw, this);
-        this.listenTo(this.model, "change:color", this.update_style, this);
-        this.listenTo(this.model, "change:stroke_color", this.change_stroke_color, this);
-        this.listenTo(this.model, "change:colors", this.change_map_color, this);
-        this.listenTo(this.model, "change:selected", this.change_selected, this);
-        this.listenTo(this.model, "change:selected_styles", function() {
-            that.change_selected_fill();
-            that.change_selected_stroke();
+        this.listenTo(this.model, "data_updated", this.draw);
+        this.listenTo(this.model, "change:color", this.update_style);
+        this.listenTo(this.model, "change:stroke_color", this.change_stroke_color);
+        this.listenTo(this.model, "change:colors", this.change_map_color);
+        this.listenTo(this.model, "change:selected", this.change_selected);
+        this.listenTo(this.model, "change:selected_styles", () => {
+            this.change_selected_fill();
+            this.change_selected_stroke();
         });
         this.listenTo(this.model, "change:interactions", this.process_interactions);
-        this.listenTo(this.parent, "bg_clicked", function() {
+        this.listenTo(this.parent, "bg_clicked", () => {
             this.event_dispatcher("parent_clicked");
         });
-    },
+    }
 
-    process_click: function(interaction) {
-        Map.__super__.process_click.apply(this, [interaction]);
+    process_click(interaction) {
+        super.process_click([interaction]);
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.click_handler;
         }
-    },
+    }
 
-    process_hover: function(interaction) {
-        Map.__super__.process_hover.apply(this, [interaction]);
+    process_hover(interaction) {
+        super.process_hover([interaction]);
         if(interaction === "tooltip") {
-            this.event_listeners.mouse_over = function() {
+            this.event_listeners.mouse_over = () => {
                 this.mouseover_handler();
                 return this.refresh_tooltip();
             };
             this.event_listeners.mouse_move = this.move_tooltip;
-            this.event_listeners.mouse_out = function() {
+            this.event_listeners.mouse_out = () => {
                 this.mouseout_handler();
                 return this.hide_tooltip();
             };
-
         }
+    }
 
-    },
-
-    change_selected_fill: function() {
+    change_selected_fill() {
         if (!this.validate_color(this.model.get("selected_styles").selected_fill)) {
             this.highlight_g.selectAll(".selected")
                 .style("fill-opacity", 0.0);
@@ -283,9 +279,9 @@ export const Map = mark.Mark.extend({
                 .style("fill-opacity", 1.0)
                 .style("fill", this.model.get("selected_styles").selected_fill);
         }
-    },
+    }
 
-    change_selected_stroke: function() {
+    change_selected_stroke() {
         if (!this.validate_color(this.model.get("selected_styles").selected_stroke)) {
             this.highlight_g.selectAll(".selected")
                 .style("stroke-width", 0.0);
@@ -294,46 +290,45 @@ export const Map = mark.Mark.extend({
                 .style("stroke-width", this.model.get("selected_styles").selected_stroke_width)
                 .style("stroke", this.model.get("selected_styles").selected_stroke);
         }
-    },
+    }
 
-    change_selected: function() {
+    change_selected() {
         this.highlight_g.selectAll("path").remove();
-        var that = this;
         var idx = this.model.get("selected");
         var select = idx ? idx : [];
         var temp = this.stroke_g.selectAll("path").data();
-        this.stroke_g.selectAll("path").style("stroke", function(d, i) {
-            return that.hoverfill(d, i);
+        this.stroke_g.selectAll("path").style("stroke", (d, i) => {
+            return this.hoverfill(d, i);
         });
         var nodes = this.stroke_g.selectAll("path");
         for (var i=0; i<temp.length; i++) {
             if(select.indexOf(temp[i].id) > -1) {
-                that.highlight_g.append(function() {
+                this.highlight_g.append(() => {
                     return nodes.nodes()[i].cloneNode(true);
                 }).attr("id", temp[i].id)
-                .style("fill-opacity", function() {
-                    if (that.validate_color(that.model.get("selected_styles").selected_fill)) {
+                .style("fill-opacity", () => {
+                    if (this.validate_color(this.model.get("selected_styles").selected_fill)) {
                         return 1.0;
                     } else {
                         return 0.0;
                     }
                 })
-                .style("fill", that.model.get("selected_styles").selected_fill)
-                .style("stroke-opacity", function() {
-                    if (that.validate_color(that.model.get("selected_styles").selected_stroke)) {
+                .style("fill", this.model.get("selected_styles").selected_fill)
+                .style("stroke-opacity", () => {
+                    if (this.validate_color(this.model.get("selected_styles").selected_stroke)) {
                         return 1.0;
                     } else {
                         return 0.0;
                     }
                 })
-                .style("stroke", that.model.get("selected_styles").selected_stroke)
-                .style("stroke-width", that.model.get("selected_styles").selected_stroke_width)
+                .style("stroke", this.model.get("selected_styles").selected_stroke)
+                .style("stroke-width", this.model.get("selected_styles").selected_stroke_width)
                 .classed("selected", true);
             }
         }
-    },
+    }
 
-    reset_selection: function() {
+    reset_selection() {
         this.model.set("selected", []);
         this.touch();
         this.highlight_g.selectAll(".selected").remove();
@@ -344,46 +339,43 @@ export const Map = mark.Mark.extend({
             .selectAll("path")
             .classed("hovered", false);
 
-        var that = this;
-        this.stroke_g.selectAll("path").style("stroke", function(d, i) {
-            return that.hoverfill(d, i);
+        this.stroke_g.selectAll("path").style("stroke", (d, i) => {
+            return this.hoverfill(d, i);
         });
         this.fill_g.selectAll("path").classed("selected", false)
-            .style("fill", function(d, i) {
-                return that.fill_g_colorfill(d, i);
+            .style("fill", (d, i) => {
+                return this.fill_g_colorfill(d, i);
             });
-    },
+    }
 
-    change_stroke_color: function() {
+    change_stroke_color() {
         this.stroke_g.selectAll("path")
             .style("stroke", this.model.get("stroke_color"));
-    },
+    }
 
-    change_map_color: function() {
-	var that = this;
+    change_map_color() {
         if (!this.is_object_empty(this.model.get("color"))) {
             return;
         }
-        this.fill_g.selectAll("path").style("fill", function(d, i) {
-            return that.fill_g_colorfill(d, i)
+        this.fill_g.selectAll("path").style("fill", (d, i) => {
+            return this.fill_g_colorfill(d, i);
         });
-    },
+    }
 
-    update_style: function() {
+    update_style() {
         var color_data = this.model.get("color");
-        var that = this;
         if (!this.is_object_empty(color_data)) {
-            this.fill_g.selectAll("path").style("fill", function(d, i) {
-                return that.fill_g_colorfill(d, i);
+            this.fill_g.selectAll("path").style("fill", (d, i) => {
+                return this.fill_g_colorfill(d, i);
             });
         }
-    },
+    }
 
-    is_object_empty: function(object: any) {
+    is_object_empty(object: any) {
         return Object.keys(object).length === 0 && object.constructor === Object;
-    },
+    }
 
-    hoverfill: function(d, j) {
+    hoverfill(d, j) {
         var idx = this.model.get("selected");
         var select = idx ? idx : [];
         if (select.indexOf(d.id) > -1 &&
@@ -392,9 +384,9 @@ export const Map = mark.Mark.extend({
         } else {
             return this.model.get("stroke_color");
         }
-    },
+    }
 
-    fill_g_colorfill: function(d, j) {
+    fill_g_colorfill(d, j) {
         var color_scale = this.scales.color;
         var idx = this.model.get("selected");
         var selection = idx ? idx : [];
@@ -413,6 +405,22 @@ export const Map = mark.Mark.extend({
         } else {
             return color_scale.scale(color_data[d.id]);
         }
-    },
-});
+    }
 
+    clear_style() {}
+    compute_view_padding() {}
+    set_default_style() {}
+    set_style_on_elements() {}
+
+    map: any;
+    map_id: any;
+    width: any;
+    height: any;
+    enable_hover: any;
+    stroke_g: any;
+    fill_g: any;
+    highlight_g: any;
+    transformed_g: any;
+    zoom: any;
+    model: MapModel;
+};
