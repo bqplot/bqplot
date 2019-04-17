@@ -66,7 +66,6 @@ export * from './LogScale';
 export * from './Selector';
 export * from './Figure';
 export * from './LogScaleModel';
-export * from './SquareMarketMap';
 export * from './FigureModel';
 export * from './Map';
 export * from './Tooltip';
