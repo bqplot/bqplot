@@ -17,9 +17,9 @@ import * as widgets from '@jupyter-widgets/base';
 import { semver_range } from './version';
 import _ from 'underscore';
 
-export const ToolbarModel = widgets.DOMWidgetModel.extend({
+export class ToolbarModel extends widgets.DOMWidgetModel {
 
-    defaults: function() {
+    defaults() {
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
             _model_name: "ToolbarModel",
             _view_name: "Toolbar",
@@ -32,7 +32,7 @@ export const ToolbarModel = widgets.DOMWidgetModel.extend({
             _panning: false,
             _panzoom: null
         });
-    },
+    }
 
     // Backbone attributes:
     // - _panning: Bool
@@ -44,7 +44,7 @@ export const ToolbarModel = widgets.DOMWidgetModel.extend({
     //   The cached interaction of the Figure. It is undefined at first
     //   and can take the value of the figure interaction, which can be
     //   null.
-    panzoom: function() {
+    panzoom() {
         var figure = this.get("figure");
         if (this.get("_panning")) {
             if (figure) {
@@ -56,15 +56,14 @@ export const ToolbarModel = widgets.DOMWidgetModel.extend({
         } else {
             if (figure) {
                 this.cached_interaction = figure.get("interaction");
-                var that = this;
                 var panzoom = this.get("_panzoom");
                 if (panzoom) {
                     figure.set("interaction", panzoom);
                     figure.save_changes();
                 } else {
-                    this._create_panzoom_model(figure).then(function (model) {
-                        that.set("_panzoom", model);
-                        that.save_changes();
+                    this._create_panzoom_model(figure).then((model) => {
+                        this.set("_panzoom", model);
+                        this.save_changes();
                         figure.set("interaction", model);
                         figure.save_changes();
                     })
@@ -73,9 +72,9 @@ export const ToolbarModel = widgets.DOMWidgetModel.extend({
             this.set("_panning", true);
             this.save_changes();
         }
-    },
+    }
 
-    reset: function() {
+    reset() {
         /**
          * Reset the scales, delete the PanZoom widget, set the figure
          * interaction back to its previous value.
@@ -92,9 +91,9 @@ export const ToolbarModel = widgets.DOMWidgetModel.extend({
             this.set("_panning", false);
             this.save_changes();
         }
-    },
+    }
 
-    save_png: function() {
+    save_png() {
         /**
          * Triggers the saving for all the views of that figure.
          */
@@ -104,9 +103,9 @@ export const ToolbarModel = widgets.DOMWidgetModel.extend({
         if (figure) {
             figure.save_png();
         }
-     },
+     }
 
-    _create_panzoom_model: function(figure) {
+    _create_panzoom_model(figure) {
         /**
          * Creates a panzoom interaction widget for the specified figure.
          *
@@ -143,18 +142,20 @@ export const ToolbarModel = widgets.DOMWidgetModel.extend({
                 return model;
             });
         });
-    },
-}, {
-    serializers: _.extend({
+    }
+
+    cached_interaction: any
+
+    static serializers = {
+        ...widgets.DOMWidgetModel.serializers,
         figure: { deserialize: widgets.unpack_models },
-        _panzoom: { deserialize: widgets.unpack_models },
-    }, widgets.DOMWidgetModel.serializers)
-});
+        _panzoom: { deserialize: widgets.unpack_models }
+    };
+};
 
-export const Toolbar = widgets.DOMWidgetView.extend({
+export class Toolbar extends widgets.DOMWidgetView {
 
-    render: function() {
-        var that = this;
+    render() {
         this.el.classList.add("jupyter-widget"); // @jupyter-widgets/controls css
         this.el.classList.add("widget-hbox"); // @jupyter-widgets/controls css
 
@@ -170,9 +171,9 @@ export const Toolbar = widgets.DOMWidgetView.extend({
         _panzoom.classList.add("widget-toggle-button") // @jupyter-widgets/controls css
         _panzoom.setAttribute("data-toggle", "tooltip");
         _panzoom.setAttribute("title", "PanZoom");
-        _panzoom.onclick = function (e) {
+        _panzoom.onclick = (e) => {
             e.preventDefault();
-            that.model.panzoom();
+            this.model.panzoom();
         };
         var panzoomicon = document.createElement("i");
         panzoomicon.className = "fa fa-arrows";
@@ -184,9 +185,9 @@ export const Toolbar = widgets.DOMWidgetView.extend({
         _reset.classList.add("widget-button") // @jupyter-widgets/controls css
         _reset.setAttribute("data-toggle", "tooltip");
         _reset.setAttribute("title", "Reset");
-        _reset.onclick = function (e) {
+        _reset.onclick = (e) => {
             e.preventDefault();
-            that.model.reset();
+            this.model.reset();
         };
         var refreshicon = document.createElement("i");
         refreshicon.className = "fa fa-refresh";
@@ -198,9 +199,9 @@ export const Toolbar = widgets.DOMWidgetView.extend({
         _save.classList.add("widget-button") // @jupyter-widgets/controls css
         _save.setAttribute("data-toggle", "tooltip");
         _save.setAttribute("title", "Save");
-        _save.onclick = function (e) {
+        _save.onclick = (e) => {
             e.preventDefault();
-            that.model.save_png();
+            this.model.save_png();
         };
         var saveicon = document.createElement("i");
         saveicon.className = "fa fa-save";
@@ -213,14 +214,16 @@ export const Toolbar = widgets.DOMWidgetView.extend({
         // Handle initial state
         this._panzoom = _panzoom;
         this.update();
-    },
+    }
 
-    update: function() {
+    update() {
         if (this.model.get("_panning")) {
             this._panzoom.classList.add("mod-active");
         } else {
             this._panzoom.classList.remove("mod-active");
         }
     }
-});
 
+    model: ToolbarModel
+    _panzoom: any
+};
