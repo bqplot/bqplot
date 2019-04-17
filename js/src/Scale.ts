@@ -15,49 +15,60 @@
 
 import * as widgets from '@jupyter-widgets/base';
 
-export const Scale = widgets.WidgetView.extend({
+export class Scale extends widgets.WidgetView {
 
-    render: function() {
+    render() {
         this.offset = 0;
-    },
+    }
 
-    create_event_listeners: function() {
-        this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
-        this.listenTo(this.model, "highlight_axis", this.highlight_axis, this);
-        this.listenTo(this.model, "unhighlight_axis", this.unhighlight_axis, this);
-    },
+    create_event_listeners() {
+        this.listenTo(this.model, "domain_changed", this.model_domain_changed);
+        this.listenTo(this.model, "highlight_axis", this.highlight_axis);
+        this.listenTo(this.model, "unhighlight_axis", this.unhighlight_axis);
+    }
 
-    set_range: function(range, padding) {
+    set_range(range, padding) {
         this.scale.range(range);
-    },
+    }
 
-    compute_and_set_domain: function(array, id) {
+    compute_and_set_domain(array, id) {
         this.model.compute_and_set_domain(array, id);
-    },
+    }
 
-    set_domain: function(array, id) {
+    set_domain(array, id) {
         this.model.set_domain(array, id);
-    },
+    }
 
-    model_domain_changed: function() {
+    model_domain_changed() {
         this.scale.domain(this.model.domain);
         this.trigger("domain_changed");
-    },
+    }
 
-    highlight_axis: function() {
+    highlight_axis() {
         this.trigger("highlight_axis");
-    },
+    }
 
-    unhighlight_axis: function() {
+    unhighlight_axis() {
         this.trigger("unhighlight_axis");
-    },
+    }
 
-    expand_domain: function(old_range, new_range) {
+    expand_domain(old_range, new_range) {
         // Base class function. No implementation.
         // Implementation is particular to the child class
         // if you have a current range and then a new range and want to
         // expand the domain to expand to the new range but keep it
         // consistent with the previous one, this is the function you use.
     }
-});
+
+
+    offset: number;
+    scale: any;
+
+    // Overriding super class
+    model: widgets.WidgetModel & {
+        domain: any,
+        set_domain: any,
+        compute_and_set_domain: any
+    };
+}
 

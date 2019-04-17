@@ -25,23 +25,23 @@ function is_defined(value){
 };
 
 
-export const Mark = widgets.WidgetView.extend({
+export abstract class Mark extends widgets.WidgetView {
 
-    initialize : function() {
+    initialize () {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
-        Mark.__super__.initialize.apply(this, arguments);
-    },
+        super.initialize.apply(this, arguments);
+    }
 
-    render: function() {
+    render() {
         this.x_padding = 0;
         this.y_padding = 0;
         this.parent = this.options.parent;
         this.uuid = widgets.uuid();
         var scale_creation_promise = this.set_scale_views();
-        this.listenTo(this.model, "scales_updated", function() {
+        this.listenTo(this.model, "scales_updated", () => {
             this.set_scale_views().then(_.bind(this.draw, this));
-        }, this);
+        });
 
         this.colors = this.model.get("colors");
 
@@ -83,9 +83,11 @@ export const Mark = widgets.WidgetView.extend({
         };
 
         return scale_creation_promise;
-    },
+    }
 
-    set_scale_views: function() {
+    abstract draw();
+    abstract set_ranges();
+    set_scale_views() {
         // first, if this.scales was already defined, unregister from the
         // old ones.
         for (var key in this.scales) {
@@ -105,45 +107,45 @@ export const Mark = widgets.WidgetView.extend({
             that.set_ranges();
             that.trigger("mark_scales_updated");
         });
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         // Positional scales are special in that they trigger a full redraw
         // when their domain is changed.
         // This should be overloaded in specific mark implementation.
-    },
+    }
 
-    initialize_additional_scales: function() {
+    initialize_additional_scales() {
         // This function is for the extra scales that are required for
         // rendering mark. The scale listeners are set up in this function.
         // This should be overloaded in the specific mark implementation.
-    },
+    }
 
-    set_internal_scales: function() {
+    set_internal_scales() {
         // Some marks such as Bars need to create additional scales
         // to draw themselves. In this case, the set_internal_scales
         // is overloaded.
-    },
+    }
 
-    create_listeners: function() {
-        this.listenTo(this.model, "change:visible", this.update_visibility, this);
-        this.listenTo(this.model, "change:selected_style", this.selected_style_updated, this);
-        this.listenTo(this.model, "change:unselected_style", this.unselected_style_updated, this);
+    create_listeners() {
+        this.listenTo(this.model, "change:visible", this.update_visibility);
+        this.listenTo(this.model, "change:selected_style", this.selected_style_updated);
+        this.listenTo(this.model, "change:unselected_style", this.unselected_style_updated);
 
         this.parent.on("margin_updated", this.relayout, this);
         this.model.on_some_change(["labels", "display_legend"], function() {
             this.model.trigger("redraw_legend");
         }, this);
-    },
+    }
 
-    remove: function() {
+    remove() {
         this.model.off(null, null, this);
         this.d3el.transition("remove").duration(0).remove();
         this.tooltip_div.remove();
-        Mark.__super__.remove.apply(this);
-    },
+        super.remove();
+    }
 
-    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+    draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         elem.selectAll(".legend" + this.uuid).remove();
         elem.append("g")
           .attr("transform", "translate(" + x_disp + ", " + y_disp + ")")
@@ -153,57 +155,57 @@ export const Mark = widgets.WidgetView.extend({
         .append("text")
           .text(this.model.get("labels")[0]);
         return [1, 1];
-    },
+    }
 
-    highlight_axes: function() {
+    highlight_axes() {
         _.each(this.model.get("scales"), function(model: any) {
             model.trigger("highlight_axis");
         });
-    },
+    }
 
-    unhighlight_axes: function() {
+    unhighlight_axes() {
         _.each(this.model.get("scales"), function(model: any) {
             model.trigger("unhighlight_axis");
         });
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         // Called when the figure margins are updated. To be overloaded in
         // specific mark implementation.
-    },
+    }
 
-    invert_range: function(start_pxl, end_pxl) {
+    invert_range(start_pxl, end_pxl) {
         return [start_pxl, end_pxl];
-    },
+    }
 
-    invert_point: function(pxl) {
+    invert_point(pxl) {
         return [pxl];
-    },
+    }
 
     // TODO: is the following function really required?
-    invert_multi_range: function(array_pixels) {
+    invert_multi_range(array_pixels) {
         return array_pixels;
-    },
+    }
 
-    update_visibility: function(model, visible) {
+    update_visibility(model, visible) {
         this.d3el.style("display", visible ? "inline" : "none");
-    },
+    }
 
-    get_colors: function(index) {
+    get_colors(index) {
         // cycles over the list of colors when too many items
         this.colors = this.model.get("colors");
         var len = this.colors.length;
         return this.colors[index % len];
-    },
+    }
 
     // Style related functions
-    selected_style_updated: function(model, style) {
+    selected_style_updated(model, style) {
         this.selected_style = style;
         this.clear_style(model.previous("selected_style"), this.selected_indices);
         this.style_updated(style, this.selected_indices);
-    },
+    }
 
-    unselected_style_updated: function(model, style) {
+    unselected_style_updated(model, style) {
         this.unselected_style = style;
         var sel_indices = this.selected_indices;
         var unselected_indices = (sel_indices) ?
@@ -212,15 +214,15 @@ export const Mark = widgets.WidgetView.extend({
             }) : [];
         this.clear_style(model.previous("unselected_style"), unselected_indices);
         this.style_updated(style, unselected_indices);
-    },
+    }
 
-    style_updated: function(new_style, indices) {
+    style_updated(new_style, indices) {
         // reset the style of the elements and apply the new style
         this.set_default_style(indices);
         this.set_style_on_elements(new_style, indices);
-    },
+    }
 
-    apply_styles: function(style_arr) {
+    apply_styles(style_arr?) {
         if(style_arr === undefined || style_arr == null) {
             style_arr = [this.selected_style, this.unselected_style];
         }
@@ -235,24 +237,22 @@ export const Mark = widgets.WidgetView.extend({
         var unselected_indices = (!this.selected_indices) ?
             [] : _.difference(all_indices, Array.from(this.selected_indices));
         this.set_style_on_elements(this.unselected_style, unselected_indices);
-    },
+    }
 
     // Abstract functions which have to be overridden by the specific mark
-    clear_style: function(style_dict, indices) {
-    },
+    abstract clear_style(style_dict, indices?);
 
-    set_default_style:function(indices) {
-    },
+    abstract set_default_style(indices);
 
-    set_style_on_elements: function(style, indices) {
-    },
+    abstract set_style_on_elements(style, indices);
 
-    compute_view_padding: function() {
-        //This function sets the x and y view paddings for the mark using
-        //the variables x_padding and y_padding
-    },
+    /**
+     * This function sets the x and y view paddings for the mark using the
+     * variables x_padding and y_padding
+     */
+    abstract compute_view_padding();
 
-    show_tooltip: function(mouse_events) {
+    show_tooltip(mouse_events?) {
         //this function displays the tooltip at the location of the mouse
         //event is the d3 event for the data.
         //mouse_events is a boolean to enable mouse_events or not.
@@ -268,26 +268,26 @@ export const Mark = widgets.WidgetView.extend({
             this.parent.popper.enableEventListeners();
             this.move_tooltip();
         }
-    },
+    }
 
-    move_tooltip: function(mouse_events) {
+    move_tooltip(mouse_events?) {
         if(this.tooltip_view) {
             this.parent.popper_reference.x = d3GetEvent().clientX;
             this.parent.popper_reference.y = d3GetEvent().clientY;
             this.parent.popper.scheduleUpdate();
         }
-    },
+    }
 
-    hide_tooltip: function() {
+    hide_tooltip() {
         //this function hides the tooltip. But the location of the tooltip
         //is the last location set by a call to show_tooltip.
         this.parent.popper.disableEventListeners();
         this.tooltip_div.style("pointer-events", "none");
         this.tooltip_div.style("opacity", 0)
             .style("display", "none");
-    },
+    }
 
-    refresh_tooltip: function(tooltip_interactions) {
+    refresh_tooltip(tooltip_interactions) {
         //the argument controls pointer interactions with the tooltip. a
         //true value enables pointer interactions while a false value
         //disables them
@@ -298,9 +298,9 @@ export const Mark = widgets.WidgetView.extend({
             this.trigger("update_tooltip", clicked_data);
             this.show_tooltip(tooltip_interactions);
         }
-    },
+    }
 
-    create_tooltip: function() {
+    create_tooltip() {
         //create tooltip widget. To be called after mark has been displayed
         //and whenever the tooltip object changes
         var tooltip_model = this.model.get("tooltip");
@@ -321,17 +321,17 @@ export const Mark = widgets.WidgetView.extend({
                 that.tooltip_view.remove();
             }
         }
-    },
+    }
 
-    event_dispatcher: function(event_name, data) {
+    event_dispatcher(event_name, data) {
         //sends a custom mssg to the python side if required
         this.custom_msg_sender(event_name);
         if(this.event_listeners[event_name] !== undefined) {
             _.bind(this.event_listeners[event_name], this, data)();
         }
-    },
+    }
 
-    custom_msg_sender: function(event_name) {
+    custom_msg_sender(event_name) {
         var event_data = this.event_metadata[event_name];
         if(event_data !== undefined) {
             var data = null;
@@ -350,36 +350,36 @@ export const Mark = widgets.WidgetView.extend({
             }
             this.send({event: event_data.msg_name, data: data});
         }
-    },
+    }
 
-    reset_interactions: function() {
+    reset_interactions() {
         this.reset_click();
         this.reset_hover();
         this.reset_legend_hover();
         this.event_listeners.legend_clicked = function() {};
-    },
+    }
 
-    reset_click: function() {
+    reset_click() {
         this.event_listeners.element_clicked = function() {};
         this.event_listeners.parent_clicked = function() {};
-    },
+    }
 
-    reset_hover: function() {
+    reset_hover() {
         this.event_listeners.mouse_over = function() {};
         this.event_listeners.mouse_move = function() {};
         this.event_listeners.mouse_out = function() {};
-    },
+    }
 
-    reset_legend_click: function() {
+    reset_legend_click() {
         this.event_listeners.legend_clicked = function() {};
-    },
+    }
 
-    reset_legend_hover: function() {
+    reset_legend_hover() {
         this.event_listeners.legend_mouse_over = function() {};
         this.event_listeners.legend_mouse_out = function() {};
-    },
+    }
 
-    process_click: function(interaction){
+    process_click(interaction){
         const that = this;
         if(interaction === "tooltip") {
             this.event_listeners.element_clicked = function() {
@@ -387,17 +387,17 @@ export const Mark = widgets.WidgetView.extend({
             };
             this.event_listeners.parent_clicked = this.hide_tooltip;
         }
-    },
+    }
 
-    process_hover: function(interaction){
+    process_hover(interaction){
         if(interaction === "tooltip") {
             this.event_listeners.mouse_over = this.refresh_tooltip;
             this.event_listeners.mouse_move = this.move_tooltip;
             this.event_listeners.mouse_out = this.hide_tooltip;
         }
-    },
+    }
 
-    process_legend_click: function(interaction) {
+    process_legend_click(interaction) {
         const that = this;
         if(interaction === "tooltip") {
             this.event_listeners.legend_clicked = function() {
@@ -405,16 +405,16 @@ export const Mark = widgets.WidgetView.extend({
             };
             this.event_listeners.parent_clicked = this.hide_tooltip;
         }
-    },
+    }
 
-    process_legend_hover: function(interaction){
+    process_legend_hover(interaction){
         if(interaction === "highlight_axes") {
             this.event_listeners.legend_mouse_over = _.bind(this.highlight_axes, this);
             this.event_listeners.legend_mouse_out = _.bind(this.unhighlight_axes, this);
         }
-    },
+    }
 
-    process_interactions: function() {
+    process_interactions() {
         //configure default interactions
         const interactions = this.model.get("interactions");
 
@@ -440,9 +440,9 @@ export const Mark = widgets.WidgetView.extend({
         } else {
             this.reset_legend_hover();
         }
-    },
+    }
 
-    mouse_over: function() {
+    mouse_over() {
         if(this.model.get("enable_hover")) {
             var el = d3.select(d3GetEvent().target);
             if(this.is_hover_element(el)) {
@@ -457,9 +457,9 @@ export const Mark = widgets.WidgetView.extend({
                 });
             }
         }
-    },
+    }
 
-    mouse_out: function() {
+    mouse_out() {
         if(this.model.get("enable_hover")) {
             var el = d3.select(d3GetEvent().target);
             if(this.is_hover_element(el)) {
@@ -473,21 +473,45 @@ export const Mark = widgets.WidgetView.extend({
                 });
             }
         }
-    },
+    }
 
-    mouse_move: function() {
+    mouse_move() {
         if(this.model.get("enable_hover") &&
             this.is_hover_element(d3.select(d3GetEvent().target))) {
             this.move_tooltip();
         }
-    },
+    }
 
     //TODO: Rename function
-    is_hover_element: function(elem) {
+    is_hover_element(elem) {
         var hit_check = this.display_el_classes.map(function(class_name) {
             return elem.classed(class_name);
         });
         return (_.compact(hit_check).length > 0);
-    },
-});
+    }
 
+    bisect: any;
+    colors: any;
+    d3el: any;
+    display_el_classes: string[];
+    event_listeners: any;
+    event_metadata: any;
+    parent: any;
+    scales: any;
+    selected_indices: any;
+    selected_style: any;
+    tooltip_div: any;
+    tooltip_view: any;
+    unselected_style: any;
+    uuid: any;
+    x_padding: any;
+    y_padding: any;
+
+    // Overriding super class
+    model: markModel;
+}
+
+export type markModel = widgets.WidgetModel & {
+    mark_data: any,
+    get_data_dict: any
+};
