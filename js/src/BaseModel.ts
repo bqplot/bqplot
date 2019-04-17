@@ -13,38 +13,37 @@
  * limitations under the License.
  */
 
-import * as widgets from '@jupyter-widgets/base';
+import { WidgetModel } from '@jupyter-widgets/base';
 import * as _ from 'underscore';
 import { semver_range } from './version';
 
-export var BaseModel = widgets.WidgetModel.extend({
+export class BaseModel extends WidgetModel {
 
-    defaults: function() {
-        return _.extend(widgets.WidgetModel.prototype.defaults(), {
+    defaults() {
+        return {...WidgetModel.prototype.defaults(), 
             _model_name: "BaseModel",
             _model_module: "bqplot",
             _model_module_version: semver_range
-        });
-    },
+        };
+    }
 
-
-    get_date_elem: function(param) {
+    get_date_elem(param) {
         return this.convert_to_date(this.get(param));
-    },
+    }
 
-    set_date_elem: function(param, value) {
+    set_date_elem(param, value) {
         this.set(param, this.convert_to_json(value));
-    },
+    }
 
-    convert_to_date: function(elem) {
+    convert_to_date(elem) {
         // Function to convert the string to a date element
         if(elem === undefined || elem === null) {
             return null;
         }
         return new Date(elem);
-    },
+    }
 
-    convert_to_json: function(elem) {
+    convert_to_json(elem) {
         // converts the date to a json compliant format
         if(elem === undefined || elem === null) {
             return null;
@@ -61,5 +60,4 @@ export var BaseModel = widgets.WidgetModel.extend({
             }
         }
     }
-});
-
+}
