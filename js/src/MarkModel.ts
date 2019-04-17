@@ -114,6 +114,11 @@ export class MarkModel extends BaseModel {
         return null;
     }
 
+    // TODO make this abstract
+    get_data_dict(data, index) {
+        return data;
+    }
+
     static serializers = {
         ...BaseModel.serializers,
         scales: { deserialize: widgets.unpack_models },

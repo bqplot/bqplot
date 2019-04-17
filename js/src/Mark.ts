@@ -18,6 +18,7 @@ import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
+import { MarkModel } from './MarkModel'
 
 // Check that value is defined and not null
 function is_defined(value){
@@ -507,10 +508,6 @@ export abstract class Mark extends widgets.WidgetView {
     y_padding: any;
 
     // Overriding super class
-    model: markModel;
+    model: MarkModel;
 }
 
-export type markModel = widgets.WidgetModel & {
-    mark_data: any,
-    get_data_dict: any
-};

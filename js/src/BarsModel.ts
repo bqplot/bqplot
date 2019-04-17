@@ -136,7 +136,7 @@ export class BarsModel extends markmodel.MarkModel {
         this.trigger("data_updated");
     }
 
-    get_data_dict(data, index, sub_index) {
+    get_data_dict(data, index) {
         return data;
     }
 

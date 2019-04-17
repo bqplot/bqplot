@@ -108,4 +108,7 @@ export class BoxplotModel extends MarkModel {
         x: serialize.array_or_json,
         y: serialize.array_or_json
     }
+
+    max_x: number;
+    min_x: number;
 }

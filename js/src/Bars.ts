@@ -20,10 +20,11 @@ import * as d3 from 'd3';
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 
 import * as _ from 'underscore';
-import * as mark from './Mark';
 import * as utils from './utils';
+import { Mark } from './Mark'
+import { BarsModel } from './BarsModel'
 
-export class Bars extends mark.Mark {
+export class Bars extends Mark {
 
     render() {
         this.padding = this.model.get("padding");
@@ -704,10 +705,6 @@ export class Bars extends mark.Mark {
     x: any;
     x1: any;
 
-        // Overriding super class
-        model: mark.markModel & {
-            base_value: any;
-            update_domains: any;
-            is_y_2d: any;
-        };
+    // Overriding super class
+    model: BarsModel;
 }

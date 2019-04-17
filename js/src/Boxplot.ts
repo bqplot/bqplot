@@ -16,9 +16,10 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"));
 import * as _ from 'underscore';
-import * as mark from './Mark';
+import { Mark } from './Mark';
+import { BoxplotModel } from './BoxplotModel'
 
-export class Boxplot extends mark.Mark {
+export class Boxplot extends Mark {
 
     render() {
         var base_creation_promise = super.render.apply(this);
@@ -590,8 +591,5 @@ export class Boxplot extends mark.Mark {
     rect_dim: any
     width: any;
     x_pixels: any[];
-    model: mark.markModel & {
-        max_x: number;
-        min_x: number;
-    }
+    model: BoxplotModel;
 }
