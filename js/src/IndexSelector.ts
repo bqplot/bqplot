@@ -164,11 +164,6 @@ export const IndexSelector = baseselector.BaseXSelector.extend({
         this.set_range([this.scale]);
     },
 
-    scale_changed: function() {
-        this.reset();
-        this.scale = this.parent.x_scale;
-    },
-
     set_range: function(array) {
         for(var iter = 0; iter < array.length; iter++) {
             array[iter].set_range([0, this.width]);
