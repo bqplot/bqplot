@@ -18,11 +18,12 @@ import * as d3 from 'd3';
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as utils from './utils';
-import * as mark from './Mark';
+import { Mark } from './Mark';
+import { GraphModel } from './GraphModel';
 
-export const Graph = mark.Mark.extend({
-    render: function() {
-        var base_creation_promise = Graph.__super__.render.apply(this);
+export class Graph extends Mark {
+    render() {
+        var base_creation_promise = super.render();
 
         var that = this;
         this.selected_style = this.model.get("selected_style");
@@ -76,9 +77,9 @@ export const Graph = mark.Mark.extend({
             that.compute_view_padding();
             that.draw();
         });
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var x_scale = this.scales.x,
             y_scale = this.scales.y;
         if (x_scale) {
@@ -87,9 +88,9 @@ export const Graph = mark.Mark.extend({
         if (y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         this.x_scale = this.scales.x;
         this.y_scale = this.scales.y;
 
@@ -109,14 +110,14 @@ export const Graph = mark.Mark.extend({
             if (!this.model.dirty) {
                 this.update_position(); }
         });
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
         this.update_position();
-    },
+    }
 
-    update_position: function() {
+    update_position() {
         var x_scale = this.scales.x,
             y_scale = this.scales.y;
         this.set_ranges();
@@ -145,9 +146,9 @@ export const Graph = mark.Mark.extend({
                 }
             }
         }
-    },
+    }
 
-    initialize_additional_scales: function() {
+    initialize_additional_scales() {
         var color_scale = this.scales.color;
         if (color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
@@ -163,10 +164,10 @@ export const Graph = mark.Mark.extend({
                 this.link_color_scale_updated();
             });
         }
-    },
+    }
 
-    create_listeners: function() {
-        Graph.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
         this.d3el.on("mouseover", _.bind(function() {
               this.event_dispatcher("mouse_over");
           }, this))
@@ -179,26 +180,26 @@ export const Graph = mark.Mark.extend({
 
         this.listenTo(this.model, "change:charge", this.update_charge);
         this.listenTo(this.model, "change:link_distance", this.update_link_distance);
-        this.listenTo(this.model, "data_updated", this.data_updated, this);
-        this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
-        this.listenTo(this.model, "change:enable_hover", function() { this.hide_tooltip(); }, this);
+        this.listenTo(this.model, "data_updated", this.data_updated);
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip);
+        this.listenTo(this.model, "change:enable_hover", function() { this.hide_tooltip(); });
         this.listenTo(this.model, "change:interactions", this.process_interactions);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:hovered_point", this.update_hovered);
-        this.listenTo(this.model, "change:hovered_style", this.hovered_style_updated, this);
-        this.listenTo(this.model, "change:unhovered_style", this.unhovered_style_updated, this);
+        this.listenTo(this.model, "change:hovered_style", this.hovered_style_updated);
+        this.listenTo(this.model, "change:unhovered_style", this.unhovered_style_updated);
 
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
-    },
+    }
 
-    data_updated: function() {
+    data_updated() {
         this.draw();
         this.relayout();
-    },
+    }
 
-    get_node_color: function(data, index) {
+    get_node_color(data, index) {
         var color_scale = this.scales.color;
         var colors = this.model.get("colors");
         var len = colors.length;
@@ -206,9 +207,9 @@ export const Graph = mark.Mark.extend({
             return color_scale.scale(data.color);
         }
         return colors[index % len];
-    },
+    }
 
-    draw: function() {
+    draw() {
         this.set_ranges();
         var x_scale = this.scales.x,
             y_scale = this.scales.y,
@@ -321,63 +322,63 @@ export const Graph = mark.Mark.extend({
         this.nodes.on("mouseout", _.bind(function() {
             this.reset_hover();
         }, this));
-    },
+    }
 
 
-    dragstarted: function(d) {
+    dragstarted(d) {
         if (!d3GetEvent().active) {
             this.force_layout.alphaTarget(.4).restart();
         }
         d.fx = d.x;
         d.fy = d.y;
-    },
+    }
 
-    dragged: function(d) {
+    dragged(d) {
         d.fx = d3GetEvent().x;
         d.fy = d3GetEvent().y;
-    },
+    }
 
-    dragended: function(d) {
+    dragended(d) {
         if (!d3GetEvent().active) {
             this.force_layout.alphaTarget(.4);
         }
         d.fx = null;
         d.fy = null;
-    },
+    }
 
-    color_scale_updated: function() {
+    color_scale_updated() {
         var that = this;
         this.nodes
             .selectAll(".element")
             .style("fill", function(d, i) {
                 return that.get_node_color(d, i);
             });
-    },
+    }
 
-    link_color_scale_updated: function() {
+    link_color_scale_updated() {
         var link_color_scale = this.scales.link_color;
 
         this.links.style("stroke", function(d) {
             return link_color_scale ? link_color_scale.scale(d.value) : null;
         });
-    },
+    }
 
-    process_click: function(interaction) {
-        Graph.__super__.process_click.apply(this, [interaction]);
+    process_click(interaction) {
+        super.process_click(interaction);
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.click_handler;
         }
-    },
+    }
 
-    reset_hover: function() {
+    reset_hover() {
         this.links.style("opacity", 1);
         this.model.set("hovered_point", null);
         this.hovered_index = null;
         this.touch();
-    },
+    }
 
-    hover_handler: function(args) {
+    hover_handler(args) {
         var data = args.data;
         var index = args.index;
         var highlight_links = this.model.get("highlight_links");
@@ -394,15 +395,15 @@ export const Graph = mark.Mark.extend({
         this.model.set("hovered_point",
                        index, {updated_view: this});
         this.touch();
-    },
+    }
 
-    reset_selection: function() {
+    reset_selection() {
         this.model.set("selected", null);
         this.selected_indices = null;
         this.touch();
-    },
+    }
 
-    click_handler: function(args) {
+    click_handler(args) {
         var index = args.index;
         var idx = this.model.get("selected");
         var selected = idx ? utils.deepCopy(idx) : [];
@@ -444,15 +445,15 @@ export const Graph = mark.Mark.extend({
             e.stopPropagation();
         }
         e.preventDefault();
-    },
+    }
 
-    hovered_style_updated: function(model, style) {
+    hovered_style_updated(model, style) {
         this.hovered_style = style;
         this.clear_style(model.previous("hovered_style"), this.hovered_index);
         this.style_updated(style, this.hovered_index);
-    },
+    }
 
-    unhovered_style_updated: function(model, style) {
+    unhovered_style_updated(model, style) {
         this.unhovered_style = style;
         var hov_indices = this.hovered_index;
         var unhovered_indices = (hov_indices) ?
@@ -461,24 +462,24 @@ export const Graph = mark.Mark.extend({
             }) : [];
         this.clear_style(model.previous("unhovered_style"), unhovered_indices);
         this.style_updated(style, unhovered_indices);
-    },
+    }
 
-    update_selected: function(model, value) {
+    update_selected(model, value) {
         this.selected_indices = value;
         this.apply_styles();
-    },
+    }
 
-    update_hovered: function(model, value) {
+    update_hovered(model, value) {
         this.hovered_index = value === null ? value : [value];
         this.apply_styles();
-    },
+    }
 
-    apply_styles: function(style_arr) {
+    apply_styles(style_arr?) {
         if(style_arr === undefined || style_arr === null) {
             style_arr = [this.selected_style, this.unselected_style,
                          this.hovered_style, this.unhovered_style];
         }
-        Graph.__super__.apply_styles.apply(this, [style_arr]);
+        super.apply_styles(style_arr);
 
         var all_indices = _.range(this.model.mark_data.length);
 
@@ -486,9 +487,9 @@ export const Graph = mark.Mark.extend({
         var unhovered_indices = (!this.hovered_index) ?
             [] : _.difference(all_indices, this.hovered_index);
         this.set_style_on_elements(this.unhovered_style, unhovered_indices);
-    },
+    }
 
-    clear_style: function(style_dict, indices) {
+    clear_style(style_dict, indices) {
         var nodes = this.d3el.selectAll(".element");
         if(indices) {
             nodes = nodes.filter(function(d, index) {
@@ -500,9 +501,9 @@ export const Graph = mark.Mark.extend({
             clearing_style[key] = null;
         }
         nodes.styles(clearing_style);
-    },
+    }
 
-    set_style_on_elements: function(style, indices) {
+    set_style_on_elements(style, indices) {
         // If the index array is undefined or of length=0, exit the
         // function without doing anything
         if(!indices || indices.length === 0) {
@@ -517,9 +518,9 @@ export const Graph = mark.Mark.extend({
             return indices.indexOf(index) !== -1;
         });
         nodes.styles(style);
-    },
+    }
 
-    compute_view_padding: function() {
+    compute_view_padding() {
         var x_padding = d3.max(this.model.mark_data.map(function(d) {
                 return (d.shape_attrs.r ||
                         d.shape_attrs.width / 2 ||
@@ -537,14 +538,14 @@ export const Graph = mark.Mark.extend({
             this.y_padding = x_padding;
             this.trigger("mark_padding_updated");
         }
-    },
+    }
 
-    selected_deleter: function() {
+    selected_deleter() {
         d3GetEvent().stopPropagation();
         return;
-    },
+    }
 
-    update_link_distance: function() {
+    update_link_distance() {
         var x_scale = this.scales.x,
             y_scale = this.scales.y;
 
@@ -552,9 +553,9 @@ export const Graph = mark.Mark.extend({
         if (!x_scale && !y_scale) {
             this.force_layout.linkDistance(link_dist).start();
         }
-    },
+    }
 
-    update_charge: function() {
+    update_charge() {
         var x_scale = this.scales.x,
             y_scale = this.scales.y;
 
@@ -562,31 +563,31 @@ export const Graph = mark.Mark.extend({
         if (!x_scale && !y_scale) {
             this.force_layout.charge(charge).start();
         }
-    },
+    }
 
-    link_arc: function(d) {
+    link_arc(d) {
         var dx = d.target.x - d.source.x,
             dy = d.target.y - d.source.y,
             dr = Math.sqrt(dx * dx + dy * dy);
         return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr +
                " 0 0,1 " + d.target.x + "," + d.target.y;
-    },
+    }
 
-    link_line: function(d) {
+    link_line(d) {
         var midx = (d.source.x + d.target.x) / 2,
             midy = (d.source.y + d.target.y) / 2;
         return "M" + d.source.x + "," + d.source.y + "L" + midx + "," +
                midy + "L" +  d.target.x + "," + d.target.y;
-    },
+    }
 
-    link_slant_line: function(d) {
+    link_slant_line(d) {
         var midx = (d.source.x + d.target.x) / 2;
         return "M" + d.source.x + "," + d.source.y +
                "L" +  midx + "," + d.target.y +
                "L" +  d.target.x + "," + d.target.y;
-    },
+    }
 
-    tick: function() {
+    tick() {
         var link_type = this.model.get("link_type");
 
         this.nodes.attr("transform", transform);
@@ -619,5 +620,20 @@ export const Graph = mark.Mark.extend({
         function transform(d) {
             return "translate(" + d.x + "," + d.y + ")";
         }
-    },
-});
+    }
+
+    set_default_style(indices) {
+    }
+
+    hovered_style: any;
+    unhovered_style: any;
+    hovered_index: any;
+    arrow: any;
+    x_scale: any;
+    y_scale: any;
+    force_layout: any;
+    links: any;
+    nodes: any;
+
+    model: GraphModel;
+}

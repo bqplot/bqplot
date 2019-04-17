@@ -14,12 +14,12 @@
  */
 
 import * as _ from 'underscore';
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export var GraphModel = markmodel.MarkModel.extend({
-    defaults: function() {
-        return _.extend({}, markmodel.MarkModel.prototype.defaults, {
+export class GraphModel extends MarkModel {
+    defaults() {
+        return { ...MarkModel.prototype.defaults(),
         _model_name: "GraphModel",
         _view_name: "Graph",
 
@@ -33,19 +33,19 @@ export var GraphModel = markmodel.MarkModel.extend({
             color: { dimension: "color" }
         },
         colors: [],
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        GraphModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["x", "y", "color", "link_color",
                              "node_data", "link_data", "link_color", ],
                             this.update_data, this);
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
-    },
+    }
 
-    update_node_data: function() {
+    update_node_data() {
         var node_data = this.get("node_data"),
             x = this.get("x"),
             y = this.get("y"),
@@ -109,9 +109,9 @@ export var GraphModel = markmodel.MarkModel.extend({
                 d.color = color[i];
             });
         }
-    },
+    }
 
-    update_link_data: function() {
+    update_link_data() {
         var link_color_scale = this.get("scales").link_color;
         this.link_data = this.get("link_data");
         var link_matrix = this.get("link_matrix");
@@ -132,9 +132,9 @@ export var GraphModel = markmodel.MarkModel.extend({
                 });
             });
         }
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         this.dirty = true;
         this.update_node_data();
         this.update_link_data();
@@ -142,15 +142,15 @@ export var GraphModel = markmodel.MarkModel.extend({
         this.update_domains();
         this.dirty = false;
         this.trigger("data_updated");
-    },
+    }
 
-    update_unique_ids: function() {},
+    update_unique_ids() {}
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         return data;
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         var data_scale_key_map = {x: 'xval', y: 'yval'};
 
         if (!this.mark_data) {
@@ -171,12 +171,15 @@ export var GraphModel = markmodel.MarkModel.extend({
             }
        }
     }
-}, {
-    serializers: _.extend({
+
+    static serializers = {
+        ...MarkModel.serializers,
         x: serialize.array_or_json,
         y: serialize.array_or_json,
         color: serialize.array_or_json,
         link_color: serialize.array_or_json,
-        link_matrix: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        link_matrix: serialize.array_or_json
+    }
+
+    link_data: any;
+}

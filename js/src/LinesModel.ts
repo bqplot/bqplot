@@ -16,14 +16,14 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"), require("d3-array"));
 import * as _ from 'underscore';
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 import * as utils from './utils';
 
-export const LinesModel = markmodel.MarkModel.extend({
+export class LinesModel extends MarkModel {
 
-    defaults: function () {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...MarkModel.prototype.defaults(),
             _model_name: "LinesModel",
             _view_name: "Lines",
             x: [],
@@ -47,11 +47,11 @@ export const LinesModel = markmodel.MarkModel.extend({
             marker_size: 64,
             opacities: [],
             fill_opacities: []
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        LinesModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["x", "y", "color"], this.update_data, this);
         this.on("change:labels", this.update_labels, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
@@ -61,9 +61,9 @@ export const LinesModel = markmodel.MarkModel.extend({
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
         this.update_domains();
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         this.dirty = true;
         // Handling data updates
         var that = this;
@@ -117,18 +117,18 @@ export const LinesModel = markmodel.MarkModel.extend({
         this.update_domains();
         this.dirty = false;
         this.trigger("data_updated");
-    },
+    }
 
-    update_labels: function() {
+    update_labels() {
         // update the names in mark_data
         var labels = this.get_labels();
         this.mark_data.forEach(function(element, i) {
             element.name = labels[i];
         });
         this.trigger("labels_updated");
-    },
+    }
 
-    get_labels: function() {
+    get_labels() {
         // Function to set the labels appropriately.
         // Setting the labels to the value sent and filling in the
         // remaining values.
@@ -144,9 +144,9 @@ export const LinesModel = markmodel.MarkModel.extend({
             });
         }
         return curve_labels;
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if(!this.mark_data) {
             return;
         }
@@ -178,23 +178,28 @@ export const LinesModel = markmodel.MarkModel.extend({
                 color_scale.del_domain([], this.model_id + "_color");
             }
         }
-    },
+    }
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         return data;
-    },
-}, {
-    serializers: _.extend({
+    }
+
+    static serializers = {
+        ...MarkModel.serializers,
         x: serialize.array_or_json,
         y: serialize.array_or_json,
-        color: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        color: serialize.array_or_json
+    };
 
-export const FlexLineModel = LinesModel.extend({
+    x_data: any;
+    y_data: any;
+    color_data: any;
+}
 
-    defaults: function() {
-        return _.extend(LinesModel.prototype.defaults(), {
+export class FlexLineModel extends LinesModel {
+
+    defaults() {
+        return {...LinesModel.prototype.defaults(),
             _model_name: "FlexLineModel",
             _view_name: "FlexLine",
 
@@ -219,10 +224,10 @@ export const FlexLineModel = LinesModel.extend({
             marker_size: 64,
             opacities: [],
             fill_opacities: [],
-        });
-    },
+        };
+    }
 
-    update_data: function() {
+    update_data() {
         this.dirty = true;
         // Handling data updates
         var that = this;
@@ -261,9 +266,9 @@ export const FlexLineModel = LinesModel.extend({
         this.update_domains();
         this.dirty = false;
         this.trigger("data_updated");
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if(!this.mark_data) {
             return;
         }
@@ -307,5 +312,7 @@ export const FlexLineModel = LinesModel.extend({
             }
         }
     }
-});
+
+    data_len: any;
+}
 
