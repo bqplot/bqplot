@@ -39,9 +39,7 @@ script:
         python -m jupyterlab.selenium_check;
         (rm -rf js/node_modules);
         (cd js; npm install);
-        (cd js; ./node_modules/.bin/karma start)
+        (cd js; npm run test);
       fi
 after_success:
     - coveralls
-
-
