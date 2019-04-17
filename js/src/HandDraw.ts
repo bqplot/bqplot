@@ -19,52 +19,49 @@ import * as utils from './utils';
 import * as interaction from './Interaction';
 var convert_dates = require('./utils').convert_dates;
 
-export const HandDraw = interaction.Interaction.extend({
+export class HandDraw extends interaction.Interaction {
 
-    render: function() {
-        HandDraw.__super__.render.apply(this);
+    render() {
+        super.render();
         this.d3el.style("cursor", "crosshair");
         this.active = false;
 
         // Register the mouse callback when the mark view promises are
         // resolved.
-        var that = this;
-        this.set_lines_view().then(function() {
-            that.d3el.on("mousedown", function() {
-                return that.mousedown();
+        this.set_lines_view().then(() => {
+            this.d3el.on("mousedown", () => {
+                return this.mousedown();
             });
-            that.set_limits();
+            this.set_limits();
         });
 
         // Update line index
         this.update_line_index();
-        this.listenTo(this.model, "change:line_index", this.update_line_index, this);
+        this.listenTo(this.model, "change:line_index", this.update_line_index);
         this.model.on_some_change(["min_x", "max_x"], this.set_limits, this);
-    },
+    }
 
-    set_lines_view: function() {
+    set_lines_view() {
         var fig = this.parent;
         var lines_model = this.model.get("lines");
-        var that = this;
-        return Promise.all(fig.mark_views.views).then(function(views) {
-            var fig_mark_ids = fig.mark_views._models.map(function(mark_model) {
+        return Promise.all(fig.mark_views.views).then((views) => {
+            var fig_mark_ids = fig.mark_views._models.map((mark_model) => {
                 return mark_model.model_id; // Model ids of the marks in the figure
             });
             var mark_index = fig_mark_ids.indexOf(lines_model.model_id);
-            that.lines_view = views[mark_index];
+            this.lines_view = views[mark_index];
         });
-    },
+    }
 
-    mousedown: function () {
+    mousedown () {
         this.active = true;
         this.mouse_entry(false);
-        var that = this;
-        this.d3el.on("mousemove", function() { that.mousemove(); });
-        this.d3el.on("mouseleave", function() { that.mouseup(); });
-        this.d3el.on("mouseup", function() { that.mouseup(); });
-    },
+        this.d3el.on("mousemove", () => { this.mousemove(); });
+        this.d3el.on("mouseleave", () => { this.mouseup(); });
+        this.d3el.on("mouseup", () => { this.mouseup(); });
+    }
 
-    mouseup: function () {
+    mouseup () {
         if (this.active) {
             this.mouse_entry(true);
             var lines_model = this.model.get("lines");
@@ -75,13 +72,13 @@ export const HandDraw = interaction.Interaction.extend({
             this.d3el.on("mouseleave", null);
             this.d3el.on("mouseup", null);
         }
-    },
+    }
 
-    mousemove: function() {
+    mousemove() {
         this.mouse_entry(true);
-    },
+    }
 
-    mouse_entry: function(memory) {
+    mouse_entry(memory) {
         // If memory is set to true, itermediate positions between the last
         // position of the mouse and the current one will be interpolated.
         if (this.active) {
@@ -111,30 +108,28 @@ export const HandDraw = interaction.Interaction.extend({
                     lines_model.y_data[this.line_index][i] = newy;
                 }
             }
-            var that  = this;
-            var xy_data = lines_model.x_data[xindex].map(function(d, i)
-            {
+            var xy_data = lines_model.x_data[xindex].map((d, i) => {
                 return {
                     x: d,
-                    y: lines_model.y_data[that.line_index][i]
+                    y: lines_model.y_data[this.line_index][i]
                 };
             });
-            this.lines_view.d3el.select("#curve" + (that.line_index + 1))
+            this.lines_view.d3el.select("#curve" + (this.line_index + 1))
                 .attr("d", function(d) {
-                    return that.lines_view.line(xy_data);
+                    return this.lines_view.line(xy_data);
                 });
             this.previous_pos = mouse_pos;
         }
-    },
+    }
 
-    capnfloor: function(val) {
+    capnfloor(val) {
         // Not taking into account the position of the mouse beyond min_x
         // and max_x
         return Math.max(Math.min(val,this.model.get("max_x")),
                         this.model.get("min_x"));
-    },
+    }
 
-    set_limits: function() {
+    set_limits() {
         var is_date = (this.lines_view.scales.x.model.type == "date");
         if(is_date) {
             this.min_x = this.model.get_date_elem("min_x");
@@ -153,9 +148,9 @@ export const HandDraw = interaction.Interaction.extend({
             this.valid_max = !(this.max_x === null ||
                                this.max_x === undefined);
         }
-    },
+    }
 
-    nns: function(x_data, x) {
+    nns(x_data, x) {
         // Nearest neighbor search
         var idx = this.lines_view.bisect(x_data, x);
         if (x - x_data[idx-1] > x_data[idx] - x) {
@@ -163,10 +158,19 @@ export const HandDraw = interaction.Interaction.extend({
         } else {
             return idx-1;
         }
-    },
+    }
 
-    update_line_index: function() {
+    update_line_index() {
         // Called when the line index is changed in the model
         this.line_index = this.model.get("line_index");
-    },
-});
+    }
+
+    active: boolean;
+    lines_view: any;
+    line_index: any;
+    min_x: any;
+    max_x: any;
+    valid_min: any;
+    valid_max: any;
+    previous_pos: any;
+};

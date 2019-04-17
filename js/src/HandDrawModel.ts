@@ -18,10 +18,10 @@ import * as _ from 'underscore';
 import * as basemodel from './BaseModel';
 import { semver_range } from './version';
 
-export const HandDrawModel = basemodel.BaseModel.extend({
+export class HandDrawModel extends basemodel.BaseModel {
 
-	defaults: function() {
-        return _.extend(widgets.WidgetModel.prototype.defaults(), {
+    defaults() {
+        return {...basemodel.BaseModel.prototype.defaults(),
             _model_name: "HandDrawModel",
             _view_name: "HandDraw",
             _model_module: "bqplot",
@@ -29,14 +29,15 @@ export const HandDrawModel = basemodel.BaseModel.extend({
             _model_module_version: semver_range,
             _view_module_version: semver_range,
 
-	        lines: null,
-	        line_index: 0,
+            lines: null,
+            line_index: 0,
             min_x: null,
             max_x: null
-        });
+        };
     }
-}, {
-    serializers: _.extend({
-        lines:  { deserialize: widgets.unpack_models },
-    }, basemodel.BaseModel.serializers)
-});
+
+    static serializers = {
+        ...widgets.DOMWidgetModel.serializers,
+        lines:  { deserialize: widgets.unpack_models }
+    };
+};
