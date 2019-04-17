@@ -46,8 +46,8 @@ export class BarsModel extends markmodel.MarkModel {
         };
     }
 
-    initialize() {
-        BarsModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.is_y_2d = false;
         this.on_some_change(["x", "y", "base"], this.update_data, this);
         this.on("change:color", function() {
@@ -215,4 +215,7 @@ export class BarsModel extends markmodel.MarkModel {
         y: serialize.array_or_json,
         color: serialize.array_or_json
     };
+
+    is_y_2d: boolean;
+    base_value: number;
 }
