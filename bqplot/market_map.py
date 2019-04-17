@@ -229,12 +229,3 @@ class MarketMap(DOMWidget):
     _model_module = Unicode('bqplot').tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
-
-
-class SquareMarketMap(MarketMap):
-    margin = Dict(dict(top=50, right=50, left=50, bottom=50)).tag(sync=True)
-    data = Dict().tag(sync=True)
-    mode = Enum(['squarify', 'slice', 'dice', 'slice-dice'],
-                default_value='squarify').tag(sync=True)
-
-    _view_name = Unicode('SquareMarketMap').tag(sync=True)
