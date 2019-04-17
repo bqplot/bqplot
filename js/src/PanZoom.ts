@@ -22,10 +22,10 @@ import _ from 'underscore';
 
 // TODO avoid code duplication for 'x' and 'y'
 
-export const PanZoom = interaction.Interaction.extend({
+export class PanZoom extends interaction.Interaction {
 
-    render: function() {
-        PanZoom.__super__.render.apply(this);
+    render() {
+        super.render();
         var that = this;
         this.d3el
           .style("cursor", "move")
@@ -39,13 +39,13 @@ export const PanZoom = interaction.Interaction.extend({
         this.active = false;
 
         this.update_scales();
-        this.listenTo(this.model, "change:scales", this.update_scales, this);
+        this.listenTo(this.model, "change:scales", this.update_scales);
 
         this.set_ranges();
-        this.listenTo(this.parent, "margin_updated", this.set_ranges, this);
-    },
+        this.listenTo(this.parent, "margin_updated", this.set_ranges);
+    }
 
-    update_scales: function() {
+    update_scales() {
         var scales = this.model.get("scales");
         var that = this;
         this.scale_promises = widgets.resolvePromisesDict({
@@ -58,9 +58,9 @@ export const PanZoom = interaction.Interaction.extend({
         });
         widgets.resolvePromisesDict(this.scale_promises)
             .then(_.bind(this.set_ranges, this));
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
        var that = this;
        var i;
        this.scale_promises.then(function(scale_views) {
@@ -75,9 +75,9 @@ export const PanZoom = interaction.Interaction.extend({
                                                 yscale_views[i].model));
            }
        });
-    },
+    }
 
-    mousedown: function () {
+    mousedown () {
         var scales = this.model.get("scales");
         this.active = true;
         this.d3el.styles({"cursor": "move"});
@@ -92,19 +92,19 @@ export const PanZoom = interaction.Interaction.extend({
                 return s.get_domain_slice_in_order();
             }),
         };
-    },
+    }
 
-    mouseup: function () {
+    mouseup () {
         this.active = false;
-    },
+    }
 
-    mousemove: function() {
+    mousemove() {
         if (this.active && this.model.get("allow_pan")) {
             // If memory is set to true, intermediate positions between the
             // last position of the mouse and the current one will be
             // interpolated.
             var mouse_pos = d3.mouse(this.el);
-            if (!("previous_pos" in this)) {
+            if (this.previous_pos === undefined) {
                 this.previous_pos = mouse_pos;
             }
             var scales = this.model.get("scales");
@@ -151,9 +151,9 @@ export const PanZoom = interaction.Interaction.extend({
 
             });
         }
-    },
+    }
 
-    mousewheel: function() {
+    mousewheel() {
         if (this.model.get("allow_zoom")) {
             d3GetEvent().preventDefault();
             // With Firefox, wheelDelta is undefined.
@@ -204,19 +204,23 @@ export const PanZoom = interaction.Interaction.extend({
                 });
             }
         }
-    },
+    }
 
-    set_scale_attribute: function(scale, attribute_name, value) {
+    set_scale_attribute(scale, attribute_name, value) {
         // The difference of two dates is an int. So we want to cast it to
         // a date when setting the attribute for the date scale
         if(scale.type == "date") {
             value = (value instanceof Date) ? value : new Date(value);
-            //TODO: Function for setting date can be made the same as for
+            //TODO: function for setting date can be made the same as for
             //other scale once the _pack_models is fixes
             scale.set_date_elem(attribute_name, value);
         } else {
             scale.set(attribute_name, value);
         }
     }
-});
 
+    active: boolean;
+    scale_promises: any;
+    previous_pos: any;
+    domains_in_order: any;
+}
