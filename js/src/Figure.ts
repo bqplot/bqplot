@@ -23,21 +23,21 @@ import * as THREE from 'three';
 
 THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl')
 
-export const Figure = widgets.DOMWidgetView.extend({
+export class Figure extends widgets.DOMWidgetView {
 
-    initialize : function() {
+    initialize() {
         // Internet Explorer does not support classList for svg elements
         this.el.classList.add("bqplot");
         this.el.classList.add("figure");
         this.el.classList.add("jupyter-widgets");
         this.change_theme();
 
-        var svg = document.createElementNS(d3.namespaces.svg, "svg");
+        var svg = document.createElementNS(d3.namespaces.svg, "svg") as SVGElement;
         svg.classList.add("svg-figure");
         var svg_interaction: any = document.createElementNS(d3.namespaces.svg, "svg");
         svg_interaction.classList.add("svg-interaction");
         svg_interaction.style = 'position: absolute; width: 100%; height: 100%;'
-        this.svg = d3.select(svg);
+        this.svg = d3.select<SVGElement, any>(svg);
         this.svg_interaction = d3.select(svg_interaction);
 
         // a shared webgl context for all marks
@@ -57,10 +57,10 @@ export const Figure = widgets.DOMWidgetView.extend({
         this.el.appendChild(this.renderer.domElement);
         this.el.appendChild(svg_interaction)
 
-        Figure.__super__.initialize.apply(this, arguments);
-    },
+        super.initialize.apply(this, arguments);
+    }
 
-    _get_height_width: function(suggested_height, suggested_width) {
+    _get_height_width(suggested_height, suggested_width) {
         //Calculates the height and width of the figure from the suggested_height
         //and suggested_width. Looks at the min_aspect_ratio and max_aspect_ratio
         //to determine the final height and width.
@@ -102,9 +102,9 @@ export const Figure = widgets.DOMWidgetView.extend({
             return_value["height"] = suggested_width / min_ratio;
         }
         return return_value;
-    },
+    }
 
-    render : function() {
+    render () {
         var min_width = this.model.get("layout").get("min_width");
         var min_height = this.model.get("layout").get("min_height");
         if(typeof min_width === "string" && min_width.endsWith('px')) {
@@ -272,7 +272,7 @@ export const Figure = widgets.DOMWidgetView.extend({
                 })
             }, that);
 
-            that.displayed.then(function(args) {
+            that.displayed.then(function(args: any) {
                 document.body.appendChild(that.tooltip_div.node());
                 that.create_listeners();
                 if(args === undefined || args.add_to_dom_only !== true) {
@@ -287,9 +287,9 @@ export const Figure = widgets.DOMWidgetView.extend({
                 })
             });
         });
-    },
+    }
 
-    replace_dummy_nodes: function(views) {
+    replace_dummy_nodes(views) {
         _.each(views, function(view: any) {
             if (view.dummy_node !== null) {
                 view.dummy_node.parentNode.replaceChild(view.el, view.dummy_node);
@@ -299,40 +299,40 @@ export const Figure = widgets.DOMWidgetView.extend({
                 });
             }
         }, this);
-    },
+    }
 
-    create_listeners: function() {
-        this.listenTo(this.model, "change:title_style", this.title_style_updated, this);
-        this.listenTo(this.model, "change:background_style", this.background_style_updated, this);
-        this.listenTo(this.model, "change:layout", this.change_layout, this);
-        this.listenTo(this.model, "change:legend_style", this.legend_style_updated, this);
-        this.listenTo(this.model, "change:legend_text", this.legend_text_updated, this);
+    create_listeners() {
+        this.listenTo(this.model, "change:title_style", this.title_style_updated);
+        this.listenTo(this.model, "change:background_style", this.background_style_updated);
+        this.listenTo(this.model, "change:layout", this.change_layout);
+        this.listenTo(this.model, "change:legend_style", this.legend_style_updated);
+        this.listenTo(this.model, "change:legend_text", this.legend_text_updated);
         this.listenTo(this.model, "change:pixel_ratio", () => {
             this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio)
             this.update_gl()
         })
-        this.listenTo(this.model, "change:theme", this.change_theme, this);
-    },
+        this.listenTo(this.model, "change:theme", this.change_theme);
+    }
 
-    title_style_updated: function() {
+    title_style_updated() {
         this.title.styles(this.model.get("title_style"));
-    },
+    }
 
-    background_style_updated: function() {
+    background_style_updated() {
         this.bg.styles(this.model.get("background_style"));
-    },
+    }
 
-    legend_style_updated: function() {
+    legend_style_updated() {
         this.fig_marks.selectAll(".g_legend").selectAll(".axis").selectAll("rect")
             .styles(this.model.get("legend_style"));
-    },
+    }
 
-    legend_text_updated: function() {
+    legend_text_updated() {
         this.fig_marks.selectAll(".g_legend").selectAll("text.legendtext")
             .styles(this.model.get("legend_text"));
-    },
+    }
 
-    create_figure_scales: function() {
+    create_figure_scales() {
         // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
         // See the scale_x and scale_y attributes of the python Figure
         var that = this;
@@ -350,9 +350,9 @@ export const Figure = widgets.DOMWidgetView.extend({
                 that.scale_y.set_range([that.plotarea_height, 0]);
             });
         return Promise.all([x_scale_promise, y_scale_promise]);
-    },
+    }
 
-    padded_range: function(direction, scale_model) {
+    padded_range(direction, scale_model) {
         // Functions to be called by mark which respects padding.
         // Typically all marks do this. Axis do not do this.
         // Also, if a mark does not set the domain, it can potentially call
@@ -374,17 +374,17 @@ export const Figure = widgets.DOMWidgetView.extend({
             fig_padding = (this.plotarea_height) * this.figure_padding_y;
             return [this.plotarea_height - scale_padding - fig_padding, scale_padding + fig_padding];
         }
-    },
+    }
 
-    range: function(direction) {
+    range(direction) {
         if(direction==="x") {
             return [0, this.plotarea_width];
         } else if(direction==="y") {
             return [this.plotarea_height, 0];
         }
-    },
+    }
 
-    get_mark_plotarea_height: function(scale_model) {
+    get_mark_plotarea_height(scale_model) {
         if(!(scale_model.get("allow_padding"))) {
             return this.plotarea_height;
         }
@@ -392,9 +392,9 @@ export const Figure = widgets.DOMWidgetView.extend({
         var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
             this.y_padding_arr[scale_id] : 0;
         return (this.plotarea_height) * (1 - this.figure_padding_y) - scale_padding - scale_padding;
-    },
+    }
 
-    get_mark_plotarea_width: function (scale_model) {
+    get_mark_plotarea_width (scale_model) {
         if(!(scale_model.get("allow_padding"))) {
             return this.plotarea_width;
         }
@@ -403,9 +403,9 @@ export const Figure = widgets.DOMWidgetView.extend({
         var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
             this.x_padding_arr[scale_id] : 0;
         return (this.plotarea_width) * (1 - this.figure_padding_x) - scale_padding - scale_padding;
-    },
+    }
 
-    add_axis: function(model) {
+    add_axis(model) {
         // Called when an axis is added to the axes list.
         var that = this;
         return this.create_child_view(model)
@@ -416,9 +416,9 @@ export const Figure = widgets.DOMWidgetView.extend({
             });
             return view;
         });
-    },
+    }
 
-    remove_from_padding_dict: function(dict, mark_view, scale_model) {
+    remove_from_padding_dict(dict, mark_view, scale_model) {
         if(scale_model === undefined || scale_model === null) {
             return;
         }
@@ -429,17 +429,17 @@ export const Figure = widgets.DOMWidgetView.extend({
                 delete dict[scale_id];
             }
         }
-    },
+    }
 
-    update_padding_dict: function(dict, mark_view, scale_model, value) {
+    update_padding_dict(dict, mark_view, scale_model, value) {
         var scale_id = scale_model.model_id;
         if(!(dict[scale_id])) {
             dict[scale_id]= {};
         }
         dict[scale_id][mark_view.model.model_id + "_" + mark_view.cid] = value;
-    },
+    }
 
-    mark_scales_updated: function(view) {
+    mark_scales_updated(view) {
         var model = view.model;
         var prev_scale_models = model.previous("scales");
         this.remove_from_padding_dict(this.x_pad_dict, view, prev_scale_models[model.get_key_for_orientation("horizontal")]);
@@ -450,9 +450,9 @@ export const Figure = widgets.DOMWidgetView.extend({
         this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")], view.y_padding);
 
         this.update_paddings();
-    },
+    }
 
-    mark_padding_updated: function(view) {
+    mark_padding_updated(view) {
         var model = view.model;
         var scale_models = model.get("scales");
 
@@ -460,13 +460,13 @@ export const Figure = widgets.DOMWidgetView.extend({
         this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")], view.y_padding);
 
         this.update_paddings();
-    },
+    }
 
-    update_marks: function(mark_views) {
+    update_marks(mark_views) {
         this.update_paddings();
-    },
+    }
 
-    remove_mark: function(view) {
+    remove_mark(view) {
        // Called when a mark is removed from the mark list.
         var model = view.model;
         model.off("redraw_legend", null, this);
@@ -478,9 +478,9 @@ export const Figure = widgets.DOMWidgetView.extend({
         this.remove_from_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_orientation("horizontal")]);
         this.remove_from_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")]);
         view.remove();
-    },
+    }
 
-    add_mark: function(model) {
+    add_mark(model) {
         var that = this;
         model.state_change.then(function() {
             model.on("data_updated redraw_legend", that.update_legend, that);
@@ -488,7 +488,7 @@ export const Figure = widgets.DOMWidgetView.extend({
 
         var dummy_node = that.fig_marks.node().appendChild(document.createElementNS(d3.namespaces.svg, "g"));
 
-        return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view) {
+        return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view: any) {
             view.dummy_node = dummy_node;
             view.on("mark_padding_updated", function() {
                 that.mark_padding_updated(view);
@@ -509,9 +509,9 @@ export const Figure = widgets.DOMWidgetView.extend({
 
             return view;
         });
-    },
+    }
 
-    update_paddings: function() {
+    update_paddings() {
         // Iterate over the paddings of the marks for each scale and store
         // the maximum padding for each scale on the X and Y in
         // x_padding_arr and y_padding_arr
@@ -540,24 +540,24 @@ export const Figure = widgets.DOMWidgetView.extend({
         // updated margins.
         this.trigger("margin_updated");
 
-    },
+    }
 
-    update_plotarea_dimensions: function() {
+    update_plotarea_dimensions() {
         this.plotarea_width = this.width - this.margin.left - this.margin.right;
         this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
-    },
+    }
 
-    processPhosphorMessage: function(msg) {
-        Figure.__super__.processPhosphorMessage.apply(this, arguments);
+    processPhosphorMessage(msg) {
+        super.processPhosphorMessage.apply(this, arguments);
         switch (msg.type) {
         case 'resize':
         case 'after-show':
             this.relayout();
             break;
         }
-    },
+    }
 
-    relayout: function() {
+    relayout() {
 
         var that = this;
 
@@ -603,17 +603,17 @@ export const Figure = widgets.DOMWidgetView.extend({
             that.layout_webgl_canvas()
         });
 
-    },
+    }
 
-    layout_webgl_canvas: function() {
+    layout_webgl_canvas() {
         this.renderer.domElement.style = 'position: absolute; pointer-events: none; ' +
                                          'left: ' + this.margin.left + 'px; ' +
                                          'top: '+ this.margin.top + 'px;'
         this.renderer.setSize(this.plotarea_width, this.plotarea_height);
         this.update_gl();
-    },
+    }
 
-    update_legend: function() {
+    update_legend() {
         this.fig_marks.selectAll(".g_legend").remove();
 
         var legend_height = 14;
@@ -662,9 +662,9 @@ export const Figure = widgets.DOMWidgetView.extend({
 
             });
         }
-    },
+    }
 
-    get_legend_coords: function(legend_location, width, height, disp) {
+    get_legend_coords(legend_location, width, height, disp) {
         var x_start = 0;
         var y_start = 0;
         var fig_width = this.plotarea_width;
@@ -704,9 +704,9 @@ export const Figure = widgets.DOMWidgetView.extend({
                 y_start = 0;
         }
         return [x_start, y_start];
-    },
+    }
 
-    set_interaction: function(model) {
+    set_interaction(model) {
         if (model) {
             // Capture all interactions with the svg overlay
             this.svg_interaction.style("pointer-events", "all");
@@ -732,13 +732,13 @@ export const Figure = widgets.DOMWidgetView.extend({
                 this.interaction_view.remove();
             }
         }
-    },
+    }
 
-    update_title: function(model, title) {
+    update_title(model, title) {
         this.title.text(this.model.get("title"));
-    },
+    }
 
-    remove: function() {
+    remove() {
         if(this.mark_views !== undefined && this.mark_views !== null) {
             this.mark_views.remove();
         }
@@ -748,10 +748,10 @@ export const Figure = widgets.DOMWidgetView.extend({
         if(this.tooltip_div !== undefined) {
             this.tooltip_div.remove();
         }
-        return Figure.__super__.remove.apply(this, arguments);
-    },
+        return super.remove.apply(this, arguments);
+    }
 
-    get_svg: function() {
+    get_svg() {
         // Returns the outer html of the figure svg
 
         var  replaceAll = function (find, replace, str) {
@@ -849,9 +849,9 @@ export const Figure = widgets.DOMWidgetView.extend({
             //svg2png(svg, this.width, this.height)
         })
 
-    },
+    }
 
-    save_png: function(filename, scale) {
+    save_png(filename, scale) {
 
             // scale up the underlying canvas for high dpi screens
             // such that image is of the same quality
@@ -880,9 +880,9 @@ export const Figure = widgets.DOMWidgetView.extend({
             };
             image.src = "data:image/svg+xml;base64," + btoa(xml);
         })
-    },
+    }
 
-    save_svg: function(filename) {
+    save_svg(filename) {
         this.get_svg().then((xml) => {
             var a = document.createElement("a");
             a.download = filename || "bqplot.svg";
@@ -891,21 +891,21 @@ export const Figure = widgets.DOMWidgetView.extend({
             a.click();
             document.body.removeChild(a);
         });
-    },
+    }
 
-    update_gl: function() {
+    update_gl() {
         if(!this._update_requested) {
            this._update_requested = true
            requestAnimationFrame(() => this._update_gl())
        }
-    },
+    }
 
-    _update_gl: function() {
+    _update_gl() {
         this.render_gl()
         this._update_requested = false;
-    },
+    }
 
-    render_gl: function() {
+    render_gl() {
         if(this.mark_views === undefined)
             this.update_gl() // we got call to soon, maybe next frame?
         return Promise.all(this.mark_views.views).then((views) => {
@@ -918,10 +918,46 @@ export const Figure = widgets.DOMWidgetView.extend({
                 mark.render_gl()
             })
         });
-    },
+    }
 
-    change_theme: function() {
+    change_theme() {
         this.el.classList.remove(this.model.previous("theme"));
         this.el.classList.add(this.model.get("theme"));
-    },
-});
+    }
+
+    axis_views: any;
+    bg: any;
+    change_layout: any;
+    clip_id: any;
+    clip_path: any;
+    fig_axes: any;
+    fig_interaction: any;
+    fig_marks: any;
+    fig: any;
+    figure_padding_x: any;
+    figure_padding_y: any;
+    height: any;
+    interaction_view: any;
+    interaction: any;
+    margin: any;
+    mark_views: any;
+    plotarea_height: any;
+    plotarea_width: any;
+    popper_reference: any;
+    popper: any;
+    renderer: any;
+    scale_x: any;
+    scale_y: any;
+    svg_interaction: d3.Selection<SVGElement, any, any, any>;
+    svg: d3.Selection<SVGElement, any, any, any>;
+    title: any;
+    tooltip_div: any;
+    width: any;
+    x_pad_dict: any;
+    x_padding_arr: any;
+    y_pad_dict: any;
+    y_padding_arr: any;
+
+    private _update_requested: boolean;
+
+}
