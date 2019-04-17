@@ -16,15 +16,16 @@
 import * as _ from 'underscore';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-shape"), require("d3-transition"));
-import * as mark from './Mark';
+import { Mark } from './Mark';
+import { LinesModel } from './LinesModel'
 import * as markers from './Markers';
 
 var bqSymbol = markers.symbol;
 
-export const Lines = mark.Mark.extend({
+export class Lines extends Mark {
 
-    render: function() {
-        var base_render_promise = Lines.__super__.render.apply(this);
+    render() {
+        var base_render_promise = super.render();
         var that = this;
         this.dot = bqSymbol().size(this.model.get("marker_size"));
         if (this.model.get("marker")) {
@@ -46,11 +47,11 @@ export const Lines = mark.Mark.extend({
             that.process_interactions();
             that.create_listeners();
             that.compute_view_padding();
-            that.draw();
+            that.draw(false);
         });
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var x_scale = this.scales.x;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
@@ -59,9 +60,9 @@ export const Lines = mark.Mark.extend({
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         var x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.update_line_xy(); }
@@ -69,9 +70,9 @@ export const Lines = mark.Mark.extend({
         this.listenTo(y_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.update_line_xy(); }
         });
-    },
+    }
 
-    initialize_additional_scales: function() {
+    initialize_additional_scales() {
         var color_scale = this.scales.color;
         if(color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
@@ -79,47 +80,47 @@ export const Lines = mark.Mark.extend({
             });
             color_scale.on("color_scale_range_changed", this.update_style, this);
         }
-    },
+    }
 
-    create_listeners: function() {
-        Lines.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
         this.d3el.on("mouseover", _.bind(function() { this.event_dispatcher("mouse_over"); }, this))
             .on("mousemove", _.bind(function() { this.event_dispatcher("mouse_move"); }, this))
             .on("mouseout", _.bind(function() { this.event_dispatcher("mouse_out"); }, this));
 
-        this.listenTo(this.model, "change:tooltip", this.create_tooltip, this);
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip);
 
         // FIXME: multiple calls to update_path_style. Use on_some_change.
-        this.listenTo(this.model, "change:interpolation", this.update_path_style, this);
-        this.listenTo(this.model, "change:close_path", this.update_path_style, this);
+        this.listenTo(this.model, "change:interpolation", this.update_path_style);
+        this.listenTo(this.model, "change:close_path", this.update_path_style);
 
         // FIXME: multiple calls to update_style. Use on_some_change.
-        this.listenTo(this.model, "change:colors", this.update_style, this);
-        this.listenTo(this.model, "change:opacities", this.update_style, this);
-        this.listenTo(this.model, "change:fill_opacities", this.update_style, this);
-        this.listenTo(this.model, "change:fill_colors", this.update_style, this);
+        this.listenTo(this.model, "change:colors", this.update_style);
+        this.listenTo(this.model, "change:opacities", this.update_style);
+        this.listenTo(this.model, "change:fill_opacities", this.update_style);
+        this.listenTo(this.model, "change:fill_colors", this.update_style);
 
-        this.listenTo(this.model, "change:fill", this.update_fill, this);
+        this.listenTo(this.model, "change:fill", this.update_fill);
 
         this.listenTo(this.model, "data_updated", function() {
             var animate = true;
             this.draw(animate);
-        }, this);
-        this.listenTo(this.model, "labels_updated", this.update_labels, this);
-        this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
-        this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels, this);
-        this.listenTo(this.model, "change:curves_subset", this.update_curves_subset, this);
-        this.listenTo(this.model, "change:line_style", this.update_line_style, this);
+        });
+        this.listenTo(this.model, "labels_updated", this.update_labels);
+        this.listenTo(this.model, "change:stroke_width", this.update_stroke_width);
+        this.listenTo(this.model, "change:labels_visibility", this.update_legend_labels);
+        this.listenTo(this.model, "change:curves_subset", this.update_curves_subset);
+        this.listenTo(this.model, "change:line_style", this.update_line_style);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
 
-        this.listenTo(this.model, "change:marker", this.update_marker, this);
-        this.listenTo(this.model, "change:marker_size", this.update_marker_size, this);
-    },
+        this.listenTo(this.model, "change:marker", this.update_marker);
+        this.listenTo(this.model, "change:marker_size", this.update_marker_size);
+    }
 
-    update_legend_labels: function() {
+    update_legend_labels() {
         if(this.model.get("labels_visibility") === "none") {
             this.d3el.selectAll(".legend")
               .attr("display", "none");
@@ -136,16 +137,16 @@ export const Lines = mark.Mark.extend({
             this.d3el.selectAll(".curve_label")
               .attr("display", "none");
         }
-    },
+    }
 
-    update_labels: function() {
+    update_labels() {
         this.d3el.selectAll(".curve")
           .data(this.model.mark_data)
           .select(".curve_label")
           .text(function(d) { return d.name; });
-    },
+    }
 
-    get_line_style: function() {
+    get_line_style() {
         switch (this.model.get("line_style")) {
             case "solid":
                 return "none";
@@ -156,21 +157,21 @@ export const Lines = mark.Mark.extend({
             case "dash_dotted":
                 return "10,5,2,5";
         }
-    },
+    }
 
     // Updating the style of the curve, stroke, colors, dashed etc...
     // Could be fused in a single function for increased readability
     // and to avoid code repetition
-    update_line_style: function() {
+    update_line_style() {
         this.d3el.selectAll(".curve").select(".line")
           .style("stroke-dasharray", _.bind(this.get_line_style, this));
         if (this.legend_el) {
             this.legend_el.select("path")
               .style("stroke-dasharray", _.bind(this.get_line_style, this));
         }
-    },
+    }
 
-    update_stroke_width: function(model, stroke_width) {
+    update_stroke_width(model, stroke_width) {
         this.compute_view_padding();
         this.d3el.selectAll(".curve").select(".line")
           .style("stroke-width", stroke_width);
@@ -178,9 +179,9 @@ export const Lines = mark.Mark.extend({
             this.legend_el.select("path")
               .style("stroke-width", stroke_width);
         }
-    },
+    }
 
-    update_style: function() {
+    update_style() {
         var that = this,
             fill = this.model.get("fill"),
             fill_color = this.model.get("fill_colors"),
@@ -232,13 +233,13 @@ export const Lines = mark.Mark.extend({
         }
         this.update_stroke_width(this.model, this.model.get("stroke_width"));
         this.update_line_style();
-    },
+    }
 
-    path_closure: function() {
+    path_closure() {
         return this.model.get("close_path") ? "Z" : "";
-    },
+    }
 
-    update_path_style: function() {
+    update_path_style() {
         var interpolation = this.get_interpolation();
         this.line.curve(interpolation);
         this.area.curve(interpolation);
@@ -256,14 +257,14 @@ export const Lines = mark.Mark.extend({
             this.legend_el.selectAll("path")
               .attr("d", this.legend_line(this.legend_path_data) + this.path_closure());
         }
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
-        this.update_line_xy();
-    },
+        this.update_line_xy(false);
+    }
 
-    selector_changed: function(point_selector, rect_selector) {
+    selector_changed(point_selector, rect_selector) {
         if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
@@ -276,9 +277,9 @@ export const Lines = mark.Mark.extend({
         });
         this.model.set("selected", selected);
         this.touch();
-    },
+    }
 
-    invert_point: function(pixel) {
+    invert_point(pixel) {
         if(pixel === undefined) {
             this.model.set("selected", null);
             this.touch();
@@ -289,9 +290,9 @@ export const Lines = mark.Mark.extend({
           Math.max((this.x_pixels.length - 1), 0));
         this.model.set("selected", [index]);
         this.touch();
-    },
+    }
 
-    update_multi_range: function(brush_extent) {
+    update_multi_range(brush_extent) {
         var x_start = brush_extent[0];
         var x_end = brush_extent[1];
 
@@ -303,9 +304,9 @@ export const Lines = mark.Mark.extend({
 
         this.selector_model.set("selected", [idx_start, idx_end]);
         this.selector.touch();
-    },
+    }
 
-    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+    draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         var curve_labels = this.model.get_labels();
         var legend_data = this.model.mark_data.map(function(d) {
             return {index: d.index, name: d.name, color: d.color};
@@ -384,9 +385,9 @@ export const Lines = mark.Mark.extend({
         });
         this.legend_el.exit().remove();
         return [this.model.mark_data.length, max_length];
-    },
+    }
 
-    update_curves_subset: function() {
+    update_curves_subset() {
         var display_labels = this.model.get("labels_visibility") === "label";
         // Show a subset of the curves
         var curves_subset = this.model.get("curves_subset");
@@ -421,9 +422,9 @@ export const Lines = mark.Mark.extend({
                 this.legend_el.attr("display", "inline");
             }
         }
-    },
+    }
 
-    update_fill: function() {
+    update_fill() {
         var fill = this.model.get("fill"),
             area = (fill === "top" || fill === "bottom" || fill === "between");
 
@@ -453,24 +454,24 @@ export const Lines = mark.Mark.extend({
                  return fill === "none" ? "" : that.get_fill_color(d, i);
              })
         }
-    },
+    }
 
-    get_element_color: function(data, index) {
+    get_element_color(data, index) {
         var color_scale = this.scales.color;
         if(color_scale && data.color !== undefined && data.color !== null) {
             return color_scale.scale(data.color);
         }
         return this.get_colors(index);
-    },
+    }
 
-    get_fill_color: function(data, index) {
+    get_fill_color(data, index) {
         var fill_colors = this.model.get("fill_colors");
         var that = this;
         return fill_colors.length === 0 ?
             that.get_element_color(data, index) : fill_colors[index];
-    },
+    }
 
-    update_line_xy: function(animate) {
+    update_line_xy(animate) {
         var x_scale = this.scales.x, y_scale = this.scales.y;
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
@@ -529,9 +530,9 @@ export const Lines = mark.Mark.extend({
             this.model.mark_data[0].values.map(function(el) {
                 return [x_scale.scale(el.x) + x_scale.offset, y_scale.scale(el.y) + y_scale.offset];
             }) : [];
-    },
+    }
 
-    get_interpolation: function() {
+    get_interpolation() {
         var curve_types = {
             linear: d3.curveLinear,
             basis: d3.curveBasis,
@@ -540,9 +541,9 @@ export const Lines = mark.Mark.extend({
         };
 
         return curve_types[this.model.get("interpolation")];
-    },
+    }
 
-    draw: function(animate) {
+    draw(animate) {
         this.set_ranges();
         var curves_sel = this.d3el.selectAll(".curve")
           .data(this.model.mark_data);
@@ -590,9 +591,9 @@ export const Lines = mark.Mark.extend({
 
         // alter the display only if a few of the curves are visible
         this.update_curves_subset();
-    },
+    }
 
-    draw_dots: function() {
+    draw_dots() {
         if (this.model.get("marker")) {
             var dots = this.d3el.selectAll(".curve").selectAll(".dot")
                 .data(function(d, i) {
@@ -602,9 +603,9 @@ export const Lines = mark.Mark.extend({
             dots.enter().append("path").attr("class", "dot");
             dots.exit().remove();
         }
-    },
+    }
 
-    update_dots_xy: function(animate) {
+    update_dots_xy(animate) {
         if (this.model.get("marker")) {
             var x_scale = this.scales.x, y_scale = this.scales.y;
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
@@ -617,9 +618,9 @@ export const Lines = mark.Mark.extend({
                 .attr("d", this.dot.size(this.model.get("marker_size"))
                                .type(this.model.get("marker")));
         }
-    },
+    }
 
-    compute_view_padding: function() {
+    compute_view_padding() {
         //This function sets the padding for the view through the variables
         //x_padding and y_padding which are view specific paddings in pixel
         var x_padding;
@@ -637,9 +638,9 @@ export const Lines = mark.Mark.extend({
             this.y_padding = y_padding;
             this.trigger("mark_padding_updated");
         }
-    },
+    }
 
-    update_marker_style: function() {
+    update_marker_style() {
         var that = this;
         var fill_color = this.model.get("fill_colors");
         var opacities = this.model.get("opacities");
@@ -649,12 +650,12 @@ export const Lines = mark.Mark.extend({
                 .style("opacity", opacities[i])
                 .style("fill", that.get_element_color(d, i) || fill_color[i]);
         });
-    },
+    }
 
-    update_marker: function(model, marker) {
+    update_marker(model, marker) {
         if (marker) {
             this.draw_dots();
-            this.update_dots_xy();
+            this.update_dots_xy(false);
             this.update_marker_style();
             if (this.legend_el) {
                 this.legend_el.select(".dot").attr("d", this.dot.type(marker).size(25));
@@ -665,11 +666,35 @@ export const Lines = mark.Mark.extend({
                 this.legend_el.select(".dot").attr("d", this.dot.size(0));
             }
         }
-    },
+    }
 
-    update_marker_size: function(model, marker_size) {
+    update_marker_size(model, marker_size) {
         this.compute_view_padding();
         this.d3el.selectAll(".dot").attr("d", this.dot.size(marker_size));
-    },
-});
+    }
+
+    clear_style(style_dict, indices?) {
+    }
+    
+    set_default_style(indices) {
+    }
+
+    set_style_on_elements(style, indices) {
+    }
+
+    dot: any;
+    legend_el: any;
+    legend_line: any;
+    legend_path_data: any;
+    selector: any;
+    selector_model: any;
+    area: any;
+    line: any;
+    x_pixels: Array<number>;
+    y_pixels: Array<number>;
+    pixel_coords: Array<number>;
+
+    // Overriding super class
+    model: LinesModel;
+}
 

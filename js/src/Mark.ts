@@ -86,7 +86,7 @@ export abstract class Mark extends widgets.WidgetView {
         return scale_creation_promise;
     }
 
-    abstract draw();
+    abstract draw(animate?);
     abstract set_ranges();
     set_scale_views() {
         // first, if this.scales was already defined, unregister from the
