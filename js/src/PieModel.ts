@@ -19,10 +19,10 @@ import * as markmodel from './MarkModel';
 import * as serialize from './serialize';
 import _ from 'underscore';
 
-export const PieModel = markmodel.MarkModel.extend({
+export class PieModel extends markmodel.MarkModel {
 
-    defaults: function() {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...markmodel.MarkModel.prototype.defaults(), 
             _model_name: "PieModel",
             _view_name: "Pie",
 
@@ -41,11 +41,11 @@ export const PieModel = markmodel.MarkModel.extend({
             inner_radius: 0.1,
             start_angle: 0.0,
             end_angle: 360.0
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        PieModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on("change:sizes", this.update_data, this);
         this.on("change:color", function() {
             this.update_color();
@@ -58,9 +58,9 @@ export const PieModel = markmodel.MarkModel.extend({
         this.update_color();
         this.update_labels();
         this.update_domains();
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         var sizes = this.get("sizes");
         var color = this.get("color") || [];
         var labels = this.get("labels");
@@ -76,9 +76,9 @@ export const PieModel = markmodel.MarkModel.extend({
         this.update_color();
         this.update_domains();
         this.trigger("data_updated");
-    },
+    }
 
-    update_labels: function() {
+    update_labels() {
         if(!this.mark_data) {
             return;
         }
@@ -88,9 +88,9 @@ export const PieModel = markmodel.MarkModel.extend({
             data.label = labels[index] == null ? "" : labels[index];
         });
         this.trigger("labels_updated");
-    },
+    }
 
-    update_color: function() {
+    update_color() {
         if(!this.mark_data) {
             return;
         }
@@ -103,9 +103,9 @@ export const PieModel = markmodel.MarkModel.extend({
                 color_scale.del_domain([], this.model_id + "_color");
             }
         }
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if(!this.mark_data) {
             return;
         }
@@ -129,15 +129,15 @@ export const PieModel = markmodel.MarkModel.extend({
                 y_scale.del_domain([], this.model_id + "_y");
             }
         }
-    },
+    }
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         return data.data;
     }
-}, {
-    serializers: _.extend({
-        sizes: serialize.array_or_json,
-        color: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
 
+    serializers =  {
+        ...markmodel.MarkModel.serializers,
+        sizes: serialize.array_or_json,
+        color: serialize.array_or_json
+    }
+}

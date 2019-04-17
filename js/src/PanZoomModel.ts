@@ -18,10 +18,10 @@ import * as basemodel from './BaseModel';
 import { semver_range } from './version';
 import _ from 'underscore';
 
-export const PanZoomModel = basemodel.BaseModel.extend({
+export class PanZoomModel extends basemodel.BaseModel {
 
-    defaults: function() {
-        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+    defaults() {
+        return {...basemodel.BaseModel.prototype.defaults(), 
             _model_name: "PanZoomModel",
             _view_name: "PanZoom",
             _model_module: "bqplot",
@@ -31,41 +31,41 @@ export const PanZoomModel = basemodel.BaseModel.extend({
             scales: {},
             allow_pan: true,
             allow_zoom: true
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        PanZoomModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on("change:scales", this.snapshot_scales, this);
         this.snapshot_scales();
-    },
+    }
 
-    reset_scales: function() {
-        var that = this;
-        widgets.resolvePromisesDict(this.get("scales")).then(function(scales: any) {
-            _.each(Object.keys(scales), function(k) {
-                _.each(scales[k], function(s: any, i) {
-                    s.set_state(that.scales_states[k][i]);
-                }, that);
-            }, that);
+    reset_scales() {
+        widgets.resolvePromisesDict(this.get("scales")).then((scales: any) => {
+            _.each(Object.keys(scales), (k) => {
+                _.each(scales[k], (s: any, i) => {
+                    s.set_state(this.scales_states[k][i]);
+                }, this);
+            }, this);
         });
-    },
+    }
 
-    snapshot_scales: function() {
+    snapshot_scales() {
         // Save the state of the scales.
-        var that = this;
-        widgets.resolvePromisesDict(this.get("scales")).then(function(scales: any) {
-            that.scales_states = Object.keys(scales).reduce(function(obj, key) {
-                obj[key] = scales[key].map(function(s) {
+        widgets.resolvePromisesDict(this.get("scales")).then((scales: any) => {
+            this.scales_states = Object.keys(scales).reduce((obj, key) => {
+                obj[key] = scales[key].map((s) => {
                     return s.get_state()
                 });
                 return obj;
             }, {});
         });
     }
-}, {
-    serializers: _.extend({
-        scales: { deserialize: widgets.unpack_models },
-    }, basemodel.BaseModel.serializers)
-});
 
+    static serializers = {
+        ...basemodel.BaseModel.serializers,
+        scales: { deserialize: widgets.unpack_models }
+    };
+
+    scales_states: any;
+}

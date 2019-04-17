@@ -21,9 +21,9 @@ import * as mark from './Mark';
 import * as utils from './utils';
 import _ from 'underscore';
 
-export const Pie = mark.Mark.extend({
-    render: function() {
-        var base_creation_promise = Pie.__super__.render.apply(this);
+export class Pie extends mark.Mark {
+    render() {
+        var base_creation_promise = super.render();
         this.selected_indices = this.model.get("selected");
         this.selected_style = this.model.get("selected_style");
         this.unselected_style = this.model.get("unselected_style");
@@ -66,9 +66,9 @@ export const Pie = mark.Mark.extend({
             that.compute_view_padding();
             that.draw();
         }, null);
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var x_scale = this.scales.x;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
@@ -79,9 +79,9 @@ export const Pie = mark.Mark.extend({
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
             this.y_offset = y_scale.offset;
         }
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         // If no scale for "x" or "y" is specified, figure scales are used.
         var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
         var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
@@ -93,10 +93,10 @@ export const Pie = mark.Mark.extend({
         this.listenTo(y_scale, "domain_changed", function() {
             if (!that.model.dirty) { that.draw(); }
         });
-    },
+    }
 
-    create_listeners: function() {
-        Pie.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
         this.d3el
           .on("mouseover", _.bind(function() {
               this.event_dispatcher("mouse_over");
@@ -112,9 +112,9 @@ export const Pie = mark.Mark.extend({
             //animate on data update
             var animate = true;
             this.draw(animate);
-        }, this);
-        this.listenTo(this.model, "change:colors", this.update_colors, this);
-        this.listenTo(this.model, "colors_updated", this.update_colors, this);
+        });
+        this.listenTo(this.model, "change:colors", this.update_colors);
+        this.listenTo(this.model, "colors_updated", this.update_colors);
         this.model.on_some_change(["inner_radius", "radius"], function() {
             this.compute_view_padding();
             var animate = true;
@@ -135,34 +135,34 @@ export const Pie = mark.Mark.extend({
         this.listenTo(this.model, "labels_updated", function() {
             var animate = true;
             this.draw(animate);
-        }, this);
+        });
 
         this.listenTo(this.model, "change:selected", function() {
             this.selected_indices = this.model.get("selected");
             this.apply_styles();
-        }, this);
+        });
         this.listenTo(this.model, "change:interactions", this.process_interactions);
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
-    },
+    }
 
-    process_click: function(interaction) {
-        Pie.__super__.process_click.apply(this, [interaction]);
+    process_click(interaction) {
+        super.process_click([interaction]);
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.click_handler;
         }
 
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
         this.position_center();
         this.update_radii();
-    },
+    }
 
-    position_center: function(animate) {
+    position_center(animate?: boolean) {
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
         var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
         var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
@@ -175,9 +175,9 @@ export const Pie = mark.Mark.extend({
         this.pie_g
             .transition("position_center").duration(animation_duration)
             .attr("transform", transform);
-    },
+    }
 
-    update_radii: function(animate) {
+    update_radii(animate?: boolean) {
         var animation_duration = animate === true ?
             this.parent.model.get("animation_duration") : 0;
 
@@ -225,16 +225,16 @@ export const Pie = mark.Mark.extend({
                     return [that.arc.centroid(d), that.outer_arc.centroid(d), pos];
                 });
         }
-    },
+    }
 
-    mid_angle_location: function(arc_data) {
+    mid_angle_location(arc_data) {
         // decides if the location of the mid angle of the arc is toward left or right (to aid the
         // placement of label text)
         var mid_angle = (arc_data.startAngle + arc_data.endAngle) / 2;
         return (mid_angle > Math.PI || (mid_angle < 0 && mid_angle > -Math.PI)) ? "left" : "right";
-    },
+    }
 
-    draw: function(animate) {
+    draw(animate?: boolean) {
         this.set_ranges();
         this.position_center(animate);
 
@@ -366,17 +366,17 @@ export const Pie = mark.Mark.extend({
         this.update_labels();
         this.update_values();
         this.apply_styles();
-    },
+    }
 
-    update_stroke_and_opacities: function() {
+    update_stroke_and_opacities() {
         var stroke = this.model.get("stroke");
         var opacities = this.model.get("opacities");
         this.pie_g.selectAll("path.slice")
             .style("stroke", stroke)
             .style("opacity", function(d, i) { return opacities[i]; });
-    },
+    }
 
-    update_colors: function() {
+    update_colors() {
         var that = this;
         var color_scale = this.scales.color;
         this.pie_g.select(".slices")
@@ -385,9 +385,9 @@ export const Pie = mark.Mark.extend({
               return (d.data.color !== undefined && color_scale !== undefined) ?
                   color_scale.scale(d.data.color) : that.get_colors(d.data.index);
           });
-    },
+    }
 
-    update_labels: function() {
+    update_labels() {
         var display_labels = this.model.get("display_labels");
 
         var labels = this.pie_g.selectAll(".labels text")
@@ -399,9 +399,9 @@ export const Pie = mark.Mark.extend({
         if(color !== undefined) {
             labels.style("fill", color);
         }
-    },
+    }
 
-    update_values: function() {
+    update_values() {
         var display_values = this.model.get("display_values");
         var values_format = d3.format(this.model.get("values_format"));
 
@@ -410,9 +410,9 @@ export const Pie = mark.Mark.extend({
                 return d.data.label +
                     (display_values ? ": " + values_format(d.data.size) : "");
             })
-    },
+    }
 
-    clear_style: function(style_dict, indices) {
+    clear_style(style_dict, indices?) {
         // Function to clear the style of a dict on some or all the elements of the
         // chart. If indices is null, clears the style on all elements. If
         // not, clears on only the elements whose indices are matching.
@@ -427,9 +427,9 @@ export const Pie = mark.Mark.extend({
             clearing_style[key] = null;
         }
         elements.styles(clearing_style);
-    },
+    }
 
-    set_style_on_elements: function(style, indices) {
+    set_style_on_elements(style, indices?) {
         // If the index array is undefined or of length=0, exit the
         // function without doing anything
         if(indices === undefined || indices === null || indices.length === 0) {
@@ -440,16 +440,16 @@ export const Pie = mark.Mark.extend({
             return indices.indexOf(index) !== -1;
         });
         elements.styles(style);
-    },
+    }
 
-    set_default_style: function(indices) {
+    set_default_style(indices?) {
         // For all the elements with index in the list indices, the default
         // style is applied.
         this.update_colors();
         this.update_stroke_and_opacities();
-    },
+    }
 
-    click_handler: function (args) {
+    click_handler (args) {
         var index = args.index;
         var that = this;
         var idx = this.model.get("selected");
@@ -505,18 +505,18 @@ export const Pie = mark.Mark.extend({
         e.preventDefault();
         this.selected_indices = selected;
         this.apply_styles();
-    },
+    }
 
-    reset_selection: function() {
+    reset_selection() {
         this.model.set("selected", null);
         this.touch();
         this.selected_indices = null;
         this.clear_style(this.selected_style);
         this.clear_style(this.unselected_style);
         this.set_default_style();
-    },
+    }
 
-    compute_view_padding: function() {
+    compute_view_padding() {
         var scales = this.model.get("scales");
         var r = d3.max([this.model.get("radius"), this.model.get("inner_radius")]);
 
@@ -528,5 +528,10 @@ export const Pie = mark.Mark.extend({
             this.trigger("mark_padding_updated");
         }
     }
-});
 
+    pie_g: any;
+    arc: any;
+    outer_arc: any;
+    x_offset: any;
+    y_offset: any;
+}
