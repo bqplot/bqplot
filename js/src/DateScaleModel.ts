@@ -29,10 +29,6 @@ export class DateScaleModel extends LinearScaleModel{
         };
     }
 
-    initialize() {
-        super.initialize();
-    }
-
     set_init_state() {
         this.type = "date";
         this.global_min = (new Date()).setTime(0);
@@ -47,4 +43,3 @@ export class DateScaleModel extends LinearScaleModel{
         this.update_domain();
     }
 }
-

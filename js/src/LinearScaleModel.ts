@@ -31,10 +31,6 @@ export class LinearScaleModel extends ScaleModel {
         };
     }
 
-    initialize() {
-        super.initialize();
-    }
-
     set_init_state() {
         this.type = "linear";
         this.global_min = Number.NEGATIVE_INFINITY;
@@ -130,4 +126,3 @@ export class LinearScaleModel extends ScaleModel {
     global_min: number | Date;
     global_max: number | Date;
 }
-
