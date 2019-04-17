@@ -18,19 +18,19 @@ import * as d3 from 'd3';
 import * as _ from 'underscore';
 import * as mark from './Mark';
 
-export const Boxplot = mark.Mark.extend({
+export class Boxplot extends mark.Mark {
 
-    render: function() {
-        var base_creation_promise = Boxplot.__super__.render.apply(this);
+    render() {
+        var base_creation_promise = super.render.apply(this);
         var that = this;
 
         return base_creation_promise.then(function() {
             that.create_listeners();
             that.draw();
         }, null);
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var x_scale = this.scales.x;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
@@ -39,9 +39,9 @@ export const Boxplot = mark.Mark.extend({
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
 
         var x_scale = this.scales.x;
         this.listenTo(x_scale, "domain_changed", function() {
@@ -52,20 +52,20 @@ export const Boxplot = mark.Mark.extend({
         this.listenTo(y_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
-    },
+    }
 
-    create_listeners: function() {
-        Boxplot.__super__.create_listeners.apply(this);
-        this.listenTo(this.model, "change:stroke", this.update_stroke, this);
-        this.listenTo(this.model, "change:opacities", this.update_opacities, this);
-        this.listenTo(this.model, "change:marker", this.update_marker, this);
-        this.listenTo(this.model, "change:outlier_fill_color", this.update_outlier_fill_color, this);
-        this.listenTo(this.model, "change:box_fill_color", this.update_box_fill_color, this);
-        this.listenTo(this.model, "data_updated", this.draw, this);
-        this.listenTo(this.model, "change:box_width", this.update_box_width, this);
-    },
+    create_listeners() {
+        super.create_listeners.apply(this);
+        this.listenTo(this.model, "change:stroke", this.update_stroke);
+        this.listenTo(this.model, "change:opacities", this.update_opacities);
+        this.listenTo(this.model, "change:marker", this.update_marker);
+        this.listenTo(this.model, "change:outlier_fill_color", this.update_outlier_fill_color);
+        this.listenTo(this.model, "change:box_fill_color", this.update_box_fill_color);
+        this.listenTo(this.model, "data_updated", this.draw);
+        this.listenTo(this.model, "change:box_width", this.update_box_width);
+    }
 
-    update_stroke: function() {
+    update_stroke() {
         var stroke = this.model.get("stroke");
         this.d3el.selectAll(".boxplot").selectAll("path, rect")
             .style("stroke", stroke);
@@ -76,19 +76,19 @@ export const Boxplot = mark.Mark.extend({
             this.legend_el.selectAll("path").attr("stroke", stroke);
             this.legend_el.selectAll("text").style("fill", stroke);
         }
-    },
+    }
 
-    update_outlier_fill_color: function() {
+    update_outlier_fill_color() {
         this.d3el.selectAll(".outlier")
                .style("fill", this.model.get("outlier_fill_color"));
-    },
+    }
 
-    update_box_fill_color: function() {
+    update_box_fill_color() {
         this.d3el.selectAll(".box")
                 .style("fill", this.model.get("box_fill_color"));
-    },
+    }
 
-    update_opacities: function() {
+    update_opacities() {
         var opacities = this.model.get("opacities");
         this.d3el.selectAll(".boxplot").style("opacity", function(d, i) {
                                                 return opacities[i];
@@ -99,30 +99,21 @@ export const Boxplot = mark.Mark.extend({
                                                     return opacities[i];
                                                  });
         }
-    },
+    }
 
-    update_marker: function() {
+    update_marker() {
         var marker = this.model.get("marker");
-        var that = this;
 
-        if (this.legend_el && this.rect_dim) {
-            var legend_data = [
-                (1/4)*that.rect_dim,
-                0,
-                that.rect_dim,
-                (3/4)*that.rect_dim
-            ];
+        if (this.legend_el && this.rect_dim) { 
             // Draw icon for legend
-            this.draw_mark_paths(marker, this.rect_dim/2,
-                this.legend_el, [legend_data]);
+            this.draw_mark_paths(marker, this.rect_dim/2);
         }
 
         // Redraw existing marks
-        this.draw_mark_paths(marker, this.calculate_mark_max_width(),
-            this.d3el, this.model.mark_data);
-    },
+        this.draw_mark_paths(marker, this.calculate_mark_max_width());
+    }
 
-    get_box_width: function() {
+    get_box_width() {
         var width = this.model.get("box_width");
 
         // null box_width means auto calculated box width
@@ -134,9 +125,9 @@ export const Boxplot = mark.Mark.extend({
         }
 
         return width;
-    },
+    }
 
-    compute_view_padding: function() {
+    compute_view_padding() {
         //This function sets the padding for the view through the variables
         //x_padding and y_padding which are view specific paddings in pixel
         var x_padding = this.get_box_width() / 2.0 + 1;
@@ -144,19 +135,19 @@ export const Boxplot = mark.Mark.extend({
             this.x_padding = x_padding;
             this.trigger("mark_padding_updated");
         }
-    },
+    }
 
-    update_box_width: function() {
+    update_box_width() {
         this.compute_view_padding();
         this.draw();
-    },
+    }
 
-    update_idx_selected: function(model, value) {
+    update_idx_selected(model, value) {
         this.selected_indices = value;
         this.apply_styles(value);
-    },
+    }
 
-    apply_styles: function(indices) {
+    apply_styles(indices) {
         var all_indices = _.range(this.model.mark_data.length);
         this.set_default_style(all_indices);
 
@@ -164,9 +155,9 @@ export const Boxplot = mark.Mark.extend({
         var unselected_indices = (indices === undefined) ?
             [] : _.difference(all_indices, indices);
         this.set_style_on_elements(this.unselected_style, unselected_indices);
-    },
+    }
 
-    set_style_on_elements: function(style, indices) {
+    set_style_on_elements(style, indices) {
         if(indices === undefined || indices.length === 0) {
             return;
         }
@@ -175,9 +166,9 @@ export const Boxplot = mark.Mark.extend({
             return indices.indexOf(index) != -1;
         });
         elements.styles(style);
-    },
+    }
 
-    set_default_style: function(indices) {
+    set_default_style(indices) {
         if(indices === undefined || indices.length === 0) {
             return;
         }
@@ -200,9 +191,9 @@ export const Boxplot = mark.Mark.extend({
           .style("stroke", stroke);
 
           elements.selectAll(".outliers").style("stroke", stroke);
-    },
+    }
 
-    clear_style: function(style_dict, indices) {
+    clear_style(style_dict, indices) {
         var elements = this.d3el.selectAll(".boxplot");
         if(indices !== undefined) {
             elements = elements.filter(function(d, index) {
@@ -214,19 +205,19 @@ export const Boxplot = mark.Mark.extend({
             clearing_style[key] = null;
         }
         elements.styles(clearing_style);
-    },
+    }
 
-    style_updated: function(new_style, indices) {
+    style_updated(new_style, indices) {
         this.set_default_style(indices);
         this.set_style_on_elements(new_style, indices);
-    },
+    }
 
-    selected_style_updated: function(model, style) {
+    selected_style_updated(model, style) {
         this.selected_style = style;
         this.style_updated(style, this.selected_indices);
-    },
+    }
 
-    unselected_style_updated: function(model, style) {
+    unselected_style_updated(model, style) {
         this.unselected_style = style;
         var sel_indices = this.selected_indices;
         var unselected_indices = (sel_indices ?
@@ -235,19 +226,19 @@ export const Boxplot = mark.Mark.extend({
                     return sel_indices.indexOf(index) == -1;
                 }): []);
         this.style_updated(style, unselected_indices);
-    },
+    }
 
     //FIXME: should use the selected_style logic
-    update_selected_colors: function(selected_indices) {
+    update_selected_colors(selected_indices) {
         var stroke = this.model.get("stroke");
         var selected_stroke = stroke;
         this.d3el.selectAll(".boxplot")
             .style("stroke", function(d, i) {
                 return (selected_indices.indexOf(i) > -1) ? selected_stroke : stroke;
             })
-    },
+    }
 
-    selector_changed: function(point_selector, rect_selector) {
+    selector_changed(point_selector, rect_selector) {
         if(point_selector === undefined) {
             this.model.set("selected", null);
             this.touch();
@@ -262,9 +253,9 @@ export const Boxplot = mark.Mark.extend({
         this.update_selected_colors(selected)
         this.model.set("selected", selected);
         this.touch();
-    },
+    }
 
-    invert_point: function(pixel) {
+    invert_point(pixel) {
         if(pixel === undefined) {
             this.update_selected_colors([]);
             this.model.set("selected", null);
@@ -279,9 +270,9 @@ export const Boxplot = mark.Mark.extend({
         this.update_selected_colors([sel_index]);
         this.touch();
         return sel_index;
-    },
+    }
 
-    prepareBoxPlots: function () {
+    prepareBoxPlots () {
         // Sets plot data on this.plotData and this.outlierData
 
         var auto_detect_outliers = this.model.get("auto_detect_outliers") !== false;
@@ -333,9 +324,9 @@ export const Boxplot = mark.Mark.extend({
             }
             this.plotData.push(displayValue);
         }
-    },
+    }
 
-    draw: function() {
+    draw() {
         this.set_ranges();
         var x_scale = this.scales.x;
         // get the visual representation of boxplots, set as state
@@ -350,9 +341,9 @@ export const Boxplot = mark.Mark.extend({
             return [[d.x - width, d.x + width],
                     [d.boxLower, d.boxUpper]]
         });
-    },
+    }
 
-    draw_mark_paths: function(parentClass, selector) {
+    draw_mark_paths(parentClass, selector) {
         var plotData = this.plotData;
         var outlierData = this.outlierData;
 
@@ -514,9 +505,9 @@ export const Boxplot = mark.Mark.extend({
               });
 
           this.apply_styles(this.selected_indices);
-    },
+    }
 
-    calculate_mark_max_width: function() {
+    calculate_mark_max_width() {
 
         var that = this;
         var min_distance = Infinity;
@@ -538,10 +529,10 @@ export const Boxplot = mark.Mark.extend({
         }
 
         return mark_width;
-    },
+    }
 
-    relayout: function() {
-        Boxplot.__super__.relayout.apply(this);
+    relayout() {
+        super.relayout.apply(this);
         this.set_ranges();
         this.compute_view_padding();
         this.d3el.select(".intselmouse")
@@ -550,9 +541,9 @@ export const Boxplot = mark.Mark.extend({
 
         // We have to redraw every time that we relayout
         this.draw();
-    },
+    }
 
-    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+    draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         var stroke = this.model.get("stroke");
         this.rect_dim = inter_y_disp * 0.8;
         var that = this;
@@ -590,4 +581,17 @@ export const Boxplot = mark.Mark.extend({
         this.legend_el.exit().remove();
         return [1, max_length];
     }
-});
+
+    height: any;
+    legend_el: any;
+    outlierData: any[];
+    pixel_coords: any;
+    plotData: any[];
+    rect_dim: any
+    width: any;
+    x_pixels: any[];
+    model: mark.markModel & {
+        max_x: number;
+        min_x: number;
+    }
+}

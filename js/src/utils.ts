@@ -85,4 +85,3 @@ export function is_valid_time_format(format) {
 export function is_array(x) {
     return (x instanceof Array) || isTypedArray(x)
 }
-

@@ -179,7 +179,6 @@ export abstract class Mark extends widgets.WidgetView {
     }
 
     invert_point(pxl) {
-        return [pxl];
     }
 
     // TODO: is the following function really required?

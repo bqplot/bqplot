@@ -16,16 +16,15 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"));
 import * as _ from 'underscore';
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export const BoxplotModel = markmodel.MarkModel.extend({
+export class BoxplotModel extends MarkModel {
 
-    defaults: function() {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...MarkModel.prototype.defaults(),
             _model_name: "BoxplotModel",
             _view_name: "Boxplot",
-
             x: [],
             y: [],
             scales_metadata: {
@@ -38,18 +37,18 @@ export const BoxplotModel = markmodel.MarkModel.extend({
             opacities: [],
             box_width: null, // auto calculate box width
             auto_detect_outliers: true
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        BoxplotModel.__super__.initialize.apply(this, arguments);
+    initialize() {
+        super.initialize.apply(this, arguments);
         this.on_some_change(["x", "y"], this.update_data, this);
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
         this.update_domains();
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         var x_data = this.get("x");
         var y_data = this.get("y");
 
@@ -69,9 +68,9 @@ export const BoxplotModel = markmodel.MarkModel.extend({
 
         this.update_domains();
         this.trigger("data_updated");
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         // color scale needs an issue in DateScaleModel to be fixed. It
         // should be moved here as soon as that is fixed.
 
@@ -103,9 +102,10 @@ export const BoxplotModel = markmodel.MarkModel.extend({
             y_scale.del_domain([], this.model_id + "_y");
         }
     }
-}, {
-    serializers: _.extend({
+
+    static serializers = {
+        ...MarkModel.serializers,
         x: serialize.array_or_json,
-        y: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        y: serialize.array_or_json
+    }
+}

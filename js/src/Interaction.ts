@@ -18,15 +18,15 @@ import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
 
-export const Interaction = widgets.WidgetView.extend({
+export class Interaction extends widgets.WidgetView {
 
-    initialize : function() {
+    initialize() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "rect"));
         this.d3el = d3.select(this.el);
-        Interaction.__super__.initialize.apply(this, arguments);
-    },
+        super.initialize.apply(this, arguments);
+    }
 
-    render: function() {
+    render() {
         this.parent = this.options.parent;
 
         // Opaque interation layer
@@ -42,9 +42,9 @@ export const Interaction = widgets.WidgetView.extend({
             .attr("pointer-events", "all")
             .attr("visibility", "hidden");
         this.parent.on("margin_updated", this.relayout, this);
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         // Called when the figure margins are updated.
         this.d3el
             .attr("width", this.parent.width -
@@ -53,12 +53,16 @@ export const Interaction = widgets.WidgetView.extend({
             .attr("height", this.parent.height -
                             this.parent.margin.top -
                             this.parent.margin.bottom);
-    },
+    }
 
-    remove: function() {
+    remove() {
         _.each(this.mark_views, function(mark: any) { mark.invert_range(); });
         this.d3el.remove();
-        Interaction.__super__.remove.apply(this);
+        super.remove.apply(this);
     }
-});
 
+    mark_views: any;
+    d3el: any;
+    parent: any;
+
+}

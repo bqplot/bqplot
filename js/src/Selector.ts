@@ -19,79 +19,72 @@ import * as interaction from './Interaction';
 var convert_dates = require('./utils').convert_dates;
 import _ from 'underscore';
 
-export const BaseSelector = interaction.Interaction.extend({
+export abstract class BaseSelector extends interaction.Interaction {
 
-    initialize: function() {
+    initialize() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
-        interaction.Interaction.__super__.initialize.apply(this, arguments);
-    },
+        super.initialize.apply(this, arguments);
+    }
 
-    render: function() {
+    render() {
         this.parent = this.options.parent;
         this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
         this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
         this.mark_views_promise = this.populate_mark_views();
-    },
+    }
 
-    create_listeners: function() {
+    create_listeners() {
         this.parent.on("margin_updated", this.relayout, this);
         this.listenTo(this.model, "change:selected", this.selected_changed);
         this.listenTo(this.model, "change:marks", this.marks_changed);
         this.listenTo(this.model, "msg:custom", this.handle_custom_messages);
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
         this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
-    },
+    }
 
-    populate_mark_views: function() {
-        var fig = this.parent;
-        var that = this;
-        var mark_ids = this.model.get("marks").map(function(mark_model) {
-            return mark_model.model_id; // Model ids of the marks of the selector
-        });
-        return Promise.all(fig.mark_views.views).then(function(views) {
-            var fig_mark_ids = fig.mark_views._models.map(function(mark_model) {
-                return mark_model.model_id;
-            });  // Model ids of the marks in the figure
-            var mark_indices = mark_ids.map(function(mark_model_id) {
-                return fig_mark_ids.indexOf(mark_model_id); // look up based on model ids
-            });
-            that.mark_views = mark_indices.map(function(elem) {
-                return views[elem]; // return the views, based on the assumption that fig.mark_views is an ordered list
-            });
-        });
-    },
+    async populate_mark_views() {
+        const fig = this.parent;
+        const mark_ids = this.model.get("marks").map(m => m.model_id);
+        const views = await Promise.all(fig.mark_views.views);
 
-    marks_changed: function() {
-        var that = this;
-        this.populate_mark_views().then(function() {that.selected_changed();});
-    },
+        const fig_mark_ids = fig.mark_views._models.map(m => m.model_id);
+        const mark_indices = mark_ids.map(mid => fig_mark_ids.indexOf(mid));
+        // return the views, based on the assumption that fig.mark_views is an
+        // ordered list
+        this.mark_views = mark_indices.map(elem => views[elem]);
+    }
 
-    handle_custom_messages: function(msg) {
+    marks_changed() {
+        this.populate_mark_views().then(() => this.selected_changed());
+    }
+
+    handle_custom_messages(msg) {
         if (msg.type === "reset") {
             this.reset();
         }
-    },
+    }
 
-    reset: function() {
-        //inherited classes should implement this function
-    },
+    abstract reset();
 
-    selected_changed: function() {
-        //inherited classes should implement this function
-    },
+    abstract selected_changed();
+    abstract create_scales();
 
-    set_selected: function(name, value) {
+    set_selected(name, value) {
         this.model.set(name, convert_dates(value))
     }
-});
 
-export const BaseXSelector = BaseSelector.extend({
+    width: any
+    height: any;
+    mark_views_promise: any;
+}
 
-    create_scales: function() {
+export abstract class BaseXSelector extends BaseSelector {
+
+    create_scales() {
         if(this.scale) {
             this.scale.remove();
         }
@@ -106,28 +99,30 @@ export const BaseXSelector = BaseSelector.extend({
                 return view;
             });
         }
-    },
+    }
 
-    update_scale_domain: function() {
+    update_scale_domain(ignore_gui_update = false) {
         // When the domain of the scale is updated, the domain of the scale
         // for the selector must be expanded to account for the padding.
         var xy = (this.model.get("orientation") == "vertical") ? "y" : "x"
         var initial_range = this.parent.padded_range(xy, this.scale.model);
         var target_range = this.parent.range(xy);
         this.scale.expand_domain(initial_range, target_range);
-    },
+    }
 
-    set_range: function(array) {
+    set_range(array) {
         var xy = (this.model.get("orientation") == "vertical") ? "y" : "x"
         for(var iter = 0; iter < array.length; iter++) {
             array[iter].set_range(this.parent.range(xy));
         }
-    },
-});
+    }
 
-export const BaseXYSelector = BaseSelector.extend({
+    scale: any;
+}
 
-    create_scales: function() {
+export abstract class BaseXYSelector extends BaseSelector {
+
+    create_scales() {
         var that = this;
         if(this.x_scale) {
             this.x_scale.remove();
@@ -156,34 +151,36 @@ export const BaseXYSelector = BaseSelector.extend({
         }
 
         return Promise.all(scale_promises);
-    },
+    }
 
-    set_x_range: function(array) {
+    set_x_range(array) {
         for(var iter = 0; iter < array.length; iter++) {
             array[iter].set_range(this.parent.range("x"));
         }
-    },
+    }
 
-    set_y_range: function(array) {
+    set_y_range(array) {
         for(var iter = 0; iter < array.length; iter++) {
             array[iter].set_range(this.parent.range("y"));
         }
-    },
+    }
 
-    update_xscale_domain: function() {
+    update_xscale_domain() {
         // When the domain of the scale is updated, the domain of the scale
         // for the selector must be expanded to account for the padding.
         var initial_range = this.parent.padded_range("x", this.x_scale.model);
         var target_range = this.parent.range("x");
         this.x_scale.expand_domain(initial_range, target_range);
-    },
+    }
 
-    update_yscale_domain: function() {
+    update_yscale_domain() {
         // When the domain of the scale is updated, the domain of the scale
         // for the selector must be expanded to account for the padding.
         var initial_range = this.parent.padded_range("y", this.y_scale.model);
         var target_range = this.parent.range("y");
         this.y_scale.expand_domain(initial_range, target_range);
     }
-});
 
+    x_scale: any
+    y_scale: any;
+}
