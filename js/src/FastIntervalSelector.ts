@@ -66,7 +66,7 @@ export class FastIntervalSelector extends BaseXSelector {
 
     create_listeners() {
         super.create_listeners();
-        this.listenTo(this.model, "change:color", this.color_change, this);
+        this.listenTo(this.model, "change:color", this.color_change);
     }
 
     color_change() {
@@ -146,11 +146,6 @@ export class FastIntervalSelector extends BaseXSelector {
         }, this);
     }
 
-    scale_changed() {
-        this.reset();
-        this.create_scale();
-    }
-
     relayout() {
         super.relayout();
 
@@ -217,5 +212,12 @@ export class FastIntervalSelector extends BaseXSelector {
               .attr("height", this.height);
         }
     }
-}
 
+    freeze_but_move: boolean;
+    freeze_dont_move: boolean;
+    active: boolean;
+    dirty: boolean;
+    size: any;
+    background: any;
+    rect: any;
+}

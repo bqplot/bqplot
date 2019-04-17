@@ -49,8 +49,8 @@ export class AxisModel extends BaseModel {
         };
     }
 
-    initialize() {
-        super.initialize();
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on("change:side", this.validate_orientation, this);
         this.on("change:orientation", this.validate_side, this);
         this.validate_orientation();
@@ -101,4 +101,3 @@ export class ColorAxisModel extends AxisModel {
         };
     }
 }
-

@@ -60,8 +60,8 @@ export class FigureModel extends BaseModel {
         };
     }
 
-    initialize() {
-        super.initialize();
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on("msg:custom", this.handle_custom_messages, this);
     }
 

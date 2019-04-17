@@ -84,7 +84,7 @@ export class ColorScaleModel extends LinearScaleModel {
 
     colors_changed() {
         var colors = this.get("colors");
-        this.color_range = colors.length > 0 ? colors : 
+        this.color_range = colors.length > 0 ? colors :
             colorutils.get_linear_scale_range(this.get("scheme"));
         // If the number of colors has changed, the domain must be updated
         this.update_domain();
@@ -95,5 +95,5 @@ export class ColorScaleModel extends LinearScaleModel {
 
     color_range: Array<number>;
     mid: number;
+    reverse: boolean;
 }
-

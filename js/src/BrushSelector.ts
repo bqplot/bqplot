@@ -58,13 +58,6 @@ abstract class BrushMixinXYSelector extends selector.BaseXYSelector {
         this.brushing = false;
     }
 
-    scale_changed() {
-        this.create_scales();
-
-        // TODO: an implementation is never called
-        // this.set_brush_scale();
-    }
-
     adjust_rectangle() {
         if (this.model.get("orientation") == "vertical") {
             this.d3el.selectAll("rect")
@@ -141,13 +134,6 @@ abstract class BrushMixinXSelector extends selector.BaseXSelector {
         this.model.set("brushing", false);
         this.convert_and_save();
         this.brushing = false;
-    }
-
-    scale_changed() {
-        this.create_scales();
-
-        // TODO: an implementation is never called
-        // this.set_brush_scale();
     }
 
     adjust_rectangle() {
@@ -592,14 +578,6 @@ export class MultiSelector extends BrushMixinXSelector {
 
     // TODO: make a proper implementation
     selected_changed() { }
-
-    scale_changed() {
-        this.d3el.selectAll(".selector")
-          .remove();
-        this.curr_index = 0;
-        this.create_scales();
-        this.create_brush();
-    }
 
     color_change() {
         if (this.model.get("color") !== null) {

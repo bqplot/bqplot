@@ -17,10 +17,10 @@ import _ from 'underscore'
 import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 
-export class ScaleModel extends BaseModel {
+export abstract class ScaleModel extends BaseModel {
 
     defaults() {
-        return {...BaseModel.prototype.defaults(), 
+        return {...BaseModel.prototype.defaults(),
             _model_name: "ScaleModel",
              _view_name: "Scale",
             _model_module: "bqplot",
@@ -32,8 +32,8 @@ export class ScaleModel extends BaseModel {
         };
     }
 
-    initialize() {
-        super.initialize();
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.domains = {};
         this.domain = [];
         this.set_init_state();
@@ -70,7 +70,11 @@ export class ScaleModel extends BaseModel {
             return this.domain.slice();
     }
 
+    abstract compute_and_set_domain(data_array, id);
+    abstract update_domain();
+
     domains: any;
     domain: Array<number>;
+    reverse: boolean;
+    type: string;
 }
-
