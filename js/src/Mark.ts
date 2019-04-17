@@ -287,7 +287,7 @@ export abstract class Mark extends widgets.WidgetView {
             .style("display", "none");
     }
 
-    refresh_tooltip(tooltip_interactions) {
+    refresh_tooltip(tooltip_interactions = false) {
         //the argument controls pointer interactions with the tooltip. a
         //true value enables pointer interactions while a false value
         //disables them
@@ -323,7 +323,7 @@ export abstract class Mark extends widgets.WidgetView {
         }
     }
 
-    event_dispatcher(event_name, data) {
+    event_dispatcher(event_name, data?) {
         //sends a custom mssg to the python side if required
         this.custom_msg_sender(event_name);
         if(this.event_listeners[event_name] !== undefined) {
@@ -510,4 +510,3 @@ export abstract class Mark extends widgets.WidgetView {
     // Overriding super class
     model: MarkModel;
 }
-
