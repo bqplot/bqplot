@@ -45,7 +45,7 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
     //   and can take the value of the figure interaction, which can be
     //   null.
     panzoom() {
-        var figure = this.get("figure");
+        const figure = this.get("figure");
         if (this.get("_panning")) {
             if (figure) {
                 figure.set("interaction", this.cached_interaction);
@@ -56,7 +56,7 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
         } else {
             if (figure) {
                 this.cached_interaction = figure.get("interaction");
-                var panzoom = this.get("_panzoom");
+                const panzoom = this.get("_panzoom");
                 if (panzoom) {
                     figure.set("interaction", panzoom);
                     figure.save_changes();
@@ -79,11 +79,11 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
          * Reset the scales, delete the PanZoom widget, set the figure
          * interaction back to its previous value.
          */
-        var figure = this.get("figure");
+        const figure = this.get("figure");
         if (figure) {
             figure.set("interaction", this.cached_interaction);
             figure.save_changes();
-            var panzoom = this.get("_panzoom");
+            const panzoom = this.get("_panzoom");
             // Should reset_scales be part of PanZoomModel.close()?
             panzoom.reset_scales()
             panzoom.close();
@@ -99,7 +99,7 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
          */
         // TODO: the toolbar view needs to be associated with a Figure
         // view to avoid calling a model method here.
-        var figure = this.get("figure");
+        const figure = this.get("figure");
         if (figure) {
             figure.save_png();
         }
@@ -120,12 +120,12 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
             view_module_version: figure.get("_view_module_version")
         }).then(function(model) {
             return Promise.all(figure.get("marks")).then(function(marks: any[]) {
-                var x_scales = [], y_scales = [];
-                for (var i=0; i<marks.length; ++i) {
-                    var preserve_domain = marks[i].get("preserve_domain");
-                    var scales = marks[i].get("scales");
+                const x_scales = [], y_scales = [];
+                for (let i=0; i<marks.length; ++i) {
+                    const preserve_domain = marks[i].get("preserve_domain");
+                    const scales = marks[i].get("scales");
                     _.each(scales, function(v, k) {
-                        var dimension = marks[i].get("scales_metadata")[k]["dimension"];
+                        const dimension = marks[i].get("scales_metadata")[k]["dimension"];
                         if (dimension === "x" && !preserve_domain[k]) {
                              x_scales.push(scales[k]);
                         }
@@ -165,7 +165,7 @@ export class Toolbar extends widgets.DOMWidgetView {
         // buttons.
 
         // Create the buttons
-        var _panzoom = document.createElement("button");
+        const _panzoom = document.createElement("button");
         _panzoom.classList.add("jupyter-widgets"); // @jupyter-widgets/controls css
         _panzoom.classList.add("jupyter-button"); // @jupyter-widgets/controls css
         _panzoom.classList.add("widget-toggle-button") // @jupyter-widgets/controls css
@@ -175,11 +175,11 @@ export class Toolbar extends widgets.DOMWidgetView {
             e.preventDefault();
             this.model.panzoom();
         };
-        var panzoomicon = document.createElement("i");
+        const panzoomicon = document.createElement("i");
         panzoomicon.className = "fa fa-arrows";
         _panzoom.appendChild(panzoomicon);
 
-        var _reset = document.createElement("button");
+        const _reset = document.createElement("button");
         _reset.classList.add("jupyter-widgets"); // @jupyter-widgets/controls css
         _reset.classList.add("jupyter-button"); // @jupyter-widgets/controls css
         _reset.classList.add("widget-button") // @jupyter-widgets/controls css
@@ -189,11 +189,11 @@ export class Toolbar extends widgets.DOMWidgetView {
             e.preventDefault();
             this.model.reset();
         };
-        var refreshicon = document.createElement("i");
+        const refreshicon = document.createElement("i");
         refreshicon.className = "fa fa-refresh";
         _reset.appendChild(refreshicon);
 
-        var _save = document.createElement("button");
+        const _save = document.createElement("button");
         _save.classList.add("jupyter-widgets"); // @jupyter-widgets/controls css
         _save.classList.add("jupyter-button"); // @jupyter-widgets/controls css
         _save.classList.add("widget-button") // @jupyter-widgets/controls css
@@ -203,7 +203,7 @@ export class Toolbar extends widgets.DOMWidgetView {
             e.preventDefault();
             this.model.save_png();
         };
-        var saveicon = document.createElement("i");
+        const saveicon = document.createElement("i");
         saveicon.className = "fa fa-save";
         _save.appendChild(saveicon);
 
