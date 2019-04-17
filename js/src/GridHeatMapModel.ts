@@ -14,13 +14,13 @@
  */
 
 import * as _ from 'underscore';
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export const GridHeatMapModel = markmodel.MarkModel.extend({
+export class GridHeatMapModel extends MarkModel {
 
-    defaults: function() {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...MarkModel.prototype.defaults(),
             _model_name: "GridHeatMapModel",
             _view_name: "GridHeatMap",
             row: [],
@@ -40,11 +40,11 @@ export const GridHeatMapModel = markmodel.MarkModel.extend({
                 fill: "white",
                 stroke: "blue"
             }
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        GridHeatMapModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["row", "column", "color"], this.update_data, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
         // on_some_change depends on the GLOBAL backbone on("change") handler which
@@ -53,9 +53,9 @@ export const GridHeatMapModel = markmodel.MarkModel.extend({
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
         this.update_domains();
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         this.dirty = true;
         // Handling data updates
         var that = this;
@@ -83,9 +83,9 @@ export const GridHeatMapModel = markmodel.MarkModel.extend({
         this.update_domains();
         this.dirty = false;
         this.trigger("data_updated");
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if(!this.mark_data) {
             return;
         }
@@ -113,13 +113,13 @@ export const GridHeatMapModel = markmodel.MarkModel.extend({
                 color_scale.del_domain([], this.model_id + "_color");
             }
         }
-    },
+    }
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         return data;
-    },
+    }
 
-    identify_modes: function() {
+    identify_modes() {
         //based on the data, identify the mode in which the heatmap should
         //be plotted.
         var modes : any = {};
@@ -153,10 +153,16 @@ export const GridHeatMapModel = markmodel.MarkModel.extend({
         }
         this.modes = modes;
     }
-}, {
-    serializers: _.extend({
+
+    static serializers = {
+        ...MarkModel.serializers,
         row: serialize.array_or_json,
         column: serialize.array_or_json,
-        color: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        color: serialize.array_or_json
+    };
+
+    colors: any;
+    rows: any;
+    columns: any;
+    modes: any;
+}
