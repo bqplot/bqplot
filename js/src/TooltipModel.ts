@@ -13,14 +13,12 @@
  * limitations under the License.
  */
 
-import * as widgets from '@jupyter-widgets/base';
-import {semver_range} from './version';
-import _ from 'underscore';
+import { DOMWidgetModel } from '@jupyter-widgets/base';
+import { semver_range } from './version';
 
-export const TooltipModel = widgets.DOMWidgetModel.extend({
-
-    defaults: function() {
-        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+export class TooltipModel extends DOMWidgetModel {
+    defaults() {
+        return {...DOMWidgetModel.prototype.defaults(), 
             _model_name: "TooltipModel",
             _view_name: "Tooltip",
             _model_module: "bqplot",
@@ -32,7 +30,6 @@ export const TooltipModel = widgets.DOMWidgetModel.extend({
             formats: [],
             show_labels: true,
             labels: []
-        });
+        };
     }
-});
-
+}
