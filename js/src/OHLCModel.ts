@@ -16,13 +16,13 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"));
 import * as _ from 'underscore';
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export const OHLCModel = markmodel.MarkModel.extend({
+export class OHLCModel extends MarkModel {
 
-    defaults: function() {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...MarkModel.prototype.defaults(),
             _model_name: "OHLCModel",
             _view_name: "OHLC",
 
@@ -36,11 +36,11 @@ export const OHLCModel = markmodel.MarkModel.extend({
             box_fill_color: "dodgerblue",
             outlier_fill_color: "gray",
             opacities: []
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        OHLCModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(["x", "y"], this.update_data, this);
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.on("change:format", this.update_format, this);
@@ -50,14 +50,14 @@ export const OHLCModel = markmodel.MarkModel.extend({
         this.update_data();
         this.update_domains();
         this.update_format();
-    },
+    }
 
-    update_format: function() {
+    update_format() {
         this.update_data();
         this.trigger("format_updated");
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         var x_data = this.get("x");
         var y_data = this.get("y");
         var format = this.get("format");
@@ -115,9 +115,9 @@ export const OHLCModel = markmodel.MarkModel.extend({
         this.mark_data.forEach(function(elem, i) { elem.index = i;});
         this.update_domains();
         this.trigger("data_updated");
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if(!this.mark_data) {
             return;
         }
@@ -187,9 +187,9 @@ export const OHLCModel = markmodel.MarkModel.extend({
         } else {
             y_scale.del_domain([], this.model_id + "_y");
         }
-    },
+    }
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         var that = this;
         var return_val = {
             index: index,
@@ -199,11 +199,12 @@ export const OHLCModel = markmodel.MarkModel.extend({
             return_val[str] = data.y[that.px[str.substr(0, 1)]];
         });
         return return_val;
-    },
-}, {
-    serializers: _.extend({
+    }
+    static serializers = {
+        ...MarkModel.serializers,
         x: serialize.array_or_json,
-        y: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        y: serialize.array_or_json
+    }
 
+    px: any;
+}
