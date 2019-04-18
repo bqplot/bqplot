@@ -14,14 +14,13 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import * as _ from 'underscore';
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export const ImageModel = markmodel.MarkModel.extend({
+export class ImageModel extends MarkModel {
 
-    defaults: function() {
-        return _.extend(markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...MarkModel.prototype.defaults(),
             _model_name: "ImageModel",
             _view_name: "Image",
             x: [0.0, 1.0],
@@ -30,25 +29,25 @@ export const ImageModel = markmodel.MarkModel.extend({
                 'x': {'orientation': 'horizontal', 'dimension': 'x'},
                 'y': {'orientation': 'vertical', 'dimension': 'y'},
             },
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        ImageModel.__super__.initialize.apply(this, arguments);
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
         this.on_some_change(['x', 'y'], this.update_data, this);
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         this.mark_data = {
             x: this.get("x"), y: this.get("y")
         };
         this.update_domains();
         this.trigger("data_updated");
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if(!this.mark_data) {
             return;
         }
@@ -70,12 +69,12 @@ export const ImageModel = markmodel.MarkModel.extend({
                 y_scale.del_domain([], this.model_id + "_y");
             }
         }
-    },
+    }
 
-}, {
-    serializers: _.extend({
+    static serializers = {
+        ...MarkModel.serializers,
         image: { deserialize: widgets.unpack_models },
         x: serialize.array_or_json,
-        y: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
+        y: serialize.array_or_json
+    };
+}

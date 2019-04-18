@@ -15,14 +15,14 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3"));
-import * as mark from './Mark';
+import {Mark }from './Mark';
 import * as _ from 'underscore';
 
 
-export const Image = mark.Mark.extend({
+export class Image extends Mark {
 
-    render: function() {
-        var base_render_promise = Image.__super__.render.apply(this);
+    render() {
+        var base_render_promise = super.render();
         var el = this.d3el || this.el;
         this.im = el.append("image")
             .attr("x", 0)
@@ -59,13 +59,13 @@ export const Image = mark.Mark.extend({
             that.reset_click();
             that.create_listeners();
             that.listenTo(that.parent, "margin_updated", function() {
-                that.draw();
+                that.draw(false);
             });
         });
 
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         var x_scale = this.scales.x,
             y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
@@ -78,9 +78,9 @@ export const Image = mark.Mark.extend({
                 this.draw();
             }
         });
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var x_scale = this.scales.x,
             y_scale = this.scales.y;
         if(x_scale) {
@@ -89,19 +89,19 @@ export const Image = mark.Mark.extend({
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
-    },
+    }
 
-    create_listeners: function() {
-        Image.__super__.create_listeners.apply(this);
-        this.listenTo(this.model, "change:image", this.update_image, this);
+    create_listeners() {
+        super.create_listeners();
+        this.listenTo(this.model, "change:image", this.update_image);
         this.listenTo(this.model, "data_updated", function() {
             //animate on data update
             var animate = true;
             this.draw(animate);
-        }, this);
-    },
+        });
+    }
 
-    update_image: function() {
+    update_image() {
         if(this.im.attr("href")) {
             URL.revokeObjectURL(this.im.attr("href"));
         }
@@ -109,18 +109,18 @@ export const Image = mark.Mark.extend({
         var blob = new Blob([image.get("value")], {type: "image/" + image.get("format")});
         var url = URL.createObjectURL(blob);
         this.im.attr("href", url);
-    },
+    }
 
-    remove: function() {
+    remove() {
         URL.revokeObjectURL(this.im.attr("href"));
-        Image.__super__.remove.apply(this);
-    },
+        super.remove();
+    }
 
-    relayout: function() {
+    relayout() {
         this.draw(true);
-    },
+    }
 
-    img_send_message: function(event_name, data) {
+    img_send_message(event_name, data) {
         // For the moment, use a custom function instead of overriding the
         // event_dispatcher from Mark.js. The data you want from an image
         // click is very different than other marks. We are not trying to
@@ -140,9 +140,9 @@ export const Image = mark.Mark.extend({
         // }
         ;
         this.send({event: event_data.msg_name, data: data_message});
-    },
+    }
 
-    draw: function(animate) {
+    draw(animate) {
         this.set_ranges()
 
         var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
@@ -165,5 +165,19 @@ export const Image = mark.Mark.extend({
             this.img_send_message("element_clicked",
                   {"data": d3.event, "index": i});
         }, this));
-    },
-});
+    }
+
+    clear_style(style_dict, indices?, elements?) {
+    }
+    
+    compute_view_padding() {
+    }
+
+    set_default_style(indices, elements?) {
+    }
+
+    set_style_on_elements(style, indices, elements?) {
+    }
+    
+    im: any;
+}
