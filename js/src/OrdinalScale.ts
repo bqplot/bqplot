@@ -15,25 +15,25 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
-import * as scale from './Scale';
+import { Scale } from './Scale';
 import _ from 'underscore';
 
-export const OrdinalScale = scale.Scale.extend({
+export class OrdinalScale extends Scale {
 
-    render: function() {
+    render() {
         this.scale = d3.scaleBand();
         this.scale.domain(this.model.domain);
         this.offset = 0;
         this.create_event_listeners();
-    },
+    }
 
-    set_range: function(range, padding) {
+    set_range(range, padding) {
        padding = (padding === undefined) ? 0 : padding;
        this.scale.range(range, padding, padding / 2.0);
        this.offset = (this.scale.domain().length === 0) ? 0 : this.scale.range() / 2.0;
-    },
+    }
 
-    expand_domain: function(old_range, new_range) {
+    expand_domain(old_range, new_range) {
         // If you have a current range and then a new range and want to
         // expand the domain to expand to the new range but keep it
         // consistent with the previous one, this is the function you use.
@@ -48,9 +48,9 @@ export const OrdinalScale = scale.Scale.extend({
         var outer_padding = (unpadded_scale.range().length > 0) ?
             Math.abs((new_range[1] - old_range[1]) / unpadded_scale.bandwidth()) : 0;
         this.scale.range(new_range, 0.0, outer_padding);
-    },
+    }
 
-    invert: function(pixel) {
+    invert(pixel) {
         // returns the element in the domain which is closest to pixel
         // value passed. If the pixel is outside the range of the scale,
         var that = this;
@@ -62,9 +62,9 @@ export const OrdinalScale = scale.Scale.extend({
             return Math.abs(pixel - d);
         });
         return domain[abs_diff.indexOf(d3.min(abs_diff))];
-    },
+    }
 
-    invert_range: function(pixels) {
+    invert_range(pixels) {
         //return all the indices between a range
         //pixels should be a non-decreasing two element array
         var that = this;
@@ -79,5 +79,4 @@ export const OrdinalScale = scale.Scale.extend({
         });
         return filtered_ind.map(function(ind) { return domain[ind]; });
     }
-});
-
+}
