@@ -20,7 +20,7 @@ import _ from 'underscore';
 export class ToolbarModel extends widgets.DOMWidgetModel {
 
     defaults() {
-        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+        return {...widgets.DOMWidgetModel.prototype.defaults(),
             _model_name: "ToolbarModel",
             _view_name: "Toolbar",
             _model_module: "bqplot",
@@ -31,7 +31,7 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
             figure: undefined,
             _panning: false,
             _panzoom: null
-        });
+        };
     }
 
     // Backbone attributes:
