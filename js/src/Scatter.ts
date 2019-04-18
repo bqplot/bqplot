@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as scatterbase from './ScatterBase';
+import {ScatterBase} from './ScatterBase';
 import * as markers from './Markers';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
@@ -20,33 +20,32 @@ import * as d3 from 'd3';
 var bqSymbol: any = markers.symbol;
 
 
-export const Scatter = scatterbase.ScatterBase.extend({
+export class Scatter extends ScatterBase {
 
-    render: function() {
+    render() {
 
         this.dot = bqSymbol()
           .type(this.model.get("marker"))
           .size(this.model.get("default_size"))
           .skew(this.model.get("default_skew"));
 
-        return Scatter.__super__.render.apply(this);
-    },
+        return super.render();
+    }
 
-    create_listeners: function() {
-        Scatter.__super__.create_listeners.apply(this);
-        this.listenTo(this.model, "change:colors", this.update_colors, this);
-        this.listenTo(this.model, "change:stroke", this.update_stroke, this);
-        this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
-        this.listenTo(this.model, "change:default_opacities", this.update_default_opacities, this);
-        this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
-        this.listenTo(this.model, "change:default_rotation", this.update_xy_position, this);
-        this.listenTo(this.model, "change:marker", this.update_marker, this);
-        this.listenTo(this.model, "change:default_size", this.update_default_size, this);
-        this.listenTo(this.model, "change:fill", this.update_fill, this);
-        this.listenTo(this.model, "change:display_names", this.update_names, this);
-    },
+    create_listeners() {
+        super.create_listeners();
+        this.listenTo(this.model, "change:colors", this.update_colors);
+        this.listenTo(this.model, "change:stroke", this.update_stroke);
+        this.listenTo(this.model, "change:stroke_width", this.update_stroke_width);
+        this.listenTo(this.model, "change:default_opacities", this.update_default_opacities);
+        this.listenTo(this.model, "change:default_skew", this.update_default_skew);
+        this.listenTo(this.model, "change:marker", this.update_marker);
+        this.listenTo(this.model, "change:default_size", this.update_default_size);
+        this.listenTo(this.model, "change:fill", this.update_fill);
+        this.listenTo(this.model, "change:display_names", this.update_names);
+    }
 
-    update_colors: function(model, new_colors) {
+    update_colors(model, new_colors) {
         if(!this.model.dirty) {
             var that = this,
                 stroke = this.model.get("stroke"),
@@ -56,7 +55,7 @@ export const Scatter = scatterbase.ScatterBase.extend({
                 function(d, i) {
                     return that.get_element_color(d, i);
                 } : "none")
-            .style("stroke", stroke ? stroke : function(d, i) {
+            .style("stroke", stroke ? stroke: function(d, i) {
                 return that.get_element_color(d, i);
             });
 
@@ -65,7 +64,7 @@ export const Scatter = scatterbase.ScatterBase.extend({
                 .style("fill", function(d, i) {
                     return new_colors[i % len];
                 })
-                .style("stroke", stroke ? stroke : function(d, i) {
+                .style("stroke", stroke ? stroke : function (d, i) {
                         return new_colors[i % len];
                     }
                 );
@@ -76,9 +75,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
             }
         }
         this.apply_styles()
-    },
+    }
 
-    update_fill: function(model, fill) {
+    update_fill(model, fill) {
         var that = this,
             colors = this.model.get("colors"),
             len = colors.length;
@@ -91,9 +90,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
                     return colors[i % len];
                 } : "none");
         }
-    },
+    }
 
-    update_stroke_width: function() {
+    update_stroke_width() {
         var stroke_width = this.model.get("stroke_width");
 
         this.d3el.selectAll(".dot")
@@ -103,13 +102,13 @@ export const Scatter = scatterbase.ScatterBase.extend({
             this.legend_el.selectAll("path")
               .style("stroke-width", stroke_width);
         }
-    },
+    }
 
-    update_stroke: function(model, fill) {
+    update_stroke(model, fill) {
         var that = this,
             stroke = this.model.get("stroke");
         this.d3el.selectAll(".dot")
-            .style("stroke", stroke ? stroke : function(d, i) {
+            .style("stroke", stroke ? stroke: function(d, i) {
                 return that.get_element_color(d, i);
             });
 
@@ -117,9 +116,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
             this.legend_el.selectAll("path")
                 .style("stroke", stroke);
         }
-    },
+    }
 
-    update_default_opacities: function(animate) {
+    update_default_opacities(animate) {
         if (!this.model.dirty) {
             var default_opacities = this.model.get("default_opacities");
             var colors = this.model.get("colors");
@@ -145,9 +144,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
                 });
             }
         }
-    },
+    }
 
-    update_marker: function(model, marker) {
+    update_marker(model, marker) {
         if (!this.model.dirty) {
             this.d3el.selectAll(".dot")
                 .transition("update_marker")
@@ -158,9 +157,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
                     .attr("d", this.dot.type(marker));
             }
         }
-    },
+    }
 
-    update_default_skew: function(animate) {
+    update_default_skew(animate) {
         if (!this.model.dirty) {
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
             var that = this;
@@ -171,9 +170,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
                     return that.get_element_skew(d);
                 }));
         }
-    },
+    }
 
-    update_default_size: function(animate) {
+    update_default_size(animate) {
         this.compute_view_padding();
         // update size scale range?
         if (!this.model.dirty) {
@@ -188,9 +187,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
             // Label positions also need to change
             this.update_names(animate);
         }
-    },
+    }
 
-    update_names: function(animate) {
+    update_names(animate) {
         var that = this,
             names = this.model.get("names") || [],
             show_names = this.model.get("display_names") && names.length !== 0,
@@ -206,9 +205,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
             .attr("display", function(d) {
                 return (show_names) ? "inline": "none";
             });
-    },
+    }
 
-    color_scale_updated: function(animate) {
+    color_scale_updated(animate) {
         var that = this,
             fill = this.model.get("fill"),
             stroke = this.model.get("stroke");
@@ -222,12 +221,12 @@ export const Scatter = scatterbase.ScatterBase.extend({
               function(d, i) {
                   return that.get_element_color(d, i);
               } : "none")
-          .style("stroke", stroke ? stroke : function(d, i) {
+          .style("stroke", stroke ? stroke: function(d, i) {
                   return that.get_element_color(d, i);
               });
-    },
+    }
 
-    draw_elements: function(animate, elements_added) {
+    draw_elements(animate, elements_added) {
         var that = this;
 
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
@@ -244,9 +243,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
 
         this.update_names(animate);
         this.apply_styles();
-    },
+    }
 
-    draw_legend_elements: function(elements_added, rect_dim) {
+    draw_legend_elements(elements_added, rect_dim) {
         var colors = this.model.get("colors"),
             len = colors.length,
             stroke = this.model.get("stroke");
@@ -265,9 +264,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
                     return colors[i % len];
                 }
           );
-    },
+    }
 
-    set_default_style: function(indices) {
+    set_default_style(indices) {
         // For all the elements with index in the list indices, the default
         // style is applied.
         if(!indices || indices.length === 0) {
@@ -284,14 +283,14 @@ export const Scatter = scatterbase.ScatterBase.extend({
           .style("fill", fill ? function(d, i) {
              return that.get_element_color(d, i);
           } : "none")
-          .style("stroke", stroke ? stroke : function(d, i) {
+          .style("stroke", stroke ? stroke: function(d, i) {
               return that.get_element_color(d, i);
           }).style("opacity", function(d, i) {
               return that.get_element_opacity(d, i);
           }).style("stroke-width", stroke_width);
-    },
+    }
 
-    set_drag_style: function(d, i, dragged_node) {
+    set_drag_style(d, i, dragged_node) {
         d3.select(dragged_node)
           .select("path")
           .classed("drag_scatter", true)
@@ -305,9 +304,9 @@ export const Scatter = scatterbase.ScatterBase.extend({
               .style("fill", drag_color)
               .style("stroke", drag_color);
         }
-    },
+    }
 
-    reset_drag_style: function(d, i, dragged_node) {
+    reset_drag_style(d, i, dragged_node) {
         var stroke = this.model.get("stroke"),
             original_color = this.get_element_color(d, i);
 
@@ -323,6 +322,7 @@ export const Scatter = scatterbase.ScatterBase.extend({
               .style("fill", original_color)
               .style("stroke", stroke ? stroke : original_color);
         }
-    },
-});
+    }
 
+    dot: any;
+}
