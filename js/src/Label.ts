@@ -15,20 +15,20 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
-import * as scatterbase from './ScatterBase';
+import {ScatterBase} from './ScatterBase';
 
 
-export const Label = scatterbase.ScatterBase.extend({
+export class Label extends ScatterBase {
 
-    create_listeners: function() {
-        Label.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
         this.model.on_some_change(["font_weight", "font_size", "colors",
                                    "align", "font_unit"], this.update_style, this);
         this.model.on_some_change(["x", "y", "x_offset", "y_offset",
                                    "rotate_angle"], this.update_position, this);
-    },
+    }
 
-    update_default_opacities: function(animate) {
+    update_default_opacities(animate) {
         if (!this.model.dirty) {
             var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
@@ -41,9 +41,9 @@ export const Label = scatterbase.ScatterBase.extend({
                     return that.get_element_opacity(d, i);
                 });
         }
-    },
+    }
 
-    update_default_size: function(animate) {
+    update_default_size(animate) {
         this.compute_view_padding();
         // update size scale range?
         if (!this.model.dirty) {
@@ -56,44 +56,44 @@ export const Label = scatterbase.ScatterBase.extend({
                     return that.get_element_size(d);
                 });
         }
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
         this.update_position();
-    },
+    }
 
-    draw_elements: function(animate, elements_added) {
+    draw_elements(animate, elements_added) {
         elements_added.append("text")
             .classed("label element", true);
 
         this.update_text();
         this.update_style();
         this.update_default_opacities(true);
-    },
+    }
 
-    update_text: function() {
+    update_text() {
         this.d3el.selectAll(".object_grp")
             .select(".label")
             .text(function(d) { return d.text; });
-    },
+    }
 
-    get_element_size: function(data) {
+    get_element_size(data) {
         var size_scale = this.scales.size;
         var unit = this.model.get("font_unit");
         if(size_scale && data.size !== undefined) {
             return size_scale.scale(data.size) + unit;
         }
         return this.model.get("default_size") + unit;
-    },
+    }
 
-    get_element_rotation: function(data) {
+    get_element_rotation(data) {
         var rotation_scale = this.scales.rotation;
         return (!rotation_scale || !data.rotation) ? "rotate(" + this.model.get("rotate_angle") + ")" :
             "rotate(" + rotation_scale.scale(data.rotation) + ")";
-    },
+    }
 
-    update_position: function() {
+    update_position() {
         var that = this;
         var x_scale = this.x_scale;
         var y_scale = this.y_scale;
@@ -105,9 +105,9 @@ export const Label = scatterbase.ScatterBase.extend({
                                 "," + (y_scale.scale(d.y) + y_scale.offset + y_offset) + ")" +
                        that.get_element_rotation(d);
             });
-    },
+    }
 
-    update_style: function() {
+    update_style() {
         var that = this;
         this.d3el.selectAll(".object_grp")
             .select("text")
@@ -122,9 +122,9 @@ export const Label = scatterbase.ScatterBase.extend({
             .style("fill", function(d, i) {
                     return that.get_element_color(d,i);
             });
-    },
+    }
 
-    color_scale_updated: function(animate) {
+    color_scale_updated(animate) {
         var that = this;
         var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
@@ -135,9 +135,9 @@ export const Label = scatterbase.ScatterBase.extend({
             .style("fill", function(d, i) {
                   return that.get_element_color(d, i);
             });
-    },
+    }
 
-    set_default_style: function(indices) {
+    set_default_style(indices) {
         // For all the elements with index in the list indices, the default
         // style is applied.
         if(!indices || indices.length === 0) {
@@ -156,9 +156,9 @@ export const Label = scatterbase.ScatterBase.extend({
             .style("fill", function(d, i) {
                     return that.get_element_color(d, i);
             });
-    },
+    }
 
-    set_drag_style: function(d, i, dragged_node) {
+    set_drag_style(d, i, dragged_node) {
         var dragged_size = (this.model.get("drag_size") *
             this.model.get("default_size")) + this.model.get("font_unit");
         d3.select(dragged_node)
@@ -166,14 +166,17 @@ export const Label = scatterbase.ScatterBase.extend({
           .classed("drag_label", true)
           .transition("set_drag_style")
           .style("font-size", (dragged_size));
-    },
+    }
 
-    reset_drag_style: function(d, i, dragged_node) {
+    reset_drag_style(d, i, dragged_node) {
         d3.select(dragged_node)
           .select("text")
           .classed("drag_label", false)
           .transition("reset_drag_style")
           .style("font-size", this.get_element_size(d));
-    },
-});
+    }
 
+    // TODO: put this here just because it is an abstract method on the base
+    // class.
+    update_default_skew() {}
+}
