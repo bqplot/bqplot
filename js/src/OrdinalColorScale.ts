@@ -15,37 +15,35 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
-import * as scale from './Scale';
+import { Scale } from './Scale';
 import * as colurutils from './ColorUtils';
 
-export const OrdinalColorScale = scale.Scale.extend({
+export class OrdinalColorScale extends Scale {
 
-    render: function(){
+    render(){
         this.scale = d3.scaleOrdinal();
         this.scale.domain(this.model.domain);
         this.create_event_listeners();
-        this.listenTo(this.model, "domain_changed", this.model_domain_changed, this);
-        this.listenTo(this.model, "set_ticks", this.model_ticks_changed, this);
+        this.listenTo(this.model, "domain_changed", this.model_domain_changed);
         this.model.on_some_change(["colors", "scheme"], this.colors_changed, this);
         this.set_range();
-    },
+    }
 
-    set_range: function() {
+    set_range() {
         if (this.model.get("colors").length > 0) {
             this.scale.range(colurutils.cycle_colors(this.model.get("colors"), this.scale.domain().length));
         } else {
             this.scale.range(colurutils.get_ordinal_scale_range(this.model.get("scheme"), this.scale.domain().length));
         }
         this.trigger("color_scale_range_changed");
-    },
+    }
 
-    model_domain_changed: function() {
-        OrdinalColorScale.__super__.model_domain_changed.apply(this);
-        this.set_range();
-    },
-
-    colors_changed: function() {
+    model_domain_changed() {
+        super.model_domain_changed();
         this.set_range();
     }
-});
 
+    colors_changed() {
+        this.set_range();
+    }
+}
