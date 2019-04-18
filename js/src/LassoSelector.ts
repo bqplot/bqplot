@@ -17,25 +17,25 @@ import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-drag"), require("d3-selection"), require("d3-shape"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
-import * as baseselector from './Selector';
+import {BaseXYSelector} from './Selector';
 import * as sel_utils from './selector_utils';
 
-export const LassoSelector = baseselector.BaseXYSelector.extend({
-    render: function() {
-        LassoSelector.__super__.render.apply(this);
+export class LassoSelector extends BaseXYSelector {
+    render() {
+        super.render();
         var scale_creation_promise = this.create_scales();
         this.line = d3.line();
         this.all_vertices = {};
         this.lasso_counter = 0;
 
         var that = this;
-        Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
+        Promise.all([this.mark_views_promise, scale_creation_promise]).then(() => {
             var drag = d3.drag()
-                .on("start", _.bind(that.drag_start, that))
-                .on("drag", _.bind(that.drag_move, that))
-                .on("end", _.bind(that.drag_end, that));
+                .on("start", () => {this.drag_start();})
+                .on("drag", () => {this.drag_move();})
+                .on("end", () => {this.drag_end();});
 
-            d3.select(window).on("keydown", _.bind(that.keydown, that));
+            d3.select(window).on("keydown", () => {this.keydown();});
 
             that.d3el.attr("class", "lassoselector");
 
@@ -52,20 +52,20 @@ export const LassoSelector = baseselector.BaseXYSelector.extend({
 
             that.create_listeners();
         });
-    },
+    }
 
-    create_listeners: function() {
-        LassoSelector.__super__.create_listeners.apply(this);
-        this.listenTo(this.model, "change:color", this.change_color, this);
-    },
+    create_listeners() {
+        super.create_listeners();
+        this.listenTo(this.model, "change:color", this.change_color);
+    }
 
-    change_color: function(model, color) {
+    change_color(model, color) {
         if (color) {
             this.d3el.selectAll("path").style("stroke", color);
         }
-    },
+    }
 
-    create_new_lasso: function() {
+    create_new_lasso() {
         var lasso = this.d3el.append("path")
             .attr("id", "l" + (++this.lasso_counter))
             .on("click", function() {
@@ -77,20 +77,20 @@ export const LassoSelector = baseselector.BaseXYSelector.extend({
         if (color) {
             lasso.style("stroke", color);
         }
-    },
+    }
 
-    drag_start: function() {
+    drag_start() {
         this.current_vertices = [];
         this.create_new_lasso();
-    },
+    }
 
-    drag_move: function() {
+    drag_move() {
         this.current_vertices.push(d3.mouse(this.background.node()));
         this.d3el.select("#l" + this.lasso_counter)
             .attr("d", this.line(this.current_vertices));
-    },
+    }
 
-    drag_end: function() {
+    drag_end() {
         var lasso_name = "l" + this.lasso_counter;
         // Close the lasso
         this.d3el.select("#" + lasso_name)
@@ -99,9 +99,9 @@ export const LassoSelector = baseselector.BaseXYSelector.extend({
         this.all_vertices[lasso_name] = this.current_vertices;
         // Update selected for each mark
         this.update_mark_selected(this.all_vertices)
-    },
+    }
 
-    update_mark_selected: function(vertices) {
+    update_mark_selected(vertices?) {
 
         if(vertices === undefined || vertices.length === 0) {
             // Reset all the selected in marks
@@ -123,14 +123,14 @@ export const LassoSelector = baseselector.BaseXYSelector.extend({
         _.each(this.mark_views, function(mark_view: any) {
             mark_view.selector_changed(point_selector, rect_selector);
         }, this);
-    },
+    }
 
-    relayout: function() {
-        LassoSelector.__super__.relayout.apply(this);
+    relayout() {
+        super.relayout();
         this.background.attr("width", this.width).attr("height", this.height);
-    },
+    }
 
-    keydown: function() {
+    keydown() {
        // delete key pressed
        if (d3GetEvent().keyCode === 46) {
            // Delete selected lassos
@@ -144,13 +144,23 @@ export const LassoSelector = baseselector.BaseXYSelector.extend({
            lassos_to_delete.remove();
            this.update_mark_selected(this.all_vertices);
       }
-    },
+    }
 
-    reset: function() {
+    reset() {
         this.lasso_counter = 0;
         this.all_vertices = {};
         this.d3el.selectAll("path").remove();
         this.update_mark_selected();
-    },
-});
+    }
 
+    // TODO: this is here to provide an implementation of an abstract method
+    // from the base class.
+    selected_changed() {}
+
+    line: any;
+    all_vertices: any;
+    lasso_counter: number;
+    background: any;
+    current_vertices: any[];
+
+}
