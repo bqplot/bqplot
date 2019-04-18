@@ -13,38 +13,38 @@
  * limitations under the License.
  */
 
-import * as scalemodel from './ScaleModel';
+import { ScaleModel } from './ScaleModel';
 import _ from 'underscore';
 
-export const OrdinalScaleModel = scalemodel.ScaleModel.extend({
+export class OrdinalScaleModel extends ScaleModel {
 
-    defaults: function() {
-        return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
+    defaults() {
+        return {...ScaleModel.prototype.defaults(), 
             _model_name: "OrdinalScaleModel",
             _view_name: "OrdinalScale",
             min: null,
             max: null,
-        });
-    },
+        };
+    }
 
-    initialize: function() {
-        OrdinalScaleModel.__super__.initialize.apply(this, arguments);
-    },
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
+    }
 
-    set_init_state: function() {
+    set_init_state() {
         this.type = "ordinal";
         this.min_from_data = true;
         this.max_from_data = true;
-    },
+    }
 
-    set_listeners: function() {
+    set_listeners() {
         this.on("change:domain", this.domain_changed, this);
         this.domain_changed();
         this.on("change:reverse", this.reverse_changed, this);
         this.reverse_changed();
-    },
+    }
 
-    domain_changed: function() {
+    domain_changed() {
         this.ord_domain = this.get("domain");
         if(this.ord_domain !== null && this.ord_domain.length !== 0) {
             this.max_from_data = false;
@@ -57,9 +57,9 @@ export const OrdinalScaleModel = scalemodel.ScaleModel.extend({
             this.domain = [];
             this.update_domain();
         }
-    },
+    }
 
-    reverse_changed: function(model, value, options) {
+    reverse_changed(model?) {
         var prev_reverse = (model === undefined) ? false : model.previous("reverse");
         this.reverse = this.get("reverse");
 
@@ -71,9 +71,9 @@ export const OrdinalScaleModel = scalemodel.ScaleModel.extend({
             this.domain.reverse();
             this.trigger("domain_changed", this.domain);
         }
-    },
+    }
 
-    update_domain: function() {
+    update_domain() {
         var domain = [];
         // TODO: check for hasOwnProperty
         for (var id in this.domains) {
@@ -84,9 +84,9 @@ export const OrdinalScaleModel = scalemodel.ScaleModel.extend({
             this.domain = domain;
             this.trigger("domain_changed", domain);
         }
-    },
+    }
 
-    compute_and_set_domain: function(data_array, id) {
+    compute_and_set_domain(data_array, id) {
         // Takes an array and calculates the domain for the particular
         // view. If you have the domain already calculated on your side,
         // call set_domain function.
@@ -103,5 +103,8 @@ export const OrdinalScaleModel = scalemodel.ScaleModel.extend({
         }
         this.set_domain(domain, id);
     }
-});
 
+    min_from_data: boolean;
+    max_from_data: boolean;
+    ord_domain: any;
+}
