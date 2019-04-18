@@ -16,12 +16,12 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
-import * as baseselector from './Selector';
+import { BaseXSelector } from './Selector';
 
-export const IndexSelector = baseselector.BaseXSelector.extend({
+export class IndexSelector extends BaseXSelector {
 
-    render : function() {
-        IndexSelector.__super__.render.apply(this);
+    render () {
+        super.render();
         this.active = false;
         this.dirty = false;
         var that = this;
@@ -54,30 +54,30 @@ export const IndexSelector = baseselector.BaseXSelector.extend({
             that.create_listeners();
             that.selected_changed();
         });
-    },
+    }
 
-    create_listeners: function() {
-        IndexSelector.__super__.create_listeners.apply(this);
-        this.listenTo(this.model, "change:color", this.color_change, this);
-    },
+    create_listeners() {
+        super.create_listeners();
+        this.listenTo(this.model, "change:color", this.color_change);
+    }
 
-    color_change: function() {
+    color_change() {
         if(this.model.get("color") !== null){
             this.line.style("stroke", this.model.get("color"));
         }
-    },
+    }
 
-    initial_click: function() {
+    initial_click() {
         this.line.attr("visibility", "visible");
         this.click();
         this.background.on("click", _.bind(this.click, this));
-    },
+    }
 
-    click: function () {
+    click () {
         this.active = !this.active;
-    },
+    }
 
-    mousemove: function() {
+    mousemove() {
         if (!this.active) {
             return;
         }
@@ -93,13 +93,13 @@ export const IndexSelector = baseselector.BaseXSelector.extend({
         });
         this.touch();
         this.dirty = false;
-    },
+    }
 
-    invert_pixel: function(pixel) {
+    invert_pixel(pixel) {
         return this.scale.invert(pixel);
-    },
+    }
 
-    reset: function() {
+    reset() {
         this.active = false;
         if(this.line !== undefined && this.line !== null) {
             this.line.attr("x1", 0)
@@ -116,17 +116,17 @@ export const IndexSelector = baseselector.BaseXSelector.extend({
             mark_view.invert_point();
         });
         this.touch();
-    },
+    }
 
-    update_scale_domain: function(ignore_gui_update) {
+    update_scale_domain(ignore_gui_update) {
         // Call the base class function to update the scale.
-        IndexSelector.__super__.update_scale_domain.apply(this);
+        super.update_scale_domain();
         if(ignore_gui_update !== true) {
             this.selected_changed();
         }
-    },
+    }
 
-    selected_changed: function(model, value) {
+    selected_changed() {
         if(this.dirty) {
             //this change was most probably triggered from the js side and
             //should be ignored.
@@ -153,20 +153,26 @@ export const IndexSelector = baseselector.BaseXSelector.extend({
                 mark_view.invert_point(pixel);
             });
         }
-    },
+    }
 
-    relayout: function() {
-        IndexSelector.__super__.relayout.apply(this);
+    relayout() {
+        super.relayout();
         this.line.attr("y1", 0)
             .attr("y2", this.height);
         this.background.attr("width", this.width)
             .attr("height", this.height);
         this.set_range([this.scale]);
-    },
+    }
 
-    set_range: function(array) {
+    set_range(array) {
         for(var iter = 0; iter < array.length; iter++) {
             array[iter].set_range([0, this.width]);
         }
-    },
-});
+    }
+
+    active: boolean;
+    dirty: boolean;
+    line: any;
+    background: any;
+}
+
