@@ -16,12 +16,13 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"));
 import * as _ from 'underscore';
-import * as mark from './Mark';
+import { Mark } from './Mark';
+import { OHLCModel } from './OHLCModel';
 
-export const OHLC = mark.Mark.extend({
+export class OHLC extends Mark {
 
-    render: function() {
-        var base_creation_promise = OHLC.__super__.render.apply(this);
+    render() {
+        var base_creation_promise = super.render();
 
         var that = this;
         this.displayed.then(function() {
@@ -33,9 +34,9 @@ export const OHLC = mark.Mark.extend({
             that.create_listeners();
             that.draw(); },
         null);
-    },
+    }
 
-    set_ranges: function() {
+    set_ranges() {
         var x_scale = this.scales.x;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
@@ -44,9 +45,9 @@ export const OHLC = mark.Mark.extend({
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         var x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if(!this.model.dirty) { this.draw(); }
@@ -54,24 +55,24 @@ export const OHLC = mark.Mark.extend({
         this.listenTo(y_scale, "domain_changed", function() {
             if(!this.model.dirty) { this.draw(); }
         });
-    },
+    }
 
-    create_listeners: function() {
-        OHLC.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
         this.d3el.on("mouseover", _.bind(this.mouse_over, this))
             .on("mousemove", _.bind(this.mouse_move, this))
             .on("mouseout", _.bind(this.mouse_out, this));
 
-        this.listenTo(this.model, "change:stroke", this.update_stroke, this);
-        this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
-        this.listenTo(this.model, "change:colors", this.update_colors, this);
-        this.listenTo(this.model, "change:opacities", this.update_opacities, this);
-        this.listenTo(this.model, "change:marker", this.update_marker, this);
-        this.listenTo(this.model, "format_updated", this.draw, this);
+        this.listenTo(this.model, "change:stroke", this.update_stroke);
+        this.listenTo(this.model, "change:stroke_width", this.update_stroke_width);
+        this.listenTo(this.model, "change:colors", this.update_colors);
+        this.listenTo(this.model, "change:opacities", this.update_opacities);
+        this.listenTo(this.model, "change:marker", this.update_marker);
+        this.listenTo(this.model, "format_updated", this.draw);
         this.listenTo(this.model, "data_updated", this.draw);
-    },
+    }
 
-    update_stroke: function() {
+    update_stroke() {
         var stroke = this.model.get("stroke");
         this.d3el.selectAll(".stick").style("stroke", stroke);
 
@@ -79,14 +80,14 @@ export const OHLC = mark.Mark.extend({
             this.legend_el.selectAll("path").style("stroke", stroke);
             this.legend_el.selectAll("text").style("fill", stroke);
         }
-    },
+    }
 
-    update_stroke_width: function() {
+    update_stroke_width() {
         var stroke_width = this.model.get("stroke_width");
         this.d3el.selectAll(".stick").attr("stroke-width", stroke_width);
-    },
+    }
 
-    update_colors: function() {
+    update_colors() {
         var that = this;
         var colors = this.model.get("colors");
         var up_color = (colors[0] ? colors[0] : "none");
@@ -101,9 +102,9 @@ export const OHLC = mark.Mark.extend({
         if(this.legend_el) {
             this.legend_el.selectAll("path").style("fill", up_color);
         }
-    },
+    }
 
-    update_opacities: function() {
+    update_opacities() {
         var opacities = this.model.get("opacities");
         this.d3el.selectAll(".stick").style("opacity", function(d, i) {
             return opacities[i];
@@ -113,9 +114,9 @@ export const OHLC = mark.Mark.extend({
             this.legend_el.selectAll("path")
                 .attr("opacity", function(d, i) { return opacities[i]; });
         }
-    },
+    }
 
-    update_marker: function() {
+    update_marker() {
         var marker = this.model.get("marker");
 
         if(this.legend_el && this.rect_dim) {
@@ -127,9 +128,9 @@ export const OHLC = mark.Mark.extend({
             this.model.mark_data.map(function(d, index) {
                 return d[1];
             }));
-    },
+    }
 
-    update_selected_colors: function(idx_start, idx_end) {
+    update_selected_colors(idx_start, idx_end) {
         var current_range = _.range(idx_start, idx_end + 1);
         if(current_range.length == this.model.mark_data.length) {
             current_range = [];
@@ -153,9 +154,9 @@ export const OHLC = mark.Mark.extend({
                     return d[px.o] > d[px.c] ? down_color : up_color;
                 });
         });
-    },
+    }
 
-    invert_range: function(start_pxl, end_pxl) {
+    invert_range(start_pxl, end_pxl) {
         if(start_pxl === undefined || end_pxl === undefined ||
            this.model.mark_data.length === 0)
         {
@@ -185,18 +186,18 @@ export const OHLC = mark.Mark.extend({
         this.model.set("selected", selected);
         this.touch();
         return selected;
-    },
+    }
 
-    invert_point: function(pixel) {
+    invert_point(pixel) {
         var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
         var sel_index = abs_diff.indexOf(d3.min(abs_diff));
         this.update_selected_colors(sel_index, sel_index);
         this.model.set("selected", [sel_index]);
         this.touch();
         return;
-    },
+    }
 
-    draw: function() {
+    draw() {
         var x_scale = this.scales.x, y_scale = this.scales.y;
         this.set_ranges();
         var colors = this.model.get("colors");
@@ -270,9 +271,9 @@ export const OHLC = mark.Mark.extend({
         this.x_pixels = this.model.mark_data.map(function(el) {
             return x_scale.scale(el[0]) + x_scale.offset;
         });
-    },
+    }
 
-    draw_mark_paths: function(type, selector, dat) {
+    draw_mark_paths(type, selector, dat) {
         /* Calculate some values so that we can draw the marks
          *      | <----- high (0,0)
          *      |
@@ -428,48 +429,48 @@ export const OHLC = mark.Mark.extend({
                 return that.body_path_bar(low[i]-high[i]);
              });
         }
-    },
+    }
 
     /* SVG path for head of candle */
-    head_path_candle: function(height) {
+    head_path_candle(height) {
         return "m0,0 l0," + height;
-    },
+    }
 
     /* SVG path for tail of candle */
-    tail_path_candle: function(y_offset, height) {
+    tail_path_candle(y_offset, height) {
         return "m0," + y_offset + " l0," + height;
-    },
+    }
 
     /* SVG path for body of candle */
-    body_path_candle: function(x_offset, y_offset, width, height) {
+    body_path_candle(x_offset, y_offset, width, height) {
         return "m" + x_offset + "," + y_offset + " l" + width + ",0" +
             " l0," + height + " l" + (-1*width) + ",0" + " z";
-    },
+    }
 
     /* SVG path for head of bar */
-    head_path_bar: function(x_offset, y_offset, width) {
+    head_path_bar(x_offset, y_offset, width) {
         return "m" + x_offset + "," + y_offset +
               " l" + width + ",0";
-    },
+    }
 
     /* SVG path for tail of bar */
-    tail_path_bar: function(y_offset, width) {
+    tail_path_bar(y_offset, width) {
         return "m0," + y_offset +
                 " l" + width + ",0";
-    },
+    }
 
     /* SVG path for body of bar */
-    body_path_bar: function(height) {
+    body_path_bar(height) {
         return "m0,0 l0," + height;
-    },
+    }
 
-    calculate_mark_width: function() {
+    calculate_mark_width() {
         /*
          * Calculate the mark width for this data set based on the minimum
          * distance between consecutive points.
          */
         var that = this;
-        var min_distance = Number.POSITIVE_INFINITY;
+        var min_distance: any = Number.POSITIVE_INFINITY;
         var scales = this.model.get("scales");
         var x_scale = scales.x;
 
@@ -487,10 +488,10 @@ export const OHLC = mark.Mark.extend({
             min_distance = -1 * min_distance;
         }
         return min_distance;
-    },
+    }
 
-    relayout: function() {
-        OHLC.__super__.relayout.apply(this);
+    relayout() {
+        super.relayout();
         this.set_ranges();
         this.d3el.select(".intselmouse")
             .attr("width", this.width)
@@ -498,9 +499,9 @@ export const OHLC = mark.Mark.extend({
 
         // We have to redraw every time that we relayout
         this.draw();
-    },
+    }
 
-    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+    draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         var stroke = this.model.get("stroke");
         var colors = this.model.get("colors");
         var up_color = (colors[0] ? colors[0] : "none");
@@ -541,14 +542,14 @@ export const OHLC = mark.Mark.extend({
             .style("fill", stroke);
 
         var max_length = d3.max(this.model.get("labels"), function(d: any) {
-            return d.length;
+            return Number(d.length);
         });
 
         this.legend_el.exit().remove();
         return [1, max_length];
-    },
+    }
 
-    draw_legend_icon: function(size, selector) {
+    draw_legend_icon(size, selector) {
         /*
          * Draw OHLC icon next to legend text
          * Drawing the icon like this means we can avoid scaling when we
@@ -575,5 +576,17 @@ export const OHLC = mark.Mark.extend({
                 this.body_path_bar(height));
         }
     }
-});
 
+    clear_style() {}
+    compute_view_padding() {}
+    set_default_style() {}
+    set_style_on_elements() {}
+
+    model: OHLCModel;
+    legend_el: any;
+    rect_dim: any;
+    x_pixels: any[];
+    width: any;
+    height: any;
+
+}

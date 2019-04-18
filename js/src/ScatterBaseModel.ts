@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-import * as markmodel from './MarkModel';
+import {MarkModel} from './MarkModel';
 import * as serialize from './serialize';
 import _ from 'underscore';
 
-export const ScatterBaseModel = markmodel.MarkModel.extend({
+export class ScatterBaseModel extends MarkModel {
 
-    defaults: function() {
-        return _.extend({}, markmodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...MarkModel.prototype.defaults(), 
         _model_name: "ScatterBaseModel",
         _view_name: "ScatterBase",
 
@@ -48,12 +48,12 @@ export const ScatterBaseModel = markmodel.MarkModel.extend({
         restrict_x: false,
         restrict_y: false,
         update_on_move: false
-        });
-    },
+        };
+    }
 
-    initialize: function() {
+    initialize(attributes, options) {
         // TODO: Normally, color, opacity and size should not require a redraw
-        ScatterBaseModel.__super__.initialize.apply(this, arguments);
+        super.initialize(attributes, options);
         this.on_some_change(["x", "y", "color", "opacity", "size", "rotation"], this.update_data, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
         // on_some_change depends on the GLOBAL backbone on("change") handler which
@@ -61,9 +61,9 @@ export const ScatterBaseModel = markmodel.MarkModel.extend({
         // assumption.
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
-    },
+    }
 
-    update_mark_data: function() {
+    update_mark_data() {
         var x_data = this.get("x");
         var y_data = this.get("y");
 
@@ -93,24 +93,24 @@ export const ScatterBaseModel = markmodel.MarkModel.extend({
                 };
             });
         }
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         this.dirty = true;
         this.update_mark_data();
         this.update_unique_ids();
         this.update_domains();
         this.dirty = false;
         this.trigger("data_updated");
-    },
+    }
 
-    update_unique_ids: function() {},
+    update_unique_ids() {}
 
-    get_data_dict: function(data, index) {
+    get_data_dict(data, index) {
         return data;
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         if (!this.mark_data) {
             return;
         }
@@ -131,14 +131,13 @@ export const ScatterBaseModel = markmodel.MarkModel.extend({
             }
        }
     }
-}, {
-    serializers: _.extend({
+
+    static serializers = {...MarkModel.serializers,
         x: serialize.array_or_json,
         y: serialize.array_or_json,
         color: serialize.array_or_json,
         opacity: serialize.array_or_json,
         size: serialize.array_or_json,
         rotation: serialize.array_or_json,
-    }, markmodel.MarkModel.serializers)
-});
-
+    }
+}
