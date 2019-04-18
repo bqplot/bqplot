@@ -14,17 +14,16 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import * as _ from 'underscore';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
-import * as basemodel from './BaseModel';
+import {BaseModel} from './BaseModel';
 import * as serialize from './serialize';
 import { semver_range } from './version';
 
-export const MarketMapModel = basemodel.BaseModel.extend({
+export class MarketMapModel extends BaseModel {
 
-    defaults: function() {
-        return _.extend(basemodel.BaseModel.prototype.defaults(), {
+    defaults() {
+        return {...BaseModel.prototype.defaults(), 
             _model_name: "MarketMapModel",
             _view_name: "MarketMap",
             _model_module: "bqplot",
@@ -71,10 +70,9 @@ export const MarketMapModel = basemodel.BaseModel.extend({
             enable_hover: true,
             enable_select: true,
             tooltip_widget: null
-        });
+        };
     }
-}, {
-    serializers: _.extend({
+    static serializers = {...BaseModel.serializers,
         scales: { deserialize: widgets.unpack_models },
         axes: { deserialize: widgets.unpack_models },
         tooltip_widget: { deserialize: widgets.unpack_models },
@@ -84,6 +82,5 @@ export const MarketMapModel = basemodel.BaseModel.extend({
         groups: serialize.array_or_json,
         display_text: serialize.array_or_json,
         color: serialize.array_or_json,
-    }, basemodel.BaseModel.serializers)
-});
-
+    }
+}
