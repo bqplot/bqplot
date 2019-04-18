@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-import * as basemodel from './ScatterBaseModel';
+import { ScatterBaseModel} from './ScatterBaseModel';
 import * as serialize from './serialize';
 import _ from 'underscore';
 
-export const ScatterModel = basemodel.ScatterBaseModel.extend({
+export class ScatterModel extends ScatterBaseModel {
 
-    defaults: function() {
-        return _.extend(basemodel.ScatterBaseModel.prototype.defaults(), {
+    defaults() {
+        return {...ScatterBaseModel.prototype.defaults(), 
             _model_name: "ScatterModel",
             _view_name: "Scatter",
             skew: null,
@@ -35,27 +35,27 @@ export const ScatterModel = basemodel.ScatterBaseModel.extend({
             drag_color: null,
             drag_size: 5.0,
             names_unique: true,
-        });
-    },
+        };
+    }
 
-    initialize: function() {
+    initialize(attributes, options) {
         // TODO: Normally, color, opacity and size should not require a redraw
-        ScatterModel.__super__.initialize.apply(this, arguments);
+        super.initialize(attributes, options);
         this.on("change:skew", this.update_data, this);
         this.on_some_change(["names", "names_unique"], function() {
             this.update_unique_ids();
             this.trigger("data_updated");
         }, this);
-    },
+    }
 
-    update_mark_data: function() {
-        ScatterModel.__super__.update_mark_data.apply(this);
+    update_mark_data() {
+        super.update_mark_data();
         var skew = this.get("skew") || [];
 
         this.mark_data.forEach(function(d, i){ d.skew = skew[i]; });
-    },
+    }
 
-    update_unique_ids: function() {
+    update_unique_ids() {
         var names = this.get("names");
         var show_labels = (names != null && names.length !== 0);
         names = (show_labels) ? names : this.mark_data.map(function(data, index) {
@@ -72,11 +72,11 @@ export const ScatterModel = basemodel.ScatterBaseModel.extend({
             data.name = names[index];
             data.unique_id = unique_ids[index];
         });
-    },
-}, {
-    serializers: _.extend({
+    }
+
+    static serializers = {
+        ...ScatterBaseModel.serializers,
         skew: serialize.array_or_json,
         names: serialize.array_or_json,
-    }, basemodel.ScatterBaseModel.serializers)
-});
-
+    }
+}
