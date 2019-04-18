@@ -16,12 +16,12 @@
 import { WidgetView } from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-time"), require("d3-time-format"));
+// const d3 =Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-time"), require("d3-time-format"));
 import * as utils from './utils';
 import _ from 'underscore';
 
 // Polyfill for Math.log10 in IE11
-Math.log10 = Math.log10 || function (x) {
+Math.log10 = Math.log10 || function(x) {
     return Math.log(x) / Math.LN10;
 };
 
@@ -43,22 +43,21 @@ export class Axis extends WidgetView {
         this.height = this.parent.height - (this.margin.top + this.margin.bottom);
         this.width = this.parent.width - (this.margin.left + this.margin.right);
 
-        var scale_promise = this.set_scale_promise(this.model.get("scale"));
-        var offset_promise = this.get_offset_promise();
+        const scale_promise = this.set_scale_promise(this.model.get("scale"));
+        const offset_promise = this.get_offset_promise();
 
-        var that = this;
-        Promise.all([scale_promise, offset_promise]).then(function() {
-            that.create_listeners();
-            that.tick_format = that.generate_tick_formatter();
-            that.set_scales_range();
-            that.append_axis();
+        Promise.all([scale_promise, offset_promise]).then(() => {
+            this.create_listeners();
+            this.tick_format = this.generate_tick_formatter();
+            this.set_scales_range();
+            this.append_axis();
         });
     }
 
     create_listeners() {
         // Creates all event listeners
 
-        this.listenTo(this.model, "change:scale", function(model, value) {
+        this.listenTo(this.model, "change:scale", (model, value) => {
             this.update_scale(model.previous("scale"), value);
             // TODO: rescale_axis does too many things. Decompose
             this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
@@ -87,13 +86,12 @@ export class Axis extends WidgetView {
     }
 
     update_offset() {
-        var offset_creation_promise = this.get_offset_promise();
-        var that = this;
-        offset_creation_promise.then(function() {
-            that.set_scales_range();
-            that.update_offset_scale_domain();
-            that.g_axisline.attr("transform", that.get_axis_transform());
-            that.update_grid_lines();
+        const offset_creation_promise = this.get_offset_promise();
+        offset_creation_promise.then(() => {
+            this.set_scales_range();
+            this.update_offset_scale_domain();
+            this.g_axisline.attr("transform", this.get_axis_transform());
+            this.update_grid_lines();
         });
     }
 
@@ -106,9 +104,9 @@ export class Axis extends WidgetView {
     set_tick_values(animate?: boolean) {
         // Sets specific tick values from "tick_values" parameter
 
-        var tick_values = this.model.get("tick_values");
-        var useticks = [];
-        var num_ticks = this.model.get("num_ticks");
+        let useticks = [];
+        const tick_values = this.model.get("tick_values");
+        const num_ticks = this.model.get("num_ticks");
 
         if (tick_values !== undefined && tick_values !== null && tick_values.length > 0) {
             this.axis.tickValues(this.get_ticks_from_array_or_length(tick_values));
@@ -121,14 +119,14 @@ export class Axis extends WidgetView {
                 // Reduce number of suggested ticks if figure width is below the
                 // threshold. Note: "undefined" will result in the D3 default
                 // setting
-                var numDateTicks = (this.width < DATESCALE_WIDTH_THRESHOLD) ? 
-                                        5 : 
+                const numDateTicks = (this.width < DATESCALE_WIDTH_THRESHOLD) ?
+                                        5 :
                                         undefined;
                 this.axis.tickValues(this.axis_scale.scale.ticks(numDateTicks));
             } else if (this.axis_scale.model.type === "log") {
-                var i, r;
-                var allticks = this.axis_scale.scale.ticks();
-                var oom = Math.abs(Math.log10(this.axis_scale.scale.domain()[1] / this.axis_scale.scale.domain()[0]));
+                let i, r;
+                const allticks = this.axis_scale.scale.ticks();
+                const oom = Math.abs(Math.log10(this.axis_scale.scale.domain()[1] / this.axis_scale.scale.domain()[0]));
                 if (oom < 2) {
                     this.axis.tickValues(allticks);
                 } else if (oom < 7) {
@@ -145,7 +143,7 @@ export class Axis extends WidgetView {
                     this.axis.tickValues(useticks);
                 } else {
                     useticks = [];
-                    var s = Math.round(oom / 10);
+                    const s = Math.round(oom / 10);
                     for (i = 0; i < allticks.length; i++) {
                         r = Math.abs(Math.log10(allticks[i]) % s);
                         if ((Math.abs(r) < 0.001) || (Math.abs(r-s) < 0.001)) {
@@ -195,11 +193,11 @@ export class Axis extends WidgetView {
     }
 
     get_tick_transforms() {
-        // parses object and returns a string that can be passed to a D3 as a 
+        // parses object and returns a string that can be passed to a D3 as a
         // set of options
         // Note: Currently, only the `tick_rotate` attribute uses .transform()
 
-        var rotation = this.model.get("tick_rotate");
+        const rotation = this.model.get("tick_rotate");
         return `rotate(${rotation})`;
     }
 
@@ -213,13 +211,13 @@ export class Axis extends WidgetView {
     update_scale_domain() {
         // Sets the scale domain (Range of input values)
 
-        var is_vertical = this.model.get("orientation") === "vertical";
+        const is_vertical = this.model.get("orientation") === "vertical";
 
-        var initial_range = (is_vertical) ?
-            this.parent.padded_range("y", this.axis_scale.model) : 
+        const initial_range = (is_vertical) ?
+            this.parent.padded_range("y", this.axis_scale.model) :
             this.parent.padded_range("x", this.axis_scale.model);
 
-        var target_range = (is_vertical) ?
+        const target_range = (is_vertical) ?
             this.parent.range("y") : this.parent.range("x");
 
         this.axis_scale.expand_domain(initial_range, target_range);
@@ -227,16 +225,16 @@ export class Axis extends WidgetView {
     }
 
     update_offset_scale_domain() {
-        // Sets the domain (range of input values) of the offset scale 
+        // Sets the domain (range of input values) of the offset scale
 
-        var is_vertical = this.model.get("orientation") === "vertical";
+        const is_vertical = this.model.get("orientation") === "vertical";
 
         if (this.offset_scale) {
-            var initial_range = (!is_vertical) ?
+            const initial_range = (!is_vertical) ?
                 this.parent.padded_range("y", this.offset_scale.model) :
                 this.parent.padded_range("x", this.offset_scale.model);
 
-            var target_range = (!is_vertical) ?
+            const target_range = (!is_vertical) ?
                 this.parent.range("y") :
                 this.parent.range("x");
 
@@ -253,7 +251,7 @@ export class Axis extends WidgetView {
                 return this.guess_tick_format();
             }
         } else if (this.axis_scale.model.type === "ordinal") {
-            var tick_format = this.model.get("tick_format");
+            const tick_format = this.model.get("tick_format");
             if(tick_format) {
                 //TODO: This may not be the best way to do this. We can
                 //check the instance of the elements in the domain and
@@ -264,7 +262,7 @@ export class Axis extends WidgetView {
                     return d3.format(tick_format);
                 }
             }
-            return function(d) { return d; };
+            return (d) => { return d; };
         } else {
             // linear or log scale
             if(this.model.get("tick_format")) {
@@ -275,7 +273,7 @@ export class Axis extends WidgetView {
     }
 
     set_scales_range() {
-        var is_vertical = this.model.get("orientation") === "vertical";
+        const is_vertical = this.model.get("orientation") === "vertical";
 
         this.axis_scale.set_range((is_vertical) ?
             [this.height, 0] : [0, this.width]);
@@ -288,8 +286,8 @@ export class Axis extends WidgetView {
     create_axis() {
         // Creates the initial D3 axis and sets it on this.axis
 
-        var is_vertical = this.model.get("orientation") === "vertical";
-        var side = this.model.get("side");
+        const is_vertical = this.model.get("orientation") === "vertical";
+        const side = this.model.get("side");
 
         if (is_vertical) {
             this.axis = side === "right" ? d3.axisRight(this.axis_scale.scale)
@@ -330,10 +328,9 @@ export class Axis extends WidgetView {
          * The offset may require the creation of a Scale, which is async
          * Hence, get_offset_promise returns a promise.
          */
-        var that = this;
-        var return_promise = Promise.resolve();
-        var offset = this.model.get("offset");
-        var is_vertical = this.model.get("orientation") === "vertical";
+        let return_promise = Promise.resolve();
+        const offset = this.model.get("offset");
+        const is_vertical = this.model.get("orientation") === "vertical";
 
         if (offset.value !== undefined && offset.value !== null) {
             //If scale is undefined but, the value is defined, then we have
@@ -343,16 +340,16 @@ export class Axis extends WidgetView {
                     this.parent.scale_x : this.parent.scale_y;
             } else {
                 return_promise = this.create_child_view(offset.scale)
-                    .then(function(view) {
-                        that.offset_scale = view;
-                        if(that.offset_scale.model.type !== "ordinal") {
-                            that.offset_scale.scale.clamp(true);
+                    .then((view) => {
+                        this.offset_scale = view;
+                        if(this.offset_scale.model.type !== "ordinal") {
+                            this.offset_scale.scale.clamp(true);
                         }
-                        that.offset_scale.on("domain_changed", function() {
+                        this.offset_scale.on("domain_changed", () => {
                             this.update_offset_scale_domain();
                             this.g_axisline.attr("transform", this.get_axis_transform());
                             this.update_grid_lines();
-                        }, that);
+                        });
                     });
             }
             this.offset_value = offset.value;
@@ -373,8 +370,8 @@ export class Axis extends WidgetView {
     }
 
     get_basic_transform() {
-        var is_vertical = this.model.get("orientation") === "vertical";
-        var side = this.model.get("side");
+        const is_vertical = this.model.get("orientation") === "vertical";
+        const side = this.model.get("side");
 
         if (is_vertical){
             return (side === "right") ? this.width : 0;
@@ -384,7 +381,7 @@ export class Axis extends WidgetView {
     }
 
     get_axis_transform() {
-        var is_vertical = this.model.get("orientation") === "vertical";
+        const is_vertical = this.model.get("orientation") === "vertical";
         if(is_vertical){
             return "translate(" + this.process_offset() + ", 0)";
         } else {
@@ -396,7 +393,7 @@ export class Axis extends WidgetView {
         if(this.offset_scale === undefined || this.offset_scale === null) {
             return this.get_basic_transform();
         } else {
-            var value = this.offset_scale.scale(this.offset_value);
+            let value = this.offset_scale.scale(this.offset_value);
             //The null check is required for two reasons. Value may be null
             //or the scale is ordinal which does not include the value in
             //its domain.
@@ -409,11 +406,11 @@ export class Axis extends WidgetView {
     get_label_attributes() {
         // Returns an object based on values of "label_location" and "label_offset"
 
-        var label_x = 0;
-        var label_location = this.model.get("label_location");
-        var label_offset = this.calculate_label_offset();
-        var is_vertical = this.model.get("orientation") === "vertical";
-        var side = this.model.get("side");
+        let label_x = 0;
+        const label_location = this.model.get("label_location");
+        const label_offset = this.calculate_label_offset();
+        const is_vertical = this.model.get("orientation") === "vertical";
+        const side = this.model.get("side");
 
          if (is_vertical){
             if (label_location === "start") {
@@ -465,7 +462,7 @@ export class Axis extends WidgetView {
         // This function returns the text styling based on the attributes
         // of the axis. As of now, only the text-anchor attribute is set.
         // More can be added :)
-        var label_location = this.model.get("label_location");
+        const label_location = this.model.get("label_location");
         if(label_location === "start")
             return {"text-anchor" : "start"};
         else if(label_location === "end")
@@ -503,9 +500,9 @@ export class Axis extends WidgetView {
         // If the label offset is not defined, depending on the orientation
         // of the axis, an offset is set.
 
-        var label_offset = this.model.get("label_offset");
-        var is_vertical = this.model.get("orientation") === "vertical";
-        var side = this.model.get("side");
+        let label_offset = this.model.get("label_offset");
+        const is_vertical = this.model.get("orientation") === "vertical";
+        const side = this.model.get("side");
 
         if (!label_offset) {
             if (!is_vertical) {
@@ -518,8 +515,8 @@ export class Axis extends WidgetView {
         // is away from the figure and negative is towards the figure. The
         // notion of away and towards is different for left/right and
         // top/bottom axis.
-        var index = -1;
-        for (var i = 0; (i < UNITS_ARRAY.length && index === -1); i++) {
+        let index = -1;
+        for (let i = 0; (i < UNITS_ARRAY.length && index === -1); i++) {
             index = label_offset.indexOf(UNITS_ARRAY[i]);
         }
 
@@ -528,25 +525,25 @@ export class Axis extends WidgetView {
         }
 
         if (side === "top" || side === "left") {
-            var num = -1 * parseInt(label_offset.substring(0, index));
+            const num = -1 * parseInt(label_offset.substring(0, index));
             label_offset = num + label_offset.substring(index);
         }
         return label_offset;
     }
 
     update_grid_lines(animate?: boolean) {
-        var grid_type = this.model.get("grid_lines");
-        var side = this.model.get("side");
-        var orientation = this.model.get("orientation");
-        var is_x = orientation !== "vertical";
-        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        const grid_type = this.model.get("grid_lines");
+        const side = this.model.get("side");
+        const orientation = this.model.get("orientation");
+        const is_x = orientation !== "vertical";
+        const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
-        var tickSize = orientation === "vertical" ? -this.width : -this.height;
-        var tickOffset = 0;
+        let tickSize = orientation === "vertical" ? -this.width : -this.height;
+        let tickOffset = 0;
 
         //apply offsets if applicable
         if (this.offset_scale) {
-            var offset = this.offset_scale.scale(this.offset_value);
+            const offset = this.offset_scale.scale(this.offset_value);
 
             if (side === "bottom" || side == "right") {
                 tickSize = -offset;
@@ -601,7 +598,7 @@ export class Axis extends WidgetView {
         this.update_scales();
 
         //animate axis and grid lines on domain changes
-        var animate = true;
+        const animate = true;
         this.set_tick_values(animate);
         this.update_grid_lines(animate);
     }
@@ -628,9 +625,9 @@ export class Axis extends WidgetView {
     }
 
     update_axis_domain() {
-        var initial_range = (this.vertical) ?
+        const initial_range = (this.vertical) ?
             this.parent.padded_range("y", this.axis_scale.model) : this.parent.padded_range("x", this.axis_scale.model);
-        var target_range = (this.vertical) ?
+        const target_range = (this.vertical) ?
             this.parent.range("y") : this.parent.range("x");
         this.axis_scale.expand_domain(initial_range, target_range);
         this.axis.scale(this.axis_scale.scale);
@@ -655,8 +652,8 @@ export class Axis extends WidgetView {
         // If an array is passed, then just scale and return equally spaced
         // points in the array. This is the way it is done for ordinal
         // scales.
-        var step, max;
-        var num_ticks = this.model.get("num_ticks");
+        let step, max;
+        const num_ticks = this.model.get("num_ticks");
 
         if(this.axis_scale.model.type === "ordinal") {
             data_array = this.axis_scale.scale.domain();
@@ -669,14 +666,14 @@ export class Axis extends WidgetView {
                 return data_array;
             } else {
                step = Math.floor(data_array.length / (num_ticks - 1));
-               var indices = _.range(0, data_array.length, step);
-               return indices.map(function(index) {
+               const indices = _.range(0, data_array.length, step);
+               return indices.map((index) => {
                    return data_array[index];
                });
             }
         }
-        var scale_range = this.axis_scale.scale.domain();
-        var max_index = (this.axis_scale.scale.domain().length - 1);
+        const scale_range = this.axis_scale.scale.domain();
+        const max_index = (this.axis_scale.scale.domain().length - 1);
         step = (scale_range[max_index] - scale_range[0]) / (num_ticks - 1);
         if(this.axis_scale.model.type === "date" ||
            this.axis_scale.model.type === "date_color_linear") {
@@ -685,8 +682,8 @@ export class Axis extends WidgetView {
             scale_range[0] = scale_range[0].getTime();
             scale_range[max_index] = scale_range[max_index].getTime();
             max = (scale_range[max_index] + (step * 0.5));
-            var range_in_times = _.range(scale_range[0], max, step);
-            return range_in_times.map(function(elem) {
+            const range_in_times = _.range(scale_range[0], max, step);
+            return range_in_times.map((elem) => {
                 return new Date(elem);
             });
         } else {
@@ -697,17 +694,16 @@ export class Axis extends WidgetView {
 
     set_scale_promise(model) {
         // Sets the child scale
-        var that = this;
         if (this.axis_scale) { this.axis_scale.remove(); }
-        return this.create_child_view(model).then(function(view) {
+        return this.create_child_view(model).then((view) => {
             // Trigger the displayed event of the child view.
-            that.displayed.then(function() {
+            this.displayed.then(() => {
                 view.trigger("displayed");
             });
-            that.axis_scale = view;
-            that.axis_scale.on("domain_changed", that.redraw_axisline, that);
-            that.axis_scale.on("highlight_axis", that.highlight, that);
-            that.axis_scale.on("unhighlight_axis", that.unhighlight, that);
+            this.axis_scale = view;
+            this.axis_scale.on("domain_changed", this.redraw_axisline, this);
+            this.axis_scale.on("highlight_axis", this.highlight, this);
+            this.axis_scale.on("unhighlight_axis", this.unhighlight, this);
         });
     }
 
@@ -726,7 +722,7 @@ export class Axis extends WidgetView {
         //zeros after the decimal point.
         //Handles the case of exponentially formatted string
         //TODO: Should be done in a single regex
-        var e_index = str.search("e");
+        const e_index = str.search("e");
         if(e_index != -1) {
             return str.substring(0, e_index).replace(/(\.[0-9]*?)0+$/gi, "$1").replace(/\.$/, "") +
                    str.substring(e_index);
@@ -738,31 +734,30 @@ export class Axis extends WidgetView {
     get_format_func(prec) {
         if(prec === 0) {
         // format this as an integer
-            return function(number) { return d3.format("d")(Math.round(number)); };
+            return (number) => { return d3.format("d")(Math.round(number)); };
         }
         //if it is -1, then it is a generic format
-        var fmt_string = (prec == -1) ? "" : ("." + (prec));
-        var that = this;
-        return function(number) {
-            var str = d3.format(fmt_string + "g")(number);
-            var reg_str = str.replace(/-|\.|e/gi, "");
+        const fmt_string = (prec == -1) ? "" : ("." + (prec));
+        return (number) => {
+            const str = d3.format(fmt_string + "g")(number);
+            const reg_str = str.replace(/-|\.|e/gi, "");
             if(reg_str.length < 6) {
-                return that._replace_trailing_zeros(str);
+                return this._replace_trailing_zeros(str);
             } else {
                 //if length is more than 6, format it exponentially
                 if(fmt_string === "") {
                     //if fmt_string is "", then the number o/p can be
                     //arbitrarily large
-                    var new_str = d3.format(fmt_string + "e")(number);
+                    let new_str = d3.format(fmt_string + "e")(number);
                     if(new_str.length >= 7) {
                         //in the case of a round off error, setting the max
                         //limit to be 6
                          new_str = d3.format(".6e")(number);
                     }
-                    return that._replace_trailing_zeros(new_str);
+                    return this._replace_trailing_zeros(new_str);
                 } else {
                     //Format with the precision required
-                    return that._replace_trailing_zeros(d3.format(fmt_string + "e")(number));
+                    return this._replace_trailing_zeros(d3.format(fmt_string + "e")(number));
                 }
             }
         };
@@ -770,15 +765,15 @@ export class Axis extends WidgetView {
 
     _linear_scale_precision(ticks?: any[]) {
         ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
-        var diff = Math.abs(ticks[1] - ticks[0]);
-        var max = Math.max(Math.abs(ticks[0]), Math.abs(ticks[ticks.length - 1]));
+        const diff = Math.abs(ticks[1] - ticks[0]);
+        const max = Math.max(Math.abs(ticks[0]), Math.abs(ticks[ticks.length - 1]));
 
-        var max_digits = this._get_digits(max);
+        const max_digits = this._get_digits(max);
         // number of digits in the max
-        var diff_digits = this._get_digits(diff);
+        const diff_digits = this._get_digits(diff);
         // number of digits in the min
 
-        var precision = Math.abs(max_digits - diff_digits);
+        const precision = Math.abs(max_digits - diff_digits);
         // difference in the number of digits. The number of digits we have
         // to display is the diff above + 1.
         if(max_digits >= 0 && diff_digits > 0) {
@@ -805,9 +800,9 @@ export class Axis extends WidgetView {
         // assumes that scale is a linear date scale
         ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
         // diff is the difference between ticks in milliseconds
-        var diff = Math.abs(ticks[1] - ticks[0]);
+        const diff = Math.abs(ticks[1] - ticks[0]);
 
-        var format_millisecond = d3.timeFormat(".%L"),
+        const format_millisecond = d3.timeFormat(".%L"),
             format_second = d3.timeFormat(":%S"),
             format_minute = d3.timeFormat("%I:%M"),
             format_hour = d3.timeFormat("%I %p"),
@@ -815,8 +810,8 @@ export class Axis extends WidgetView {
             format_month = d3.timeFormat("%b %Y"),
             format_year = d3.timeFormat("%Y");
 
-        return function(date) {
-            var div = 1000;
+        return (date) => {
+            let div = 1000;
             if(Math.floor(diff / div) === 0) {
                 //diff is less than a second
                 if(d3.timeSecond(date) < date) {
@@ -880,7 +875,7 @@ export class Axis extends WidgetView {
 
     _log_sc_precision(ticks?: any[]) {
         ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
-        var ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
+        const ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
 
         if(ratio >= 0.3010) {
             //format them as they are with the max_length of 6
