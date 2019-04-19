@@ -16,16 +16,15 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
 
-import * as figure from './Figure';
+import {Figure} from './Figure';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 
-export const MarketMap = figure.Figure.extend({
+export class MarketMap extends Figure {
 
-    render: function(options) {
+    render(options?) {
         this.id = widgets.uuid();
         var min_width = String(this.model.get("layout").get("min_width"));
         var min_height = String(this.model.get("layout").get("min_height"));
@@ -104,45 +103,45 @@ export const MarketMap = figure.Figure.extend({
             that.draw_group_names();
             that.create_tooltip_widget();
         });
-    },
+    }
 
-    set_top_el_style: function() {
+    set_top_el_style() {
         this.el.style["user-select"] = "none";
         this.el.style["ms-user-select"] = "none";
         this.el.style["moz-user-select"] = "none";
         this.el.style["khtml-user-select"] = "none";
         this.el.style["webkit-user-select"] = "none";
-    },
+    }
 
-    update_plotarea_dimensions: function() {
+    update_plotarea_dimensions() {
         this.plotarea_width = this.width - this.margin.left - this.margin.right;
         this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
         this.column_width = parseFloat((this.plotarea_width / this.num_cols).toFixed(2));
         this.row_height = parseFloat((this.plotarea_height / this.num_rows).toFixed(2));
-    },
+    }
 
-    reset_drawing_controls: function() {
+    reset_drawing_controls() {
         // Properties useful in drawing the map
         this.prev_x = 0;
         this.prev_y = -1;
         this.y_direction = 1;  // for y direction 1 means going to the right
         this.x_direction = 1;  // for x direction 1 means going down
         this.group_iter = 1;
-    },
+    }
 
-    create_listeners: function() {
-        this.listenTo(this.model, "change:scales", this.create_scale_views, this);
-        this.listenTo(this.model, "change:color", this.recolor_chart, this);
-        this.listenTo(this.model, "change:colors", this.colors_updated, this);
-        this.listenTo(this.model, "change:show_groups", this.show_groups, this);
-        this.listenTo(this.model, "change:selected_stroke", this.update_selected_stroke, this);
-        this.listenTo(this.model, "change:hovered_stroke", this.update_hovered_stroke, this);
-        this.listenTo(this.model, "change:font_style", this.update_font_style, this);
+    create_listeners() {
+        this.listenTo(this.model, "change:scales", this.create_scale_views);
+        this.listenTo(this.model, "change:color", this.recolor_chart);
+        this.listenTo(this.model, "change:colors", this.colors_updated);
+        this.listenTo(this.model, "change:show_groups", this.show_groups);
+        this.listenTo(this.model, "change:selected_stroke", this.update_selected_stroke);
+        this.listenTo(this.model, "change:hovered_stroke", this.update_hovered_stroke);
+        this.listenTo(this.model, "change:font_style", this.update_font_style);
         this.model.on_some_change(["title", "title_style"], this.update_title, this);
         this.listenTo(this.model, "change:selected", function() {
             this.clear_selected();
             this.apply_selected();
-        }, this);
+        });
         this.model.on_some_change(["names", "groups", "ref_data"], function() {
             this.update_data();
             this.compute_dimensions_and_draw();
@@ -150,26 +149,26 @@ export const MarketMap = figure.Figure.extend({
         this.listenTo(this.model, "change:rows", function(model, value) {
             this.num_rows = value;
             this.compute_dimensions_and_draw();
-        }, this);
+        });
         this.listenTo(this.model, "change:cols", function(model, value) {
             this.num_cols = value;
             this.compute_dimensions_and_draw();
-        }, this);
+        });
         this.listenTo(this.model, "change:row_groups", function(model, value) {
             this.row_groups = value;
             this.compute_dimensions_and_draw();
-        }, this);
-        this.listenTo(this.model, "change:tooltip_widget", this.create_tooltip_widget, this);
-        this.listenTo(this.model, "change:tooltip_fields", this.update_default_tooltip, this);
-        this.listenTo(this.model, "change:tooltip_formats", this.update_default_tooltip, this);
-    },
+        });
+        this.listenTo(this.model, "change:tooltip_widget", this.create_tooltip_widget);
+        this.listenTo(this.model, "change:tooltip_fields", this.update_default_tooltip);
+        this.listenTo(this.model, "change:tooltip_formats", this.update_default_tooltip);
+    }
 
-    update_title: function(model, value) {
+    update_title(model, value) {
         this.title.text(this.model.get("title"))
            .styles(this.model.get("title_style"));
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         var that = this;
 
         var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
@@ -204,9 +203,9 @@ export const MarketMap = figure.Figure.extend({
             that.trigger("margin_updated");
         });
 
-    },
+    }
 
-    update_data: function() {
+    update_data() {
         var that = this;
         this.data = this.model.get("names") || [];
         this.ref_data = this.model.get("ref_data");
@@ -241,17 +240,17 @@ export const MarketMap = figure.Figure.extend({
             this.running_sums.push(count);
         }
         this.running_sums.pop();
-    },
+    }
 
-    update_domains: function() {
+    update_domains() {
         var color_scale_model = this.model.get("scales").color;
         var color_data = this.model.get("color");
         if(color_scale_model && color_data.length > 0) {
             color_scale_model.compute_and_set_domain(color_data, this.model.model_id);
         }
-    },
+    }
 
-    set_area_dimensions: function(num_items) {
+    set_area_dimensions(num_items) {
         this.num_rows = this.model.get("rows");
         this.num_cols = this.model.get("cols");
         this.row_groups = this.model.get("row_groups");
@@ -292,9 +291,9 @@ export const MarketMap = figure.Figure.extend({
         // switch direction. The below functions tells us where to swtich
         // direction.
         this.set_row_limits();
-    },
+    }
 
-    compute_dimensions_and_draw: function() {
+    compute_dimensions_and_draw() {
         this.set_area_dimensions(this.data.length);
         this.update_plotarea_dimensions();
         this.draw_map();
@@ -306,9 +305,9 @@ export const MarketMap = figure.Figure.extend({
         this.fig_hover.selectAll("rect")
             .remove();
         this.hide_tooltip();
-    },
+    }
 
-    update_default_tooltip: function() {
+    update_default_tooltip() {
         this.tooltip_fields = this.model.get("tooltip_fields");
         var formats = this.model.get("tooltip_formats");
         this.tooltip_formats = this.tooltip_fields.map(function(field, index) {
@@ -316,9 +315,9 @@ export const MarketMap = figure.Figure.extend({
             if(fmt === undefined || fmt === "") {return function(d) { return d; }; }
             else return d3.format(fmt);
         });
-    },
+    }
 
-    create_scale_views: function() {
+    create_scale_views() {
         for (var key in this.scales) {
             this.stopListening(this.scales[key]);
         }
@@ -332,9 +331,9 @@ export const MarketMap = figure.Figure.extend({
             that.scales = d;
             that.set_scales();
         });
-    },
+    }
 
-    set_scales: function() {
+    set_scales() {
         var that = this;
         var color_scale = this.scales.color;
         if(color_scale) {
@@ -346,15 +345,15 @@ export const MarketMap = figure.Figure.extend({
             });
             this.update_map_colors();
         }
-    },
+    }
 
-    show_groups: function(model, value) {
+    show_groups(model, value) {
         this.fig_names.style("display", (value ? "inline" : "none"));
         this.fig_map.selectAll(".market_map_text").style("opacity", (value ? 0.2 : 1));
         this.fig_map.selectAll(".market_map_rect").style("stroke-opacity", (value ? 0.2 : 1));
-    },
+    }
 
-    draw_map: function() {
+    draw_map() {
         this.reset_drawing_controls();
         // Removing pre existing elements from the map
         this.fig_map.selectAll(".element_group").remove();
@@ -410,7 +409,7 @@ export const MarketMap = figure.Figure.extend({
             groups.attr("transform", function(data, ind) { return that.get_cell_transform(ind); })
                 .on("click", function(data, ind) { that.cell_click_handler(data, (element_count + ind), this);})
                 .on("mouseover", function(data, ind) { that.mouseover_handler(data, (element_count + ind), this);})
-                .on("mousemove", function(data) { that.mousemove_handler(data); })
+                .on("mousemove", function(data) { that.mousemove_handler(); })
                 .on("mouseout", function(data, ind) { that.mouseout_handler(data, (element_count + ind), this);})
                 .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
                 .attr("id", function(data: any) { return "market_map_element_" + data.name;});
@@ -449,19 +448,19 @@ export const MarketMap = figure.Figure.extend({
                 .text(that.groups[i]);
         });
         this.draw_group_names();
-    },
+    }
 
-    draw_group_names: function() {
+    draw_group_names() {
         // Get all the bounding rects of the paths around each of the
         // sectors. Get their client bounding rect.
-        var paths = this.svg.selectAll(".bounding_path").nodes();
+        var paths = this.svg.selectAll(".bounding_path").nodes() as SVGPathElement[];
         var clientRects = paths.map(function(path) { return path.getBoundingClientRect(); });
         var text_elements = this.fig_names.selectAll(".names_object").data(clientRects);
         text_elements.attr("width", function(d) { return d.width;})
             .attr("height", function(d) { return d.height;});
-    },
+    }
 
-    recolor_chart: function() {
+    recolor_chart() {
         var that = this;
         this.update_data();
         this.rect_groups = this.fig.selectAll(".element_group")
@@ -481,14 +480,16 @@ export const MarketMap = figure.Figure.extend({
                            that.colors_map(i);
                 });
         });
-    },
+    }
 
-    update_font_style: function(model, value) {
-        this.svg.selectAll(".market_map_text")
-            .styles(value);
-    },
+    update_font_style(model, value) {
+        // This is a bit awkward because we did not figure out how to get
+        // Typescript to recognize the d3-select-multi typings.
+        const x: any = this.svg.selectAll(".market_map_text");
+        x.styles(value);
+    }
 
-    update_map_colors: function() {
+    update_map_colors() {
         var that = this;
         var color_scale = this.scales.color;
         if(this.rect_groups !== undefined && this.rect_groups !== null) {
@@ -507,9 +508,9 @@ export const MarketMap = figure.Figure.extend({
                     });
             });
         }
-    },
+    }
 
-    cell_click_handler: function(data, id, cell) {
+    cell_click_handler(data, id, cell) {
         if(this.model.get("enable_select")) {
             var selected = this.model.get("selected").slice();
             var index = selected.indexOf(data.name);
@@ -529,9 +530,9 @@ export const MarketMap = figure.Figure.extend({
             this.model.set("selected", selected);
             this.touch();
         }
-    },
+    }
 
-    apply_selected: function() {
+    apply_selected() {
         var selected = this.model.get("selected");
         var that = this;
         if(selected === undefined || selected === null || selected.length === 0)
@@ -547,14 +548,14 @@ export const MarketMap = figure.Figure.extend({
                 }
            });
         }
-    },
+    }
 
-    clear_selected: function() {
+    clear_selected() {
         this.fig_click.selectAll("rect")
             .remove();
-    },
+    }
 
-    add_selected_cell: function(id, transform) {
+    add_selected_cell(id, transform) {
         this.fig_click.append("rect")
             .attr("id", "click_" + id)
             .attr("transform", transform)
@@ -563,9 +564,9 @@ export const MarketMap = figure.Figure.extend({
             .attr("width", this.column_width)
             .attr("height", this.row_height)
             .styles({'stroke': this.selected_stroke, 'stroke-width': '4px', 'fill': 'none'});
-    },
+    }
 
-    mouseover_handler: function(data, id, cell) {
+    mouseover_handler(data, id, cell) {
         var transform = d3.select(cell).attr("transform");
         if(this.model.get("enable_hover")) {
             this.fig_hover.append("rect")
@@ -581,27 +582,27 @@ export const MarketMap = figure.Figure.extend({
             this.show_tooltip(d3.event, data);
             this.send({event: "hover", data: data.name, ref_data: data.ref_data});
         }
-    },
+    }
 
-    update_selected_stroke: function(model, value) {
+    update_selected_stroke(model, value) {
         this.selected_stroke = value;
         this.fig_click.selectAll("rect")
             .styles({'stroke': value});
-    },
+    }
 
-    update_hovered_stroke: function(model, value) {
+    update_hovered_stroke(model, value) {
         this.hovered_stroke = value;
         // I do not need to update anything else because when hovered color
         // is being updated you are not hovering over anything.
-    },
+    }
 
-    mouseout_handler: function(data, id, cell) {
+    mouseout_handler(data, id, cell) {
         this.fig_hover.select(".hover_" + id)
             .remove();
         this.hide_tooltip();
-    },
+    }
 
-    show_tooltip: function(event, data) {
+    show_tooltip(event, data) {
         var that = this;
         if(!this.tooltip_view && (!this.tooltip_fields || this.tooltip_fields.length == 0))
         {
@@ -633,26 +634,26 @@ export const MarketMap = figure.Figure.extend({
             this.popper.enableEventListeners();
             this.move_tooltip();
         }
-    },
+    }
 
-    mousemove_handler: function(data) {
-        this.move_tooltip(data);
-    },
+    mousemove_handler() {
+        this.move_tooltip();
+    }
 
-    move_tooltip: function(data) {
+    move_tooltip() {
         this.popper_reference.x = d3.event.clientX;
         this.popper_reference.y = d3.event.clientY;
         this.popper.scheduleUpdate();
-    },
+    }
 
-    hide_tooltip: function() {
+    hide_tooltip() {
          this.tooltip_div.style("pointer-events", "none");
          this.tooltip_div.transition()
             .styles({"opacity": 0, "display": "none"});
         this.popper.disableEventListeners();
-    },
+    }
 
-    create_tooltip_widget: function() {
+    create_tooltip_widget() {
         var tooltip_model = this.model.get("tooltip_widget");
         if((this.tooltip_view !== null && this.tooltip_view !== undefined)) {
             //remove the previous tooltip
@@ -668,13 +669,13 @@ export const MarketMap = figure.Figure.extend({
                 view.trigger("displayed", {"add_to_dom_only": true});
             });
         }
-    },
+    }
 
-    get_group_transform: function(index) {
+    get_group_transform(index) {
         return "translate(" + '0' + ", 0)";
-    },
+    }
 
-    get_cell_transform: function(index) {
+    get_cell_transform(index) {
         if(!this.past_border_y()){
             if(this.past_border_x()) {
                 this.y_direction = -1 * this.y_direction;
@@ -689,9 +690,9 @@ export const MarketMap = figure.Figure.extend({
         }
         return "translate(" + (this.prev_x * this.column_width) + ", " +
                               (this.prev_y * this.row_height) + ")";
-    },
+    }
 
-    get_new_cords: function() {
+    get_new_cords() {
         var new_x = this.prev_x;
         var new_y = this.prev_y;
         var y_direction = this.y_direction;
@@ -710,43 +711,43 @@ export const MarketMap = figure.Figure.extend({
             new_y += this.y_direction;
         }
         return [new_x, new_y, group_iter, x_direction, y_direction, new_x * this.column_width, new_y * this.row_height];
-    },
+    }
 
-    past_border_y: function() {
+    past_border_y() {
         if(this.y_direction == 1) {
             return (this.prev_y + 1) < this.row_limits[this.group_iter];
         } else {
             return (this.prev_y - 1) > this.row_limits[this.group_iter -1] - 1;
         }
-    },
+    }
 
-    past_border_x: function() {
+    past_border_x() {
         if(this.x_direction == 1) {
             return (this.prev_x + 1) < this.num_cols;
         } else {
             return (this.prev_x - 1) > -1;
         }
-    },
+    }
 
-    colors_updated: function() {
+    colors_updated() {
         this.colors = this.model.get("colors");
         this.recolor_chart();
-    },
+    }
 
-    get_color: function(index, length) {
+    get_color(index, length) {
         return this.colors[index % length];
-    },
+    }
 
-    set_row_limits: function() {
+    set_row_limits() {
         var step = Math.floor(this.num_rows / this.row_groups);
         this.row_limits = [];
         for(var iter = this.row_groups - 1; iter > -1; iter--){
             this.row_limits.unshift(iter * step);
         }
         this.row_limits[this.row_groups] = this.num_rows;
-    },
+    }
 
-    get_end_points: function(group_iter, num_cells, start_col, start_row, x_direction, y_direction) {
+    get_end_points(group_iter, num_cells, start_col, start_row, x_direction, y_direction) {
         //start_row is the 0-based index and not a 1-based index, i.e., it
         //is not the column number in the truest sense
         // Function to get the end points of the rectangle representing the
@@ -935,9 +936,9 @@ export const MarketMap = figure.Figure.extend({
        */
 
         return end_points;
-    },
+    }
 
-    create_bounding_path: function(elem, end_points) {
+    create_bounding_path(elem, end_points) {
         var values = [];
         var editing_copy = end_points.slice();
         values.push(end_points[0]);
@@ -1026,18 +1027,51 @@ export const MarketMap = figure.Figure.extend({
             .style('stroke', this.model.get('group_stroke'))
             .style('stroke-width', 3);
         return bounding_path;
-    },
+    }
 
-    calc_end_point_source: function(curr_x, curr_y, x_direction, y_direction) {
+    calc_end_point_source(curr_x, curr_y, x_direction, y_direction) {
         curr_y = (y_direction == 1) ? curr_y : curr_y + 1;
         curr_x = (x_direction == 1) ? curr_x : curr_x + 1;
         return[{'x': curr_x * this.column_width, 'y': curr_y * this.row_height}];
-    },
+    }
 
-    calc_end_point_dest: function(curr_x, curr_y, x_direction, y_direction) {
+    calc_end_point_dest(curr_x, curr_y, x_direction, y_direction) {
         curr_y = (y_direction == -1) ? curr_y : curr_y + 1;
         curr_x = (x_direction == -1) ? curr_x : curr_x + 1;
         return[{'x': curr_x * this.column_width, 'y': curr_y * this.row_height}];
-    },
-});
+    }
 
+    scales: any;
+    num_rows: number;
+    num_cols: number;
+    row_groups: any;
+    enable_select: any;
+    data: any[];
+    fig_map: any;
+    fig_click: any;
+    fig_hover: any;
+    fig_names: any;
+    axis: any[];
+    selected_stroke: any;
+    hovered_stroke: any;
+    column_width: number;
+    row_height: number;
+    prev_x: number;
+    prev_y: number;
+    y_direction: number;
+    x_direction: number;
+    group_iter: number;
+    ref_data: any;
+    group_data: any;
+    groups: any;
+    colors: any;
+    colors_map: any;
+    grouped_data: any;
+    running_sums: any[];
+    tooltip_fields: any;
+    tooltip_formats: any;
+    rect_groups: any;
+    end_points: any[];
+    tooltip_view: any;
+    row_limits: any[];
+}

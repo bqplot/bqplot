@@ -39,7 +39,7 @@ async function create_figure_scatter(manager, x, y) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
-    let scales = {x: 'IPY_MODEL_scale_x', y: 'IPY_MODEL_scale_y'}
+    let scales = {x: JSON.stringify(scale_x), y: JSON.stringify(scale_y)}
     let color    = null;
     let size     = {type: null, values: null};
     let opacity  = {type: null, values: null};
@@ -53,9 +53,9 @@ async function create_figure_scatter(manager, x, y) {
     let figureModel;
     try {
         figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'], 
-            layout: 'IPY_MODEL_layout_figure1', _dom_classes: [],
+            layout: JSON.stringify(layout), _dom_classes: [],
             figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
-            marks: ['IPY_MODEL_scatter1']})
+            marks: [JSON.stringify(scatterModel)]})
     } catch(e) {
         console.error('error', e)
     }
@@ -70,8 +70,8 @@ async function create_figure_lines(manager, x, y, default_scales={}) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
-    let scales = {x: 'IPY_MODEL_scale_x', y: 'IPY_MODEL_scale_y'}
-    let scales_mark = {x: default_scales['x'] || 'IPY_MODEL_scale_x', y: default_scales['y'] || 'IPY_MODEL_scale_y'}
+    let scales = {x: JSON.stringify(scale_x), y: JSON.stringify(scale_y)}
+    let scales_mark = {x: default_scales['x'] || JSON.stringify(scale_x), y: default_scales['y'] || JSON.stringify(scale_y)}
     let color    = null;
     let size     = {type: null, values: null};
     let opacity  = {type: null, values: null};
@@ -85,9 +85,9 @@ async function create_figure_lines(manager, x, y, default_scales={}) {
     let figureModel;
     try {
         figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'],
-            layout: 'IPY_MODEL_layout_figure1', _dom_classes: [],
+            layout: JSON.stringify(layout), _dom_classes: [],
             figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
-            marks: ['IPY_MODEL_lines1']})
+            marks: [JSON.stringify(linesModel)]})
     } catch(e) {
         console.error('error', e)
     }
@@ -100,7 +100,7 @@ async function create_figure_bars(manager, x, y) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:0, max:3, allow_padding: false})
-    let scales = {x: 'IPY_MODEL_scale_x', y: 'IPY_MODEL_scale_y'}
+    let scales = {x: JSON.stringify(scale_x), y: JSON.stringify(scale_y)}
     let color    = null;
     let size     = {type: null, values: null};
     let opacity  = {type: null, values: null};
@@ -114,9 +114,9 @@ async function create_figure_bars(manager, x, y) {
     let figureModel;
     try {
         figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'],
-            layout: 'IPY_MODEL_layout_figure1', _dom_classes: [],
+            layout: JSON.stringify(layout), _dom_classes: [],
             figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
-            marks: ['IPY_MODEL_bars1']})
+            marks: [JSON.stringify(barsModel)]})
     } catch(e) {
         console.error('error', e)
     }

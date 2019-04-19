@@ -2,9 +2,7 @@ language: python
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
     - 2.7
-    - 3.3
-    - 3.4
-    - 3.5
+    - 3.6
 addons:
   firefox: latest
 install:
@@ -30,9 +28,10 @@ install:
   - conda env create -f test-environment.yml
   - source activate bqplot-test
   - pip install . coveralls
+  - conda list
 script:
     - py.test --cov-report=term --cov=bqplot tests
-    - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+    - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
         export DISPLAY=:99.0;
         sh -e /etc/init.d/xvfb start || true;
         jupyter labextension install js @jupyter-widgets/jupyterlab-manager;

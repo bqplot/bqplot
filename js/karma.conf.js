@@ -1,8 +1,14 @@
 var webpackConfig = require('./webpack.config.js');
 // add the .ts loader
-webpackConfig[1].module.rules.push({ test: /\.ts?$/, loader: 'ts-loader'})
+webpackConfig[1].module.rules.push({ 
+  test: /\.ts?$/,
+  loader: 'ts-loader',
+  options: {
+    configFile: 'tsconfig-test.json'
+  }
+});
 // remove the json loader (gives issues)
-webpackConfig[1].module.rules.splice(2, 1)
+webpackConfig[1].module.rules.splice(2, 1);
 
 var webpack = require('webpack');
 

@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import * as _ from 'underscore';
 import * as markmodel from './MarkModel';
 import * as topojson from 'topojson';
 
@@ -101,7 +100,7 @@ export class MapModel extends markmodel.MarkModel {
     }
 
     get_data_dict(data, index) {
-        return _.extend(data.properties, {'id': data.id});
+        return {...data.properties, 'id': data.id};
     }
 
     geodata: any;

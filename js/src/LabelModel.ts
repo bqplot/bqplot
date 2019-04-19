@@ -13,14 +13,13 @@
  * limitations under the License.
  */
 
-import * as _ from 'underscore';
-import * as basemodel from './ScatterBaseModel';
+import {ScatterBaseModel} from './ScatterBaseModel';
 import * as serialize from './serialize';
 
-export const LabelModel = basemodel.ScatterBaseModel.extend({
+export class LabelModel extends ScatterBaseModel {
 
-    defaults: function () {
-        return _.extend(basemodel.ScatterBaseModel.prototype.defaults(), {
+    defaults() {
+        return {...ScatterBaseModel.prototype.defaults(), 
             _model_name: "LabelModel",
             _view_name: "Label",
 
@@ -33,30 +32,30 @@ export const LabelModel = basemodel.ScatterBaseModel.extend({
             drag_size: 1.0,
             font_weight: "bold",
             align: "start",
-        });
-    },
+        };
+    }
 
-    initialize: function() {
+    initialize(attributes, options) {
         // TODO: Normally, color, opacity and size should not require a redraw
-        LabelModel.__super__.initialize.apply(this, arguments);
+        super.initialize(attributes, options);
         this.on("change:text", this.update_data, this);
-    },
+    }
 
-    update_mark_data: function() {
-        LabelModel.__super__.update_mark_data.apply(this);
+    update_mark_data() {
+        super.update_mark_data();
         var text = this.get("text");
 
         this.mark_data.forEach(function(d, i){ d.text = text[i]; });
-    },
+    }
 
-    update_unique_ids: function() {
+    update_unique_ids() {
         this.mark_data.forEach(function(data, index){
                                    data.unique_id = "Label" + index;
         });
-    },
-}, {
-    serializers: _.extend({
-        text: serialize.array_or_json,
-    }, basemodel.ScatterBaseModel.serializers)
-});
+    }
 
+    static serializers = {
+        ...ScatterBaseModel.serializers,
+        text: serialize.array_or_json,
+    }
+}

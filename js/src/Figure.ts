@@ -911,7 +911,7 @@ export class Figure extends widgets.DOMWidgetView {
         return Promise.all(this.mark_views.views).then((views) => {
             // render all marks that have a render_gl method
             this.renderer.autoClear = false;
-            this.renderer.autoClearColor = new THREE.Color(0x000000)
+            this.renderer.autoClearColor = new (THREE.Color as (x) => void)(0x000000);
             this.renderer.clear()
             let marks_gl = _.filter(views, (view: any) => view.render_gl)
             _.each(marks_gl, (mark: any) => {

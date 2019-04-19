@@ -1,9 +1,7 @@
-import { LinearScaleModel } from "../src/LinearScaleModel.js";
-import { LinearScale } from "../src/LinearScale.js";
 import { expect } from 'chai';
 import {DummyManager} from './dummy-manager';
 import bqplot = require('..');
-import {create_model, create_model_bqplot, create_view} from './widget-utils'
+import {create_model_bqplot} from './widget-utils'
 
 describe("scales >", () => {
     beforeEach(async function() {
