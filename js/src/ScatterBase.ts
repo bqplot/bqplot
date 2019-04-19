@@ -26,13 +26,15 @@ export abstract class ScatterBase extends mark.Mark {
     render() {
         const base_creation_promise = super.render();
 
+        var that = this;
+        // Warning: arrow functions actually breaks the drag
         this.drag_listener = d3.drag()
-          .subject((d: any) => {
-              return {x: this.x_scale.scale(d.x), y: this.y_scale.scale(d.y)};
+          .subject(function(d: any) {
+              return {x: that.x_scale.scale(d.x), y: that.y_scale.scale(d.y)};
           })
-          .on("start", (d, i) => { return this.drag_start(d, i, this); })
-          .on("drag", (d, i) => { return this.on_drag(d, i, this); })
-          .on("end", (d, i) => { return this.drag_ended(d, i, this); });
+          .on("start", function(d, i) { return that.drag_start(d, i, this); })
+          .on("drag", function(d, i) { return that.on_drag(d, i, this); })
+          .on("end", function(d, i) { return that.drag_ended(d, i, this); });
 
         this.selected_style = this.model.get("selected_style");
         this.unselected_style = this.model.get("unselected_style");
