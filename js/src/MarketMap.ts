@@ -16,8 +16,8 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
 import * as d3 from 'd3';
+import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
-
 import {Figure} from './Figure';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';

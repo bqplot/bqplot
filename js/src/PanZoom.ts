@@ -80,7 +80,7 @@ export class PanZoom extends interaction.Interaction {
     mousedown () {
         var scales = this.model.get("scales");
         this.active = true;
-        this.d3el.styles({"cursor": "move"});
+        this.d3el.style("cursor", "move");
         this.previous_pos = d3.mouse(this.el);
         // A copy of the original domains is required to avoid additional
         // drift when Paning.
@@ -161,9 +161,9 @@ export class PanZoom extends interaction.Interaction {
             var mouse_pos = d3.mouse(this.el);
             if (delta) {
                 if (delta > 0) {
-                    this.d3el.styles({"cursor": "zoom-in"});
+                    this.d3el.style("cursor", "zoom-in");
                 } else {
-                    this.d3el.styles({"cursor": "zoom-out"});
+                    this.d3el.style("cursor", "zoom-out");
                 }
                 var scales = this.model.get("scales");
                 var that = this;
@@ -224,3 +224,4 @@ export class PanZoom extends interaction.Interaction {
     previous_pos: any;
     domains_in_order: any;
 }
+
