@@ -14,6 +14,7 @@
  */
 
 import * as d3 from 'd3';
+import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"));
 import * as _ from 'underscore';
 import { Mark } from './Mark';

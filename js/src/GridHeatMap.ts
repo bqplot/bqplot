@@ -14,8 +14,8 @@
  */
 
 import * as d3 from 'd3';
+import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
-
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import * as utils from './utils';
