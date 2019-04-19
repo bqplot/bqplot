@@ -30,10 +30,11 @@ export class LassoSelector extends BaseXYSelector {
 
         const that = this;
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(() => {
+            // Warning: arrow functions actually breaks the drag
             const drag = d3.drag()
-                .on("start", () => {this.drag_start();})
-                .on("drag", () => {this.drag_move();})
-                .on("end", () => {this.drag_end();});
+                .on("start", function () {that.drag_start();})
+                .on("drag", function() {that.drag_move();})
+                .on("end", function() {that.drag_end();});
 
             d3.select(window).on("keydown", () => {this.keydown();});
 

@@ -21,10 +21,10 @@ import { BaseModel } from './BaseModel';
 
 export class Interaction extends widgets.WidgetView {
 
-    initialize() {
+    initialize(parameters) {
         this.setElement(document.createElementNS(d3.namespaces.svg, "rect"));
         this.d3el = d3.select(this.el);
-        super.initialize.apply(this, arguments);
+        super.initialize.call(this, parameters);
     }
 
     render() {
