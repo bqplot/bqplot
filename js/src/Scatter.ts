@@ -15,9 +15,9 @@
 import {ScatterBase} from './ScatterBase';
 import * as markers from './Markers';
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-selection"));
+// const d3 =Object.assign({}, require("d3-selection"));
 
-var bqSymbol: any = markers.symbol;
+const bqSymbol: any = markers.symbol;
 
 
 export class Scatter extends ScatterBase {
@@ -47,9 +47,9 @@ export class Scatter extends ScatterBase {
 
     update_colors(model, new_colors) {
         if(!this.model.dirty) {
-            var that = this,
-                stroke = this.model.get("stroke"),
-                len = new_colors.length;
+            const that = this;
+            const stroke = this.model.get("stroke");
+            const len = new_colors.length;
             this.d3el.selectAll(".dot")
             .style("fill", this.model.get("fill") ?
                 function(d, i) {
@@ -78,9 +78,9 @@ export class Scatter extends ScatterBase {
     }
 
     update_fill(model, fill) {
-        var that = this,
-            colors = this.model.get("colors"),
-            len = colors.length;
+        const that = this;
+        const colors = this.model.get("colors");
+        const len = colors.length;
         this.d3el.selectAll(".dot").style("fill", fill  ? function(d, i) {
             return that.get_element_color(d, i);
         } : "none");
@@ -93,7 +93,7 @@ export class Scatter extends ScatterBase {
     }
 
     update_stroke_width() {
-        var stroke_width = this.model.get("stroke_width");
+        const stroke_width = this.model.get("stroke_width");
 
         this.d3el.selectAll(".dot")
           .style("stroke-width", stroke_width);
@@ -105,8 +105,8 @@ export class Scatter extends ScatterBase {
     }
 
     update_stroke(model, fill) {
-        var that = this,
-            stroke = this.model.get("stroke");
+        const that = this;
+        const stroke = this.model.get("stroke");
         this.d3el.selectAll(".dot")
             .style("stroke", stroke ? stroke: function(d, i) {
                 return that.get_element_color(d, i);
@@ -120,14 +120,14 @@ export class Scatter extends ScatterBase {
 
     update_default_opacities(animate) {
         if (!this.model.dirty) {
-            var default_opacities = this.model.get("default_opacities");
-            var colors = this.model.get("colors");
-            var len = colors.length;
-            var len_opac = default_opacities.length;
-            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            const default_opacities = this.model.get("default_opacities");
+            const colors = this.model.get("colors");
+            const len = colors.length;
+            const len_opac = default_opacities.length;
+            const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             // update opacity scale range?
-            var that = this;
+            const that = this;
             this.d3el.selectAll(".dot")
                 .transition("update_default_opacities")
                 .duration(animation_duration)
@@ -161,8 +161,8 @@ export class Scatter extends ScatterBase {
 
     update_default_skew(animate) {
         if (!this.model.dirty) {
-            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-            var that = this;
+            const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            const that = this;
             this.d3el.selectAll(".dot")
                 .transition("update_default_skew")
                 .duration(animation_duration)
@@ -176,8 +176,8 @@ export class Scatter extends ScatterBase {
         this.compute_view_padding();
         // update size scale range?
         if (!this.model.dirty) {
-            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-            var that = this;
+            const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            const that = this;
             this.d3el.selectAll(".dot")
                 .transition("update_default_size")
                 .duration(animation_duration)
@@ -190,17 +190,17 @@ export class Scatter extends ScatterBase {
     }
 
     update_names(animate) {
-        var that = this,
-            names = this.model.get("names") || [],
-            show_names = this.model.get("display_names") && names.length !== 0,
-            animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+        const that = this;
+        const names = this.model.get("names") || [];
+        const show_names = this.model.get("display_names") && names.length !== 0;
+        const animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
 
         this.d3el.selectAll(".object_grp").select("text")
             .text(function(d) { return d.name; })
             .transition("update_names")
             .duration(animation_duration)
             .attr("transform", function(d) {
-                var text_loc = Math.sqrt(that.get_element_size(d)) / 2.0;
+                const text_loc = Math.sqrt(that.get_element_size(d)) / 2.0;
                 return "translate(" + (text_loc) + "," + (-text_loc) + ")";})
             .attr("display", function(d) {
                 return (show_names) ? "inline": "none";
@@ -208,10 +208,10 @@ export class Scatter extends ScatterBase {
     }
 
     color_scale_updated(animate) {
-        var that = this,
+        const that = this,
             fill = this.model.get("fill"),
             stroke = this.model.get("stroke");
-            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         this.d3el.selectAll(".object_grp")
           .select("path")
@@ -227,10 +227,10 @@ export class Scatter extends ScatterBase {
     }
 
     draw_elements(animate, elements_added) {
-        var that = this;
+        const that = this;
 
-        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-        var elements = this.d3el.selectAll(".object_grp")
+        const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        const elements = this.d3el.selectAll(".object_grp")
 
         elements_added.append("path").attr("class", "dot element");
         elements_added.append("text").attr("class", "dot_text");
@@ -246,7 +246,7 @@ export class Scatter extends ScatterBase {
     }
 
     draw_legend_elements(elements_added, rect_dim) {
-        var colors = this.model.get("colors"),
+        const colors = this.model.get("colors"),
             len = colors.length,
             stroke = this.model.get("stroke");
 
@@ -272,10 +272,10 @@ export class Scatter extends ScatterBase {
         if(!indices || indices.length === 0) {
             return;
         }
-        var elements = this.d3el.selectAll(".element").filter(function(data, index) {
+        const elements = this.d3el.selectAll(".element").filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        var fill = this.model.get("fill"),
+        const fill = this.model.get("fill"),
             stroke = this.model.get("stroke"),
             stroke_width = this.model.get("stroke_width"),
             that = this;
@@ -297,7 +297,7 @@ export class Scatter extends ScatterBase {
           .transition("set_drag_style")
           .attr("d", this.dot.size(5 * this.model.get("default_size")));
 
-        var drag_color = this.model.get("drag_color");
+        const drag_color = this.model.get("drag_color");
         if (drag_color) {
             d3.select(dragged_node)
               .select("path")
@@ -307,7 +307,7 @@ export class Scatter extends ScatterBase {
     }
 
     reset_drag_style(d, i, dragged_node) {
-        var stroke = this.model.get("stroke"),
+        const stroke = this.model.get("stroke"),
             original_color = this.get_element_color(d, i);
 
         d3.select(dragged_node)

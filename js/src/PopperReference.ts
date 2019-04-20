@@ -45,15 +45,15 @@ export const ElementReference = (function () {
  */
 export const PositionReference = (function () {
     function PositionReference(_a) {
-        var x = _a.x, y = _a.y, width = _a.width, height = _a.height;
+        const x = _a.x, y = _a.y, width = _a.width, height = _a.height;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
     }
     PositionReference.prototype.getBoundingClientRect = function () {
-        var halfwidth = this.width / 2;
-        var halfheight = this.height / 2;
+        const halfwidth = this.width / 2;
+        const halfheight = this.height / 2;
         return {
             left: this.x - halfwidth,
             right: this.x + halfwidth,

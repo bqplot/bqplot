@@ -16,10 +16,10 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
 import * as utils from './utils';
-import * as interaction from './Interaction';
-var convert_dates = require('./utils').convert_dates;
+import { Interaction } from './Interaction';
+const convert_dates = require('./utils').convert_dates;
 
-export class HandDraw extends interaction.Interaction {
+export class HandDraw extends Interaction {
 
     render() {
         super.render();
@@ -42,13 +42,13 @@ export class HandDraw extends interaction.Interaction {
     }
 
     set_lines_view() {
-        var fig = this.parent;
-        var lines_model = this.model.get("lines");
+        const fig = this.parent;
+        const lines_model = this.model.get("lines");
         return Promise.all(fig.mark_views.views).then((views) => {
-            var fig_mark_ids = fig.mark_views._models.map((mark_model) => {
+            const fig_mark_ids = fig.mark_views._models.map((mark_model) => {
                 return mark_model.model_id; // Model ids of the marks in the figure
             });
-            var mark_index = fig_mark_ids.indexOf(lines_model.model_id);
+            const mark_index = fig_mark_ids.indexOf(lines_model.model_id);
             this.lines_view = views[mark_index];
         });
     }
@@ -64,7 +64,7 @@ export class HandDraw extends interaction.Interaction {
     mouseup () {
         if (this.active) {
             this.mouse_entry(true);
-            var lines_model = this.model.get("lines");
+            const lines_model = this.model.get("lines");
             lines_model.set("y", convert_dates(utils.deepCopy(lines_model.y_data)));
             this.lines_view.touch();
             this.active = false;
@@ -82,25 +82,25 @@ export class HandDraw extends interaction.Interaction {
         // If memory is set to true, itermediate positions between the last
         // position of the mouse and the current one will be interpolated.
         if (this.active) {
-            var lines_model = this.model.get("lines");
-            var xindex = Math.min(this.line_index,
+            const lines_model = this.model.get("lines");
+            const xindex = Math.min(this.line_index,
                                   lines_model.x_data.length - 1);
-            var mouse_pos = d3.mouse(this.el);
+            const mouse_pos = d3.mouse(this.el);
             if (!memory || !("previous_pos" in this)) {
                 this.previous_pos = mouse_pos;
             }
-            var scale_x = this.lines_view.scales.x.scale;
-            var scale_y = this.lines_view.scales.y.scale;
+            const scale_x = this.lines_view.scales.x.scale;
+            const scale_y = this.lines_view.scales.y.scale;
 
-            var newx = scale_x.invert(mouse_pos[0]);
-            var newy = scale_y.invert(mouse_pos[1]);
-            var oldx = scale_x.invert(this.previous_pos[0]);
+            const newx = scale_x.invert(mouse_pos[0]);
+            const newy = scale_y.invert(mouse_pos[1]);
+            const oldx = scale_x.invert(this.previous_pos[0]);
             scale_y.invert(this.previous_pos[1]);
-            var old_index = this.nns(lines_model.x_data[xindex], oldx);
-            var new_index = this.nns(lines_model.x_data[xindex], newx);
-            var min = Math.min(old_index, new_index);
-            var max = Math.max(old_index, new_index);
-            for (var i=min; i<=max; ++i) {
+            const old_index = this.nns(lines_model.x_data[xindex], oldx);
+            const new_index = this.nns(lines_model.x_data[xindex], newx);
+            const min = Math.min(old_index, new_index);
+            const max = Math.max(old_index, new_index);
+            for (let i=min; i<=max; ++i) {
                 if ((!(this.valid_min) ||
                      lines_model.x_data[xindex][i] >= this.min_x) &&
                     ((!this.valid_max) ||
@@ -108,7 +108,7 @@ export class HandDraw extends interaction.Interaction {
                     lines_model.y_data[this.line_index][i] = newy;
                 }
             }
-            var xy_data = lines_model.x_data[xindex].map((d, i) => {
+            const xy_data = lines_model.x_data[xindex].map((d, i) => {
                 return {
                     x: d,
                     y: lines_model.y_data[this.line_index][i]
@@ -130,7 +130,7 @@ export class HandDraw extends interaction.Interaction {
     }
 
     set_limits() {
-        var is_date = (this.lines_view.scales.x.model.type == "date");
+        const is_date = (this.lines_view.scales.x.model.type == "date");
         if(is_date) {
             this.min_x = this.model.get_date_elem("min_x");
             this.valid_min = !(this.min_x === null ||
@@ -152,7 +152,7 @@ export class HandDraw extends interaction.Interaction {
 
     nns(x_data, x) {
         // Nearest neighbor search
-        var idx = this.lines_view.bisect(x_data, x);
+        const idx = this.lines_view.bisect(x_data, x);
         if (x - x_data[idx-1] > x_data[idx] - x) {
             return idx;
         } else {

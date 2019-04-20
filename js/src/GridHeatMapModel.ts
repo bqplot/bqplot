@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
@@ -58,17 +57,17 @@ export class GridHeatMapModel extends MarkModel {
     update_data() {
         this.dirty = true;
         // Handling data updates
-        var that = this;
+        const that = this;
         this.colors = this.get("color");
         this.rows = this.get("row");
         this.columns = this.get("column");
 
-        var num_cols = this.colors[0].length;
-        var flat_colors = [].concat.apply([], this.colors.map((x) => Array.prototype.slice.call(x, 0)));
+        const num_cols = this.colors[0].length;
+        const flat_colors = [].concat.apply([], this.colors.map((x) => Array.prototype.slice.call(x, 0)));
 
         this.mark_data = flat_colors.map(function(data, index) {
-            var row_num = Math.floor(index / num_cols);
-            var col_num = index % num_cols;
+            const row_num = Math.floor(index / num_cols);
+            const col_num = index % num_cols;
 
             return {
                 row_num : row_num,
@@ -89,9 +88,9 @@ export class GridHeatMapModel extends MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var scales = this.get("scales");
-        var y_scale = scales.row, x_scale = scales.column;
-        var color_scale = scales.color;
+        const scales = this.get("scales");
+        const y_scale = scales.row, x_scale = scales.column;
+        const color_scale = scales.color;
 
         if(!this.get("preserve_domain").row) {
             y_scale.compute_and_set_domain(this.rows, this.model_id + "_row");
@@ -122,12 +121,12 @@ export class GridHeatMapModel extends MarkModel {
     identify_modes() {
         //based on the data, identify the mode in which the heatmap should
         //be plotted.
-        var modes : any = {};
-        var scales = this.get("scales");
-        var row_scale = scales.row;
-        var column_scale = scales.column;
-        var data_nrow = this.colors.length;
-        var data_ncol = this.colors[0].length;
+        const modes : any = {};
+        const scales = this.get("scales");
+        const row_scale = scales.row;
+        const column_scale = scales.column;
+        const data_nrow = this.colors.length;
+        const data_ncol = this.colors[0].length;
 
         if(row_scale.type === "ordinal") {
             modes.row = "middle";

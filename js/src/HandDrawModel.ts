@@ -14,14 +14,13 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import * as _ from 'underscore';
-import * as basemodel from './BaseModel';
+import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 
-export class HandDrawModel extends basemodel.BaseModel {
+export class HandDrawModel extends BaseModel {
 
     defaults() {
-        return {...basemodel.BaseModel.prototype.defaults(),
+        return {...BaseModel.prototype.defaults(),
             _model_name: "HandDrawModel",
             _view_name: "HandDraw",
             _model_module: "bqplot",

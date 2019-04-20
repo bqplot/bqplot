@@ -58,9 +58,9 @@ export class OHLCModel extends MarkModel {
     }
 
     update_data() {
-        var x_data = this.get("x");
-        var y_data = this.get("y");
-        var format = this.get("format");
+        let x_data = this.get("x");
+        let y_data = this.get("y");
+        const format = this.get("format");
 
         // Local private function to report errors in format
         function print_bad_format(format) {
@@ -91,7 +91,7 @@ export class OHLCModel extends MarkModel {
             y_data = [];
         } else {
             // Verify that OHLC data is valid
-            var px = this.px;
+            const px = this.px;
             if((this.px.h !== -1 &&
                !y_data.every(function(d) {
                 return (d[px.h] === d3.max(d) &&
@@ -121,10 +121,12 @@ export class OHLCModel extends MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var scales = this.get("scales");
-        var x_scale = scales.x, y_scale = scales.y;
-        var min_x_dist = Number.POSITIVE_INFINITY;
-        var max_y_height = 0, dist = 0, height = 0;
+        const scales = this.get("scales");
+        const x_scale = scales.x, y_scale = scales.y;
+        let min_x_dist = Number.POSITIVE_INFINITY;
+        let max_y_height = 0;
+        let dist = 0;
+        let height = 0;
 
         /*
          * Compute the minimum x distance between the data points. We will
@@ -132,7 +134,7 @@ export class OHLCModel extends MarkModel {
          * Also compute the maximum height of all of the marks (i.e. maximum
          * distance from high to low) and use that to pad the y domain.
          */
-        for(var i = 0; i < this.mark_data.length; i++) {
+        for(let i = 0; i < this.mark_data.length; i++) {
             if(i > 0) {
                 dist = this.mark_data[i][0] - this.mark_data[i-1][0];
                 if(dist < min_x_dist) min_x_dist = dist;
@@ -145,7 +147,8 @@ export class OHLCModel extends MarkModel {
             min_x_dist = 0;
         }
 
-        var min, max;
+        let min;
+        let max;
         // X Scale
         if((!this.get("preserve_domain").x) && this.mark_data.length !== 0) {
             if(x_scale.type === "ordinal") {
@@ -170,8 +173,8 @@ export class OHLCModel extends MarkModel {
         if((!this.get("preserve_domain").y) && this.mark_data.length !== 0) {
             // Remember that elem contains OHLC data here so we cannot use
             // compute_and_set_domain
-            var top = this.px.h;
-            var bottom = this.px.l;
+            let top = this.px.h;
+            let bottom = this.px.l;
             if(top === -1 || bottom === -1) {
                 top = this.px.o;
                 bottom = this.px.c;
@@ -190,8 +193,8 @@ export class OHLCModel extends MarkModel {
     }
 
     get_data_dict(data, index) {
-        var that = this;
-        var return_val = {
+        const that = this;
+        const return_val = {
             index: index,
             x: data.x
         };

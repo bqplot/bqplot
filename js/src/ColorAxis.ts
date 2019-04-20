@@ -16,7 +16,6 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-axis"), require("d3-scale"), require("d3-selection"), require("d3-selection-multi"));
 import { Axis } from './Axis';
-import * as _ from 'underscore';
 
 class ColorBar extends Axis {
 
@@ -27,7 +26,7 @@ class ColorBar extends Axis {
         this.height = this.parent.height - (this.margin.top + this.margin.bottom);
         this.width = this.parent.width - (this.margin.left + this.margin.right);
 
-        var scale_promise = this.set_scale(this.model.get("scale"));
+        const scale_promise = this.set_scale(this.model.get("scale"));
         this.side = this.model.get("side");
         this.x_offset = 100;
         this.y_offset = 40;
@@ -38,7 +37,7 @@ class ColorBar extends Axis {
 
         this.ordinal = false;
         this.num_ticks = this.model.get("num_ticks");
-        var that = this;
+        const that = this;
         scale_promise.then(function() {
             that.create_listeners();
             that.tick_format = that.generate_tick_formatter();
@@ -93,7 +92,7 @@ class ColorBar extends Axis {
 
     set_scale(model) {
         // Sets the child scale
-        var that = this;
+        const that = this;
         if (this.axis_scale) { this.axis_scale.remove(); }
         return this.create_child_view(model).then(function(view) {
             // Trigger the displayed event of the child view.
@@ -128,7 +127,7 @@ class ColorBar extends Axis {
                 .style("text-anchor", this.vertical ? "middle" : "end")
                 .text(this.model.get("label"));
         }
-        var colorBar = this.d3el.append("g")
+        const colorBar = this.d3el.append("g")
             .attr("id","colorBarG" + this.cid);
 
         this.draw_color_bar();
@@ -150,20 +149,20 @@ class ColorBar extends Axis {
     }
 
     draw_color_bar() {
-        var colorBar = this.d3el.select("#colorBarG" + this.cid);
+        const colorBar = this.d3el.select("#colorBarG" + this.cid);
         colorBar.attr("transform", this.get_colorbar_transform());
-        var that = this;
+        const that = this;
         colorBar.selectAll(".g-rect")
             .remove();
         colorBar.selectAll(".g-defs")
             .remove();
 
         this.colors = this.axis_scale.scale.range();
-        var colorSpacing = 100 / (this.colors.length - 1);
+        const colorSpacing = 100 / (this.colors.length - 1);
 
         if(this.ordinal) {
-            var bar_width = this.get_color_bar_width() / this.colors.length;
-            var rects = colorBar.append("g")
+            const bar_width = this.get_color_bar_width() / this.colors.length;
+            let rects = colorBar.append("g")
                 .attr("class", "g-rect axis")
                 .selectAll("rect")
                 .data(this.colors);
@@ -228,7 +227,7 @@ class ColorBar extends Axis {
     }
 
     get_topg_transform() {
-        var em = 12;
+        const em = 12;
         if(this.vertical){
             if(this.side === "right") {
                 return "translate(" + String(this.get_basic_transform() + this.margin.right / 2 - this.bar_height) + ", 0)";
@@ -258,12 +257,12 @@ class ColorBar extends Axis {
     }
 
     set_axisline_scale_range() {
-        var range = (this.vertical) ?
+        const range = (this.vertical) ?
             [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
         if(this.ordinal) {
             this.axis_line_scale.rangeRound(range).padding(0.05);
         } else {
-            var mid = this.axis_scale.model.mid;
+            const mid = this.axis_scale.model.mid;
             if (mid === undefined || mid === null) {
                 this.axis_line_scale.range(range);
             } else {
@@ -292,10 +291,10 @@ class ColorBar extends Axis {
         this.set_axisline_scale_range();
         // shifting the entire g of the color bar first.
         this.d3el.attr("transform", this.get_topg_transform());
-        var that = this;
-        var bar_width = this.get_color_bar_width() / this.colors.length;
+        const that = this;
+        const bar_width = this.get_color_bar_width() / this.colors.length;
         if(this.ordinal) {
-            var rectangles = this.d3el.select("#colorBarG" + this.cid)
+            const rectangles = this.d3el.select("#colorBarG" + this.cid)
                 .select(".g-rect")
                 .selectAll("rect")
                 .attr("width", bar_width);
@@ -335,7 +334,7 @@ class ColorBar extends Axis {
             this.axis.scale(this.axis_line_scale);
             this.set_tick_values();
 
-            var transform;
+            let transform;
             if(this.vertical) {
                 transform = "translate(" + ((this.side === "right") ?
                     this.bar_height : 0) + ", 0)";
@@ -349,11 +348,11 @@ class ColorBar extends Axis {
     }
 
     set_axisline_domain() {
-        var domain = this.axis_scale.scale.domain();
+        const domain = this.axis_scale.scale.domain();
         if (this.ordinal) {
             this.axis_line_scale.domain(domain);
         } else {
-            var mid = this.axis_scale.model.mid;
+            const mid = this.axis_scale.model.mid;
             if (mid === undefined || mid === null) {
                 this.axis_line_scale.domain([domain[0], domain[domain.length-1]]);
             } else {

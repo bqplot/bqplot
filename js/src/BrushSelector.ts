@@ -78,19 +78,21 @@ abstract class BrushMixinXYSelector extends selector.BaseXYSelector {
                 return mark_view.selector_changed();
             });
             return;
-        } if (extent_y === undefined) {
+        }
+        let x, y;
+        if (extent_y === undefined) {
             // 1d brush
-            var orient = this.model.get("orientation");
-            var x = (orient == "vertical") ? [] : extent_x,
-                y = (orient == "vertical") ? extent_x : [];
+            const orient = this.model.get("orientation");
+            x = (orient == "vertical") ? [] : extent_x,
+            y = (orient == "vertical") ? extent_x : [];
         } else {
             // 2d brush
-            var x = extent_x, y = extent_y;
+            x = extent_x, y = extent_y;
         }
-        var point_selector = function(p) {
+        const point_selector = function(p) {
             return sel_utils.point_in_rectangle(p, x, y);
         };
-        var rect_selector = function(xy) {
+        const rect_selector = function(xy) {
             return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
         };
 
@@ -156,19 +158,21 @@ abstract class BrushMixinXSelector extends selector.BaseXSelector {
                 return mark_view.selector_changed();
             });
             return;
-        } if (extent_y === undefined) {
+        }
+        let x, y;
+        if (extent_y === undefined) {
             // 1d brush
-            var orient = this.model.get("orientation");
-            var x = (orient == "vertical") ? [] : extent_x,
-                y = (orient == "vertical") ? extent_x : [];
+            const orient = this.model.get("orientation");
+            x = (orient == "vertical") ? [] : extent_x,
+            y = (orient == "vertical") ? extent_x : [];
         } else {
             // 2d brush
-            var x = extent_x, y = extent_y;
+            x = extent_x, y = extent_y;
         }
-        var point_selector = function(p) {
+        const point_selector = function(p) {
             return sel_utils.point_in_rectangle(p, x, y);
         };
-        var rect_selector = function(xy) {
+        const rect_selector = function(xy) {
             return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
         };
 
@@ -193,8 +197,8 @@ export class BrushSelector extends BrushMixinXYSelector {
         super.render.apply(this);
         this.brush_render();
 
-        var that = this;
-        var scale_creation_promise = this.create_scales();
+        const that = this;
+        const scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.brush = d3.brush()
               .on("start", _.bind(that.brush_start, that))
@@ -227,18 +231,18 @@ export class BrushSelector extends BrushMixinXYSelector {
     }
 
     convert_and_save() {
-        var e = d3GetEvent();
+        const e = d3GetEvent();
         if(!e.sourceEvent) return;
         if(!e.selection) {
             this.empty_selection();
         } else {
-            var d0 = e.selection;
-            var pixel_extent_x = [d0[0][0], d0[1][0]];
-            var pixel_extent_y = [d0[1][1], d0[0][1]];
+            const d0 = e.selection;
+            const pixel_extent_x = [d0[0][0], d0[1][0]];
+            const pixel_extent_y = [d0[1][1], d0[0][1]];
 
-            var extent_x = pixel_extent_x.map(this.x_scale.scale.invert).sort(
+            const extent_x = pixel_extent_x.map(this.x_scale.scale.invert).sort(
                 (a: number, b: number) => a - b);
-            var extent_y = pixel_extent_y.map(this.y_scale.scale.invert).sort(
+            const extent_y = pixel_extent_y.map(this.y_scale.scale.invert).sort(
                 (a: number, b: number) => a - b);
 
             this.update_mark_selected(pixel_extent_x, pixel_extent_y);
@@ -253,7 +257,7 @@ export class BrushSelector extends BrushMixinXYSelector {
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected_x = this.model.get("selected_x") || [],
+        const selected_x = this.model.get("selected_x") || [],
             selected_y = this.model.get("selected_y") || [];
         if(selected_x.length === 0 || selected_y.length === 0) {
             this.update_mark_selected();
@@ -261,12 +265,12 @@ export class BrushSelector extends BrushMixinXYSelector {
             // invalid value for selected. Ignoring the value
             return;
         } else {
-            var extent = [[selected_x[0], selected_y[0]],
+            const extent = [[selected_x[0], selected_y[0]],
                           [selected_x[1], selected_y[1]]];
             this.brush.extent(extent);
-            var pixel_extent_x = selected_x.map(this.x_scale.scale).sort(
+            const pixel_extent_x = selected_x.map(this.x_scale.scale).sort(
                 function(a, b) { return a - b; });
-            var pixel_extent_y = selected_y.map(this.y_scale.scale).sort(
+            const pixel_extent_y = selected_y.map(this.y_scale.scale).sort(
                 function(a, b) { return a - b; });
             this.update_mark_selected(pixel_extent_x, pixel_extent_y);
         }
@@ -282,9 +286,9 @@ export class BrushSelector extends BrushMixinXYSelector {
         this.set_y_range([this.y_scale]);
 
         this.brush.extent([[0, 0], [this.width, this.height]]);
-        var range_x = this.model.get("selected_x").map(this.x_scale.scale).sort(
+        const range_x = this.model.get("selected_x").map(this.x_scale.scale).sort(
             function(a, b) { return a - b; });
-        var range_y = this.model.get("selected_y").map(this.y_scale.scale).sort(
+        const range_y = this.model.get("selected_y").map(this.y_scale.scale).sort(
             function(a, b) { return a - b; });
         this.brush.move(this.d3el, [[range_x[0], range_y[0]], [range_x[1], range_y[1]]]);
         this.brushsel = this.d3el.call(this.brush);
@@ -303,8 +307,8 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
         super.render();
         this.brush_render();
 
-        var that = this;
-        var scale_creation_promise = this.create_scales();
+        const that = this;
+        const scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.brush = (that.model.get("orientation") == "vertical" ? d3.brushY() : d3.brushX())
               .on("start", _.bind(that.brush_start, that))
@@ -334,13 +338,13 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
     }
 
     convert_and_save() {
-        var e = d3GetEvent();
+        const e = d3GetEvent();
         if(!e.sourceEvent) return;
         if(!e.selection) {
             this.empty_selection();
         } else {
-            var pixel_extent = e.selection;
-            var extent = pixel_extent.map(this.scale.scale.invert).sort(
+            const pixel_extent = e.selection;
+            const extent = pixel_extent.map(this.scale.scale.invert).sort(
                 (a, b) => a - b);
             this.update_mark_selected(pixel_extent);
 
@@ -362,16 +366,16 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected = this.model.get("selected") || [];
+        const selected = this.model.get("selected") || [];
         if(selected.length === 0) {
             this.update_mark_selected();
         } else if(selected.length != 2) {
             // invalid value for selected. Ignoring the value
             return;
         } else {
-            var extent = [selected[0], selected[1]];
+            const extent = [selected[0], selected[1]];
             this.brush.extent(extent);
-            var pixel_extent = extent.map(this.scale.scale).sort(
+            const pixel_extent = extent.map(this.scale.scale).sort(
                 (a: number, b: number) => a - b);
             this.update_mark_selected(pixel_extent);
         }
@@ -388,7 +392,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
         this.set_range([this.scale]);
         this.brush.extent([[0, 0], [this.width, this.height]]);
 
-        var range = this.model.get("selected").map(this.scale.scale).sort(
+        const range = this.model.get("selected").map(this.scale.scale).sort(
             function(a, b) { return a - b; });
         this.brush.move(this.d3el, range);
         this.brushsel = this.d3el.call(this.brush);
@@ -419,11 +423,11 @@ export class MultiSelector extends BrushMixinXSelector {
     render() {
         super.render.apply(this);
 
-        var that = this;
+        const that = this;
         this.names = this.model.get("names");
         this.curr_index = 0;
 
-        var scale_creation_promise = this.create_scales();
+        const scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.d3el.attr("class", "multiselector");
             that.d3el.attr("width", that.width);
@@ -441,16 +445,16 @@ export class MultiSelector extends BrushMixinXSelector {
     }
 
     labels_change(model, value) {
-        var prev_names = model.previous("names");
+        const prev_names = model.previous("names");
         this.names = value;
 
-        var data = _.range(this.curr_index + 1);
-        var that = this;
-        var selected = utils.deepCopy(this.model.get("selected"));
+        const data = _.range(this.curr_index + 1);
+        const that = this;
+        const selected = utils.deepCopy(this.model.get("selected"));
         //TODO: Use do diff?
         data.forEach(function(elem) {
-            var label = that.get_label(elem);
-            var prev_label = that.get_label(elem, prev_names);
+            const label = that.get_label(elem);
+            const prev_label = that.get_label(elem, prev_names);
             if(prev_label !== label) {
                 that.d3el.select(".brush_text_" + elem).text(label);
                 selected[label] = selected[prev_label];
@@ -463,17 +467,17 @@ export class MultiSelector extends BrushMixinXSelector {
 
     create_brush() {
         // Function to add new brushes.
-        var that = this;
-        var index = this.curr_index;
+        const that = this;
+        const index = this.curr_index;
 
-        var vertical = (this.model.get("orientation") == "vertical");
-        var brush = (vertical ? d3.brushY() : d3.brushX())
+        const vertical = (this.model.get("orientation") == "vertical");
+        const brush = (vertical ? d3.brushY() : d3.brushX())
           .on("start", () => { this.brush_start(); })
           .on("brush", () => { this.brush_move(index, this); })
           .on("end", () => { this.brush_end(index, this); });
         brush.extent([[0, 0], [this.width, this.height]]);
 
-        var new_brush_g = this.d3el.append("g")
+        const new_brush_g = this.d3el.append("g")
           .attr("class", "selector brushintsel active");
 
         new_brush_g.append("text")
@@ -494,9 +498,9 @@ export class MultiSelector extends BrushMixinXSelector {
         this.color_change();
         this.adjust_rectangle();
 
-        var old_handler = new_brush_g.on("mousedown.brush");
+        const old_handler = new_brush_g.on("mousedown.brush");
         new_brush_g.on("mousedown.brush", function() {
-            var accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
+            const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
             if(d3GetEvent().shiftKey && accelKey) {
                 that.reset();
             } else if(accelKey) {
@@ -530,8 +534,8 @@ export class MultiSelector extends BrushMixinXSelector {
     }
 
     brush_move(item?, brush_g?) {
-        var sel = d3GetEvent().selection;
-        var hide_names = !(this.model.get("show_names"));
+        const sel = d3GetEvent().selection;
+        const hide_names = !(this.model.get("show_names"));
         d3.select(brush_g).select("text")
           .style("display", ((!sel || hide_names) ? "none" : "inline"));
         this.set_text_location(brush_g, sel);
@@ -539,15 +543,15 @@ export class MultiSelector extends BrushMixinXSelector {
     }
 
     brush_end (item?, brush_g?) {
-        var sel = d3GetEvent().selection;
+        const sel = d3GetEvent().selection;
         this.model.set("brushing", false);
         this.convert_and_save(sel, item);
     }
 
     set_text_location(brush_g, extent) {
-        var vertical = (this.model.get("orientation") == "vertical");
-        var orient = vertical ? "y" : "x";
-        var mid = (extent[0] + extent[1]) / 2;
+        const vertical = (this.model.get("orientation") == "vertical");
+        const orient = vertical ? "y" : "x";
+        const mid = (extent[0] + extent[1]) / 2;
         d3.select(brush_g).select("text")
           .attr(orient, mid);
     }
@@ -568,7 +572,7 @@ export class MultiSelector extends BrushMixinXSelector {
             this.model.set("_selected", {});
             this.touch();
         } else {
-            var selected = utils.deepCopy(this.model.get("_selected"));
+            const selected = utils.deepCopy(this.model.get("_selected"));
             selected[this.get_label(item)] = extent.map(this.scale.scale.invert);
             this.update_mark_selected(extent);
             this.model.set("_selected", selected);

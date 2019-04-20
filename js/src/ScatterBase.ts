@@ -18,15 +18,15 @@ import 'd3-selection-multi';
 // const d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as utils from './utils';
-import * as mark from './Mark';
-import _ from 'underscore';
+import { Mark } from './Mark';
+import * as _ from 'underscore';
 
-export abstract class ScatterBase extends mark.Mark {
+export abstract class ScatterBase extends Mark {
 
     render() {
         const base_creation_promise = super.render();
 
-        var that = this;
+        const that = this;
         // Warning: arrow functions actually breaks the drag
         this.drag_listener = d3.drag()
           .subject(function(d: any) {

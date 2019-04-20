@@ -14,12 +14,11 @@
  */
 
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-selection"));
-import * as interaction from './Interaction';
-var convert_dates = require('./utils').convert_dates;
-import _ from 'underscore';
+// const d3 =Object.assign({}, require("d3-selection"));
+import { Interaction } from './Interaction';
+const convert_dates = require('./utils').convert_dates;
 
-export abstract class BaseSelector extends interaction.Interaction {
+export abstract class BaseSelector extends Interaction {
 
     initialize() {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
@@ -89,7 +88,7 @@ export abstract class BaseXSelector extends BaseSelector {
             this.scale.remove();
         }
         if(this.model.get("scale")) {
-            var that = this;
+            const that = this;
             return this.create_child_view(this.model.get("scale")).then(function(view) {
                 that.scale = view;
                 // The argument is to suppress the update to gui
@@ -104,15 +103,15 @@ export abstract class BaseXSelector extends BaseSelector {
     update_scale_domain(ignore_gui_update = false) {
         // When the domain of the scale is updated, the domain of the scale
         // for the selector must be expanded to account for the padding.
-        var xy = (this.model.get("orientation") == "vertical") ? "y" : "x"
-        var initial_range = this.parent.padded_range(xy, this.scale.model);
-        var target_range = this.parent.range(xy);
+        const xy = (this.model.get("orientation") == "vertical") ? "y" : "x"
+        const initial_range = this.parent.padded_range(xy, this.scale.model);
+        const target_range = this.parent.range(xy);
         this.scale.expand_domain(initial_range, target_range);
     }
 
     set_range(array) {
-        var xy = (this.model.get("orientation") == "vertical") ? "y" : "x"
-        for(var iter = 0; iter < array.length; iter++) {
+        const xy = (this.model.get("orientation") == "vertical") ? "y" : "x"
+        for(let iter = 0; iter < array.length; iter++) {
             array[iter].set_range(this.parent.range(xy));
         }
     }
@@ -123,14 +122,14 @@ export abstract class BaseXSelector extends BaseSelector {
 export abstract class BaseXYSelector extends BaseSelector {
 
     create_scales() {
-        var that = this;
+        const that = this;
         if(this.x_scale) {
             this.x_scale.remove();
         }
         if(this.y_scale) {
             this.y_scale.remove();
         }
-        var scale_promises = [];
+        const scale_promises = [];
         if(this.model.get("x_scale")) {
             scale_promises.push(this.create_child_view(this.model.get("x_scale")).then(function(view) {
                 that.x_scale = view;
@@ -154,7 +153,7 @@ export abstract class BaseXYSelector extends BaseSelector {
     }
 
     set_x_range(array) {
-        for(var iter = 0; iter < array.length; iter++) {
+        for(let iter = 0; iter < array.length; iter++) {
             array[iter].set_range(this.parent.range("x"));
         }
     }
@@ -168,16 +167,16 @@ export abstract class BaseXYSelector extends BaseSelector {
     update_xscale_domain() {
         // When the domain of the scale is updated, the domain of the scale
         // for the selector must be expanded to account for the padding.
-        var initial_range = this.parent.padded_range("x", this.x_scale.model);
-        var target_range = this.parent.range("x");
+        const initial_range = this.parent.padded_range("x", this.x_scale.model);
+        const target_range = this.parent.range("x");
         this.x_scale.expand_domain(initial_range, target_range);
     }
 
     update_yscale_domain() {
         // When the domain of the scale is updated, the domain of the scale
         // for the selector must be expanded to account for the padding.
-        var initial_range = this.parent.padded_range("y", this.y_scale.model);
-        var target_range = this.parent.range("y");
+        const initial_range = this.parent.padded_range("y", this.y_scale.model);
+        const target_range = this.parent.range("y");
         this.y_scale.expand_domain(initial_range, target_range);
     }
 

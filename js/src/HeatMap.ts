@@ -21,8 +21,8 @@ import { Mark } from './Mark';
 export class HeatMap extends Mark {
 
     render() {
-        var base_render_promise = super.render();
-        var that = this;
+        const base_render_promise = super.render();
+        const that = this;
 
         // TODO: create_listeners is put inside the promise success handler
         // because some of the functions depend on child scales being
@@ -51,19 +51,19 @@ export class HeatMap extends Mark {
     }
 
     set_ranges() {
-        var x_scale = this.scales.x;
+        const x_scale = this.scales.x;
         if(x_scale) {
-            var x_range = this.parent.padded_range("x", x_scale.model);
+            const x_range = this.parent.padded_range("x", x_scale.model);
             x_scale.set_range(x_range);
         }
-        var y_scale = this.scales.y;
+        const y_scale = this.scales.y;
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
     }
 
     set_positional_scales() {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
@@ -73,7 +73,7 @@ export class HeatMap extends Mark {
     }
 
     initialize_additional_scales() {
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
         if(color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
                 this.draw();
@@ -110,22 +110,22 @@ export class HeatMap extends Mark {
 
     draw() {
         this.set_ranges();
-        var that = this;
+        const that = this;
 
-        var x_plot_data = this.get_x_plotting_data(this.model.mark_data.x);
-        var y_plot_data = this.get_y_plotting_data(this.model.mark_data.y);
+        const x_plot_data = this.get_x_plotting_data(this.model.mark_data.x);
+        const y_plot_data = this.get_y_plotting_data(this.model.mark_data.y);
 
         this.canvas.setAttribute("width", x_plot_data.total_width);
         this.canvas.setAttribute("height", y_plot_data.total_height);
 
-        var ctx = this.canvas.getContext("2d");
-        var colors = this.model.mark_data.color;
+        const ctx = this.canvas.getContext("2d");
+        const colors = this.model.mark_data.color;
         colors.forEach(function(row, i) {
-            var height = y_plot_data.heights[i];
-            var y = y_plot_data.start[i];
+            const height = y_plot_data.heights[i];
+            const y = y_plot_data.start[i];
             row.forEach(function(d, j) {
-                var width = x_plot_data.widths[j];
-                var x = x_plot_data.start[j];
+                const width = x_plot_data.widths[j];
+                const x = x_plot_data.start[j];
                 ctx.fillStyle = that.get_element_fill(d);
                 // add .5 to width and height to fill gaps
                 ctx.fillRect(x, y, width+.5, height+.5);
@@ -145,11 +145,11 @@ export class HeatMap extends Mark {
         // data is the data for which the plot data is to be generated.
         // since data may be a TypedArray, explicitly use Array.map
         data = Array.from(data)
-        var scaled_data = Array.prototype.map.call(data, this.scales.x.scale);
-        var x_padding = this.get_x_padding(scaled_data);
-        var num_cols = data.length;
+        const scaled_data = Array.prototype.map.call(data, this.scales.x.scale);
+        const x_padding = this.get_x_padding(scaled_data);
+        const num_cols = data.length;
 
-        var widths = scaled_data.map(function(d, i) {
+        const widths = scaled_data.map(function(d, i) {
             if (i == 0) {
                 return (scaled_data[1] - d) * 0.5 + x_padding.left;
             }
@@ -161,13 +161,13 @@ export class HeatMap extends Mark {
             }
         });
 
-        var x0 = scaled_data[0] - x_padding.left;
-        var start_points = scaled_data.map(function(d, i) {
+        const x0 = scaled_data[0] - x_padding.left;
+        const start_points = scaled_data.map(function(d, i) {
             if (i == 0) { return 0; }
             else { return (d + scaled_data[i - 1]) * 0.5 - x0; }
         });
 
-        var total_width = (scaled_data[num_cols-1] - scaled_data[0]) +
+        const total_width = (scaled_data[num_cols-1] - scaled_data[0]) +
                            x_padding.left + x_padding.right;
 
         return {
@@ -179,7 +179,7 @@ export class HeatMap extends Mark {
     }
 
     get_x_padding(scaled_data) {
-        var num_cols = scaled_data.length;
+        const num_cols = scaled_data.length;
         return {
             left: (scaled_data[1] - scaled_data[0]) * 0.5,
             right: (scaled_data[num_cols-1] - scaled_data[num_cols-2]) * 0.5
@@ -192,11 +192,11 @@ export class HeatMap extends Mark {
         //
         //  data is the data for which the plot data is to be generated.
         data = Array.from(data)
-        var scaled_data = data.map(this.scales.y.scale);
-        var y_padding = this.get_y_padding(scaled_data);
-        var num_rows = data.length;
+        const scaled_data = data.map(this.scales.y.scale);
+        const y_padding = this.get_y_padding(scaled_data);
+        const num_rows = data.length;
 
-        var heights = scaled_data.map(function(d, i) {
+        const heights = scaled_data.map(function(d, i) {
             if (i == 0) {
                 return -(scaled_data[1] - d) * 0.5 + y_padding.bottom;
             }
@@ -208,13 +208,13 @@ export class HeatMap extends Mark {
             }
         });
 
-        var y0 = scaled_data[num_rows - 1] - y_padding.top
-        var start_points = scaled_data.map(function(d, i) {
+        const y0 = scaled_data[num_rows - 1] - y_padding.top
+        const start_points = scaled_data.map(function(d, i) {
             if (i == num_rows - 1) { return 0; }
             else { return (d + scaled_data[i + 1]) * 0.5 - y0; }
         });
 
-        var total_height = (scaled_data[0] - scaled_data[num_rows-1]) +
+        const total_height = (scaled_data[0] - scaled_data[num_rows-1]) +
                             y_padding.top + y_padding.bottom;
 
         return {
@@ -226,7 +226,7 @@ export class HeatMap extends Mark {
     }
 
     get_y_padding(scaled_data) {
-        var num_rows = scaled_data.length;
+        const num_rows = scaled_data.length;
         return {
             bottom: -(scaled_data[1] - scaled_data[0]) * 0.5,
             top: -(scaled_data[num_rows-1] - scaled_data[num_rows-2]) * 0.5

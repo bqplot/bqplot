@@ -24,8 +24,8 @@ export class IndexSelector extends BaseXSelector {
         super.render();
         this.active = false;
         this.dirty = false;
-        var that = this;
-        var scale_creation_promise = this.create_scales();
+        const that = this;
+        const scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             that.line = that.d3el.append("line")
               .attr("class", "selector indsel")
@@ -82,8 +82,8 @@ export class IndexSelector extends BaseXSelector {
             return;
         }
         this.dirty = true;
-        var mouse_pos = d3.mouse(this.background.node());
-        var xpixel = mouse_pos[0];
+        const mouse_pos = d3.mouse(this.background.node());
+        const xpixel = mouse_pos[0];
         //update the index vertical line
         this.line.attr("x1", xpixel).attr("x2", xpixel);
 
@@ -133,14 +133,14 @@ export class IndexSelector extends BaseXSelector {
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected = this.model.get("selected") || [];
+        const selected = this.model.get("selected") || [];
         if(selected.length === 0) {
             this.reset();
         } else if (selected.length != 1) {
             // invalid value for selected. Ignoring the value
             return;
         } else {
-            var pixel = this.scale.scale(selected[0]);
+            const pixel = this.scale.scale(selected[0]);
             if(this.line !== undefined && this.line !== null) {
                 this.line.attr("x1", 0)
                          .attr("x2", 0)
@@ -165,7 +165,7 @@ export class IndexSelector extends BaseXSelector {
     }
 
     set_range(array) {
-        for(var iter = 0; iter < array.length; iter++) {
+        for(let iter = 0; iter < array.length; iter++) {
             array[iter].set_range([0, this.width]);
         }
     }

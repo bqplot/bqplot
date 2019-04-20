@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
@@ -46,16 +45,16 @@ export class GraphModel extends MarkModel {
     }
 
     update_node_data() {
-        var node_data = this.get("node_data"),
-            x = this.get("x"),
-            y = this.get("y"),
-            color = this.get("color") || [],
+        let node_data = this.get("node_data");
+        const x = this.get("x");
+        const y = this.get("y");
+        const color = this.get("color") || [];
 
-            scales = this.get("scales"),
-            color_scale = scales.color;
+        const scales = this.get("scales");
+        const color_scale = scales.color;
 
         function get_shape_attrs(shape, attrs) {
-            var new_attrs: any = {};
+            const new_attrs: any = {};
             switch (shape) {
                 case "circle":
                     new_attrs.r = attrs.r || 15;
@@ -81,7 +80,7 @@ export class GraphModel extends MarkModel {
         }
 
         this.mark_data = [];
-        var that = this;
+        const that = this;
         //populate mark data from node data with meaningful defaults filled in
         node_data.forEach(function(d, i) {
             d.label = d.label || "N" + i;
@@ -112,11 +111,11 @@ export class GraphModel extends MarkModel {
     }
 
     update_link_data() {
-        var link_color_scale = this.get("scales").link_color;
+        const link_color_scale = this.get("scales").link_color;
         this.link_data = this.get("link_data");
-        var link_matrix = this.get("link_matrix");
-        var link_color = this.get("link_color");
-        var that = this;
+        let link_matrix = this.get("link_matrix");
+        const link_color = this.get("link_color");
+        const that = this;
 
         if (link_color_scale !== undefined && link_color.length > 0) {
             link_matrix = link_color;
@@ -151,16 +150,16 @@ export class GraphModel extends MarkModel {
     }
 
     update_domains() {
-        var data_scale_key_map = {x: 'xval', y: 'yval'};
+        const data_scale_key_map = {x: 'xval', y: 'yval'};
 
         if (!this.mark_data) {
             return;
         }
 
-        var scales = this.get("scales");
-        for (var key in scales) {
+        const scales = this.get("scales");
+        for (let key in scales) {
             if (scales.hasOwnProperty(key)) {
-                var scale = scales[key];
+                const scale = scales[key];
                 if (!this.get("preserve_domain")[key]) {
                     scale.compute_and_set_domain(this.mark_data.map(function(d) {
                         return d[key] || d[data_scale_key_map[key]];

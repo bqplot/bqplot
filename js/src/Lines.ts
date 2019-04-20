@@ -20,13 +20,13 @@ import { Mark } from './Mark';
 import { LinesModel } from './LinesModel'
 import * as markers from './Markers';
 
-var bqSymbol = markers.symbol;
+const bqSymbol = markers.symbol;
 
 export class Lines extends Mark {
 
     render() {
-        var base_render_promise = super.render();
-        var that = this;
+        const base_render_promise = super.render();
+        const that = this;
         this.dot = bqSymbol().size(this.model.get("marker_size"));
         if (this.model.get("marker")) {
             this.dot.type(this.model.get("marker"));
@@ -52,18 +52,18 @@ export class Lines extends Mark {
     }
 
     set_ranges() {
-        var x_scale = this.scales.x;
+        const x_scale = this.scales.x;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
         }
-        var y_scale = this.scales.y;
+        const y_scale = this.scales.y;
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
     }
 
     set_positional_scales() {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.update_line_xy(); }
         });
@@ -73,7 +73,7 @@ export class Lines extends Mark {
     }
 
     initialize_additional_scales() {
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
         if(color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
                 this.update_style();
@@ -103,7 +103,7 @@ export class Lines extends Mark {
         this.listenTo(this.model, "change:fill", this.update_fill);
 
         this.listenTo(this.model, "data_updated", function() {
-            var animate = true;
+            const animate = true;
             this.draw(animate);
         });
         this.listenTo(this.model, "labels_updated", this.update_labels);
@@ -182,13 +182,13 @@ export class Lines extends Mark {
     }
 
     update_style() {
-        var that = this,
+        const that = this,
             fill = this.model.get("fill"),
             fill_color = this.model.get("fill_colors"),
             opacities = this.model.get("opacities"),
             fill_opacities = this.model.get("fill_opacities");
         // update curve colors
-        var curves = this.d3el.selectAll(".curve")
+        const curves = this.d3el.selectAll(".curve")
         curves.select(".line")
           .style("opacity", function(d, i) { return opacities[i]; })
           .style("stroke", function(d, i) {
@@ -240,10 +240,10 @@ export class Lines extends Mark {
     }
 
     update_path_style() {
-        var interpolation = this.get_interpolation();
+        const interpolation = this.get_interpolation();
         this.line.curve(interpolation);
         this.area.curve(interpolation);
-        var that = this;
+        const that = this;
         this.d3el.selectAll(".curve").select(".line")
           .attr("d", function(d) {
               return that.line(d.values) + that.path_closure();
@@ -270,9 +270,9 @@ export class Lines extends Mark {
             this.touch();
             return [];
         }
-        var pixels = this.pixel_coords;
-        var indices = _.range(pixels.length);
-        var selected = _.filter(indices, function(index) {
+        const pixels = this.pixel_coords;
+        const indices = _.range(pixels.length);
+        const selected = _.filter(indices, function(index) {
             return point_selector(pixels[index]);
         });
         this.model.set("selected", selected);
@@ -286,20 +286,20 @@ export class Lines extends Mark {
             return;
         }
 
-        var index = Math.min(this.bisect(this.x_pixels, pixel),
+        const index = Math.min(this.bisect(this.x_pixels, pixel),
           Math.max((this.x_pixels.length - 1), 0));
         this.model.set("selected", [index]);
         this.touch();
     }
 
     update_multi_range(brush_extent) {
-        var x_start = brush_extent[0];
-        var x_end = brush_extent[1];
+        const x_start = brush_extent[0];
+        const x_end = brush_extent[1];
 
-        var data = this.model.x_data[0] instanceof Array ?
+        const data = this.model.x_data[0] instanceof Array ?
             this.model.x_data[0] : this.model.x_data;
-        var idx_start = this.bisect(data, x_start);
-        var idx_end = Math.min(this.bisect(data, x_end),
+        const idx_start = this.bisect(data, x_start);
+        const idx_end = Math.min(this.bisect(data, x_end),
             Math.max((data.length - 1), 0));
 
         this.selector_model.set("selected", [idx_start, idx_end]);
@@ -307,14 +307,14 @@ export class Lines extends Mark {
     }
 
     draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-        var curve_labels = this.model.get_labels();
-        var legend_data = this.model.mark_data.map(function(d) {
+        const curve_labels = this.model.get_labels();
+        const legend_data = this.model.mark_data.map(function(d) {
             return {index: d.index, name: d.name, color: d.color};
         });
         this.legend_el = elem.selectAll(".legend" + this.uuid)
           .data(legend_data);
 
-        var that = this,
+        const that = this,
             rect_dim = inter_y_disp * 0.8,
             fill_colors = this.model.get("fill_colors"),
             opacities = this.model.get("opacities");
@@ -328,7 +328,7 @@ export class Lines extends Mark {
                                  [rect_dim / 2, 0],
                                  [rect_dim, rect_dim / 2]];
 
-        var legend = this.legend_el.enter()
+        const legend = this.legend_el.enter()
           .append("g")
             .attr("class", "legend" + this.uuid)
             .attr("transform", function(d, i) {
@@ -380,7 +380,7 @@ export class Lines extends Mark {
 
         legend.merge(this.legend_el);
 
-        var max_length = d3.max(curve_labels, function(d: any) {
+        const max_length = d3.max(curve_labels, function(d: any) {
             return d.length;
         });
         this.legend_el.exit().remove();
@@ -388,9 +388,9 @@ export class Lines extends Mark {
     }
 
     update_curves_subset() {
-        var display_labels = this.model.get("labels_visibility") === "label";
+        const display_labels = this.model.get("labels_visibility") === "label";
         // Show a subset of the curves
-        var curves_subset = this.model.get("curves_subset");
+        const curves_subset = this.model.get("curves_subset");
         if (curves_subset.length > 0) {
             this.d3el.selectAll(".curve")
               .attr("display", function(d, i) {
@@ -425,10 +425,10 @@ export class Lines extends Mark {
     }
 
     update_fill() {
-        var fill = this.model.get("fill"),
+        const fill = this.model.get("fill"),
             area = (fill === "top" || fill === "bottom" || fill === "between");
 
-        var y_scale = this.scales.y;
+        const y_scale = this.scales.y;
 
         this.area.defined(function(d) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
         if (fill == "bottom") {
@@ -438,7 +438,7 @@ export class Lines extends Mark {
         } else if (fill == "between") {
             this.area.y0(function(d) { return y_scale.scale(d.y0) + y_scale.offset; })
         }
-        var that = this;
+        const that = this;
         this.d3el.selectAll(".curve").select(".area")
           .attr("d", function(d) {
               return that.area(d.values);
@@ -457,7 +457,7 @@ export class Lines extends Mark {
     }
 
     get_element_color(data, index) {
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
         if(color_scale && data.color !== undefined && data.color !== null) {
             return color_scale.scale(data.color);
         }
@@ -465,21 +465,21 @@ export class Lines extends Mark {
     }
 
     get_fill_color(data, index) {
-        var fill_colors = this.model.get("fill_colors");
-        var that = this;
+        const fill_colors = this.model.get("fill_colors");
+        const that = this;
         return fill_colors.length === 0 ?
             that.get_element_color(data, index) : fill_colors[index];
     }
 
     update_line_xy(animate) {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
-        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
+        const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         this.line
           .x(function(d) { return x_scale.scale(d.x) + x_scale.offset; })
           .y(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
 
-        var fill = this.model.get("fill");
+        const fill = this.model.get("fill");
         this.area
           .x(function(d) { return x_scale.scale(d.x) + x_scale.offset; })
           .y1(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
@@ -492,8 +492,8 @@ export class Lines extends Mark {
             this.area.y0(function(d) { return y_scale.scale(d.y0) + y_scale.offset; })
         }
 
-        var that = this;
-        var curves_sel = this.d3el.selectAll(".curve");
+        const that = this;
+        const curves_sel = this.d3el.selectAll(".curve");
 
         curves_sel.select(".line")
           .transition("update_line_xy")
@@ -513,7 +513,7 @@ export class Lines extends Mark {
         curves_sel.select(".curve_label")
           .transition("update_line_xy")
           .attr("transform", function(d) {
-              var last_xy = d.values[d.values.length - 1];
+              const last_xy = d.values[d.values.length - 1];
               return "translate(" + x_scale.scale(last_xy.x) +
                               "," + y_scale.scale(last_xy.y) + ")";
           })
@@ -533,7 +533,7 @@ export class Lines extends Mark {
     }
 
     get_interpolation() {
-        var curve_types = {
+        const curve_types = {
             linear: d3.curveLinear,
             basis: d3.curveBasis,
             cardinal: d3.curveCardinal,
@@ -545,12 +545,12 @@ export class Lines extends Mark {
 
     draw(animate) {
         this.set_ranges();
-        var curves_sel = this.d3el.selectAll(".curve")
+        const curves_sel = this.d3el.selectAll(".curve")
           .data(this.model.mark_data);
 
-        var y_scale = this.scales.y;
+        const y_scale = this.scales.y;
 
-        var new_curves = curves_sel.enter().append("g")
+        const new_curves = curves_sel.enter().append("g")
           .attr("class", "curve");
         new_curves.append("path")
           .attr("class", "line")
@@ -565,7 +565,7 @@ export class Lines extends Mark {
                 "none" : "inline")
           .text(function(d) { return d.name; });
 
-        var fill = this.model.get("fill"),
+        const fill = this.model.get("fill"),
             area = (fill === "top" || fill === "bottom" || fill === "between");
         curves_sel.select(".line")
           .attr("id", function(d, i) { return "curve" + (i+1); })
@@ -595,7 +595,7 @@ export class Lines extends Mark {
 
     draw_dots() {
         if (this.model.get("marker")) {
-            var dots = this.d3el.selectAll(".curve").selectAll(".dot")
+            const dots = this.d3el.selectAll(".curve").selectAll(".dot")
                 .data(function(d, i) {
                     return d.values.map(function(e) {
                         return {x: e.x, y: e.y, sub_index: e.sub_index}; });
@@ -607,9 +607,9 @@ export class Lines extends Mark {
 
     update_dots_xy(animate) {
         if (this.model.get("marker")) {
-            var x_scale = this.scales.x, y_scale = this.scales.y;
-            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-            var dots = this.d3el.selectAll(".curve").selectAll(".dot");
+            const x_scale = this.scales.x, y_scale = this.scales.y;
+            const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            const dots = this.d3el.selectAll(".curve").selectAll(".dot");
 
             dots.transition("update_dots_xy").duration(animation_duration)
                 .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
@@ -623,16 +623,16 @@ export class Lines extends Mark {
     compute_view_padding() {
         //This function sets the padding for the view through the variables
         //x_padding and y_padding which are view specific paddings in pixel
-        var x_padding;
+        let x_padding;
         if (this.model.get("marker")) {
-            var marker_padding = Math.sqrt(this.model.get("marker_size")) / 2 + 1.0;
-            var line_padding = this.model.get("stroke_width") / 2.0;
+            const marker_padding = Math.sqrt(this.model.get("marker_size")) / 2 + 1.0;
+            const line_padding = this.model.get("stroke_width") / 2.0;
             x_padding = Math.max(marker_padding, line_padding);
         } else {
             x_padding = this.model.get("stroke_width") / 2.0;
         }
 
-        var y_padding = x_padding;
+        const y_padding = x_padding;
         if(x_padding !== this.x_padding || y_padding !== this.y_padding) {
             this.x_padding = x_padding;
             this.y_padding = y_padding;
@@ -641,11 +641,11 @@ export class Lines extends Mark {
     }
 
     update_marker_style() {
-        var that = this;
-        var fill_color = this.model.get("fill_colors");
-        var opacities = this.model.get("opacities");
+        const that = this;
+        const fill_color = this.model.get("fill_colors");
+        const opacities = this.model.get("opacities");
         this.d3el.selectAll(".curve").each(function(d, i) {
-            var curve = d3.select(this);
+            const curve = d3.select(this);
             curve.selectAll(".dot")
                 .style("opacity", opacities[i])
                 .style("fill", that.get_element_color(d, i) || fill_color[i]);

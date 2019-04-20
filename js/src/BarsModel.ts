@@ -65,11 +65,11 @@ export class BarsModel extends markmodel.MarkModel {
     }
 
     update_data() {
-        var x_data = this.get("x");
-        var y_data = this.get("y");
+        let x_data = this.get("x");
+        let y_data = this.get("y");
         y_data = (y_data.length === 0 || !_.isNumber(y_data[0])) ?
             y_data : [y_data];
-        var that = this;
+        const that = this;
 
         this.base_value = this.get("base");
         if(this.base_value === undefined || this.base_value === null) {
@@ -86,15 +86,15 @@ export class BarsModel extends markmodel.MarkModel {
             })));
             // since x_data may be a TypedArray, explicitly use Array.map
             this.mark_data = Array.prototype.map.call(x_data, function (x_elem, index) {
-                var data: any = {};
-                var y0 = that.base_value;
-                var y0_neg = that.base_value;
-                var y0_left = that.base_value;
+                const data: any = {};
+                let y0 = that.base_value;
+                let y0_neg = that.base_value;
+                let y0_left = that.base_value;
                 data.key = x_elem;
                 // since y_data may be a TypedArray, explicitly use Array.map
                 data.values = Array.prototype.map.call(y_data, function(y_elem, y_index) {
-                    var value = y_elem[index] - that.base_value;
-                    var positive = (value >= 0);
+                    const value = y_elem[index] - that.base_value;
+                    const positive = (value >= 0);
                     return {
                         index: index,
                         sub_index: y_index,
@@ -148,10 +148,10 @@ export class BarsModel extends markmodel.MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var color = this.get("color") || [];
-        var color_scale = this.get("scales").color;
-        var color_mode = this.get("color_mode");
-        var apply_color_to_groups = ((color_mode === "group") ||
+        const color = this.get("color") || [];
+        const color_scale = this.get("scales").color;
+        const color_mode = this.get("color_mode");
+        const apply_color_to_groups = ((color_mode === "group") ||
                                      (color_mode === "auto" && !(this.is_y_2d)));
         this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
             single_bar_d.values.forEach(function(bar_d, bar_index) {
@@ -172,9 +172,9 @@ export class BarsModel extends markmodel.MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var scales = this.get("scales");
-        var dom_scale = scales.x;
-        var range_scale = scales.y;
+        const scales = this.get("scales");
+        const dom_scale = scales.x;
+        const range_scale = scales.y;
 
         if(!this.get("preserve_domain").x) {
             dom_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -191,13 +191,13 @@ export class BarsModel extends markmodel.MarkModel {
                                                 d3.max(this.mark_data, function(c: any) { return c.pos_max; }), this.base_value],
                                                 this.model_id + "_y");
             } else {
-                var min = d3.min(this.mark_data,
+                const min = d3.min(this.mark_data,
                     function(c: any) {
                         return d3.min(c.values, function(val: any) {
                             return val.y_ref;
                         });
                     });
-                var max = d3.max(this.mark_data, function(c: any) {
+                const max = d3.max(this.mark_data, function(c: any) {
                     return d3.max(c.values, function(val: any) {
                         return val.y_ref;
                     });

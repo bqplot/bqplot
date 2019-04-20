@@ -15,15 +15,15 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3"));
-import {Mark }from './Mark';
+import { Mark }from './Mark';
 import * as _ from 'underscore';
 
 
 export class Image extends Mark {
 
     render() {
-        var base_render_promise = super.render();
-        var el = this.d3el || this.el;
+        const base_render_promise = super.render();
+        const el = this.d3el || this.el;
         this.im = el.append("image")
             .attr("x", 0)
             .attr("y", 0)
@@ -53,7 +53,7 @@ export class Image extends Mark {
             }
         };
 
-        var that = this;
+        const that = this;
         return base_render_promise.then(function() {
             that.event_listeners = {};
             that.reset_click();
@@ -66,7 +66,7 @@ export class Image extends Mark {
     }
 
     set_positional_scales() {
-        var x_scale = this.scales.x,
+        const x_scale = this.scales.x,
             y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) {
@@ -81,7 +81,7 @@ export class Image extends Mark {
     }
 
     set_ranges() {
-        var x_scale = this.scales.x,
+        const x_scale = this.scales.x,
             y_scale = this.scales.y;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
@@ -96,7 +96,7 @@ export class Image extends Mark {
         this.listenTo(this.model, "change:image", this.update_image);
         this.listenTo(this.model, "data_updated", function() {
             //animate on data update
-            var animate = true;
+            const animate = true;
             this.draw(animate);
         });
     }
@@ -105,9 +105,9 @@ export class Image extends Mark {
         if(this.im.attr("href")) {
             URL.revokeObjectURL(this.im.attr("href"));
         }
-        var image = this.model.get("image");
-        var blob = new Blob([image.get("value")], {type: "image/" + image.get("format")});
-        var url = URL.createObjectURL(blob);
+        const image = this.model.get("image");
+        const blob = new Blob([image.get("value")], {type: "image/" + image.get("format")});
+        const url = URL.createObjectURL(blob);
         this.im.attr("href", url);
     }
 
@@ -129,8 +129,8 @@ export class Image extends Mark {
         // (or near) which the user clicked.
         //
         // Here we want to return the location of the mouse click.
-        var event_data = this.event_metadata[event_name];
-        var data_message = {
+        const event_data = this.event_metadata[event_name];
+        const data_message = {
             "click_x": this.scales.x.invert(d3.mouse(this.el)[0]),
             "click_y": this.scales.y.invert(d3.mouse(this.el)[1])
             };
@@ -142,24 +142,24 @@ export class Image extends Mark {
         this.send({event: event_data.msg_name, data: data_message});
     }
 
-    draw(animate) {
+    draw(animate?) {
         this.set_ranges()
 
-        var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
-        var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
+        const x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
+        const y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
 
-        var animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
-        var el = this.d3el || this.el;
-        var x_scaled = this.model.mark_data["x"].map(x_scale.scale),
+        const animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
+        const el = this.d3el || this.el;
+        const x_scaled = this.model.mark_data["x"].map(x_scale.scale),
             y_scaled = this.model.mark_data["y"].map(y_scale.scale);
 
         el.selectAll("image").transition()
             .duration(animation_duration)
             .attr("transform", function(d) {
-                var tx = x_scaled[0] + x_scale.offset;
-                var ty = y_scaled[1] + y_scale.offset;
-                var sx = x_scaled[1] - x_scaled[0];
-                var sy = y_scaled[0] - y_scaled[1];
+                const tx = x_scaled[0] + x_scale.offset;
+                const ty = y_scaled[1] + y_scale.offset;
+                const sx = x_scaled[1] - x_scaled[0];
+                const sy = y_scaled[0] - y_scaled[1];
                 return "translate(" + tx + "," + ty + ") scale(" + sx + ", " + sy + ")"});
         el.on("click", _.bind(function(d, i) {
             this.img_send_message("element_clicked",

@@ -32,8 +32,8 @@ export class FastIntervalSelector extends BaseXSelector {
         this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
         this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
 
-        var that = this;
-        var scale_creation_promise = this.create_scales();
+        const that = this;
+        const scale_creation_promise = this.create_scales();
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(function() {
             //container for mouse events
             that.background = that.d3el.append("rect")
@@ -91,14 +91,14 @@ export class FastIntervalSelector extends BaseXSelector {
             return;
         }
         this.dirty = true;
-        var mouse_pos = d3.mouse(this.background.node());
-        var int_len = this.size > 0 ?
+        const mouse_pos = d3.mouse(this.background.node());
+        const int_len = this.size > 0 ?
             this.size : parseInt(this.rect.attr("width"));
-        var vert_factor = (this.height - mouse_pos[1]) / this.height;
-        var interval_size = this.freeze_but_move ?
+        const vert_factor = (this.height - mouse_pos[1]) / this.height;
+        const interval_size = this.freeze_but_move ?
             int_len : Math.round(vert_factor * this.width);
 
-        var start;
+        let start;
         if (mouse_pos[0] - interval_size / 2 < 0) {
             start = 0;
         } else if ((mouse_pos[0] + interval_size / 2) > this.width) {
@@ -110,7 +110,7 @@ export class FastIntervalSelector extends BaseXSelector {
         //update the interval location and size
         this.rect.attr("x", start);
         this.rect.attr("width", interval_size);
-        var pixel_extent = [start, start + interval_size];
+        const pixel_extent = [start, start + interval_size];
         this.set_selected("selected",
                                    this.scale.invert_range(pixel_extent));
         this.update_mark_selected(pixel_extent, undefined);
@@ -125,19 +125,21 @@ export class FastIntervalSelector extends BaseXSelector {
             _.each(this.mark_views, function(mark_view: any) {
                 return mark_view.selector_changed();
             });
-        } if (extent_y === undefined) {
+        }
+        let x, y;
+        if (extent_y === undefined) {
             // 1d brush
-            var orient = this.model.get("orientation");
-            var x = (orient == "vertical") ? [] : extent_x,
-                y = (orient == "vertical") ? extent_x : [];
+            const orient = this.model.get("orientation");
+            x = (orient == "vertical") ? [] : extent_x,
+            y = (orient == "vertical") ? extent_x : [];
         } else {
             // 2d brush
-            var x = extent_x, y = extent_y;
+            x = extent_x, y = extent_y;
         }
-        var point_selector = function(p) {
+        const point_selector = function(p) {
             return sel_utils.point_in_rectangle(p, x, y);
         };
-        var rect_selector = function(xy) {
+        const rect_selector = function(xy) {
             return sel_utils.rect_inter_rect(xy[0], xy[1], x, y);
         };
 
@@ -182,14 +184,14 @@ export class FastIntervalSelector extends BaseXSelector {
             return;
         }
         //reposition the interval selector and set the selected attribute.
-        var selected = this.model.get("selected") || [];
+        const selected = this.model.get("selected") || [];
         if(selected.length === 0) {
             this.reset();
         } else if (selected.length != 2) {
             // invalid value for selected. Ignoring the value
             return;
         } else {
-            var pixels = selected.map(this.scale.scale);
+            let pixels = selected.map(this.scale.scale);
             pixels = pixels.sort(function(a, b) { return a - b; });
 
             this.rect.attrs({

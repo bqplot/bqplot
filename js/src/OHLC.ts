@@ -22,9 +22,9 @@ import { OHLCModel } from './OHLCModel';
 export class OHLC extends Mark {
 
     render() {
-        var base_creation_promise = super.render();
+        const base_creation_promise = super.render();
 
-        var that = this;
+        const that = this;
         this.displayed.then(function() {
             that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
             that.create_tooltip();
@@ -37,18 +37,18 @@ export class OHLC extends Mark {
     }
 
     set_ranges() {
-        var x_scale = this.scales.x;
+        const x_scale = this.scales.x;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
         }
-        var y_scale = this.scales.y;
+        const y_scale = this.scales.y;
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
     }
 
     set_positional_scales() {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if(!this.model.dirty) { this.draw(); }
         });
@@ -73,7 +73,7 @@ export class OHLC extends Mark {
     }
 
     update_stroke() {
-        var stroke = this.model.get("stroke");
+        const stroke = this.model.get("stroke");
         this.d3el.selectAll(".stick").style("stroke", stroke);
 
         if(this.legend_el) {
@@ -83,15 +83,15 @@ export class OHLC extends Mark {
     }
 
     update_stroke_width() {
-        var stroke_width = this.model.get("stroke_width");
+        const stroke_width = this.model.get("stroke_width");
         this.d3el.selectAll(".stick").attr("stroke-width", stroke_width);
     }
 
     update_colors() {
-        var that = this;
-        var colors = this.model.get("colors");
-        var up_color = (colors[0] ? colors[0] : "none");
-        var down_color = (colors[1] ? colors[1] : "none");
+        const that = this;
+        const colors = this.model.get("colors");
+        const up_color = (colors[0] ? colors[0] : "none");
+        const down_color = (colors[1] ? colors[1] : "none");
 
         // Fill candles based on the opening and closing values
         this.d3el.selectAll(".stick").style("fill", function(d) {
@@ -105,7 +105,7 @@ export class OHLC extends Mark {
     }
 
     update_opacities() {
-        var opacities = this.model.get("opacities");
+        const opacities = this.model.get("opacities");
         this.d3el.selectAll(".stick").style("opacity", function(d, i) {
             return opacities[i];
         });
@@ -117,7 +117,7 @@ export class OHLC extends Mark {
     }
 
     update_marker() {
-        var marker = this.model.get("marker");
+        const marker = this.model.get("marker");
 
         if(this.legend_el && this.rect_dim) {
             this.draw_legend_icon(this.rect_dim, this.legend_el);
@@ -131,16 +131,16 @@ export class OHLC extends Mark {
     }
 
     update_selected_colors(idx_start, idx_end) {
-        var current_range = _.range(idx_start, idx_end + 1);
+        let current_range = _.range(idx_start, idx_end + 1);
         if(current_range.length == this.model.mark_data.length) {
             current_range = [];
         }
-        var that = this;
-        var stroke = this.model.get("stroke");
-        var colors = this.model.get("colors");
-        var up_color = (colors[0] ? colors[0] : stroke);
-        var down_color = (colors[1] ? colors[1] : stroke);
-        var px = this.model.px;
+        const that = this;
+        const stroke = this.model.get("stroke");
+        const colors = this.model.get("colors");
+        const up_color = (colors[0] ? colors[0] : stroke);
+        const down_color = (colors[1] ? colors[1] : stroke);
+        const px = this.model.px;
 
         _.range(0, this.model.mark_data.length)
          .forEach(function(d) {
@@ -161,20 +161,20 @@ export class OHLC extends Mark {
            this.model.mark_data.length === 0)
         {
             this.update_selected_colors(-1, -1);
-            selected = [];
+            const selected = [];
             return selected;
         }
 
-        var indices = _.range(this.model.mark_data.length);
-        var that = this;
-        var selected = _.filter(indices, function(index) {
-            var elem = that.x_pixels[index];
+        const indices = _.range(this.model.mark_data.length);
+        const that = this;
+        const selected = _.filter(indices, function(index) {
+            const elem = that.x_pixels[index];
             return (elem >= start_pxl && elem <= end_pxl);
         });
 
-        var x_scale = this.scales.x;
-        var idx_start = -1;
-        var idx_end = -1;
+        const x_scale = this.scales.x;
+        let idx_start = -1;
+        let idx_end = -1;
         if(selected.length > 0 &&
             (start_pxl !== x_scale.scale.range()[0] ||
                end_pxl !== x_scale.scale.range()[1]))
@@ -189,8 +189,8 @@ export class OHLC extends Mark {
     }
 
     invert_point(pixel) {
-        var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
-        var sel_index = abs_diff.indexOf(d3.min(abs_diff));
+        const abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+        const sel_index = abs_diff.indexOf(d3.min(abs_diff));
         this.update_selected_colors(sel_index, sel_index);
         this.model.set("selected", [sel_index]);
         this.touch();
@@ -198,14 +198,14 @@ export class OHLC extends Mark {
     }
 
     draw() {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
         this.set_ranges();
-        var colors = this.model.get("colors");
-        var opacities = this.model.get("opacities");
-        var up_color = (colors[0] ? colors[0] : "none");
-        var down_color = (colors[1] ? colors[1] : "none");
-        var px = this.model.px;
-        var stick = this.d3el.selectAll(".stick")
+        const colors = this.model.get("colors");
+        const opacities = this.model.get("opacities");
+        const up_color = (colors[0] ? colors[0] : "none");
+        const down_color = (colors[1] ? colors[1] : "none");
+        const px = this.model.px;
+        const stick = this.d3el.selectAll(".stick")
             .data(this.model.mark_data.map(function(data, index) {
                 return {
                     x: data[0],
@@ -215,7 +215,7 @@ export class OHLC extends Mark {
             }));
 
         // Create new
-        var new_sticks = stick.enter()
+        const new_sticks = stick.enter()
             .append("g")
             .attr("class", "stick")
             .attr("id", function(d, i) { return "stick" + i; })
@@ -230,10 +230,10 @@ export class OHLC extends Mark {
 
         stick.exit().remove();
 
-        var that = this;
+        const that = this;
 
         // Determine offset to use for translation
-        var y_index  = px.h;
+        let y_index  = px.h;
         if(px.h === -1) {
             y_index = px.o;
         }
@@ -246,7 +246,7 @@ export class OHLC extends Mark {
         if(x_scale.model.type === "ordinal") {
             // If we are out of range, we just set the mark in the final
             // bucket's range band. FIXME?
-            var x_max = d3.max(this.parent.range("x"));
+            const x_max = d3.max(this.parent.range("x"));
             this.d3el.selectAll(".stick").attr( "transform", function(d, i) {
                 return "translate(" + ((x_scale.scale(that.model.mark_data[i][0]) !== undefined ?
                                         x_scale.scale(that.model.mark_data[i][0]) : x_max) +
@@ -295,20 +295,22 @@ export class OHLC extends Mark {
          *      | <----- low
          */
 
-        var px = this.model.px;
-        var that = this;
-        var open = [];
-        var high = [];
-        var low = [];
-        var close = [];
-        var headline_top = [];
-        var headline_bottom = [];
-        var to_left_side = [];
-        var scaled_mark_widths = [];
+        const px = this.model.px;
+        const that = this;
+        const open = [];
+        const high = [];
+        const low = [];
+        const close = [];
+        const headline_top = [];
+        const headline_bottom = [];
+        const to_left_side = [];
+        const scaled_mark_widths = [];
 
-        var min_x_difference = this.calculate_mark_width();
-        var x_scale = this.scales.x, y_scale = this.scales.y;
-        var offset_in_x_units, data_point;
+        let min_x_difference = this.calculate_mark_width();
+        const x_scale = this.scales.x;
+        const y_scale = this.scales.y;
+        let offset_in_x_units;
+        let data_point;
 
         for(var i = 0; i < dat.length; i++) {
             if(px.o === -1) {
@@ -469,13 +471,13 @@ export class OHLC extends Mark {
          * Calculate the mark width for this data set based on the minimum
          * distance between consecutive points.
          */
-        var that = this;
-        var min_distance: any = Number.POSITIVE_INFINITY;
-        var scales = this.model.get("scales");
-        var x_scale = scales.x;
+        const that = this;
+        let min_distance: any = Number.POSITIVE_INFINITY;
+        const scales = this.model.get("scales");
+        const x_scale = scales.x;
 
         for(var i = 1; i < that.model.mark_data.length; i++) {
-            var dist = that.model.mark_data[i][0] -
+            const dist = that.model.mark_data[i][0] -
                        that.model.mark_data[i-1][0];
             if(dist < min_distance) min_distance = dist;
         }
@@ -502,16 +504,16 @@ export class OHLC extends Mark {
     }
 
     draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-        var stroke = this.model.get("stroke");
-        var colors = this.model.get("colors");
-        var up_color = (colors[0] ? colors[0] : "none");
+        const stroke = this.model.get("stroke");
+        const colors = this.model.get("colors");
+        const up_color = (colors[0] ? colors[0] : "none");
         this.rect_dim = inter_y_disp * 0.8;
-        var that = this;
+        const that = this;
 
         this.legend_el = elem.selectAll("#legend" + this.uuid)
                              .data([this.model.mark_data]);
 
-        var leg = this.legend_el.enter().append("g")
+        const leg = this.legend_el.enter().append("g")
             .attr("transform", function(d, i) {
                 return "translate(0, " + (i * inter_y_disp + y_disp) + ")";
             })
@@ -541,7 +543,7 @@ export class OHLC extends Mark {
             .text(function(d, i) { return that.model.get("labels")[i]; })
             .style("fill", stroke);
 
-        var max_length = d3.max(this.model.get("labels"), function(d: any) {
+        const max_length = d3.max(this.model.get("labels"), function(d: any) {
             return Number(d.length);
         });
 
@@ -555,10 +557,10 @@ export class OHLC extends Mark {
          * Drawing the icon like this means we can avoid scaling when we
          * already know what the size of the mark is in pixels
          */
-        var height = size;
-        var width = size / 2;
-        var bottom_y_offset = size * 3 / 4;
-        var top_y_offset = size / 4;
+        const height = size;
+        const width = size / 2;
+        const bottom_y_offset = size * 3 / 4;
+        const top_y_offset = size / 4;
         if(this.model.get("marker") === "candle") {
             selector.selectAll(".stick_head").attr("d",
                 this.head_path_candle(width/2));

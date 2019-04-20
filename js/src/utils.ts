@@ -16,7 +16,7 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-scale"));
 import isTypedArray from 'is-typedarray';
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 // the following is a regex to match all valid time formats that can be
 // generated with d3 as of 2nd March 2015. If new formats are added to d3
@@ -37,8 +37,8 @@ export function deepCopy(obj) {
     } else if(_.isDate(obj)) {
         return new Date(obj.getTime());
     } else {
-        var newobj = {}
-        for(var key in obj) {
+        const newobj = {}
+        for(let key in obj) {
             if(obj.hasOwnProperty(key)) {
                 newobj[key] = deepCopy(obj[key])
             }
@@ -55,8 +55,8 @@ export function convert_dates(value) {
     // date array
     if(isTypedArray(value))
         return value;
-    var convert_to_date = function(x) {
-        var ar = new Float64Array(x.map(Number));
+    const convert_to_date = function(x) {
+        const ar = new Float64Array(x.map(Number));
         return ar;
     }
     if(value[0] instanceof Array && value[0][0] instanceof Date)
@@ -67,9 +67,9 @@ export function convert_dates(value) {
 }
 
 export function getCustomRange(array) {
-    var first = array[0];
-    var end = array[array.length - 1];
-    var pivot;
+    const first = array[0];
+    const end = array[array.length - 1];
+    let pivot;
     if(array[0] > array[1]) {
         pivot = d3.min(array);
     } else {

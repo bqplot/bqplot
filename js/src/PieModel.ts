@@ -15,14 +15,13 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"));
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
-import _ from 'underscore';
 
-export class PieModel extends markmodel.MarkModel {
+export class PieModel extends MarkModel {
 
     defaults() {
-        return {...markmodel.MarkModel.prototype.defaults(), 
+        return {...MarkModel.prototype.defaults(), 
             _model_name: "PieModel",
             _view_name: "Pie",
 
@@ -61,9 +60,9 @@ export class PieModel extends markmodel.MarkModel {
     }
 
     update_data() {
-        var sizes = this.get("sizes");
-        var color = this.get("color") || [];
-        var labels = this.get("labels");
+        const sizes = this.get("sizes");
+        const color = this.get("color") || [];
+        const labels = this.get("labels");
         this.mark_data = Array.prototype.map.call(sizes, function(d, i) {
             return {
                 size: d,
@@ -82,7 +81,7 @@ export class PieModel extends markmodel.MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var labels = this.get("labels");
+        const labels = this.get("labels");
         this.mark_data.forEach(function(data, index) {
             // jshint eqnull: true
             data.label = labels[index] == null ? "" : labels[index];
@@ -94,8 +93,8 @@ export class PieModel extends markmodel.MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var color = this.get("color");
-        var color_scale = this.get("scales").color;
+        const color = this.get("color");
+        const color_scale = this.get("scales").color;
         if(color_scale) {
             if(!this.get("preserve_domain").color) {
                 color_scale.compute_and_set_domain(color, this.model_id + "_color");
@@ -109,12 +108,12 @@ export class PieModel extends markmodel.MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var scales = this.get("scales");
-        var x_scale = scales.x;
-        var y_scale = scales.y;
+        const scales = this.get("scales");
+        const x_scale = scales.x;
+        const y_scale = scales.y;
 
         if(x_scale) {
-            var x = (x_scale.type === "date") ?
+            const x = (x_scale.type === "date") ?
                 this.get_date_elem("x") : this.get("x");
             if(!this.get("preserve_domain").x) {
                 x_scale.compute_and_set_domain([x], this.model_id + "_x");
@@ -136,7 +135,7 @@ export class PieModel extends markmodel.MarkModel {
     }
 
     serializers =  {
-        ...markmodel.MarkModel.serializers,
+        ...MarkModel.serializers,
         sizes: serialize.array_or_json,
         color: serialize.array_or_json
     }

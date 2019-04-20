@@ -51,9 +51,9 @@ export class ImageModel extends MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var scales = this.get("scales");
-        var x_scale = scales.x;
-        var y_scale = scales.y;
+        const scales = this.get("scales");
+        const x_scale = scales.x;
+        const y_scale = scales.y;
 
         if(x_scale) {
             if(!this.get("preserve_domain").x) {

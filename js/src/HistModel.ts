@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import * as _ from 'underscore';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-scale-chromatic"));
 import { MarkModel } from './MarkModel';
@@ -54,9 +53,9 @@ export class HistModel extends MarkModel {
     }
 
     update_data() {
-        var x_data = this.get("sample");
-        var scales = this.get("scales");
-        var x_scale = scales.sample;
+        let x_data = this.get("sample");
+        const scales = this.get("scales");
+        const x_scale = scales.sample;
 
         // TODO: This potentially triggers domain_changed and therefore a
         // Draw, while update_data is generally followed by a Draw.
@@ -76,12 +75,12 @@ export class HistModel extends MarkModel {
             this.min_x = x_scale.domain[0];
             this.max_x = x_scale.domain[1];
 
-            var that = this;
+            const that = this;
             x_data = x_data.filter(function(d) {
                 return (d <= that.max_x && d >= that.min_x);
             });
             // since x_data may be a TypedArray, explicitly use Array.map
-            var x_data_ind =  Array.prototype.map.call(x_data, function (d,i) {
+            const x_data_ind =  Array.prototype.map.call(x_data, function (d,i) {
                 return {index: i, value: d};
             });
 
@@ -111,18 +110,18 @@ export class HistModel extends MarkModel {
 
         this.count = this.mark_data.map(function(d) { return d.length; });
         if (this.get("normalized")) {
-            var x_width = 1;
+            let x_width = 1;
             if(this.mark_data.length > 0) {
                 x_width = this.mark_data[0].x1 - this.mark_data[0].x0;
             }
 
-            var sum = this.count.reduce(function(a, b) { return a + b; }, 0);
+            const sum = this.count.reduce(function(a, b) { return a + b; }, 0);
             if (sum != 0) {
                 this.count = this.count.map(function(a) { return a / (sum * x_width); });
             }
         }
 
-        var that = this;
+        const that = this;
         this.mark_data.forEach(function(el, it) { el['y'] = that.count[it]; });
 
         if (save_and_update) {
@@ -134,7 +133,7 @@ export class HistModel extends MarkModel {
     }
 
     get_data_dict(data, index) {
-        var return_dict : any = {};
+        const return_dict : any = {};
         return_dict.midpoint = this.x_mid[index];
         return_dict.bin_start = this.x_bins[index];
         return_dict.bin_end = this.x_bins[index + 1];
@@ -151,7 +150,7 @@ export class HistModel extends MarkModel {
         // things including the data which is to be plotted. So the x-domain
         // change is handled by the update_data function and only the
         // y-domain change is handled by this function.
-        var y_scale = this.get("scales").count;
+        const y_scale = this.get("scales").count;
         if(!this.get("preserve_domain").count) {
             y_scale.set_domain([0, d3.max(this.mark_data, function(d: any): number {
                 return d.y;
@@ -160,10 +159,10 @@ export class HistModel extends MarkModel {
     }
 
     create_uniform_bins(min_val, max_val, num_bins) {
-        var diff = max_val - min_val;
-        var step_size = (diff) / num_bins;
-        var return_val = [];
-        for(var i=0; i<num_bins; i++) {
+        const diff = max_val - min_val;
+        const step_size = (diff) / num_bins;
+        const return_val = [];
+        for(let i=0; i<num_bins; i++) {
             return_val[i] = min_val+ i * step_size;
         }
         return_val[num_bins] = max_val;

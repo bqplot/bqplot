@@ -62,10 +62,10 @@ export class HeatMapModel extends MarkModel {
     update_domains() {
         if (!this.mark_data) { return; }
 
-        var scales = this.get("scales");
-        var x_scale = scales.x, y_scale = scales.y;
-        var color_scale = scales.color;
-        var flat_colors = [].concat.apply([], this.mark_data.color.map((x) => Array.prototype.slice.call(x, 0)));
+        const scales = this.get("scales");
+        const x_scale = scales.x, y_scale = scales.y;
+        const color_scale = scales.color;
+        const flat_colors = [].concat.apply([], this.mark_data.color.map((x) => Array.prototype.slice.call(x, 0)));
 
         if(!this.get("preserve_domain").x) {
             x_scale.compute_and_set_domain(this.mark_data.x, this.model_id + "_x");

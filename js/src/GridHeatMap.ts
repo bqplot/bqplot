@@ -25,8 +25,8 @@ import { GridHeatMapModel } from './GridHeatMapModel'
 export class GridHeatMap extends Mark {
 
     render() {
-        var base_render_promise = super.render();
-        var that = this;
+        const base_render_promise = super.render();
+        const that = this;
 
         // TODO: create_listeners is put inside the promise success handler
         // because some of the functions depend on child scales being
@@ -52,7 +52,7 @@ export class GridHeatMap extends Mark {
     }
 
     initialize_additional_scales() {
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
         if(color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
                 this.apply_styles();
@@ -62,22 +62,22 @@ export class GridHeatMap extends Mark {
     }
 
     set_ranges() {
-        var row_scale = this.scales.row;
+        const row_scale = this.scales.row;
         if(row_scale) {
             // The y_range is reversed because we want the first row
             // to start at the top of the plotarea and not the bottom.
-            var row_range = this.parent.padded_range("y", row_scale.model);
+            const row_range = this.parent.padded_range("y", row_scale.model);
             row_scale.set_range(row_range);
             // row_scale.set_range([row_range[1], row_range[0]]);
         }
-        var col_scale = this.scales.column;
+        const col_scale = this.scales.column;
         if(col_scale) {
             col_scale.set_range(this.parent.padded_range("x", col_scale.model));
         }
     }
 
     set_positional_scales() {
-        var x_scale = this.scales.column, y_scale = this.scales.row;
+        const x_scale = this.scales.column, y_scale = this.scales.row;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
@@ -89,12 +89,13 @@ export class GridHeatMap extends Mark {
     expand_scale_domain(scale, data, mode, start) {
         // This function expands the domain so that the heatmap has the
         // minimum area needed to draw itself.
-        var current_pixels, min_diff;
+        let current_pixels;
+        let min_diff;
         if(mode === "expand_one") {
             current_pixels = data.map(function(el) {
                 return scale.scale(el);
             });
-            var diffs = current_pixels.slice(1).map(function(el, index) {
+            const diffs = current_pixels.slice(1).map(function(el, index) {
                 return el - current_pixels[index];
             });
             //TODO: Explain what is going on here.
@@ -106,12 +107,11 @@ export class GridHeatMap extends Mark {
             } else {
                 min_diff = d3.min(diffs);
             }
-            var new_pixel = 0;
             if(start) {
-                new_pixel = current_pixels[current_pixels.length - 1] + min_diff;
+                const new_pixel = current_pixels[current_pixels.length - 1] + min_diff;
                 return [data[0], scale.invert(new_pixel)];
             } else {
-                new_pixel = current_pixels[0] - min_diff;
+                const new_pixel = current_pixels[0] - min_diff;
                 return [scale.invert(new_pixel), data[current_pixels.length - 1]];
             }
         } else if(mode === "expand_two") {
@@ -121,8 +121,8 @@ export class GridHeatMap extends Mark {
             min_diff = d3.min(current_pixels.slice(1).map(function(el, index) {
                 return el - current_pixels[index];
             }));
-            var new_end = current_pixels[current_pixels.length - 1] + min_diff;
-            var new_start = current_pixels[0] - min_diff;
+            const new_end = current_pixels[current_pixels.length - 1] + min_diff;
+            const new_start = current_pixels[0] - min_diff;
             return [scale.invert(new_start), scale.invert(new_end)];
         }
     }
@@ -145,15 +145,15 @@ export class GridHeatMap extends Mark {
     }
 
     click_handler (args) {
-        var num_cols = this.model.colors[0].length;
-        var index = args.row_num * num_cols + args.column_num;
-        var row = args.row_num;
-        var column = args.column_num;
-        var that = this;
-        var idx = this.model.get("selected") ? utils.deepCopy(this.model.get("selected")) : [];
-        var selected = utils.deepCopy(this._cell_nums_from_indices(idx));
-        var elem_index = selected.indexOf(index);
-        var accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
+        const num_cols = this.model.colors[0].length;
+        const index = args.row_num * num_cols + args.column_num;
+        const row = args.row_num;
+        const column = args.column_num;
+        const that = this;
+        let idx = this.model.get("selected") ? utils.deepCopy(this.model.get("selected")) : [];
+        let selected = utils.deepCopy(this._cell_nums_from_indices(idx));
+        const elem_index = selected.indexOf(index);
+        const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
         //TODO: This is a shim for when accelKey is supported by chrome.
         // index of slice i. Checking if it is already present in the
         // list
@@ -176,13 +176,13 @@ export class GridHeatMap extends Mark {
                 }
                 //Add elements before or after the index of the current
                 //slice which has been clicked
-                var row_index = (selected.length !== 0) ?
+                const row_index = (selected.length !== 0) ?
                     that.anchor_cell_index[0] : row;
-                var col_index = (selected.length !== 0) ?
+                const col_index = (selected.length !== 0) ?
                     that.anchor_cell_index[1] : column;
                 _.range(Math.min(row, row_index), Math.max(row, row_index)+1).forEach(function(i) {
                     _.range(Math.min(column, col_index), Math.max(column, col_index)+1).forEach(function(j) {
-                        var cell_num = that._cell_nums_from_indices([[i, j]])[0];
+                        const cell_num = that._cell_nums_from_indices([[i, j]])[0];
                         if (selected.indexOf(cell_num) === -1) {
                             selected.push(cell_num);
                             idx.push([i, j]);
@@ -199,7 +199,7 @@ export class GridHeatMap extends Mark {
             ((idx.length === 0) ? null : idx),
             {updated_view: this});
         this.touch();
-        var e = d3GetEvent();
+        let e = d3GetEvent();
         if(!e) {
             e = window.event;
         }
@@ -243,9 +243,9 @@ export class GridHeatMap extends Mark {
             return;
         }
         elements = (!elements || elements.length === 0) ? this._filter_cells_by_cell_num(this._cell_nums_from_indices(indices)) : elements;
-        var stroke = this.model.get("stroke");
-        var opacity = this.model.get("opacity");
-        var that = this;
+        const stroke = this.model.get("stroke");
+        const opacity = this.model.get("opacity");
+        const that = this;
 
         elements.style("fill", function(d) {
              return that.get_element_fill(d);
@@ -278,8 +278,8 @@ export class GridHeatMap extends Mark {
             }
         }
 
-        var clearing_style = {};
-        for(var key in style_dict) {
+        const clearing_style = {};
+        for(let key in style_dict) {
             clearing_style[key] = null;
         }
         elements.styles(clearing_style);
@@ -306,8 +306,8 @@ export class GridHeatMap extends Mark {
     }
 
     apply_styles() {
-        var num_rows = this.model.colors.length;
-        var num_cols = this.model.colors[0].length;
+        const num_rows = this.model.colors.length;
+        const num_cols = this.model.colors[0].length;
 
         this.clear_style(this.selected_style);
         this.clear_style(this.unselected_style);
@@ -315,8 +315,8 @@ export class GridHeatMap extends Mark {
 
         this.set_default_style([], this.display_cells);
 
-        var selected_cell_nums = this._cell_nums_from_indices(this.selected_indices);
-        var unsel_cell_nums = (selected_cell_nums === null || selected_cell_nums.length === 0) ? []
+        const selected_cell_nums = this._cell_nums_from_indices(this.selected_indices);
+        const unsel_cell_nums = (selected_cell_nums === null || selected_cell_nums.length === 0) ? []
                                 : _.difference(_.range(num_rows*num_cols), selected_cell_nums);
 
         this.selected_elements = this._filter_cells_by_cell_num(selected_cell_nums);
@@ -326,7 +326,7 @@ export class GridHeatMap extends Mark {
         this.set_style_on_elements(this.unselected_style, [], this.unselected_elements);
 
         if(this.anchor_cell_index !== null && this.anchor_cell_index !== undefined) {
-            var anchor_num = this._cell_nums_from_indices([this.anchor_cell_index]);
+            const anchor_num = this._cell_nums_from_indices([this.anchor_cell_index]);
             this.anchor_element = this._filter_cells_by_cell_num(anchor_num);
             this.set_style_on_elements(this.anchor_style, [], this.anchor_element);
         }
@@ -361,7 +361,7 @@ export class GridHeatMap extends Mark {
         if(indices === null || indices === undefined) {
             return null;
         }
-        var num_cols = this.model.colors[0].length;
+        const num_cols = this.model.colors[0].length;
         return indices.map(function(i) { return i[0] * num_cols + i[1];});
     }
 
@@ -375,16 +375,16 @@ export class GridHeatMap extends Mark {
             this.touch();
             return [];
         }
-        var col_indices = _.range(this.model.colors[0].length);
-        var row_indices = _.range(this.model.colors.length);
-        var that = this;
-        var sel_cols = _.filter(col_indices, function(index) {
+        const col_indices = _.range(this.model.colors[0].length);
+        const row_indices = _.range(this.model.colors.length);
+        const that = this;
+        const sel_cols = _.filter(col_indices, function(index) {
             return rect_selector([that.column_pixels[index], []]);
         });
-        var sel_rows = _.filter(row_indices, function(index) {
+        const sel_rows = _.filter(row_indices, function(index) {
             return rect_selector([[], that.row_pixels[index]]);
         });
-        var selected = sel_cols.map(function(s) {
+        let selected = sel_cols.map(function(s) {
             return sel_rows.map(function(r) {
                 return [r, s];
             });
@@ -397,16 +397,16 @@ export class GridHeatMap extends Mark {
     draw() {
         this.set_ranges();
 
-        var that = this;
-        var num_rows = this.model.colors.length;
-        var num_cols = this.model.colors[0].length;
+        const that = this;
+        const num_rows = this.model.colors.length;
+        const num_cols = this.model.colors[0].length;
 
-        var row_scale = this.scales.row;
-        var column_scale = this.scales.column;
+        const row_scale = this.scales.row;
+        const column_scale = this.scales.column;
 
-        var row_start_aligned = this.model.get("row_align") === "start";
-        var col_start_aligned = this.model.get("column_align") === "start";
-        var new_domain;
+        const row_start_aligned = this.model.get("row_align") === "start";
+        const col_start_aligned = this.model.get("column_align") === "start";
+        let new_domain;
 
         if(this.model.modes.row !== "middle" && this.model.modes.row !== "boundaries") {
             new_domain = this.expand_scale_domain(row_scale, this.model.rows, this.model.modes.row, (row_start_aligned));
@@ -424,8 +424,8 @@ export class GridHeatMap extends Mark {
             }
         }
 
-        var row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes.row, row_start_aligned);
-        var column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes.column, col_start_aligned);
+        const row_plot_data = this.get_tile_plotting_data(row_scale, this.model.rows, this.model.modes.row, row_start_aligned);
+        const column_plot_data = this.get_tile_plotting_data(column_scale, this.model.columns, this.model.modes.column, col_start_aligned);
 
         this.row_pixels = row_plot_data.start.map(function(d, i) {
             return [d, d + row_plot_data.widths[i]];
@@ -443,10 +443,10 @@ export class GridHeatMap extends Mark {
                 return "translate(0, " + row_plot_data.start[d] + ")";
             });
 
-        var col_nums = _.range(num_cols);
-        var row_nums = _.range(num_rows);
+        const col_nums = _.range(num_cols);
+        const row_nums = _.range(num_rows);
 
-        var data_array = row_nums.map(function(row) {
+        const data_array = row_nums.map(function(row) {
             return col_nums.map(function(col) {
                 return that.model.mark_data[row * num_cols + col];
             });
@@ -492,8 +492,8 @@ export class GridHeatMap extends Mark {
         // is to be generated. mode refers to the expansion of the data to
         // generate the plotting data and start is a boolean indicating the
         // alignment of the data w.r.t the cells.
-        var start_points = [];
-        var widths = [];
+        let start_points = [];
+        let widths = [];
         data = Array.from(data); // copy to Array
         if(mode === "middle") {
             start_points = data.map(function(d) { return scale.scale(d); });
@@ -502,11 +502,11 @@ export class GridHeatMap extends Mark {
             return {"start": start_points, "widths": widths};
         }
         if(mode === "boundaries") {
-            var pixel_points = data.map(function(d) {
+            const pixel_points = data.map(function(d) {
                 return scale.scale(d);
             });
             widths = [];
-            for (var i=1; i<pixel_points.length; ++i) {
+            for (let i=1; i<pixel_points.length; ++i) {
                 widths[i - 1] = Math.abs(pixel_points[i] - pixel_points[i - 1]);
             }
             start_points = pixel_points[1] > pixel_points[0] ?
@@ -517,7 +517,7 @@ export class GridHeatMap extends Mark {
             };
         }
         if(mode === "expand_one") {
-            var bounds;
+            let bounds;
             if(start) {
                 // Start points remain the same as the data.
                 start_points = data.map(function(d) {
@@ -575,8 +575,8 @@ export class GridHeatMap extends Mark {
                 return scale.scale(d);
             });
 
-            var is_positive = (start_points[1] - start_points[0]) > 0;
-            var bound: number = (is_positive) ? d3.min(scale.scale.range() as number[]) : d3.max(scale.scale.range() as number[]);
+            const is_positive = (start_points[1] - start_points[0]) > 0;
+            let bound: number = (is_positive) ? d3.min(scale.scale.range() as number[]) : d3.max(scale.scale.range() as number[]);
             start_points.splice(0, 0, bound);
             widths = start_points.slice(1).map(function(d, ind) {
                 return Math.abs(d - start_points[ind]);

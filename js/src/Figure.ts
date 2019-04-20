@@ -33,9 +33,9 @@ export class Figure extends widgets.DOMWidgetView {
         this.el.classList.add("jupyter-widgets");
         this.change_theme();
 
-        var svg = document.createElementNS(d3.namespaces.svg, "svg") as SVGElement;
+        const svg = document.createElementNS(d3.namespaces.svg, "svg") as SVGElement;
         svg.classList.add("svg-figure");
-        var svg_interaction: any = document.createElementNS(d3.namespaces.svg, "svg");
+        const svg_interaction: any = document.createElementNS(d3.namespaces.svg, "svg");
         svg_interaction.classList.add("svg-interaction");
         svg_interaction.style = 'position: absolute; width: 100%; height: 100%;'
         this.svg = d3.select<SVGElement, any>(svg);
@@ -46,7 +46,7 @@ export class Figure extends widgets.DOMWidgetView {
         if(!this.renderer.capabilities.floatFragmentTextures) {
             console.error("you videocard/driver does not support float fragment textures, you may have limited functionality")
         }
-        var gl = this.renderer.context;
+        const gl = this.renderer.context;
         if(!gl.getExtension('OES_texture_float_linear')) {
             console.error("you videocard/driver does not support float fragment linear interpolation, you may have limited functionality")
         }
@@ -66,12 +66,12 @@ export class Figure extends widgets.DOMWidgetView {
         //and suggested_width. Looks at the min_aspect_ratio and max_aspect_ratio
         //to determine the final height and width.
 
-        var max_ratio = this.model.get("max_aspect_ratio");
-        var min_ratio = this.model.get("min_aspect_ratio");
+        const max_ratio = this.model.get("max_aspect_ratio");
+        const min_ratio = this.model.get("min_aspect_ratio");
 
-        var return_value = {};
-        var width_undefined = (suggested_width === undefined || isNaN(suggested_width) || suggested_width <= 0);
-        var height_undefined = (suggested_height === undefined || isNaN(suggested_height) || suggested_width <= 0);
+        const return_value = {};
+        const width_undefined = (suggested_width === undefined || isNaN(suggested_width) || suggested_width <= 0);
+        const height_undefined = (suggested_height === undefined || isNaN(suggested_height) || suggested_width <= 0);
 
         if (width_undefined && height_undefined) {
             // Same as the defaults in bqplot.less
@@ -83,7 +83,7 @@ export class Figure extends widgets.DOMWidgetView {
             suggested_width = suggested_height * min_ratio;
         }
 
-        var ratio = suggested_width / suggested_height;
+        const ratio = suggested_width / suggested_height;
         if (ratio <= max_ratio && ratio >= min_ratio) {
             // If the available width and height are within bounds in terms
             // of aspect ration, use all the space available.
@@ -106,8 +106,8 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     render () {
-        var min_width = this.model.get("layout").get("min_width");
-        var min_height = this.model.get("layout").get("min_height");
+        let min_width = this.model.get("layout").get("min_width");
+        let min_height = this.model.get("layout").get("min_height");
         if(typeof min_width === "string" && min_width.endsWith('px')) {
             min_width = Number(min_width.slice(0, -2));
         } else {
@@ -119,7 +119,7 @@ export class Figure extends widgets.DOMWidgetView {
             min_height = undefined;
         }
 
-        var impl_dimensions = this._get_height_width(min_height, min_width);
+        const impl_dimensions = this._get_height_width(min_height, min_width);
         this.width = impl_dimensions["width"];
         this.height = impl_dimensions["height"];
 
@@ -227,8 +227,8 @@ export class Figure extends widgets.DOMWidgetView {
         this.model.on("save_png", this.save_png, this);
         this.model.on("save_svg", this.save_svg, this);
 
-        var figure_scale_promise = this.create_figure_scales();
-        var that = this;
+        const figure_scale_promise = this.create_figure_scales();
+        const that = this;
         figure_scale_promise.then(function() {
             that.mark_views = new widgets.ViewList(that.add_mark, that.remove_mark, that);
             that.mark_views.update(that.model.get("marks"));
@@ -336,15 +336,15 @@ export class Figure extends widgets.DOMWidgetView {
     create_figure_scales() {
         // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
         // See the scale_x and scale_y attributes of the python Figure
-        var that = this;
-        var x_scale_promise = this.create_child_view(this.model.get("scale_x"))
+        const that = this;
+        const x_scale_promise = this.create_child_view(this.model.get("scale_x"))
             .then(function(view) {
                 that.scale_x = view;
                 that.scale_x.scale.clamp(true);
                 that.scale_x.set_range([0, that.plotarea_width]);
             });
 
-        var y_scale_promise = this.create_child_view(this.model.get("scale_y"))
+        const y_scale_promise = this.create_child_view(this.model.get("scale_y"))
             .then(function(view) {
                 that.scale_y = view;
                 that.scale_y.scale.clamp(true);
@@ -358,21 +358,20 @@ export class Figure extends widgets.DOMWidgetView {
         // Typically all marks do this. Axis do not do this.
         // Also, if a mark does not set the domain, it can potentially call
         // the unpadded ranges.
-        var scale_padding, fig_padding;
         if(!scale_model.get("allow_padding")) {
             return this.range(direction);
         }
-        var scale_id = scale_model.model_id;
+        const scale_id = scale_model.model_id;
 
         if(direction==="x") {
-            scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
+            const scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
                 this.x_padding_arr[scale_id] : 0;
-            fig_padding = (this.plotarea_width) * this.figure_padding_x;
+            const fig_padding = (this.plotarea_width) * this.figure_padding_x;
             return [(fig_padding + scale_padding), (this.plotarea_width - fig_padding - scale_padding)];
         } else if(direction==="y") {
-            scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
+            const scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
                 this.y_padding_arr[scale_id] : 0;
-            fig_padding = (this.plotarea_height) * this.figure_padding_y;
+            const fig_padding = (this.plotarea_height) * this.figure_padding_y;
             return [this.plotarea_height - scale_padding - fig_padding, scale_padding + fig_padding];
         }
     }
@@ -389,8 +388,8 @@ export class Figure extends widgets.DOMWidgetView {
         if(!(scale_model.get("allow_padding"))) {
             return this.plotarea_height;
         }
-        var scale_id = scale_model.model_id;
-        var scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
+        const scale_id = scale_model.model_id;
+        const scale_padding = (this.y_padding_arr[scale_id] !== undefined) ?
             this.y_padding_arr[scale_id] : 0;
         return (this.plotarea_height) * (1 - this.figure_padding_y) - scale_padding - scale_padding;
     }
@@ -400,15 +399,15 @@ export class Figure extends widgets.DOMWidgetView {
             return this.plotarea_width;
         }
 
-        var scale_id = scale_model.model_id;
-        var scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
+        const scale_id = scale_model.model_id;
+        const scale_padding = (this.x_padding_arr[scale_id] !== undefined) ?
             this.x_padding_arr[scale_id] : 0;
         return (this.plotarea_width) * (1 - this.figure_padding_x) - scale_padding - scale_padding;
     }
 
     add_axis(model) {
         // Called when an axis is added to the axes list.
-        var that = this;
+        const that = this;
         return this.create_child_view(model)
           .then(function(view) {
             that.fig_axes.node().appendChild(view.el);
@@ -423,7 +422,7 @@ export class Figure extends widgets.DOMWidgetView {
         if(scale_model === undefined || scale_model === null) {
             return;
         }
-        var scale_id = scale_model.model_id;
+        const scale_id = scale_model.model_id;
         if(dict[scale_id] !== undefined) {
             delete dict[scale_id][mark_view.model.model_id + "_" + mark_view.cid];
             if(Object.keys(dict[scale_id]).length === 0) {
@@ -433,7 +432,7 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     update_padding_dict(dict, mark_view, scale_model, value) {
-        var scale_id = scale_model.model_id;
+        const scale_id = scale_model.model_id;
         if(!(dict[scale_id])) {
             dict[scale_id]= {};
         }
@@ -441,12 +440,12 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     mark_scales_updated(view) {
-        var model = view.model;
-        var prev_scale_models = model.previous("scales");
+        const model = view.model;
+        const prev_scale_models = model.previous("scales");
         this.remove_from_padding_dict(this.x_pad_dict, view, prev_scale_models[model.get_key_for_orientation("horizontal")]);
         this.remove_from_padding_dict(this.y_pad_dict, view, prev_scale_models[model.get_key_for_orientation("vertical")]);
 
-        var scale_models = model.get("scales");
+        const scale_models = model.get("scales");
         this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_orientation("horizontal")], view.x_padding);
         this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")], view.y_padding);
 
@@ -454,8 +453,8 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     mark_padding_updated(view) {
-        var model = view.model;
-        var scale_models = model.get("scales");
+        const model = view.model;
+        const scale_models = model.get("scales");
 
         this.update_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_orientation("horizontal")], view.x_padding);
         this.update_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")], view.y_padding);
@@ -469,25 +468,25 @@ export class Figure extends widgets.DOMWidgetView {
 
     remove_mark(view) {
        // Called when a mark is removed from the mark list.
-        var model = view.model;
+        const model = view.model;
         model.off("redraw_legend", null, this);
         model.off("data_updated", null, this);
         model.off("scales_updated", null, this);
         model.off("mark_padding_updated", null, this);
 
-        var scale_models = model.get("scales");
+        const scale_models = model.get("scales");
         this.remove_from_padding_dict(this.x_pad_dict, view, scale_models[model.get_key_for_orientation("horizontal")]);
         this.remove_from_padding_dict(this.y_pad_dict, view, scale_models[model.get_key_for_orientation("vertical")]);
         view.remove();
     }
 
     add_mark(model) {
-        var that = this;
+        const that = this;
         model.state_change.then(function() {
             model.on("data_updated redraw_legend", that.update_legend, that);
         });
 
-        var dummy_node = that.fig_marks.node().appendChild(document.createElementNS(d3.namespaces.svg, "g"));
+        const dummy_node = that.fig_marks.node().appendChild(document.createElementNS(d3.namespaces.svg, "g"));
 
         return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view: any) {
             view.dummy_node = dummy_node;
@@ -497,8 +496,8 @@ export class Figure extends widgets.DOMWidgetView {
             view.on("mark_scales_updated", function() {
                 that.mark_scales_updated(view);
             }, that);
-            var child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("x")];
-            var child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("y")];
+            let child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("x")];
+            let child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("y")];
             if(child_x_scale === undefined) {
                 child_x_scale = that.scale_x.model;
             }
@@ -516,14 +515,13 @@ export class Figure extends widgets.DOMWidgetView {
         // Iterate over the paddings of the marks for each scale and store
         // the maximum padding for each scale on the X and Y in
         // x_padding_arr and y_padding_arr
-        var max = 0; // ok padding cannot be negative
 
         this.x_padding_arr = {};
         this.y_padding_arr = {};
 
-        var that = this;
+        const that = this;
         _.forEach(this.x_pad_dict, function(dict: any, scale_id) {
-            max = 0;
+            let max = 0;
             _.forEach(dict, function(value: any, key) {
                 max = Math.max(max, value);
             });
@@ -531,7 +529,7 @@ export class Figure extends widgets.DOMWidgetView {
         });
 
         _.forEach(this.y_pad_dict, function(dict: any, scale_id) {
-            max = 0;
+            let max = 0;
             _.forEach(dict, function(value: any, key) {
                 max = Math.max(max, value);
             });
@@ -560,9 +558,9 @@ export class Figure extends widgets.DOMWidgetView {
 
     relayout() {
 
-        var that = this;
+        const that = this;
 
-        var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
+        const impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
         that.width = impl_dimensions["width"];
         that.height = impl_dimensions["height"];
 
@@ -617,29 +615,29 @@ export class Figure extends widgets.DOMWidgetView {
     update_legend() {
         this.fig_marks.selectAll(".g_legend").remove();
 
-        var legend_height = 14;
-        var legend_width = 24;
-        var legend_location = this.model.get("legend_location");
+        const legend_height = 14;
+        const legend_width = 24;
+        const legend_location = this.model.get("legend_location");
 
-        var legend_g = this.fig_marks.append("g")
+        const legend_g = this.fig_marks.append("g")
           .attr("class", "g_legend");
 
-        var that = this;
-        var count = 1;
-        var max_label_len = 1;
+        const that = this;
+        let count = 1;
+        let max_label_len = 1;
 
         if(this.mark_views !== undefined && this.mark_views !== null) {
             Promise.all(this.mark_views.views).then(function(views) {
                 views.forEach(function(mark_view: any) {
                     if(mark_view.model.get("display_legend")) {
-                        var child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
+                        const child_count = mark_view.draw_legend(legend_g, 0, count * (legend_height + 2), 0, legend_height + 2);
                         count = count + child_count[0];
                         max_label_len = (child_count[1]) ?
                             Math.max(max_label_len, child_count[1]) : max_label_len;
                     }
                 });
 
-                var coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
+                const coords = that.get_legend_coords(legend_location, legend_width, (count + 1) * (legend_height + 2), 0);
                 if(count !== 1) {
                     legend_g.insert("g", ":first-child")
                       .attr("class", "axis")
@@ -653,7 +651,7 @@ export class Figure extends widgets.DOMWidgetView {
                 max_label_len = (legend_location === "top-right" ||
                                  legend_location === "right" ||
                                  legend_location === "bottom-right") ? -(max_label_len + 2) : 1;
-                var em = 16;
+                const em = 16;
                 legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
                                                           String(coords[1]) + ") ");
 
@@ -666,10 +664,10 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     get_legend_coords(legend_location, width, height, disp) {
-        var x_start = 0;
-        var y_start = 0;
-        var fig_width = this.plotarea_width;
-        var fig_height = this.plotarea_height;
+        let x_start = 0;
+        let y_start = 0;
+        const fig_width = this.plotarea_width;
+        const fig_height = this.plotarea_height;
 
         switch (legend_location){
             case "top":
@@ -712,7 +710,7 @@ export class Figure extends widgets.DOMWidgetView {
             // Capture all interactions with the svg overlay
             this.svg_interaction.style("pointer-events", "all");
             // Sets the child interaction
-            var that = this;
+            const that = this;
             model.state_change.then(function() {
                 // Sets the child interaction
                 that.create_child_view(model).then(function(view) {
@@ -755,26 +753,26 @@ export class Figure extends widgets.DOMWidgetView {
     get_svg() {
         // Returns the outer html of the figure svg
 
-        var  replaceAll = function (find, replace, str) {
+        const  replaceAll = function (find, replace, str) {
             return str.replace(new RegExp(find, "g"), replace);
         };
 
-        var get_css = function(node, regs) {
+        const get_css = function(node, regs) {
             /**
              * Gathers all the css rules applied to elements of the svg
              * node. Removes the parent element selectors specified in
              * argument `regs`.
              */
-            var css = "";
-            var sheets = document.styleSheets;
-            var selector;
-            for (var i = 0; i < sheets.length; i++) {
-                var rules: any = (sheets[i] as CSSStyleSheet).cssRules;
+            let css = "";
+            const sheets = document.styleSheets;
+            let selector;
+            for (let i = 0; i < sheets.length; i++) {
+                const rules: any = (sheets[i] as CSSStyleSheet).cssRules;
                 if (rules) {
-                    for (var j = 0; j < rules.length; j++) {
-                        var rule = rules[j];
+                    for (let j = 0; j < rules.length; j++) {
+                        const rule = rules[j];
                         if (typeof(rule.style) !== "undefined") {
-                            var match = null;
+                            let match = null;
                             try {
                                 match = node.querySelectorAll(rule.selectorText);
                             } catch (err) {
@@ -782,10 +780,10 @@ export class Figure extends widgets.DOMWidgetView {
                                              rule.selectorText + "'", err);
                             }
                             if (match) {
-                                var elems = node.querySelectorAll(rule.selectorText);
+                                const elems = node.querySelectorAll(rule.selectorText);
                                 if (elems.length > 0) {
                                     selector = rule.selectorText;
-                                    for (var r = 0; r < regs.length; r++) {
+                                    for (let r = 0; r < regs.length; r++) {
                                         selector = replaceAll(regs[r], "", selector);
                                     }
                                     css += `${selector} { ${rule.style.cssText} }
@@ -804,28 +802,28 @@ export class Figure extends widgets.DOMWidgetView {
             return css;
         };
 
-       var svg2svg = function(node, canvas, node_interaction, width, height) {
+       const svg2svg = function(node, canvas, node_interaction, width, height) {
            // Creates a standalone SVG string from an inline SVG element
            // containing all the computed style attributes.
-           var svg = node.cloneNode(true);
+           const svg = node.cloneNode(true);
            svg.setAttribute("version", "1.1");
            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
            svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
            svg.style.background = window.getComputedStyle(document.body).background;
-           var s = document.createElement("style");
+           const s = document.createElement("style");
            s.setAttribute("type", "text/css");
            s.innerHTML = "<![CDATA[\n" +
                get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
-           var defs = document.createElement("defs");
+           const defs = document.createElement("defs");
            defs.appendChild(s);
            // we put the svg interaction part after the marks
-           var g_root = svg.children[0];
-           var svg_interaction = node_interaction.cloneNode(true);
+           const g_root = svg.children[0];
+           const svg_interaction = node_interaction.cloneNode(true);
            g_root.insertBefore(svg_interaction.children[0].children[0], g_root.children[3])
 
            // and add the webgl canvas as an image
-           var data_url = canvas.toDataURL('image/png');
-           var marks = d3.select(g_root.children[2]);
+           const data_url = canvas.toDataURL('image/png');
+           const marks = d3.select(g_root.children[2]);
            marks.append("image")
                 .attr("x", 0)
                 .attr("y", 0)
@@ -844,7 +842,7 @@ export class Figure extends widgets.DOMWidgetView {
         // Instead, we render again, and directly afterwards we do get the pixel data using canvas.toDataURL
         return this.render_gl().then(() => {
             // Create standalone SVG string
-            var svg = svg2svg(this.svg.node(), this.renderer.domElement, this.svg_interaction.node(), this.plotarea_width, this.plotarea_height);
+            const svg = svg2svg(this.svg.node(), this.renderer.domElement, this.svg_interaction.node(), this.plotarea_width, this.plotarea_height);
             return svg;
             // Save to PNG
             //svg2png(svg, this.width, this.height)
@@ -862,18 +860,18 @@ export class Figure extends widgets.DOMWidgetView {
 
     // Render a SVG data into a canvas and download as PNG.
         this.get_svg().then((xml) => {
-            var image = new Image();
+            const image = new Image();
             image.onload = () => {
-                var canvas = document.createElement("canvas");
+                const canvas = document.createElement("canvas");
                 canvas.classList.add('bqplot');
                 canvas.width = this.width * scale;
                 canvas.height = this.height * scale;
                 canvas.style.width = this.width;
                 canvas.style.height = this.height;
-                var context = canvas.getContext("2d");
+                const context = canvas.getContext("2d");
                 context.scale(scale, scale);
                 context.drawImage(image, 0, 0);
-                var a = document.createElement("a");
+                const a = document.createElement("a");
                 a.download = filename || "image.png";
                 a.href = canvas.toDataURL("image/png");
                 document.body.appendChild(a);
@@ -885,7 +883,7 @@ export class Figure extends widgets.DOMWidgetView {
 
     save_svg(filename) {
         this.get_svg().then((xml) => {
-            var a = document.createElement("a");
+            const a = document.createElement("a");
             a.download = filename || "bqplot.svg";
             a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(xml);
             document.body.appendChild(a);

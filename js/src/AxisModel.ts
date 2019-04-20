@@ -58,8 +58,8 @@ export class AxisModel extends BaseModel {
     }
 
     validate_side() {
-        var orientation = this.get("orientation"),
-            side = this.get("side");
+        const orientation = this.get("orientation");
+        let side = this.get("side");
         if(orientation === "vertical") {
             if (side !== "left" && side !== "right") {
                 this.set("side", "left");

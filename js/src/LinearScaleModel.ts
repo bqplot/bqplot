@@ -54,13 +54,13 @@ export class LinearScaleModel extends ScaleModel {
     }
 
     reverse_changed(model, value, options) {
-        var prev_reverse = (model === undefined) ? false : model.previous("reverse");
+        const prev_reverse = (model === undefined) ? false : model.previous("reverse");
         this.reverse = this.get("reverse");
 
         // the domain should be reversed only if the previous value of reverse
         // is different from the current value. During init, domain should be
         // reversed only if reverse is set to True.
-        var reverse_domain = (prev_reverse + this.reverse) % 2;
+        const reverse_domain = (prev_reverse + this.reverse) % 2;
         if(this.domain.length > 0 && reverse_domain === 1) {
             this.domain.reverse();
             this.trigger("domain_changed", this.domain);
@@ -68,7 +68,7 @@ export class LinearScaleModel extends ScaleModel {
     }
 
     update_domain() {
-        var that = this;
+        const that = this;
         const min = (!this.min_from_data) ?
             this.min : d3.min(_.map(this.domains, function(d: any[]) {
                 return d.length > 0 ? d[0] : that.global_max;
@@ -111,10 +111,10 @@ export class LinearScaleModel extends ScaleModel {
            this.set_domain([], id);
            return;
         }
-        var data = data_array[0] instanceof Array ?
+        const data = data_array[0] instanceof Array ?
             data_array : [data_array];
-        var min = d3.min(data.map(function(d) { return d3.min(d); }));
-        var max = d3.max(data.map(function(d) { return d3.max(d); }));
+        const min = d3.min(data.map(function(d) { return d3.min(d); }));
+        const max = d3.max(data.map(function(d) { return d3.max(d); }));
         this.set_domain([min, max], id);
     }
 

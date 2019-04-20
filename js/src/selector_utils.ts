@@ -26,7 +26,7 @@ export function point_in_rectangle(point, x, y) {
     
     if (x.length == 0 && y.length == 0) { return false; }
 
-    var is_inside = true;
+    let is_inside = true;
     x.sort(function(a, b){return a-b});
     y.sort(function(a, b){return a-b});
 
@@ -48,7 +48,7 @@ export function lasso_inter_rect(x, y, vertices) {
     // checks whether the lasso intersects the rectangle of coordinates
     // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
 
-    for (var i = 0; i < vertices.length; i++) {
+    for (let i = 0; i < vertices.length; i++) {
         if (point_in_rectangle(vertices[i], x, y)) { return true; }
     }
     return false;

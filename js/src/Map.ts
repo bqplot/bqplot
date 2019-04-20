@@ -17,15 +17,14 @@ import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-zoom"));
 const d3GetEvent = () => { return require("d3-selection").event };
-import * as _ from 'underscore';
-import * as mark from './Mark';
+import { Mark } from './Mark';
 import { MapModel } from './MapModel';
 import * as utils from './utils';
 
-export class Map extends mark.Mark {
+export class Map extends Mark {
 
     render() {
-        var base_render_promise = super.render();
+        const base_render_promise = super.render();
 
         this.map = this.d3el.append("svg")
             .attr("viewBox", "0 0 1200 980");
@@ -51,14 +50,14 @@ export class Map extends mark.Mark {
     }
 
     set_positional_scales() {
-        var geo_scale = this.scales.projection;
+        const geo_scale = this.scales.projection;
         this.listenTo(geo_scale, "domain_changed", () => {
             if (!this.model.dirty) { this.draw(); }
         });
     }
 
     initialize_additional_scales() {
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
         if(color_scale) {
             this.listenTo(color_scale, "domain_changed", () => {
                 this.update_style();
@@ -80,7 +79,7 @@ export class Map extends mark.Mark {
         this.fill_g = this.transformed_g.append("g");
         this.highlight_g = this.transformed_g.append("g");
         this.stroke_g = this.transformed_g.append("g");
-        var projection = this.scales.projection;
+        const projection = this.scales.projection;
         //Bind data and create one path per GeoJSON feature
         this.fill_g.selectAll("path")
             .data(this.model.geodata)
@@ -125,12 +124,12 @@ export class Map extends mark.Mark {
         if (!this.model.get("hover_highlight")) {
             return;
         }
-        var el = d3.select(d3GetEvent().target);
+        const el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
-            var data: any = el.data()[0];
-            var idx = this.model.get("selected");
-            var select = idx ? utils.deepCopy(idx) : [];
-            var node = this.highlight_g.append(() => {
+            const data: any = el.data()[0];
+            const idx = this.model.get("selected");
+            const select = idx ? utils.deepCopy(idx) : [];
+            const node = this.highlight_g.append(() => {
                 return el.node().cloneNode(true);
             });
             node.classed("hovered", true);
@@ -155,7 +154,7 @@ export class Map extends mark.Mark {
         if (!this.model.get("hover_highlight")) {
             return;
         }
-        var el = d3.select(d3GetEvent().target);
+        const el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
             el.transition("mouseout_handler")
             .style("fill", (d, i) => {
@@ -169,18 +168,18 @@ export class Map extends mark.Mark {
     }
 
     click_handler() {
-        var el = d3.select(d3GetEvent().target);
+        const el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
-            var data: any = el.data()[0];
-            var idx = this.model.get("selected");
-            var selected = idx ? utils.deepCopy(idx) : [];
-            var elem_index = selected.indexOf(data.id);
+            const data: any = el.data()[0];
+            const idx = this.model.get("selected");
+            const selected = idx ? utils.deepCopy(idx) : [];
+            const elem_index = selected.indexOf(data.id);
             if(elem_index > -1) {
                 selected.splice(elem_index, 1);
                 el.transition("click_handler")
                     .style("fill-opacity", 0.0);
                 this.highlight_g.selectAll(".hovered").remove();
-                var choice = "#c".concat(data.id.toString());
+                const choice = "#c".concat(data.id.toString());
                 d3.select(choice).remove();
             } else {
                 this.highlight_g.selectAll(".hovered").remove();
@@ -218,9 +217,9 @@ export class Map extends mark.Mark {
     }
 
     zoomed(that) {
-        var tr = d3GetEvent().transform;
-        var h = that.height / 3;
-        var w = 2 * that.width;
+        const tr = d3GetEvent().transform;
+        const h = that.height / 3;
+        const w = 2 * that.width;
         tr.x = Math.min(that.width / 2 * (tr.k -1), Math.max(w / 2  * (1 - tr.k), tr.x));
         tr.y = Math.min(that.height / 2 * (tr.k - 1) + this.height * tr.k, Math.max(h / 2 * (1 - tr.k) - that.width * tr.k, tr.y));
         that.transformed_g.style("stroke-width", 1 / tr.k)
@@ -294,14 +293,14 @@ export class Map extends mark.Mark {
 
     change_selected() {
         this.highlight_g.selectAll("path").remove();
-        var idx = this.model.get("selected");
-        var select = idx ? idx : [];
-        var temp = this.stroke_g.selectAll("path").data();
+        const idx = this.model.get("selected");
+        const select = idx ? idx : [];
+        const temp = this.stroke_g.selectAll("path").data();
         this.stroke_g.selectAll("path").style("stroke", (d, i) => {
             return this.hoverfill(d, i);
         });
-        var nodes = this.stroke_g.selectAll("path");
-        for (var i=0; i<temp.length; i++) {
+        const nodes = this.stroke_g.selectAll("path");
+        for (let i=0; i<temp.length; i++) {
             if(select.indexOf(temp[i].id) > -1) {
                 this.highlight_g.append(() => {
                     return nodes.nodes()[i].cloneNode(true);
@@ -363,7 +362,7 @@ export class Map extends mark.Mark {
     }
 
     update_style() {
-        var color_data = this.model.get("color");
+        const color_data = this.model.get("color");
         if (!this.is_object_empty(color_data)) {
             this.fill_g.selectAll("path").style("fill", (d, i) => {
                 return this.fill_g_colorfill(d, i);
@@ -376,8 +375,8 @@ export class Map extends mark.Mark {
     }
 
     hoverfill(d, j) {
-        var idx = this.model.get("selected");
-        var select = idx ? idx : [];
+        const idx = this.model.get("selected");
+        const select = idx ? idx : [];
         if (select.indexOf(d.id) > -1 &&
             this.validate_color(this.model.get("selected_styles").selected_stroke)) {
             return this.model.get("selected_styles").selected_stroke;
@@ -387,11 +386,11 @@ export class Map extends mark.Mark {
     }
 
     fill_g_colorfill(d, j) {
-        var color_scale = this.scales.color;
-        var idx = this.model.get("selected");
-        var selection = idx ? idx : [];
-        var color_data = this.model.get("color");
-        var colors = this.model.get("colors");
+        const color_scale = this.scales.color;
+        const idx = this.model.get("selected");
+        const selection = idx ? idx : [];
+        const color_data = this.model.get("color");
+        const colors = this.model.get("colors");
 
         if (selection.indexOf(d.id) > -1) {
 		    return this.model.get("selected_styles").selected_fill;

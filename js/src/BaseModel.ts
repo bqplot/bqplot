@@ -14,7 +14,6 @@
  */
 
 import { WidgetModel } from '@jupyter-widgets/base';
-import * as _ from 'underscore';
 import { semver_range } from './version';
 
 export class BaseModel extends WidgetModel {
