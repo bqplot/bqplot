@@ -70,7 +70,13 @@ export class MarketMap extends Figure {
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "mark_tooltip");
         this.tooltip_div.styles({"opacity": 0, "pointer-events": "none"});
-        this.popper_reference = new popperreference.ElementReference(this.svg.node());
+
+        const freeze_tooltip_loc = this.model.get("freeze_tooltip_location");
+        if (freeze_tooltip_loc) {
+            this.popper_reference = new popperreference.ElementReference(this.svg.node());
+        } else {
+            this.popper_reference = new popperreference.PositionReference({x: 0, y: 0, width: 20, height: 20});
+        }
         this.popper = new popper(this.popper_reference, this.tooltip_div.node(), {
             placement: 'auto',
         });
@@ -202,7 +208,6 @@ export class MarketMap extends Figure {
             that.hide_tooltip();
             that.trigger("margin_updated");
         });
-
     }
 
     update_data() {
@@ -393,11 +398,14 @@ export class MarketMap extends Figure {
                 .attr("y", 0)
                 .classed("market_map_rect", true);
 
+            // Grouping calls to style into a single call to styles
+            // leads to build error despite the import of d3-selection-multi
             let text = new_groups.append("text")
                 .classed("market_map_text", true)
                 .style("text-anchor", "middle")
                 .style('fill', 'black')
-                .style("pointer-events", "none");
+                .style("pointer-events", "none")
+                .style("dominant-baseline", "central");
             let fontStyle = that.model.get("font_style");
             for (let i in Object.keys(fontStyle)) {
                 text.style(i, fontStyle[i]);
@@ -411,8 +419,7 @@ export class MarketMap extends Figure {
                 .on("mouseover", function(data, ind) { that.mouseover_handler(data, (element_count + ind), this);})
                 .on("mousemove", function(data) { that.mousemove_handler(); })
                 .on("mouseout", function(data, ind) { that.mouseout_handler(data, (element_count + ind), this);})
-                .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); })
-                .attr("id", function(data: any) { return "market_map_element_" + data.name;});
+                .attr("class",function(data, index) { return d3.select(this).attr("class") + " " + "rect_" + (element_count + index); });
 
             groups.selectAll(".market_map_rect")
                 .attr("width", that.column_width)
@@ -514,17 +521,12 @@ export class MarketMap extends Figure {
         if(this.model.get("enable_select")) {
             const selected = this.model.get("selected").slice();
             const index = selected.indexOf(data.name);
-            const cell_id = d3.select(cell).attr("id");
             if(index == -1) {
-                //append a rectangle with the dimensions to the g-click
+                // not already selected, so add to selected
                 selected.push(data.name);
-                const transform = d3.select(cell).attr("transform");
-                this.add_selected_cell(cell_id, transform);
             }
             else {
-                this.fig_click.select("#click_" + cell_id)
-                    .remove();
-                //remove the rectangle from the g-click
+                // already in selected list, so delete from selected
                 selected.splice(index, 1);
             }
             this.model.set("selected", selected);
@@ -539,31 +541,27 @@ export class MarketMap extends Figure {
             this.clear_selected();
         else{
             selected.forEach(function(data) {
-                const cell_id = "market_map_element_" + data;
-                that.fig_click.select("#click_" + cell_id)
-                    .remove();
-                if(that.fig_map.selectAll("#"+ cell_id)[0].length == 1) {
-                    const transform = that.fig_map.selectAll("#"+ cell_id).attr("transform");
-                    that.add_selected_cell(cell_id, transform);
-                }
-           });
+                const selected_cell = that.fig_map
+                    .selectAll(".rect_element")
+                    .filter((d, i) => { d.name === data });
+
+                that.fig_click
+                    .append("rect")
+                    .data(selected_cell.data())
+                    .attr("transform", selected_cell.attr("transform"))
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("width", that.column_width)
+                    .attr("height", that.row_height)
+                    .styles({"stroke": that.selected_stroke,
+                            "stroke-width": "3px",
+                            "fill": "none"});
+            });
         }
     }
 
     clear_selected() {
-        this.fig_click.selectAll("rect")
-            .remove();
-    }
-
-    add_selected_cell(id, transform) {
-        this.fig_click.append("rect")
-            .attr("id", "click_" + id)
-            .attr("transform", transform)
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", this.column_width)
-            .attr("height", this.row_height)
-            .styles({'stroke': this.selected_stroke, 'stroke-width': '4px', 'fill': 'none'});
+        this.fig_click.selectAll("rect").remove();
     }
 
     mouseover_handler(data, id, cell) {
@@ -577,8 +575,7 @@ export class MarketMap extends Figure {
                 .attr("width", this.column_width)
                 .attr("height", this.row_height)
                 .styles({'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none',
-                        'pointer-events': 'none'
-                    });
+                         'pointer-events': 'none'});
             this.show_tooltip(d3.event, data);
             this.send({event: "hover", data: data.name, ref_data: data.ref_data});
         }
@@ -587,7 +584,7 @@ export class MarketMap extends Figure {
     update_selected_stroke(model, value) {
         this.selected_stroke = value;
         this.fig_click.selectAll("rect")
-            .styles({'stroke': value});
+            .style('stroke', value);
     }
 
     update_hovered_stroke(model, value) {
