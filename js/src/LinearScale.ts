@@ -34,7 +34,7 @@ export class LinearScale extends Scale {
         // The following code is required to make a copy of the actual
         // state of the scale. Referring to the model domain and then
         // setting the range to be the old range in case it is not.
-        var unpadded_scale = this.scale.copy();
+        const unpadded_scale = this.scale.copy();
 
         // To handle the case for a clamped scale for which we have to
         // expand the domain, the copy should be unclamped.
@@ -52,7 +52,7 @@ export class LinearScale extends Scale {
 
     invert_range(pixels) {
         //Pixels is a non-decreasing array of pixel values
-        var that = this;
+        const that = this;
         return pixels.map(function(pix) { return that.invert(pix); });
     }
 }

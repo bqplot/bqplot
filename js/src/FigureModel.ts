@@ -14,7 +14,6 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import * as _ from 'underscore';
 import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 

@@ -40,7 +40,7 @@ export abstract class Mark extends widgets.WidgetView {
         this.y_padding = 0;
         this.parent = this.options.parent;
         this.uuid = widgets.uuid();
-        var scale_creation_promise = this.set_scale_views();
+        const scale_creation_promise = this.set_scale_views();
         this.listenTo(this.model, "scales_updated", () => {
             this.set_scale_views().then(_.bind(this.draw, this));
         });
@@ -96,9 +96,9 @@ export abstract class Mark extends widgets.WidgetView {
             this.stopListening(this.scales[key]);
         }
 
-        var scale_models = this.model.get("scales");
-        var that = this;
-        var scale_promises = {};
+        const scale_models = this.model.get("scales");
+        const that = this;
+        const scale_promises = {};
         _.each(scale_models, function(model, key) {
             scale_promises[key] = that.create_child_view(model);
         });
@@ -195,7 +195,7 @@ export abstract class Mark extends widgets.WidgetView {
     get_colors(index) {
         // cycles over the list of colors when too many items
         this.colors = this.model.get("colors");
-        var len = this.colors.length;
+        const len = this.colors.length;
         return this.colors[index % len];
     }
 
@@ -208,8 +208,8 @@ export abstract class Mark extends widgets.WidgetView {
 
     unselected_style_updated(model, style) {
         this.unselected_style = style;
-        var sel_indices = this.selected_indices;
-        var unselected_indices = (sel_indices) ?
+        const sel_indices = this.selected_indices;
+        const unselected_indices = (sel_indices) ?
             _.range(this.model.mark_data.length).filter(function(index){
                 return sel_indices.indexOf(index) === -1;
             }) : [];
@@ -227,7 +227,7 @@ export abstract class Mark extends widgets.WidgetView {
         if(style_arr === undefined || style_arr == null) {
             style_arr = [this.selected_style, this.unselected_style];
         }
-        var all_indices = _.range(this.model.mark_data.length);
+        const all_indices = _.range(this.model.mark_data.length);
         for(var i = 0; i < style_arr.length; i++) {
             this.clear_style(style_arr[i]);
         }
@@ -235,7 +235,7 @@ export abstract class Mark extends widgets.WidgetView {
         this.set_default_style(all_indices);
 
         this.set_style_on_elements(this.selected_style, Array.from(this.selected_indices || []));
-        var unselected_indices = (!this.selected_indices) ?
+        const unselected_indices = (!this.selected_indices) ?
             [] : _.difference(all_indices, Array.from(this.selected_indices));
         this.set_style_on_elements(this.unselected_style, unselected_indices);
     }
@@ -292,10 +292,10 @@ export abstract class Mark extends widgets.WidgetView {
         //the argument controls pointer interactions with the tooltip. a
         //true value enables pointer interactions while a false value
         //disables them
-        var el = d3.select(d3GetEvent().target);
+        const el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
-            var data: any = el.data()[0];
-            var clicked_data = this.model.get_data_dict(data, data.index);
+            const data: any = el.data()[0];
+            const clicked_data = this.model.get_data_dict(data, data.index);
             this.trigger("update_tooltip", clicked_data);
             this.show_tooltip(tooltip_interactions);
         }
@@ -304,10 +304,10 @@ export abstract class Mark extends widgets.WidgetView {
     create_tooltip() {
         //create tooltip widget. To be called after mark has been displayed
         //and whenever the tooltip object changes
-        var tooltip_model = this.model.get("tooltip");
-        var that = this;
+        const tooltip_model = this.model.get("tooltip");
+        const that = this;
         if(tooltip_model) {
-            var tooltip_creation_promise = this.create_child_view(tooltip_model);
+            const tooltip_creation_promise = this.create_child_view(tooltip_model);
             tooltip_creation_promise.then(function(view) {
                 if(that.tooltip_view) {
                     that.tooltip_view.remove();
@@ -333,12 +333,12 @@ export abstract class Mark extends widgets.WidgetView {
     }
 
     custom_msg_sender(event_name) {
-        var event_data = this.event_metadata[event_name];
+        const event_data = this.event_metadata[event_name];
         if(event_data !== undefined) {
-            var data = null;
+            let data = null;
             if(event_data.hit_test) {
                 //do a hit test to check valid element
-                var el = d3.select(d3GetEvent().target);
+                const el = d3.select(d3GetEvent().target);
                 if(this.is_hover_element(el)) {
                     data = el.data()[0];
                     if(event_data.lookup_data) {
@@ -445,11 +445,11 @@ export abstract class Mark extends widgets.WidgetView {
 
     mouse_over() {
         if(this.model.get("enable_hover")) {
-            var el = d3.select(d3GetEvent().target);
+            const el = d3.select(d3GetEvent().target);
             if(this.is_hover_element(el)) {
-                var data: any = el.data()[0];
+                const data: any = el.data()[0];
                 //make tooltip visible
-                var hovered_data = this.model.get_data_dict(data, data.index);
+                const hovered_data = this.model.get_data_dict(data, data.index);
                 this.trigger("update_tooltip", hovered_data);
                 this.show_tooltip();
                 this.send({
@@ -462,10 +462,10 @@ export abstract class Mark extends widgets.WidgetView {
 
     mouse_out() {
         if(this.model.get("enable_hover")) {
-            var el = d3.select(d3GetEvent().target);
+            const el = d3.select(d3GetEvent().target);
             if(this.is_hover_element(el)) {
-                var data: any = el.data()[0];
-                var hovered_data = this.model.get_data_dict(data, data.index);
+                const data: any = el.data()[0];
+                const hovered_data = this.model.get_data_dict(data, data.index);
                 // make tooltip invisible
                 this.hide_tooltip();
                 this.send({
@@ -485,7 +485,7 @@ export abstract class Mark extends widgets.WidgetView {
 
     //TODO: Rename function
     is_hover_element(elem) {
-        var hit_check = this.display_el_classes.map(function(class_name) {
+        const hit_check = this.display_el_classes.map(function(class_name) {
             return elem.classed(class_name);
         });
         return (_.compact(hit_check).length > 0);

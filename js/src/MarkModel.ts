@@ -83,7 +83,7 @@ export class MarkModel extends BaseModel {
     unregister_all_scales(scales) {
         // disassociates the mark with the scale
         this.dirty = true;
-        for (var key in scales) {
+        for (let key in scales) {
             scales[key].del_domain([], this.model_id + "_" + key);
         }
         this.dirty = false;
@@ -95,8 +95,8 @@ export class MarkModel extends BaseModel {
     }
 
     get_key_for_dimension(dimension) {
-        var scales_metadata = this.get("scales_metadata");
-        for (var scale in scales_metadata) {
+        const scales_metadata = this.get("scales_metadata");
+        for (let scale in scales_metadata) {
             if(scales_metadata[scale].dimension === dimension) {
                 return scale;
             }
@@ -105,8 +105,8 @@ export class MarkModel extends BaseModel {
     }
 
     get_key_for_orientation(orientation) {
-        var scales_metadata = this.get("scales_metadata");
-        for (var scale in scales_metadata) {
+        const scales_metadata = this.get("scales_metadata");
+        for (let scale in scales_metadata) {
             if(scales_metadata[scale].orientation === orientation) {
                 return scale;
             }

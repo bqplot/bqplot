@@ -14,7 +14,7 @@
  */
 
 import { ScaleModel } from './ScaleModel';
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 export class OrdinalScaleModel extends ScaleModel {
 
@@ -60,13 +60,13 @@ export class OrdinalScaleModel extends ScaleModel {
     }
 
     reverse_changed(model?) {
-        var prev_reverse = (model === undefined) ? false : model.previous("reverse");
+        const prev_reverse = (model === undefined) ? false : model.previous("reverse");
         this.reverse = this.get("reverse");
 
         // the domain should be reversed only if the previous value of reverse
         // is different from the current value. During init, domain should be
         // reversed only if reverse is set to True.
-        var reverse_domain = (prev_reverse + this.reverse) % 2;
+        const reverse_domain = (prev_reverse + this.reverse) % 2;
         if(this.domain.length > 0 && reverse_domain === 1) {
             this.domain.reverse();
             this.trigger("domain_changed", this.domain);
@@ -74,9 +74,9 @@ export class OrdinalScaleModel extends ScaleModel {
     }
 
     update_domain() {
-        var domain = [];
+        let domain = [];
         // TODO: check for hasOwnProperty
-        for (var id in this.domains) {
+        for (let id in this.domains) {
             domain = _.union(domain, this.domains[id]);
         }
         if(this.domain.length !== domain.length ||
@@ -97,7 +97,7 @@ export class OrdinalScaleModel extends ScaleModel {
            this.set_domain([], id);
            return;
         }
-        var domain = _.flatten(data_array);
+        const domain = _.flatten(data_array);
         if(this.get("reverse")) {
             domain.reverse();
         }

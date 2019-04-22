@@ -15,7 +15,7 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import { semver_range } from './version';
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 export class ToolbarModel extends widgets.DOMWidgetModel {
 

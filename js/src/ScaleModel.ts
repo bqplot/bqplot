@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import _ from 'underscore'
 import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 

@@ -43,7 +43,7 @@ export class LabelModel extends ScatterBaseModel {
 
     update_mark_data() {
         super.update_mark_data();
-        var text = this.get("text");
+        const text = this.get("text");
 
         this.mark_data.forEach(function(d, i){ d.text = text[i]; });
     }

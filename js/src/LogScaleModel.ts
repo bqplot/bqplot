@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import * as _ from 'underscore';
 import { LinearScaleModel } from './LinearScaleModel';
 
 export class LogScaleModel extends LinearScaleModel {

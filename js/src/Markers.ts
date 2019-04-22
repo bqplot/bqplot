@@ -16,13 +16,13 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-collection"));
 
-var pi = Math.PI,
+const pi = Math.PI,
     radian = pi / 180,
     sqrt3 = Math.sqrt(3),
     tan30 = Math.tan(pi / 6);
 
-var circleSymbol = function(size) {
-    var r = Math.sqrt(size / pi);
+const circleSymbol = function(size) {
+    const r = Math.sqrt(size / pi);
     return "M0," + r +
         "A" + r + "," + r + " 0 1,1 0," + (-r) +
         "A" + r + "," + r + " 0 1,1 0," + r +
@@ -32,7 +32,7 @@ var circleSymbol = function(size) {
 const bqSymbolTypes = d3.map({
     "circle": circleSymbol,
     "cross": function(size,e) {
-        var r = Math.sqrt(size / 5) / 2;
+        const r = Math.sqrt(size / 5) / 2;
         return "M" + -3 * r + "," + -r +
             "H" + -r +
             "V" + -3 * r +
@@ -48,7 +48,7 @@ const bqSymbolTypes = d3.map({
             "Z";
     },
     "diamond": function(size, s) {
-        var ry = Math.sqrt(size / (2 * tan30)),
+        const ry = Math.sqrt(size / (2 * tan30)),
             rx = ry * tan30;
         return "M0," + -ry +
             "L" + rx + ",0" +
@@ -57,7 +57,7 @@ const bqSymbolTypes = d3.map({
             "Z";
     },
     "square": function(size, s) {
-        var r = Math.sqrt(size) / 2;
+        const r = Math.sqrt(size) / 2;
         return "M" + -r + "," + -r +
             "L" + r + "," + -r +
             " " + r + "," + r +
@@ -65,7 +65,7 @@ const bqSymbolTypes = d3.map({
             "Z";
     },
     "triangle-down": function(size, s) {
-        var rx = Math.sqrt(size / sqrt3),
+        const rx = Math.sqrt(size / sqrt3),
             ry = rx * sqrt3 / 2;
         return "M0," + ry +
             "L" + rx +"," + -ry +
@@ -73,7 +73,7 @@ const bqSymbolTypes = d3.map({
             "Z";
     },
     "triangle-up": function(size, s) {
-        var rx = Math.sqrt(size / sqrt3),
+        const rx = Math.sqrt(size / sqrt3),
             ry = rx * sqrt3 / 2;
         return "M0," + -ry +
             "L" + rx +"," + ry +
@@ -81,7 +81,7 @@ const bqSymbolTypes = d3.map({
             "Z";
     },
     "arrow": function(size, skew) {
-        var angle = 60 + (5 - 60) * skew,
+        const angle = 60 + (5 - 60) * skew,
             s = Math.tan(angle * radian),
             ry = Math.sqrt(size / s),
             rx = ry * s / 2;
@@ -91,7 +91,7 @@ const bqSymbolTypes = d3.map({
             "Z";
     },
     "ellipse": function(size, skew) {
-        var s = Math.pow(10, skew),
+        const s = Math.pow(10, skew),
             rx = Math.sqrt(size / (pi * s)),
             ry = rx * s;
         return "M0," + ry +
@@ -100,7 +100,7 @@ const bqSymbolTypes = d3.map({
             "Z";
     },
     "rectangle": function(size, skew) {
-        var s = Math.pow(10, skew),
+        const s = Math.pow(10, skew),
             rx = Math.sqrt(size / s) / 2,
             ry = rx * s;
         return "M" + -rx + "," + -ry +
@@ -134,9 +134,9 @@ function functor(x) {
 }
 
 const bqSymbol = function() {
-    var type = symbolType,
-        size = symbolSize,
-        skew = symbolSkew;
+    let type = symbolType;
+    let size = symbolSize;
+    let skew = symbolSkew;
 
     function symbol(d,i) {
         return (bqSymbolTypes.get(type.call(this,d,i)) || circleSymbol)

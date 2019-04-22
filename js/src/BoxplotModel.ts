@@ -49,8 +49,8 @@ export class BoxplotModel extends MarkModel {
     }
 
     update_data() {
-        var x_data = this.get("x");
-        var y_data = this.get("y");
+        let x_data = this.get("x");
+        let y_data = this.get("y");
 
         y_data.forEach(function(elm) {
             elm.sort(function(a, b) {
@@ -74,9 +74,9 @@ export class BoxplotModel extends MarkModel {
         // color scale needs an issue in DateScaleModel to be fixed. It
         // should be moved here as soon as that is fixed.
 
-        var scales = this.get("scales");
-        var x_scale = scales.x;
-        var y_scale = scales.y;
+        const scales = this.get("scales");
+        const x_scale = scales.x;
+        const y_scale = scales.y;
 
         if(!this.get("preserve_domain").x && this.mark_data) {
             x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -88,11 +88,11 @@ export class BoxplotModel extends MarkModel {
         if(!this.get("preserve_domain").y && this.mark_data) {
            //The values are sorted, so we are using that to calculate the min/max
 
-            var min = d3.min(this.mark_data.map(function(d) {
+            const min = d3.min(this.mark_data.map(function(d) {
                 return d[1][0];
             }));
-            var max = d3.max(this.mark_data.map(function(d) {
-                var values = d[1];
+            const max = d3.max(this.mark_data.map(function(d) {
+                const values = d[1];
                 return values[values.length-1];
             }));
 

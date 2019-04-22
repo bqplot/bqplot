@@ -29,7 +29,7 @@ export class Bars extends Mark {
 
     render() {
         this.padding = this.model.get("padding");
-        var base_creation_promise = super.render.apply(this);
+        const base_creation_promise = super.render.apply(this);
         this.set_internal_scales();
         this.selected_indices = this.model.get("selected");
         this.selected_style = this.model.get("selected_style");
@@ -37,7 +37,7 @@ export class Bars extends Mark {
 
         this.display_el_classes = ["bar", "legendtext"];
 
-        var that = this;
+        const that = this;
         this.displayed.then(function() {
             that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
             that.create_tooltip();
@@ -60,12 +60,12 @@ export class Bars extends Mark {
     }
 
     set_ranges() {
-        var orient = this.model.get("orientation");
+        const orient = this.model.get("orientation");
         this.set_scale_orientation();
-        var dom_scale = this.dom_scale,
-            range_scale = this.range_scale;
-        var dom = (orient === "vertical") ? "x" : "y",
-            rang = (orient === "vertical") ? "y" : "x";
+        const dom_scale = this.dom_scale;
+        const range_scale = this.range_scale;
+        const dom = (orient === "vertical") ? "x" : "y";
+        const rang = (orient === "vertical") ? "y" : "x";
         if(dom_scale.model.type !== "ordinal") {
             dom_scale.set_range(this.parent.padded_range(dom, dom_scale.model));
         } else {
@@ -80,7 +80,7 @@ export class Bars extends Mark {
     }
 
     set_positional_scales() {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) {
                 this.draw();
@@ -104,7 +104,7 @@ export class Bars extends Mark {
         // the value have to be negatively offset by half of the width of
         // the bars, because ordinal scales give the values corresponding
         // to the start of the bin but linear scale gives the actual value.
-        var dom_scale = this.dom_scale;
+        const dom_scale = this.dom_scale;
         if(dom_scale.model.type !== "ordinal") {
             if (this.model.get("align")==="center") {
                 this.dom_offset = -(this.x.bandwidth() / 2).toFixed(2);
@@ -139,7 +139,7 @@ export class Bars extends Mark {
 
         this.listenTo(this.model, "data_updated", function() {
             //animate bars on data update
-            var animate = true;
+            const animate = true;
             this.draw(animate);
         });
         this.listenTo(this.model, "change:colors", this.update_colors);
@@ -175,8 +175,8 @@ export class Bars extends Mark {
 
     draw_zero_line() {
         this.set_scale_orientation();
-        var range_scale = this.range_scale;
-        var orient = this.model.get("orientation");
+        const range_scale = this.range_scale;
+        const orient = this.model.get("orientation");
         if (orient === "vertical") {
             this.d3el.select(".zeroLine")
               .attr("x1",  0)
@@ -212,7 +212,7 @@ export class Bars extends Mark {
             return;
         }
 
-        var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+        const abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
         this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
         this.touch();
     }
@@ -223,13 +223,13 @@ export class Bars extends Mark {
             this.touch();
             return [];
         }
-        var pixels = this.pixel_coords;
-        var indices = _.range(pixels.length);
+        const pixels = this.pixel_coords;
+        const indices = _.range(pixels.length);
         // Here we only select bar groups. It shouldn't be too hard to select
         // individual bars, the `selected` attribute would then be a list of pairs.
-        var selected_groups = _.filter(indices, function(index) {
-            var bars = pixels[index];
-            for (var i = 0; i < bars.length; i++) {
+        const selected_groups = _.filter(indices, function(index) {
+            let bars = pixels[index];
+            for (let i = 0; i < bars.length; i++) {
                 if (rect_selector(bars[i])) { return true; }
             } return false;
         });
@@ -244,18 +244,18 @@ export class Bars extends Mark {
 
     draw(animate?: boolean) {
         this.set_ranges();
-        var that = this;
-        var bar_groups = this.d3el.selectAll(".bargroup")
+        const that = this;
+        let bar_groups = this.d3el.selectAll(".bargroup")
           .data(this.model.mark_data, function(d) {
               return d.key;
           });
 
-        var dom_scale = this.dom_scale;
+        const dom_scale = this.dom_scale;
         // this.x is the ordinal scale used to draw the bars. If a linear
         // scale is given, then the ordinal scale is created from the
         // linear scale.
         if(dom_scale.model.type !== "ordinal") {
-            var model_domain = this.model.mark_data.map(function(elem) {
+            const model_domain = this.model.mark_data.map(function(elem) {
                 return elem.key;
             });
             this.x.domain(model_domain);
@@ -290,7 +290,7 @@ export class Bars extends Mark {
                                          {"data": d, "index": i});
         });
 
-        var bars_sel = bar_groups.selectAll(".bar")
+        const bars_sel = bar_groups.selectAll(".bar")
           .data(function(d) {
               return d.values;
           });
@@ -318,27 +318,27 @@ export class Bars extends Mark {
     }
 
     draw_bars(animate?: boolean) {
-        var bar_groups = this.d3el.selectAll(".bargroup");
-        var bars_sel = bar_groups.selectAll(".bar");
-        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        const bar_groups = this.d3el.selectAll(".bargroup");
+        const bars_sel = bar_groups.selectAll(".bar");
+        const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
         // We need two different transitions because draw_bars can be called in the following cases:
         // - after the scale has been updated, in that case animate === false
         // - after the data has been updated, in that case animate === true
         // However, if we use the same transition, the animation_duration won't be updated and the
         // "immediate" transition will always be used...
-        var transition_name = animate === true ? "update_bars" : "draw_bars";
-        var that = this;
-        var orient = this.model.get("orientation");
+        const transition_name = animate === true ? "update_bars" : "draw_bars";
+        const that = this;
+        const orient = this.model.get("orientation");
 
-        var dom_scale = this.dom_scale, range_scale = this.range_scale;
+        const dom_scale = this.dom_scale, range_scale = this.range_scale;
 
-        var dom = (orient === "vertical") ? "x" : "y",
+        const dom = (orient === "vertical") ? "x" : "y",
             rang = (orient === "vertical") ? "y" : "x";
 
-        var dom_control = (orient === "vertical") ? "width" : "height",
+        const dom_control = (orient === "vertical") ? "width" : "height",
             rang_control = (orient === "vertical") ? "height" : "width";
         if (dom_scale.model.type === "ordinal") {
-            var dom_max = d3.max(this.parent.range(dom));
+            const dom_max = d3.max(this.parent.range(dom));
             bar_groups.attr("transform", function(d) {
                 if (orient === "vertical") {
                     return "translate(" + ((dom_scale.scale(d.key) !== undefined ?
@@ -357,8 +357,8 @@ export class Bars extends Mark {
                 }
             });
         }
-        var is_stacked = (this.model.get("type") === "stacked");
-        var band_width = 1.0;
+        const is_stacked = (this.model.get("type") === "stacked");
+        let band_width = 1.0;
         if (is_stacked) {
             band_width = Math.max(1.0, this.x.bandwidth());
             bars_sel.transition(transition_name).duration(animation_duration)
@@ -386,10 +386,10 @@ export class Bars extends Mark {
         }
 
         this.pixel_coords = this.model.mark_data.map(function(d) {
-            var key = d.key;
-            var group_dom = dom_scale.scale(key) + that.dom_offset;
+            const key = d.key;
+            const group_dom = dom_scale.scale(key) + that.dom_offset;
             return d.values.map(function(d) {
-                var rect_coords = {};
+                const rect_coords = {};
                 rect_coords[dom] = is_stacked ? group_dom : group_dom + that.x1(d.sub_index);
                 rect_coords[rang] = is_stacked ?
                     (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0) :
@@ -415,8 +415,8 @@ export class Bars extends Mark {
     }
 
     update_stroke_and_opacities() {
-        var stroke = this.model.get("stroke");
-        var opacities = this.model.get("opacities");
+        const stroke = this.model.get("stroke");
+        const opacities = this.model.get("opacities");
         this.d3el.selectAll(".bar")
             .style("stroke", stroke || "none")
             .style("opacity", function(d, i) {
@@ -430,8 +430,8 @@ export class Bars extends Mark {
         //if y is 1-d, each bar should be of 1 color.
         //if y is multi-dimensional, the corresponding values should be of
         //the same color.
-        var that = this;
-        var color_scale = this.scales.color;
+        const that = this;
+        const color_scale = this.scales.color;
         if(this.model.mark_data.length > 0) {
             if(!(this.model.is_y_2d)) {
                 this.d3el.selectAll(".bar").style("fill", function(d, i) {
@@ -469,20 +469,20 @@ export class Bars extends Mark {
             return [0, 0];
         }
 
-        var legend_data = this.model.mark_data[0].values.map(function(data) {
+        const legend_data = this.model.mark_data[0].values.map(function(data) {
             return {
                 index: data.sub_index,
                 color: data.color,
                 color_index: data.color_index
             };
         });
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
         this.legend_el = elem.selectAll(".legend" + this.uuid)
             .data(legend_data);
 
-        var that = this;
-        var rect_dim = inter_y_disp * 0.8;
-        var legend = this.legend_el.enter()
+        const that = this;
+        const rect_dim = inter_y_disp * 0.8;
+        const legend = this.legend_el.enter()
           .append("g")
             .attr("class", "legend" + this.uuid)
             .attr("transform", function(d, i) {
@@ -522,7 +522,7 @@ export class Bars extends Mark {
 
         legend.merge(this.legend_el);
 
-        var max_length = d3.max(this.model.get("labels"), function(d: any[]) {
+        const max_length = d3.max(this.model.get("labels"), function(d: any[]) {
             return d.length;
         });
 
@@ -538,14 +538,14 @@ export class Bars extends Mark {
         // This function is not used right now. But it can be used if we
         // decide to accommodate more properties than those set by default.
         // Because those have to cleared specifically.
-        var elements = this.d3el.selectAll(".bargroup");
+        let elements = this.d3el.selectAll(".bargroup");
         if(indices !== undefined) {
             elements = elements.filter(function(d, index) {
                 return indices.indexOf(index) !== -1;
             });
         }
-        var clearing_style = {};
-        for(var key in style_dict) {
+        const clearing_style = {};
+        for(const key in style_dict) {
             clearing_style[key] = null;
         }
         elements.selectAll(".bar").styles(clearing_style);
@@ -561,7 +561,7 @@ export class Bars extends Mark {
         if(Object.keys(style).length === 0) {
             return;
         }
-        var elements = this.d3el.selectAll(".bargroup");
+        let elements = this.d3el.selectAll(".bargroup");
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
@@ -576,7 +576,7 @@ export class Bars extends Mark {
     }
 
     set_x_range() {
-        var dom_scale = this.dom_scale;
+        const dom_scale = this.dom_scale;
         if(dom_scale.model.type === "ordinal") {
             return dom_scale.scale.range();
         } else {
@@ -586,14 +586,14 @@ export class Bars extends Mark {
     }
 
     bar_click_handler (args) {
-        var index = args.index;
-        var that = this;
-        var idx = this.model.get("selected");
-        var selected: number[] = idx ? utils.deepCopy(idx) : [];
+        const index = args.index;
+        const that = this;
+        const idx = this.model.get("selected");
+        let selected: number[] = idx ? utils.deepCopy(idx) : [];
         // index of bar i. Checking if it is already present in the list.
-        var elem_index = selected.indexOf(index);
+        const elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
-        var accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
+        const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
         if(elem_index > -1 && accelKey) {
             // if the index is already selected and if accel key is
             // pressed, remove the element from the list
@@ -607,9 +607,9 @@ export class Bars extends Mark {
                 }
                 //Add elements before or after the index of the current
                 //bar which has been clicked
-                var min_index = (selected.length !== 0) ?
+                const min_index = (selected.length !== 0) ?
                     d3.min(selected) : -1;
-                var max_index = (selected.length !== 0) ?
+                const max_index = (selected.length !== 0) ?
                     d3.max(selected) : that.model.mark_data.length;
                 if(index > max_index){
                     _.range(max_index+1, index+1).forEach(function(i) {
@@ -638,7 +638,7 @@ export class Bars extends Mark {
                        ((selected.length === 0) ? null : selected),
                        {updated_view: this});
         this.touch();
-        var e = d3GetEvent();
+        const e = d3GetEvent();
         if(e.cancelBubble !== undefined) { // IE
             e.cancelBubble = true;
         }
@@ -658,10 +658,10 @@ export class Bars extends Mark {
         // //This function returns a dictionary with keys as the scales and
         // //value as the pixel padding required for the rendering of the
         // //mark.
-        var dom_scale = this.dom_scale;
-        var orient = this.model.get("orientation");
-        var x_padding = 0;
-        var avail_space = (orient === "vertical" ) ? this.parent.plotarea_width: this.parent.plotarea_height;
+        const dom_scale = this.dom_scale;
+        const orient = this.model.get("orientation");
+        let x_padding = 0;
+        const avail_space = (orient === "vertical" ) ? this.parent.plotarea_width: this.parent.plotarea_height;
         if(dom_scale) {
             if (this.x !== null && this.x !== undefined &&
                 this.x.domain().length !== 0) {

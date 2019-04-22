@@ -1,8 +1,8 @@
 
-import _ from 'underscore';
+import * as _ from 'underscore';
 import isTypedArray from 'is-typedarray';
 
-var typesToArray = {
+const typesToArray = {
     int8: Int8Array,
     int16: Int16Array,
     int32: Int32Array,
@@ -13,7 +13,7 @@ var typesToArray = {
     float64: Float64Array
 }
 
-var arrayToTypes = {
+const arrayToTypes = {
     Int8Array: 'int8',
     Int16Array: 'int16',
     Int32Array: 'int32',
@@ -26,7 +26,7 @@ var arrayToTypes = {
 
 
 function deserialize_typed_array(data, manager) {
-    var type = typesToArray[data.dtype];
+    const type = typesToArray[data.dtype];
     if(data == null) {
         console.log('data is null')
     }
@@ -36,15 +36,15 @@ function deserialize_typed_array(data, manager) {
     if(!data.value.buffer) {
         console.log('data.buffer is null')
     }
-    var ar = new type(data.value.buffer);
+    const ar = new type(data.value.buffer);
     ar.type = data.type;
     if(data.shape && data.shape.length >= 2) {
         if(data.shape.length > 2)
             throw new Error("only arrays with rank 1 or 2 supported")
-        var arrays = []
+        const arrays = []
         // slice the 1d typed arrays in multiple arrays and put them in a
         // regular array
-        for(var i=0; i < data.shape[0]; i++) {
+        for(let i=0; i < data.shape[0]; i++) {
             arrays.push(ar.slice(i*data.shape[1], (i+1)*data.shape[1]));
         }
         return arrays;
@@ -60,36 +60,16 @@ function serialize_typed_array(ar, manager) {
     if(!ar.buffer) {
         console.log('ar.buffer is null or not defined')
     }
-    var dtype = arrayToTypes[ar.constructor.name];
-    var type = ar.type || null;
-    var wire = {dtype: dtype, value: new DataView(ar.buffer), shape: [ar.length], type: type}
+    const dtype = arrayToTypes[ar.constructor.name];
+    const type = ar.type || null;
+    const wire = {dtype: dtype, value: new DataView(ar.buffer), shape: [ar.length], type: type}
     return wire;
 }
-/*
-function deserialize_ndarray(data, manager) {
-    if(data === null)
-        return null;
-    console.log('deserialize_ndarray')
-    return ndarray(deserialize_typed_array(data, manager), data.shape);
-}
-
-function serialize_ndarray(data, manager) {
-    if(data === null)
-        return null;
-    var ar = data;
-    if(_.isArray(data) && !data.buffer) { // plain list of list
-        var ar = require("ndarray-pack")(data)
-    }
-    var data_json = {'data': ar.data.buffer, dtype:arrayToTypes[ar.data.constructor.name], shape:ar.shape}
-    return data_json;
-}
-
-*/
 
 function deserialize_array_or_json(data, manager) {
     if(data == null)
         return null;
-    var value = null;
+    let value = null;
     if(_.isNumber(data)) { // plain number
         return data;
     }

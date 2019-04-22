@@ -66,12 +66,12 @@ export class LinesModel extends MarkModel {
     update_data() {
         this.dirty = true;
         // Handling data updates
-        var that = this;
+        const that = this;
         this.x_data = this.get("x");
         this.y_data = this.get("y");
         this.color_data = this.get("color") || [];
 
-        var curve_labels = this.get("labels");
+        let curve_labels = this.get("labels");
         if (this.x_data.length === 0 || this.y_data.length === 0) {
             this.mark_data = [];
         } else {
@@ -81,7 +81,7 @@ export class LinesModel extends MarkModel {
                 this.y_data : [this.y_data];
             curve_labels = this.get_labels();
 
-            var y_length = this.y_data.length;
+            const y_length = this.y_data.length;
 
             if (this.x_data.length == 1 && y_length > 1) {
                 // same x for all y
@@ -100,7 +100,7 @@ export class LinesModel extends MarkModel {
                 });
             } else {
                 this.mark_data = curve_labels.map(function(name, i) {
-                    var xy_data = d3.zip(that.x_data[i], that.y_data[i]);
+                    const xy_data = d3.zip(that.x_data[i], that.y_data[i]);
                     return {
                         name: name,
                         values: xy_data.map(function(d, j) {
@@ -121,7 +121,7 @@ export class LinesModel extends MarkModel {
 
     update_labels() {
         // update the names in mark_data
-        var labels = this.get_labels();
+        const labels = this.get_labels();
         this.mark_data.forEach(function(element, i) {
             element.name = labels[i];
         });
@@ -132,8 +132,8 @@ export class LinesModel extends MarkModel {
         // Function to set the labels appropriately.
         // Setting the labels to the value sent and filling in the
         // remaining values.
-        var curve_labels = this.get("labels");
-        var data_length = (this.x_data.length == 1) ?
+        let curve_labels = this.get("labels");
+        const data_length = (this.x_data.length == 1) ?
             (this.y_data.length) : Math.min(this.x_data.length, this.y_data.length);
         if(curve_labels.length > data_length) {
             curve_labels = curve_labels.slice(0, data_length);
@@ -150,9 +150,9 @@ export class LinesModel extends MarkModel {
         if(!this.mark_data) {
             return;
         }
-        var scales = this.get("scales");
-        var x_scale = scales.x, y_scale = scales.y;
-        var color_scale = scales.color;
+        const scales = this.get("scales");
+        const x_scale = scales.x, y_scale = scales.y;
+        const color_scale = scales.color;
 
         if(!this.get("preserve_domain").x) {
             x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
@@ -230,11 +230,11 @@ export class FlexLineModel extends LinesModel {
     update_data() {
         this.dirty = true;
         // Handling data updates
-        var that = this;
+        const that = this;
         this.x_data = this.get("x");
         this.y_data = this.get("y");
 
-        var curve_labels = this.get("labels");
+        let curve_labels = this.get("labels");
         if (this.x_data.length === 0 || this.y_data.length === 0) {
             this.mark_data = [];
             this.data_len = 0;
@@ -244,8 +244,8 @@ export class FlexLineModel extends LinesModel {
             this.y_data = !_.isNumber(this.y_data[0]) ?
                 this.y_data : [this.y_data];
             curve_labels = this.get_labels();
-            var color_data = this.get("color") || [];
-            var width_data = this.get("width") || [];
+            const color_data = this.get("color") || [];
+            const width_data = this.get("width") || [];
             this.data_len = Math.min(this.x_data[0].length, this.y_data[0].length);
 
             this.mark_data = [{
@@ -272,10 +272,10 @@ export class FlexLineModel extends LinesModel {
         if(!this.mark_data) {
             return;
         }
-        var scales = this.get("scales");
-        var x_scale = scales.x, y_scale = scales.y;
-        var color_scale = scales.color;
-        var width_scale = scales.width;
+        const scales = this.get("scales");
+        const x_scale = scales.x, y_scale = scales.y;
+        const color_scale = scales.color;
+        const width_scale = scales.width;
 
         if(!this.get("preserve_domain").x) {
             x_scale.compute_and_set_domain(this.x_data[0].slice(0, this.data_len), this.model_id + "_x");

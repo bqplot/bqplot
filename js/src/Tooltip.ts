@@ -17,7 +17,7 @@ import {DOMWidgetView} from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-format"), require("d3-time-format"));
 import * as utils from './utils';
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 export class Tooltip extends DOMWidgetView {
     initialize() {
@@ -39,10 +39,10 @@ export class Tooltip extends DOMWidgetView {
     }
 
     update_formats() {
-        var fields = this.model.get("fields");
-        var formats = this.model.get("formats");
+        const fields = this.model.get("fields");
+        const formats = this.model.get("formats");
         this.tooltip_formats = fields.map(function(field, index) {
-            var fmt = formats[index];
+            const fmt = formats[index];
             if(fmt === undefined || fmt === "") {
                 return function(d) { return d; };
             } else {
@@ -59,7 +59,7 @@ export class Tooltip extends DOMWidgetView {
     update_tooltip(data) {
         //data is a dictionary passed by the parent along with the update_
         //tooltip event. Responsibility of the mark to pass the data
-        var that = this;
+        const that = this;
         this.d3el.select("table")
             .selectAll("tr")
             .select(".datavalue")
@@ -67,19 +67,18 @@ export class Tooltip extends DOMWidgetView {
     }
 
     create_table() {
-        var fields = this.model.get("fields");
-        var labels = _.clone(this.model.get("labels"));
-        var ind = labels.length;
-        for (; ind < fields.length; ind++) {
+        const fields = this.model.get("fields");
+        const labels = _.clone(this.model.get("labels"));
+        for (let ind = labels.length; ind < fields.length; ind++) {
             labels[ind] = fields[ind];
         }
 
         this.d3el.select("table").remove();
-        var tooltip_table = this.d3el.append("table")
+        const tooltip_table = this.d3el.append("table")
             .selectAll("tr").data(fields);
 
         tooltip_table.exit().remove();
-        var table_rows = tooltip_table.enter().append("tr")
+        const table_rows = tooltip_table.enter().append("tr")
                             .attr("class", "datarow");
         if(this.model.get("show_labels")) {
             table_rows.append("td")

@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as topojson from 'topojson';
 
-export class MapModel extends markmodel.MarkModel {
+export class MapModel extends MarkModel {
 
     defaults() {
-        return {...markmodel.MarkModel.prototype.defaults(),
+        return {...MarkModel.prototype.defaults(),
             _model_name: "MapModel",
             _view_name: "Map",
 

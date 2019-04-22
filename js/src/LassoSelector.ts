@@ -23,14 +23,14 @@ import * as sel_utils from './selector_utils';
 export class LassoSelector extends BaseXYSelector {
     render() {
         super.render();
-        var scale_creation_promise = this.create_scales();
+        const scale_creation_promise = this.create_scales();
         this.line = d3.line();
         this.all_vertices = {};
         this.lasso_counter = 0;
 
-        var that = this;
+        const that = this;
         Promise.all([this.mark_views_promise, scale_creation_promise]).then(() => {
-            var drag = d3.drag()
+            const drag = d3.drag()
                 .on("start", () => {this.drag_start();})
                 .on("drag", () => {this.drag_move();})
                 .on("end", () => {this.drag_end();});
@@ -66,14 +66,14 @@ export class LassoSelector extends BaseXYSelector {
     }
 
     create_new_lasso() {
-        var lasso = this.d3el.append("path")
+        const lasso = this.d3el.append("path")
             .attr("id", "l" + (++this.lasso_counter))
             .on("click", function() {
                 //toggle the opacity of lassos
-                var lasso = d3.select(this);
+                const lasso = d3.select(this);
                 lasso.classed("selected", !lasso.classed("selected"));
             });
-        var color = this.model.get("color");
+        const color = this.model.get("color");
         if (color) {
             lasso.style("stroke", color);
         }
@@ -91,7 +91,7 @@ export class LassoSelector extends BaseXYSelector {
     }
 
     drag_end() {
-        var lasso_name = "l" + this.lasso_counter;
+        const lasso_name = "l" + this.lasso_counter;
         // Close the lasso
         this.d3el.select("#" + lasso_name)
             .attr("d", this.line(this.current_vertices) + "Z");
@@ -109,13 +109,13 @@ export class LassoSelector extends BaseXYSelector {
                 return mark_view.selector_changed();
             });
         }
-        var point_selector = function(p) {
-            for (var l in vertices) {
+        const point_selector = function(p) {
+            for (let l in vertices) {
                 if (sel_utils.point_in_lasso(p, vertices[l])) { return true; }
             } return false;
         };
-        var rect_selector = function(xy) {
-            for (var l in vertices) {
+        const rect_selector = function(xy) {
+            for (let l in vertices) {
                 if (sel_utils.lasso_inter_rect(xy[0], xy[1], vertices[l])) { return true; }
             } return false;
         };
@@ -134,11 +134,11 @@ export class LassoSelector extends BaseXYSelector {
        // delete key pressed
        if (d3GetEvent().keyCode === 46) {
            // Delete selected lassos
-           var lassos_to_delete = this.d3el.selectAll(".selected");
+           const lassos_to_delete = this.d3el.selectAll(".selected");
            // Update the lasso vertices
-           var vertices = this.all_vertices;
+           const vertices = this.all_vertices;
            lassos_to_delete.each(function() {
-               var lasso_name = d3.select(this).attr("id");
+               const lasso_name = d3.select(this).attr("id");
                delete vertices[lasso_name];
            });
            lassos_to_delete.remove();

@@ -30,10 +30,10 @@ export class Label extends ScatterBase {
 
     update_default_opacities(animate) {
         if (!this.model.dirty) {
-            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             // update opacity scale range?
-            var that = this;
+            const that = this;
             this.d3el.selectAll(".label")
                 .transition("update_default_opacities")
                 .duration(animation_duration)
@@ -47,8 +47,8 @@ export class Label extends ScatterBase {
         this.compute_view_padding();
         // update size scale range?
         if (!this.model.dirty) {
-            var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-            var that = this;
+            const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+            const that = this;
             this.d3el.selectAll(".label")
                 .transition("update_default_size")
                 .duration(animation_duration)
@@ -79,8 +79,8 @@ export class Label extends ScatterBase {
     }
 
     get_element_size(data) {
-        var size_scale = this.scales.size;
-        var unit = this.model.get("font_unit");
+        const size_scale = this.scales.size;
+        const unit = this.model.get("font_unit");
         if(size_scale && data.size !== undefined) {
             return size_scale.scale(data.size) + unit;
         }
@@ -88,16 +88,16 @@ export class Label extends ScatterBase {
     }
 
     get_element_rotation(data) {
-        var rotation_scale = this.scales.rotation;
+        const rotation_scale = this.scales.rotation;
         return (!rotation_scale || !data.rotation) ? "rotate(" + this.model.get("rotate_angle") + ")" :
             "rotate(" + rotation_scale.scale(data.rotation) + ")";
     }
 
     update_position() {
-        var that = this;
-        var x_scale = this.x_scale;
-        var y_scale = this.y_scale;
-        var x_offset = this.model.get("x_offset"),
+        const that = this;
+        const x_scale = this.x_scale;
+        const y_scale = this.y_scale;
+        const x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");
         this.d3el.selectAll(".object_grp")
             .attr("transform", function(d) {
@@ -108,7 +108,7 @@ export class Label extends ScatterBase {
     }
 
     update_style() {
-        var that = this;
+        const that = this;
         this.d3el.selectAll(".object_grp")
             .select("text")
             .attr("dominant-baseline", "central")
@@ -125,8 +125,8 @@ export class Label extends ScatterBase {
     }
 
     color_scale_updated(animate) {
-        var that = this;
-        var animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        const that = this;
+        const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         this.d3el.selectAll(".object_grp")
             .select("text")
@@ -143,10 +143,10 @@ export class Label extends ScatterBase {
         if(!indices || indices.length === 0) {
             return;
         }
-        var elements = this.d3el.selectAll(".element").filter(function(data, index) {
+        const elements = this.d3el.selectAll(".element").filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        var that = this;
+        const that = this;
         elements
             .style("font-size", function(d, i) {
                 return that.get_element_size(d);
@@ -159,7 +159,7 @@ export class Label extends ScatterBase {
     }
 
     set_drag_style(d, i, dragged_node) {
-        var dragged_size = (this.model.get("drag_size") *
+        const dragged_size = (this.model.get("drag_size") *
             this.model.get("default_size")) + this.model.get("font_unit");
         d3.select(dragged_node)
           .select("text")

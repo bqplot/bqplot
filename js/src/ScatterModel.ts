@@ -15,7 +15,7 @@
 
 import { ScatterBaseModel} from './ScatterBaseModel';
 import * as serialize from './serialize';
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 export class ScatterModel extends ScatterBaseModel {
 
@@ -50,18 +50,18 @@ export class ScatterModel extends ScatterBaseModel {
 
     update_mark_data() {
         super.update_mark_data();
-        var skew = this.get("skew") || [];
+        const skew = this.get("skew") || [];
 
         this.mark_data.forEach(function(d, i){ d.skew = skew[i]; });
     }
 
     update_unique_ids() {
-        var names = this.get("names");
-        var show_labels = (names != null && names.length !== 0);
+        let names = this.get("names");
+        const show_labels = (names != null && names.length !== 0);
         names = (show_labels) ? names : this.mark_data.map(function(data, index) {
             return "Dot" + index;
         });
-        var unique_ids = [];
+        let unique_ids = [];
         if(this.get("names_unique")) {
             unique_ids = names.slice(0);
         } else {

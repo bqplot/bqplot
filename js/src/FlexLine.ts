@@ -20,8 +20,8 @@ import { Lines } from './Lines';
 export class FlexLine extends Lines {
 
     render() {
-        var base_render_promise = super.render.apply(this);
-        var that = this;
+        const base_render_promise = super.render.apply(this);
+        const that = this;
 
         return base_render_promise.then(function() {
             that.create_listeners();
@@ -31,7 +31,7 @@ export class FlexLine extends Lines {
 
     set_ranges() {
         super.set_ranges();
-        var width_scale = this.scales.width;
+        const width_scale = this.scales.width;
         if(width_scale) {
             width_scale.set_range([0.5, this.model.get("stroke_width")]);
         }
@@ -43,11 +43,11 @@ export class FlexLine extends Lines {
     }
 
     draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-        var g_elements = elem.selectAll(".legend" + this.uuid)
+        const g_elements = elem.selectAll(".legend" + this.uuid)
             .data(this.model.mark_data, function(d, i) { return d.name; });
 
-        var that = this;
-        var rect_dim = inter_y_disp * 0.8;
+        const that = this;
+        const rect_dim = inter_y_disp * 0.8;
         g_elements.enter().append("g")
             .attr("class", "legend" + this.uuid)
             .attr("transform", function(d, i) {
@@ -67,7 +67,7 @@ export class FlexLine extends Lines {
             .attr("dy", "0.35em")
             .text(function(d, i) {return that.model.get("labels")[i]; })
             .style("fill", function(d,i) { return that.get_colors(i); });
-        var max_length = d3.max(this.model.get("labels"), function(d: any[]) {
+        const max_length = d3.max(this.model.get("labels"), function(d: any[]) {
             return d.length;
         });
 
@@ -76,7 +76,7 @@ export class FlexLine extends Lines {
     }
 
     set_positional_scales() {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
@@ -86,7 +86,7 @@ export class FlexLine extends Lines {
     }
 
     initialize_additional_scales() {
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
         if(color_scale) {
             this.listenTo(color_scale, "domain_changed", function() {
                 this.draw();
@@ -97,7 +97,7 @@ export class FlexLine extends Lines {
 
     draw() {
         this.set_ranges();
-        var curves_sel = this.d3el.selectAll(".curve")
+        let curves_sel = this.d3el.selectAll(".curve")
             .data(this.model.mark_data, function(d, i) { return d.name; });
 
         curves_sel.exit()
@@ -109,11 +109,11 @@ export class FlexLine extends Lines {
             .attr("class", "curve")
             .merge(curves_sel);
 
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
 
-        var that = this;
+        const that = this;
         curves_sel.nodes().forEach(function(elem, index) {
-            var lines = d3.select(elem).selectAll<SVGLineElement, undefined>("line")
+            let lines = d3.select(elem).selectAll<SVGLineElement, undefined>("line")
                 .data(that.model.mark_data[index].values);
             lines = lines.enter().append("line").merge(lines);
             lines.attr("class", "line-elem")
@@ -127,7 +127,7 @@ export class FlexLine extends Lines {
     }
 
     get_element_color(d) {
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
         if(color_scale !== undefined && d.color !== undefined) {
             return color_scale.scale(d.color);
         }
@@ -135,7 +135,7 @@ export class FlexLine extends Lines {
     }
 
     get_element_width(d) {
-        var width_scale = this.scales.width;
+        const width_scale = this.scales.width;
         if(width_scale !== undefined && d.size !== undefined) {
             return width_scale.scale(d.size);
         }
@@ -146,7 +146,7 @@ export class FlexLine extends Lines {
         super.relayout();
         this.set_ranges();
 
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+        const x_scale = this.scales.x, y_scale = this.scales.y;
 
         this.d3el.selectAll(".curve").selectAll(".line-elem")
             .transition("relayout")

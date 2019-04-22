@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-import {MarkModel} from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
-import _ from 'underscore';
 
 export class ScatterBaseModel extends MarkModel {
 
@@ -64,8 +63,8 @@ export class ScatterBaseModel extends MarkModel {
     }
 
     update_mark_data() {
-        var x_data = this.get("x");
-        var y_data = this.get("y");
+        let x_data = this.get("x");
+        const y_data = this.get("y");
 
         if (x_data.length === 0 || y_data.length === 0) {
             this.mark_data = [];
@@ -73,9 +72,9 @@ export class ScatterBaseModel extends MarkModel {
             //FIXME:Temporary fix to avoid misleading NaN error due to X and Y
             //being of different lengths. In particular, if Y is of a smaller
             //length, throws an error on the JS side
-            var min_len = Math.min(x_data.length, y_data.length);
+            const min_len = Math.min(x_data.length, y_data.length);
             x_data = x_data.slice(0, min_len);
-            var color = this.get("color") || [],
+            const color = this.get("color") || [],
                 size = this.get("size") || [],
                 opacity = this.get("opacity") || [],
                 rotation = this.get("rotation") || [];
@@ -117,10 +116,10 @@ export class ScatterBaseModel extends MarkModel {
         // color scale needs an issue in DateScaleModel to be fixed. It
         // should be moved here as soon as that is fixed.
 
-       var scales = this.get("scales");
-       for (var key in scales) {
+       const scales = this.get("scales");
+       for (let key in scales) {
             if(scales.hasOwnProperty(key)) {
-                var scale = scales[key];
+                const scale = scales[key];
                 if(!this.get("preserve_domain")[key]) {
                     scale.compute_and_set_domain(this.mark_data.map(function(elem) {
                         return elem[key];

@@ -25,12 +25,12 @@ function get_max_index(color_object) {
 }
 
 export function cycle_colors(colors, count) {
-    var colors_len = colors.length;
+    const colors_len = colors.length;
     if(colors_len > count) {
         return colors.slice(0, count);
     } else {
-        var return_array = [];
-        var iters = Math.floor(count / colors_len);
+        let return_array = [];
+        let iters = Math.floor(count / colors_len);
         for(;iters > 0; iters--) {
             return_array = return_array.concat(colors);
         }
@@ -40,10 +40,10 @@ export function cycle_colors(colors, count) {
 
 export function cycle_colors_from_scheme(scheme, num_steps) {
     scheme = (scheme in colorbrewer) ? scheme : default_scheme;
-    var color_set = colorbrewer[scheme];
+    const color_set = colorbrewer[scheme];
 
     // Indices of colorbrewer objects are strings
-    var color_index = num_steps.toString();
+    let color_index = num_steps.toString();
 
     if (num_steps === 2) {
         return [color_set[3]["0"], color_set[3]["2"]];
@@ -58,16 +58,16 @@ export function cycle_colors_from_scheme(scheme, num_steps) {
 export function get_linear_scale(scheme) {
     scheme = ((scheme in colorbrewer) && !(colorbrewer[scheme]["type"] === "qual")) ?
                   scheme : default_scheme;
-    var color_set = colorbrewer[scheme];
-    var color_index = get_max_index(color_set).toString();
+    const color_set = colorbrewer[scheme];
+    const color_index = get_max_index(color_set).toString();
 
-    var colors = color_set[color_index];
-    var scale = d3.scaleLinear().range(colors);
+    const colors = color_set[color_index];
+    const scale = d3.scaleLinear().range(colors);
     return scale;
 }
 
 export function get_ordinal_scale(scheme, num_steps) {
-    var scale = d3.scaleOrdinal();
+    const scale = d3.scaleOrdinal();
     scale.range(this.cycle_colors_from_scheme(scheme, num_steps));
     return scale;
 }

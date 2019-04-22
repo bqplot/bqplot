@@ -23,8 +23,8 @@ import { BoxplotModel } from './BoxplotModel'
 export class Boxplot extends Mark {
 
     render() {
-        var base_creation_promise = super.render.apply(this);
-        var that = this;
+        const base_creation_promise = super.render.apply(this);
+        const that = this;
 
         return base_creation_promise.then(function() {
             that.create_listeners();
@@ -33,11 +33,11 @@ export class Boxplot extends Mark {
     }
 
     set_ranges() {
-        var x_scale = this.scales.x;
+        const x_scale = this.scales.x;
         if(x_scale) {
             x_scale.set_range(this.parent.padded_range("x", x_scale.model));
         }
-        var y_scale = this.scales.y;
+        const y_scale = this.scales.y;
         if(y_scale) {
             y_scale.set_range(this.parent.padded_range("y", y_scale.model));
         }
@@ -45,12 +45,12 @@ export class Boxplot extends Mark {
 
     set_positional_scales() {
 
-        var x_scale = this.scales.x;
+        const x_scale = this.scales.x;
         this.listenTo(x_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
 
-        var y_scale = this.scales.y;
+        const y_scale = this.scales.y;
         this.listenTo(y_scale, "domain_changed", function() {
             if (!this.model.dirty) { this.draw(); }
         });
@@ -68,7 +68,7 @@ export class Boxplot extends Mark {
     }
 
     update_stroke() {
-        var stroke = this.model.get("stroke");
+        const stroke = this.model.get("stroke");
         this.d3el.selectAll(".boxplot").selectAll("path, rect")
             .style("stroke", stroke);
 
@@ -91,7 +91,7 @@ export class Boxplot extends Mark {
     }
 
     update_opacities() {
-        var opacities = this.model.get("opacities");
+        const opacities = this.model.get("opacities");
         this.d3el.selectAll(".boxplot").style("opacity", function(d, i) {
                                                 return opacities[i];
                                            });
@@ -104,7 +104,7 @@ export class Boxplot extends Mark {
     }
 
     update_marker() {
-        var marker = this.model.get("marker");
+        const marker = this.model.get("marker");
 
         if (this.legend_el && this.rect_dim) { 
             // Draw icon for legend
@@ -116,12 +116,12 @@ export class Boxplot extends Mark {
     }
 
     get_box_width() {
-        var width = this.model.get("box_width");
+        let width = this.model.get("box_width");
 
         // null box_width means auto calculated box width
         if (!width) {
-            var plotWidth = this.parent.plotarea_width;
-            var maxWidth = plotWidth / 10.0;
+            const plotWidth = this.parent.plotarea_width;
+            const maxWidth = plotWidth / 10.0;
             width = plotWidth / (this.model.mark_data.length + 1) / 1.5;
             width = Math.min(width, maxWidth);
         }
@@ -130,9 +130,9 @@ export class Boxplot extends Mark {
     }
 
     compute_view_padding() {
-        //This function sets the padding for the view through the variables
+        //This function sets the padding for the view through the constiables
         //x_padding and y_padding which are view specific paddings in pixel
-        var x_padding = this.get_box_width() / 2.0 + 1;
+        const x_padding = this.get_box_width() / 2.0 + 1;
         if (x_padding !== this.x_padding) {
             this.x_padding = x_padding;
             this.trigger("mark_padding_updated");
@@ -150,11 +150,11 @@ export class Boxplot extends Mark {
     }
 
     apply_styles(indices) {
-        var all_indices = _.range(this.model.mark_data.length);
+        const all_indices = _.range(this.model.mark_data.length);
         this.set_default_style(all_indices);
 
         this.set_style_on_elements(this.selected_style, this.selected_indices);
-        var unselected_indices = (indices === undefined) ?
+        const unselected_indices = (indices === undefined) ?
             [] : _.difference(all_indices, indices);
         this.set_style_on_elements(this.unselected_style, unselected_indices);
     }
@@ -163,7 +163,7 @@ export class Boxplot extends Mark {
         if(indices === undefined || indices.length === 0) {
             return;
         }
-        var elements = this.d3el.selectAll(".boxplot");
+        let elements = this.d3el.selectAll(".boxplot");
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) != -1;
         });
@@ -174,10 +174,10 @@ export class Boxplot extends Mark {
         if(indices === undefined || indices.length === 0) {
             return;
         }
-        var color = this.model.get("color");
-        var stroke = this.model.get("stroke");
-        var opacities = this.model.get("opacities");
-        var elements = this.d3el.selectAll(".boxplot")
+        const color = this.model.get("color");
+        const stroke = this.model.get("stroke");
+        const opacities = this.model.get("opacities");
+        let elements = this.d3el.selectAll(".boxplot")
             .filter(function(data, index) {
                 return indices.indexOf(index) != -1;
             });
@@ -196,14 +196,14 @@ export class Boxplot extends Mark {
     }
 
     clear_style(style_dict, indices) {
-        var elements = this.d3el.selectAll(".boxplot");
+        let elements = this.d3el.selectAll(".boxplot");
         if(indices !== undefined) {
             elements = elements.filter(function(d, index) {
                 return indices.indexOf(index) != -1;
             });
         }
-        var clearing_style = {};
-        for(var key in style_dict) {
+        const clearing_style = {};
+        for(let key in style_dict) {
             clearing_style[key] = null;
         }
         elements.styles(clearing_style);
@@ -221,8 +221,8 @@ export class Boxplot extends Mark {
 
     unselected_style_updated(model, style) {
         this.unselected_style = style;
-        var sel_indices = this.selected_indices;
-        var unselected_indices = (sel_indices ?
+        const sel_indices = this.selected_indices;
+        const unselected_indices = (sel_indices ?
             _.range(this.model.mark_data.length)
                 .filter(function(index) {
                     return sel_indices.indexOf(index) == -1;
@@ -232,8 +232,8 @@ export class Boxplot extends Mark {
 
     //FIXME: should use the selected_style logic
     update_selected_colors(selected_indices) {
-        var stroke = this.model.get("stroke");
-        var selected_stroke = stroke;
+        const stroke = this.model.get("stroke");
+        const selected_stroke = stroke;
         this.d3el.selectAll(".boxplot")
             .style("stroke", function(d, i) {
                 return (selected_indices.indexOf(i) > -1) ? selected_stroke : stroke;
@@ -247,9 +247,9 @@ export class Boxplot extends Mark {
             this.update_selected_colors([])
             return [];
         }
-        var pixels = this.pixel_coords;
-        var indices = _.range(pixels.length);
-        var selected = _.filter(indices, function(index) {
+        const pixels = this.pixel_coords;
+        const indices = _.range(pixels.length);
+        const selected = _.filter(indices, function(index) {
             return rect_selector(pixels[index]);
         });
         this.update_selected_colors(selected)
@@ -265,8 +265,8 @@ export class Boxplot extends Mark {
             return;
         }
 
-        var abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
-        var sel_index = abs_diff.indexOf(d3.min(abs_diff));
+        const abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
+        const sel_index = abs_diff.indexOf(d3.min(abs_diff));
 
         this.model.set("selected", [sel_index]);
         this.update_selected_colors([sel_index]);
@@ -277,18 +277,18 @@ export class Boxplot extends Mark {
     prepareBoxPlots () {
         // Sets plot data on this.plotData and this.outlierData
 
-        var auto_detect_outliers = this.model.get("auto_detect_outliers") !== false;
-        var x_scale = this.scales.x;
-        var y_scale = this.scales.y;
+        const auto_detect_outliers = this.model.get("auto_detect_outliers") !== false;
+        const x_scale = this.scales.x;
+        const y_scale = this.scales.y;
 
        // convert the domain data to the boxes to be drawn on the screen
        // find the quantiles, min/max and outliers for the box plot
         this.plotData = [];
         this.outlierData = [];
-        for(var i = 0; i<this.model.mark_data.length; ++i) {
-            var values = this.model.mark_data[i];
+        for(let i = 0; i<this.model.mark_data.length; ++i) {
+            const values = this.model.mark_data[i];
 
-            var displayValue: any = {};
+            const displayValue: any = {};
 
             displayValue.x         = x_scale.scale(values[0]);
             displayValue.boxUpper  = y_scale.scale(d3.quantile(values[1], 0.75));
@@ -297,16 +297,16 @@ export class Boxplot extends Mark {
 
             // The domain Y to screen Y is an inverse scale, so be aware of that
             // The max from the domain Y becomes min on the screen (display) scale
-            var iqr = displayValue.boxLower - displayValue.boxUpper;
-            var lowerBound = displayValue.boxLower + 1.5 * iqr;
-            var upperBound = displayValue.boxUpper - 1.5 * iqr;
+            const iqr = displayValue.boxLower - displayValue.boxUpper;
+            const lowerBound = displayValue.boxLower + 1.5 * iqr;
+            const upperBound = displayValue.boxUpper - 1.5 * iqr;
 
             displayValue.whiskerMax = Number.MAX_VALUE;
             displayValue.whiskerMin = Number.MIN_VALUE;
 
-            for (var j=0; j<values[1].length; ++j)  {
+            for (let j=0; j<values[1].length; ++j)  {
 
-               var plotY = y_scale.scale(values[1][j]);
+               const plotY = y_scale.scale(values[1][j]);
 
                // Find the outlier
                if (auto_detect_outliers && (plotY > lowerBound || plotY  < upperBound)) {
@@ -330,7 +330,7 @@ export class Boxplot extends Mark {
 
     draw() {
         this.set_ranges();
-        var x_scale = this.scales.x;
+        const x_scale = this.scales.x;
         // get the visual representation of boxplots, set as state
         this.prepareBoxPlots();
 
@@ -338,7 +338,7 @@ export class Boxplot extends Mark {
         this.draw_mark_paths(".boxplot", this.d3el);
         // Keep the pixel coordinates of the boxes, for interactions.
         this.x_pixels = this.model.mark_data.map(function(el) { return x_scale.scale(el[0]) + x_scale.offset; });
-        var width = this.get_box_width() / 2;
+        const width = this.get_box_width() / 2;
         this.pixel_coords = this.plotData.map(function(d) {
             return [[d.x - width, d.x + width],
                     [d.boxLower, d.boxUpper]]
@@ -346,15 +346,15 @@ export class Boxplot extends Mark {
     }
 
     draw_mark_paths(parentClass, selector) {
-        var plotData = this.plotData;
-        var outlierData = this.outlierData;
+        const plotData = this.plotData;
+        const outlierData = this.outlierData;
 
-        var color = this.model.get("color");
-        var boxplot = this.d3el.selectAll(parentClass).data(plotData);
+        const color = this.model.get("color");
+        const boxplot = this.d3el.selectAll(parentClass).data(plotData);
 
-        var fillcolor = this.model.get("box_fill_color");
+        const fillcolor = this.model.get("box_fill_color");
         // Create new
-        var new_boxplots = boxplot.enter()
+        const new_boxplots = boxplot.enter()
             .append("g")
             .attr ("class", "boxplot")
             .attr ("id", function(d, i) { return "boxplot" + i; });
@@ -393,11 +393,8 @@ export class Boxplot extends Mark {
         new_boxplots.append("path").attr("class", "median_line");
         new_boxplots.append("g").attr("class", "outliers");
 
-        var xOffset = 0;
-        var scaleX = this.scales.x;
-        if (scaleX.model.type === "ordinal") {
-            xOffset = scaleX.scale.rangeBand() / 2;
-        }
+        const scaleX = this.scales.x;
+        const xOffset = scaleX.model.type === "ordinal" ? scaleX.scale.rangeBand() / 2 : 0;
 
         selector.selectAll(".boxplot").data(plotData)
             .style("stroke", this.model.get("stroke"))
@@ -407,7 +404,7 @@ export class Boxplot extends Mark {
             });
 
        //Box
-        var width = this.get_box_width();
+        const width = this.get_box_width();
 
         selector.selectAll(".box").data(plotData)
             .style("fill", fillcolor)
@@ -425,8 +422,8 @@ export class Boxplot extends Mark {
             .style("stroke-width", 2)
             .attr("d", function(d, i) {
 
-            var x = 0;
-            var medianY = d.boxMedian;
+            const x = 0;
+            const medianY = d.boxMedian;
 
             return  "M"  + (x - width/2) + "," +
                     medianY +  " L" + (x + width /2)  + "," +  medianY;
@@ -437,10 +434,10 @@ export class Boxplot extends Mark {
           selector.selectAll(".whisker_max").data(plotData)
               .attr("d", function(d, i) {
 
-              var x = 0;
+              const x = 0;
               // The price points are sorted so the last element is the max
-              var maxY = d.whiskerMax;
-              var boxY = d.boxUpper;
+              const maxY = d.whiskerMax;
+              const boxY = d.boxUpper;
 
               return "M"  + x + "," +  maxY +  " L" + x + "," +  boxY;
            }).attr("stroke-dasharray", function(d, i) {
@@ -450,9 +447,9 @@ export class Boxplot extends Mark {
           selector.selectAll(".whisker_max_end").data(plotData)
               .attr("d", function(d, i) {
 
-              var x = 0;
+              const x = 0;
               // The price points are sorted, so 1st element is min
-              var maxY = (d.whiskerMax);
+              const maxY = (d.whiskerMax);
 
               return "M"  + (x - width/2) + "," +  maxY +  " L" + (x + width/2) + "," +  maxY;
            });
@@ -462,10 +459,10 @@ export class Boxplot extends Mark {
           selector.selectAll(".whisker_min").data(plotData)
               .attr("d", function(d, i) {
 
-              var x = 0;
+              const x = 0;
               // The price points are sorted, so 1st element is min
-              var minY = (d.whiskerMin);
-              var boxY = (d.boxLower);
+              const minY = (d.whiskerMin);
+              const boxY = (d.boxLower);
 
               return "M"  + x + "," +  minY +  " L" + x + "," +  boxY;
           }).attr("stroke-dasharray", function(d, i) {
@@ -475,9 +472,9 @@ export class Boxplot extends Mark {
           selector.selectAll(".whisker_min_end").data(plotData)
               .attr("d", function(d, i) {
 
-              var x = 0;
+              const x = 0;
               // The price points are sorted, so 1st element is min
-              var minY = (d.whiskerMin);
+              const minY = (d.whiskerMin);
 
               return "M"  + (x - width/2) + "," +  minY +  " L" + (x + width/2) + "," +  minY;
           });
@@ -485,7 +482,7 @@ export class Boxplot extends Mark {
           boxplot.exit().remove();
 
           // Add the outliers group
-          var outliers = selector.selectAll(".outlier")
+          const outliers = selector.selectAll(".outlier")
               .data(outlierData);
 
           // Add/remove elements as needed
@@ -511,18 +508,17 @@ export class Boxplot extends Mark {
 
     calculate_mark_max_width() {
 
-        var that = this;
-        var min_distance = Infinity;
-
-        var x_scale = this.scales.x;
-        for(var i = 1; i < that.model.mark_data.length; i++) {
-            var dist = x_scale.scale(that.model.mark_data[i][0]) -
+        const that = this;
+        const x_scale = this.scales.x;
+        let min_distance = Infinity;
+        for(let i = 1; i < that.model.mark_data.length; i++) {
+            let dist = x_scale.scale(that.model.mark_data[i][0]) -
                        x_scale.scale(that.model.mark_data[i-1][0]);
             dist = (dist < 0) ? (-1*dist) : dist;
             if(dist < min_distance) min_distance = dist;
         }
 
-        var mark_width = 0;
+        let mark_width = 0;
         if(min_distance == Infinity) {
             mark_width = (x_scale.scale(this.model.max_x) -
                           x_scale.scale(this.model.min_x)) / 2;
@@ -546,14 +542,14 @@ export class Boxplot extends Mark {
     }
 
     draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-        var stroke = this.model.get("stroke");
+        const stroke = this.model.get("stroke");
         this.rect_dim = inter_y_disp * 0.8;
-        var that = this;
+        const that = this;
 
         this.legend_el = elem.selectAll(".legend" + this.uuid)
                               .data([this.model.mark_data]);
 
-        var leg = this.legend_el.enter().append("g")
+        const leg = this.legend_el.enter().append("g")
             .attr("transform", function(d, i) {
                 return "translate(0, " + (i * inter_y_disp + y_disp) + ")";
             })
@@ -576,7 +572,7 @@ export class Boxplot extends Mark {
             .text(function(d, i) { return that.model.get("labels")[i]; })
             .style("fill", stroke);
 
-        var max_length = d3.max(this.model.get("labels"), function(d: any[]) {
+        const max_length = d3.max(this.model.get("labels"), function(d: any[]) {
             return d.length;
         });
 

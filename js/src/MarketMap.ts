@@ -26,16 +26,16 @@ export class MarketMap extends Figure {
 
     render(options?) {
         this.id = widgets.uuid();
-        var min_width = String(this.model.get("layout").get("min_width"));
-        var min_height = String(this.model.get("layout").get("min_height"));
+        const min_width = String(this.model.get("layout").get("min_width"));
+        const min_height = String(this.model.get("layout").get("min_height"));
 
-        var impl_dimensions = this._get_height_width(min_height.slice(0, -2), min_width.slice(0, -2));
+        const impl_dimensions = this._get_height_width(min_height.slice(0, -2), min_width.slice(0, -2));
         this.width = impl_dimensions["width"];
         this.height = impl_dimensions["height"];
 
         this.scales = {};
         this.set_top_el_style();
-        var that = this;
+        const that = this;
         this.margin = this.model.get("map_margin");
         this.num_rows = this.model.get("rows");
         this.num_cols = this.model.get("cols");
@@ -88,7 +88,7 @@ export class MarketMap extends Figure {
           .text(this.model.get("title"));
         this.title.styles(this.model.get("title_style"));
 
-        var scale_creation_promise = this.create_scale_views();
+        const scale_creation_promise = this.create_scale_views();
         scale_creation_promise.then(function() {
             that.create_listeners();
             that.axis_views = new widgets.ViewList(that.add_axis, null, that);
@@ -169,9 +169,9 @@ export class MarketMap extends Figure {
     }
 
     relayout() {
-        var that = this;
+        const that = this;
 
-        var impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
+        const impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
         this.width = impl_dimensions["width"];
         this.height = impl_dimensions["height"];
 
@@ -206,19 +206,19 @@ export class MarketMap extends Figure {
     }
 
     update_data() {
-        var that = this;
+        const that = this;
         this.data = this.model.get("names") || [];
         this.ref_data = this.model.get("ref_data");
         this.group_data = this.model.get("groups");
         this.groups = _.uniq(this.group_data, true);
-        var display_text = this.model.get("display_text");
+        let display_text = this.model.get("display_text");
         display_text = (display_text === null || display_text.length === 0) ? this.data : display_text;
 
         this.colors = this.model.get("colors");
-        var num_colors = this.colors.length;
+        const num_colors = this.colors.length;
         this.colors_map = function(d) { return that.get_color(d, num_colors);};
-        var color_data = this.model.get("color");
-        var mapped_data = this.data.map(function(d, i) {
+        const color_data = this.model.get("color");
+        const mapped_data = this.data.map(function(d, i) {
             return {
                 display: display_text[i],
                 name: d,
@@ -233,8 +233,8 @@ export class MarketMap extends Figure {
         this.groups = [];
         this.running_sums = [];
         this.running_sums[0] = 0;
-        var count = 0;
-        for (var key in this.grouped_data) {
+        let count = 0;
+        for (let key in this.grouped_data) {
             this.groups.push(key);
             count += this.grouped_data[key].length;
             this.running_sums.push(count);
@@ -243,8 +243,8 @@ export class MarketMap extends Figure {
     }
 
     update_domains() {
-        var color_scale_model = this.model.get("scales").color;
-        var color_data = this.model.get("color");
+        const color_scale_model = this.model.get("scales").color;
+        const color_data = this.model.get("color");
         if(color_scale_model && color_data.length > 0) {
             color_scale_model.compute_and_set_domain(color_data, this.model.model_id);
         }
@@ -309,21 +309,21 @@ export class MarketMap extends Figure {
 
     update_default_tooltip() {
         this.tooltip_fields = this.model.get("tooltip_fields");
-        var formats = this.model.get("tooltip_formats");
+        const formats = this.model.get("tooltip_formats");
         this.tooltip_formats = this.tooltip_fields.map(function(field, index) {
-            var fmt = formats[index];
+            const fmt = formats[index];
             if(fmt === undefined || fmt === "") {return function(d) { return d; }; }
             else return d3.format(fmt);
         });
     }
 
     create_scale_views() {
-        for (var key in this.scales) {
+        for (let key in this.scales) {
             this.stopListening(this.scales[key]);
         }
-        var scale_models = this.model.get("scales");
-        var that = this;
-        var scale_promises = {};
+        const scale_models = this.model.get("scales");
+        const that = this;
+        const scale_promises = {};
         _.each(scale_models, function(model, key) {
             scale_promises[key] = that.create_child_view(model);
         });
@@ -334,8 +334,8 @@ export class MarketMap extends Figure {
     }
 
     set_scales() {
-        var that = this;
-        var color_scale = this.scales.color;
+        const that = this;
+        const color_scale = this.scales.color;
         if(color_scale) {
             color_scale.set_range();
             color_scale.on("color_scale_range_changed", that.update_map_colors, that);
@@ -360,9 +360,9 @@ export class MarketMap extends Figure {
         this.fig_names.selectAll(".names_object").remove();
         this.rect_groups = this.fig_map.selectAll(".element_group")
             .data(this.groups);
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
 
-        var that = this;
+        const that = this;
         this.rect_groups = this.rect_groups.enter()
             .append("g")
             .attr("class", "element_group")
@@ -372,19 +372,19 @@ export class MarketMap extends Figure {
         this.rect_groups.exit().remove();
         this.end_points = [];
         this.rect_groups.nodes().forEach(function(d, i) {
-            var data = that.grouped_data[that.groups[i]];
-            var return_arr = that.get_new_cords();
-            var ends = that.get_end_points(return_arr[2], data.length, return_arr[0], return_arr[1], return_arr[3], return_arr[4]);
+            const data = that.grouped_data[that.groups[i]];
+            const return_arr = that.get_new_cords();
+            const ends = that.get_end_points(return_arr[2], data.length, return_arr[0], return_arr[1], return_arr[3], return_arr[4]);
             ends.forEach(function(point) { that.end_points.push(point); });
-            var element_count = that.running_sums[i];
+            const element_count = that.running_sums[i];
 
-            var groups = d3.select(d)
+            let groups = d3.select(d)
                 .selectAll<SVGGElement, undefined>(".rect_element")
                 .data(data);
 
             // Appending the <g> <rect> and <text> elements to the newly
             // added nodes
-            var new_groups = groups.enter()
+            const new_groups = groups.enter()
                 .append("g")
                 .classed("rect_element", true);
 
@@ -434,8 +434,8 @@ export class MarketMap extends Figure {
             // Removing the old nodes
             groups.exit().remove();
             that.create_bounding_path(d, ends);
-            var min_x = d3.min(ends, function(end_point: any) { return end_point.x;});
-            var min_y = d3.min(ends, function(end_point: any) { return end_point.y;});
+            const min_x = d3.min(ends, function(end_point: any) { return end_point.x;});
+            const min_y = d3.min(ends, function(end_point: any) { return end_point.y;});
 
             that.fig_names.append("foreignObject")
                 .attr("class", "names_object")
@@ -453,22 +453,22 @@ export class MarketMap extends Figure {
     draw_group_names() {
         // Get all the bounding rects of the paths around each of the
         // sectors. Get their client bounding rect.
-        var paths = this.svg.selectAll(".bounding_path").nodes() as SVGPathElement[];
-        var clientRects = paths.map(function(path) { return path.getBoundingClientRect(); });
-        var text_elements = this.fig_names.selectAll(".names_object").data(clientRects);
+        const paths = this.svg.selectAll(".bounding_path").nodes() as SVGPathElement[];
+        const clientRects = paths.map(function(path) { return path.getBoundingClientRect(); });
+        const text_elements = this.fig_names.selectAll(".names_object").data(clientRects);
         text_elements.attr("width", function(d) { return d.width;})
             .attr("height", function(d) { return d.height;});
     }
 
     recolor_chart() {
-        var that = this;
+        const that = this;
         this.update_data();
         this.rect_groups = this.fig.selectAll(".element_group")
             .data(this.groups);
-        var color_scale = this.scales.color;
+        const color_scale = this.scales.color;
 
         this.rect_groups.nodes().forEach(function(d, i) {
-            var data = that.grouped_data[that.groups[i]];
+            const data = that.grouped_data[that.groups[i]];
             d3.select(d)
                 .selectAll(".rect_element")
                 .data(data)
@@ -490,11 +490,11 @@ export class MarketMap extends Figure {
     }
 
     update_map_colors() {
-        var that = this;
-        var color_scale = this.scales.color;
+        const that = this;
+        const color_scale = this.scales.color;
         if(this.rect_groups !== undefined && this.rect_groups !== null) {
             this.rect_groups.nodes().forEach(function(d, i) {
-                var data = that.grouped_data[that.groups[i]];
+                const data = that.grouped_data[that.groups[i]];
                 d3.select(d)
                     .selectAll(".rect_element")
                     .data(data)
@@ -512,13 +512,13 @@ export class MarketMap extends Figure {
 
     cell_click_handler(data, id, cell) {
         if(this.model.get("enable_select")) {
-            var selected = this.model.get("selected").slice();
-            var index = selected.indexOf(data.name);
-            var cell_id = d3.select(cell).attr("id");
+            const selected = this.model.get("selected").slice();
+            const index = selected.indexOf(data.name);
+            const cell_id = d3.select(cell).attr("id");
             if(index == -1) {
                 //append a rectangle with the dimensions to the g-click
                 selected.push(data.name);
-                var transform = d3.select(cell).attr("transform");
+                const transform = d3.select(cell).attr("transform");
                 this.add_selected_cell(cell_id, transform);
             }
             else {
@@ -533,17 +533,17 @@ export class MarketMap extends Figure {
     }
 
     apply_selected() {
-        var selected = this.model.get("selected");
-        var that = this;
+        const selected = this.model.get("selected");
+        const that = this;
         if(selected === undefined || selected === null || selected.length === 0)
             this.clear_selected();
         else{
             selected.forEach(function(data) {
-                var cell_id = "market_map_element_" + data;
+                const cell_id = "market_map_element_" + data;
                 that.fig_click.select("#click_" + cell_id)
                     .remove();
                 if(that.fig_map.selectAll("#"+ cell_id)[0].length == 1) {
-                    var transform = that.fig_map.selectAll("#"+ cell_id).attr("transform");
+                    const transform = that.fig_map.selectAll("#"+ cell_id).attr("transform");
                     that.add_selected_cell(cell_id, transform);
                 }
            });
@@ -567,7 +567,7 @@ export class MarketMap extends Figure {
     }
 
     mouseover_handler(data, id, cell) {
-        var transform = d3.select(cell).attr("transform");
+        const transform = d3.select(cell).attr("transform");
         if(this.model.get("enable_hover")) {
             this.fig_hover.append("rect")
                 .attr("class", "hover_" + id)
@@ -603,25 +603,25 @@ export class MarketMap extends Figure {
     }
 
     show_tooltip(event, data) {
-        var that = this;
+        const that = this;
         if(!this.tooltip_view && (!this.tooltip_fields || this.tooltip_fields.length == 0))
         {
             return;
         } else {
-            var tooltip_div = this.tooltip_div;
+            const tooltip_div = this.tooltip_div;
             tooltip_div.transition()
                 .styles({"opacity": 0.9, "display": null});
 
             this.move_tooltip();
             tooltip_div.select("table").remove();
 
-            var ref_data = data.ref_data;
+            const ref_data = data.ref_data;
             if(!this.tooltip_view) {
-                var tooltip_table = tooltip_div.append("table")
+                const tooltip_table = tooltip_div.append("table")
                     .selectAll("tr").data(this.tooltip_fields);
 
                 tooltip_table.exit().remove();
-                var table_rows = tooltip_table.enter().append("tr");
+                const table_rows = tooltip_table.enter().append("tr");
 
                 table_rows.append("td")
                     .attr("class", "tooltiptext")
@@ -654,15 +654,15 @@ export class MarketMap extends Figure {
     }
 
     create_tooltip_widget() {
-        var tooltip_model = this.model.get("tooltip_widget");
+        const tooltip_model = this.model.get("tooltip_widget");
         if((this.tooltip_view !== null && this.tooltip_view !== undefined)) {
             //remove the previous tooltip
             this.tooltip_view.remove();
             this.tooltip_view = null;
         }
-        var that = this;
+        const that = this;
         if(tooltip_model) {
-            var tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
+            const tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
             tooltip_widget_creation_promise.then(function(view) {
                 that.tooltip_view = view;
                 that.tooltip_div.node().appendChild(view.el);
@@ -693,11 +693,11 @@ export class MarketMap extends Figure {
     }
 
     get_new_cords() {
-        var new_x = this.prev_x;
-        var new_y = this.prev_y;
-        var y_direction = this.y_direction;
-        var x_direction = this.x_direction;
-        var group_iter = this.group_iter;
+        let new_x = this.prev_x;
+        let new_y = this.prev_y;
+        let y_direction = this.y_direction;
+        let x_direction = this.x_direction;
+        let group_iter = this.group_iter;
         if(!this.past_border_y()){
             if(this.past_border_x()) {
                 y_direction = -1 * this.y_direction;
@@ -739,9 +739,9 @@ export class MarketMap extends Figure {
     }
 
     set_row_limits() {
-        var step = Math.floor(this.num_rows / this.row_groups);
+        const step = Math.floor(this.num_rows / this.row_groups);
         this.row_limits = [];
-        for(var iter = this.row_groups - 1; iter > -1; iter--){
+        for(let iter = this.row_groups - 1; iter > -1; iter--){
             this.row_limits.unshift(iter * step);
         }
         this.row_limits[this.row_groups] = this.num_rows;
@@ -754,27 +754,27 @@ export class MarketMap extends Figure {
         // groups.
         // Requires the direction variables to be updated before this
         // function is called
-        var top_row = this.row_limits[group_iter - 1];
-        var bottom_row = this.row_limits[group_iter];
-        var across = false;
+        let top_row = this.row_limits[group_iter - 1];
+        let bottom_row = this.row_limits[group_iter];
+        let across = false;
 
-        var init_x = x_direction;
-        var init_y = y_direction;
-        var end_points = [];
-        var current_row;
+        let init_x = x_direction;
+        let init_y = y_direction;
+        const end_points = [];
+        let current_row;
 
-        var rows_remaining = (init_y == 1) ? (bottom_row - start_row) : (start_row - top_row + 1);
-        var cols_remaining = (init_x == 1) ? (this.num_cols - 1 - start_col) : (start_col); // this is the num of columns remaining
+        let rows_remaining = (init_y == 1) ? (bottom_row - start_row) : (start_row - top_row + 1);
+        let cols_remaining = (init_x == 1) ? (this.num_cols - 1 - start_col) : (start_col); // this is the num of columns remaining
         //after the cuirrent column has been filled
-        var elem_remaining = num_cells;
+        let elem_remaining = num_cells;
         //this holds the number of continuous cols that will be filled
         //between the current top and bottom rows
-        var num_rows = bottom_row - top_row;
+        let num_rows = bottom_row - top_row;
 
         if(elem_remaining !== 0) {
             // starting corener of the path
             this.calc_end_point_source(start_col, start_row, init_x, init_y).forEach(function(d) { end_points.push(d); });
-            var elem_filled = Math.min(rows_remaining, elem_remaining);
+            const elem_filled = Math.min(rows_remaining, elem_remaining);
 
             if(elem_filled === elem_remaining) {
                 // There are enough elements only to fill one column
@@ -839,10 +839,10 @@ export class MarketMap extends Figure {
         }
 
         while(elem_remaining > num_rows) {
-            var no_cont_cols;
+            let no_cont_cols;
             if(num_rows * cols_remaining < elem_remaining) {
                 no_cont_cols = cols_remaining;
-                var leftover_elem = elem_remaining - (no_cont_cols) * num_rows;
+                const leftover_elem = elem_remaining - (no_cont_cols) * num_rows;
                 no_cont_cols += Math.floor(leftover_elem / (this.row_limits[group_iter + 1] - this.row_limits[group_iter]));
             } else {
                 no_cont_cols = Math.floor(elem_remaining / num_rows);
@@ -939,28 +939,28 @@ export class MarketMap extends Figure {
     }
 
     create_bounding_path(elem, end_points) {
-        var values = [];
-        var editing_copy = end_points.slice();
+        const values = [];
+        const editing_copy = end_points.slice();
         values.push(end_points[0]);
         editing_copy.splice(0, 1);
         //do union based on which direction you are trying to move in and
         //draw the path
         //best way seems to be horizaontal followed by vertical
-        var props = ['x', 'y'];
-        var iter = 0;
-        var prop = props[iter % 2];
-        var other_prop = props[(iter + 1) % 2];
-        var curr_elem = values[0];
-        var match = curr_elem[prop];
-        var dim = curr_elem[other_prop];
-        var max_iter = 2 * editing_copy.length;
-        var final_val = 0;
+        const props = ['x', 'y'];
+        let iter = 0;
+        let prop = props[iter % 2];
+        let other_prop = props[(iter + 1) % 2];
+        const curr_elem = values[0];
+        let match = curr_elem[prop];
+        let dim = curr_elem[other_prop];
+        let max_iter = 2 * editing_copy.length;
+        let final_val = 0;
         while(editing_copy.length > 1 && max_iter > 0){
-            var filtered_array = editing_copy.filter(function(elem) { return elem[prop] == match; });
+            const filtered_array = editing_copy.filter(function(elem) { return elem[prop] == match; });
             if(filtered_array.length > 0) {
                 iter++;
-                var min_elem = d3.min(filtered_array, function(elem) { return elem[other_prop] as number; });
-                var max_elem = d3.max(filtered_array, function(elem) { return elem[other_prop] as number; });
+                const min_elem = d3.min(filtered_array, function(elem) { return elem[other_prop] as number; });
+                const max_elem = d3.max(filtered_array, function(elem) { return elem[other_prop] as number; });
                 if(min_elem < dim && max_elem > dim) {
                     if(prop == 'y') {
                         if(this.x_direction == 1) {
@@ -975,8 +975,8 @@ export class MarketMap extends Figure {
                         // multiple elements greater or lesser. If there is
                         // only one in one of the directions, that is the
                         // direction I draw the line in.
-                        var lesser_arr = filtered_array.filter(function(elem) { return elem[other_prop] < dim; });
-                        var greater_arr = filtered_array.filter(function(elem) { return elem[other_prop] > dim; });
+                        const lesser_arr = filtered_array.filter(function(elem) { return elem[other_prop] < dim; });
+                        const greater_arr = filtered_array.filter(function(elem) { return elem[other_prop] > dim; });
 
                         if(lesser_arr.length == 1) {
                             final_val = min_elem;
@@ -993,9 +993,9 @@ export class MarketMap extends Figure {
                         final_val = max_elem;
                     }
                 }
-                var match_elem = editing_copy.filter(function(elem) { return elem[prop] == match && elem[other_prop] == final_val;});
+                const match_elem = editing_copy.filter(function(elem) { return elem[prop] == match && elem[other_prop] == final_val;});
                 match_elem.forEach(function(elem) { editing_copy.splice(editing_copy.indexOf(elem), 1);} );
-                var value = {};
+                const value = {};
                 value[prop] = match;
                 value[other_prop] = final_val;
                 values.push(value);
@@ -1004,7 +1004,7 @@ export class MarketMap extends Figure {
                 final_val = dim;
             }
             //swap prop and other_prop
-            var temp = prop;
+            const temp = prop;
             prop = other_prop;
             other_prop = temp;
 
@@ -1015,11 +1015,11 @@ export class MarketMap extends Figure {
         if(editing_copy.length > 0)
             values.push(editing_copy[0]);
         values.push(end_points[0]);
-        var line = d3.line()
+        const line = d3.line()
             .curve(d3.curveLinear)
             .x(function(d: any) { return d.x;})
             .y(function(d: any) { return d.y;});
-        var bounding_path = d3.select(elem)
+        const bounding_path = d3.select(elem)
             .append('path')
             .attr("class", "bounding_path")
             .attr('d', function() {return line(values);})
