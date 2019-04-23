@@ -888,7 +888,7 @@ export class Figure extends widgets.DOMWidgetView {
     save_png(filename, scale) {
         // Render a SVG data into a canvas and download as PNG.
 
-        this.get_rendered_canvas(scale).then((canvas) => {
+        this.get_rendered_canvas(scale).then((canvas: any) => {
             const a = document.createElement("a");
             a.download = filename || "image.png";
             a.href = canvas.toDataURL("image/png");
@@ -964,7 +964,6 @@ export class Figure extends widgets.DOMWidgetView {
     renderer: any;
     scale_x: any;
     scale_y: any;
-    svg_interaction: d3.Selection<SVGElement, any, any, any>;
     svg: d3.Selection<SVGElement, any, any, any>;
     svg_background: d3.Selection<SVGElement, any, any, any>;
     title: any;
