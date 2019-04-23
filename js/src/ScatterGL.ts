@@ -12,72 +12,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var mark = require("./Mark");
-var markers = require("./Markers");
-var d3 = require("d3");
-var THREE = require('three')
-var _ = require("underscore");
-var GLAttributes = require('./glattributes').GLAttributes;
+import { Mark } from './Mark';
+import * as d3 from 'd3';
+import * as markers from './Markers';
+import * as _ from 'underscore';
+import { GLAttributes } from './glattributes';
+import { ScatterGLModel } from './ScatterGLModel';
+import * as THREE from 'three';
 
-var bqSymbol = markers.symbol;
+const bqSymbol = markers.symbol;
 
-var color_to_array_rgba = function(color, default_color) {
-    var color_name = color || default_color
+const color_to_array_rgba = function(color, default_color?) {
+    const color_name = color || default_color || [0., 0., 0., 0.];
     if(color_name == 'none') {
-        return [0., 0., 0., 0.]
+        return [0., 0., 0., 0.];
     } else {
-        var color = new THREE.Color(color_name);
-        return [color.r, color.g, color.b, 1.0]
+        const color = new THREE.Color(color_name);
+        return [color.r, color.g, color.b, 1.0];
     }
 }
 
-var color_to_array = function(color, default_color) {
-    var color = new THREE.Color(color || default_color);
-    return [color.r, color.g, color.b]
-}
-
-var create_colormap =  function(scale) {
+const create_colormap = function(scale) {
     // convert the d3 color scale to a texture
-    var colors = scale ? scale.model.color_range : ['#ff0000', '#ff0000'];
-    var color_scale = d3.scale.linear()
+    const colors = scale ? scale.model.color_range : ['#ff0000', '#ff0000'];
+    const color_scale = d3.scaleLinear()
                               .range(colors)
-                              .domain(_.range(colors.length).map((i) => i/(colors.length-1)))
-    var colormap_array = [];
-    var N = 256;
-    var colormap = _.map(_.range(N), (i) => {
-        var index = i/(N-1);
-        var rgb = color_scale(index);
-        rgb = [parseInt("0x" + rgb.substring(1, 3)),
-               parseInt("0x" + rgb.substring(3, 5)),
-               parseInt("0x" + rgb.substring(5, 7))]
-        colormap_array.push(rgb[0], rgb[1], rgb[2])
+                              .domain(_.range(colors.length).map((i) => i/(colors.length-1)));
+    const colormap_array = [];
+    const N = 256;
+    _.map(_.range(N), (i) => {
+        const index = i/(N-1);
+        const rgb = color_scale(index);
+        const rgb_arr = [parseInt("0x" + String(rgb).substring(1, 3)),
+                       parseInt("0x" + String(rgb).substring(3, 5)),
+                       parseInt("0x" + String(rgb).substring(5, 7))]
+        colormap_array.push(rgb_arr[0], rgb_arr[1], rgb_arr[2])
     })
-    colormap_array = new Uint8Array(colormap_array);
-    colormap_texture = new THREE.DataTexture(colormap_array, N, 1, THREE.RGBFormat, THREE.UnsignedByteType)
+    const colormap_arr = new Uint8Array(colormap_array);
+    const colormap_texture = new THREE.DataTexture(colormap_arr, N, 1, THREE.RGBFormat, THREE.UnsignedByteType)
     colormap_texture.needsUpdate = true;
     return colormap_texture
 }
 
+export class ScatterGL extends Mark {
 
-
-var ScatterGL = mark.Mark.extend({
-
-    render: function() {
-        var base_render_promise = ScatterGL.__super__.render.apply(this);
+    render() {
+        const base_render_promise = super.render();
 
         this.previous_values = {}
         this.attributes_changed = {}
         this.transitions = []
         this.invalidated_pixel_position = true;;
         this._update_requested = false;
-        window.last_scatter_gl = this;
 
-        var el = this.d3el || this.el;
+        const el = this.d3el || this.el;
 
         // only used for the legend
         this.dot = bqSymbol()
-          .type(this.model.get("marker"))
-
+            .type(this.model.get("marker"))
 
         this.im = el.append("image")
             .attr("x", 0)
@@ -176,37 +168,35 @@ var ScatterGL = mark.Mark.extend({
         this.marker_plane = new THREE.PlaneGeometry();
         // this.geo_triangle_2d = new THREE.CircleGeometry(1, 3, Math.PI/2);
 
-
         this.canvas_markers = {}
         this.canvas_textures = {}
 
-        var width = height = 64;
+        const width = 64, height = 64;
 
-        var canvas_marker;
+        let canvas_marker;
         canvas_marker = this.canvas_markers.circle = document.createElement('canvas');
         canvas_marker.width  = width;
         canvas_marker.height = height;
 
-        var ctx = canvas_marker.getContext('2d');
+        let ctx = canvas_marker.getContext('2d');
         ctx.lineWidth = 1.0;
         ctx.strokeStyle = 'rgba(0, 255, 0, 1.0)';
         ctx.fillStyle = 'rgba(255, 0, 0, 1.0)';
 
         ctx.translate(0.5, 0.5);
         ctx.beginPath();
-        var dx = width/4;
-        var dy = height/4;
-        var r = Math.sqrt(dx*dx + dy*dy)
+        let dx = width/4;
+        let dy = height/4;
+        let r = Math.sqrt(dx*dx + dy*dy)
         ctx.arc(width/2, height/2, r, 0, 2*Math.PI);
         ctx.fill()
         ctx.stroke()
-
 
         canvas_marker = this.canvas_markers.arrow = document.createElement('canvas');
         canvas_marker.width  = width;
         canvas_marker.height = height;
 
-        var ctx = canvas_marker.getContext('2d');
+        ctx = canvas_marker.getContext('2d');
         ctx.lineWidth = 1.0;
         ctx.strokeStyle = 'rgba(0, 255, 0, 1.0)';
         ctx.fillStyle = 'rgba(255, 0, 0, 1.0)';
@@ -221,13 +211,11 @@ var ScatterGL = mark.Mark.extend({
         ctx.fill()
         ctx.stroke()
 
-
         canvas_marker = this.canvas_markers.square = document.createElement('canvas');
         canvas_marker.width  = width;
         canvas_marker.height = height;
 
-        // 
-        var ctx = canvas_marker.getContext('2d');
+        ctx = canvas_marker.getContext('2d');
         ctx.lineWidth = 1.0;
         ctx.strokeStyle = 'rgba(0, 255, 0, 1.0)';
         ctx.fillStyle = 'rgba(255, 0, 0, 1.0)';
@@ -237,7 +225,6 @@ var ScatterGL = mark.Mark.extend({
         ctx.fill()
         ctx.stroke()
 
-
         this.canvas_textures.circle = new THREE.CanvasTexture(this.canvas_markers.circle)
         this.canvas_textures.arrow = new THREE.CanvasTexture(this.canvas_markers.arrow)
         this.canvas_textures.square = new THREE.CanvasTexture(this.canvas_markers.square)
@@ -246,18 +233,18 @@ var ScatterGL = mark.Mark.extend({
         this.canvas_textures.arrow.premultiplyAlpha = true;
         this.canvas_textures.square.premultiplyAlpha = true;
 
-        var marker_geometry = this.marker_plane;
+        const marker_geometry = this.marker_plane;
         this.buffer_marker_geometry = new THREE.BufferGeometry().fromGeometry(marker_geometry);
         this.marker_scale = 1;
-        var sync_marker = () => {
+        const sync_marker = () => {
             this.dot.type(this.model.get("marker"))
             this.scatter_material.uniforms['texture'].value = this.canvas_textures[this.model.get('marker')]
             this.scatter_material.defines['FAST_DRAW'] = 0;
-            var marker = this.model.get('marker');
-            var scale = 1;
-            var FAST_CIRCLE = 1;
-            var FAST_SQUARE = 2;
-            var FAST_ARROW = 3;
+            const marker = this.model.get('marker');
+            let scale = 1;
+            const FAST_CIRCLE = 1;
+            const FAST_SQUARE = 2;
+            const FAST_ARROW = 3;
             if(marker === 'circle') {
                 // same as in ./Markers.js
                 scale = 1/Math.sqrt(Math.PI);
@@ -281,10 +268,7 @@ var ScatterGL = mark.Mark.extend({
 
         // marker_plane.scale(scale, scale, scale)
 
-
         return base_render_promise.then(() => {
-
-
             this.camera = new THREE.OrthographicCamera( 1 / - 2, 1 / 2, 1 / 2, 1 / - 2, -10000, 10000 );
             this.camera.position.z = 10;
             this.scene = new THREE.Scene();
@@ -305,7 +289,6 @@ var ScatterGL = mark.Mark.extend({
             this.update_geometry()
             this.scene.add(this.mesh)
 
-
             this.create_listeners();
             this.update_scene();
             this.listenTo(this.parent, "margin_updated", () => {
@@ -313,11 +296,10 @@ var ScatterGL = mark.Mark.extend({
             });
         });
         return base_render_promise;
-    },
+    }
 
-    push_size: function() {
+    push_size() {
         // size can be an array, or a scalar (default_size)
-        let name = 'size';
         let ar = this.model.get('size');
         // first time, so make the previous value the same
         if(!this.attributes.contains('size')) {
@@ -338,24 +320,22 @@ var ScatterGL = mark.Mark.extend({
         this.attributes_previous.compute_length()
         this.attributes.compute_length()
         this.push_selected()
-    },
+    }
 
-    push_color: function() {
+    push_color() {
         // first time, so make the previous value the same
         let value = this.model.get('color');
-        let is_vec3 = false;
         let type_name = 'array';
         if(!value) {
             let color_names = this.model.get('colors');
             if(!color_names)
-                color_names = [(this.model.unselected_style || {})['fill'] || 'orange'] ;// TODO: what should the default color be
+                color_names = [(this.model.get('unselected_style') || {})['fill'] || 'orange'] ;// TODO: what should the default color be
             if(color_names) {
-                is_vec3 = true;
                 // this.scatter_material.defines['USE_COLORMAP'] = true;
                 let length = color_names.length == 1 ? 1 : this.attributes.length;
-                var color_data = new Float32Array(length * 3);
+                const color_data = new Float32Array(length * 3);
                 _.each(_.range(length), (i) => {
-                    var color = new THREE.Color(color_names[i % color_names.length]) // TODO: can be done more efficiently
+                    const color = new THREE.Color(color_names[i % color_names.length]) // TODO: can be done more efficiently
                     color_data[i*3+0] = color.r;
                     color_data[i*3+1] = color.g;
                     color_data[i*3+2] = color.b;
@@ -364,7 +344,6 @@ var ScatterGL = mark.Mark.extend({
                 type_name = length == 1 ? 'scalar_vec3' : 'array_vec3';
             }
         }
-        // let type_name = is_vec3 ? 'array_vec3' : 'array' ;
         let type_prev = this.attributes.type_name('color');
 
         if(!this.attributes.contains('color')) {
@@ -383,9 +362,9 @@ var ScatterGL = mark.Mark.extend({
         this.scatter_material.defines['USE_COLORMAP_PREVIOUS'] = type_prev.indexOf('vec3') == -1;
         this.push_selected()
         this.scatter_material.needsUpdate = true;
-    },
+    }
 
-    push_opacity: function() {
+    push_opacity() {
         let value = this.model.get('opacity');
         let type_name = 'array';
         if(!value) {
@@ -401,7 +380,7 @@ var ScatterGL = mark.Mark.extend({
                     type_name = 'array'
                     value = new Float32Array(this.attributes.length);
                     // TODO: instead of a loop, we might be able to do this more efficiently using TypedArray.set ?
-                    for(var i = 0; i < value.length; i++) {
+                    for(let i = 0; i < value.length; i++) {
                         value[i] = default_opacities[i % default_opacities.length]
                     }
                 }
@@ -422,9 +401,9 @@ var ScatterGL = mark.Mark.extend({
         this.attributes.compute_length()
         this.push_selected()
         this.scatter_material.needsUpdate = true;
-    },
+    }
 
-    push_array: function(name) {
+    push_array(name) {
         let ar = this.model.get(name);
         if(!ar) return;
         this.attributes_previous.array[name] = this.attributes.array[name] || ar;
@@ -432,23 +411,22 @@ var ScatterGL = mark.Mark.extend({
         this.attributes_previous.compute_length()
         this.attributes.compute_length()
         this.push_selected()
-    },
+    }
 
-    push_selected: function() {
-        var selected = this.model.get('selected')
+    push_selected() {
+        const selected = this.model.get('selected')
         if(this.attributes_active && this.mesh.geometry.attributes.selected) {
             if(selected) {
                 this.scatter_material.uniforms['has_selection'].value = true;
                 let selected_mask = this.mesh.geometry.attributes.selected.array;
                 selected_mask.fill(0)
-                for(var i =0; i < selected.length; i++) {
+                for(let i =0; i < selected.length; i++) {
                     if(selected[i] < selected_mask.length)
                         selected_mask[selected[i]] = 1;
                 }
                 this.mesh.geometry.attributes.selected.needsUpdate = true;
                 // this.mesh.geometry.attributes.selected_.needsUpdate = true;
                 this.update_scene()
-                console.log('fast path')
                 // return;
             }
 
@@ -460,7 +438,7 @@ var ScatterGL = mark.Mark.extend({
         let selected_mask = new Uint8Array(length)
         if(selected) {
             this.scatter_material.uniforms['has_selection'].value = true;
-            for(var i =0; i < selected.length; i++) {
+            for(let i =0; i < selected.length; i++) {
                 if(selected[i] < selected_mask.length)
                     selected_mask[selected[i]] = 1;
             }
@@ -471,21 +449,19 @@ var ScatterGL = mark.Mark.extend({
         this.attributes_previous.array['selected'] = selected_mask;
         this.attributes_previous.compute_length()
         this.attributes.compute_length()
-    },
+    }
 
-    update_geometry: function(attributes_changed, finalizers) {
-
+    update_geometry(attributes_changed?, finalizers?) {
         this.instanced_geometry = new THREE.InstancedBufferGeometry();
-        var vertices = this.buffer_marker_geometry.attributes.position.clone();
+        const vertices = this.buffer_marker_geometry.attributes.position.clone();
         this.instanced_geometry.addAttribute('position', vertices);
-        var scale = this.marker_scale;// + 2 * this.model.get('stroke_width')
         this.scatter_material.uniforms.marker_scale.value = this.marker_scale;
 
-        var uv = this.buffer_marker_geometry.attributes.uv.clone();
+        const uv = this.buffer_marker_geometry.attributes.uv.clone();
         this.instanced_geometry.addAttribute('uv', uv);
 
-        var previous_length = this.attributes_previous.length;
-        var current_length = this.attributes.length;
+        const previous_length = this.attributes_previous.length;
+        const current_length = this.attributes.length;
 
         // TODO: optimize, there are cases where do don't have to copy, but use the originals
         this.attributes_active = this.attributes.deepcopy()
@@ -514,20 +490,18 @@ var ScatterGL = mark.Mark.extend({
             this.mesh.geometry.dispose()
             this.mesh.geometry = this.instanced_geometry;
         }
-        _.each(attributes_changed, (key) => {
-            var property = "animation_time_" + key
-            //console.log("animating", key)
-            var done = () => {
+        _.each(attributes_changed, (key: any) => {
+            const property = "animation_time_" + key
+            const done = () => {
                 // _.each(attributes_changed, (prop) => {
                     delete this.previous_values[key] // may happen multiple times, that is ok
                 // })
-                _.each(finalizers, (finalizer) => {
-                    console.log(finalizer)
+                _.each(finalizers, (finalizer: any) => {
                     finalizer()
                 })
             }
             // uniforms of material_rgb has a reference to these same object
-            var set = (value) => {
+            const set = (value) => {
                 this.scatter_material.uniforms[property]['value'] = value
             }
             this.scatter_material.uniforms[property]['value'] = 0
@@ -536,26 +510,26 @@ var ScatterGL = mark.Mark.extend({
         this.attributes_changed = {}
 
         this.update_scene();
-    },    
+    }
 
     update_scene() {
         this.parent.update_gl()
-    },
+    }
 
-    render_gl: function() {
+    render_gl() {
         this.set_ranges()
         this._update_requested = false;
-        var fig = this.parent;
+        const fig = this.parent;
         this.im.attr('x', 0)
                .attr('y', 0)
                .attr('width', fig.plotarea_width)
                .attr('height', fig.plotarea_height)
         this.camera.left = 0
-        var x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
-        var y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
+        const x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
+        const y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
 
-        var range_x = this.parent.padded_range("x", x_scale.model);
-        var range_y = this.parent.padded_range("y", y_scale.model);
+        const range_x = this.parent.padded_range("x", x_scale.model);
+        const range_y = this.parent.padded_range("y", y_scale.model);
 
         this.scatter_material.uniforms['colormap'].value = create_colormap(this.scales.color)
 
@@ -589,7 +563,7 @@ var ScatterGL = mark.Mark.extend({
             this.scatter_material.uniforms['range_size'].value = this.scales.size.scale.range();
             this.scatter_material.uniforms['domain_size'].value = this.scales.size.scale.domain();
         } else {
-            var size = this.model.get('default_size');
+            const size = this.model.get('default_size');
             this.scatter_material.uniforms['range_size'].value = [0, size];
             this.scatter_material.uniforms['domain_size'].value = [0, size];
         }
@@ -604,144 +578,143 @@ var ScatterGL = mark.Mark.extend({
             this.scatter_material.uniforms['domain_opacity'].value = this.scales.opacity.scale.domain();
         }
 
-        var renderer = fig.renderer;
-        // var image = this.model.get("image");
+        const renderer = fig.renderer;
+        // const image = this.model.get("image");
         renderer.render(this.scene, this.camera);
-        // var canvas = renderer.domElement;
-        // var url = canvas.toDataURL('image/png');
+        // const canvas = renderer.domElement;
+        // const url = canvas.toDataURL('image/png');
         // this.im.attr("href", url);
 
-        var transitions_todo = []
-        for(var i = 0; i < this.transitions.length; i++) {
-            var t = this.transitions[i];
+        const transitions_todo = []
+        for(let i = 0; i < this.transitions.length; i++) {
+            const t = this.transitions[i];
             if(!t.is_done())
-                transitions_todo.push(t)
-            t.update()
+                transitions_todo.push(t);
+            t.update();
         }
         this.transitions = transitions_todo;
         if(this.transitions.length > 0) {
-            this.update_scene()
+            this.update_scene();
         }
+    }
 
-    },
-
-    create_listeners: function() {
-        ScatterGL.__super__.create_listeners.apply(this);
+    create_listeners() {
+        super.create_listeners();
         this.listenTo(this.model, "change:x", () => {
-            this.push_array('x')
-            this.update_geometry(['x', 'size'], [() => this.push_array('x')])
-        }, this);
+            this.push_array('x');
+            this.update_geometry(['x', 'size'], [() => this.push_array('x')]);
+        });
         this.listenTo(this.model, "change:y", () => {
-            this.push_array('y')
-            this.update_geometry(['y', 'size'], [() => this.push_array('y')])
-        }, this);
+            this.push_array('y');
+            this.update_geometry(['y', 'size'], [() => this.push_array('y')]);
+        });
         this.listenTo(this.model, "change:rotation", () => {
-            this.push_array('rotation')
-            this.update_geometry(['rotation', 'size'], [() => this.push_array('rotation')])
-        }, this);
+            this.push_array('rotation');
+            this.update_geometry(['rotation', 'size'], [() => this.push_array('rotation')]);
+        });
         this.listenTo(this.model, "change:opacity change:default_opacities", () => {
-            this.push_opacity()
-            this.update_geometry(['opacity'], [() => this.push_opacity()])
-        }, this);
+            this.push_opacity();
+            this.update_geometry(['opacity'], [() => this.push_opacity()]);
+        });
         this.listenTo(this.model, "change:color change:colors change:selected_style change:unselected_style change:hovered_style change:unhovered_style", () => {
-            this.push_color()
-            this.update_geometry(['color'], [() => this.push_color()])
-        }, this);
+            this.push_color();
+            this.update_geometry(['color'], [() => this.push_color()]);
+        });
         this.listenTo(this.model, "change:size change:default_size", () => {
-            this.push_size()
-            this.update_geometry(['size'], [() => this.push_size()])
-        }, this);
+            this.push_size();
+            this.update_geometry(['size'], [() => this.push_size()]);
+        });
         this.listenTo(this.model, "change:selected", () => {
-            this.push_selected()
+            this.push_selected();
             // this.update_geometry([])
-        }, this);
-        var sync_visible = () => {
+        });
+        const sync_visible = () => {
             this.mesh.visible = this.model.get('visible')
-            this.update_scene()
+            this.update_scene();
         }
-        this.listenTo(this.model, "change:visible", sync_visible , this);
-        sync_visible()
+        this.listenTo(this.model, "change:visible", sync_visible);
+        sync_visible();
 
-        var sync_fill = () => {
-            this.scatter_material.uniforms.fill.value = this.model.get('fill')
-            this.update_scene()
+        const sync_fill = () => {
+            this.scatter_material.uniforms.fill.value = this.model.get('fill');
+            this.update_scene();
         }
-        this.listenTo(this.model, "change:fill", sync_fill, this);
-        sync_fill()
+        this.listenTo(this.model, "change:fill", sync_fill);
+        sync_fill();
 
-        var sync_stroke_width = () => {
-            this.scatter_material.uniforms.stroke_width.value = this.model.get('stroke_width')
-            this.update_geometry()
+        const sync_stroke_width = () => {
+            this.scatter_material.uniforms.stroke_width.value = this.model.get('stroke_width');
+            this.update_geometry();
         }
-        this.listenTo(this.model, "change:stroke_width", sync_stroke_width, this);
-        sync_stroke_width()
+        this.listenTo(this.model, "change:stroke_width", sync_stroke_width);
+        sync_stroke_width();
 
-        var sync_stroke = () => {
+        const sync_stroke = () => {
             if(this.model.get('stroke')) {
                 this.scatter_material.uniforms.stroke_color_default.value = color_to_array_rgba(this.model.get('stroke'));
                 this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = true;
             } else {
                 this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = false;
             }
-            this.update_scene()
+            this.update_scene();
         }
-        this.listenTo(this.model, "change:stroke", sync_stroke, this);
-        sync_stroke()
+        this.listenTo(this.model, "change:stroke", sync_stroke);
+        sync_stroke();
 
-        this.listenTo(this.model, "change", this.update_legend, this);
+        this.listenTo(this.model, "change", this.update_legend);
 
         // many things to implement still
-        // this.listenTo(this.model, "change:stroke", this.update_stroke, this);
-        // this.listenTo(this.model, "change:stroke_width", this.update_stroke_width, this);
-        // this.listenTo(this.model, "change:default_opacities", this.update_default_opacities, this);
-        // this.listenTo(this.model, "change:default_skew", this.update_default_skew, this);
-        // this.listenTo(this.model, "change:default_rotation", this.update_xy_position, this);
-        // this.listenTo(this.model, "change:marker", this.update_marker, this);
-        // this.listenTo(this.model, "change:fill", this.update_fill, this);
-        // this.listenTo(this.model, "change:display_names", this.update_names, this);
-    },
+        // this.listenTo(this.model, "change:stroke", this.update_stroke);
+        // this.listenTo(this.model, "change:stroke_width", this.update_stroke_width);
+        // this.listenTo(this.model, "change:default_opacities", this.update_default_opacities);
+        // this.listenTo(this.model, "change:default_skew", this.update_default_skew);
+        // this.listenTo(this.model, "change:default_rotation", this.update_xy_position);
+        // this.listenTo(this.model, "change:marker", this.update_marker);
+        // this.listenTo(this.model, "change:fill", this.update_fill);
+        // this.listenTo(this.model, "change:display_names", this.update_names);
+    }
 
-    update_position: function(animate) {
-        this.update_scene()
-        this.invalidate_pixel_position()
-    },
+    update_position(animate?) {
+        this.update_scene();
+        this.invalidate_pixel_position();
+    }
 
     // we want to compute the pixels coordinates 'lazily', since it's quite expensive for 10^6 points
-    invalidate_pixel_position: function() {
+    invalidate_pixel_position() {
         this.invalidated_pixel_position = true;
-    },
+    }
 
-    ensure_pixel_position: function() {
+    ensure_pixel_position() {
         if(this.invalidated_pixel_position)
-            this.update_pixel_position()
-    },
+            this.update_pixel_position();
+    }
 
-    update_pixel_position: function(animate) {
-        var x_scale = this.scales.x, y_scale = this.scales.y;
+    update_pixel_position(animate?) {
+        const x_scale = this.scales.x, y_scale = this.scales.y;
 
-        var x_data = this.model.get("x")
-        var y_data = this.model.get("y")
-        var N = Math.min(x_data.length, y_data.length);
+        const x_data = this.model.get("x");
+        const y_data = this.model.get("y");
+        const N = Math.min(x_data.length, y_data.length);
         // this.pixel_coords = _.map(_.range(N), (i) => {
         //         return [x_scale.scale(x_data[i]) + x_scale.offset,
         //                 y_scale.scale(y_data[i]) + y_scale.offset];
         //     });
         this.pixel_x = new Float64Array(N);
         this.pixel_y = new Float64Array(N);
-        for(var i = 0; i < N; i++) {
+        for(let i = 0; i < N; i++) {
             this.pixel_x[i] = x_scale.scale(x_data[i]) + x_scale.offset;
             this.pixel_y[i] = y_scale.scale(y_data[i]) + y_scale.offset;
         }
         this.invalidated_pixel_position = false;
-    },
+    }
 
-    selector_changed: function(point_selector, rect_selector) {
+    selector_changed(point_selector, rect_selector) {
         if(!this.trottled_selector_changed)
-            this.trottled_selector_changed = _.throttle(this._real_selector_changed, 50, {leading: false})
-        this.trottled_selector_changed(point_selector, rect_selector)
-    },
+            this.trottled_selector_changed = _.throttle(this._real_selector_changed, 50, {leading: false});
+        this.trottled_selector_changed(point_selector, rect_selector);
+    }
 
-    _real_selector_changed: function(point_selector, rect_selector) {
+    _real_selector_changed(point_selector, rect_selector) {
         // not sure why selection isn't working yet
         this.ensure_pixel_position()
         if(point_selector === undefined) {
@@ -749,11 +722,11 @@ var ScatterGL = mark.Mark.extend({
             this.touch();
             return [];
         }
-        var selection_mask = point_selector(this.pixel_x, this.pixel_y)
-        var selected = new Uint32Array(selection_mask.length);
-        var count = 0;
-        var N = selection_mask.length;
-        for(var i=0; i < N; i++) {
+        const selection_mask = point_selector(this.pixel_x, this.pixel_y);
+        let selected = new Uint32Array(selection_mask.length);
+        let count = 0;
+        const N = selection_mask.length;
+        for(let i=0; i < N; i++) {
             if(selection_mask[i]) {
                 selected[count++] = i;
             }
@@ -761,9 +734,9 @@ var ScatterGL = mark.Mark.extend({
         selected = selected.slice(0, count);
         this.model.set("selected", selected);
         this.touch();
-    },
+    }
 
-    set_positional_scales: function() {
+    set_positional_scales() {
         this.x_scale = this.scales.x;
         this.y_scale = this.scales.y;
         // If no scale for "x" or "y" is specified, figure scales are used.
@@ -775,18 +748,20 @@ var ScatterGL = mark.Mark.extend({
         }
         this.listenTo(this.x_scale, "domain_changed", function() {
             if (!this.model.dirty) {
-                var animate = true;
-                this.update_position(animate); }
+                const animate = true;
+                this.update_position(animate);
+            }
         });
         this.listenTo(this.y_scale, "domain_changed", function() {
             if (!this.model.dirty) {
-                var animate = true;
-                this.update_position(animate); }
+                const animate = true;
+                this.update_position(animate);
+            }
         });
-    },
+    }
 
-    initialize_additional_scales: function() {
-        var color_scale = this.scales.color,
+    initialize_additional_scales() {
+        const color_scale = this.scales.color,
             size_scale = this.scales.size,
             opacity_scale = this.scales.opacity,
             skew_scale = this.scales.skew,
@@ -795,38 +770,37 @@ var ScatterGL = mark.Mark.extend({
         // impact the position of the elements
         if (color_scale) {
             this.listenTo(color_scale, "domain_changed", () => {
-                this.update_scene()
+                this.update_scene();
             });
             color_scale.on("color_scale_range_changed", () => {
-                this.update_scene()
+                this.update_scene();
             });
         }
         if (size_scale) {
             this.listenTo(size_scale, "domain_changed", () => {
-                this.update_scene()
+                this.update_scene();
             });
         }
         if (opacity_scale) {
             this.listenTo(opacity_scale, "domain_changed", () => {
-                this.update_scene()
+                this.update_scene();
             });
         }
         if (skew_scale) {
             this.listenTo(skew_scale, "domain_changed", function() {
-                var animate = true;
+                const animate = true;
                 this.update_default_skew(animate);
             });
         }
         if (rotation_scale) {
             this.listenTo(rotation_scale, "domain_changed", () => {
-                this.update_scene()
+                this.update_scene();
             });
         }
+    }
 
-    },
-
-    set_ranges: function() {
-        var x_scale = this.scales.x,
+    set_ranges() {
+        const x_scale = this.scales.x,
             y_scale = this.scales.y,
             size_scale = this.scales.size,
             opacity_scale = this.scales.opacity,
@@ -850,64 +824,61 @@ var ScatterGL = mark.Mark.extend({
         if(rotation_scale) {
             rotation_scale.set_range([0, Math.PI]); // TODO: this mirrors the 180 from the normal scatter, but why not 360?
         }
-    },
+    }
 
-
-    transition: function(f, on_done, context) {
+    transition(f, on_done, context) {
         // this is a copy from ipyvolume, maybe better to use tween, and do the rerendering
         // at the figure level (say if multiple scatter's want to rerender)
-        var that = this;
-        var Transition = function() {
+        const that = this;
+        const Transition = function() {
             //this.objects = []
             this.time_start = (new Date()).getTime();
             this.duration = that.parent.model.get("animation_duration");
             this.cancelled = false;
-            this.called_on_done = false
+            this.called_on_done = false;
             this.set = function(obj) {
-                this.objects.push(obj)
+                this.objects.push(obj);
             }
             this.is_done = function() {
-                var dt = (new Date()).getTime() - this.time_start;
-                return (dt >= this.duration) || this.cancelled
+                const dt = (new Date()).getTime() - this.time_start;
+                return (dt >= this.duration) || this.cancelled;
             }
             this.cancel = function() {
                 this.cancelled = true;
             },
             this.update = function() {
                 if(this.cancelled)
-                    return
-                var dt = ((new Date()).getTime() - this.time_start)/this.duration;
+                    return;
+                const dt = ((new Date()).getTime() - this.time_start)/this.duration;
 
-                var u = Math.min(1, dt);
+                const u = Math.min(1, dt);
                 f.apply(context, [u]);
                 if(dt >= 1 && !this.called_on_done) {
-                    this.called_on_done = true
-                    on_done.apply(context)
+                    this.called_on_done = true;
+                    on_done.apply(context);
                 }
-                console.log('u', dt, u)
-                that.update_scene()
+                that.update_scene();
             }
             if(!this.duration) {
                 f.apply(context, [1]);
-                on_done.apply(context)
-                that.update_scene()
+                on_done.apply(context);
+                that.update_scene();
             } else {
-                that.transitions.push(this)
+                that.transitions.push(this);
             }
         }
-        return new Transition()
-    },
+        return new Transition();
+    }
 
-    draw_legend: function(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
+    draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
         this.legend_el = elem.selectAll(".legend" + this.uuid)
           .data([{}]);
-        var colors = this.model.get("colors"),
-            len = colors.length
-            stroke = this.model.get("stroke");
+        const colors = this.model.get("colors"),
+            len = colors.length;
 
-        var that = this;
-        var rect_dim = inter_y_disp * 0.8;
-        var el_added = this.legend_el.enter()
+        const that = this;
+        const rect_dim = inter_y_disp * 0.8;
+        const el_added = this.legend_el.enter()
           .append("g")
             .attr("class", "legend" + this.uuid)
             .attr("transform", function(d, i) {
@@ -928,17 +899,16 @@ var ScatterGL = mark.Mark.extend({
               return colors[i % len];
           });
 
-        var max_length = d3.max(this.model.get("labels"), function(d) {
+        const max_length = d3.max(this.model.get("labels"), function(d: any[]) {
             return d.length;
         });
 
         this.legend_el.exit().remove();
         return [1, max_length];
-    },
+    }
 
-    draw_legend_elements: function(elements_added, rect_dim) {
-        var colors = this.model.get("colors"),
-            len = colors.length,
+    draw_legend_elements(elements_added, rect_dim) {
+        const colors = this.model.get("colors"),
             stroke = this.model.get("stroke"),
             fill   = this.model.get("fill");
 
@@ -948,38 +918,64 @@ var ScatterGL = mark.Mark.extend({
           })
           .attr("d", this.dot.size(64))
               .style("fill", fill   ? colors[0] : 'none')
-              .style("stroke", stroke ? stroke : colors[0])
-            ;
-    },
+              .style("stroke", stroke ? stroke : colors[0]);
+    }
 
-    update_legend: function() {
+    update_legend() {
         if (this.legend_el) {
-            var colors = this.model.get("colors"),
-                len = colors.length,
-                stroke = this.model.get("stroke");
+            const colors = this.model.get("colors"),
+                stroke = this.model.get("stroke"),
                 fill   = this.model.get("fill");
             this.legend_el.select("path")
               .style("fill", fill   ? colors[0] : 'none')
-              .style("stroke", stroke ? stroke : colors[0])
-            ;
+              .style("stroke", stroke ? stroke : colors[0]);
             this.legend_el.select("text")
-              .style("fill", fill ? colors[0] : "none")
-            ;
+              .style("fill", fill ? colors[0] : "none");
             if (this.legend_el) {
                 this.legend_el.select("path")
                     .attr("d", this.dot.type(this.model.get("marker")));
             }
         }
-    },
+    }
 
-    relayout: function() {
+    relayout() {
         this.set_ranges();
         this.update_position();
-    },
+    }
 
+    draw(animate?) {}
+    clear_style(style_dict, indices?, elements?) {}
+    set_default_style(indices, elements?) {}
+    set_style_on_elements(style, indices, elements?) {}
+    compute_view_padding() {}
 
-});
+    legend_el: any;
+    dot: any;
+    transitions: any;
+    x_scale: any;
+    y_scale: any;
+    pixel_x: any;
+    pixel_y: any;
+    geo_circle_2d: any;
+    trottled_selector_changed: any;
+    invalidated_pixel_position: any;
+    scatter_material: any;
+    camera: any;
+    scene: any;
+    mesh: any;
+    instanced_geometry: any;
+    buffer_marker_geometry: any;
+    canvas_markers: any;
+    canvas_textures: any;
+    im: any;
+    marker_scale: any;
+    marker_plane: any;
+    previous_values: any;
+    attributes_changed: any;
+    attributes_active: any;
+    attributes_active_previous: any;
+    attributes_previous: any;
+    _update_requested: any;
 
-module.exports = {
-    ScatterGL: ScatterGL
+    model: ScatterGLModel;
 };

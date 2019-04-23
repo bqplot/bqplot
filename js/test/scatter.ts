@@ -48,13 +48,6 @@ describe("scatter >", () => {
         scatter.model.set('selected', [0]);
         expect(getFills()).to.deep.equal(['green', 'orange']);
 
-        scatter.model.set('colors', ['red']);
-        expect(getFills()).to.deep.equal(['red', 'orange']);
-
-        scatter.model.set('selected_style', {'fill': 'green', 'stroke': 'none'});
-        scatter.model.set('selected', [0]);
-        expect(getFills()).to.deep.equal(['green', 'orange']);
-
         scatter.model.set('selected', [1]);
         expect(getFills()).to.deep.equal(['orange', 'green']);
 

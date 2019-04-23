@@ -13,15 +13,13 @@
  * limitations under the License.
  */
 
-var d3 = require("d3");
-var _ = require("underscore");
-var basemodel = require("./MarkModel");
-var serialize = require("./serialize");
+import { MarkModel } from './MarkModel';
+import * as serialize from './serialize';
 
-var ScatterGLModel = basemodel.MarkModel.extend({
+export class ScatterGLModel extends MarkModel {
 
-    defaults: function() {
-        return _.extend(basemodel.MarkModel.prototype.defaults(), {
+    defaults() {
+        return {...MarkModel.prototype.defaults(),
             _model_name: "ScatterGLModel",
             _view_name: "ScatterGL",
             x: [],
@@ -38,21 +36,20 @@ var ScatterGLModel = basemodel.MarkModel.extend({
             fill: true,
             drag_color: null,
             drag_size: 5.0,
-            names_unique: true,
-        });
-    },
+            names_unique: true
+        };
+    }
 
-    initialize: function() {
-        ScatterGLModel.__super__.initialize.apply(this, arguments);
-        this.update_domains()
-    },
+    initialize(attributes, options) {
+        super.initialize(attributes, options);
+        this.update_domains();
+    }
 
-    update_domains: function() {
+    update_domains() {
         // color scale needs an issue in DateScaleModel to be fixed. It
         // should be moved here as soon as that is fixed.
-
-       var scales = this.get("scales");
-       for (var key in scales) {
+        var scales = this.get("scales");
+        for (var key in scales) {
             if(scales.hasOwnProperty(key) && key != "color") {
                 var scale = scales[key];
                 if(!this.get("preserve_domain")[key]) {
@@ -61,11 +58,10 @@ var ScatterGLModel = basemodel.MarkModel.extend({
                     scale.del_domain([], this.model_id + key);
                 }
             }
-       }
+        }
     }
 
-
-}, {serializers: _.extend({
+    static serializers = {...MarkModel.serializers,
         x: serialize.array_or_json,
         y: serialize.array_or_json,
         color: serialize.array_or_json,
@@ -74,9 +70,5 @@ var ScatterGLModel = basemodel.MarkModel.extend({
         rotation: serialize.array_or_json,
         opacity: serialize.array_or_json,
         default_opacities: serialize.array_or_json
-    }, basemodel.MarkModel.serializers)
-});
-
-module.exports = {
-    ScatterGLModel: ScatterGLModel
+    }
 };

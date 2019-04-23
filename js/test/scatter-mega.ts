@@ -1,14 +1,10 @@
 import { expect } from 'chai';
 import {DummyManager} from './dummy-manager';
 import * as bqplot from '..';
-import {create_model, create_model_bqplot, create_view, create_figure_scatter} from './widget-utils'
-import * as d3 from 'd3';
-import {Color} from 'three';
+import {create_figure_scatter} from './widget-utils'
 
 
 let r = [1., 0., 0.];
-let g = [0., 1., 0.];
-let b = [0., 0., 1.];
 // let sb_color = new Color('steelblue');
 let sb = [0.27450981736183167, 0.5098039507865906, 0.7058823704719543];
 
@@ -27,7 +23,7 @@ describe("scatter mega >", () => {
 
         expect(scatter.attributes.scalar['size']).to.equal(default_size)
         expect(scatter.attributes_previous.scalar['size']).to.equal(default_size)
-        
+
         scatter.model.set('default_size', default_size*2)
         expect(scatter.attributes.scalar['size']).to.equal(default_size*2)
         expect(scatter.attributes_previous.scalar['size']).to.equal(default_size)
@@ -38,7 +34,7 @@ describe("scatter mega >", () => {
         expect(scatter.attributes.scalar['size']).to.be.undefined
         expect(scatter.attributes_previous.scalar['size']).to.equal(default_size*2)
         expect(scatter.attributes_previous.array['size']).to.be.undefined
-        
+
         scatter.model.set('size', new Float32Array([0.5, 1.0]))
         expect(Array.from(scatter.attributes.array['size'])).to.deep.equal([0.5, 1.0])
         expect(Array.from(scatter.attributes_previous.array['size'])).to.deep.equal([0., 0.5])
