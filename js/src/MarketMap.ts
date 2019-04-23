@@ -543,7 +543,9 @@ export class MarketMap extends Figure {
             selected.forEach(function(data) {
                 const selected_cell = that.fig_map
                     .selectAll(".rect_element")
-                    .filter((d, i) => { d.name === data });
+                    .filter(function(d, i) {
+                        return d.name === data;
+                    });
 
                 that.fig_click
                     .append("rect")
