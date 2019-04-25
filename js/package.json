@@ -65,10 +65,10 @@
   "files": [
     "dist/",
     "css/",
-    "src/",
+    "lib/",
     "shaders/"
   ],
   "jupyterlab": {
-    "extension": "src/jupyterlab-plugin"
+    "extension": "lib/jupyterlab-plugin"
   }
 }
