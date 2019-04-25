@@ -125,7 +125,6 @@ export class MarkModel extends BaseModel {
     };
 
     dirty: boolean;
-    display_el_classes: Array<string>; 
     mark_data: any;
 
 }
