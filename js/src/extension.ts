@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-if (window.require) {
-    window.require.config({
+if ((window as any).require) {
+    (window as any).require.config({
         map: {
             "*" : {
                 "bqplot": "nbextensions/bqplot/index",
@@ -24,6 +24,4 @@ if (window.require) {
 }
 
 // Export the required load_ipython_extension
-module.exports = {
-    load_ipython_extension: function() {}
-};
+export function load_ipython_extension() {}
