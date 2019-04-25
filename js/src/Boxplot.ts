@@ -16,9 +16,12 @@
 import * as d3 from 'd3';
 import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"));
+// Hack to fix problem with webpack providing multiple d3 objects
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import { Mark } from './Mark';
-import { BoxplotModel } from './BoxplotModel'
+import { BoxplotModel } from './BoxplotModel';
+import * as Utils  from './utils';
 
 export class Boxplot extends Mark {
 
@@ -26,8 +29,13 @@ export class Boxplot extends Mark {
         const base_creation_promise = super.render.apply(this);
         const that = this;
 
+        this.selected_style = this.model.get("selected_style");
+        this.unselected_style = this.model.get("unselected_style");
+
         return base_creation_promise.then(function() {
+            that.event_listeners = {};
             that.create_listeners();
+            that.process_interactions();
             that.draw();
         }, null);
     }
@@ -65,6 +73,11 @@ export class Boxplot extends Mark {
         this.listenTo(this.model, "change:box_fill_color", this.update_box_fill_color);
         this.listenTo(this.model, "data_updated", this.draw);
         this.listenTo(this.model, "change:box_width", this.update_box_width);
+        this.listenTo(this.model, "change:selected", this.update_selected);
+        this.listenTo(this.model, "change:interactions", this.process_interactions);
+        this.listenTo(this.parent, "bg_clicked", function() {
+            this.event_dispatcher("parent_clicked");
+        });
     }
 
     update_stroke() {
@@ -149,21 +162,11 @@ export class Boxplot extends Mark {
         this.apply_styles(value);
     }
 
-    apply_styles(indices) {
-        const all_indices = _.range(this.model.mark_data.length);
-        this.set_default_style(all_indices);
-
-        this.set_style_on_elements(this.selected_style, this.selected_indices);
-        const unselected_indices = (indices === undefined) ?
-            [] : _.difference(all_indices, indices);
-        this.set_style_on_elements(this.unselected_style, unselected_indices);
-    }
-
     set_style_on_elements(style, indices) {
         if(indices === undefined || indices.length === 0) {
             return;
         }
-        let elements = this.d3el.selectAll(".boxplot");
+        let elements = this.d3el.selectAll(".box");
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) != -1;
         });
@@ -171,28 +174,12 @@ export class Boxplot extends Mark {
     }
 
     set_default_style(indices) {
-        if(indices === undefined || indices.length === 0) {
-            return;
-        }
-        const color = this.model.get("color");
-        const stroke = this.model.get("stroke");
-        const opacities = this.model.get("opacities");
-        let elements = this.d3el.selectAll(".boxplot")
-            .filter(function(data, index) {
-                return indices.indexOf(index) != -1;
-            });
-
-        elements.style("fill", function(d) {
-              return (d[0] > d[3] ? color : "none");
-          })
-          .style("opacity", function(d, i) {
-                    return opacities[i];
-                });
-
-        elements.selectAll("path, rect")
-          .style("stroke", stroke);
-
-          elements.selectAll(".outliers").style("stroke", stroke);
+        // For all the elements with index in the list indices, the default
+        // style is applied.
+        this.update_outlier_fill_color();
+        this.update_box_fill_color();
+        this.update_stroke();
+        this.update_opacities();
     }
 
     clear_style(style_dict, indices) {
@@ -328,6 +315,89 @@ export class Boxplot extends Mark {
         }
     }
 
+    process_click(interaction) {
+        super.process_click.apply(this, [interaction]);
+
+        if (interaction === "select") {
+            this.event_listeners.parent_clicked = this.reset_selection;
+            this.event_listeners.element_clicked = this.box_click_handler;
+        }
+    }
+
+    box_click_handler(args) {
+        const index = args.index;
+        const that = this;
+        const idx = this.model.get("selected");
+        let selected: number[] = idx ? Utils.deepCopy(idx) : [];
+        // index of box i. Checking if it is already present in the list.
+        const elem_index = selected.indexOf(index);
+        // Replacement for "Accel" modifier.
+        const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
+        if(elem_index > -1 && accelKey) {
+            // if the index is already selected and if accel key is
+            // pressed, remove the element from the list
+            selected.splice(elem_index, 1);
+        } else {
+            if(d3GetEvent().shiftKey) {
+                //If shift is pressed and the element is already
+                //selected, do not do anything
+                if(elem_index > -1) {
+                    return;
+                }
+                //Add elements before or after the index of the current
+                //box which has been clicked
+                const min_index = (selected.length !== 0) ?
+                    d3.min(selected) : -1;
+                const max_index = (selected.length !== 0) ?
+                    d3.max(selected) : that.model.mark_data.length;
+                if(index > max_index){
+                    _.range(max_index+1, index+1).forEach(function(i) {
+                        selected.push(i);
+                    });
+                } else if(index < min_index){
+                    _.range(index, min_index).forEach(function(i) {
+                        selected.push(i);
+                    });
+                }
+            } else if(accelKey) {
+                //If accel is pressed and the box is not already selected
+                //add the box to the list of selected boxes.
+                selected.push(index);
+            }
+            // updating the array containing the box indexes selected
+            // and updating the style
+            else {
+                //if accel is not pressed, then clear the selected ones
+                //and set the current element to the selected
+                selected = [];
+                selected.push(index);
+            }
+        }
+        this.model.set("selected",
+                       ((selected.length === 0) ? null : selected),
+                       {updated_view: this});
+        this.touch();
+        const e = d3GetEvent();
+        if(e.cancelBubble !== undefined) { // IE
+            e.cancelBubble = true;
+        }
+        if(e.stopPropagation) {
+            e.stopPropagation();
+        }
+        e.preventDefault();
+    }
+
+    reset_selection() {
+        this.model.set("selected", null);
+        this.selected_indices = null;
+        this.touch();
+    }
+
+    update_selected(model, value) {
+        this.selected_indices = value;
+        this.apply_styles();
+    }
+
     draw() {
         this.set_ranges();
         const x_scale = this.scales.x;
@@ -346,6 +416,7 @@ export class Boxplot extends Mark {
     }
 
     draw_mark_paths(parentClass, selector) {
+        const that = this;
         const plotData = this.plotData;
         const outlierData = this.outlierData;
 
@@ -415,6 +486,9 @@ export class Boxplot extends Mark {
             })
             .attr("height", function (d, i) {
                 return (d.boxLower - d.boxUpper);
+            }).on("click", function(d, i) {
+                return that.event_dispatcher("element_clicked",
+                                            {"data": d, "index": i});
             });
 
         //Median line
