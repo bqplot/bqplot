@@ -21,7 +21,7 @@ import * as serialize from './serialize';
 export class PieModel extends MarkModel {
 
     defaults() {
-        return {...MarkModel.prototype.defaults(), 
+        return {...MarkModel.prototype.defaults(),
             _model_name: "PieModel",
             _view_name: "Pie",
 
@@ -134,7 +134,7 @@ export class PieModel extends MarkModel {
         return data.data;
     }
 
-    serializers =  {
+   static serializers =  {
         ...MarkModel.serializers,
         sizes: serialize.array_or_json,
         color: serialize.array_or_json
