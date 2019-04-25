@@ -149,12 +149,11 @@ export class Pie extends Mark {
     }
 
     process_click(interaction) {
-        super.process_click([interaction]);
+        super.process_click(interaction);
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.click_handler;
         }
-
     }
 
     relayout() {
