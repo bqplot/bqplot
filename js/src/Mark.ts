@@ -35,7 +35,7 @@ export abstract class Mark extends widgets.WidgetView {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
         super.initialize.apply(this, arguments);
-    },
+    }
 
     render() {
         this.x_padding = 0;
