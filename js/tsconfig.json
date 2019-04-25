@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
-      "allowJs": true,
-      // "declaration": true,
+      "declaration": true,
       "esModuleInterop": true,
       "incremental": true,
       "lib": ["es2015", "dom"],
