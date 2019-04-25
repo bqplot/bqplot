@@ -17,13 +17,19 @@ import * as d3 from 'd3';
 // const d3 =Object.assign({}, require("d3-selection"));
 import { Interaction } from './Interaction';
 const convert_dates = require('./utils').convert_dates;
+import { WidgetView } from '@jupyter-widgets/base';
 
 export abstract class BaseSelector extends Interaction {
 
-    initialize() {
+    initialize(parameters) {
         this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
         this.d3el = d3.select(this.el);
-        super.initialize.apply(this, arguments);
+        // The following line is a workaround to avoid calling the initialize
+        // method from Interaction. Indeed this last one wraps the area responsible
+        // for capturing mouse events in a rect element whose width and height are
+        // 0. The whole hierarchy of Interaction should be refactored to fix this.
+        WidgetView.prototype.initialize.call(this, parameters);
+        //super.initialize.apply(this, arguments);
     }
 
     render() {
