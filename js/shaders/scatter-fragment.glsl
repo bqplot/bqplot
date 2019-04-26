@@ -1,5 +1,9 @@
 #include <fog_pars_fragment>
 #include <alphamap_pars_fragment>
+
+precision highp float;
+precision highp int;
+
 varying vec4 fill_color;
 varying vec4 stroke_color;
 varying vec3 vertex_position;

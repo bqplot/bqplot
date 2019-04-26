@@ -78,7 +78,7 @@ export class ScatterGL extends Mark {
             .attr("height", 200)
             .attr("preserveAspectRatio", "none");
 
-        this.scatter_material = new THREE.ShaderMaterial({
+        this.scatter_material = new THREE.RawShaderMaterial({
             uniforms: {
                 offset: { type: '3f', value: [0, 0, 0] },
                 scale : { type: '3f', value: [1, 1, 1] },

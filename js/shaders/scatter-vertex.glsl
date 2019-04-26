@@ -1,6 +1,9 @@
 #include <fog_pars_vertex>
 #include <scales>
 
+uniform mat4 projectionMatrix;
+uniform mat4 modelViewMatrix;
+
  // for animation, all between 0 and 1
 uniform float animation_time_x;
 uniform float animation_time_y;
@@ -78,6 +81,9 @@ varying float pixel_size;
 // #ifdef AS_LINE
 // attribute vec3 position_previous;
 // #else
+attribute vec3 position;
+attribute vec2 uv;
+
 attribute float x;
 attribute float x_previous;
 attribute float y;
@@ -94,7 +100,6 @@ attribute float opacity_previous;
 
 // boolean not supported, so float will do
 attribute float selected;
-attribute float selected_previous;
 // #endif
 
 uniform sampler2D colormap;
@@ -204,7 +209,6 @@ void main(void) {
     stroke_color.rgb *= stroke_color.a;
 
     // color_rgba = has_selection && has_selected_color ? (selected > 0.5 ? selected_color : unselected_color) : color_rgba;
-    // color_rgb_previous = selected_previous > 0.5 ? selected_color : color_rgb;
     gl_Position = projectionMatrix * vec4(rotate_xy(position, angle) * s, 1.0) +
                   projectionMatrix*modelViewMatrix * vec4(center_pixels + vec3(0., 0., 0.), 1.0);
 }
