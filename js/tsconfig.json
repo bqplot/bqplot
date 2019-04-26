@@ -3,7 +3,6 @@
       "declaration": true,
       "esModuleInterop": true,
       "incremental": true,
-      "lib": ["es2015", "dom"],
       "module": "commonjs",
       "moduleResolution": "node",
       "noEmitOnError": true,
@@ -15,7 +14,7 @@
       "sourceMap": true,
       // "strict": true,
       "strictNullChecks": false,
-      "target": "es2015",
+      "target": "es2017",
       // "types": [],
     },
     "include": [
