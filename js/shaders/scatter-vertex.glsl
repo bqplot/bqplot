@@ -104,7 +104,7 @@ attribute float selected;
 
 uniform sampler2D colormap;
 uniform sampler2D colormap_previous;
-attribute vec2 domain_color;
+uniform vec2 domain_color;
 
 #ifdef USE_COLORMAP
 attribute float color;
@@ -160,8 +160,8 @@ void main(void) {
     vec3 model_pos = rotate_xy(position, 1.) * s + center_pixels;
 
 #ifdef USE_COLORMAP
-    float color_index = color; //(color - domain_color[0]) / (domain_color[1] - domain_color[0]);
-    vec4 color_rgba = texture2D(colormap, vec2(color_index, 0.5));
+    float color_index = (color - domain_color.x) / (domain_color.y - domain_color.x);
+    vec4 color_rgba = texture2D(colormap, vec2(color_index, 0));
 #else
     vec4 color_rgba = vec4(color, 1.0);
 #endif

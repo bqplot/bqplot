@@ -37,21 +37,23 @@ const create_colormap = function(scale) {
     const colors = scale ? scale.model.color_range : ['#ff0000', '#ff0000'];
     const color_scale = d3.scaleLinear()
                               .range(colors)
-                              .domain(_.range(colors.length).map((i) => i/(colors.length-1)));
+                              .domain(_.range(colors.length).map((i) => i / (colors.length - 1)));
     const colormap_array = [];
     const N = 256;
     _.map(_.range(N), (i) => {
-        const index = i/(N-1);
-        const rgb = color_scale(index);
-        const rgb_arr = [parseInt("0x" + String(rgb).substring(1, 3)),
-                       parseInt("0x" + String(rgb).substring(3, 5)),
-                       parseInt("0x" + String(rgb).substring(5, 7))]
-        colormap_array.push(rgb_arr[0], rgb_arr[1], rgb_arr[2])
-    })
+        const index = i / (N - 1);
+        const rgb = d3.color(String(color_scale(index))).hex();
+        const rgb_str = String(rgb);
+        const rgb_arr = [parseInt("0x" + rgb_str.substring(1, 3)),
+                         parseInt("0x" + rgb_str.substring(3, 5)),
+                         parseInt("0x" + rgb_str.substring(5, 7))];
+        colormap_array.push(rgb_arr[0], rgb_arr[1], rgb_arr[2]);
+    });
     const colormap_arr = new Uint8Array(colormap_array);
-    const colormap_texture = new THREE.DataTexture(colormap_arr, N, 1, THREE.RGBFormat, THREE.UnsignedByteType)
+    const colormap_texture = new THREE.DataTexture(colormap_arr, N, 1, THREE.RGBFormat, THREE.UnsignedByteType);
     colormap_texture.needsUpdate = true;
-    return colormap_texture
+
+    return colormap_texture;
 }
 
 export class ScatterGL extends Mark {
@@ -323,37 +325,35 @@ export class ScatterGL extends Mark {
     }
 
     push_color() {
-        // first time, so make the previous value the same
-        let value = this.model.get('color');
+        let color = this.model.get('color');
         let type_name = 'array';
-        if(!value) {
-            let color_names = this.model.get('colors');
-            if(!color_names)
-                color_names = [(this.model.get('unselected_style') || {})['fill'] || 'orange'] ;// TODO: what should the default color be
-            if(color_names) {
+        if(!color) {
+            let colors = this.model.get('colors');
+            if(!colors) {
+                colors = [(this.model.get('unselected_style') || {})['fill'] || 'orange'] ;// TODO: what should the default color be
+            } else {
                 // this.scatter_material.defines['USE_COLORMAP'] = true;
-                let length = color_names.length == 1 ? 1 : this.attributes.length;
-                const color_data = new Float32Array(length * 3);
+                let length = colors.length == 1 ? 1 : this.attributes.length;
+                color = new Float32Array(length * 3);
                 _.each(_.range(length), (i) => {
-                    const color = new THREE.Color(color_names[i % color_names.length]) // TODO: can be done more efficiently
-                    color_data[i*3+0] = color.r;
-                    color_data[i*3+1] = color.g;
-                    color_data[i*3+2] = color.b;
+                    const scatter_color = new THREE.Color(colors[i % colors.length]) // TODO: can be done more efficiently
+                    color[i*3+0] = scatter_color.r;
+                    color[i*3+1] = scatter_color.g;
+                    color[i*3+2] = scatter_color.b;
                 })
-                value = color_data;
                 type_name = length == 1 ? 'scalar_vec3' : 'array_vec3';
             }
         }
         let type_prev = this.attributes.type_name('color');
 
         if(!this.attributes.contains('color')) {
-            this.attributes_previous[type_name]['color'] = this.attributes[type_name]['color'] = value;
+            this.attributes_previous[type_name]['color'] = this.attributes[type_name]['color'] = color;
             type_prev = type_name;
         } else {
             this.attributes_previous.drop('color')
             this.attributes_previous[type_prev]['color'] = this.attributes[type_prev]['color']
             this.attributes.drop('color')
-            this.attributes[type_name]['color'] = value;
+            this.attributes[type_name]['color'] = color;
         }
         this.attributes_previous.compute_length()
         this.attributes.compute_length()
@@ -532,6 +532,22 @@ export class ScatterGL extends Mark {
         const range_y = this.parent.padded_range("y", y_scale.model);
 
         this.scatter_material.uniforms['colormap'].value = create_colormap(this.scales.color)
+        if(this.scales.color) {
+            const color = this.model.get('color');
+            let min;
+            let max;
+            if(this.scales.color.model.min !== null) {
+                min = this.scales.color.model.min;
+            } else {
+                min = Math.min(...color);
+            }
+            if(this.scales.color.model.max !== null) {
+                max = this.scales.color.model.max;
+            } else {
+                max = Math.max(...color);
+            }
+            this.scatter_material.uniforms['domain_color'].value = [min, max];
+        }
 
         _.each(['selected', 'hovered'], (style_type) => {
             _.each(['stroke', 'fill', 'opacity'], (style_property) => {
