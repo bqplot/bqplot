@@ -17,7 +17,7 @@ uniform float animation_time_rotation;
 uniform float animation_time_opacity;
 
 #ifdef HAS_DEFAULT_STROKE_COLOR
-uniform vec4 stroke_color_default;
+uniform vec4 default_stroke_color;
 #endif
 
 uniform bool has_selection;
@@ -76,7 +76,7 @@ varying vec4 stroke_color;
 varying vec3 vertex_position;
 varying vec2 vertex_uv;
 varying vec2 vUv;
-varying float pixel_size;
+varying float marker_size;
 
 // #ifdef AS_LINE
 // attribute vec3 position_previous;
@@ -152,9 +152,9 @@ void main(void) {
 
 
     // times 4 because of the normalized coordinates, and radius vs diameter use
-    pixel_size = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size)) * marker_scale * 4.;
+    marker_size = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size)) * marker_scale * 4.;
     // we draw larger than the size for the stroke_width (on both side)
-    float s = pixel_size + 2.0 * stroke_width;
+    float s = marker_size + 2.0 * stroke_width;
     vUv = uv;
     float angle = SCALE_ROTATION(mix(rotation_previous, rotation, animation_time_rotation));
     vec3 model_pos = rotate_xy(position, 1.) * s + center_pixels;
@@ -177,14 +177,13 @@ void main(void) {
     fill_color = color_rgba;
     stroke_color = color_rgba;
 
-    #ifdef HAS_DEFAULT_STROKE_COLOR
-    stroke_color = stroke_color_default;
-    #endif
+#ifdef HAS_DEFAULT_STROKE_COLOR
+    stroke_color = default_stroke_color;
+#endif
 
     float opacity_value = SCALE_OPACITY(mix(opacity_previous, opacity, animation_time_opacity));
     fill_color.a *= opacity_value;
     stroke_color.a *= opacity_value;
-
 
     if(has_selection) {
         if(has_selected_fill && selected > 0.5 )
@@ -203,12 +202,12 @@ void main(void) {
             stroke_color.a *= unselected_opacity;
             fill_color.a *= unselected_opacity;
         }
-
     }
+
     fill_color.rgb *= fill_color.a;
     stroke_color.rgb *= stroke_color.a;
 
     // color_rgba = has_selection && has_selected_color ? (selected > 0.5 ? selected_color : unselected_color) : color_rgba;
     gl_Position = projectionMatrix * vec4(rotate_xy(position, angle) * s, 1.0) +
-                  projectionMatrix*modelViewMatrix * vec4(center_pixels + vec3(0., 0., 0.), 1.0);
+                  projectionMatrix * modelViewMatrix * vec4(center_pixels + vec3(0., 0., 0.), 1.0);
 }

@@ -66,7 +66,6 @@ export class ScatterGLModel extends MarkModel {
         y: serialize.array_or_json,
         color: serialize.array_or_json,
         size: serialize.array_or_json,
-        selected: serialize.array_or_json,
         rotation: serialize.array_or_json,
         opacity: serialize.array_or_json,
         default_opacities: serialize.array_or_json

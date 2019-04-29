@@ -4,27 +4,29 @@
 precision highp float;
 precision highp int;
 
+#define PI 3.1415926538
+
+#define FAST_CIRCLE 1
+#define FAST_SQUARE 2
+#define FAST_ARROW 3
+
+// This parameter is used for reducing aliasing
+#define SMOOTH_PIXELS 1.0
+
 varying vec4 fill_color;
 varying vec4 stroke_color;
 varying vec3 vertex_position;
 varying vec2 vertex_uv;
 varying vec2 vUv;
-varying float pixel_size;
-
-uniform sampler2D texture;
-#ifdef USE_TEXTURE
-uniform sampler2D texture_previous;
-uniform float animation_time_texture;
-#endif
+varying float marker_size;
 
 uniform bool fill;
 uniform float stroke_width;
 
-#define FAST_CIRCLE 1
-#define FAST_SQUARE 2
-#define FAST_ARROW 3
-#define SMOOTH_PIXELS 1.0
 
+/*
+ * Rotate a point in the 2-D plane, given an angle in radians
+ */
 vec2 rotate_xy(vec2 x, float angle) {
     float sina = sin(angle);
     float cosa = cos(angle);
@@ -32,66 +34,120 @@ vec2 rotate_xy(vec2 x, float angle) {
     return m * x.xy;
 }
 
+/*
+ * Returns 1.0 if pixel inside of a circle (0.0 otherwise) given the circle radius and the
+ * pixel position.
+ */
+float circle(in float radius, in vec2 pixel_position) {
+    // This function does not use the ellipse function for optimization purpose
+    // Circle equation: x^2 + y^2 = radius^2
+    float d = dot(pixel_position, pixel_position);
+    float r1 = pow(radius - SMOOTH_PIXELS, 2.0);
+    float r2 = pow(radius + SMOOTH_PIXELS, 2.0);
+    return 1.0 - smoothstep(r1, r2, d);
+}
+
+/*
+ * Returns 1.0 if pixel inside of an ellipse (0.0 otherwise) given the ellipse radius and the
+ * pixel position.
+ */
+float ellipse(in float a, in float b, in vec2 pixel_position) {
+    // Ellipse equation: b^2 * x^2 + a^2 * y^2 = a^2 * b^2
+    float r_x = pow(a, 2.0);
+    float r_y = pow(b, 2.0);
+    float d = r_y * pow(pixel_position.x, 2.0) + r_x * pow(pixel_position.y, 2.0);
+    float r1 = pow(a - SMOOTH_PIXELS, 2.0) * pow(b - SMOOTH_PIXELS, 2.0);
+    float r2 = pow(a + SMOOTH_PIXELS, 2.0) * pow(b + SMOOTH_PIXELS, 2.0);
+    return 1.0 - smoothstep(r1, r2, d);
+}
+
+/*
+ * Returns 1.0 if pixel inside of a rectangle (0.0 otherwise) given the rectangle half-size
+ * on the x and y axes and the pixel position.
+ */
+float rectangle(in vec2 size, in vec2 pixel_position) {
+    vec2 rec = smoothstep(vec2(-SMOOTH_PIXELS), vec2(SMOOTH_PIXELS), size - abs(pixel_position));
+    return rec.x * rec.y;
+}
+
+/*
+ * Returns 1.0 if pixel inside of a square (0.0 otherwise) given the square half-size
+ * and the pixel position.
+ */
+float square(in float size, in vec2 pixel_position) {
+    return rectangle(vec2(size), pixel_position);
+}
+
+float isosceles_triangle(in float angle, in float height, in vec2 pixel_position) {
+    float half_angle = angle / 2.0;
+
+    // The triangle center is on vec2(0.0, -height/3.0)
+    vec2 translated_pixel = vec2(pixel_position.x, pixel_position.y - height / 3.0);
+
+    vec2 pixel_left = rotate_xy(translated_pixel, -half_angle);
+    vec2 pixel_right = rotate_xy(translated_pixel, half_angle);
+
+    float half_height = height * 0.5;
+
+    float half_bottom = half_height * tan(half_angle);
+
+    return smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, half_bottom + pixel_left.x) *
+           smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, half_bottom - pixel_right.x) *
+           smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, translated_pixel.y + half_height);
+}
+
 
 void main(void) {
-    #if FAST_DRAW == FAST_CIRCLE
-        vec2 pixel = (vUv - 0.5) * (pixel_size + 2.0 * stroke_width);
-        float r = length(pixel);
-        float fill_weight = 1.0 - smoothstep(pixel_size/2.0 - stroke_width - SMOOTH_PIXELS, pixel_size/2.0 - stroke_width + SMOOTH_PIXELS, r);
-        float edge_weight = 1.0 - smoothstep(pixel_size/2.0 + stroke_width - SMOOTH_PIXELS, pixel_size/2.0 + stroke_width + SMOOTH_PIXELS, r);
-        float stroke_weight = (1.0 - fill_weight) * edge_weight;
+    // pixel is the pixel position relatively to the marker,
+    // e.g. vec2(0.) would be the center of the square marker
+    // e.g. vec2(marker_size + 2.0 * stroke_width) would be the top-right pixel of the square marker
+    vec2 pixel = (vUv - 0.5) * (marker_size + 2.0 * stroke_width);
 
-        fill_weight *= (fill ? 1.0 : 0.0);
+    // fill_weight and stroke_weight are color factors
+    // e.g. if fill_weight == 1.0 then the pixel color will be fill_color
+    // e.g. if stroke_weight == 1.0 then the pixel color will be stroke_color
+    float fill_weight = 0.0;
+    float stroke_weight = 0.0;
 
-        vec4 color = fill_color * fill_weight + stroke_color * stroke_weight;
-        color.a = fill_color.a * fill_weight + stroke_color.a * stroke_weight;
+    // Note for the reader: In the following code,
+    // - `1.0`     -> True
+    // - `0.0`     -> False
+    // - `1.0 - A` -> NOT A
+    // - `A + B`   -> A OR B
+    // - `A * B`   -> A AND B
 
-        gl_FragColor = color;
-    #elif FAST_DRAW == FAST_SQUARE
-        vec2 pixel = (vUv - 0.5) * (pixel_size + 2.0 * stroke_width);
-        float stroke_weight_inverse = smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, -(abs(pixel.x) - pixel_size/2.0 + stroke_width/2.0))
-                                    * smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, -(abs(pixel.y) - pixel_size/2.0 + stroke_width/2.0));
-        float stroke_weight = 1.0 - stroke_weight_inverse;
-        float fill_weight =  1.0*     smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, -(abs(pixel.x) - pixel_size/2.0 + stroke_width/2.0))
-                                    * smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, -(abs(pixel.y) - pixel_size/2.0 + stroke_width/2.0));
-        fill_weight *= (fill ? 1.0 : 0.0);
-        vec4 color = fill_color * fill_weight + stroke_color * stroke_weight;
-        color.a = fill_color.a * fill_weight + stroke_color.a * stroke_weight;
+#if FAST_DRAW == FAST_CIRCLE
+    float inner_radius = marker_size/2.0 - stroke_width;
+    float outer_radius = marker_size/2.0 + stroke_width;
 
-        gl_FragColor = color;
-    #elif FAST_DRAW == FAST_ARROW
-        vec2 pixel = (vUv - 0.5) * (pixel_size + 2.0 * stroke_width);
+    float inner_circle = circle(inner_radius, pixel);
+    float outer_circle = circle(outer_radius, pixel);
 
-        // take 2 rotated coordinate systems
-        float angle = 10. * 3.14 / 180.;
-        vec2 pixel_left = (rotate_xy(vUv - vec2(0.5, 1.0), -angle) + vec2(0.0, 0.5)) * (pixel_size + 2.0 * stroke_width);
-        vec2 pixel_right = (rotate_xy(vUv - 1.0, angle) + 0.5) * (pixel_size + 2.0 * stroke_width);
+    fill_weight = inner_circle;
+    stroke_weight = (1.0 - inner_circle) * outer_circle;
 
-        float bottom_width = tan(angle) * pixel_size;
-        float edge_weight_bottom = (1.0 - smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, abs(pixel.y + pixel_size/2.0) - stroke_width/2.0))
-                                 * (1.0 - smoothstep(bottom_width - SMOOTH_PIXELS, bottom_width + SMOOTH_PIXELS, abs(pixel.x)));
-        float edge_weight_left  = (1.0 - smoothstep(- SMOOTH_PIXELS, + SMOOTH_PIXELS, abs(pixel_left.x) - stroke_width/2.0));
-        float edge_weight_right = (1.0 - smoothstep(- SMOOTH_PIXELS, + SMOOTH_PIXELS, abs(pixel_right.x) - stroke_width/2.0));
+#elif FAST_DRAW == FAST_SQUARE
+    float inner_square_size = marker_size/2.0 - stroke_width;
 
-        float fill_weight = smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, pixel.y + pixel_size/2.0 - stroke_width/2.)
-                          * smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, pixel_left.x  - stroke_width/2.)
-                          * smoothstep(-SMOOTH_PIXELS, SMOOTH_PIXELS, -pixel_right.x - stroke_width/2.);
+    fill_weight = square(inner_square_size, pixel);
 
-        float stroke_weight = 1.0 - (1.0 - edge_weight_bottom) * (1.0 - edge_weight_left) * (1.0 - edge_weight_right);
+    stroke_weight = 1.0 - fill_weight;
 
-        vec4 color = fill_color * fill_weight + stroke_color * stroke_weight;
-        color.a = fill_color.a * fill_weight + stroke_color.a * stroke_weight;
-        gl_FragColor = color;
-    #else
-        vec4 weights = texture2D(texture, vUv);
-        // we use weights.r for the fill weight, and weights.g for the stroke weights
-        // we also use the stroke weight as alpha blending, so we don't add fill and stroke
-        // colors together, but blend them
-        float alpha = weights.g;
-        gl_FragColor   = mix(fill_color   * weights.r, stroke_color, alpha);
-        gl_FragColor.a = mix(fill_color.a * weights.r, stroke_color.a, alpha);
-    #endif
-#ifdef ALPHATEST
- if ( gl_FragColor.a < ALPHATEST ) discard;
+#elif FAST_DRAW == FAST_ARROW
+    float angle = 20. * PI / 180.;
+
+    float inner_height = marker_size/2.0 - stroke_width;
+    float outer_height = marker_size/2.0 + stroke_width;
+
+    float inner_triangle = isosceles_triangle(angle, inner_height, pixel);
+    float outer_triangle = isosceles_triangle(angle, outer_height, pixel);
+
+    fill_weight = inner_triangle;
+    stroke_weight = (1.0 - inner_triangle) * outer_triangle;
+
 #endif
+
+    fill_weight *= (fill ? 1.0 : 0.0);
+
+    gl_FragColor = fill_color * fill_weight + stroke_color * stroke_weight;
 }
