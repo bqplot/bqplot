@@ -9,18 +9,17 @@ precision highp int;
 #define FAST_CIRCLE 1
 #define FAST_SQUARE 2
 #define FAST_ARROW 3
+#define FAST_CROSS 4
 
 // This parameter is used for reducing aliasing
 #define SMOOTH_PIXELS 1.0
 
-varying vec4 fill_color;
-varying vec4 stroke_color;
-varying vec3 vertex_position;
-varying vec2 vertex_uv;
-varying vec2 vUv;
-varying float marker_size;
+varying vec4 v_fill_color;
+varying vec4 v_stroke_color;
+varying float v_inner_size;
+varying float v_outer_size;
+varying vec2 v_pixel;
 
-uniform bool fill;
 uniform float stroke_width;
 
 
@@ -38,7 +37,7 @@ vec2 rotate_xy(vec2 x, float angle) {
  * Returns 1.0 if pixel inside of a circle (0.0 otherwise) given the circle radius and the
  * pixel position.
  */
-float circle(in float radius, in vec2 pixel_position) {
+float smooth_circle(in float radius, in vec2 pixel_position) {
     // This function does not use the ellipse function for optimization purpose
     // Circle equation: x^2 + y^2 = radius^2
     float d = dot(pixel_position, pixel_position);
@@ -51,7 +50,7 @@ float circle(in float radius, in vec2 pixel_position) {
  * Returns 1.0 if pixel inside of an ellipse (0.0 otherwise) given the ellipse radius and the
  * pixel position.
  */
-float ellipse(in float a, in float b, in vec2 pixel_position) {
+float smooth_ellipse(in float a, in float b, in vec2 pixel_position) {
     // Ellipse equation: b^2 * x^2 + a^2 * y^2 = a^2 * b^2
     float r_x = pow(a, 2.0);
     float r_y = pow(b, 2.0);
@@ -65,8 +64,17 @@ float ellipse(in float a, in float b, in vec2 pixel_position) {
  * Returns 1.0 if pixel inside of a rectangle (0.0 otherwise) given the rectangle half-size
  * on the x and y axes and the pixel position.
  */
-float rectangle(in vec2 size, in vec2 pixel_position) {
+float smooth_rectangle(in vec2 size, in vec2 pixel_position) {
     vec2 rec = smoothstep(vec2(-SMOOTH_PIXELS), vec2(SMOOTH_PIXELS), size - abs(pixel_position));
+    return rec.x * rec.y;
+}
+
+/*
+ * Returns 1.0 if pixel inside of a rectangle (0.0 otherwise) given the rectangle half-size
+ * on the x and y axes and the pixel position.
+ */
+float rectangle(in vec2 size, in vec2 pixel_position) {
+    vec2 rec = step(0.0, size - abs(pixel_position));
     return rec.x * rec.y;
 }
 
@@ -74,11 +82,11 @@ float rectangle(in vec2 size, in vec2 pixel_position) {
  * Returns 1.0 if pixel inside of a square (0.0 otherwise) given the square half-size
  * and the pixel position.
  */
-float square(in float size, in vec2 pixel_position) {
-    return rectangle(vec2(size), pixel_position);
+float smooth_square(in float size, in vec2 pixel_position) {
+    return smooth_rectangle(vec2(size), pixel_position);
 }
 
-float isosceles_triangle(in float angle, in float height, in vec2 pixel_position) {
+float smooth_isosceles_triangle(in float angle, in float height, in vec2 pixel_position) {
     float half_angle = angle / 2.0;
 
     // The triangle center is on vec2(0.0, -height/3.0)
@@ -97,15 +105,21 @@ float isosceles_triangle(in float angle, in float height, in vec2 pixel_position
 }
 
 
-void main(void) {
-    // pixel is the pixel position relatively to the marker,
-    // e.g. vec2(0.) would be the center of the square marker
-    // e.g. vec2(marker_size + 2.0 * stroke_width) would be the top-right pixel of the square marker
-    vec2 pixel = (vUv - 0.5) * (marker_size + 2.0 * stroke_width);
+/*
+ * Returns 1.0 if pixel inside of a cross shape (0.0 otherwise) given the cross half-size
+ * on the x and y axes and the pixel position.
+ */
+float cross(in vec2 size, in vec2 pixel_position) {
+    float cross_shape = rectangle(size.xy, pixel_position) +
+                        rectangle(size.yx, pixel_position);
+    return step(1.0, cross_shape); // equivalent of `cross_shape >= 1.0 ? 1.0 : 0.0`;
+}
 
+
+void main(void) {
     // fill_weight and stroke_weight are color factors
-    // e.g. if fill_weight == 1.0 then the pixel color will be fill_color
-    // e.g. if stroke_weight == 1.0 then the pixel color will be stroke_color
+    // e.g. if fill_weight == 1.0 then the pixel color will be v_fill_color
+    // e.g. if stroke_weight == 1.0 then the pixel color will be v_stroke_color
     float fill_weight = 0.0;
     float stroke_weight = 0.0;
 
@@ -116,38 +130,43 @@ void main(void) {
     // - `A + B`   -> A OR B
     // - `A * B`   -> A AND B
 
+    float inner_shape = 0.0;
+    float outer_shape = 0.0;
+
 #if FAST_DRAW == FAST_CIRCLE
-    float inner_radius = marker_size/2.0 - stroke_width;
-    float outer_radius = marker_size/2.0 + stroke_width;
 
-    float inner_circle = circle(inner_radius, pixel);
-    float outer_circle = circle(outer_radius, pixel);
-
-    fill_weight = inner_circle;
-    stroke_weight = (1.0 - inner_circle) * outer_circle;
+    inner_shape = smooth_circle(v_inner_size, v_pixel);
+    outer_shape = smooth_circle(v_outer_size, v_pixel);
 
 #elif FAST_DRAW == FAST_SQUARE
-    float inner_square_size = marker_size/2.0 - stroke_width;
 
-    fill_weight = square(inner_square_size, pixel);
+    inner_shape = smooth_square(v_inner_size, v_pixel);
+    outer_shape = 1.0; // Always in the outer_shape
 
-    stroke_weight = 1.0 - fill_weight;
+#elif FAST_DRAW == FAST_CROSS
+
+    float r = v_outer_size / 3.0;
+
+    inner_shape = cross(vec2(v_inner_size, r - 2.0 * stroke_width), v_pixel);
+    outer_shape = cross(vec2(r, v_outer_size), v_pixel);
 
 #elif FAST_DRAW == FAST_ARROW
+
     float angle = 20. * PI / 180.;
 
-    float inner_height = marker_size/2.0 - stroke_width;
-    float outer_height = marker_size/2.0 + stroke_width;
-
-    float inner_triangle = isosceles_triangle(angle, inner_height, pixel);
-    float outer_triangle = isosceles_triangle(angle, outer_height, pixel);
-
-    fill_weight = inner_triangle;
-    stroke_weight = (1.0 - inner_triangle) * outer_triangle;
+    inner_shape = smooth_isosceles_triangle(angle, v_inner_size, v_pixel);
+    outer_shape = smooth_isosceles_triangle(angle, v_outer_size, v_pixel);
 
 #endif
 
-    fill_weight *= (fill ? 1.0 : 0.0);
+    // `inner_shape` is the shape without the stroke, `outer_shape` is the shape with the stroke
+    // note that the stroke is always drawn, only that it has the `v_fill_color` if stroke is None
+    fill_weight = inner_shape;
+    stroke_weight = (1.0 - inner_shape) * outer_shape;
 
-    gl_FragColor = fill_color * fill_weight + stroke_color * stroke_weight;
+#if !FILL
+    fill_weight = 0.0;
+#endif
+
+    gl_FragColor = v_fill_color * fill_weight + v_stroke_color * stroke_weight;
 }
