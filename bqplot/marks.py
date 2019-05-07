@@ -522,7 +522,7 @@ class _ScatterBase(Mark):
         'opacity': {'dimension': 'opacity'},
         'rotation': {'dimension': 'rotation'}
     }).tag(sync=True)
-    default_opacities = Array(None, allow_none=True)\
+    default_opacities = Array([1.0])\
         .tag(sync=True, display_name='Opacities', **array_serialization)\
         .valid(array_squeeze, array_dimension_bounds(1, 1))
     hovered_style = Dict().tag(sync=True)

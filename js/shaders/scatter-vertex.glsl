@@ -8,11 +8,7 @@ uniform mat4 modelViewMatrix;
 uniform float animation_time_x;
 uniform float animation_time_y;
 uniform float animation_time_z;
-uniform float animation_time_vx;
-uniform float animation_time_vy;
-uniform float animation_time_vz;
 uniform float animation_time_size;
-uniform float animation_time_color;
 uniform float animation_time_rotation;
 uniform float animation_time_opacity;
 
@@ -77,9 +73,6 @@ varying float v_inner_size;
 varying float v_outer_size;
 varying vec2 v_pixel;
 
-// #ifdef AS_LINE
-// attribute vec3 position_previous;
-// #else
 attribute vec3 position;
 attribute vec2 uv;
 
@@ -97,12 +90,10 @@ attribute float rotation_previous;
 attribute float opacity;
 attribute float opacity_previous;
 
-// boolean not supported, so float will do
+// Boolean or int not supported for attributes, using a float instead
 attribute float selected;
-// #endif
 
 uniform sampler2D colormap;
-uniform sampler2D colormap_previous;
 uniform vec2 domain_color;
 
 #ifdef USE_COLORMAP
@@ -110,13 +101,6 @@ attribute float color;
 #else
 attribute vec3 color;
 #endif
-
-#ifdef USE_COLORMAP_PREVIOUS
-attribute float color_previous;
-#else
-attribute vec3 color_previous;
-#endif
-
 
 
 #define SCALE_X(x) scale_transform_linear(x, range_x, domain_x)
@@ -175,15 +159,7 @@ void main(void) {
 #else
     vec4 color_rgba = vec4(color, 1.0);
 #endif
-#ifdef USE_COLORMAP_PREVIOUS
-    float color_index_previous = color_previous;
-    vec4 color_rgba_previous = texture2D(colormap, vec2(color_index_previous, 0.5));
-#else
-    vec4 color_rgba_previous = vec4(color_previous, 1.0);
-#endif
-    // we don't have selected_color_previous, should we?
-    // if(selected )
-    color_rgba = mix(color_rgba_previous, color_rgba, animation_time_color);
+
     v_fill_color = color_rgba;
     v_stroke_color = color_rgba;
 

@@ -112,7 +112,7 @@ float smooth_isosceles_triangle(in float angle, in float height, in vec2 pixel_p
 float cross(in vec2 size, in vec2 pixel_position) {
     float cross_shape = rectangle(size.xy, pixel_position) +
                         rectangle(size.yx, pixel_position);
-    return step(1.0, cross_shape); // equivalent of `cross_shape >= 1.0 ? 1.0 : 0.0`;
+    return clamp(cross_shape, 0.0, 1.0);
 }
 
 
