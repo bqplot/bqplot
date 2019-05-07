@@ -185,6 +185,7 @@ export class ScatterGL extends Mark {
             this.scene.add(this.mesh);
 
             this.create_listeners();
+            this.compute_view_padding();
             this.update_scene();
             this.listenTo(this.parent, "margin_updated", () => {
                 this.update_scene();
@@ -878,11 +879,22 @@ export class ScatterGL extends Mark {
         this.update_position();
     }
 
+    compute_view_padding() {
+        //This function computes the padding along the x and y directions.
+        //The value is in pixels.
+        const x_padding = Math.sqrt(this.model.get("default_size")) / 2 + 1.0;
+
+        if(x_padding !== this.x_padding || x_padding !== this.y_padding) {
+            this.x_padding = x_padding;
+            this.y_padding = x_padding;
+            this.trigger("mark_padding_updated");
+        }
+    }
+
     draw(animate?) {}
     clear_style(style_dict, indices?, elements?) {}
     set_default_style(indices, elements?) {}
     set_style_on_elements(style, indices, elements?) {}
-    compute_view_padding() {}
 
     legend_el: any;
     dot: any;
