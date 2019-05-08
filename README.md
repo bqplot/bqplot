@@ -2,7 +2,7 @@
 
 [![Travis](https://travis-ci.org/bloomberg/bqplot.svg?branch=master)](https://travis-ci.org/bloomberg/bqplot)
 [![Documentation](https://readthedocs.org/projects/bqplot/badge/?version=latest)](http://bqplot.readthedocs.org)
-[![Binder](https://img.shields.io/badge/launch-binder-brightgreen.svg)](https://mybinder.org/v2/gh/bloomberg/bqplot/stable?filepath=examples/Index.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bloomberg/bqplot/stable?filepath=examples/Index.ipynb)
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jupyter-widgets/Lobby)
 
 2-D plotting library for Project Jupyter
