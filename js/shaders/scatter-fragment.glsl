@@ -4,15 +4,19 @@
 precision highp float;
 precision highp int;
 
-#define PI 3.1415926538
-
 #define FAST_CIRCLE 1
 #define FAST_SQUARE 2
 #define FAST_ARROW 3
 #define FAST_CROSS 4
+#define FAST_TRIANGLE_UP 5
+#define FAST_TRIANGLE_DOWN 6
 
 // This parameter is used for reducing aliasing
 #define SMOOTH_PIXELS 1.0
+
+// ANGLE_X = X * PI / 180.
+#define ANGLE_20 0.3490658503988659
+#define ANGLE_60 1.0471975511965976
 
 varying vec4 v_fill_color;
 varying vec4 v_stroke_color;
@@ -152,10 +156,20 @@ void main(void) {
 
 #elif FAST_DRAW == FAST_ARROW
 
-    float angle = 20. * PI / 180.;
+    inner_shape = smooth_isosceles_triangle(ANGLE_20, v_inner_size, v_pixel);
+    outer_shape = smooth_isosceles_triangle(ANGLE_20, v_outer_size, v_pixel);
 
-    inner_shape = smooth_isosceles_triangle(angle, v_inner_size, v_pixel);
-    outer_shape = smooth_isosceles_triangle(angle, v_outer_size, v_pixel);
+#elif FAST_DRAW == FAST_TRIANGLE_UP
+
+    inner_shape = smooth_isosceles_triangle(ANGLE_60, v_inner_size, v_pixel);
+    outer_shape = smooth_isosceles_triangle(ANGLE_60, v_outer_size, v_pixel);
+
+#elif FAST_DRAW == FAST_TRIANGLE_DOWN
+
+    vec2 reversed_pixel = vec2(v_pixel.x, -v_pixel.y);
+
+    inner_shape = smooth_isosceles_triangle(ANGLE_60, v_inner_size, reversed_pixel);
+    outer_shape = smooth_isosceles_triangle(ANGLE_60, v_outer_size, reversed_pixel);
 
 #endif
 

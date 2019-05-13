@@ -688,6 +688,8 @@ export class ScatterGL extends Mark {
         const FAST_SQUARE = 2;
         const FAST_ARROW = 3;
         const FAST_CROSS = 4;
+        const FAST_TRIANGLE_UP = 5;
+        const FAST_TRIANGLE_DOWN = 6;
 
         const marker = this.model.get('marker');
         this.dot.type(marker);
@@ -708,6 +710,14 @@ export class ScatterGL extends Mark {
         if(marker === 'cross') {
             this.scatter_material.uniforms.marker_scale.value = 3./(2. * Math.sqrt(5.));
             this.scatter_material.defines['FAST_DRAW'] = FAST_CROSS;
+        }
+        if(marker === 'triangle-up') {
+            this.scatter_material.uniforms.marker_scale.value = 2.;
+            this.scatter_material.defines['FAST_DRAW'] = FAST_TRIANGLE_UP;
+        }
+        if(marker === 'triangle-down') {
+            this.scatter_material.uniforms.marker_scale.value = 2.;
+            this.scatter_material.defines['FAST_DRAW'] = FAST_TRIANGLE_DOWN;
         }
 
         this.scatter_material.needsUpdate = true;
