@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import {deepCopy, convert_dates} from '../src/utils';
+import {deepCopy, convert_dates} from '../utils';
 
 
 describe("utils >", () => {

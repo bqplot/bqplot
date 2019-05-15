@@ -16,7 +16,7 @@ import { Mark } from './Mark';
 import * as d3 from 'd3';
 import * as markers from './Markers';
 import * as _ from 'underscore';
-// import { GLAttributes } from './glattributes';
+import { deepCopy } from './utils';
 import { ScatterGLModel } from './ScatterGLModel';
 import * as THREE from 'three';
 
@@ -319,7 +319,7 @@ export class ScatterGL extends Mark {
     }
 
     get_opacity_attribute_parameters() {
-        let default_opacities = this.model.get('default_opacities');
+        let default_opacities = this.model.get('default_opacities') || [1.];
 
         if (default_opacities.length == 0) default_opacities = [1.];
 
@@ -527,12 +527,6 @@ export class ScatterGL extends Mark {
         sync_fill();
 
         this.listenTo(this.model, "change", this.update_legend);
-
-        // many things to implement still
-        // this.listenTo(this.model, "change:default_skew", this.update_default_skew);
-        // this.listenTo(this.model, "change:default_rotation", this.update_xy_position);
-        // this.listenTo(this.model, "change:fill", this.update_fill);
-        // this.listenTo(this.model, "change:display_names", this.update_names);
     }
 
     update_attribute(name: String, value: THREE.InstancedBufferAttribute, new_parameters: AttributeParameters) {
@@ -560,11 +554,17 @@ export class ScatterGL extends Mark {
         if (animate) {
             // `value_previous.array` must have at least the same length as `value.array` in order for animation to work
             if (value.array.length < new_parameters.array.length && value.meshPerAttribute == new_parameters.mesh_per_attribute) {
-                const array = to_float_array(new_parameters.array);
+                const array = deepCopy(new_parameters.array);
                 // array.fill(default_value);
                 array.set(value.array);
                 value_previous = this.update_attribute(
                     name + '_previous', value_previous, new AttributeParameters(array, value.itemSize, value.meshPerAttribute, value.normalized));
+            }
+            // meshPerAttribute changed but not the array size, it is very likely that the number of markers has changed, value_previous must
+            // have the right meshPerAttribute
+            else if (value.array.length == new_parameters.array.length && value.meshPerAttribute != new_parameters.mesh_per_attribute) {
+                value_previous = this.update_attribute(
+                    name + '_previous', value_previous, new AttributeParameters(value.array, value.itemSize, new_parameters.mesh_per_attribute, value.normalized));
             }
             else {
                 value_previous = this.update_attribute(
@@ -630,6 +630,7 @@ export class ScatterGL extends Mark {
         // order to prevent buffer overflows. We assume here that
         // `update_markers_number` is called from `update_x` or `update_y` hence they
         // are already correctly sized
+        // If the number of markers has decreased, no need to change the buffer sizes
         if (this.markers_number > old_markers_number) {
             this.update_color(false);
             this.update_opacity(false);
