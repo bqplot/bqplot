@@ -1,4 +1,4 @@
-import { array_or_json } from "../src/serialize";
+import { array_or_json } from "../serialize";
 import { expect } from 'chai';
 // import {DummyManager} from './dummy-manager';
 // import bqplot = require('..');

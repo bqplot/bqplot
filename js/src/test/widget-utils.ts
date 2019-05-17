@@ -17,7 +17,7 @@ async function create_model(manager, module: string, model: string, view: string
             model_id: id,
     }, args );
     return model_widget;
-   
+
 }
 
 export
@@ -35,27 +35,29 @@ async function create_widget(manager, name: string, id: string, args: Object) {
 }
 
 export
-async function create_figure_scatter(manager, x, y) {
+async function create_figure_scatter(manager, x, y, mega=false) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
-    let scales = {x: JSON.stringify(scale_x), y: JSON.stringify(scale_y)}
+    // TODO: the default values for the ColorScale should not be required, but defined in the defaults method
+    let scale_color = await create_model_bqplot(manager, 'ColorScale', 'scale_color', {scheme: 'RdYlGn', colors: []})
+    let scales = {x: scale_x.toJSON(), y: scale_y.toJSON(), color: scale_color.toJSON()}
     let color    = null;
-    let size     = {type: null, values: null};
-    let opacity  = {type: null, values: null};
-    let rotation = {type: null, values: null};
+    let size     = null;
+    let opacity  = null;
+    let rotation = null;
     let skew     = {type: null, values: null};
 
-    let scatterModel = await create_model_bqplot(manager, 'Scatter', 'scatter1', {scales: scales,
-        x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew,
-        visible: true, default_size: 64,
+    let scatterModel = await create_model_bqplot(manager, mega ? 'ScatterGL' : 'Scatter' , 'scatter1', {scales: scales,
+        x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew, colors: ['steelblue'],
+        visible: true, default_size: 64, selected_style: {}, unselected_style: {}, hovered_style: {}, unhovered_style: {},
         preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})
     let figureModel;
     try {
-        figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'], 
-            layout: JSON.stringify(layout), _dom_classes: [],
+        figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'],
+            layout: layout.toJSON(), _dom_classes: [],
             figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
-            marks: [JSON.stringify(scatterModel)]})
+            marks: [scatterModel.toJSON()]})
     } catch(e) {
         console.error('error', e)
     }
@@ -70,8 +72,8 @@ async function create_figure_lines(manager, x, y, default_scales={}) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
-    let scales = {x: JSON.stringify(scale_x), y: JSON.stringify(scale_y)}
-    let scales_mark = {x: default_scales['x'] || JSON.stringify(scale_x), y: default_scales['y'] || JSON.stringify(scale_y)}
+    let scales = {x: scale_x.toJSON(), y: scale_y.toJSON()}
+    let scales_mark = {x: default_scales['x'] || scale_x.toJSON(), y: default_scales['y'] || scale_y.toJSON()}
     let color    = null;
     let size     = {type: null, values: null};
     let opacity  = {type: null, values: null};
@@ -85,9 +87,9 @@ async function create_figure_lines(manager, x, y, default_scales={}) {
     let figureModel;
     try {
         figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'],
-            layout: JSON.stringify(layout), _dom_classes: [],
+            layout: layout.toJSON(), _dom_classes: [],
             figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
-            marks: [JSON.stringify(linesModel)]})
+            marks: [linesModel.toJSON()]})
     } catch(e) {
         console.error('error', e)
     }
@@ -100,7 +102,7 @@ async function create_figure_bars(manager, x, y) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:0, max:3, allow_padding: false})
-    let scales = {x: JSON.stringify(scale_x), y: JSON.stringify(scale_y)}
+    let scales = {x: scale_x.toJSON(), y: scale_y.toJSON()}
     let color    = null;
     let size     = {type: null, values: null};
     let opacity  = {type: null, values: null};
@@ -114,9 +116,9 @@ async function create_figure_bars(manager, x, y) {
     let figureModel;
     try {
         figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales['x'], scale_y: scales['y'],
-            layout: JSON.stringify(layout), _dom_classes: [],
+            layout: layout.toJSON(), _dom_classes: [],
             figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
-            marks: [JSON.stringify(barsModel)]})
+            marks: [barsModel.toJSON()]})
     } catch(e) {
         console.error('error', e)
     }

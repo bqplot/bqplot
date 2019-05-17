@@ -1,6 +1,6 @@
 
 import * as _ from 'underscore';
-import isTypedArray from 'is-typedarray';
+import * as isTypedArray from 'is-typedarray';
 
 const typesToArray = {
     int8: Int8Array,

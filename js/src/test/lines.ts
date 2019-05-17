@@ -14,7 +14,7 @@ describe("lines >", () => {
         let x = ['a', 'b'];
         let scale_x = await create_model_bqplot(this.manager, 'OrdinalScale', 'scale_x_ordinal', {allow_padding: false, domain: []});
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)};
-        let objects = await create_figure_lines(this.manager, x, y, {'x': JSON.stringify(scale_x)});
+        let objects = await create_figure_lines(this.manager, x, y, {'x': scale_x.toJSON()});
         let lines = objects.lines;
         let data = lines.d3el.selectAll(".curve").data();
         expect(data[0].values[0].x).to.equal('a');

@@ -42,7 +42,7 @@ from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization, register
 
 from .scales import Scale, DateScale
-from .traits import Date, array_serialization
+from .traits import Date, array_serialization, _array_equal
 from .marks import Lines
 from ._version import __frontend_version__
 import numpy as np
@@ -435,9 +435,12 @@ class BrushSelector(TwoDSelector):
             (x0, y0), (x1, y1) = value
             x = [x0, x1]
             y = [y0, y1]
+
             with self.hold_sync():
-                self.selected_x = x
-                self.selected_y = y
+                if not _array_equal(self.selected_x, x):
+                    self.selected_x = x
+                if not _array_equal(self.selected_y, y):
+                    self.selected_y =y
 
     _view_name = Unicode('BrushSelector').tag(sync=True)
     _model_name = Unicode('BrushSelectorModel').tag(sync=True)

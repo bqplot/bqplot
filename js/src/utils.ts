@@ -15,7 +15,7 @@
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-scale"));
-import isTypedArray from 'is-typedarray';
+import * as isTypedArray from 'is-typedarray';
 import * as _ from 'underscore';
 
 // the following is a regex to match all valid time formats that can be
