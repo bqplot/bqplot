@@ -749,19 +749,28 @@ export class ScatterGL extends Mark {
 
         if(this.scales.color) {
             const color = this.model.get('color');
-            let min;
-            let max;
-            if(this.scales.color.model.min !== null) {
-                min = this.scales.color.model.min;
+            if(color) {
+                let min;
+                let max;
+                if(this.scales.color.model.min !== null) {
+                    min = this.scales.color.model.min;
+                } else {
+                    min = Math.min(...color);
+                }
+                if(this.scales.color.model.max !== null) {
+                    max = this.scales.color.model.max;
+                } else {
+                    max = Math.max(...color);
+                }
+                this.scatter_material.uniforms['domain_color'].value = [min, max];
             } else {
-                min = Math.min(...color);
+                if(this.scales.color.model.min !== null && this.scales.color.model.max !== null) {
+                    this.scatter_material.uniforms['domain_color'].value = [this.scales.color.model.min, this.scales.color.model.max];
+                } else {
+                    console.warn('no color set, and color scale does not have a min or max')
+                }
+
             }
-            if(this.scales.color.model.max !== null) {
-                max = this.scales.color.model.max;
-            } else {
-                max = Math.max(...color);
-            }
-            this.scatter_material.uniforms['domain_color'].value = [min, max];
         }
 
         this.update_scene();
@@ -862,6 +871,7 @@ export class ScatterGL extends Mark {
         // impact the position of the elements
         if (color_scale) {
             this.listenTo(color_scale, 'all', this.update_color_map);
+            this.listenTo(this.model, 'change:color', this.update_color_map);
             this.update_color_map();
         }
         if (size_scale) {

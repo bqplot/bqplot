@@ -153,12 +153,25 @@ describe("scatter mega >", () => {
         expect(scatter.color.meshPerAttribute).to.equal(1);
         expect(scatter.scatter_material.defines['USE_COLORMAP']).to.be.false;
 
-        const new_color = new Float32Array([0.5, 1., 0.6, 0.3]);
+        const new_color = new Float32Array([0.5, 1., 0.3, 0.1]);
         scatter.model.set('color', new_color);
         expect(scatter.color.array).to.deep.equal(new_color);
         expect(scatter.color.itemSize).to.equal(1);
         expect(scatter.color.meshPerAttribute).to.equal(1);
         expect(scatter.scatter_material.defines['USE_COLORMAP']).to.be.true;
+        expect(scatter.scatter_material.uniforms['domain_color'].value).to.deep.equal([new_color[3], new_color[1]])
+
+        const new_color2 = new Float32Array([0.5, 2., 0.6, -0.3]);
+        scatter.model.set('color', new_color2);
+        expect(scatter.scatter_material.uniforms['domain_color'].value).to.deep.equal([new_color2[3], new_color2[1]])
+
+        scatter.model.set('color', null);
+        // TODO: now the min/max are undefined, or is there a good default?
+        scatter.scales.color.model.set('min', 1)
+        scatter.scales.color.model.set('max', 3)
+        expect(scatter.scatter_material.uniforms['domain_color'].value).to.deep.equal([1, 3])
+        scatter.scales.color.model.set('min', -1)
+        expect(scatter.scatter_material.uniforms['domain_color'].value).to.deep.equal([-1, 3])
     });
 
     it("selection", async function() {

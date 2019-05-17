@@ -39,7 +39,9 @@ async function create_figure_scatter(manager, x, y, mega=false) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:2, max:3, allow_padding: false})
-    let scales = {x: scale_x.toJSON(), y: scale_y.toJSON()}
+    // TODO: the default values for the ColorScale should not be required, but defined in the defaults method
+    let scale_color = await create_model_bqplot(manager, 'ColorScale', 'scale_color', {scheme: 'RdYlGn', colors: []})
+    let scales = {x: scale_x.toJSON(), y: scale_y.toJSON(), color: scale_color.toJSON()}
     let color    = null;
     let size     = null;
     let opacity  = null;
