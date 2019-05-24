@@ -58,6 +58,12 @@ export class Figure extends widgets.DOMWidgetView {
         this.el.appendChild(this.renderer.domElement);
         this.el.appendChild(svg_interaction)
 
+        // For testing we need to know when the mark_views is created, the tests
+        // can wait for this promise.
+        this._initial_marks_created = new Promise((resolve) => {
+            this._initial_marks_created_resolve = resolve;
+        });
+
         super.initialize.apply(this, arguments);
     }
 
@@ -239,6 +245,7 @@ export class Figure extends widgets.DOMWidgetView {
                 // Update Interaction layer
                 // This has to be done after the marks are created
                 that.set_interaction(that.model.get("interaction"));
+                that._initial_marks_created_resolve()
             });
 
             that.axis_views = new widgets.ViewList(that.add_axis, null, that);
@@ -958,5 +965,8 @@ export class Figure extends widgets.DOMWidgetView {
     y_padding_arr: any;
 
     private _update_requested: boolean;
+    // this is public for the test framework, but considered a private API
+    public _initial_marks_created: Promise<any>;
+    private _initial_marks_created_resolve: Function;
 
 }
