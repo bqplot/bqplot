@@ -178,7 +178,7 @@ setup_args = {
         ('etc/jupyter/nbconfig/notebook.d' , ['bqplot.json'])
     ],
     'install_requires': [
-        'ipywidgets>=7.0.0a8',
+        'ipywidgets>=7.5.0',
         'traitlets>=4.3.0',
         'traittypes>=0.0.6',
         'numpy>=1.10.4',
