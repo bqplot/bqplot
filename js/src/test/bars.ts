@@ -10,7 +10,7 @@ describe("bars >", () => {
         this.manager = new DummyManager({bqplot: bqplot});
     });
 
-    it.skip("create 1d", async function() {
+    it("create 1d", async function() {
         let x = {dtype: 'float32', value: new DataView((new Float32Array([0,1])).buffer)};
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)};
         let objects = await create_figure_bars(this.manager, x, y);
@@ -27,7 +27,7 @@ describe("bars >", () => {
         expect(heights).to.deep.equal([height*2/3, height]);
     });
 
-    it.skip("create 2d classic", async function() {
+    it("create 2d classic", async function() {
         let x = [0,0.5,1];
         let y = [[2,2.0,3], [2.0, 2.5, 3.5]];
         let objects = await create_figure_bars(this.manager, x, y);
@@ -62,7 +62,7 @@ describe("bars >", () => {
         expect(heights).to.deep.equal([h0, h0, h0, h3, h2, h4]);
     });
 
-    it.skip("create 2d binary", async function() {
+    it("create 2d binary", async function() {
         let x = {dtype: 'float32', value: new DataView((new Float32Array([0,0.5,1])).buffer), shape: [3]};
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2,2.0,3, 2.0,2.5,3.5])).buffer), shape: [2,3]};
         let objects = await create_figure_bars(this.manager, x, y);

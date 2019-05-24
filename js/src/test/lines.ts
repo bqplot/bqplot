@@ -30,7 +30,7 @@ describe("lines >", () => {
         expect(paths).to.deep.equal([`M${width*1/4},${height}L${width*3/4},0`]);
     });
 
-    it.skip("create 1d", async function() {
+    it("create 1d", async function() {
         let x = {dtype: 'float32', value: new DataView((new Float32Array([0,1])).buffer)};
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)};
         let objects = await create_figure_lines(this.manager, x, y);
@@ -49,7 +49,7 @@ describe("lines >", () => {
         expect(paths).to.deep.equal([`M0,${height}L${width},0`]);
     });
 
-    it.skip("create 2d classic", async function() {
+    it("create 2d classic", async function() {
         let x = [[0,0.5,1], [0.5, 0.5, 1.]];
         let y = [[2,2.0,3], [2.0, 2.5, 3.]];
         let objects = await create_figure_lines(this.manager, x, y);
@@ -79,7 +79,7 @@ describe("lines >", () => {
         expect(paths).to.deep.equal([`M0,${height}L${width/2},${height}L${width},0`, `M${width/2},${height}L${width/2},${height/2}L${width},0`]);
     });
 
-    it.skip("create 2d binary", async function() {
+    it("create 2d binary", async function() {
         let x = {dtype: 'float32', value: new DataView((new Float32Array([0.0,0.5,1.0, 0.5,0.5,1.0])).buffer), shape: [2,3]};
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2.0,2.0,3.0, 2.0,2.5,3.0])).buffer), shape: [2,3]};
         let objects = await create_figure_lines(this.manager, x, y);
@@ -109,7 +109,7 @@ describe("lines >", () => {
         expect(paths).to.deep.equal([`M0,${height}L${width/2},${height}L${width},0`, `M${width/2},${height}L${width/2},${height/2}L${width},0`]);
     });
 
-    it.skip("create 2d binary shared x", async function() {
+    it("create 2d binary shared x", async function() {
         let x = {dtype: 'float32', value: new DataView((new Float32Array([0.0,0.5,1.0])).buffer), shape: [3]};
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2.0,2.0,3.0, 2.0,2.5,3.0])).buffer), shape: [2,3]};
         let objects = await create_figure_lines(this.manager, x, y);
