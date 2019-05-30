@@ -63,7 +63,8 @@
     "popper.js": "^1.0.0",
     "three": "^0.91.0",
     "topojson": "^1.6.24",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "raw-loader": "^0.5.1"
   },
   "files": [
     "dist/",
