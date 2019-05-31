@@ -22,7 +22,15 @@ import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
 
-THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl')
+const scales = require('raw-loader!../shaders/scales.glsl');
+
+// Recent versions of raw-loader return an object where the shader string can
+// be accessed via the 'default' property
+if (typeof scales === "string") {
+  THREE.ShaderChunk['scales'] = scales;
+} else {
+  THREE.ShaderChunk['scales'] = scales.default;
+}
 
 export class Figure extends widgets.DOMWidgetView {
 
