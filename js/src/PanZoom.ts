@@ -49,10 +49,10 @@ export class PanZoom extends interaction.Interaction {
         const scales = this.model.get("scales");
         const that = this;
         this.scale_promises = widgets.resolvePromisesDict({
-            "x": Promise.all((scales.x || []).map(function(model) {
+            "x": Promise.all((scales.x || []).map(function(model : widgets.WidgetModel) {
                     return that.create_child_view(model);
                  })),
-            "y": Promise.all((scales.y || []).map(function(model) {
+            "y": Promise.all((scales.y || []).map(function(model : widgets.WidgetModel) {
                     return that.create_child_view(model);
                  })),
         });

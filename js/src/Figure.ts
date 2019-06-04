@@ -35,11 +35,11 @@ export class Figure extends widgets.DOMWidgetView {
 
         const svg = document.createElementNS(d3.namespaces.svg, "svg") as SVGElement;
         svg.classList.add("svg-figure");
-        const svg_interaction: any = document.createElementNS(d3.namespaces.svg, "svg");
-        svg_interaction.classList.add("svg-interaction");
-        svg_interaction.style = 'position: absolute; width: 100%; height: 100%;'
         this.svg = d3.select<SVGElement, any>(svg);
-        this.svg_interaction = d3.select(svg_interaction);
+
+        const svg_background = document.createElementNS(d3.namespaces.svg, "svg") as SVGElement;
+        svg_background.classList.add("svg-background");
+        this.svg_background = d3.select<SVGElement, any>(svg_background);
 
         // a shared webgl context for all marks
         this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, premultipliedAlpha: true});
@@ -54,9 +54,9 @@ export class Figure extends widgets.DOMWidgetView {
         this.renderer.setClearAlpha(0);
         this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio)
 
-        this.el.appendChild(svg);
+        this.el.appendChild(svg_background)
         this.el.appendChild(this.renderer.domElement);
-        this.el.appendChild(svg_interaction)
+        this.el.appendChild(svg);
 
         // For testing we need to know when the mark_views is created, the tests
         // can wait for this promise.
@@ -154,7 +154,7 @@ export class Figure extends widgets.DOMWidgetView {
 
         this.fig = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-        this.fig_interaction = this.svg_interaction.append("g")
+        this.fig_background = this.svg_background.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "tooltip_div");
@@ -163,7 +163,7 @@ export class Figure extends widgets.DOMWidgetView {
             placement: 'auto',
         });
 
-        this.bg = this.fig.append("rect")
+        this.bg = this.fig_background.append("rect")
           .attr("class", "plotarea_background")
           .attr("x", 0).attr("y", 0)
           .attr("width", this.plotarea_width)
@@ -172,9 +172,9 @@ export class Figure extends widgets.DOMWidgetView {
           .style("pointer-events", "inherit");
         this.bg.on("click", function() { that.trigger("bg_clicked"); });
 
-        this.fig_axes = this.fig.append("g");
+        this.fig_axes = this.fig_background.append("g");
         this.fig_marks = this.fig.append("g");
-        this.interaction = this.fig_interaction.append("g");
+        this.interaction = this.fig.append("g");
 
         /*
          * The following was the structure of the DOM element constructed
@@ -189,22 +189,21 @@ export class Figure extends widgets.DOMWidgetView {
             </svg>
         </div>
 
-        Since marks have to be drawn on top of the axes etc, we make an overlay canvas.
-        However, the interact part needs to be drawn on top of that, so we create another svg
-        for that.
+        To allow the main/interaction layer on top, and also allowing us to draw
+        on top of the canvas (e.g. selectors), we create a new DOM structure.
         When creating a screenshot/image, we collapse all this into one svg.
 
         <div class="bqplot figure jupyter-widgets">
-            <svg class="svg-figure">
+            <svg class="svg-background">
                 <g transform="margin translation">
                     <g class="svg-axes"></g>
-                    <g class="svg-marks"></g>
                 </g>
             </svg>
-            <canvas style='position: absolute;'>
+            <canvas>
             </canvas>
-            <svg class="svg-interaction" style='position: absolute;'>
+            <svg class="svg-figure">
                 <g transform="margin translation">
+                    <g class="svg-marks"></g>
                     <g class="svg-interaction"></g>
                 </g>
             </svg>
@@ -588,7 +587,7 @@ export class Figure extends widgets.DOMWidgetView {
             // transform figure
             that.fig.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
-            that.fig_interaction.attr("transform", "translate(" + that.margin.left + "," +
+            that.fig_background.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
             that.title.attrs({
                 x: (0.5 * (that.plotarea_width)),
@@ -612,8 +611,7 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     layout_webgl_canvas() {
-        this.renderer.domElement.style = 'position: absolute; pointer-events: none; ' +
-                                         'left: ' + this.margin.left + 'px; ' +
+        this.renderer.domElement.style = 'left: ' + this.margin.left + 'px; ' +
                                          'top: '+ this.margin.top + 'px;'
         this.renderer.setSize(this.plotarea_width, this.plotarea_height);
         this.update_gl();
@@ -715,7 +713,7 @@ export class Figure extends widgets.DOMWidgetView {
     set_interaction(model) {
         if (model) {
             // Capture all interactions with the svg overlay
-            this.svg_interaction.style("pointer-events", "all");
+            this.svg.style("pointer-events", "all");
             // Sets the child interaction
             const that = this;
             model.state_change.then(function() {
@@ -733,7 +731,7 @@ export class Figure extends widgets.DOMWidgetView {
             });
         } else {
             // Let interactions pass through to the marks
-            this.svg_interaction.style("pointer-events", "none");
+            this.svg.style("pointer-events", "none");
             if (this.interaction_view) {
                 this.interaction_view.remove();
             }
@@ -809,10 +807,10 @@ export class Figure extends widgets.DOMWidgetView {
             return css;
         };
 
-       const svg2svg = function(node, canvas, node_interaction, width, height) {
+       const svg2svg = function(node_background, canvas, node_foreground, width, height) {
            // Creates a standalone SVG string from an inline SVG element
            // containing all the computed style attributes.
-           const svg = node.cloneNode(true);
+           const svg = node_foreground.cloneNode(true);
            svg.setAttribute("version", "1.1");
            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
            svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
@@ -820,13 +818,18 @@ export class Figure extends widgets.DOMWidgetView {
            const s = document.createElement("style");
            s.setAttribute("type", "text/css");
            s.innerHTML = "<![CDATA[\n" +
-               get_css(node, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n]]>";
+               get_css(node_foreground, ["\.theme-dark", "\.theme-light", ".bqplot > ", ":root"]) + "\n" +
+               get_css(node_background, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n" +
+               "]]>";
            const defs = document.createElement("defs");
            defs.appendChild(s);
-           // we put the svg interaction part after the marks
+           // we put the svg background part before the marks
            const g_root = svg.children[0];
-           const svg_interaction = node_interaction.cloneNode(true);
-           g_root.insertBefore(svg_interaction.children[0].children[0], g_root.children[3])
+           const svg_background = node_background.cloneNode(true);
+           // first the axes
+           g_root.insertBefore(svg_background.children[0].children[1], g_root.children[0])
+           // and the background as first element
+           g_root.insertBefore(svg_background.children[0].children[0], g_root.children[0])
 
            // and add the webgl canvas as an image
            const data_url = canvas.toDataURL('image/png');
@@ -849,7 +852,7 @@ export class Figure extends widgets.DOMWidgetView {
         // Instead, we render again, and directly afterwards we do get the pixel data using canvas.toDataURL
         return this.render_gl().then(() => {
             // Create standalone SVG string
-            const svg = svg2svg(this.svg.node(), this.renderer.domElement, this.svg_interaction.node(), this.plotarea_width, this.plotarea_height);
+            const svg = svg2svg(this.svg_background.node(), this.renderer.domElement, this.svg.node(), this.plotarea_width, this.plotarea_height);
             return svg;
             // Save to PNG
             //svg2png(svg, this.width, this.height)
@@ -857,34 +860,40 @@ export class Figure extends widgets.DOMWidgetView {
 
     }
 
+    get_rendered_canvas(scale) {
+        // scale up the underlying canvas for high dpi screens
+        // such that image is of the same quality
+        scale = scale || window.devicePixelRatio;
+        // Render a SVG data into a canvas and
+        return this.get_svg().then((xml) => {
+            return new Promise((accept) => {
+                const image = new Image();
+                image.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.classList.add('bqplot');
+                    canvas.width = this.width * scale;
+                    canvas.height = this.height * scale;
+                    canvas.style.width = this.width;
+                    canvas.style.height = this.height;
+                    const context = canvas.getContext("2d");
+                    context.scale(scale, scale);
+                    context.drawImage(image, 0, 0);
+                    accept(canvas)
+                };
+                image.src = "data:image/svg+xml;base64," + btoa(xml);
+            });
+        });
+    }
+
     save_png(filename, scale) {
+        // Render a SVG data into a canvas and download as PNG.
 
-            // scale up the underlying canvas for high dpi screens
-            // such that image is of the same quality
-            scale = scale || window.devicePixelRatio;
-
-            // Render a SVG data into a canvas and download as PNG.
-
-    // Render a SVG data into a canvas and download as PNG.
-        this.get_svg().then((xml) => {
-            const image = new Image();
-            image.onload = () => {
-                const canvas = document.createElement("canvas");
-                canvas.classList.add('bqplot');
-                canvas.width = this.width * scale;
-                canvas.height = this.height * scale;
-                canvas.style.width = this.width;
-                canvas.style.height = this.height;
-                const context = canvas.getContext("2d");
-                context.scale(scale, scale);
-                context.drawImage(image, 0, 0);
-                const a = document.createElement("a");
-                a.download = filename || "image.png";
-                a.href = canvas.toDataURL("image/png");
-                document.body.appendChild(a);
-                a.click();
-            };
-            image.src = "data:image/svg+xml;base64," + btoa(xml);
+        this.get_rendered_canvas(scale).then((canvas: any) => {
+            const a = document.createElement("a");
+            a.download = filename || "image.png";
+            a.href = canvas.toDataURL("image/png");
+            document.body.appendChild(a);
+            a.click();
         })
     }
 
@@ -939,6 +948,7 @@ export class Figure extends widgets.DOMWidgetView {
     fig_axes: any;
     fig_interaction: any;
     fig_marks: any;
+    fig_background: any;
     fig: any;
     figure_padding_x: any;
     figure_padding_y: any;
@@ -954,8 +964,8 @@ export class Figure extends widgets.DOMWidgetView {
     renderer: any;
     scale_x: any;
     scale_y: any;
-    svg_interaction: d3.Selection<SVGElement, any, any, any>;
     svg: d3.Selection<SVGElement, any, any, any>;
+    svg_background: d3.Selection<SVGElement, any, any, any>;
     title: any;
     tooltip_div: any;
     width: any;

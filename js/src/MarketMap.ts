@@ -329,7 +329,7 @@ export class MarketMap extends Figure {
         const scale_models = this.model.get("scales");
         const that = this;
         const scale_promises = {};
-        _.each(scale_models, function(model, key) {
+        _.each(scale_models, function(model : widgets.WidgetModel, key) {
             scale_promises[key] = that.create_child_view(model);
         });
         return widgets.resolvePromisesDict(scale_promises).then(function(d) {
@@ -543,7 +543,9 @@ export class MarketMap extends Figure {
             selected.forEach(function(data) {
                 const selected_cell = that.fig_map
                     .selectAll(".rect_element")
-                    .filter((d, i) => { d.name === data });
+                    .filter(function(d, i) {
+                        return d.name === data;
+                    });
 
                 that.fig_click
                     .append("rect")

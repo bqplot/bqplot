@@ -49,11 +49,10 @@
 
     --bq-selector-fill: var(--jp-border-color1);
 
-    --bq-mark-tooltip-border: 2px solid whitesmoke;
+    --bq-mark-tooltip-border: 2px solid var(--jp-border-color0);
     --bq-mark-tooltip-box-shadow: 1px 1px 2px rgba(245, 245, 245, 0.8);
-    --bq-mark-tooltip-background-color: black;
-    --bq-mark-tooltip-td-border: thin solid whitesmoke;
-    --bq-mark-tooltip-table: black;
+    --bq-mark-tooltip-background-color: var(--jp-layout-color0);
+    --bq-mark-tooltip-td-border: 1px solid var(--jp-border-color1);
 
     --bq-world-map-path-stroke: black;
     --bq-world-map-path-fill: seagreen;
@@ -111,7 +110,20 @@
     width: 640px;
     height: 480px;
 }
+.bqplot > .svg-background {
+    position: absolute;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+.bqplot > canvas {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
 .bqplot > svg {
+    z-index: 2;
     font: 11px sans-serif;
     user-select: none;
     -ms-user-select: none;
