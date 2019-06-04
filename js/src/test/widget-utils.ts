@@ -63,6 +63,7 @@ async function create_figure_scatter(manager, x, y, mega=false) {
     }
     let figure  = await create_view(manager, figureModel);
     await manager.display_view(undefined, figure);
+    await figure._initial_marks_created;
     return {figure: figure, scatter: await figure.mark_views.views[0]}
 }
 
@@ -95,6 +96,7 @@ async function create_figure_lines(manager, x, y, default_scales={}) {
     }
     let figure  = await create_view(manager, figureModel);
     await manager.display_view(undefined, figure);
+    await figure._initial_marks_created;
     return {figure: figure, lines: await figure.mark_views.views[0]}
 }
 export
@@ -124,5 +126,6 @@ async function create_figure_bars(manager, x, y) {
     }
     let figure  = await create_view(manager, figureModel);
     await manager.display_view(undefined, figure);
+    await figure._initial_marks_created;
     return {figure: figure, bars: await figure.mark_views.views[0]}
 }
