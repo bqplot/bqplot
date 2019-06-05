@@ -163,7 +163,7 @@ export class Figure extends widgets.DOMWidgetView {
             placement: 'auto',
         });
 
-        this.bg = this.fig_background.append("rect")
+        this.bg = this.fig.append("rect")
           .attr("class", "plotarea_background")
           .attr("x", 0).attr("y", 0)
           .attr("width", this.plotarea_width)
@@ -712,8 +712,6 @@ export class Figure extends widgets.DOMWidgetView {
 
     set_interaction(model) {
         if (model) {
-            // Capture all interactions with the svg overlay
-            this.svg.style("pointer-events", "all");
             // Sets the child interaction
             const that = this;
             model.state_change.then(function() {
@@ -730,8 +728,6 @@ export class Figure extends widgets.DOMWidgetView {
                 });
             });
         } else {
-            // Let interactions pass through to the marks
-            this.svg.style("pointer-events", "none");
             if (this.interaction_view) {
                 this.interaction_view.remove();
             }
