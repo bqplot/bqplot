@@ -163,14 +163,21 @@ export class Figure extends widgets.DOMWidgetView {
             placement: 'auto',
         });
 
-        this.bg = this.fig.append("rect")
+        this.bg = this.fig_background.append("rect")
           .attr("class", "plotarea_background")
           .attr("x", 0).attr("y", 0)
           .attr("width", this.plotarea_width)
           .attr("height", this.plotarea_height)
           .styles(this.model.get("background_style"))
           .style("pointer-events", "inherit");
-        this.bg.on("click", function() { that.trigger("bg_clicked"); });
+
+        this.bg_events = this.fig.append("rect")
+          .attr("class", "plotarea_events")
+          .attr("x", 0).attr("y", 0)
+          .attr("width", this.plotarea_width)
+          .attr("height", this.plotarea_height)
+          .style("pointer-events", "inherit");
+        this.bg_events.on("click", function() { that.trigger("bg_clicked"); });
 
         this.fig_axes = this.fig_background.append("g");
         this.fig_marks = this.fig.append("g");
@@ -598,6 +605,9 @@ export class Figure extends widgets.DOMWidgetView {
             that.bg
                 .attr("width", that.plotarea_width)
                 .attr("height", that.plotarea_height);
+            that.bg_events
+                .attr("width", that.plotarea_width)
+                .attr("height", that.plotarea_height);
 
 
             that.clip_path.attr("width", that.plotarea_width)
@@ -938,6 +948,7 @@ export class Figure extends widgets.DOMWidgetView {
 
     axis_views: any;
     bg: any;
+    bg_events: any;
     change_layout: any;
     clip_id: any;
     clip_path: any;
