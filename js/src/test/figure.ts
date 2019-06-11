@@ -17,7 +17,7 @@ describe("figure >", () => {
         this.manager = new DummyManager({ bqplot: bqplot });
     });
 
-    it.skip("canvas/png render check", async function() {
+    it("canvas/png render check", async function() {
         const x = {dtype: 'float32', value: new DataView((new Float32Array([0.5, 0.5])).buffer)};
         const y = {dtype: 'float32', value: new DataView((new Float32Array([2.0, 2.5])).buffer)};
         const { scatter, figure } = await create_figure_scatter(this.manager, x, y);
