@@ -227,7 +227,7 @@ export class MarketMap extends Figure {
             return {
                 display: display_text[i],
                 name: d,
-                color: color_data[i],
+                color: Number.isNaN(color_data[i]) ? undefined : color_data[i],
                 group: that.group_data[i],
                 ref_data: (that.ref_data === null || that.ref_data === undefined) ? null : that.ref_data[i]
             };
