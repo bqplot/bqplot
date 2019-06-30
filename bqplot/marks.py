@@ -1729,6 +1729,7 @@ class Image(Mark):
     _view_name = Unicode('Image').tag(sync=True)
     _model_name = Unicode('ImageModel').tag(sync=True)
     image = Instance(widgets.Image).tag(sync=True, **widget_serialization)
+    pixelated = Bool(True).tag(sync=True)
     x = Array(default_value=(0, 1)).tag(sync=True, scaled=True,
                                         rtype='Number',
                                         atype='bqplot.Axis',
