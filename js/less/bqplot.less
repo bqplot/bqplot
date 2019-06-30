@@ -112,7 +112,6 @@
 }
 .bqplot > .svg-background {
     position: absolute;
-    pointer-events: none;
     width: 100%;
     height: 100%;
     z-index: 0;
@@ -268,7 +267,7 @@
     .plotarea_background {
         fill: var(--bq-plotarea-background-fill);
     }
-   .plotarea_events {
+    .plotarea_events {
         opacity: 0; // fully transparent, only used for capturing events
     }
     .image_pixelated {
@@ -280,7 +279,6 @@
       image-rendering: pixelated; /* chrome doesn't support optimizespeed */
       image-rendering: -moz-crisp-edges; /* this is guaranteed to work for firefox */
     }
-
 }
 .tooltip_div {
     z-index: 1001;
