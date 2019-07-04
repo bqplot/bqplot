@@ -25,7 +25,7 @@
     "@types/chai": "^4.1.7",
     "@types/d3": "^5.7.2",
     "@types/expect.js": "^0.3.29",
-    "@types/mocha": "^5.2.6",
+    "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.2",
     "@types/sinon": "^7.0.11",
     "chai": "^4.1.2",
