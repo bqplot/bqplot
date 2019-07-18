@@ -22,7 +22,7 @@ import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
 
-THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl')
+THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl').default;
 
 export class Figure extends widgets.DOMWidgetView {
 
