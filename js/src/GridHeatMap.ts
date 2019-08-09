@@ -508,11 +508,14 @@ export class GridHeatMap extends Mark {
 
     update_labels() {
         const display_format_str = this.model.get("display_format");
-        const display_format = d3.format(display_format_str);
-
-        const x: any = d3.selectAll(".cell_text")
-            .text(function(d: any, i) { return display_format_str ? display_format(d.color) : null; });
-        x.styles(this.model.get("font_style"));
+        if (display_format_str !== null) {
+            const display_format = d3.format(display_format_str);
+            const x: any = d3.selectAll(".cell_text")
+                .text(function(d: any, i) { return display_format(d.color); });
+            x.styles(this.model.get("font_style"));
+        } else {
+            d3.selectAll(".cell_text").text(null);
+        }
     }
 
     get_tile_plotting_data(scale, data, mode, start) {
