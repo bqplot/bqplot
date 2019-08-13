@@ -139,7 +139,7 @@ class Figure(DOMWidget):
     layout = LayoutTraitType(kw=dict(min_width='125px'))\
         .tag(sync=True, **widget_serialization)
 
-    min_aspect_ratio = Float(0).tag(sync=True)
+    min_aspect_ratio = Float(0.01).tag(sync=True)
     max_aspect_ratio = Float(100).tag(sync=True)
 
     fig_margin = Dict(dict(top=60, bottom=60, left=60, right=60))\
@@ -188,6 +188,8 @@ class Figure(DOMWidget):
     @validate('min_aspect_ratio', 'max_aspect_ratio')
     def _validate_aspect_ratio(self, proposal):
         value = proposal['value']
+        if value<=0:
+            raise TraitError('aspect ratio must be positive')
         if proposal['trait'].name == 'min_aspect_ratio' and \
            value > self.max_aspect_ratio:
             raise TraitError('setting min_aspect_ratio > max_aspect_ratio')
