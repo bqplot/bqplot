@@ -136,8 +136,6 @@ var GridHeatMap = mark.Mark.extend({
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
-        this.model.on_some_change(["display_format", "font_style"],
-                                  this.update_labels, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
     },
@@ -452,45 +450,26 @@ var GridHeatMap = mark.Mark.extend({
             });
         });
 
-        this.display_cell_groups = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
+        this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
             return data_array[i];
-        })
-        .enter()
-        .append("g")
-        .attr("class", "heatmapcell")
-        .attr("transform", function(d, i) {
-            return "translate(" + column_plot_data.start[i] + ", 0)";
         });
-
-        this.display_cells = this.display_cell_groups
+        this.display_cells.enter()
             .append("rect")
-            .attr("class", "cell_rect")
+            .attr("class", "heatmapcell")
             .on("click", _.bind(function() {
                 this.event_dispatcher("element_clicked");
             }, this));
 
-        this.display_cell_groups
-            .append("text")
-            .attr("class", "cell_text")
-            .style({"text-anchor": "middle",
-                    "fill" : "black",
-                    "pointer-events": "none",
-                    "dominant-baseline": "central"});
-
-        this.display_cell_groups
-            .selectAll(".cell_rect")
-            .attr("x", 0)
-            .attr("y", 0)
+        this.display_cells
+            .attr({
+                "x": function(d, i) {
+                    return column_plot_data.start[i];
+                }, "y": 0
+            })
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height",function(d) { return row_plot_data.widths[d.row_num]; })
 
-        this.display_cell_groups
-            .selectAll(".cell_text")
-            .attr("x", function(d, i) { return column_plot_data.widths[i] / 2; })
-            .attr("y", function(d) { return row_plot_data.widths[d.row_num] / 2; });
-
         this.apply_styles();
-        this.update_labels();
 
         this.display_cells.on("click", function(d, i) {
             return that.event_dispatcher("element_clicked", {
@@ -508,15 +487,6 @@ var GridHeatMap = mark.Mark.extend({
 
     update_opacity: function(model, value) {
         this.display_cells.style("opacity", value);
-    },
-
-    update_labels: function() {
-        var display_format_str = this.model.get("display_format");
-        var display_format = d3.format(display_format_str);
-
-        d3.selectAll(".cell_text")
-            .text(function(d, i) { return display_format_str ? display_format(d.color) : null; })
-            .style(this.model.get("font_style"));
     },
 
     get_tile_plotting_data: function(scale, data, mode, start) {
