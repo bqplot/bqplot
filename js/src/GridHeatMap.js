@@ -521,7 +521,7 @@ var GridHeatMap = mark.Mark.extend({
         var display_format_str = this.model.get("display_format");
         var display_format = d3.format(display_format_str);
 
-        d3.selectAll(".cell_text")
+        this.d3el.selectAll(".cell_text")
             .text(function(d, i) { return display_format_str ? display_format(d.color) : null; })
             .style(this.model.get("font_style"));
     },
