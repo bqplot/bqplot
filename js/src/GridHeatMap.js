@@ -395,6 +395,12 @@ var GridHeatMap = mark.Mark.extend({
     },
 
     draw: function() {
+        // This is a total kludge to try to get around an apparent race
+        // condition. It seems that the heatmapcell translate() update below is
+        // not actually updating the DOM when the scale has its final size. This
+        // timeout makes it so that the scaleis its final size the first time
+        // the grid heatmap is drawn.
+        setTimeout(() => {
         this.set_ranges();
 
         var that = this;
@@ -500,6 +506,7 @@ var GridHeatMap = mark.Mark.extend({
                 column_num: d.column_num
             });
         });
+    }, 20)
     },
 
     update_stroke: function(model, value) {
