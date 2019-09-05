@@ -947,7 +947,7 @@ class Boxplot(Mark):
         .tag(sync=True, display_name='Opacities')
     box_width = Int(None, min=5, allow_none=True).tag(sync=True, display_name='Box Width')
     auto_detect_outliers = Bool(True).tag(sync=True, display_name='Auto-detect Outliers')
-    precomputed_statistics = Bool(Flse).tag(sync=True, display_name='Precomputed Statistics')
+    precomputed_statistics = Bool(False).tag(sync=True, display_name='Precomputed Statistics')
 
     _view_name = Unicode('Boxplot').tag(sync=True)
     _model_name = Unicode('BoxplotModel').tag(sync=True)
