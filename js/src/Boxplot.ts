@@ -260,6 +260,37 @@ export class Boxplot extends Mark {
         this.touch();
         return sel_index;
     }
+    
+    prepareBoxPlotsPrecomputedStatistics () {
+        // Sets plot data on this.plotData and this.outlierData
+
+        const x_scale = this.scales.x;
+        const y_scale = this.scales.y;
+
+       // convert the domain data to the boxes to be drawn on the screen
+       // find the quantiles, min/max and outliers for the box plot
+        this.plotData = [];
+        this.outlierData = [];
+        for(let i = 0; i<this.model.mark_data.length; ++i) {
+            const values = this.model.mark_data[i];
+
+            const displayValue: any = {};
+
+            // values[1] is of the format [q0, q25, q50, q75, q100, outlier1, outlier2, ... outlierN]
+            displayValue.x         = x_scale.scale(values[0]);
+            displayValue.whiskerMin = y_scale.scale(values[1][0])
+            displayValue.boxLower = y_scale.scale(values[1][1]);
+            displayValue.boxMedian = y_scale.scale(values[1][2]);
+            displayValue.boxUpper = y_scale.scale(values[1][3]);
+            displayValue.whiskerMax = y_scale.scale(values[1][4]);
+
+            for (let j = 5; j < values[1].length; ++j) {
+                this.outlierData.push({ x: x_scale.scale(values[0]), y: y_scale.scale(values[1][j]) });
+            }
+            
+            this.plotData.push(displayValue);
+        }
+    }
 
     prepareBoxPlots () {
         // Sets plot data on this.plotData and this.outlierData
@@ -401,8 +432,15 @@ export class Boxplot extends Mark {
     draw() {
         this.set_ranges();
         const x_scale = this.scales.x;
-        // get the visual representation of boxplots, set as state
-        this.prepareBoxPlots();
+
+        if (this.model.get("precomputed_statistics")) {
+            this.prepareBoxPlotsPrecomputedStatistics();
+        }
+        else {
+            // get the visual representation of boxplots, set as state
+            this.prepareBoxPlots();
+        }
+
 
         // Draw the visual elements with data which was bound
         this.draw_mark_paths(".boxplot", this.d3el);
