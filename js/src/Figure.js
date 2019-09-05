@@ -82,10 +82,20 @@ var Figure = widgets.DOMWidgetView.extend({
     },
 
     render : function() {
-        var min_width = String(this.model.get("layout").get("min_width"));
-        var min_height = String(this.model.get("layout").get("min_height"));
+        var min_width = this.model.get("layout").get("min_width");
+        var min_height = this.model.get("layout").get("min_height");
+        if (typeof min_width === "string" && min_width.endsWith('px')) {
+            min_width = Number(min_width.slice(0, -2));
+        } else {
+            min_width = undefined;
+        }
+        if (typeof min_height === "string"  && min_height.endsWith('px')) {
+            min_height = Number(min_height.slice(0, -2));
+        } else {
+            min_height = undefined;
+        }
 
-        var impl_dimensions = this._get_height_width(min_height.slice(0, -2), min_width.slice(0, -2));
+        var impl_dimensions = this._get_height_width(min_height, min_width);
         this.width = impl_dimensions["width"];
         this.height = impl_dimensions["height"];
 
