@@ -136,6 +136,8 @@ var GridHeatMap = mark.Mark.extend({
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
+        this.model.on_some_change(["display_format", "font_style"],
+                                  this.update_labels, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
     },
@@ -469,7 +471,24 @@ var GridHeatMap = mark.Mark.extend({
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height",function(d) { return row_plot_data.widths[d.row_num]; })
 
+        // cell labels
+        this.display_cell_labels = this.display_rows.selectAll(".heatmapcell_label").data(function(d, i) {
+            return data_array[i];
+        });
+        this.display_cell_labels.enter()
+            .append("text")
+            .attr({
+                "class": "heatmapcell_label",
+                "x": function(d, i) { return column_plot_data.start[i] + column_plot_data.widths[i] / 2; },
+                "y": function(d) { return row_plot_data.widths[d.row_num] / 2; },
+            })
+            .style({"text-anchor": "middle",
+                    "fill" : "black",
+                    "pointer-events": "none",
+                    "dominant-baseline": "central"});
+
         this.apply_styles();
+        this.update_labels();
 
         this.display_cells.on("click", function(d, i) {
             return that.event_dispatcher("element_clicked", {
@@ -488,6 +507,16 @@ var GridHeatMap = mark.Mark.extend({
     update_opacity: function(model, value) {
         this.display_cells.style("opacity", value);
     },
+
+    update_labels: function() {
+        var display_format_str = this.model.get("display_format");
+        var display_format = d3.format(display_format_str);
+
+        this.d3el.selectAll(".heatmapcell_label")
+            .text(function(d, i) { return display_format_str ? display_format(d.color) : null; })
+            .style(this.model.get("font_style"));
+    },
+
 
     get_tile_plotting_data: function(scale, data, mode, start) {
         // This function returns the starting points and widths of the
