@@ -1507,8 +1507,7 @@ class GridHeatMap(Mark):
     null_color = Color('black', allow_none=True).tag(sync=True)
     stroke = Color('black', allow_none=True).tag(sync=True)
     opacity = Float(1.0, min=0.2, max=1).tag(sync=True, display_name='Opacity')
-    anchor_style = Dict({'fill': 'white', 'stroke': 'blue'}).tag(sync=True)
-
+    anchor_style = Dict().tag(sync=True)
     display_format = Unicode(default_value=None, allow_none=True)\
         .tag(sync=True)
     font_style = Dict().tag(sync=True)
