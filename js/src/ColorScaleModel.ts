@@ -77,7 +77,7 @@ export class ColorScaleModel extends LinearScaleModel {
         const domain = [];
         for (let i = 0; i < n_colors; i++) {
             const j = this.reverse ? n_colors-1-i : i;
-            domain.push(scale(j));
+            domain.push(new Date(scale(j)));
         }
         return domain;
     }
