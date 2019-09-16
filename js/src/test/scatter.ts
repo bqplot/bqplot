@@ -10,7 +10,7 @@ describe("scatter >", () => {
         this.manager = new DummyManager({bqplot: bqplot});
     });
 
-    it.skip("create", async function() {
+    it("create", async function() {
         let x = {dtype: 'float32', value: new DataView((new Float32Array([0,1])).buffer)};
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)};
         let objects = await create_figure_scatter(this.manager, x, y);
@@ -28,16 +28,18 @@ describe("scatter >", () => {
         expect(transforms).to.deep.equal([`translate(0, ${height})`, `translate(${width}, 0)`]);
     });
 
-    it.skip("computed fill", async function() {
+    it("computed fill", async function() {
         let x = [0, 1];
         let y = [2, 3];
         let objects = await create_figure_scatter(this.manager, x, y);
         let scatter = objects.scatter;
 
+        let getFills = () => scatter.d3el.selectAll(".object_grp .element").nodes().map((el) => ((el.getAttribute('style')||'').match(/fill: (\w*)/)||[null,null])[1]);
+        expect(getFills()).to.deep.equal(['steelblue', 'steelblue']);
+
         scatter.model.set('unselected_style', {'fill': 'orange', 'stroke': 'none'});
         scatter.model.set('selected', [0]);
-        let getFills = () => scatter.d3el.selectAll(".object_grp .element").nodes().map((el) => ((el.getAttribute('style')||'').match(/fill: (\w*)/)||[null,null])[1]);
-        expect(getFills()).to.deep.equal([null, 'orange']);
+        expect(getFills()).to.deep.equal(['steelblue', 'orange']);
 
         scatter.model.set('colors', ['red']);
         expect(getFills()).to.deep.equal(['red', 'orange']);

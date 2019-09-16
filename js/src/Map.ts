@@ -108,10 +108,10 @@ export class Map extends Mark {
             .on("zoom", () => {
                this.zoomed(this);
             });
-        this.parent.bg.call(this.zoom);
+        this.parent.bg_events.call(this.zoom);
 
-        this.parent.bg.on("dblclick.zoom", null);
-        this.parent.bg.on("dblclick", () => {
+        this.parent.bg_events.on("dblclick.zoom", null);
+        this.parent.bg_events.on("dblclick", () => {
             this.reset_zoom(this);
         });
     }

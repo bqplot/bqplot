@@ -1,23 +1,25 @@
 {
-    "compilerOptions": {
-      "declaration": true,
-      "esModuleInterop": true,
-      "incremental": true,
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "noEmitOnError": true,
-      // "noImplicitAny": true,
-      "noUnusedLocals": true,
-      "outDir": "lib",
-      "preserveWatchOutput": true,
-      "rootDir": "src",
-      "sourceMap": true,
-      // "strict": true,
-      "strictNullChecks": false,
-      "target": "es2017",
-      // "types": [],
-    },
-    "include": [
-        "./src/**/*"
-    ]
+  "compilerOptions": {
+    "declaration": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "outDir": "lib",
+    "preserveWatchOutput": true,
+    "rootDir": "src",
+    "inlineSourceMap": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "target": "es2017",
+    "types": ["mocha", "node"]
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }

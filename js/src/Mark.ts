@@ -99,7 +99,7 @@ export abstract class Mark extends widgets.WidgetView {
         const scale_models = this.model.get("scales");
         const that = this;
         const scale_promises = {};
-        _.each(scale_models, function(model, key) {
+        _.each(scale_models, function(model : widgets.WidgetModel, key) {
             scale_promises[key] = that.create_child_view(model);
         });
         return widgets.resolvePromisesDict(scale_promises).then(function(scales) {
