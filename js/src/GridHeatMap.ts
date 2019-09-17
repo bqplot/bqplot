@@ -140,8 +140,6 @@ export class GridHeatMap extends Mark {
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
-        this.model.on_some_change(["display_format", "font_style"],
-                                  this.update_labels, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
     }
@@ -457,36 +455,20 @@ export class GridHeatMap extends Mark {
         this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
             return data_array[i];
         });
-        let new_display_cells = this.display_cells
-            .enter()
-            .append("g")
-            .attr("class", "heatmapcell")
-            .attr("transform", (d, i) => { return "translate(" + column_plot_data.start[i] + ", 0)"; });
-        new_display_cells
+        this.display_cells.enter()
             .append("rect")
-            .attr("class", "cell_rect");
-        new_display_cells
-            .append("text")
-            .attr("class", "cell_text")
-            .style("text-anchor", "middle")
-            .style("fill", "black")
-            .style("pointer-events", "none")
-            .style("dominant-baseline", "central");
+            .attr("class", "heatmapcell")
+            .on("click", _.bind(function() {
+                this.event_dispatcher("element_clicked");
+            }, this));
 
-        this.display_cells = new_display_cells.merge(this.display_cells);
-
-        this.display_cells.selectAll(".cell_rect")
-            .attr("x", 0)
+        this.display_cells
+            .attr("x", function(d, i) { return column_plot_data.start[i]; })
             .attr("y", 0)
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height", function(d) { return row_plot_data.widths[d.row_num]; });
 
-        this.display_cells.selectAll(".cell_text")
-            .attr("x", function(d, i) { return column_plot_data.widths[i] / 2; })
-            .attr("y", function(d) { return row_plot_data.widths[d.row_num] / 2; });
-
         this.apply_styles();
-        this.update_labels();
 
         this.display_cells.on("click", function(d, i) {
             return that.event_dispatcher("element_clicked", {
@@ -504,18 +486,6 @@ export class GridHeatMap extends Mark {
 
     update_opacity(model, value) {
         this.display_cells.style("opacity", value);
-    }
-
-    update_labels() {
-        const display_format_str = this.model.get("display_format");
-        if (display_format_str !== null) {
-            const display_format = d3.format(display_format_str);
-            const x: any = d3.selectAll(".cell_text")
-                .text(function(d: any, i) { return display_format(d.color); });
-            x.styles(this.model.get("font_style"));
-        } else {
-            d3.selectAll(".cell_text").text(null);
-        }
     }
 
     get_tile_plotting_data(scale, data, mode, start) {
