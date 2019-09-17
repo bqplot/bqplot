@@ -1457,6 +1457,10 @@ class GridHeatMap(Mark):
     anchor_style: dict (default: {'fill': 'white', 'stroke': 'blue'})
         Controls the style for the element which serves as the anchor during
         selection.
+    display_format: string (default: None)
+        format for displaying values. If None, then values are not displayed
+    font_style: dict
+        CSS style for the text of each cell
 
     Data Attributes
 
@@ -1509,7 +1513,10 @@ class GridHeatMap(Mark):
     null_color = Color('black', allow_none=True).tag(sync=True)
     stroke = Color('black', allow_none=True).tag(sync=True)
     opacity = Float(1.0, min=0.2, max=1).tag(sync=True, display_name='Opacity')
-    anchor_style = Dict({'fill': 'white', 'stroke': 'blue'}).tag(sync=True)
+    anchor_style = Dict().tag(sync=True)
+    display_format = Unicode(default_value=None, allow_none=True)\
+        .tag(sync=True)
+    font_style = Dict().tag(sync=True)
 
     def __init__(self, **kwargs):
         data = kwargs['color']
