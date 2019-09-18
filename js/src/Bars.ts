@@ -674,7 +674,7 @@ export class Bars extends Mark {
                 } else {
                     if (this.model.get("align") === "left" ||
                         this.model.get("align") === "right") {
-                        x_padding = parseFloat(( this.x.rangeBand() / 2 ).toFixed(2));
+                        x_padding = parseFloat(( this.x.bandwidth() / 2 ).toFixed(2));
                     }
                 }
             }
