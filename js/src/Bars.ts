@@ -28,7 +28,6 @@ import { BarsModel } from './BarsModel'
 export class Bars extends Mark {
 
     render() {
-        this.padding = this.model.get("padding");
         const base_creation_promise = super.render.apply(this);
         this.set_internal_scales();
         this.selected_indices = this.model.get("selected");
@@ -69,7 +68,7 @@ export class Bars extends Mark {
         if(dom_scale.model.type !== "ordinal") {
             dom_scale.set_range(this.parent.padded_range(dom, dom_scale.model));
         } else {
-            dom_scale.set_range(this.parent.padded_range(dom, dom_scale.model), this.padding);
+            dom_scale.set_range(this.parent.padded_range(dom, dom_scale.model), this.model.get("padding"));
         }
         range_scale.set_range(this.parent.padded_range(rang, range_scale.model));
         // x_offset is set later by the adjust_offset method
@@ -199,7 +198,7 @@ export class Bars extends Mark {
         this.draw_zero_line();
 
         this.x.rangeRound(this.set_x_range());
-        this.x.padding(this.padding);
+        this.x.padding(this.model.get("padding"));
         this.adjust_offset();
         this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
         this.draw_bars();
@@ -263,7 +262,7 @@ export class Bars extends Mark {
             this.x.domain(dom_scale.scale.domain());
         }
         this.x.rangeRound(this.set_x_range());
-        this.x.padding(this.padding);
+        this.x.padding(this.model.get("padding"));
         this.adjust_offset();
         this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
 
@@ -675,7 +674,7 @@ export class Bars extends Mark {
                 } else {
                     if (this.model.get("align") === "left" ||
                         this.model.get("align") === "right") {
-                        x_padding = parseFloat(( this.x.rangeBand() / 2 ).toFixed(2));
+                        x_padding = parseFloat(( this.x.bandwidth() / 2 ).toFixed(2));
                     }
                 }
             }
@@ -698,7 +697,6 @@ export class Bars extends Mark {
     dom_offset: any;
     dom_scale: any;
     legend_el: any;
-    padding: any;
     pixel_coords: any;
     range_offset: any;
     range_scale: any;
