@@ -457,33 +457,32 @@ export class GridHeatMap extends Mark {
         this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
             return data_array[i];
         });
-        let new_display_cells = this.display_cells
-            .enter()
-            .append("g")
-            .attr("class", "heatmapcell")
-            .attr("transform", (d, i) => { return "translate(" + column_plot_data.start[i] + ", 0)"; });
-        new_display_cells
+        this.display_cells.enter()
             .append("rect")
-            .attr("class", "cell_rect");
-        new_display_cells
-            .append("text")
-            .attr("class", "cell_text")
-            .style("text-anchor", "middle")
-            .style("fill", "black")
-            .style("pointer-events", "none")
-            .style("dominant-baseline", "central");
+            .attr("class", "heatmapcell")
+            .on("click", _.bind(function() {
+                this.event_dispatcher("element_clicked");
+            }, this));
 
-        this.display_cells = new_display_cells.merge(this.display_cells);
-
-        this.display_cells.selectAll(".cell_rect")
-            .attr("x", 0)
+        this.display_cells
+            .attr("x", function(d, i) { return column_plot_data.start[i]; })
             .attr("y", 0)
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height", function(d) { return row_plot_data.widths[d.row_num]; });
 
-        this.display_cells.selectAll(".cell_text")
-            .attr("x", function(d, i) { return column_plot_data.widths[i] / 2; })
-            .attr("y", function(d) { return row_plot_data.widths[d.row_num] / 2; });
+        // cell labels
+        this.display_cell_labels = this.display_rows.selectAll(".heatmapcell_label").data(function(d, i) {
+            return data_array[i];
+        });
+        this.display_cell_labels.enter()
+            .append("text")
+            .attr("class", "heatmapcell_label")
+            .attr("x", function(d, i) { return column_plot_data.start[i] + column_plot_data.widths[i] / 2; })
+            .attr("y", function(d) { return row_plot_data.widths[d.row_num] / 2; })
+            .style("text-anchor", "middle")
+            .style("fill", "black")
+            .style("pointer-events", "none")
+            .style("dominant-baseline", "central");
 
         this.apply_styles();
         this.update_labels();
@@ -508,13 +507,14 @@ export class GridHeatMap extends Mark {
 
     update_labels() {
         const display_format_str = this.model.get("display_format");
-        if (display_format_str !== null) {
-            const display_format = d3.format(display_format_str);
-            const x: any = d3.selectAll(".cell_text")
-                .text(function(d: any, i) { return display_format(d.color); });
-            x.styles(this.model.get("font_style"));
-        } else {
-            d3.selectAll(".cell_text").text(null);
+        const display_format = display_format_str ? d3.format(display_format_str) : null;
+
+        let fonts = this.d3el.selectAll(".heatmapcell_label")
+            .text(function(d, i) { return display_format ? display_format(d.color) : null; });
+
+        const fontStyle = this.model.get("font_style");
+        for (const styleKey in fontStyle) {
+            fonts = fonts.style(styleKey, fontStyle[styleKey]);
         }
     }
 
@@ -642,6 +642,7 @@ export class GridHeatMap extends Mark {
     anchor_style: any;
     anchor_cell_index: any;
     display_cells: any;
+    display_cell_labels: any;
     selected_elements: any;
     unselected_elements: any;
     anchor_element: any;

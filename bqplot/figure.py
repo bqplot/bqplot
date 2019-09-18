@@ -139,10 +139,6 @@ class Figure(DOMWidget):
     legend_text = Dict().tag(sync=True)
     theme = Enum(['classic', 'gg'], default_value='classic').tag(sync=True)
 
-    # min width is based on hardcoded padding values
-    layout = LayoutTraitType(kw=dict(min_width='125px'))\
-        .tag(sync=True, **widget_serialization)
-
     min_aspect_ratio = Float(0.01).tag(sync=True)
     max_aspect_ratio = Float(100).tag(sync=True)
     pixel_ratio = Float(None, allow_none=True).tag(sync=True)
