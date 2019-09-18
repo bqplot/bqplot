@@ -140,6 +140,8 @@ export class GridHeatMap extends Mark {
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
+        this.model.on_some_change(["display_format", "font_style"],
+                                  this.update_labels, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
     }
@@ -468,7 +470,22 @@ export class GridHeatMap extends Mark {
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height", function(d) { return row_plot_data.widths[d.row_num]; });
 
+        // cell labels
+        this.display_cell_labels = this.display_rows.selectAll(".heatmapcell_label").data(function(d, i) {
+            return data_array[i];
+        });
+        this.display_cell_labels.enter()
+            .append("text")
+            .attr("class", "heatmapcell_label")
+            .attr("x", function(d, i) { return column_plot_data.start[i] + column_plot_data.widths[i] / 2; })
+            .attr("y", function(d) { return row_plot_data.widths[d.row_num] / 2; })
+            .style("text-anchor", "middle")
+            .style("fill", "black")
+            .style("pointer-events", "none")
+            .style("dominant-baseline", "central");
+
         this.apply_styles();
+        this.update_labels();
 
         this.display_cells.on("click", function(d, i) {
             return that.event_dispatcher("element_clicked", {
@@ -486,6 +503,19 @@ export class GridHeatMap extends Mark {
 
     update_opacity(model, value) {
         this.display_cells.style("opacity", value);
+    }
+
+    update_labels() {
+        const display_format_str = this.model.get("display_format");
+        const display_format = display_format_str ? d3.format(display_format_str) : null;
+
+        let fonts = this.d3el.selectAll(".heatmapcell_label")
+            .text(function(d, i) { return display_format ? display_format(d.color) : null; });
+
+        const fontStyle = this.model.get("font_style");
+        for (const styleKey in fontStyle) {
+            fonts = fonts.style(styleKey, fontStyle[styleKey]);
+        }
     }
 
     get_tile_plotting_data(scale, data, mode, start) {
@@ -612,6 +642,7 @@ export class GridHeatMap extends Mark {
     anchor_style: any;
     anchor_cell_index: any;
     display_cells: any;
+    display_cell_labels: any;
     selected_elements: any;
     unselected_elements: any;
     anchor_element: any;
