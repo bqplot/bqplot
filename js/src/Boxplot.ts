@@ -465,7 +465,7 @@ export class Boxplot extends Mark {
         new_boxplots.append("g").attr("class", "outliers");
 
         const scaleX = this.scales.x;
-        const xOffset = scaleX.model.type === "ordinal" ? scaleX.scale.rangeBand() / 2 : 0;
+        const xOffset = scaleX.model.type === "ordinal" ? scaleX.scale.bandwidth() / 2 : 0;
 
         selector.selectAll(".boxplot").data(plotData)
             .style("stroke", this.model.get("stroke"))
