@@ -497,23 +497,8 @@ export class MarketMap extends Figure {
     }
 
     update_map_colors() {
-        const that = this;
-        const color_scale = this.scales.color;
         if(this.rect_groups !== undefined && this.rect_groups !== null) {
-            this.rect_groups.nodes().forEach(function(d, i) {
-                const data = that.grouped_data[that.groups[i]];
-                d3.select(d)
-                    .selectAll(".rect_element")
-                    .data(data)
-                    .select('rect')
-                    .style('stroke', that.model.get('stroke'))
-                    .style('fill', function(elem: any, j) {
-                        return (color_scale && elem.color !== undefined &&
-                               elem.color !== null) ?
-                            color_scale.scale(elem.color) :
-                            that.colors_map(i);
-                    });
-            });
+            this.recolor_chart();
         }
     }
 
