@@ -39,5 +39,9 @@ export class DateColorScaleModel extends ColorScaleModel {
         this.max_from_data = (this.max === null);
         this.update_domain();
     }
+
+    protected toDomainType(value: number) : Date {
+        return new Date(value);
+    }
 }
 
