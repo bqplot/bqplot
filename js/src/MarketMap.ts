@@ -223,13 +223,13 @@ export class MarketMap extends Figure {
         const num_colors = this.colors.length;
         this.colors_map = function(d) { return that.get_color(d, num_colors);};
         const color_data = this.model.get("color");
-        const mapped_data = this.data.map(function(d, i) {
+        const mapped_data = _.map(this.data, (d, i) => {
             return {
                 display: display_text[i],
                 name: d,
                 color: Number.isNaN(color_data[i]) ? undefined : color_data[i],
-                group: that.group_data[i],
-                ref_data: (that.ref_data === null || that.ref_data === undefined) ? null : that.ref_data[i]
+                group: this.group_data[i],
+                ref_data: (this.ref_data === null || this.ref_data === undefined) ? null : this.ref_data[i]
             };
         });
 
