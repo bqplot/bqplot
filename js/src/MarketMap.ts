@@ -15,6 +15,15 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
+
+import {
+    MessageLoop
+} from '@phosphor/messaging';
+
+import {
+    Widget
+} from '@phosphor/widgets';
+
 import * as d3 from 'd3';
 import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
@@ -649,8 +658,10 @@ export class MarketMap extends Figure {
             const tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
             tooltip_widget_creation_promise.then(function(view) {
                 that.tooltip_view = view;
+
+                MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
                 that.tooltip_div.node().appendChild(view.el);
-                view.trigger("displayed", {"add_to_dom_only": true});
+                MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
             });
         }
     }
