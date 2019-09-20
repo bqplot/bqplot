@@ -17,7 +17,6 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 // const d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
-import * as utils from './utils';
 import { Mark } from './Mark';
 import * as _ from 'underscore';
 
@@ -344,8 +343,8 @@ export abstract class ScatterBase extends Mark {
 
     scatter_click_handler(args) {
         const index = args.index;
-        const idx = this.model.get("selected");
-        let selected = idx ? utils.deepCopy(idx) : [];
+        const idx = this.model.get("selected") || [];
+        let selected = Array.from(idx);
         // index of bar i. Checking if it is already present in the list.
         const elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
