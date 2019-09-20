@@ -1519,12 +1519,8 @@ class GridHeatMap(Mark):
     font_style = Dict().tag(sync=True)
 
     def __init__(self, **kwargs):
-        data = kwargs['color']
-        kwargs.setdefault('row', range(data.shape[0]))
-        kwargs.setdefault('column', range(data.shape[1]))
-        scales = kwargs.pop('scales', {})
-        # Adding default row and column data if they are not passed.
         # Adding scales in case they are not passed too.
+        scales = kwargs.pop('scales', {})
 
         if(scales.get('row', None) is None):
             row_scale = OrdinalScale(reverse=True)
