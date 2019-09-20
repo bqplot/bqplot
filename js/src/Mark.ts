@@ -353,29 +353,22 @@ export abstract class Mark extends widgets.WidgetView {
         }
     }
 
-    reset_interactions() {
-        this.reset_click();
-        this.reset_hover();
-        this.reset_legend_hover();
-        this.event_listeners.legend_clicked = function() {};
-    }
-
     reset_click() {
         this.event_listeners.element_clicked = function() {};
         this.event_listeners.parent_clicked = function() {};
     }
 
-    reset_hover() {
+    private reset_hover() {
         this.event_listeners.mouse_over = function() {};
         this.event_listeners.mouse_move = function() {};
         this.event_listeners.mouse_out = function() {};
     }
 
-    reset_legend_click() {
+    private reset_legend_click() {
         this.event_listeners.legend_clicked = function() {};
     }
 
-    reset_legend_hover() {
+    private reset_legend_hover() {
         this.event_listeners.legend_mouse_over = function() {};
         this.event_listeners.legend_mouse_out = function() {};
     }

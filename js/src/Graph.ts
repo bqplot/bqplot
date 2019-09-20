@@ -321,7 +321,7 @@ export class Graph extends Mark {
             this.hover_handler({"data": d, "index": i});
         }, this));
         this.nodes.on("mouseout", _.bind(function() {
-            this.reset_hover();
+            this.reset_hover_points();
         }, this));
     }
 
@@ -372,7 +372,7 @@ export class Graph extends Mark {
         }
     }
 
-    reset_hover() {
+    reset_hover_points() {
         this.links.style("opacity", 1);
         this.model.set("hovered_point", null);
         this.hovered_index = null;
