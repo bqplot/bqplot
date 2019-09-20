@@ -288,7 +288,7 @@ export abstract class ScatterBase extends Mark {
             this.scatter_hover_handler({"data": d, "index": i});
         });
         elements_added.on("mouseout", () => {
-            this.reset_hover();
+            this.reset_hover_points();
         });
 
         this.draw_elements(animate, elements_added)
@@ -321,7 +321,7 @@ export abstract class ScatterBase extends Mark {
         }
     }
 
-    reset_hover() {
+    reset_hover_points() {
         this.model.set("hovered_point", null);
         this.hovered_index = null;
         this.touch();
