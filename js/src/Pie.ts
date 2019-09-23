@@ -19,7 +19,6 @@ import 'd3-selection-multi';
 // Hack to fix problem with webpack providing multiple d3 objects
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import { Mark } from './Mark';
-import * as utils from './utils';
 import * as _ from 'underscore';
 
 export class Pie extends Mark {
@@ -452,8 +451,8 @@ export class Pie extends Mark {
     click_handler (args) {
         const index = args.index;
         const that = this;
-        const idx = this.model.get("selected");
-        let selected: number[] = idx ? utils.deepCopy(idx) : [];
+        const idx = this.model.get("selected") || [];
+        let selected: number[] = Array.from(idx);
             // index of slice i. Checking if it is already present in the list.
         const elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.

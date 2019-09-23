@@ -37,7 +37,6 @@ export class MapModel extends MarkModel {
                 color: { dimension: "color" },
                 projection: { dimension: "geo" }
             },
-            selected: [],
             selected_styles: {
                 selected_fill: "Red",
                 selected_stroke: null,

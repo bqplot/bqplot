@@ -19,7 +19,6 @@ import * as d3 from 'd3';
 const d3GetEvent = () => { return require("d3-selection").event };
 import { Mark } from './Mark';
 import { MapModel } from './MapModel';
-import * as utils from './utils';
 
 export class Map extends Mark {
 
@@ -127,8 +126,8 @@ export class Map extends Mark {
         const el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
             const data: any = el.data()[0];
-            const idx = this.model.get("selected");
-            const select = idx ? utils.deepCopy(idx) : [];
+            const idx = this.model.get("selected") || [];
+            const select = Array.from(idx);
             const node = this.highlight_g.append(() => {
                 return el.node().cloneNode(true);
             });
@@ -171,8 +170,8 @@ export class Map extends Mark {
         const el = d3.select(d3GetEvent().target);
         if(this.is_hover_element(el)) {
             const data: any = el.data()[0];
-            const idx = this.model.get("selected");
-            const selected = idx ? utils.deepCopy(idx) : [];
+            const idx = this.model.get("selected") || [];
+            const selected = Array.from(idx);
             const elem_index = selected.indexOf(data.id);
             if(elem_index > -1) {
                 selected.splice(elem_index, 1);

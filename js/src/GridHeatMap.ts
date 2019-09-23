@@ -18,7 +18,6 @@ import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
-import * as utils from './utils';
 import { Mark} from './Mark';
 import { GridHeatMapModel } from './GridHeatMapModel'
 
@@ -152,8 +151,8 @@ export class GridHeatMap extends Mark {
         const row = args.row_num;
         const column = args.column_num;
         const that = this;
-        let idx = this.model.get("selected") ? utils.deepCopy(this.model.get("selected")) : [];
-        let selected = utils.deepCopy(this._cell_nums_from_indices(idx));
+        let idx = this.model.get("selected") || [];
+        let selected = this._cell_nums_from_indices(Array.from(idx));
         const elem_index = selected.indexOf(index);
         const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
         //TODO: This is a shim for when accelKey is supported by chrome.

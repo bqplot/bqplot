@@ -18,7 +18,6 @@ import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-force"), require("d3-selection"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
-import * as utils from './utils';
 import { Mark } from './Mark';
 import { GraphModel } from './GraphModel';
 
@@ -406,8 +405,8 @@ export class Graph extends Mark {
 
     click_handler(args) {
         const index = args.index;
-        const idx = this.model.get("selected");
-        let selected = idx ? utils.deepCopy(idx) : [];
+        const idx = this.model.get("selected") || [];
+        let selected = Array.from(idx);
         const elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
         const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
