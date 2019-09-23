@@ -21,7 +21,6 @@ const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { BoxplotModel } from './BoxplotModel';
-import * as Utils  from './utils';
 
 export class Boxplot extends Mark {
 
@@ -119,7 +118,7 @@ export class Boxplot extends Mark {
     update_marker() {
         const marker = this.model.get("marker");
 
-        if (this.legend_el && this.rect_dim) { 
+        if (this.legend_el && this.rect_dim) {
             // Draw icon for legend
             this.draw_mark_paths(marker, this.rect_dim/2);
         }
@@ -327,8 +326,8 @@ export class Boxplot extends Mark {
     box_click_handler(args) {
         const index = args.index;
         const that = this;
-        const idx = this.model.get("selected");
-        let selected: number[] = idx ? Utils.deepCopy(idx) : [];
+        const idx = this.model.get("selected") || [];
+        let selected: number[] = Array.from(idx);
         // index of box i. Checking if it is already present in the list.
         const elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
