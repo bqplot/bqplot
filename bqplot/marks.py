@@ -1372,8 +1372,6 @@ class Map(Mark):
     hovered_styles: Dict (default: {'hovered_fill': 'Orange',
     'hovered_stroke': None, 'hovered_stroke_width': 2.0})
         Dictionary containing the styles for hovered subunits
-    selected: List (default: [])
-        list containing the selected countries in the map
     hover_highlight: bool (default: True)
         boolean to control if the map should be aware of which country is being
         hovered on.
@@ -1408,7 +1406,6 @@ class Map(Mark):
     colors = Dict().tag(sync=True, display_name='Colors')
     scales_metadata = Dict({'color': {'dimension': 'color'},
                             'projection': {'dimension': 'geo'}}).tag(sync=True)
-    selected = List(allow_none=True).tag(sync=True)
     selected_styles = Dict({
         'selected_fill': 'Red',
         'selected_stroke': None,
