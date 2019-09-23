@@ -21,7 +21,6 @@ import 'd3-selection-multi';
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 
 import * as _ from 'underscore';
-import * as utils from './utils';
 import { Mark } from './Mark'
 import { BarsModel } from './BarsModel'
 
@@ -587,8 +586,9 @@ export class Bars extends Mark {
     bar_click_handler (args) {
         const index = args.index;
         const that = this;
-        const idx = this.model.get("selected");
-        let selected: number[] = idx ? utils.deepCopy(idx) : [];
+        const idx = this.model.get("selected") || [];
+        let selected: number[] = Array.from(idx);
+
         // index of bar i. Checking if it is already present in the list.
         const elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
