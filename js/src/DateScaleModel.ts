@@ -22,10 +22,8 @@ export class DateScaleModel extends LinearScaleModel{
         return {...LinearScaleModel.prototype.defaults(),
             _model_name: "DateScaleModel",
             _view_name: "DateScale",
-
-            // min: null,
-            // max: null,
-            // mid: null
+            min: null,
+            max: null
         };
     }
 

@@ -21,6 +21,17 @@ import * as colorutils from './ColorUtils';
 
 export class ColorScaleModel extends LinearScaleModel {
 
+    defaults() {
+        return {...LinearScaleModel.prototype.defaults(),
+            _model_name: "ColorScaleModel",
+            _view_name: "ColorScale",
+            mid: null,
+            scheme: 'RdYlGn',
+            extrapolation: 'constant',
+            colors: null,
+        };
+    }
+
     set_init_state() {
         this.type = "color_linear";
         this.color_range = [];
