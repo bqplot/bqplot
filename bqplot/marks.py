@@ -49,6 +49,7 @@ from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float,
 from traittypes import Array
 
 from numpy import histogram
+import numpy as np
 
 from .scales import Scale, OrdinalScale, LinearScale
 from .traits import (Date, array_serialization,
@@ -1531,6 +1532,37 @@ class GridHeatMap(Mark):
             scales['column'] = column_scale
         kwargs['scales'] = scales
         super(GridHeatMap, self).__init__(**kwargs)
+
+    @validate('row')
+    def _validate_row(self, proposal):
+        row = proposal.value
+
+        if row is None:
+            return row
+
+        color = np.asarray(self.color)
+        n_rows = color.shape[0]
+        if len(row) != n_rows and len(row) != n_rows + 1 and len(row) != n_rows - 1:
+            raise TraitError('row must be an array of size color.shape[0]')
+
+        return row
+
+    @validate('column')
+    def _validate_column(self, proposal):
+        column = proposal.value
+
+        if column is None:
+            return column
+
+        color = np.asarray(self.color)
+        n_columns = color.shape[1]
+        print(column)
+        print(len(column))
+        print(n_columns)
+        if len(column) != n_columns and len(column) != n_columns + 1 and len(column) != n_columns - 1:
+            raise TraitError('column must be an array of size color.shape[1]')
+
+        return column
 
     _view_name = Unicode('GridHeatMap').tag(sync=True)
     _model_name = Unicode('GridHeatMapModel').tag(sync=True)
