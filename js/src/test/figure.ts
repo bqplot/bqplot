@@ -17,6 +17,22 @@ describe("figure >", () => {
         this.manager = new DummyManager({ bqplot: bqplot });
     });
 
+    it("should not create a WebGL renderer if not needed", async function() {
+        const x = {dtype: 'float32', value: new DataView((new Float32Array([0.5, 0.5])).buffer)};
+        const y = {dtype: 'float32', value: new DataView((new Float32Array([2.0, 2.5])).buffer)};
+        const { figure } = await create_figure_scatter(this.manager, x, y);
+
+        expect(figure.renderer).to.be.undefined;
+    });
+
+    it("should create a WebGL renderer when needed", async function() {
+        const x = {dtype: 'float32', value: new DataView((new Float32Array([0.5, 0.5])).buffer)};
+        const y = {dtype: 'float32', value: new DataView((new Float32Array([2.0, 2.5])).buffer)};
+        const { figure } = await create_figure_scatter(this.manager, x, y, true);
+
+        expect(figure.renderer).to.not.be.undefined;
+    });
+
     it("canvas/png render check", async function() {
         const x = {dtype: 'float32', value: new DataView((new Float32Array([0.5, 0.5])).buffer)};
         const y = {dtype: 'float32', value: new DataView((new Float32Array([2.0, 2.5])).buffer)};
@@ -26,7 +42,6 @@ describe("figure >", () => {
         scatter.model.set('default_size', 1e6);
         scatter.model.set('colors', ['red']);
         scatter.d3el.selectAll(".object_grp").data();
-        console.log(figure)
 
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         const canvas = await figure.get_rendered_canvas();
