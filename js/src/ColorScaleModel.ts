@@ -21,6 +21,17 @@ import * as colorutils from './ColorUtils';
 
 export class ColorScaleModel extends LinearScaleModel {
 
+    defaults() {
+        return {...LinearScaleModel.prototype.defaults(),
+            _model_name: "ColorScaleModel",
+            _view_name: "ColorScale",
+            mid: null,
+            scheme: 'RdYlGn',
+            extrapolation: 'constant',
+            colors: null,
+        };
+    }
+
     set_init_state() {
         this.type = "color_linear";
         this.color_range = [];
@@ -77,7 +88,7 @@ export class ColorScaleModel extends LinearScaleModel {
         const domain = [];
         for (let i = 0; i < n_colors; i++) {
             const j = this.reverse ? n_colors-1-i : i;
-            domain.push(scale(j));
+            domain.push(this.toDomainType(scale(j)));
         }
         return domain;
     }
@@ -91,6 +102,10 @@ export class ColorScaleModel extends LinearScaleModel {
         // Update the range of the views. For a color scale the range doesn't depend
         // on the view, so ideally we could get rid of this
         this.trigger("colors_changed");
+    }
+
+    protected toDomainType(value: number) : any {
+        return value;
     }
 
     color_range: Array<number>;

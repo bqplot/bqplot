@@ -23,8 +23,8 @@ module.exports = [
         externals: ['@jupyter-widgets/base'],
         mode: 'production'
     },
-    {// bqplot bundle for the notebook
-        entry: './lib/index-embed.js',
+    {// bqplot bundle for the classic notebook
+        entry: './lib/index-classic.js',
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, '../bqplot/static'),
@@ -37,7 +37,7 @@ module.exports = [
         externals: ['@jupyter-widgets/base'],
         mode: 'production'
     },
-    {// embeddable bqplot bundle
+    {// bqplot bundle for unpkg.
         entry: './lib/index-embed.js',
         output: {
             filename: 'index.js',

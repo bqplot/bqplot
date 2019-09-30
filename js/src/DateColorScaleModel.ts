@@ -20,7 +20,10 @@ export class DateColorScaleModel extends ColorScaleModel {
     defaults() {
         return {...ColorScaleModel.prototype.defaults(),
             _model_name: "DateColorScaleModel",
-            _view_name: "DateColorScale"
+            _view_name: "DateColorScale",
+            min: null,
+            max: null,
+            mid: null
         };
     }
 
@@ -38,6 +41,10 @@ export class DateColorScaleModel extends ColorScaleModel {
         this.min_from_data = (this.min === null);
         this.max_from_data = (this.max === null);
         this.update_domain();
+    }
+
+    protected toDomainType(value: number) : Date {
+        return new Date(value);
     }
 }
 

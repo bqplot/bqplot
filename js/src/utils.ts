@@ -56,7 +56,8 @@ export function convert_dates(value) {
     if(isTypedArray(value))
         return value;
     const convert_to_date = function(x) {
-        const ar = new Float64Array(x.map(Number));
+        const ar: any = new Float64Array(x.map(Number));
+        ar.type = 'date';
         return ar;
     }
     if(value[0] instanceof Array && value[0][0] instanceof Date)

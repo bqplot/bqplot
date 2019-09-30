@@ -16,6 +16,15 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 import 'd3-selection-multi';
+
+import {
+    MessageLoop
+} from '@phosphor/messaging';
+
+import {
+    Widget
+} from '@phosphor/widgets';
+
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
@@ -266,6 +275,7 @@ export abstract class Mark extends widgets.WidgetView {
             }
             this.tooltip_div.styles(this.model.get("tooltip_style"))
                 .style("display", null);
+            MessageLoop.sendMessage(this.tooltip_view.pWidget, Widget.Msg.AfterAttach);
             this.parent.popper.enableEventListeners();
             this.move_tooltip();
         }
@@ -306,21 +316,18 @@ export abstract class Mark extends widgets.WidgetView {
         //and whenever the tooltip object changes
         const tooltip_model = this.model.get("tooltip");
         const that = this;
+        //remove previous tooltip
+        if(this.tooltip_view) {
+            this.tooltip_view.remove();
+        }
         if(tooltip_model) {
-            const tooltip_creation_promise = this.create_child_view(tooltip_model);
-            tooltip_creation_promise.then(function(view) {
-                if(that.tooltip_view) {
-                    that.tooltip_view.remove();
-                }
-                //remove previous tooltip
+            this.create_child_view(tooltip_model).then(function(view) {
                 that.tooltip_view = view;
+
+                MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
                 that.tooltip_div.node().appendChild(view.el);
-                view.trigger("displayed", {"add_to_dom_only": true});
+                MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
             });
-        } else {
-            if(that.tooltip_view) {
-                that.tooltip_view.remove();
-            }
         }
     }
 
@@ -353,29 +360,22 @@ export abstract class Mark extends widgets.WidgetView {
         }
     }
 
-    reset_interactions() {
-        this.reset_click();
-        this.reset_hover();
-        this.reset_legend_hover();
-        this.event_listeners.legend_clicked = function() {};
-    }
-
     reset_click() {
         this.event_listeners.element_clicked = function() {};
         this.event_listeners.parent_clicked = function() {};
     }
 
-    reset_hover() {
+    private reset_hover() {
         this.event_listeners.mouse_over = function() {};
         this.event_listeners.mouse_move = function() {};
         this.event_listeners.mouse_out = function() {};
     }
 
-    reset_legend_click() {
+    private reset_legend_click() {
         this.event_listeners.legend_clicked = function() {};
     }
 
-    reset_legend_hover() {
+    private reset_legend_hover() {
         this.event_listeners.legend_mouse_over = function() {};
         this.event_listeners.legend_mouse_out = function() {};
     }

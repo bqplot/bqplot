@@ -35,7 +35,8 @@ export class OHLCModel extends MarkModel {
             stroke: null,
             box_fill_color: "dodgerblue",
             outlier_fill_color: "gray",
-            opacities: []
+            opacities: [],
+            format: 'ohlc',
         };
     }
 

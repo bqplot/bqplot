@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
-@import '../node_modules/@jupyter-widgets/controls/css/labvariables.css';
-@import '../less/bqplot.less';
+require("../css/bqplot.css");
+module.exports = require('./index');

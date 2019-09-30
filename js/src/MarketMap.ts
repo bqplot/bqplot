@@ -15,6 +15,15 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import * as _ from 'underscore';
+
+import {
+    MessageLoop
+} from '@phosphor/messaging';
+
+import {
+    Widget
+} from '@phosphor/widgets';
+
 import * as d3 from 'd3';
 import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
@@ -223,13 +232,13 @@ export class MarketMap extends Figure {
         const num_colors = this.colors.length;
         this.colors_map = function(d) { return that.get_color(d, num_colors);};
         const color_data = this.model.get("color");
-        const mapped_data = this.data.map(function(d, i) {
+        const mapped_data = _.map(this.data, (d, i) => {
             return {
                 display: display_text[i],
                 name: d,
-                color: color_data[i],
-                group: that.group_data[i],
-                ref_data: (that.ref_data === null || that.ref_data === undefined) ? null : that.ref_data[i]
+                color: Number.isNaN(color_data[i]) ? undefined : color_data[i],
+                group: this.group_data[i],
+                ref_data: (this.ref_data === null || this.ref_data === undefined) ? null : this.ref_data[i]
             };
         });
 
@@ -497,23 +506,8 @@ export class MarketMap extends Figure {
     }
 
     update_map_colors() {
-        const that = this;
-        const color_scale = this.scales.color;
         if(this.rect_groups !== undefined && this.rect_groups !== null) {
-            this.rect_groups.nodes().forEach(function(d, i) {
-                const data = that.grouped_data[that.groups[i]];
-                d3.select(d)
-                    .selectAll(".rect_element")
-                    .data(data)
-                    .select('rect')
-                    .style('stroke', that.model.get('stroke'))
-                    .style('fill', function(elem: any, j) {
-                        return (color_scale && elem.color !== undefined &&
-                               elem.color !== null) ?
-                            color_scale.scale(elem.color) :
-                            that.colors_map(i);
-                    });
-            });
+            this.recolor_chart();
         }
     }
 
@@ -664,8 +658,10 @@ export class MarketMap extends Figure {
             const tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
             tooltip_widget_creation_promise.then(function(view) {
                 that.tooltip_view = view;
+
+                MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
                 that.tooltip_div.node().appendChild(view.el);
-                view.trigger("displayed", {"add_to_dom_only": true});
+                MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
             });
         }
     }

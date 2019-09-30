@@ -49,6 +49,7 @@ from traitlets import (Int, Unicode, List, Enum, Dict, Bool, Float,
 from traittypes import Array
 
 from numpy import histogram
+import numpy as np
 
 from .scales import Scale, OrdinalScale, LinearScale
 from .traits import (Date, array_serialization,
@@ -774,14 +775,14 @@ class Label(_ScatterBase):
     name = 'Labels'
 
     # Other attributes
-    x_offset = Int().tag(sync=True)
-    y_offset = Int().tag(sync=True)
+    x_offset = Int(0).tag(sync=True)
+    y_offset = Int(0).tag(sync=True)
 
     colors = List(trait=Color(default_value=None,
                               allow_none=True),
                   default_value=CATEGORY10)\
         .tag(sync=True, display_name='Colors')
-    rotate_angle = Float().tag(sync=True)
+    rotate_angle = Float(0.0).tag(sync=True)
     text = Array(None, allow_none=True)\
         .tag(sync=True, **array_serialization).valid(array_squeeze)
     default_size = Float(16.).tag(sync=True)
@@ -1372,8 +1373,6 @@ class Map(Mark):
     hovered_styles: Dict (default: {'hovered_fill': 'Orange',
     'hovered_stroke': None, 'hovered_stroke_width': 2.0})
         Dictionary containing the styles for hovered subunits
-    selected: List (default: [])
-        list containing the selected countries in the map
     hover_highlight: bool (default: True)
         boolean to control if the map should be aware of which country is being
         hovered on.
@@ -1408,7 +1407,6 @@ class Map(Mark):
     colors = Dict().tag(sync=True, display_name='Colors')
     scales_metadata = Dict({'color': {'dimension': 'color'},
                             'projection': {'dimension': 'geo'}}).tag(sync=True)
-    selected = List(allow_none=True).tag(sync=True)
     selected_styles = Dict({
         'selected_fill': 'Red',
         'selected_stroke': None,
@@ -1513,19 +1511,14 @@ class GridHeatMap(Mark):
     null_color = Color('black', allow_none=True).tag(sync=True)
     stroke = Color('black', allow_none=True).tag(sync=True)
     opacity = Float(1.0, min=0.2, max=1).tag(sync=True, display_name='Opacity')
-    anchor_style = Dict({'fill': 'white', 'stroke': 'blue'}).tag(sync=True)
-
+    anchor_style = Dict().tag(sync=True)
     display_format = Unicode(default_value=None, allow_none=True)\
         .tag(sync=True)
     font_style = Dict().tag(sync=True)
 
     def __init__(self, **kwargs):
-        data = kwargs['color']
-        kwargs.setdefault('row', range(data.shape[0]))
-        kwargs.setdefault('column', range(data.shape[1]))
-        scales = kwargs.pop('scales', {})
-        # Adding default row and column data if they are not passed.
         # Adding scales in case they are not passed too.
+        scales = kwargs.pop('scales', {})
 
         if(scales.get('row', None) is None):
             row_scale = OrdinalScale(reverse=True)
@@ -1536,6 +1529,37 @@ class GridHeatMap(Mark):
             scales['column'] = column_scale
         kwargs['scales'] = scales
         super(GridHeatMap, self).__init__(**kwargs)
+
+    @validate('row')
+    def _validate_row(self, proposal):
+        row = proposal.value
+
+        if row is None:
+            return row
+
+        color = np.asarray(self.color)
+        n_rows = color.shape[0]
+        if len(row) != n_rows and len(row) != n_rows + 1 and len(row) != n_rows - 1:
+            raise TraitError('row must be an array of size color.shape[0]')
+
+        return row
+
+    @validate('column')
+    def _validate_column(self, proposal):
+        column = proposal.value
+
+        if column is None:
+            return column
+
+        color = np.asarray(self.color)
+        n_columns = color.shape[1]
+        print(column)
+        print(len(column))
+        print(n_columns)
+        if len(column) != n_columns and len(column) != n_columns + 1 and len(column) != n_columns - 1:
+            raise TraitError('column must be an array of size color.shape[1]')
+
+        return column
 
     _view_name = Unicode('GridHeatMap').tag(sync=True)
     _model_name = Unicode('GridHeatMapModel').tag(sync=True)

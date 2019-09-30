@@ -28,9 +28,11 @@ export class OrdinalScale extends Scale {
     }
 
     set_range(range, padding) {
-       padding = (padding === undefined) ? 0 : padding;
-       this.scale.range(range, padding, padding / 2.0);
-       this.offset = (this.scale.domain().length === 0) ? 0 : this.scale.range() / 2.0;
+        padding = (padding === undefined) ? 0 : padding;
+        this.scale.range(range);
+        this.scale.paddingInner(padding);
+        this.scale.paddingOuter(padding / 2.0);
+        this.offset = (this.scale.domain().length === 0) ? 0 : this.scale.range() / 2.0;
     }
 
     expand_domain(old_range, new_range) {
@@ -44,10 +46,12 @@ export class OrdinalScale extends Scale {
         // happens, the labels are placed at the center of the bins
 
         const unpadded_scale = this.scale.copy();
-        unpadded_scale.range(old_range);
+        unpadded_scale.range(old_range).paddingInner(0).paddingOuter(0);
         const outer_padding = (unpadded_scale.range().length > 0) ?
             Math.abs((new_range[1] - old_range[1]) / unpadded_scale.bandwidth()) : 0;
-        this.scale.range(new_range, 0.0, outer_padding);
+        this.scale.range(new_range);
+        this.scale.paddingInner(0.0);
+        this.scale.paddingOuter(outer_padding);
     }
 
     invert(pixel) {

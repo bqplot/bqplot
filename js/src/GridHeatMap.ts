@@ -18,7 +18,6 @@ import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
-import * as utils from './utils';
 import { Mark} from './Mark';
 import { GridHeatMapModel } from './GridHeatMapModel'
 
@@ -152,8 +151,8 @@ export class GridHeatMap extends Mark {
         const row = args.row_num;
         const column = args.column_num;
         const that = this;
-        let idx = this.model.get("selected") ? utils.deepCopy(this.model.get("selected")) : [];
-        let selected = utils.deepCopy(this._cell_nums_from_indices(idx));
+        let idx = this.model.get("selected") || [];
+        let selected = this._cell_nums_from_indices(Array.from(idx));
         const elem_index = selected.indexOf(index);
         const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
         //TODO: This is a shim for when accelKey is supported by chrome.
@@ -437,10 +436,9 @@ export class GridHeatMap extends Mark {
         })
 
         this.display_rows = this.d3el.selectAll(".heatmaprow")
-            .data(_.range(num_rows));
-        this.display_rows = this.display_rows.enter().append("g")
+            .data(_.range(num_rows))
+            .join("g")
             .attr("class", "heatmaprow")
-            .merge(this.display_rows)
             .attr("transform", function(d) {
                 return "translate(0, " + row_plot_data.start[d] + ")";
             });
@@ -454,36 +452,35 @@ export class GridHeatMap extends Mark {
             });
         });
 
-        this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
-            return data_array[i];
-        });
-        let new_display_cells = this.display_cells
-            .enter()
-            .append("g")
+        this.display_cells = this.display_rows.selectAll(".heatmapcell")
+            .data(function(d, i) {
+                return data_array[i];
+            })
+            .join("rect")
             .attr("class", "heatmapcell")
-            .attr("transform", (d, i) => { return "translate(" + column_plot_data.start[i] + ", 0)"; });
-        new_display_cells
-            .append("rect")
-            .attr("class", "cell_rect");
-        new_display_cells
-            .append("text")
-            .attr("class", "cell_text")
-            .style("text-anchor", "middle")
-            .style("fill", "black")
-            .style("pointer-events", "none")
-            .style("dominant-baseline", "central");
+            .on("click", _.bind(function() {
+                this.event_dispatcher("element_clicked");
+            }, this));
 
-        this.display_cells = new_display_cells.merge(this.display_cells);
-
-        this.display_cells.selectAll(".cell_rect")
-            .attr("x", 0)
+        this.display_cells
+            .attr("x", function(d, i) { return column_plot_data.start[i]; })
             .attr("y", 0)
             .attr("width", function(d, i) { return column_plot_data.widths[i]; })
             .attr("height", function(d) { return row_plot_data.widths[d.row_num]; });
 
-        this.display_cells.selectAll(".cell_text")
-            .attr("x", function(d, i) { return column_plot_data.widths[i] / 2; })
-            .attr("y", function(d) { return row_plot_data.widths[d.row_num] / 2; });
+        // cell labels
+        this.display_cell_labels = this.display_rows.selectAll(".heatmapcell_label")
+            .data(function(d, i) {
+                return data_array[i];
+            })
+            .join("text")
+            .attr("class", "heatmapcell_label")
+            .attr("x", function(d, i) { return column_plot_data.start[i] + column_plot_data.widths[i] / 2; })
+            .attr("y", function(d) { return row_plot_data.widths[d.row_num] / 2; })
+            .style("text-anchor", "middle")
+            .style("fill", "black")
+            .style("pointer-events", "none")
+            .style("dominant-baseline", "central");
 
         this.apply_styles();
         this.update_labels();
@@ -508,11 +505,15 @@ export class GridHeatMap extends Mark {
 
     update_labels() {
         const display_format_str = this.model.get("display_format");
-        const display_format = d3.format(display_format_str);
+        const display_format = display_format_str ? d3.format(display_format_str) : null;
 
-        const x: any = d3.selectAll(".cell_text")
-            .text(function(d: any, i) { return display_format_str ? display_format(d.color) : null; });
-        x.styles(this.model.get("font_style"));
+        let fonts = this.d3el.selectAll(".heatmapcell_label")
+            .text(function(d, i) { return display_format ? display_format(d.color) : null; });
+
+        const fontStyle = this.model.get("font_style");
+        for (const styleKey in fontStyle) {
+            fonts = fonts.style(styleKey, fontStyle[styleKey]);
+        }
     }
 
     get_tile_plotting_data(scale, data, mode, start) {
@@ -639,6 +640,7 @@ export class GridHeatMap extends Mark {
     anchor_style: any;
     anchor_cell_index: any;
     display_cells: any;
+    display_cell_labels: any;
     selected_elements: any;
     unselected_elements: any;
     anchor_element: any;

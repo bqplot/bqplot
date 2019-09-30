@@ -168,8 +168,8 @@ def panzoom(marks):
     scales of the specified marks.
     """
     return PanZoom(scales={
-            'x': sum([mark._get_dimension_scales('x', preserve_domain=True) for mark in marks], []),
-            'y': sum([mark._get_dimension_scales('y', preserve_domain=True) for mark in marks], [])
+        'x': sum([mark._get_dimension_scales('x', preserve_domain=True) for mark in marks], []),
+        'y': sum([mark._get_dimension_scales('y', preserve_domain=True) for mark in marks], [])
     })
 
 
@@ -186,8 +186,6 @@ class Selector(Interaction):
         the data selected by the selector.
     """
     marks = List().tag(sync=True, **widget_serialization)
-
-    _view_name = Unicode('Selector').tag(sync=True)
 
     def reset(self):
         self.send({"type": "reset"})
@@ -391,7 +389,7 @@ class BrushSelector(TwoDSelector):
         This attribute changes while the selection is being made with the
         ``BrushSelector``.
     selected: numpy.ndarray
-        A 2x2 array containing the coordinates 
+        A 2x2 array containing the coordinates
         [[selected_x[0], selected_y[0]],
          [selected_x[1], selected_y[1]]]
     brushing: bool (default: False)
@@ -419,7 +417,7 @@ class BrushSelector(TwoDSelector):
             self.selected = None
         else:
             self.selected = np.array([[self.selected_x[0], self.selected_y[0]],
-                             [self.selected_x[1], self.selected_y[1]]])
+                                      [self.selected_x[1], self.selected_y[1]]])
 
     @observe('selected')
     def _set_selected_xy(self, change):
@@ -427,8 +425,8 @@ class BrushSelector(TwoDSelector):
         if self.selected is None or len(self.selected) == 0:
             # if we set either selected_x OR selected_y to None
             # we don't want to set the other to None as well
-            if not (self.selected_x is None or len(self.selected_x) == 0
-                 or self.selected_y is None or len(self.selected_y) == 0):
+            if not (self.selected_x is None or len(self.selected_x) == 0 or
+                    self.selected_y is None or len(self.selected_y) == 0):
                 self.selected_x = None
                 self.selected_y = None
         else:
@@ -440,7 +438,7 @@ class BrushSelector(TwoDSelector):
                 if not _array_equal(self.selected_x, x):
                     self.selected_x = x
                 if not _array_equal(self.selected_y, y):
-                    self.selected_y =y
+                    self.selected_y = y
 
     _view_name = Unicode('BrushSelector').tag(sync=True)
     _model_name = Unicode('BrushSelectorModel').tag(sync=True)
@@ -511,7 +509,6 @@ class MultiSelector(BrushIntervalSelector):
     show_names = Bool(True).tag(sync=True)
 
     def __init__(self, **kwargs):
-        self.is_date = isinstance(kwargs.get('scale'), DateScale)
         try:
             self.read_json = kwargs.get('scale').domain_class.from_json
         except AttributeError:

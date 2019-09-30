@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
-require("../less/bqplot-standalone.less");
+require("../less/bqplot.less");
 module.exports = require('./index');
