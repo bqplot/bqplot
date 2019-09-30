@@ -23,8 +23,7 @@ var OrdinalScaleModel = scalemodel.ScaleModel.extend({
         return _.extend(scalemodel.ScaleModel.prototype.defaults(), {
             _model_name: "OrdinalScaleModel",
             _view_name: "OrdinalScale",
-            min: null,
-            max: null,
+            domain: [],
         });
     },
 

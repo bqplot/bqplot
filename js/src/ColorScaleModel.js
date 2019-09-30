@@ -20,6 +20,17 @@ var colorutils = require("./ColorUtils");
 
 var ColorScaleModel = linearscalemodel.LinearScaleModel.extend({
 
+    defaults: function() {
+        return _.extend(linearscalemodel.LinearScaleModel.prototype.defaults(), {
+            _model_name: "ColorScaleModel",
+            _view_name: "ColorScale",
+            mid: null,
+            scheme: 'RdYlGn',
+            extrapolation: 'constant',
+            colors: null,
+        });
+    },
+
     set_init_state: function() {
         this.type = "color_linear";
         this.color_range = [];
