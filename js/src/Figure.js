@@ -195,7 +195,7 @@ var Figure = widgets.DOMWidgetView.extend({
             that.axis_views.update(that.model.get("axes"));
 
             // TODO: move to the model
-            that.model.on_some_change(["fig_margin", "min_aspect_ration", "max_aspect_ratio", "preserve_aspect"], that.relayout, that);
+            that.model.on_some_change(["fig_margin", "min_aspect_ration", "max_aspect_ratio"], that.relayout, that);
             that.model.on_some_change(["padding_x", "padding_y"], function() {
                 this.figure_padding_x = this.model.get("padding_x");
                 this.figure_padding_y = this.model.get("padding_y");
