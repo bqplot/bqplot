@@ -46,7 +46,7 @@ export class OrdinalScale extends Scale {
         // happens, the labels are placed at the center of the bins
 
         const unpadded_scale = this.scale.copy();
-        unpadded_scale.range(old_range);
+        unpadded_scale.range(old_range).paddingInner(0).paddingOuter(0);
         const outer_padding = (unpadded_scale.range().length > 0) ?
             Math.abs((new_range[1] - old_range[1]) / unpadded_scale.bandwidth()) : 0;
         this.scale.range(new_range);
