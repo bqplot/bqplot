@@ -24,7 +24,6 @@ Market Map
    :toctree: _generate/
 
    MarketMap
-   SquareMarketMap
 """
 
 from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance, Float
