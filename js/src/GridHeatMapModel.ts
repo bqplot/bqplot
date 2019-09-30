@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
@@ -57,22 +58,24 @@ export class GridHeatMapModel extends MarkModel {
     update_data() {
         this.dirty = true;
         // Handling data updates
-        const that = this;
         this.colors = this.get("color");
-        this.rows = this.get("row");
-        this.columns = this.get("column");
 
+        const num_rows = this.colors.length;
         const num_cols = this.colors[0].length;
+
+        this.rows = this.get("row") || _.range(num_rows);
+        this.columns = this.get("column") || _.range(num_cols);
+
         const flat_colors = [].concat.apply([], this.colors.map((x) => Array.prototype.slice.call(x, 0)));
 
-        this.mark_data = flat_colors.map(function(data, index) {
+        this.mark_data = flat_colors.map((data, index) => {
             const row_num = Math.floor(index / num_cols);
             const col_num = index % num_cols;
 
             return {
                 row_num : row_num,
-                row : that.rows[row_num],
-                column : that.columns[col_num],
+                row : this.rows[row_num],
+                column : this.columns[col_num],
                 column_num : col_num,
                 color : data,
                 _cell_num : index,
