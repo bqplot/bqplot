@@ -31,7 +31,7 @@ export class MarkModel extends BaseModel {
             scales: {},
             scales_metadata: {},
             preserve_domain: {},
-            display_legend: true,
+            display_legend: false,
             labels: [],
             apply_clip: true,
             visible: true,
@@ -127,7 +127,7 @@ export class MarkModel extends BaseModel {
     };
 
     dirty: boolean;
-    display_el_classes: Array<string>; 
+    display_el_classes: Array<string>;
     mark_data: any;
 
 }
