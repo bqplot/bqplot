@@ -23,10 +23,8 @@ var DateScaleModel = linearscalemodel.LinearScaleModel.extend({
         return _.extend(linearscalemodel.LinearScaleModel.prototype.defaults(), {
             _model_name: "DateScaleModel",
             _view_name: "DateScale",
-
-            // min: null,
-            // max: null,
-            // mid: null
+            min: null,
+            max: null
         });
     },
 
