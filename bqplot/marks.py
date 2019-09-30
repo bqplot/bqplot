@@ -768,14 +768,14 @@ class Label(_ScatterBase):
     name = 'Labels'
 
     # Other attributes
-    x_offset = Int().tag(sync=True)
-    y_offset = Int().tag(sync=True)
+    x_offset = Int(0).tag(sync=True)
+    y_offset = Int(0).tag(sync=True)
 
     colors = List(trait=Color(default_value=None,
                               allow_none=True),
                   default_value=CATEGORY10)\
         .tag(sync=True, display_name='Colors')
-    rotate_angle = Float().tag(sync=True)
+    rotate_angle = Float(0.0).tag(sync=True)
     text = Array(None, allow_none=True)\
         .tag(sync=True, **array_serialization).valid(array_squeeze)
     default_size = Float(16.).tag(sync=True)
