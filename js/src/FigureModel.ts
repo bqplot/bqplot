@@ -34,15 +34,15 @@ export class FigureModel extends BaseModel {
             interaction: null,
             scale_x: undefined,
             scale_y: undefined,
-            fig_color: null,
             title_style: {},
             background_style: {},
             legend_style: {},
             legend_text: {},
+            theme: "classic",
 
-            preserve_aspect: false,
             min_aspect_ratio: 0.01,
             max_aspect_ratio: 100,
+            pixel_ratio: null,
 
             fig_margin: {
                 top: 60,
@@ -55,7 +55,6 @@ export class FigureModel extends BaseModel {
             padding_y: 0.025,
             legend_location: "top-right",
             animation_duration: 0,
-            pixel_ratio: null
         };
     }
 
