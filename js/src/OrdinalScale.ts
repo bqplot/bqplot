@@ -32,7 +32,7 @@ export class OrdinalScale extends Scale {
         this.scale.range(range);
         this.scale.paddingInner(padding);
         this.scale.paddingOuter(padding / 2.0);
-        this.offset = (this.scale.domain().length === 0) ? 0 : this.scale.range() / 2.0;
+        this.offset = (this.scale.domain().length === 0) ? 0 : this.scale.bandwidth() / 2.0;
     }
 
     expand_domain(old_range, new_range) {
@@ -59,7 +59,7 @@ export class OrdinalScale extends Scale {
         // value passed. If the pixel is outside the range of the scale,
         const that = this;
         const domain = this.scale.domain();
-        const pixel_vals = domain.map(function(d) { 
+        const pixel_vals = domain.map(function(d) {
             return that.scale(d) + that.scale.bandwidth() / 2;
         });
         const abs_diff = pixel_vals.map(function(d) {
@@ -77,7 +77,7 @@ export class OrdinalScale extends Scale {
             return that.scale(d) + that.scale.bandwidth() / 2;
         });
         const indices = _.range(pixel_vals.length);
-        const filtered_ind = indices.filter(function(ind) { 
+        const filtered_ind = indices.filter(function(ind) {
             return (pixel_vals[ind] >= pixels[0] &&
                     pixel_vals[ind] <= pixels[1]);
         });
