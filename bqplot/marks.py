@@ -1452,7 +1452,7 @@ class GridHeatMap(Mark):
         not `OrdinalScale`. `start` aligns the column values passed to
         be aligned with the start of the tiles and `end` aligns the
         column values to the end of the tiles.
-    anchor_style: dict (default: {'fill': 'white', 'stroke': 'blue'})
+    anchor_style: dict (default: {})
         Controls the style for the element which serves as the anchor during
         selection.
     display_format: string (default: None)
