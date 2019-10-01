@@ -36,14 +36,13 @@ var FigureModel = basemodel.BaseModel.extend({
             interaction: null,
             scale_x: undefined,
             scale_y: undefined,
-            fig_color: null,
             title_style: {},
             background_style: {},
             legend_style: {},
             legend_text: {},
+            theme: "classic",
 
-            preserve_aspect: false,
-            min_aspect_ratio: 0,
+            min_aspect_ratio: 0.01,
             max_aspect_ratio: 100,
 
             fig_margin: {

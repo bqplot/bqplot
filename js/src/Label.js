@@ -21,7 +21,7 @@ var Label = scatterbase.ScatterBase.extend({
 
     create_listeners: function() {
         Label.__super__.create_listeners.apply(this);
-        this.model.on_some_change(["font_weight", "font_size", "colors",
+        this.model.on_some_change(["font_weight", "default_size", "colors",
                                    "align", "font_unit"], this.update_style, this);
         this.model.on_some_change(["x", "y", "x_offset", "y_offset",
                                    "rotate_angle"], this.update_position, this);

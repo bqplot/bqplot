@@ -26,11 +26,12 @@ var LabelModel = basemodel.ScatterBaseModel.extend({
 
             x_offset: 0,
             y_offset: 0,
+            colors: d3.scale.category10().range(),
             rotate_angle: 0.0,
-            text: [],
-            font_size: 16.0,
-            font_unit: "px",
+            text: null,
+            default_size: 16.0,
             drag_size: 1.0,
+            font_unit: "px",
             font_weight: "bold",
             align: "start",
         });

@@ -452,42 +452,40 @@ var GridHeatMap = mark.Mark.extend({
             });
         });
 
-        this.display_cell_groups = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
+        this.display_cells = this.display_rows.selectAll(".heatmapcell").data(function(d, i) {
             return data_array[i];
-        })
-        .enter()
-        .append("g")
-        .attr("class", "heatmapcell")
-        .attr("transform", function(d, i) {
-            return "translate(" + column_plot_data.start[i] + ", 0)";
         });
-
-        this.display_cells = this.display_cell_groups
+        this.display_cells.enter()
             .append("rect")
-            .attr("class", "cell_rect")
+            .attr("class", "heatmapcell")
             .on("click", _.bind(function() {
                 this.event_dispatcher("element_clicked");
             }, this));
 
-        this.display_cell_groups
+        this.display_cells
+            .attr({
+                "x": function(d, i) {
+                    return column_plot_data.start[i];
+                }, "y": 0
+            })
+            .attr("width", function(d, i) { return column_plot_data.widths[i]; })
+            .attr("height",function(d) { return row_plot_data.widths[d.row_num]; })
+
+        // cell labels
+        this.display_cell_labels = this.display_rows.selectAll(".heatmapcell_label").data(function(d, i) {
+            return data_array[i];
+        });
+        this.display_cell_labels.enter()
             .append("text")
-            .attr("class", "cell_text")
+            .attr({
+                "class": "heatmapcell_label",
+                "x": function(d, i) { return column_plot_data.start[i] + column_plot_data.widths[i] / 2; },
+                "y": function(d) { return row_plot_data.widths[d.row_num] / 2; },
+            })
             .style({"text-anchor": "middle",
                     "fill" : "black",
                     "pointer-events": "none",
                     "dominant-baseline": "central"});
-
-        this.display_cell_groups
-            .selectAll(".cell_rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", function(d, i) { return column_plot_data.widths[i]; })
-            .attr("height",function(d) { return row_plot_data.widths[d.row_num]; })
-
-        this.display_cell_groups
-            .selectAll(".cell_text")
-            .attr("x", function(d, i) { return column_plot_data.widths[i] / 2; })
-            .attr("y", function(d) { return row_plot_data.widths[d.row_num] / 2; });
 
         this.apply_styles();
         this.update_labels();
@@ -514,10 +512,11 @@ var GridHeatMap = mark.Mark.extend({
         var display_format_str = this.model.get("display_format");
         var display_format = d3.format(display_format_str);
 
-        d3.selectAll(".cell_text")
+        this.d3el.selectAll(".heatmapcell_label")
             .text(function(d, i) { return display_format_str ? display_format(d.color) : null; })
             .style(this.model.get("font_style"));
     },
+
 
     get_tile_plotting_data: function(scale, data, mode, start) {
         // This function returns the starting points and widths of the

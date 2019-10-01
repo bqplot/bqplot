@@ -768,14 +768,14 @@ class Label(_ScatterBase):
     name = 'Labels'
 
     # Other attributes
-    x_offset = Int().tag(sync=True)
-    y_offset = Int().tag(sync=True)
+    x_offset = Int(0).tag(sync=True)
+    y_offset = Int(0).tag(sync=True)
 
     colors = List(trait=Color(default_value=None,
                               allow_none=True),
                   default_value=CATEGORY10)\
         .tag(sync=True, display_name='Colors')
-    rotate_angle = Float().tag(sync=True)
+    rotate_angle = Float(0.0).tag(sync=True)
     text = Array(None, allow_none=True)\
         .tag(sync=True, **array_serialization).valid(array_squeeze)
     default_size = Float(16.).tag(sync=True)
@@ -1448,7 +1448,7 @@ class GridHeatMap(Mark):
         not `OrdinalScale`. `start` aligns the column values passed to
         be aligned with the start of the tiles and `end` aligns the
         column values to the end of the tiles.
-    anchor_style: dict (default: {'fill': 'white', 'stroke': 'blue'})
+    anchor_style: dict (default: {})
         Controls the style for the element which serves as the anchor during
         selection.
     display_format: string (default: None)
@@ -1507,8 +1507,7 @@ class GridHeatMap(Mark):
     null_color = Color('black', allow_none=True).tag(sync=True)
     stroke = Color('black', allow_none=True).tag(sync=True)
     opacity = Float(1.0, min=0.2, max=1).tag(sync=True, display_name='Opacity')
-    anchor_style = Dict({'fill': 'white', 'stroke': 'blue'}).tag(sync=True)
-
+    anchor_style = Dict().tag(sync=True)
     display_format = Unicode(default_value=None, allow_none=True)\
         .tag(sync=True)
     font_style = Dict().tag(sync=True)

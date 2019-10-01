@@ -22,7 +22,10 @@ var DateColorScaleModel = colorscale.ColorScaleModel.extend({
     defaults: function() {
         return _.extend(colorscale.ColorScaleModel.prototype.defaults(), {
             _model_name: "DateColorScaleModel",
-            _view_name: "DateColorScale"
+            _view_name: "DateColorScale",
+            min: null,
+            max: null,
+            mid: null
         });
     },
 
