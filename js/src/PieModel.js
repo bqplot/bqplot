@@ -38,7 +38,13 @@ var PieModel = markmodel.MarkModel.extend({
             radius: 180,
             inner_radius: 0.1,
             start_angle: 0.0,
-            end_angle: 360.0
+            end_angle: 360.0,
+            display_labels: 'inside',
+            display_values: false,
+            values_format: '.1f',
+            label_color: null,
+            font_size: '12px',
+            font_weight: 'normal',
         });
     },
 

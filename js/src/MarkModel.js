@@ -32,7 +32,7 @@ var MarkModel = basemodel.BaseModel.extend({
             scales: {},
             scales_metadata: {},
             preserve_domain: {},
-            display_legend: true,
+            display_legend: false,
             labels: [],
             apply_clip: true,
             visible: true,
