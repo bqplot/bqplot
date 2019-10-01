@@ -32,9 +32,10 @@ export class OHLCModel extends MarkModel {
                 x: { orientation: "horizontal", dimension: "x" },
                 y: { orientation: "vertical", dimension: "y" }
             },
+            marker: 'candle',
             stroke: null,
-            box_fill_color: "dodgerblue",
-            outlier_fill_color: "gray",
+            stroke_width: 1.0,
+            colors: ['green', 'red'],
             opacities: [],
             format: 'ohlc',
         };
