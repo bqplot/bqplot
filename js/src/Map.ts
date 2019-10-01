@@ -246,7 +246,7 @@ export class Map extends Mark {
     }
 
     process_click(interaction) {
-        super.process_click([interaction]);
+        super.process_click(interaction);
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.click_handler;
@@ -254,7 +254,7 @@ export class Map extends Mark {
     }
 
     process_hover(interaction) {
-        super.process_hover([interaction]);
+        super.process_hover(interaction);
         if(interaction === "tooltip") {
             this.event_listeners.mouse_over = () => {
                 this.mouseover_handler();

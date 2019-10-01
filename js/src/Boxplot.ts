@@ -315,7 +315,7 @@ export class Boxplot extends Mark {
     }
 
     process_click(interaction) {
-        super.process_click.apply(this, [interaction]);
+        super.process_click(interaction);
 
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
