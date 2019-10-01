@@ -97,7 +97,7 @@ export class Figure extends widgets.DOMWidgetView {
         return return_value;
     }
 
-    render () {
+    render () : Promise<any> {
         let min_width = this.model.get("layout").get("min_width");
         let min_height = this.model.get("layout").get("min_height");
         if(typeof min_width === "string" && min_width.endsWith('px')) {
@@ -227,9 +227,9 @@ export class Figure extends widgets.DOMWidgetView {
 
         const figure_scale_promise = this.create_figure_scales();
 
-        figure_scale_promise.then(() => {
+        return figure_scale_promise.then(() => {
             this.mark_views = new widgets.ViewList(this.add_mark, this.remove_mark, this);
-            this.mark_views.update(this.model.get("marks")).then((views) => {
+            const mark_views_updated = this.mark_views.update(this.model.get("marks")).then((views) => {
                 this.replace_dummy_nodes(views);
                 this.update_marks(views);
                 this.update_legend();
@@ -241,7 +241,7 @@ export class Figure extends widgets.DOMWidgetView {
             });
 
             this.axis_views = new widgets.ViewList(this.add_axis, null, this);
-            this.axis_views.update(this.model.get("axes"));
+            const axis_views_updated = this.axis_views.update(this.model.get("axes"));
 
             // TODO: move to the model
             this.model.on_some_change(["fig_margin", "min_aspect_ration", "max_aspect_ratio"], this.relayout, this);
@@ -286,6 +286,7 @@ export class Figure extends widgets.DOMWidgetView {
                     this.relayout();
                 })
             });
+            return Promise.all([mark_views_updated, axis_views_updated]);
         });
     }
 
@@ -302,6 +303,7 @@ export class Figure extends widgets.DOMWidgetView {
         if (this.renderer && !this.el.contains(this.renderer.domElement)) {
             this.el.insertBefore(this.renderer.domElement, this.el.childNodes[1]);
         }
+        this.layout_webgl_canvas()
     }
 
     replace_dummy_nodes(views) {
@@ -935,7 +937,7 @@ export class Figure extends widgets.DOMWidgetView {
 
     render_gl() : Promise<void> {
         // Nothing to render using a WebGL context
-        if (!this.renderer || !this.mark_views) {
+        if (!this.renderer) {
             return Promise.resolve();
         }
 
