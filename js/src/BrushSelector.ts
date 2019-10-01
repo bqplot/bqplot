@@ -262,8 +262,14 @@ export class BrushSelector extends BrushMixinXYSelector {
             this.empty_selection();
         } else {
             const d0 = e.selection;
-            const pixel_extent_x = [d0[0][0], d0[1][0]];
-            const pixel_extent_y = [d0[1][1], d0[0][1]];
+            var pixel_extent_x = [d0[0][0], d0[1][0]];
+            var pixel_extent_y = [d0[1][1], d0[0][1]];
+
+            // d3 does not always (!) give the selection in [[xmin, xmax], [ymin, ymax]] order
+            // so we sort it to be sure
+            var sortFunction = (a: number, b: number) => a - b;
+            pixel_extent_x.sort(sortFunction)
+            pixel_extent_y.sort(sortFunction)
 
             const extent_x = pixel_extent_x.map(this.x_scale.scale.invert).sort(
                 (a: number, b: number) => a - b);
@@ -311,12 +317,14 @@ export class BrushSelector extends BrushMixinXYSelector {
         this.set_y_range([this.y_scale]);
 
         this.brush.extent([[0, 0], [this.width, this.height]]);
-        const range_x = this.model.get("selected_x").map(this.x_scale.scale).sort(
-            function(a, b) { return a - b; });
-        const range_y = this.model.get("selected_y").map(this.y_scale.scale).sort(
-            function(a, b) { return a - b; });
-        this.brush.move(this.d3el, [[range_x[0], range_y[0]], [range_x[1], range_y[1]]]);
-        this.brushsel = this.d3el.call(this.brush);
+        if(this.model.get("selected_x") && this.model.get("selected_y")) {
+            const range_x = this.model.get("selected_x").map(this.x_scale.scale).sort(
+                function(a, b) { return a - b; });
+            const range_y = this.model.get("selected_y").map(this.y_scale.scale).sort(
+                function(a, b) { return a - b; });
+            this.brush.move(this.d3el, [[range_x[0], range_y[0]], [range_x[1], range_y[1]]]);
+            this.brushsel = this.d3el.call(this.brush);
+        }
     }
 
     // TODO: check that we've properly overridden the mixin.
@@ -417,10 +425,12 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
         this.set_range([this.scale]);
         this.brush.extent([[0, 0], [this.width, this.height]]);
 
-        const range = this.model.get("selected").map(this.scale.scale).sort(
-            function(a, b) { return a - b; });
-        this.brush.move(this.d3el, range);
-        this.brushsel = this.d3el.call(this.brush);
+        if(this.model.get("selected")) {
+            const range = this.model.get("selected").map(this.scale.scale).sort(
+                function(a, b) { return a - b; });
+            this.brush.move(this.d3el, range);
+            this.brushsel = this.d3el.call(this.brush);
+        }
     }
 
     reset() { }

@@ -21,6 +21,7 @@ import * as _ from 'underscore';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
+import { WidgetView } from '@jupyter-widgets/base';
 
 THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl').default;
 
@@ -720,27 +721,28 @@ export class Figure extends widgets.DOMWidgetView {
         return [x_start, y_start];
     }
 
-    set_interaction(model) {
+    set_interaction(model) : Promise<WidgetView> {
         if (model) {
             // Sets the child interaction
-            const that = this;
-            model.state_change.then(function() {
+            return model.state_change.then(() => {
                 // Sets the child interaction
-                that.create_child_view(model).then(function(view) {
-                    if (that.interaction_view) {
-                        that.interaction_view.remove();
+                return this.create_child_view(model).then((view) => {
+                    if (this.interaction_view) {
+                        this.interaction_view.remove();
                     }
-                    that.interaction_view = view;
-                    that.interaction.node().appendChild(view.el);
-                    that.displayed.then(function() {
+                    this.interaction_view = view;
+                    this.interaction.node().appendChild(view.el);
+                    this.displayed.then(() => {
                         view.trigger("displayed");
                     });
+                    return view;
                 });
             });
         } else {
             if (this.interaction_view) {
                 this.interaction_view.remove();
             }
+            return Promise.resolve(null);
         }
     }
 
