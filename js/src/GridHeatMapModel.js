@@ -23,23 +23,22 @@ var GridHeatMapModel = markmodel.MarkModel.extend({
         return _.extend(markmodel.MarkModel.prototype.defaults(), {
             _model_name: "GridHeatMapModel",
             _view_name: "GridHeatMap",
-            row: [],
-            column: [],
+            row: null,
+            column: null,
             color: null,
             scales_metadata: {
                 row: { orientation: "vertical", dimension: "y" },
                 column: { orientation: "horizontal", dimension: "x" },
                 color: { dimension: "color" }
             },
-            null_color: "black",
             row_align: "start",
             column_align: "start",
+            null_color: "black",
             stroke: "black",
             opacity: 1.0,
-            anchor_style: {
-                fill: "white",
-                stroke: "blue"
-            }
+            anchor_style: {},
+            display_format: null,
+            font_style: {},
         });
     },
 
