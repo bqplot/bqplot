@@ -1553,9 +1553,6 @@ class GridHeatMap(Mark):
 
         color = np.asarray(self.color)
         n_columns = color.shape[1]
-        print(column)
-        print(len(column))
-        print(n_columns)
         if len(column) != n_columns and len(column) != n_columns + 1 and len(column) != n_columns - 1:
             raise TraitError('column must be an array of size color.shape[1]')
 
