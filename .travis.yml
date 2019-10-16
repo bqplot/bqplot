@@ -21,7 +21,8 @@ install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
+  # Commented out because of conda bug. CF https://github.com/conda/conda/issues/9337
+  # - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
   - conda install pyyaml
