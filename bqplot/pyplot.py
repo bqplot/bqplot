@@ -155,7 +155,8 @@ def show(key=None, display_toolbar=True):
     if display_toolbar:
         if not hasattr(figure, 'pyplot'):
             figure.pyplot = Toolbar(figure=figure)
-        display(VBox([figure, figure.pyplot]))
+            figure.pyplot_vbox = VBox([figure, figure.pyplot])
+        display(figure.pyplot_vbox)
     else:
         display(figure)
 
@@ -232,6 +233,7 @@ def close(key):
     fig = figure_registry[key]
     if hasattr(fig, 'pyplot'):
         fig.pyplot.close()
+        fig.pyplot_vbox.close()
     fig.close()
     del figure_registry[key]
     del _context['scale_registry'][key]
