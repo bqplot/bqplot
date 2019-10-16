@@ -42,21 +42,7 @@ export class Figure extends widgets.DOMWidgetView {
         svg_background.classList.add("svg-background");
         this.svg_background = d3.select<SVGElement, any>(svg_background);
 
-        // a shared webgl context for all marks
-        this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, premultipliedAlpha: true});
-        if(!this.renderer.capabilities.floatFragmentTextures) {
-            console.error("you videocard/driver does not support float fragment textures, you may have limited functionality")
-        }
-        const gl = this.renderer.context;
-        if(!gl.getExtension('OES_texture_float_linear')) {
-            console.error("you videocard/driver does not support float fragment linear interpolation, you may have limited functionality")
-        }
-        this.renderer.setSize(100, 100);
-        this.renderer.setClearAlpha(0);
-        this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio)
-
         this.el.appendChild(svg_background)
-        this.el.appendChild(this.renderer.domElement);
         this.el.appendChild(svg);
 
         // For testing we need to know when the mark_views is created, the tests
@@ -112,7 +98,7 @@ export class Figure extends widgets.DOMWidgetView {
         return return_value;
     }
 
-    render () {
+    render () : Promise<any> {
         let min_width = this.model.get("layout").get("min_width");
         let min_height = this.model.get("layout").get("min_height");
         if(typeof min_width === "string" && min_width.endsWith('px')) {
@@ -178,7 +164,7 @@ export class Figure extends widgets.DOMWidgetView {
           .attr("width", this.plotarea_width)
           .attr("height", this.plotarea_height)
           .style("pointer-events", "inherit");
-        this.bg_events.on("click", function() { that.trigger("bg_clicked"); });
+        this.bg_events.on("click", () => { this.trigger("bg_clicked"); });
 
         this.fig_axes = this.fig_background.append("g");
         this.fig_marks = this.fig.append("g");
@@ -241,67 +227,84 @@ export class Figure extends widgets.DOMWidgetView {
         this.model.on("save_svg", this.save_svg, this);
 
         const figure_scale_promise = this.create_figure_scales();
-        const that = this;
-        figure_scale_promise.then(function() {
-            that.mark_views = new widgets.ViewList(that.add_mark, that.remove_mark, that);
-            that.mark_views.update(that.model.get("marks"));
-            Promise.all(that.mark_views.views).then(function(views) {
-                that.replace_dummy_nodes(views);
-                that.update_marks(views);
-                that.update_legend();
+
+        return figure_scale_promise.then(() => {
+            this.mark_views = new widgets.ViewList(this.add_mark, this.remove_mark, this);
+            const mark_views_updated = this.mark_views.update(this.model.get("marks")).then((views) => {
+                this.replace_dummy_nodes(views);
+                this.update_marks(views);
+                this.update_legend();
                 // Update Interaction layer
                 // This has to be done after the marks are created
-                that.set_interaction(that.model.get("interaction"));
-                that._initial_marks_created_resolve()
+                this.set_interaction(this.model.get("interaction"));
+                this._initial_marks_created_resolve();
+                this.update_gl();
             });
 
-            that.axis_views = new widgets.ViewList(that.add_axis, null, that);
-            that.axis_views.update(that.model.get("axes"));
+            this.axis_views = new widgets.ViewList(this.add_axis, null, this);
+            const axis_views_updated = this.axis_views.update(this.model.get("axes"));
 
             // TODO: move to the model
-            that.model.on_some_change(["fig_margin", "min_aspect_ration", "max_aspect_ratio"], that.relayout, that);
-            that.model.on_some_change(["padding_x", "padding_y"], function() {
+            this.model.on_some_change(["fig_margin", "min_aspect_ration", "max_aspect_ratio"], this.relayout, this);
+            this.model.on_some_change(["padding_x", "padding_y"], () => {
                 this.figure_padding_x = this.model.get("padding_x");
                 this.figure_padding_y = this.model.get("padding_y");
                 this.trigger("margin_updated");
-            }, that);
-            that.model.on("change:axes", function(model, value, options) {
+            }, this);
+            this.model.on("change:axes", (model, value, options) => {
                 this.axis_views.update(value);
-            }, that);
-            that.model.on("change:marks", function(model, value, options) {
-                this.mark_views.update(value);
-                Promise.all(this.mark_views.views).then(function(views) {
-                    that.replace_dummy_nodes(views);
-                    that.update_marks(views);
-                    that.update_legend();
+            }, this);
+            this.model.on("change:marks", (model, value, options) => {
+                this.mark_views.update(value).then((views) => {
+                    this.replace_dummy_nodes(views);
+                    this.update_marks(views);
+                    this.update_legend();
+                    this.update_gl();
                 });
-            }, that);
-            that.model.on("change:legend_location", that.update_legend, that);
-            that.model.on("change:title", that.update_title, that);
+            }, this);
+            this.model.on("change:legend_location", this.update_legend, this);
+            this.model.on("change:title", this.update_title, this);
 
-            that.model.on("change:interaction", function(model, value) {
-                Promise.all(that.mark_views.views).then((views) => {
+            this.model.on("change:interaction", (model, value) => {
+                Promise.all(this.mark_views.views).then((views) => {
                     // Like above:
                     // This has to be done after the marks are created
                     this.set_interaction(value);
                 })
-            }, that);
+            }, this);
 
-            that.displayed.then(function(args: any) {
-                document.body.appendChild(that.tooltip_div.node());
-                that.create_listeners();
+            this.displayed.then((args: any) => {
+                document.body.appendChild(this.tooltip_div.node());
+                this.create_listeners();
                 if(args === undefined || args.add_to_dom_only !== true) {
                     //do not relayout if it is only being added to the DOM
                     //and not displayed.
-                    that.relayout();
+                    this.relayout();
                 }
                 // In the classic notebook, we should relayout the figure on
                 // resize of the main window.
-                window.addEventListener('resize', function() {
-                    that.relayout();
+                window.addEventListener('resize', () => {
+                    this.relayout();
                 })
             });
+            return Promise.all([mark_views_updated, axis_views_updated]);
         });
+    }
+
+    createWebGLRenderer() {
+        // a shared webgl context for all marks
+        if (!this.renderer) {
+            this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, premultipliedAlpha: true});
+
+            this.renderer.setSize(100, 100);
+            this.renderer.setClearAlpha(0);
+            this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio);
+        }
+
+        if (this.renderer && !this.el.contains(this.renderer.domElement)) {
+            this.el.insertBefore(this.renderer.domElement, this.el.childNodes[1]);
+        }
+        this.layout_webgl_canvas()
     }
 
     replace_dummy_nodes(views) {
@@ -323,8 +326,10 @@ export class Figure extends widgets.DOMWidgetView {
         this.listenTo(this.model, "change:legend_style", this.legend_style_updated);
         this.listenTo(this.model, "change:legend_text", this.legend_text_updated);
         this.listenTo(this.model, "change:pixel_ratio", () => {
-            this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio)
-            this.update_gl()
+            if (this.renderer) {
+                this.renderer.setPixelRatio(this.model.get('pixel_ratio') || window.devicePixelRatio);
+                this.update_gl();
+            }
         })
         this.listenTo(this.model, "change:theme", this.change_theme);
     }
@@ -495,31 +500,36 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     add_mark(model) {
-        const that = this;
-        model.state_change.then(function() {
-            model.on("data_updated redraw_legend", that.update_legend, that);
+        model.state_change.then(() => {
+            model.on("data_updated redraw_legend", this.update_legend, this);
         });
 
-        const dummy_node = that.fig_marks.node().appendChild(document.createElementNS(d3.namespaces.svg, "g"));
+        const dummy_node = this.fig_marks.node().appendChild(document.createElementNS(d3.namespaces.svg, "g"));
 
-        return that.create_child_view(model, {clip_id: that.clip_id}).then(function(view: any) {
+        return this.create_child_view(model, {clip_id: this.clip_id}).then((view: any) => {
             view.dummy_node = dummy_node;
-            view.on("mark_padding_updated", function() {
-                that.mark_padding_updated(view);
-            }, that);
-            view.on("mark_scales_updated", function() {
-                that.mark_scales_updated(view);
-            }, that);
+            view.on("mark_padding_updated", () => {
+                this.mark_padding_updated(view);
+            }, this);
+            view.on("mark_scales_updated", () => {
+                this.mark_scales_updated(view);
+            }, this);
+
             let child_x_scale = view.model.get("scales")[view.model.get_key_for_dimension("x")];
             let child_y_scale = view.model.get("scales")[view.model.get_key_for_dimension("y")];
             if(child_x_scale === undefined) {
-                child_x_scale = that.scale_x.model;
+                child_x_scale = this.scale_x.model;
             }
             if(child_y_scale === undefined) {
-                child_y_scale = that.scale_y.model;
+                child_y_scale = this.scale_y.model;
             }
-            that.update_padding_dict(that.x_pad_dict, view, child_x_scale, view.x_padding);
-            that.update_padding_dict(that.y_pad_dict, view, child_y_scale, view.y_padding);
+            this.update_padding_dict(this.x_pad_dict, view, child_x_scale, view.x_padding);
+            this.update_padding_dict(this.y_pad_dict, view, child_y_scale, view.y_padding);
+
+            // If the mark needs a WebGL renderer, we create it
+            if (view.render_gl) {
+                this.createWebGLRenderer();
+            }
 
             return view;
         });
@@ -571,61 +581,60 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     relayout() {
-
-        const that = this;
-
         const impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
-        that.width = impl_dimensions["width"];
-        that.height = impl_dimensions["height"];
+        this.width = impl_dimensions["width"];
+        this.height = impl_dimensions["height"];
 
-        window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(() => {
             // update ranges
-            that.margin = that.model.get("fig_margin");
-            that.update_plotarea_dimensions();
+            this.margin = this.model.get("fig_margin");
+            this.update_plotarea_dimensions();
 
-            if (that.scale_x !== undefined && that.scale_x !== null) {
-                that.scale_x.set_range([0, that.plotarea_width]);
+            if (this.scale_x !== undefined && this.scale_x !== null) {
+                this.scale_x.set_range([0, this.plotarea_width]);
             }
 
 
-            if (that.scale_y !== undefined && that.scale_y !== null) {
-                that.scale_y.set_range([that.plotarea_height, 0]);
+            if (this.scale_y !== undefined && this.scale_y !== null) {
+                this.scale_y.set_range([this.plotarea_height, 0]);
             }
 
             // transform figure
-            that.fig.attr("transform", "translate(" + that.margin.left + "," +
-                                                      that.margin.top + ")");
-            that.fig_background.attr("transform", "translate(" + that.margin.left + "," +
-                                                      that.margin.top + ")");
-            that.title.attrs({
-                x: (0.5 * (that.plotarea_width)),
-                y: -(that.margin.top / 2.0),
+            this.fig.attr("transform", "translate(" + this.margin.left + "," +
+                                                      this.margin.top + ")");
+            this.fig_background.attr("transform", "translate(" + this.margin.left + "," +
+                                                      this.margin.top + ")");
+            this.title.attrs({
+                x: (0.5 * (this.plotarea_width)),
+                y: -(this.margin.top / 2.0),
                 dy: "1em"
             });
 
-            that.bg
-                .attr("width", that.plotarea_width)
-                .attr("height", that.plotarea_height);
-            that.bg_events
-                .attr("width", that.plotarea_width)
-                .attr("height", that.plotarea_height);
+            this.bg
+                .attr("width", this.plotarea_width)
+                .attr("height", this.plotarea_height);
+            this.bg_events
+                .attr("width", this.plotarea_width)
+                .attr("height", this.plotarea_height);
 
 
-            that.clip_path.attr("width", that.plotarea_width)
-                .attr("height", that.plotarea_height);
+            this.clip_path.attr("width", this.plotarea_width)
+                .attr("height", this.plotarea_height);
 
-            that.trigger("margin_updated");
-            that.update_legend();
-            that.layout_webgl_canvas()
+            this.trigger("margin_updated");
+            this.update_legend();
+            this.layout_webgl_canvas();
         });
 
     }
 
     layout_webgl_canvas() {
-        this.renderer.domElement.style = 'left: ' + this.margin.left + 'px; ' +
-                                         'top: '+ this.margin.top + 'px;'
-        this.renderer.setSize(this.plotarea_width, this.plotarea_height);
-        this.update_gl();
+        if (this.renderer) {
+            this.renderer.domElement.style = 'left: ' + this.margin.left + 'px; ' +
+                                             'top: '+ this.margin.top + 'px;'
+            this.renderer.setSize(this.plotarea_width, this.plotarea_height);
+            this.update_gl();
+        }
     }
 
     update_legend() {
@@ -815,57 +824,57 @@ export class Figure extends widgets.DOMWidgetView {
             return css;
         };
 
-       const svg2svg = function(node_background, canvas, node_foreground, width, height) {
-           // Creates a standalone SVG string from an inline SVG element
-           // containing all the computed style attributes.
-           const svg = node_foreground.cloneNode(true);
-           svg.setAttribute("version", "1.1");
-           svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-           svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-           svg.style.background = window.getComputedStyle(document.body).background;
-           const s = document.createElement("style");
-           s.setAttribute("type", "text/css");
-           s.innerHTML = "<![CDATA[\n" +
-               get_css(node_foreground, ["\.theme-dark", "\.theme-light", ".bqplot > ", ":root"]) + "\n" +
-               get_css(node_background, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n" +
-               "]]>";
-           const defs = document.createElement("defs");
-           defs.appendChild(s);
-           // we put the svg background part before the marks
-           const g_root = svg.children[0];
-           const svg_background = node_background.cloneNode(true);
-           // first the axes
-           g_root.insertBefore(svg_background.children[0].children[1], g_root.children[0])
-           // and the background as first element
-           g_root.insertBefore(svg_background.children[0].children[0], g_root.children[0])
-
-           // and add the webgl canvas as an image
-           const data_url = canvas.toDataURL('image/png');
-           const marks = d3.select(g_root.children[2]);
-           marks.append("image")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", 1)
-                .attr("height", 1)
-                .attr("preserveAspectRatio", "none")
-                .attr("transform", "scale(" + width + ", " + height + ")")
-                .attr("href", data_url);
-
-           svg.insertBefore(defs, svg.firstChild);
-           // Getting the outer HTML
-           return svg.outerHTML;
-        };
         // Even though the canvas may display the rendering already, it is not guaranteed it can be read of the canvas
         // or we have to set preserveDrawingBuffer to true, which may impact performance.
         // Instead, we render again, and directly afterwards we do get the pixel data using canvas.toDataURL
         return this.render_gl().then(() => {
             // Create standalone SVG string
-            const svg = svg2svg(this.svg_background.node(), this.renderer.domElement, this.svg.node(), this.plotarea_width, this.plotarea_height);
-            return svg;
-            // Save to PNG
-            //svg2png(svg, this.width, this.height)
-        })
+            const node_background: any = this.svg_background.node();
+            const node_foreground: any = this.svg.node();
+            const width = this.plotarea_width;
+            const height = this.plotarea_height;
 
+            // Creates a standalone SVG string from an inline SVG element
+            // containing all the computed style attributes.
+            const svg = node_foreground.cloneNode(true);
+            svg.setAttribute("version", "1.1");
+            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+            svg.style.background = window.getComputedStyle(document.body).background;
+            const s = document.createElement("style");
+            s.setAttribute("type", "text/css");
+            s.innerHTML = "<![CDATA[\n" +
+                get_css(node_foreground, ["\.theme-dark", "\.theme-light", ".bqplot > ", ":root"]) + "\n" +
+                get_css(node_background, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n" +
+                "]]>";
+            const defs = document.createElement("defs");
+            defs.appendChild(s);
+            // we put the svg background part before the marks
+            const g_root = svg.children[0];
+            const svg_background = node_background.cloneNode(true);
+            // first the axes
+            g_root.insertBefore(svg_background.children[0].children[1], g_root.children[0])
+            // and the background as first element
+            g_root.insertBefore(svg_background.children[0].children[0], g_root.children[0])
+
+            // and add the webgl canvas as an image
+            if (this.renderer) {
+                const data_url = this.renderer.domElement.toDataURL('image/png');
+                const marks = d3.select(g_root.children[2]);
+                marks.append("image")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("width", 1)
+                    .attr("height", 1)
+                    .attr("preserveAspectRatio", "none")
+                    .attr("transform", "scale(" + width + ", " + height + ")")
+                    .attr("href", data_url);
+            }
+
+            svg.insertBefore(defs, svg.firstChild);
+            // Getting the outer HTML
+            return svg.outerHTML;
+        });
     }
 
     get_rendered_canvas(scale) {
@@ -918,19 +927,22 @@ export class Figure extends widgets.DOMWidgetView {
 
     update_gl() {
         if(!this._update_requested) {
-           this._update_requested = true
-           requestAnimationFrame(() => this._update_gl())
+           this._update_requested = true;
+           requestAnimationFrame(this._update_gl.bind(this));
        }
     }
 
     _update_gl() {
-        this.render_gl()
+        this.render_gl();
         this._update_requested = false;
     }
 
-    render_gl() {
-        if(this.mark_views === undefined)
-            this.update_gl() // we got call to soon, maybe next frame?
+    render_gl() : Promise<void> {
+        // Nothing to render using a WebGL context
+        if (!this.renderer) {
+            return Promise.resolve();
+        }
+
         return Promise.all(this.mark_views.views).then((views) => {
             // render all marks that have a render_gl method
             this.renderer.autoClear = false;
@@ -970,7 +982,7 @@ export class Figure extends widgets.DOMWidgetView {
     plotarea_width: any;
     popper_reference: any;
     popper: any;
-    renderer: any;
+    renderer: THREE.WebGLRenderer | null;
     scale_x: any;
     scale_y: any;
     svg: d3.Selection<SVGElement, any, any, any>;

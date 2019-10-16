@@ -118,6 +118,7 @@ export class MarketMap extends Figure {
             that.draw_group_names();
             that.create_tooltip_widget();
         });
+        return scale_creation_promise;
     }
 
     set_top_el_style() {
