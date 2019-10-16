@@ -83,15 +83,13 @@ export class Figure extends widgets.DOMWidgetView {
             return_value["width"] = suggested_width;
             return_value["height"] = suggested_height;
         } else if (ratio > max_ratio) {
-            // The available space is too oblong horizontally.
-            // Use all vertical space and compute width based on maximum
-            // aspect ratio.
+            // Too much horizontal space
+            // Use all vertical space and compute width from max aspect ratio.
             return_value["height"] = suggested_height;
             return_value["width"] = suggested_height * max_ratio;
          } else { // ratio < min_ratio
-            // The available space is too oblong vertically.
-            // Use all horizontal space and compute height based on minimum
-            // aspect ratio.
+            // Too much vertical space
+            // Use all horizontal space and compute height from min aspect ratio.
             return_value["width"] = suggested_width;
             return_value["height"] = suggested_width / min_ratio;
         }
