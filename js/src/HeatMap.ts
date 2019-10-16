@@ -110,7 +110,6 @@ export class HeatMap extends Mark {
 
     draw() {
         this.set_ranges();
-        const that = this;
 
         const x_plot_data = this.get_x_plotting_data(this.model.mark_data.x);
         const y_plot_data = this.get_y_plotting_data(this.model.mark_data.y);
@@ -120,22 +119,26 @@ export class HeatMap extends Mark {
 
         const ctx = this.canvas.getContext("2d");
         const colors = this.model.mark_data.color;
-        colors.forEach(function(row, i) {
+        colors.forEach((row, i) => {
             const height = y_plot_data.heights[i];
-            const y = y_plot_data.start[i];
-            row.forEach(function(d, j) {
+            const y = y_plot_data.origin + y_plot_data.start[i];
+            row.forEach((d, j) => {
                 const width = x_plot_data.widths[j];
-                const x = x_plot_data.start[j];
-                ctx.fillStyle = that.get_element_fill(d);
-                // add .5 to width and height to fill gaps
-                ctx.fillRect(x, y, width+.5, height+.5);
+                const x = x_plot_data.origin + x_plot_data.start[j];
+                ctx.fillStyle = this.get_element_fill(d);
+                ctx.fillRect(x, y, this.expandRect(width), this.expandRect(height));
             })
-        })
+        });
         this.image.attr("width", x_plot_data.total_width)
             .attr("height", y_plot_data.total_height)
             .attr("x", x_plot_data.x0)
             .attr("y", y_plot_data.y0);
         this.draw_canvas();
+    }
+
+    expandRect(value) {
+        // Add 0.5px to width and height to fill gaps between rectangles
+        return value > 0 ? value + 0.5 : value - 0.5;
     }
 
     get_x_plotting_data(data) {
@@ -147,6 +150,7 @@ export class HeatMap extends Mark {
         data = Array.from(data)
         const scaled_data = Array.prototype.map.call(data, this.scales.x.scale);
         const x_padding = this.get_x_padding(scaled_data);
+        const reverse = this.scales.x.model.get('reverse');
         const num_cols = data.length;
 
         const widths = scaled_data.map(function(d, i) {
@@ -167,14 +171,14 @@ export class HeatMap extends Mark {
             else { return (d + scaled_data[i - 1]) * 0.5 - x0; }
         });
 
-        const total_width = (scaled_data[num_cols-1] - scaled_data[0]) +
-                           x_padding.left + x_padding.right;
+        const total_width = Math.abs(scaled_data[num_cols-1] - scaled_data[0] + x_padding.left + x_padding.right);
 
         return {
             "widths": widths,
             "total_width": total_width,
+            "origin": reverse ? total_width : 0,
             "start": start_points,
-            "x0": x0
+            "x0": reverse ? x0 - total_width : x0,
         };
     }
 
@@ -194,6 +198,7 @@ export class HeatMap extends Mark {
         data = Array.from(data)
         const scaled_data = data.map(this.scales.y.scale);
         const y_padding = this.get_y_padding(scaled_data);
+        const reverse = this.scales.y.model.get('reverse');
         const num_rows = data.length;
 
         const heights = scaled_data.map(function(d, i) {
@@ -214,14 +219,14 @@ export class HeatMap extends Mark {
             else { return (d + scaled_data[i + 1]) * 0.5 - y0; }
         });
 
-        const total_height = (scaled_data[0] - scaled_data[num_rows-1]) +
-                            y_padding.top + y_padding.bottom;
+        const total_height = Math.abs(scaled_data[0] - scaled_data[num_rows-1] + y_padding.top + y_padding.bottom);
 
         return {
             "heights": heights,
             "total_height": total_height,
+            "origin": reverse ? total_height : 0,
             "start": start_points,
-            "y0": y0
+            "y0": reverse ? y0 - total_height : y0,
         };
     }
 
