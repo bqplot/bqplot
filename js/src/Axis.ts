@@ -39,9 +39,6 @@ export class Axis extends WidgetView {
     render() {
         this.d3el.style("display", this.model.get("visible") ? "inline" : "none");
         this.parent = this.options.parent;
-        this.margin = this.parent.margin;
-        this.height = this.parent.height - (this.margin.top + this.margin.bottom);
-        this.width = this.parent.width - (this.margin.left + this.margin.right);
 
         const scale_promise = this.set_scale_promise(this.model.get("scale"));
         const offset_promise = this.get_offset_promise();
@@ -635,9 +632,6 @@ export class Axis extends WidgetView {
 
     parent_margin_updated() {
         // sets the new dimensions of the g element for the axis.
-        this.margin = this.parent.margin;
-        this.width = this.parent.width - this.margin.left - this.margin.right;
-        this.height = this.parent.height - this.margin.top - this.margin.bottom;
         this.rescale_axis();
     }
 
@@ -898,17 +892,26 @@ export class Axis extends WidgetView {
         }
     }
 
+    get width() : number {
+        return this.parent.width - this.parent.margin.right - this.parent.margin.left;
+    }
+
+    get height() : number {
+        return this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
+    }
+
+    get margin() {
+        return this.parent.margin;
+    }
+
     axis_scale: any;
     axis: any;
     d3el: any;
     g_axisline: any;
-    height: any;
     label_offset: any;
-    margin: any;
     offset_scale: any;
     offset_value: any;
     parent: any;
     tick_format: any;
     vertical: boolean;
-    width: any;
 }

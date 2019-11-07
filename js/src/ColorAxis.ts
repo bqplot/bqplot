@@ -21,10 +21,7 @@ class ColorBar extends Axis {
 
     render() {
         this.parent = this.options.parent;
-        this.margin = this.parent.margin;
         this.vertical = this.model.get("orientation") === "vertical";
-        this.height = this.parent.height - (this.margin.top + this.margin.bottom);
-        this.width = this.parent.width - (this.margin.left + this.margin.right);
 
         const scale_promise = this.set_scale(this.model.get("scale"));
         this.side = this.model.get("side");
@@ -358,7 +355,7 @@ class ColorBar extends Axis {
             } else {
                 this.axis_line_scale.domain([domain[0], mid, domain[domain.length-1]]);
             }
-        } 
+        }
     }
 
     redraw_axis() {
