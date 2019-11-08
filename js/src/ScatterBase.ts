@@ -304,7 +304,7 @@ export abstract class ScatterBase extends Mark {
     draw_elements(animate, elements_added) {}
 
     process_click(interaction) {
-        super.process_click([interaction]);
+        super.process_click(interaction);
         switch (interaction){
             case "add":
                 this.event_listeners.parent_clicked = this.add_element;

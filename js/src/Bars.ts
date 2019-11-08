@@ -157,7 +157,7 @@ export class Bars extends Mark {
     }
 
     process_click(interaction) {
-        super.process_click.apply(this, [interaction]);
+        super.process_click(interaction);
         if (interaction === "select") {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.bar_click_handler;
