@@ -243,7 +243,7 @@ export class Axis extends WidgetView {
         if(this.axis_scale.model.type === "date" ||
            this.axis_scale.model.type === "date_color_linear") {
             if(this.model.get("tick_format")) {
-                return d3.timeFormat(this.model.get("tick_format"));
+                return d3.utcFormat(this.model.get("tick_format"));
             } else {
                 return this.guess_tick_format();
             }
@@ -254,7 +254,7 @@ export class Axis extends WidgetView {
                 //check the instance of the elements in the domain and
                 //apply the format depending on that.
                 if(utils.is_valid_time_format(tick_format)) {
-                    return d3.timeFormat(tick_format);
+                    return d3.utcFormat(tick_format);
                 } else {
                     return d3.format(tick_format);
                 }
@@ -796,65 +796,65 @@ export class Axis extends WidgetView {
         // diff is the difference between ticks in milliseconds
         const diff = Math.abs(ticks[1] - ticks[0]);
 
-        const format_millisecond = d3.timeFormat(".%L"),
-            format_second = d3.timeFormat(":%S"),
-            format_minute = d3.timeFormat("%I:%M"),
-            format_hour = d3.timeFormat("%I %p"),
-            format_day = d3.timeFormat("%b %d"),
-            format_month = d3.timeFormat("%b %Y"),
-            format_year = d3.timeFormat("%Y");
+        const format_millisecond = d3.utcFormat(".%L"),
+            format_second = d3.utcFormat(":%S"),
+            format_minute = d3.utcFormat("%I:%M"),
+            format_hour = d3.utcFormat("%I %p"),
+            format_day = d3.utcFormat("%b %d"),
+            format_month = d3.utcFormat("%b %Y"),
+            format_year = d3.utcFormat("%Y");
 
         return (date) => {
             let div = 1000;
             if(Math.floor(diff / div) === 0) {
                 //diff is less than a second
-                if(d3.timeSecond(date) < date) {
+                if(d3.utcSecond(date) < date) {
                     return format_millisecond(date);
-                } else if(d3.timeMinute(date) < date) {
+                } else if(d3.utcMinute(date) < date) {
                     return format_second(date);
                 } else {
                     return format_minute(date);
                 }
             } else if (Math.floor(diff / (div *= 60)) === 0) {
                 //diff is less than a minute
-                if(d3.timeMinute(date) < date) {
+                if(d3.utcMinute(date) < date) {
                     return format_second(date);
                 } else {
                     return format_minute(date);
                 }
             } else if (Math.floor(diff / (div *= 60)) === 0) {
                 // diff is less than an hour
-                if(d3.timeHour(date) < date) {
+                if(d3.utcHour(date) < date) {
                     return format_minute(date);
                 } else {
                     return format_hour(date);
                 }
             } else if (Math.floor(diff / (div *= 24)) === 0) {
                 //diff is less than a day
-                if(d3.timeDay(date) < date) {
+                if(d3.utcDay(date) < date) {
                     return format_hour(date);
                 } else {
                     return format_day(date);
                 }
             } else if (Math.floor(diff / (div *= 27)) === 0) {
                 //diff is less than a month
-                if(d3.timeMonth(date) < date) {
+                if(d3.utcMonth(date) < date) {
                     return format_day(date);
                 } else {
                     return format_month(date);
                 }
             } else if (Math.floor(diff / (div *= 12)) === 0) {
                 //diff is less than a year
-                if(d3.timeMonth(date) < date) {
+                if(d3.utcMonth(date) < date) {
                     return format_day(date);
                 } else {
                     return format_month(date);
                 }
             } else {
                 //diff is more than a year
-                if(d3.timeMonth(date) < date) {
+                if(d3.utcMonth(date) < date) {
                     return format_day(date);
-                } else if (d3.timeYear(date) < date) {
+                } else if (d3.utcYear(date) < date) {
                     return format_month(date);
                 } else {
                     return format_year(date);
