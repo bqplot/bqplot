@@ -678,7 +678,7 @@ export class Axis extends WidgetView {
             max = (scale_range[max_index] + (step * 0.5));
             const range_in_times = _.range(scale_range[0], max, step);
             return range_in_times.map((elem) => {
-                return new Date(elem);
+                return new Date(elem+"+00:00");
             });
         } else {
             max = (scale_range[max_index] + (step * 0.5));

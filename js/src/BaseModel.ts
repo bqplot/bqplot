@@ -39,7 +39,7 @@ export class BaseModel extends WidgetModel {
         if(elem === undefined || elem === null) {
             return null;
         }
-        return new Date(elem);
+        return new Date(elem+"+00:00");
     }
 
     convert_to_json(elem) {
