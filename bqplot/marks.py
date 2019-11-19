@@ -246,6 +246,7 @@ class Mark(Widget):
         self._legend_hover_handlers = CallbackDispatcher()
         self._element_click_handlers = CallbackDispatcher()
         self._bg_click_handlers = CallbackDispatcher()
+        self._bg_click_with_coordinates_handlers = CallbackDispatcher()
         self.on_msg(self._handle_custom_msgs)
 
     def on_hover(self, callback, remove=False):
@@ -266,6 +267,9 @@ class Mark(Widget):
     def on_background_click(self, callback, remove=False):
         self._bg_click_handlers.register_callback(callback, remove=remove)
 
+    def on_background_click_with_coordinates(self, callback, remove=False):
+        self._bg_click_with_coordinates_handlers.register_callback(callback, remove=remove)
+
     def _handle_custom_msgs(self, _, content, buffers=None):
         if content.get('event', '') == 'hover':
             self._hover_handlers(self, content)
@@ -279,6 +283,8 @@ class Mark(Widget):
             self._element_click_handlers(self, content)
         elif content.get('event', '') == 'background_click':
             self._bg_click_handlers(self, content)
+        elif content.get('event', '') == 'background_click_with_coordinates':
+            self._bg_click_with_coordinates_handlers(self, content)
 
 
 @register_mark('bqplot.Lines')

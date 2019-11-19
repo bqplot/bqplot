@@ -318,6 +318,10 @@ export abstract class ScatterBase extends Mark {
                 this.event_listeners.parent_clicked = this.reset_selection;
                 this.event_listeners.element_clicked = this.scatter_click_handler;
                 break;
+            default:
+                this.event_listeners.parent_clicked = this.send_pos;
+                this.event_listeners.element_clicked = () => {};
+                break;
         }
     }
 
@@ -650,21 +654,36 @@ export abstract class ScatterBase extends Mark {
         return;
     }
 
-    add_element() {
+    get_pos() {
         const mouse_pos = d3.mouse(this.el);
         const curr_pos = [mouse_pos[0], mouse_pos[1]];
-
         const x_scale = this.scales.x, y_scale = this.scales.y;
+        return [
+            x_scale.scale.invert(curr_pos[0]),
+            y_scale.scale.invert(curr_pos[1])
+        ]
+    }
+
+    send_pos() {
+        const pos = this.get_pos()
+        this.send({
+            event: "background_click_with_coordinates",
+            point: {x : pos[0], y: pos[1]}
+        });
+    }
+
+    add_element() {
         //add the new point to data
         const x = this.model.get('x');
         const y = this.model.get('y');
         // copy data and fill in the last value
         const xn = new x.constructor(x.length+1)
         const yn = new y.constructor(y.length+1)
+        const pos = this.get_pos()
         xn.set(x)
         yn.set(y)
-        xn[x.length] = x_scale.scale.invert(curr_pos[0]);
-        yn[y.length] = y_scale.scale.invert(curr_pos[1]);
+        xn[x.length] = pos[0];
+        yn[y.length] = pos[1];
         this.model.set("x", xn);
         this.model.set("y", yn);
         this.touch();
