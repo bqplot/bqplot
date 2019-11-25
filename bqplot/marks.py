@@ -992,6 +992,16 @@ class Bars(Mark):
         reference value from which the bars are drawn. defaults to 0.0
     align: {'center', 'left', 'right'}
         alignment of bars with respect to the tick value
+    label_display: bool (default: False)
+        whether or not to display bar data labels
+    label_display_format: string (default: None)
+        format for displaying values. 
+    label_font_style: dict
+        CSS style for the text of each cell
+    label_display_vertical_offset: float
+        vertical offset value for the label display
+    label_display_horizontal_offset: float
+        horizontal offset value for the label display
 
     Data Attributes
 
@@ -1027,6 +1037,13 @@ class Bars(Mark):
         .tag(sync=True, scaled=True, rtype='Color',
              atype='bqplot.ColorAxis', **array_serialization)\
         .valid(array_squeeze, array_dimension_bounds(1, 1))
+
+    # Bar text labels attributes -- add default values. Add bool for displaying a label or not. Add d3 formatting in docstring
+    label_display = Bool(default_value=False).tag(sync=True)
+    label_display_format = Unicode(default_value=".2f", allow_none=False).tag(sync=True) 
+    label_font_style = Dict().tag(sync=True)
+    label_display_vertical_offset = Float(default_value=0.0, allow_none=False).tag(sync=True)
+    label_display_horizontal_offset = Float(default_value=0.0, allow_none=False).tag(sync=True)
 
     # Other attributes
     scales_metadata = Dict({

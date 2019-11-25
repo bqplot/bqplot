@@ -96,6 +96,7 @@ export class Bars extends Mark {
         this.x = d3.scaleBand();
         this.x1 = d3.scaleBand();
     }
+    
 
     adjust_offset() {
         // In the case of a linear scale, and when plotting ordinal data,
@@ -154,6 +155,8 @@ export class Bars extends Mark {
         this.listenTo(this.parent, "bg_clicked", function() {
             this.event_dispatcher("parent_clicked");
         });
+        this.model.on_some_change(["label_display_format", "label_font_style", "label_display", "label_display_vertical_offset", "label_display_horizontal_offset"],
+        this.draw, this);
     }
 
     process_click(interaction) {
@@ -293,6 +296,7 @@ export class Bars extends Mark {
               return d.values;
           });
 
+
         // default values for width and height are to ensure smooth
         // transitions
         bars_sel.enter()
@@ -303,7 +307,25 @@ export class Bars extends Mark {
 
         bars_sel.exit().remove();
 
+        const bar_labels = bar_groups.selectAll(".bar_label")
+                                        .data(function(d) {
+                                            return d.values;
+                                        });
+
+        bar_labels.exit().remove();
+
+        bar_labels.enter()
+                    .append("text")
+                    .attr("class", "bar_label")
+                    .attr("width", 0)
+                    .attr("height", 0);
+
+        if (!this.model.get("label_display")) {
+            bar_groups.selectAll("text").remove();
+        }
+
         this.draw_bars(animate);
+        // this.draw_bar_labels(); TODO
 
         this.apply_styles();
 
@@ -328,7 +350,8 @@ export class Bars extends Mark {
         const that = this;
         const orient = this.model.get("orientation");
 
-        const dom_scale = this.dom_scale, range_scale = this.range_scale;
+        const dom_scale = this.dom_scale;
+        const range_scale = this.range_scale;
 
         const dom = (orient === "vertical") ? "x" : "y",
             rang = (orient === "vertical") ? "y" : "x";
@@ -355,6 +378,8 @@ export class Bars extends Mark {
                 }
             });
         }
+
+
         const is_stacked = (this.model.get("type") === "stacked");
         let band_width = 1.0;
         if (is_stacked) {
@@ -383,6 +408,11 @@ export class Bars extends Mark {
               });
         }
 
+
+
+        // adding/updating bar data labels
+        this.manage_bar_labels(bar_groups, band_width, dom, rang);
+
         this.pixel_coords = this.model.mark_data.map(function(d) {
             const key = d.key;
             const group_dom = dom_scale.scale(key) + that.dom_offset;
@@ -405,6 +435,131 @@ export class Bars extends Mark {
         });
     }
 
+
+    //////////////////
+    /// Bar labels ///
+    //////////////////
+
+    /// main bar rendering function ///
+    manage_bar_labels(bar_groups, band_width, dom, rang) {
+        if (this.model.get("label_display")) {
+            this.add_bar_labels(bar_groups, band_width, dom, rang);
+            this.update_bar_labels();
+        }
+    }
+
+    /// all bars are stacked by default. The only other value this parameter can take is 'grouped'
+    add_bar_labels(bar_groups, band_width, dom, rang) {
+        const offset_vertical = this.model.get("label_display_vertical_offset");
+        const offset_horizontal = this.model.get("label_display_horizontal_offset");
+        const base = this.model.get("base");
+        const bar_orientation = this.model.get("orientation");
+        const bar_labels = bar_groups.selectAll(".bar_label");
+
+        if (this.model.get("type") === "stacked") {
+            this.stacked_bar_labels(bar_labels, bar_orientation, band_width, dom, rang, offset_vertical, offset_horizontal, base);
+        } else {
+            this.grouped_bar_labels(bar_labels, bar_orientation, band_width, dom, rang, offset_vertical, offset_horizontal, base);
+        }
+    }
+
+    stacked_bar_labels(bar_labels, bar_orientation, band_width, dom, rang, offset_vertical, offset_horizontal, base) {
+        bar_labels
+            .attr(dom, d =>  0)
+            .attr(rang, d => {
+                if (d.y <= base) {
+                    return this.range_scale.scale(d.y0);
+                } else {
+                    return this.range_scale.scale(d.y1);
+                } 
+            })
+            .style("font-weight", "400")
+            .style("text-anchor", (d, i) => {
+                return this.style_bar_label_text_anchor(d, i, bar_orientation, base);
+            })
+            .style("dominant-baseline", (d, i) => {
+                return this.style_bar_label_dominant_baseline(d, i, base, bar_orientation);
+            })
+            .attr("transform", (d, i) => {
+                return this.transform_bar_label(d, i, base, offset_horizontal, offset_vertical, band_width, bar_orientation);
+            })
+    }
+
+    grouped_bar_labels(bar_labels, bar_orientation, band_width, dom, rang, offset_vertical, offset_horizontal, base) {
+        bar_labels
+            .attr("x", (d, i) =>  {
+                if (bar_orientation === "horizontal") {
+                    return this.range_scale.scale(d.y);
+                } else {
+                    return this.x1(i);
+                }
+            })
+            .attr("y", (d, i) => {
+                if (bar_orientation === "horizontal") {
+                    return this.x1(i);
+                } else {
+                    return this.range_scale.scale(d.y);
+                }
+            })
+            .style("font-weight", "400")
+            .style("text-anchor", (d, i) => {
+                return this.style_bar_label_text_anchor(d, i, bar_orientation, base);
+            })
+            .style("dominant-baseline", (d, i) => {
+                return this.style_bar_label_dominant_baseline(d, i, base, bar_orientation);
+            })
+            .attr("transform", (d, i) => {
+                return this.transform_bar_label(d, i, base, offset_horizontal, offset_vertical, band_width, bar_orientation);
+            })
+    }
+
+
+
+    /// Bar labels styling ///
+    transform_bar_label(d, i, base, offset_horizontal, offset_vertical, band_width, bar_orientation) {
+        if (bar_orientation === "horizontal") {
+            return (d.y <= base) ? `translate(${(d.y0 <= base) ? (0 - offset_vertical) : (0 + offset_vertical)}, ${band_width / 2 + offset_horizontal})` :
+                                   `translate(${(d.y1 <= base) ? (0 - offset_vertical) : (0 + offset_vertical)}, ${band_width / 2 + offset_horizontal})`;  
+        } else {
+            return (d.y <= base) ? `translate(${band_width / 2 + offset_horizontal}, ${(d.y0 <= base) ? (0 - offset_vertical) : (0 + offset_vertical)})` :
+                                   `translate(${band_width / 2 + offset_horizontal}, ${(d.y1 <= base) ? (0 - offset_vertical) : (0 + offset_vertical)})`;
+        }
+    }
+
+    style_bar_label_text_anchor(d, i, bar_orientation, base) {
+        if (bar_orientation === "horizontal") {
+            return (d.y <= base) ? "start" : "end";
+        } else {
+            return "middle";
+        }
+    }
+
+    style_bar_label_dominant_baseline(d, i, base, bar_orientation) {
+        if (bar_orientation === "horizontal") {
+            return "central";
+        } else {
+            return (d.y <= base) ? "text-after-edge" : "text-before-edge";
+        }
+    }
+
+    update_bar_labels() {
+        const display_format_str = this.model.get("label_display_format");
+        const display_format = display_format_str ? d3.format(display_format_str) : null;
+
+        let fonts = this.d3el.selectAll(".bar_label")
+            .text((d, i) => display_format ? display_format(d.y) : null);
+
+        const fontStyle = this.model.get("label_font_style");
+
+        for (const styleKey in fontStyle) {
+            fonts = fonts.style(styleKey, fontStyle[styleKey]);
+        }
+    }
+
+    ////////////////////////////
+    ////// End bar labels //////
+    ////////////////////////////
+    
     update_type(model, value) {
         // We need to update domains here as the y_domain needs to be
         // changed when we switch from stacked to grouped.
