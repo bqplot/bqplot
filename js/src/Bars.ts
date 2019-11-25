@@ -96,6 +96,7 @@ export class Bars extends Mark {
         this.x = d3.scaleBand();
         this.x1 = d3.scaleBand();
     }
+    
 
 
     adjust_offset() {
@@ -300,6 +301,7 @@ export class Bars extends Mark {
             .data(function (d) {
                 return d.values;
             });
+
 
         // default values for width and height are to ensure smooth
         // transitions
@@ -685,7 +687,6 @@ export class Bars extends Mark {
     ////////////////////////////
     ////// End bar labels //////
     ////////////////////////////
-
     update_type(model, value) {
         // We need to update domains here as the y_domain needs to be
         // changed when we switch from stacked to grouped.
