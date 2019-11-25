@@ -96,7 +96,7 @@ export class Bars extends Mark {
         this.x = d3.scaleBand();
         this.x1 = d3.scaleBand();
     }
-    
+
 
 
     adjust_offset() {
@@ -301,7 +301,6 @@ export class Bars extends Mark {
             .data(function (d) {
                 return d.values;
             });
-
 
         // default values for width and height are to ensure smooth
         // transitions
@@ -989,9 +988,3 @@ export class Bars extends Mark {
     // Overriding super class
     model: BarsModel;
 }
-
-// const something: d3.Selection = d3.select('hello123')
-
-// namespace Private {
-//     export type D3Selection = d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
-// }
