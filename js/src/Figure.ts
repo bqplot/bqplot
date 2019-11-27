@@ -844,9 +844,9 @@ export class Figure extends widgets.DOMWidgetView {
             svg.setAttribute("version", "1.1");
             svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
             svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-            const computedStyle = window.getComputedStyle(this.el);
-            svg.style.background = computedStyle.background;
+            svg.style.background = window.getComputedStyle(document.body).background;
 
+            const computedStyle = window.getComputedStyle(this.el);
             var cssCode = get_css(this.el, ["\.theme-dark", "\.theme-light", ".bqplot > ", ":root"]) + "\n";
             // extract all CSS variables, and generate a piece of css to define the variables
             var cssVariables = cssCode.match(/(--\w[\w-]*)/g) || [];

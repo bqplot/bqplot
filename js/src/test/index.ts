@@ -7,5 +7,7 @@ import './lines';
 import './bars';
 import './utils';
 import './figure';
-import './interacts';
-require("../../css/bqplot.css");
+import './interacts'
+
+require('@jupyter-widgets/controls/css/widgets.css');
+require('../../css/bqplot.css');
