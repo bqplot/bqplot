@@ -844,15 +844,24 @@ export class Figure extends widgets.DOMWidgetView {
             svg.setAttribute("version", "1.1");
             svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
             svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-            svg.style.background = window.getComputedStyle(document.body).background;
-            const s = document.createElement("style");
-            s.setAttribute("type", "text/css");
-            s.innerHTML = "<![CDATA[\n" +
-                get_css(node_foreground, ["\.theme-dark", "\.theme-light", ".bqplot > ", ":root"]) + "\n" +
-                get_css(node_background, ["\.theme-dark", "\.theme-light", ".bqplot > "]) + "\n" +
-                "]]>";
+            const computedStyle = window.getComputedStyle(this.el);
+            svg.style.background = computedStyle.background;
+
+            var cssCode = get_css(this.el, ["\.theme-dark", "\.theme-light", ".bqplot > ", ":root"]) + "\n";
+            // extract all CSS variables, and generate a piece of css to define the variables
+            var cssVariables = cssCode.match(/(--\w[\w-]*)/g) || [];
+            var cssVariableCode = cssVariables.reduce((cssCode, variable) => {
+                const value = computedStyle.getPropertyValue(variable);
+                return `${cssCode}\n\t${variable}: ${value};`;
+            }, ":root {") + "\n}\n";
+
+            // and put the CSS in a style element
+            const styleElement = document.createElement("style");
+            styleElement.setAttribute("type", "text/css");
+            styleElement.innerHTML = "<![CDATA[\n" + cssVariableCode + cssCode + "]]>";
+
             const defs = document.createElement("defs");
-            defs.appendChild(s);
+            defs.appendChild(styleElement);
             // we put the svg background part before the marks
             const g_root = svg.children[0];
             const svg_background = node_background.cloneNode(true);
