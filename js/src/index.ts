@@ -37,6 +37,7 @@ export * from './OrdinalScale';
 export * from './Label';
 export * from './LabelModel';
 export * from './OrdinalScaleModel';
+export * from './OrdinalColorScaleModel';
 export * from './BrushSelector';
 export * from './LassoSelector';
 export * from './PanZoom';
