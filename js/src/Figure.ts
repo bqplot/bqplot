@@ -25,7 +25,15 @@ import { WidgetView } from '@jupyter-widgets/base';
 
 THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl').default;
 
-export class Figure extends widgets.DOMWidgetView {
+interface IFigureSize
+{
+    width: number,
+    height: number
+};
+
+
+export
+class Figure extends widgets.DOMWidgetView {
 
     initialize() {
         // Internet Explorer does not support classList for svg elements
@@ -54,65 +62,33 @@ export class Figure extends widgets.DOMWidgetView {
         super.initialize.apply(this, arguments);
     }
 
-    _get_height_width(suggested_height, suggested_width) {
-        //Calculates the height and width of the figure from the suggested_height
-        //and suggested_width. Looks at the min_aspect_ratio and max_aspect_ratio
-        //to determine the final height and width.
+    protected getFigureSize (): IFigureSize {
+        const figureSize: IFigureSize = this.el.getBoundingClientRect();
+        const clientRectRatio = figureSize.width / figureSize.height;
 
-        const max_ratio = this.model.get("max_aspect_ratio");
-        const min_ratio = this.model.get("min_aspect_ratio");
+        const minRatio: number = this.model.get('min_aspect_ratio');
+        const maxRatio: number = this.model.get('max_aspect_ratio');
 
-        const return_value = {};
-        const width_undefined = (suggested_width === undefined || isNaN(suggested_width) || suggested_width <= 0);
-        const height_undefined = (suggested_height === undefined || isNaN(suggested_height) || suggested_width <= 0);
-
-        if (width_undefined && height_undefined) {
-            // Same as the defaults in bqplot.less
-            suggested_height = 480;
-            suggested_width = 640;
-        } else if (height_undefined) {
-            suggested_height = suggested_width / min_ratio;
-        } else if (width_undefined) {
-            suggested_width = suggested_height * min_ratio;
+        if (clientRectRatio < minRatio) {
+            // Too much vertical space: Keep horizontal space but compute height from min aspect ratio
+            figureSize.height = figureSize.width / minRatio;
+        }
+        else if (clientRectRatio > maxRatio) {
+            // Too much horizontal space: Keep vertical space but compute width from max aspect ratio
+            figureSize.width = figureSize.height * maxRatio;
         }
 
-        const ratio = suggested_width / suggested_height;
-        if (ratio <= max_ratio && ratio >= min_ratio) {
-            // If the available width and height are within bounds in terms
-            // of aspect ration, use all the space available.
-            return_value["width"] = suggested_width;
-            return_value["height"] = suggested_height;
-        } else if (ratio > max_ratio) {
-            // Too much horizontal space
-            // Use all vertical space and compute width from max aspect ratio.
-            return_value["height"] = suggested_height;
-            return_value["width"] = suggested_height * max_ratio;
-         } else { // ratio < min_ratio
-            // Too much vertical space
-            // Use all horizontal space and compute height from min aspect ratio.
-            return_value["width"] = suggested_width;
-            return_value["height"] = suggested_width / min_ratio;
-        }
-        return return_value;
+        return figureSize;
     }
 
-    render () : Promise<any> {
-        let min_width = this.model.get("layout").get("min_width");
-        let min_height = this.model.get("layout").get("min_height");
-        if(typeof min_width === "string" && min_width.endsWith('px')) {
-            min_width = Number(min_width.slice(0, -2));
-        } else {
-            min_width = undefined;
-        }
-        if(typeof min_height === "string"  && min_height.endsWith('px')) {
-            min_height = Number(min_height.slice(0, -2));
-        } else {
-            min_height = undefined;
-        }
+    render () {
+        this.displayed.then(this.renderImpl.bind(this));
+    }
 
-        const impl_dimensions = this._get_height_width(min_height, min_width);
-        this.width = impl_dimensions["width"];
-        this.height = impl_dimensions["height"];
+    private renderImpl (args: any) {
+        const figureSize = this.getFigureSize();
+        this.width = figureSize.width;
+        this.height = figureSize.height;
 
         this.id = widgets.uuid();
 
@@ -271,20 +247,19 @@ export class Figure extends widgets.DOMWidgetView {
                 })
             }, this);
 
-            this.displayed.then((args: any) => {
-                document.body.appendChild(this.tooltip_div.node());
-                this.create_listeners();
-                if(args === undefined || args.add_to_dom_only !== true) {
-                    //do not relayout if it is only being added to the DOM
-                    //and not displayed.
-                    this.relayout();
-                }
-                // In the classic notebook, we should relayout the figure on
-                // resize of the main window.
-                window.addEventListener('resize', () => {
-                    this.relayout();
-                })
+            document.body.appendChild(this.tooltip_div.node());
+            this.create_listeners();
+            if(args === undefined || args.add_to_dom_only !== true) {
+                //do not relayout if it is only being added to the DOM
+                //and not displayed.
+                this.relayout();
+            }
+            // In the classic notebook, we should relayout the figure on
+            // resize of the main window.
+            window.addEventListener('resize', () => {
+                this.relayout();
             });
+
             return Promise.all([mark_views_updated, axis_views_updated]);
         });
     }
@@ -579,9 +554,9 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     relayout() {
-        const impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
-        this.width = impl_dimensions["width"];
-        this.height = impl_dimensions["height"];
+        const figureSize = this.getFigureSize();
+        this.width = figureSize.width;
+        this.height = figureSize.height;
 
         window.requestAnimationFrame(() => {
             // update ranges
