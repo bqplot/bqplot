@@ -40,6 +40,7 @@ var loadedModules = [
     require("./Label"),
     require("./LabelModel"),
     require("./OrdinalScaleModel"),
+    require("./OrdinalColorScaleModel"),
     require("./BrushSelector"),
     require("./LassoSelector"),
     require("./PanZoom"),

@@ -559,4 +559,4 @@ class OrdinalColorScale(ColorScale):
     domain = List().tag(sync=True)
 
     _view_name = Unicode('OrdinalColorScale').tag(sync=True)
-    _model_name = Unicode('OrdinalScaleModel').tag(sync=True)
+    _model_name = Unicode('OrdinalColorScaleModel').tag(sync=True)
