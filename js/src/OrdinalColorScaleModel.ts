@@ -14,7 +14,6 @@
  */
 
 import { OrdinalScaleModel } from './OrdinalScaleModel';
-import * as _ from 'underscore';
 
 export class OrdinalColorScaleModel extends OrdinalScaleModel {
 
