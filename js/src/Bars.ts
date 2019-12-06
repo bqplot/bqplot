@@ -415,7 +415,7 @@ export class Bars extends Mark {
         }
 
         // adding/updating bar data labels
-        this.manage_bar_labels(bar_groups, band_width, dom, rang);
+        this.manageBarLabels(bar_groups, band_width, dom, rang);
 
         this.pixel_coords = this.model.mark_data.map(function (d) {
             const key = d.key;
@@ -439,62 +439,83 @@ export class Bars extends Mark {
         });
     }
 
+
+    ///////////////////
+    ///   Getters   ///
+    ///////////////////
+
+    /**
+     * Get the vertical label offset from the model
+     */
+    get offsetVertical(): number {
+        return this.model.get("label_display_vertical_offset");
+    }
+
+    /**
+     * Get the horizontal label offset from the model
+     */
+    get offsetHorizontal(): number {
+        return this.model.get("label_display_horizontal_offset");
+    }
+
+    /**
+     * Get the baseline parameter from the model
+     */
+    get baseLine(): number {
+        return this.model.get("base");
+    }
+
+    /**
+     * Get the bar chart's orientation
+     */
+    get barOrientation(): string {
+        return this.model.get("orientation");
+    }
+
+
     //////////////////
     /// Bar labels ///
     //////////////////
 
-    /// main bar rendering function ///
-    manage_bar_labels(bar_groups, band_width, dom, rang) {
-        if (this.model.get("label_display")) {
-            this.add_bar_labels(bar_groups, band_width, dom, rang);
-            this.update_bar_labels_style();
+    /**
+     * Main entry point function for adding bar labels
+     * @param barGroups - D3 selection for all bar groups
+     * @param bandWidth - Bandwidth of the x or y axis
+     * @param dom - X or y axis (depending on oridnetation)
+     * @param rang - X or y axis (depending on orientation)
+     */
+    manageBarLabels(barGroups: any, bandWidth: number, dom: string, rang: string): void {
+        if (!this.model.get("label_display")) {
+            return
         }
-    }
 
-    /// all bars are stacked by default. The only other value this parameter can take is 'grouped'
-    add_bar_labels(bar_groups, band_width, dom, rang) {
-        const offset_vertical = this.model.get("label_display_vertical_offset");
-        const offset_horizontal = this.model.get("label_display_horizontal_offset");
-        const base = this.model.get("base");
-        const bar_orientation = this.model.get("orientation");
-        const bar_labels = bar_groups.selectAll(".bar_label");
-
+        // Ladding the labels
         if (this.model.get("type") === "stacked") {
-            this.stacked_bar_labels(
-                bar_labels,
-                bar_orientation,
-                band_width,
-                dom,
-                rang,
-                offset_vertical,
-                offset_horizontal,
-                base);
+            this.stackedBarLabels(barGroups, bandWidth, dom, rang);
         } else {
-            this.grouped_bar_labels(
-                bar_labels, 
-                bar_orientation, 
-                band_width, 
-                dom, 
-                rang, 
-                offset_vertical, 
-                offset_horizontal, 
-                base);
+            this.groupedBarLabels(barGroups, bandWidth);
         }
+
+        // Styling the labels
+        this.updateBarLabelsStyle();
     }
 
-    stacked_bar_labels(
-        bar_labels, 
-        bar_orientation, 
-        band_width, 
-        dom, 
-        rang, 
-        offset_vertical, 
-        offset_horizontal, 
-        base) {
-        bar_labels
+    /**
+     * All bars are stacked by default. The only other value this parameter can take is 'grouped'
+     * @param barGroups - D3 selection for bar groups
+     * @param bandWidth - Bandwidth parameter for the bar dimensions
+     * @param dom - X or y axis (depending on oridnetation)
+     * @param rang - X or y axis (depending on oridnetation)
+     */
+    stackedBarLabels(barGroups: any, bandWidth: number, dom: string, rang: string): void {
+        const baseLine = this.baseLine;
+        const barOrientation = this.barOrientation;
+        const barLabels = barGroups.selectAll(".bar_label");
+        
+        barLabels
             .attr(dom, d => 0)
             .attr(rang, d => {
-                if (d.y <= base) {
+                if (d.y <= baseLine) {
                     return this.range_scale.scale(d.y0);
                 } else {
                     return this.range_scale.scale(d.y1);
@@ -502,50 +523,48 @@ export class Bars extends Mark {
             })
             .style("font-weight", "400")
             .style("text-anchor", (d, i) => {
-                return this.style_bar_label_text_anchor(
+                return this.styleBarLabelTextAnchor(
                     d, 
-                    i, 
-                    bar_orientation, 
-                    base);
+                    barOrientation, 
+                    baseLine);
             })
             .style("dominant-baseline", (d, i) => {
-                return this.style_bar_label_dominant_baseline(
+                return this.styleBarLabelDominantBaseline(
                     d, 
-                    i, 
-                    base, 
-                    bar_orientation);
+                    baseLine, 
+                    barOrientation);
             })
             .attr("transform", (d, i) => {
-                return this.transform_bar_label(
+                return this.transformBarLabel(
                     d, 
-                    i, 
-                    base, 
-                    offset_horizontal, 
-                    offset_vertical, 
-                    band_width, 
-                    bar_orientation);
+                    baseLine, 
+                    this.offsetHorizontal, 
+                    this.offsetVertical, 
+                    bandWidth, 
+                    barOrientation);
             })
     }
 
-    grouped_bar_labels(
-        bar_labels, 
-        bar_orientation, 
-        band_width, 
-        dom, 
-        rang, 
-        offset_vertical, 
-        offset_horizontal, 
-        base) {
-        bar_labels
+    /**
+     * Add labels for a chart with grouped bars
+     * @param barGroups - D3 selection for bar group
+     * @param bandWidth - bandwidth parameter for the X axis
+     */
+    groupedBarLabels(barGroups: any, bandWidth: number): void {
+        const baseLine = this.baseLine;
+        const barOrientation = this.barOrientation;
+        const barLabels = barGroups.selectAll(".bar_label")
+        
+        barLabels
             .attr("x", (d, i) => {
-                if (bar_orientation === "horizontal") {
+                if (barOrientation === "horizontal") {
                     return this.range_scale.scale(d.y);
                 } else {
                     return this.x1(i);
                 }
             })
             .attr("y", (d, i) => {
-                if (bar_orientation === "horizontal") {
+                if (barOrientation === "horizontal") {
                     return this.x1(i);
                 } else {
                     return this.range_scale.scale(d.y);
@@ -553,85 +572,108 @@ export class Bars extends Mark {
             })
             .style("font-weight", "400")
             .style("text-anchor", (d, i) => {
-                return this.style_bar_label_text_anchor(
+                return this.styleBarLabelTextAnchor(
                     d, 
-                    i, 
-                    bar_orientation, 
-                    base);
+                    barOrientation, 
+                    baseLine);
             })
             .style("dominant-baseline", (d, i) => {
-                return this.style_bar_label_dominant_baseline(
+                return this.styleBarLabelDominantBaseline(
                     d, 
-                    i, 
-                    base, 
-                    bar_orientation);
+                    baseLine, 
+                    barOrientation);
             })
             .attr("transform", (d, i) => {
-                return this.transform_bar_label(
+                return this.transformBarLabel(
                     d, 
-                    i, 
-                    base, 
-                    offset_horizontal, 
-                    offset_vertical, 
-                    band_width, 
-                    bar_orientation);
+                    baseLine, 
+                    this.offsetHorizontal, 
+                    this.offsetVertical, 
+                    bandWidth, 
+                    barOrientation);
             })
     }
 
-    /// Bar labels styling ///
-    transform_bar_label(
-        d, 
-        i, 
-        base, 
-        offset_horizontal, 
-        offset_vertical, 
-        band_width, 
-        bar_orientation) {
-        if (bar_orientation === "horizontal") {
-            return (d.y <= base) 
-            ? `translate(${(d.y0 <= base) 
-                ? (0 - offset_vertical) 
-                : (0 + offset_vertical)}, ${band_width / 2 + offset_horizontal})` 
-            : `translate(${(d.y1 <= base) 
-                ? (0 - offset_vertical) 
-                : (0 + offset_vertical)}, ${band_width / 2 + offset_horizontal})`;
+    /**
+     * Applies CSS translate to shift label position according
+     * to vertical/horizontal offsets
+     * @param d - Data point
+     * @param baseLine - The base line of the chart
+     * @param offsetHorizontal - Horizontal offset, in pixels, of the label
+     * @param offsetVertical - Vertical offset, in pixels, of the label
+     * @param bandWidth - Bandwidth parameter for the bar dimantions
+     * @param barOrientation - Orientation of the bar chart (horizontal/vertical)
+     */
+    transformBarLabel(
+        d: any, 
+        baseLine: number, 
+        offsetHorizontal: number, 
+        offsetVertical: number, 
+        bandWidth: number, 
+        barOrientation: string): string {
+        if (barOrientation === "horizontal") {
+            return (d.y <= baseLine) 
+            ? `translate(${(d.y0 <= baseLine) 
+                ? (0 - offsetVertical) 
+                : (0 + offsetVertical)}, ${bandWidth / 2 + offsetHorizontal})` 
+            : `translate(${(d.y1 <= baseLine) 
+                ? (0 - offsetVertical) 
+                : (0 + offsetVertical)}, ${bandWidth / 2 + offsetHorizontal})`;
         } else {
-            return (d.y <= base) 
-            ? `translate(${band_width / 2 + offset_horizontal}, 
-                ${(d.y0 <= base) 
-                    ? (0 - offset_vertical) 
-                    : (0 + offset_vertical)})` 
-            : `translate(${band_width / 2 + offset_horizontal}, 
-                ${(d.y1 <= base) 
-                    ? (0 - offset_vertical) 
-                    : (0 + offset_vertical)})`;
+            return (d.y <= baseLine) 
+            ? `translate(${bandWidth / 2 + offsetHorizontal}, 
+                ${(d.y0 <= baseLine) 
+                    ? (0 - offsetVertical) 
+                    : (0 + offsetVertical)})` 
+            : `translate(${bandWidth / 2 + offsetHorizontal}, 
+                ${(d.y1 <= baseLine) 
+                    ? (0 - offsetVertical) 
+                    : (0 + offsetVertical)})`;
         }
     }
 
-    style_bar_label_text_anchor(d, i, bar_orientation, base) {
-        if (bar_orientation === "horizontal") {
-            return (d.y <= base) ? "start" : "end";
+
+    /**
+     * Determines the value of the text-anchor CSS attribute
+     * @param d - Data point
+     * @param i - Index number
+     * @param barOrientation - Orientation of the bar chart (horizontal/vertical)
+     * @param baseLine - The base line of the chart
+     */
+    styleBarLabelTextAnchor(d: any, barOrientation: string, baseLine: number): string {
+        if (barOrientation === "horizontal") {
+            return (d.y <= baseLine) ? "start" : "end";
         } else {
             return "middle";
         }
     }
 
-    style_bar_label_dominant_baseline(d, i, base, bar_orientation) {
-        if (bar_orientation === "horizontal") {
+    /**
+     * Determines the value of the dominant-base-line CSS attribute
+     * @param d - Data point
+     * @param i - Index number
+     * @param baseLine - The base line of the chart
+     * @param barOrientation - Orientation of the bar chart (horizontal/vertical)
+     */
+    styleBarLabelDominantBaseline(d: any, baseLine: number, barOrientation: string): string {
+        if (barOrientation === "horizontal") {
             return "central";
         } else {
-            return (d.y <= base) ? "text-after-edge" : "text-before-edge";
+            return (d.y <= baseLine) ? "text-after-edge" : "text-before-edge";
         }
     }
 
-    update_bar_labels_style() {
-        const display_format_str = this.model.get("label_display_format");
-        const display_format = display_format_str 
-        ? d3.format(display_format_str) 
+    /**
+     * Adds CSS styling to the bar labels
+     */
+    updateBarLabelsStyle(): void {
+        const displayFormatStr = this.model.get("label_display_format");
+        const displayFormat = displayFormatStr 
+        ? d3.format(displayFormatStr) 
         : null;
 
         let fonts = this.d3el.selectAll(".bar_label")
-            .text((d, i) => display_format ? display_format(d.y) : null);
+            .text((d, i) => displayFormat ? displayFormat(d.y) : null);
 
         const fontStyle = this.model.get("label_font_style");
 
@@ -946,3 +988,9 @@ export class Bars extends Mark {
     // Overriding super class
     model: BarsModel;
 }
+
+// const something: d3.Selection = d3.select('hello123')
+
+// namespace Private {
+//     export type D3Selection = d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
+// }
