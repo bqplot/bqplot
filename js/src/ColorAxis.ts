@@ -35,7 +35,7 @@ class ColorBar extends Axis {
         this.ordinal = false;
         this.num_ticks = this.model.get("num_ticks");
         const that = this;
-        scale_promise.then(function() {
+        return scale_promise.then(function() {
             that.create_listeners();
             that.tick_format = that.generate_tick_formatter();
             that.set_scales_range();
