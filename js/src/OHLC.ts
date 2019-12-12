@@ -25,15 +25,19 @@ export class OHLC extends Mark {
         const base_creation_promise = super.render();
 
         const that = this;
+        this.display_el_classes = ["stick_body", "stick_tail", "stick_head"] ;
+
         this.displayed.then(function() {
             that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
             that.create_tooltip();
         });
 
         return base_creation_promise.then(function() {
+            that.event_listeners = {};
+            that.process_interactions();
             that.create_listeners();
-            that.draw(); },
-        null);
+            that.draw(); 
+        });
     }
 
     set_ranges() {
@@ -57,11 +61,24 @@ export class OHLC extends Mark {
         });
     }
 
+    /**
+     * Creates event listeners and binds them to rendered d3 elements
+     */
     create_listeners() {
-        super.create_listeners();
-        this.d3el.on("mouseover", _.bind(this.mouse_over, this))
-            .on("mousemove", _.bind(this.mouse_move, this))
-            .on("mouseout", _.bind(this.mouse_out, this));
+        super.create_listeners.apply(this);
+        this.d3el
+            .on("mouseover", _.bind(function() {
+                this.event_dispatcher("mouse_over");
+            }, this))
+            .on("mousemove", _.bind(function() {
+                this.event_dispatcher("mouse_move");
+            }, this))
+            .on("mouseout", _.bind(function() {
+                this.event_dispatcher("mouse_out");
+            }, this));
+
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip);
+        this.listenTo(this.model, "change:interactions", this.process_interactions);
 
         this.listenTo(this.model, "change:stroke", this.update_stroke);
         this.listenTo(this.model, "change:stroke_width", this.update_stroke_width);
