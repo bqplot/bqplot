@@ -42,7 +42,12 @@ export class BarsModel extends markmodel.MarkModel {
             base: 0.0,
             opacities: [],
             orientation: "vertical",
-            align: "center"
+            align: "center",
+            label_display: false,
+            label_display_format: ".2f",
+            label_display_font_style: {},
+            label_display_horizontal_offset: 0.0,
+            label_display_vertical_offset: 0.0
         };
     }
 
