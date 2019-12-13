@@ -7,4 +7,5 @@ import './lines';
 import './bars';
 import './utils';
 import './figure';
-import './interacts'
+import './interacts';
+require("../../css/bqplot.css");

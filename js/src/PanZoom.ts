@@ -77,11 +77,15 @@ export class PanZoom extends interaction.Interaction {
        });
     }
 
-    mousedown () {
+    mousedown() {
+        this._mousedown(d3.mouse(this.el));
+    }
+
+    _mousedown(mouse_pos) {
         const scales = this.model.get("scales");
         this.active = true;
         this.d3el.style("cursor", "move");
-        this.previous_pos = d3.mouse(this.el);
+        this.previous_pos = mouse_pos.slice();
         // A copy of the original domains is required to avoid additional
         // drift when Paning.
         this.domains_in_order = {
@@ -99,56 +103,38 @@ export class PanZoom extends interaction.Interaction {
     }
 
     mousemove() {
+        this._mousemove(d3.mouse(this.el));
+    }
+
+    _mousemove(mouse_pos) {
         if (this.active && this.model.get("allow_pan")) {
             // If memory is set to true, intermediate positions between the
             // last position of the mouse and the current one will be
             // interpolated.
-            const mouse_pos = d3.mouse(this.el);
             if (this.previous_pos === undefined) {
                 this.previous_pos = mouse_pos;
             }
-            const scales = this.model.get("scales");
-            const that = this;
-            this.scale_promises.then(function(scale_views) {
-                const xscale_views = scale_views.x;
-                const xdomains = that.domains_in_order.x;
-                const xdiffs = xscale_views.map(function(view) {
-                    if (view.scale.invert) {
-                        // Categorical scales don't have an inversion.
-                        return view.scale.invert(mouse_pos[0]) -
-                               view.scale.invert(that.previous_pos[0]);
-                    }
+            const mouse_delta = {
+                x: mouse_pos[0] - this.previous_pos[0],
+                y: mouse_pos[1] - this.previous_pos[1],
+            }
+            return this.scale_promises.then((scale_views) => {
+                ["x", "y"].forEach((dimension) => {
+                    scale_views[dimension].forEach((view, index) => {
+                        if (view.scale.invert) { // Categorical scales don't have an inversion.
+                            const scale = view.scale.copy().domain(this.domains_in_order[dimension][index]);
+                            // convert the initial domain to pixel coordinates
+                            const pixel_min = scale(this.domains_in_order[dimension][index][0]);
+                            const pixel_max = scale(this.domains_in_order[dimension][index][1]);
+                            // shift pixels, and convert to new domain
+                            const domain_min = scale.invert(pixel_min - mouse_delta[dimension]);
+                            const domain_max = scale.invert(pixel_max - mouse_delta[dimension]);
+                            this.set_scale_attribute(view.model, "min", domain_min);
+                            this.set_scale_attribute(view.model, "max", domain_max);
+                            view.touch();
+                        }
+                    });
                 });
-                let domain, min, max;
-                for (let i=0; i<xscale_views.length; i++) {
-                    domain = xdomains[i];
-                    min = domain[0] - xdiffs[i];
-                    max = domain[1] - xdiffs[i];
-                    that.set_scale_attribute(scales.x[i], "min", min);
-                    that.set_scale_attribute(scales.x[i], "max", max);
-                    // TODO? Only do in mouseup?
-                    xscale_views[i].touch();
-                }
-
-                const yscale_views = scale_views.y;
-                const ydomains = that.domains_in_order.y;
-                const ydiffs = yscale_views.map(function(view) {
-                    if (view.scale.invert) {
-                        // Categorical scales don't have an inversion.
-                        return view.scale.invert(mouse_pos[1]) -
-                               view.scale.invert(that.previous_pos[1]);
-                    }
-                });
-                for (let i=0; i<yscale_views.length; i++) {
-                    domain = ydomains[i];
-                    min = domain[0] - ydiffs[i];
-                    max = domain[1] - ydiffs[i];
-                    that.set_scale_attribute(scales.y[i], "min", min);
-                    that.set_scale_attribute(scales.y[i], "max", max);
-                    // TODO? Only do this on mouseup?
-                    yscale_views[i].touch();
-                }
-
             });
         }
     }
@@ -159,52 +145,39 @@ export class PanZoom extends interaction.Interaction {
             // With Firefox, wheelDelta is undefined.
             const delta = d3GetEvent().wheelDelta || d3GetEvent().detail * (-40);
             const mouse_pos = d3.mouse(this.el);
-            if (delta) {
-                if (delta > 0) {
-                    this.d3el.style("cursor", "zoom-in");
-                } else {
-                    this.d3el.style("cursor", "zoom-out");
-                }
-                const scales = this.model.get("scales");
-                const that = this;
-                this.scale_promises.then(function(scale_views) {
-                    let domain;
-                    let min;
-                    let max;
-                    const xscale_views = scale_views.x;
-                    const xpos = xscale_views.map(function(view) {
-                         return view.scale.invert(mouse_pos[0]);
-                    });
-                    const factor = Math.exp(-delta * 0.001);
-                    for (let i=0; i<xscale_views.length; i++) {
-                        domain = scales.x[i].get_domain_slice_in_order();
-                        min = domain[0];
-                        max = domain[1];
-                        that.set_scale_attribute(scales.x[i], "min",
-                                    (1 - factor) * xpos[i] + factor * min);
-                        that.set_scale_attribute(scales.x[i], "max",
-                                    (1 - factor) * xpos[i] + factor * max);
-                        // TODO? Only do in mouseup?
-                        xscale_views[i].touch();
-                    }
+            this._zoom(mouse_pos, delta);
+        }
+    }
 
-                    const yscale_views = scale_views.y;
-                    const ypos = yscale_views.map(function(view) {
-                        return view.scale.invert(mouse_pos[1]);
-                    });
-                    for (let i=0; i<yscale_views.length; i++) {
-                        domain = scales.y[i].get_domain_slice_in_order();
-                        min = domain[0];
-                        max = domain[1];
-                        that.set_scale_attribute(scales.y[i], "min",
-                                    (1 - factor) * ypos[i] + factor * min);
-                        that.set_scale_attribute(scales.y[i], "max",
-                                    (1 - factor) * ypos[i] + factor * max);
-                        // TODO? Only do this on mouseup?
-                        yscale_views[i].touch();
-                    }
-                });
+    _zoom(mouse_pos, delta) {
+        if (delta) {
+            if (delta > 0) {
+                this.d3el.style("cursor", "zoom-in");
+            } else {
+                this.d3el.style("cursor", "zoom-out");
             }
+            const mouse = {x: mouse_pos[0], y: mouse_pos[1]};
+            const factor = Math.exp(-delta * 0.001);
+            return this.scale_promises.then((scale_views) => {
+                ["x", "y"].forEach((dimension) => {
+                    scale_views[dimension].forEach((view, index) => {
+                        if (view.scale.invert) { // Categorical scales don't have an inversion.
+                            const scale = view.scale;//.copy().domain(this.domains_in_order[dimension][index]);
+                            // convert the initial domain to pixel coordinates
+                            let [domain_min, domain_max] = view.model.get_domain_slice_in_order();
+                            const pixel_min = scale(domain_min);
+                            const pixel_max = scale(domain_max);
+                            // take a weighted average between the mouse pos and the original pixel coordinate
+                            // and translate that back to the domain
+                            domain_min = scale.invert((1 - factor) * mouse[dimension] + factor * pixel_min);
+                            domain_max = scale.invert((1 - factor) * mouse[dimension] + factor * pixel_max);
+                            this.set_scale_attribute(view.model, "min", domain_min);
+                            this.set_scale_attribute(view.model, "max", domain_max);
+                            view.touch();
+                        }
+                    });
+                });
+            });
         }
     }
 
