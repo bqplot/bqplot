@@ -787,7 +787,13 @@ export class Figure extends widgets.DOMWidgetView {
             const sheets = document.styleSheets;
             let selector;
             for (let i = 0; i < sheets.length; i++) {
-                const rules: any = (sheets[i] as CSSStyleSheet).cssRules;
+                let rules: any = null;
+                // due to CORS we may have some sheets we cannot access, instead of checking we always try
+                try {
+                    rules = (sheets[i] as CSSStyleSheet).cssRules;
+                } catch(e) {
+                    // ignore CORS errors
+                }
                 if (rules) {
                     for (let j = 0; j < rules.length; j++) {
                         const rule = rules[j];
