@@ -97,7 +97,9 @@ export class Hist extends Mark {
 
     update_colors(model, colors) {
         this.d3el.selectAll(".bargroup").selectAll("rect")
-          .style("fill", this.get_colors(0));
+          .style("fill", (d, i) => {
+              this.get_colors(d.index);
+          });
         if (model.get("labels") && colors.length > 1) {
             this.d3el.selectAll(".bargroup").selectAll("text")
               .style("fill", this.get_colors(1));
@@ -153,8 +155,6 @@ export class Hist extends Mark {
 
     draw() {
         this.set_ranges();
-        const colors = this.model.get("colors");
-        const fill_color = colors[0];
 
         const indices = [];
         this.model.mark_data.forEach(function(d, i) {
@@ -189,7 +189,9 @@ export class Hist extends Mark {
           });
 
         bar_groups.select(".rect")
-          .style("fill", fill_color)
+          .style("fill", (d, i) => {
+              return this.get_colors(d.index);
+          })
           .on("click", function(d, i) {
               return that.event_dispatcher("element_clicked", {
                   "data": d, "index": i
