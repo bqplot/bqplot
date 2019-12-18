@@ -547,7 +547,6 @@ class Figure extends widgets.DOMWidgetView {
         super.processPhosphorMessage.apply(this, arguments);
         switch (msg.type) {
         case 'resize':
-        case 'after-attach':
             this.relayout();
             break;
         }
