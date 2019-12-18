@@ -104,36 +104,38 @@ export class HeatMap extends Mark {
         this.draw();
     }
 
-    draw_canvas() {
+    drawCanvas() {
         this.image.attr("href", this.canvas.toDataURL("image/png"));
     }
 
     draw() {
         this.set_ranges();
 
-        const x_plot_data = this.get_x_plotting_data(this.model.mark_data.x);
-        const y_plot_data = this.get_y_plotting_data(this.model.mark_data.y);
+        const plottingData = this.getPlottingData();
 
-        this.canvas.setAttribute("width", x_plot_data.total_width);
-        this.canvas.setAttribute("height", y_plot_data.total_height);
+        this.canvas.setAttribute('width', plottingData.totalWidth);
+        this.canvas.setAttribute('height', plottingData.totalHeight);
 
-        const ctx = this.canvas.getContext("2d");
+        const ctx = this.canvas.getContext('2d');
         const colors = this.model.mark_data.color;
         colors.forEach((row, i) => {
-            const height = y_plot_data.heights[i];
-            const y = y_plot_data.origin + y_plot_data.start[i];
+            const height = plottingData.heights[i];
+            const y = plottingData.yOrigin + plottingData.yStartPoints[i];
+
             row.forEach((d, j) => {
-                const width = x_plot_data.widths[j];
-                const x = x_plot_data.origin + x_plot_data.start[j];
-                ctx.fillStyle = this.get_element_fill(d);
+                const width = plottingData.widths[j];
+                const x = plottingData.xOrigin + plottingData.xStartPoints[j];
+                ctx.fillStyle = this.getElementFill(d);
                 ctx.fillRect(x, y, this.expandRect(width), this.expandRect(height));
             })
         });
-        this.image.attr("width", x_plot_data.total_width)
-            .attr("height", y_plot_data.total_height)
-            .attr("x", x_plot_data.x0)
-            .attr("y", y_plot_data.y0);
-        this.draw_canvas();
+
+        this.image.attr("width", plottingData.totalWidth)
+            .attr("height", plottingData.totalHeight)
+            .attr("x", plottingData.x0)
+            .attr("y", plottingData.y0);
+
+        this.drawCanvas();
     }
 
     expandRect(value) {
@@ -141,104 +143,73 @@ export class HeatMap extends Mark {
         return value > 0 ? value + 0.5 : value - 0.5;
     }
 
-    get_x_plotting_data(data) {
-        // This function returns the starting points and widths of the
-        // cells based on the parameters passed.
-        //
-        // data is the data for which the plot data is to be generated.
-        // since data may be a TypedArray, explicitly use Array.map
-        data = Array.from(data)
-        const scaled_data = Array.prototype.map.call(data, this.scales.x.scale);
-        const x_padding = this.get_x_padding(scaled_data);
-        const reverse = this.scales.x.model.get('reverse');
-        const num_cols = data.length;
+    getPlottingData() {
+        const xData: Array<number> = Array.from(this.model.mark_data.x).map(this.scales.x.scale);
+        const yData: Array<number> = Array.from(this.model.mark_data.y).map(this.scales.y.scale);
 
-        const widths = scaled_data.map(function(d, i) {
-            if (i == 0) {
-                return (scaled_data[1] - d) * 0.5 + x_padding.left;
-            }
-            else if (i == num_cols - 1) {
-                return (d - scaled_data[i - 1]) * 0.5 + x_padding.right;
-            }
-            else {
-                return (scaled_data[i + 1] - scaled_data[i - 1]) * 0.5;
-            }
-        });
+        const xReverse = this.scales.x.model.get('reverse');
+        const yReverse = this.scales.y.model.get('reverse');
 
-        const x0 = scaled_data[0] - x_padding.left;
-        const start_points = scaled_data.map(function(d, i) {
+        const padding = this.getPadding(xData, yData);
+
+        const widths = this.computeRectSizes(xData, padding.left, padding.right);
+        const heights = this.computeRectSizes(yData, padding.bottom, padding.top, true);
+
+        const totalWidth = Math.abs((xData[xData.length - 1] - xData[0]) + padding.left + padding.right);
+        const totalHeight = Math.abs((yData[0] - yData[yData.length - 1]) + padding.top + padding.bottom);
+
+        const x0 = xData[0] - padding.left;
+        const y0 = yData[yData.length - 1] - padding.top;
+
+        const xStartPoints = xData.map((d, i) => {
             if (i == 0) { return 0; }
-            else { return (d + scaled_data[i - 1]) * 0.5 - x0; }
+            else { return (d + xData[i - 1]) * 0.5 - x0; }
+        });
+        const yStartPoints = yData.map((d, i) => {
+            if (i == yData.length - 1) { return 0; }
+            else { return (d + yData[i + 1]) * 0.5 - y0; }
         });
 
-        const total_width = Math.abs(scaled_data[num_cols-1] - scaled_data[0] + x_padding.left + x_padding.right);
-
         return {
-            "widths": widths,
-            "total_width": total_width,
-            "origin": reverse ? total_width : 0,
-            "start": start_points,
-            "x0": reverse ? x0 - total_width : x0,
+            widths, heights,
+            totalWidth, totalHeight,
+            xOrigin: xReverse ? totalWidth : 0,
+            yOrigin: yReverse ? totalHeight : 0,
+            xStartPoints, yStartPoints,
+            x0: xReverse ? x0 - totalWidth : x0,
+            y0: yReverse ? y0 - totalHeight : y0,
         };
     }
 
-    get_x_padding(scaled_data) {
-        const num_cols = scaled_data.length;
+    getPadding(xData, yData) {
+        const numCols = xData.length;
+        const numRows = yData.length;
+
         return {
-            left: (scaled_data[1] - scaled_data[0]) * 0.5,
-            right: (scaled_data[num_cols-1] - scaled_data[num_cols-2]) * 0.5
+            left: (xData[1] - xData[0]) * 0.5,
+            right: (xData[numCols-1] - xData[numCols-2]) * 0.5,
+            bottom: -(yData[1] - yData[0]) * 0.5,
+            top: -(yData[numRows-1] - yData[numRows-2]) * 0.5
         };
     }
 
-    get_y_plotting_data(data) {
-        // This function returns the starting points and heights of the
-        // cells based on the parameters passed.
-        //
-        //  data is the data for which the plot data is to be generated.
-        data = Array.from(data)
-        const scaled_data = data.map(this.scales.y.scale);
-        const y_padding = this.get_y_padding(scaled_data);
-        const reverse = this.scales.y.model.get('reverse');
-        const num_rows = data.length;
+    computeRectSizes(data, padding1, padding2, reversed=false) {
+        const factor = reversed ? -1 : 1;
 
-        const heights = scaled_data.map(function(d, i) {
+        return data.map((d, i) => {
             if (i == 0) {
-                return -(scaled_data[1] - d) * 0.5 + y_padding.bottom;
+                return factor * (data[1] - d) * 0.5 + padding1;
             }
-            else if (i == num_rows - 1) {
-                return -(d - scaled_data[i - 1]) * 0.5 + y_padding.top;
+            else if (i == data.length - 1) {
+                return factor * (d - data[i - 1]) * 0.5 + padding2;
             }
             else {
-                return -(scaled_data[i + 1] - scaled_data[i - 1]) * 0.5;
+                return factor * (data[i + 1] - data[i - 1]) * 0.5;
             }
         });
-
-        const y0 = scaled_data[num_rows - 1] - y_padding.top
-        const start_points = scaled_data.map(function(d, i) {
-            if (i == num_rows - 1) { return 0; }
-            else { return (d + scaled_data[i + 1]) * 0.5 - y0; }
-        });
-
-        const total_height = Math.abs(scaled_data[0] - scaled_data[num_rows-1] + y_padding.top + y_padding.bottom);
-
-        return {
-            "heights": heights,
-            "total_height": total_height,
-            "origin": reverse ? total_height : 0,
-            "start": start_points,
-            "y0": reverse ? y0 - total_height : y0,
-        };
     }
 
-    get_y_padding(scaled_data) {
-        const num_rows = scaled_data.length;
-        return {
-            bottom: -(scaled_data[1] - scaled_data[0]) * 0.5,
-            top: -(scaled_data[num_rows-1] - scaled_data[num_rows-2]) * 0.5
-        };
-    }
-
-    get_element_fill(color) {
+    getElementFill(color) {
         if (color === null) {
             return this.model.get("null_color")
         }
