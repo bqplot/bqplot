@@ -818,7 +818,7 @@ class Hist(Mark):
         Boolean attribute to return normalized values which
         sum to 1 or direct counts for the `count` attribute. The scale of
         `count` attribute is determined by the value of this flag.
-    colors: list of colors (default: CATEGORY10)
+    colors: list of colors (default: ['steelblue'])
         List of colors of the Histogram. If the list is shorter than the number
         of bins, the colors are reused.
     stroke: Color or None (default: None)
@@ -874,7 +874,7 @@ class Hist(Mark):
     midpoints = List(read_only=True).tag(sync=True, display_name='Mid points')
     # midpoints is a read-only attribute that is set when the mark is drawn
     colors = List(trait=Color(default_value=None, allow_none=True),
-                  default_value=CATEGORY10)\
+                  default_value=['steelblue'])\
         .tag(sync=True, display_name='Colors')
     stroke = Color(None, allow_none=True).tag(sync=True)
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
@@ -995,7 +995,7 @@ class Bars(Mark):
     label_display: bool (default: False)
         whether or not to display bar data labels
     label_display_format: string (default: .2f)
-        format for displaying values. 
+        format for displaying values.
     label_font_style: dict
         CSS style for the text of each cell
     label_display_vertical_offset: float
@@ -1038,15 +1038,15 @@ class Bars(Mark):
              atype='bqplot.ColorAxis', **array_serialization)\
         .valid(array_squeeze, array_dimension_bounds(1, 1))
 
-    # Bar text labels attributes -- add default values. 
+    # Bar text labels attributes -- add default values.
     # Add bool for displaying a label or not. Add d3 formatting in docstring
     label_display = Bool(default_value=False).tag(sync=True)
-    label_display_format = Unicode(default_value=".2f", 
-                                   allow_none=False).tag(sync=True) 
+    label_display_format = Unicode(default_value=".2f",
+                                   allow_none=False).tag(sync=True)
     label_font_style = Dict().tag(sync=True)
-    label_display_vertical_offset = Float(default_value=0.0, 
+    label_display_vertical_offset = Float(default_value=0.0,
                                           allow_none=False).tag(sync=True)
-    label_display_horizontal_offset = Float(default_value=0.0, 
+    label_display_horizontal_offset = Float(default_value=0.0,
                                             allow_none=False).tag(sync=True)
 
     # Other attributes
