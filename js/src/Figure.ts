@@ -82,7 +82,11 @@ class Figure extends widgets.DOMWidgetView {
     }
 
     render () {
-        this.displayed.then(this.renderImpl.bind(this));
+        // we cannot use Promise.all here, since this.layoutPromise is resolved, and will be overwritten later on
+        this.displayed.then(() => {
+            // make sure we render after all layouts styles are set, since they can affect the size
+            this.layoutPromise.then(this.renderImpl.bind(this));
+        });
     }
 
     private renderImpl (args: any) {
