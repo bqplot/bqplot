@@ -10,7 +10,7 @@ import * as d3Timer from 'd3-timer';
 const test_x = 200;
 const test_y = 250;
 const pixel_red = [255, 0, 0, 255];
-const pixel_black = [0, 0, 0, 255];
+const pixel_background = [255, 255, 255, 255];
 
 describe("interacts >", () => {
     beforeEach(async function() {
@@ -97,7 +97,7 @@ describe("interacts >", () => {
         canvas = await figure.get_rendered_canvas();
         context = canvas.getContext("2d");
         pixel = context.getImageData(test_x*window.devicePixelRatio, test_y*window.devicePixelRatio, 1, 1);
-        expect(Array.prototype.slice.call(pixel.data)).to.deep.equals(pixel_black);
+        expect(Array.prototype.slice.call(pixel.data)).to.deep.equals(pixel_background);
 
         pixel = context.getImageData((test_x + 150)*window.devicePixelRatio, test_y*window.devicePixelRatio, 1, 1);
         expect(Array.prototype.slice.call(pixel.data)).to.deep.equals(pixel_red);
@@ -148,7 +148,7 @@ describe("interacts >", () => {
         canvas = await figure.get_rendered_canvas();
         context = canvas.getContext("2d");
         pixel = context.getImageData(test_x*window.devicePixelRatio, test_y*window.devicePixelRatio, 1, 1);
-        expect(Array.prototype.slice.call(pixel.data)).to.deep.equals(pixel_black);
+        expect(Array.prototype.slice.call(pixel.data)).to.deep.equals(pixel_background);
 
         pixel = context.getImageData((test_x + 150)*window.devicePixelRatio, test_y*window.devicePixelRatio, 1, 1);
         expect(Array.prototype.slice.call(pixel.data)).to.deep.equals(pixel_red);
