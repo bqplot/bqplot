@@ -337,11 +337,6 @@ export class Hist extends Mark {
         return [1, max_length];
     }
 
-    reset_colors(index, color) {
-        const rects = this.d3el.selectAll("#rect"+index);
-        rects.style("fill", color);
-    }
-
     update_selected(model, value) {
         if(value === undefined || value === null || value.length === 0) {
             //reset the color of everything if selected is blank
