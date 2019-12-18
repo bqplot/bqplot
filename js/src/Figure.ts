@@ -551,7 +551,10 @@ class Figure extends widgets.DOMWidgetView {
         super.processPhosphorMessage.apply(this, arguments);
         switch (msg.type) {
         case 'resize':
-            this.relayout();
+            const figureSize = this.getFigureSize();
+            if ((this.width !== figureSize.width) || (this.height !== figureSize.height)) {
+                this.relayout();
+            }
             break;
         }
     }
