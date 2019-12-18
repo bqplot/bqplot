@@ -554,11 +554,11 @@ class Figure extends widgets.DOMWidgetView {
     }
 
     relayout() {
-        const figureSize = this.getFigureSize();
-        this.width = figureSize.width;
-        this.height = figureSize.height;
-
-        window.requestAnimationFrame(() => {
+        const relayoutImpl = () => {
+            this.relayoutRequested = false; // reset relayout request
+            const figureSize = this.getFigureSize();
+            this.width = figureSize.width;
+            this.height = figureSize.height;
             // update ranges
             this.margin = this.model.get("fig_margin");
             this.update_plotarea_dimensions();
@@ -597,8 +597,12 @@ class Figure extends widgets.DOMWidgetView {
             this.trigger("margin_updated");
             this.update_legend();
             this.layout_webgl_canvas();
-        });
+        };
 
+        if (!this.relayoutRequested) {
+            this.relayoutRequested = true; // avoid scheduling a relayout twice
+            requestAnimationFrame(relayoutImpl.bind(this))
+        }
     }
 
     layout_webgl_canvas() {
@@ -975,6 +979,7 @@ class Figure extends widgets.DOMWidgetView {
     y_padding_arr: any;
 
     private _update_requested: boolean;
+    private relayoutRequested: boolean = false;
     // this is public for the test framework, but considered a private API
     public _initial_marks_created: Promise<any>;
     private _initial_marks_created_resolve: Function;
