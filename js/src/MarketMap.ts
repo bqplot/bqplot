@@ -35,12 +35,10 @@ export class MarketMap extends Figure {
 
     render(options?) {
         this.id = widgets.uuid();
-        const min_width = String(this.model.get("layout").get("min_width"));
-        const min_height = String(this.model.get("layout").get("min_height"));
 
-        const impl_dimensions = this._get_height_width(min_height.slice(0, -2), min_width.slice(0, -2));
-        this.width = impl_dimensions["width"];
-        this.height = impl_dimensions["height"];
+        const figureSize = this.getFigureSize();
+        this.width = figureSize.width;
+        this.height = figureSize.height;
 
         this.scales = {};
         this.set_top_el_style();
@@ -187,9 +185,9 @@ export class MarketMap extends Figure {
     relayout() {
         const that = this;
 
-        const impl_dimensions = this._get_height_width(this.el.clientHeight, this.el.clientWidth);
-        this.width = impl_dimensions["width"];
-        this.height = impl_dimensions["height"];
+        const figureSize = this.getFigureSize();
+        this.width = figureSize.width;
+        this.height = figureSize.height;
 
         window.requestAnimationFrame(function () {
             // update ranges
