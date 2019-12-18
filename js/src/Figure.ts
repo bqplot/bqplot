@@ -89,7 +89,7 @@ class Figure extends widgets.DOMWidgetView {
         });
     }
 
-    private renderImpl (args: any) {
+    private renderImpl () {
         const figureSize = this.getFigureSize();
         this.width = figureSize.width;
         this.height = figureSize.height;
@@ -253,11 +253,7 @@ class Figure extends widgets.DOMWidgetView {
 
             document.body.appendChild(this.tooltip_div.node());
             this.create_listeners();
-            if(args === undefined || args.add_to_dom_only !== true) {
-                //do not relayout if it is only being added to the DOM
-                //and not displayed.
-                this.relayout();
-            }
+
             // In the classic notebook, we should relayout the figure on
             // resize of the main window.
             window.addEventListener('resize', () => {
