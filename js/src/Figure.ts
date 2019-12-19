@@ -256,8 +256,10 @@ class Figure extends widgets.DOMWidgetView {
 
             // In the classic notebook, we should relayout the figure on
             // resize of the main window.
-            window.addEventListener('resize', () => {
-                this.relayout();
+            const relayoutMethod = this.relayout.bind(this);
+            window.addEventListener('resize', relayoutMethod);
+            this.once('remove', () => {
+                window.removeEventListener('resize', relayoutMethod);
             });
 
             return Promise.all([mark_views_updated, axis_views_updated]);
