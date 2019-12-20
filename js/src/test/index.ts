@@ -5,6 +5,7 @@ import './scatter';
 import './scatter-mega';
 import './lines';
 import './bars';
+import './hist';
 import './utils';
 import './figure';
 import './interacts';
