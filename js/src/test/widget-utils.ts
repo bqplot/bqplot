@@ -166,5 +166,5 @@ async function create_figure_hist(manager, sample, bins) {
 
 export
 function getFills (selection: any) {
-    return selection.nodes().map((el) => ((el.getAttribute('style')||'').match(/fill: (\w*)/)||[null,null])[1]);
+    return selection.nodes().map((el) => el.style.fill);
 }

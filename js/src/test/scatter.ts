@@ -65,9 +65,9 @@ describe("scatter >", () => {
         expect(getFills(elements)).to.deep.equal(['red', 'green']);
 
         scatter.model.set('colors', []);
-        expect(getFills(elements)).to.deep.equal([null, 'green']);
+        expect(getFills(elements)).to.deep.equal(['', 'green']);
 
         scatter.model.set('selected_style', {});
-        expect(getFills(elements)).to.deep.equal([null, null]);
+        expect(getFills(elements)).to.deep.equal(['', '']);
     });
 });
