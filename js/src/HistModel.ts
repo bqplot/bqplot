@@ -32,7 +32,7 @@ export class HistModel extends MarkModel {
             },
             bins: 10,
             midpoints: [],
-            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
+            colors: ['steelblue'],
             stroke: null,
             opacities: [],
             normalized: false
@@ -106,8 +106,6 @@ export class HistModel extends MarkModel {
     }
 
     normalize_data(save_and_update) {
-
-
         this.count = this.mark_data.map(function(d) { return d.length; });
         if (this.get("normalized")) {
             let x_width = 1;

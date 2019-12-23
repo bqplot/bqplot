@@ -106,6 +106,7 @@ async function create_figure_lines(manager, x, y, default_scales={}) {
     await figure._initial_marks_created;
     return {figure: figure, lines: await figure.mark_views.views[0]}
 }
+
 export
 async function create_figure_bars(manager, x, y) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
@@ -135,4 +136,35 @@ async function create_figure_bars(manager, x, y) {
     await manager.display_view(undefined, figure);
     await figure._initial_marks_created;
     return {figure: figure, bars: await figure.mark_views.views[0]}
+}
+
+export
+async function create_figure_hist(manager, sample, bins) {
+    let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
+    let scale_sample = await create_model_bqplot(manager, 'LinearScale', 'scale_sample', {allow_padding: false})
+    let scale_count = await create_model_bqplot(manager, 'LinearScale', 'scale_count', {allow_padding: false})
+    let scales = {sample: scale_sample.toJSON(), count: scale_count.toJSON()}
+
+    let histModel = await create_model_bqplot(manager, 'Hist', 'hist1', {scales: scales,
+        sample: sample, bins: bins,
+        visible: true, default_size: 64,
+        preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})
+    let figureModel;
+    try {
+        figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scales.sample, scale_y: scales.count,
+            layout: layout.toJSON(), _dom_classes: [],
+            figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
+            marks: [histModel.toJSON()]})
+    } catch(e) {
+        console.error('error', e)
+    }
+    let figure  = await create_view(manager, figureModel);
+    await manager.display_view(undefined, figure);
+    await figure._initial_marks_created;
+    return {figure: figure, hist: await figure.mark_views.views[0]}
+}
+
+export
+function getFills (selection: any) {
+    return selection.nodes().map((el) => el.style.fill);
 }

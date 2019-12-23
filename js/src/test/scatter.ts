@@ -1,7 +1,17 @@
-import { expect } from 'chai';
-import {DummyManager} from './dummy-manager';
-import bqplot = require('..');
-import {create_figure_scatter} from './widget-utils'
+import {
+    expect
+} from 'chai';
+
+import {
+    DummyManager
+} from './dummy-manager';
+
+import * as bqplot from '..';
+
+import {
+    create_figure_scatter, getFills
+} from './widget-utils'
+
 import * as d3Timer from 'd3-timer';
 
 
@@ -34,30 +44,30 @@ describe("scatter >", () => {
         let objects = await create_figure_scatter(this.manager, x, y);
         let scatter = objects.scatter;
 
-        let getFills = () => scatter.d3el.selectAll(".object_grp .element").nodes().map((el) => ((el.getAttribute('style')||'').match(/fill: (\w*)/)||[null,null])[1]);
-        expect(getFills()).to.deep.equal(['steelblue', 'steelblue']);
+        const elements = scatter.d3el.selectAll(".object_grp .element");
+        expect(getFills(elements)).to.deep.equal(['steelblue', 'steelblue']);
 
         scatter.model.set('unselected_style', {'fill': 'orange', 'stroke': 'none'});
         scatter.model.set('selected', [0]);
-        expect(getFills()).to.deep.equal(['steelblue', 'orange']);
+        expect(getFills(elements)).to.deep.equal(['steelblue', 'orange']);
 
         scatter.model.set('colors', ['red']);
-        expect(getFills()).to.deep.equal(['red', 'orange']);
+        expect(getFills(elements)).to.deep.equal(['red', 'orange']);
 
         scatter.model.set('selected_style', {'fill': 'green', 'stroke': 'none'});
         scatter.model.set('selected', [0]);
-        expect(getFills()).to.deep.equal(['green', 'orange']);
+        expect(getFills(elements)).to.deep.equal(['green', 'orange']);
 
         scatter.model.set('selected', [1]);
-        expect(getFills()).to.deep.equal(['orange', 'green']);
+        expect(getFills(elements)).to.deep.equal(['orange', 'green']);
 
         scatter.model.set('unselected_style', {});
-        expect(getFills()).to.deep.equal(['red', 'green']);
+        expect(getFills(elements)).to.deep.equal(['red', 'green']);
 
         scatter.model.set('colors', []);
-        expect(getFills()).to.deep.equal([null, 'green']);
+        expect(getFills(elements)).to.deep.equal(['', 'green']);
 
         scatter.model.set('selected_style', {});
-        expect(getFills()).to.deep.equal([null, null]);
+        expect(getFills(elements)).to.deep.equal(['', '']);
     });
 });
