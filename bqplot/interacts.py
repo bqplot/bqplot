@@ -389,9 +389,10 @@ class BrushSelector(TwoDSelector):
         This attribute changes while the selection is being made with the
         ``BrushSelector``.
     selected: numpy.ndarray
-        A 2x2 array containing the coordinates
-        [[selected_x[0], selected_y[0]],
-         [selected_x[1], selected_y[1]]]
+        A 2x2 array containing the coordinates ::
+
+            [[selected_x[0], selected_y[0]],
+             [selected_x[1], selected_y[1]]]
     brushing: bool (default: False)
         boolean attribute to indicate if the selector is being dragged.
         It is True when the selector is being moved and False when it is not.

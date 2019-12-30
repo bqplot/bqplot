@@ -323,8 +323,7 @@ class Lines(Mark):
         Interpolation scheme used for interpolation between the data points
         provided. Please refer to the svg interpolate documentation for details
         about the different interpolation schemes.
-    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
-             'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse'}
         Marker shape
     marker_size: nonnegative int (default: 64)
         Default marker size in pixels
@@ -580,8 +579,7 @@ class Scatter(_ScatterBase):
         Font-awesome icon for that mark
     name: string (class-level attribute)
         User-friendly name of the mark
-    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down',
-             'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse'}
         Marker shape
     colors: list of colors (default: ['steelblue'])
         List of colors of the markers. If the list is shorter than the number
