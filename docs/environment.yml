@@ -9,4 +9,4 @@ dependencies:
  - numpy
  - pandas
  - bqplot
- - jupyter_sphinx
+ - nbsphinx
