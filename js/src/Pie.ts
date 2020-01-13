@@ -29,7 +29,7 @@ export class Pie extends Mark {
         this.unselected_style = this.model.get("unselected_style");
 
         this.display_el_classes = ["slice", "text"];
-        const that = this;
+
         this.pie_g = this.d3el.append("g").attr("class", "pie");
         this.pie_g.append("g").attr("class", "slices");
         this.pie_g.append("g").attr("class", "labels");
@@ -40,7 +40,7 @@ export class Pie extends Mark {
 
         const display_labels = this.model.get("display_labels");
 
-        if(display_labels === "outside") {
+        if (display_labels === "outside") {
             this.arc = d3.arc()
                 .outerRadius(radius * 0.8)
                 .innerRadius(inner_radius * 0.8);
@@ -54,17 +54,17 @@ export class Pie extends Mark {
                 .innerRadius(inner_radius);
         }
 
-        this.displayed.then(function() {
-            that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
-            that.create_tooltip();
+        this.displayed.then(() => {
+            this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+            this.create_tooltip();
         });
 
-        return base_creation_promise.then(function() {
-            that.event_listeners = {};
-            that.process_interactions();
-            that.create_listeners();
-            that.compute_view_padding();
-            that.draw();
+        return base_creation_promise.then(() => {
+            this.event_listeners = {};
+            this.process_interactions();
+            this.create_listeners();
+            this.compute_view_padding();
+            this.draw();
         }, null);
     }
 
@@ -118,13 +118,11 @@ export class Pie extends Mark {
         this.model.on_some_change(["inner_radius", "radius"], function() {
             this.compute_view_padding();
             const animate = true;
-            this.update_radii(animate);
+            this.update_radius(animate);
         }, this);
         this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
         this.model.on_some_change(["x", "y"], this.position_center, this);
-        this.model.on_some_change(["display_labels", "label_color", "font_size", "font_weight"],
-                                  this.update_labels, this);
-        this.model.on_some_change(["start_angle", "end_angle", "sort"], function() {
+        this.model.on_some_change(["display_labels", "label_color", "font_size", "font_weight", "start_angle", "end_angle", "sort"], function() {
             const animate = true;
             this.draw(animate);
         }, this);
@@ -158,7 +156,7 @@ export class Pie extends Mark {
     relayout() {
         this.set_ranges();
         this.position_center();
-        this.update_radii();
+        this.update_radius();
     }
 
     position_center(animate?: boolean) {
@@ -176,7 +174,7 @@ export class Pie extends Mark {
             .attr("transform", transform);
     }
 
-    update_radii(animate?: boolean) {
+    update_radius(animate?: boolean) {
         const animation_duration = animate === true ?
             this.parent.model.get("animation_duration") : 0;
 
@@ -198,18 +196,18 @@ export class Pie extends Mark {
         const that = this;
 
         slices.selectAll("path.slice")
-            .transition("update_radii").duration(animation_duration)
+            .transition("update_radius").duration(animation_duration)
             .attr("d", this.arc);
 
         if(display_labels === "inside") {
             labels.selectAll("text")
-                .transition("update_radii").duration(animation_duration)
+                .transition("update_radius").duration(animation_duration)
                 .attr("transform", function(d) {
                     return "translate(" + that.arc.centroid(d) + ")";
                 });
         } else if(display_labels === "outside") {
             labels.selectAll("text")
-                .transition("update_radii").duration(animation_duration)
+                .transition("update_radius").duration(animation_duration)
                 .attr("transform", function(d) {
                     const pos = that.outer_arc.centroid(d);
                     pos[0] = radius * (that.mid_angle_location(d) === "left" ? -1 : 1);
@@ -217,7 +215,7 @@ export class Pie extends Mark {
                 });
 
             lines.selectAll("polyline")
-                .transition("update_radii").duration(animation_duration)
+                .transition("update_radius").duration(animation_duration)
                 .attr("points", function(d) {
                     const pos = that.outer_arc.centroid(d);
                     pos[0] = radius * 0.95 * (that.mid_angle_location(d) === "left" ? -1 : 1);
@@ -250,21 +248,23 @@ export class Pie extends Mark {
 
         // update pie slices
         const slices = this.pie_g.select(".slices")
-            .selectAll("path.slice")
+            .selectAll(".slice")
             .data(pie(this.model.mark_data));
 
         slices.enter()
-            .insert("path")
-            .attr("class", "slice")
-            .style("fill", function(d) {
-                return that.get_colors(d.data.index);
-            })
+            .append('path')
+            .attr('class', 'slice')
+            .style('fill', d => this.get_colors(d.data.index))
             .each(function(d) {
                 this._current = d;
-            }).on("click", function(d, i) {
-            return that.event_dispatcher("element_clicked", {data: d, index: i});});
-
-        slices.transition("draw").duration(animation_duration)
+            })
+            .on("click", function(d, i) {
+                return that.event_dispatcher("element_clicked", {data: d, index: i});}
+            )
+            .merge(slices)
+            .transition("draw")
+            .duration(animation_duration)
+            .style('opacity', d => d.value == 0 ? 0 : 1)
             .attrTween("d", function(d) {
                 const interpolate = d3.interpolate(this._current, d);
                 this._current = d;
@@ -272,40 +272,43 @@ export class Pie extends Mark {
             });
 
         slices.exit()
-            .transition("draw")
+            .transition('remove')
+            .duration(animation_duration)
+            .style('opacity', 0)
             .remove();
 
-        // update labels
+        // Update labels
+        const display_labels = this.model.get("display_labels");
+
         const labels = this.pie_g.select(".labels")
             .selectAll("text")
             .data(pie(this.model.mark_data));
 
-        labels.enter()
+        const labelsTransition = labels.enter()
             .append("text")
             .attr("dy", ".35em")
-            .style("opacity", 0)
-            .text(function(d) {
-                return d.data.label;
-            })
+            .text(d => d.data.label)
+            .style("opacity", 1)
+            .style("font-weight", this.model.get("font_weight"))
+            .style("font-size", this.model.get("font_size"))
             .each(function(d) {
                 this._current = d;
-            });
-
-        const label_trans = labels.transition("draw")
-            .duration(animation_duration)
-            .style("opacity", function(d) {
-                return d.data.value === 0 ? 0 : 1;
-            });
-
-        const display_labels = this.model.get("display_labels");
-
-        if(display_labels === "inside") {
-            label_trans.attr("transform", function(d) {
-                return "translate(" + that.arc.centroid(d) + ")";
             })
-            .style("text-anchor", "middle");
+            .merge(labels)
+            .transition("draw")
+            .duration(animation_duration)
+            .style("opacity", d => (display_labels === "none" || d.value == 0) ? 0 : 1);
+
+        const color = this.model.get("label_color");
+        if(color !== undefined) {
+            labelsTransition.style("fill", color);
+        }
+
+        if (display_labels === "inside") {
+            labelsTransition.attr("transform", d => "translate(" + this.arc.centroid(d) + ")")
+                .style("text-anchor", "middle");
         } else if (display_labels === "outside") {
-            label_trans.attrTween("transform", function(d) {
+            labelsTransition.attrTween("transform", function(d) {
                 const interpolate = d3.interpolate(this._current, d);
                 const _this = this;
                 return function(t) {
@@ -328,41 +331,38 @@ export class Pie extends Mark {
 
         labels.exit().remove();
 
-        // for labels which are displayed outside draw the polylines
-        if (display_labels === "outside") {
-            const polylines = this.pie_g.select(".lines")
-                .selectAll("polyline")
-                .data(pie(this.model.mark_data));
+        const polylines = this.pie_g.select(".lines")
+            .selectAll("polyline")
+            .data(pie(this.model.mark_data));
 
-            polylines.enter()
-                .append("polyline")
-                .each(function(d) {
-                    this._current = d;
-                });
+        const polylinesTransition = polylines.enter()
+            .append("polyline")
+            .each(function(d) {
+                this._current = d;
+            })
+            .merge(polylines)
+            .transition("draw")
+            .duration(animation_duration)
+            .style("opacity", d => (display_labels !== "outside" || d.value == 0 || d.data.label === "") ? 0 : 1);
 
-            polylines.transition("draw")
-                .duration(animation_duration)
-                .style("visibility", function(d) {
-                    return d.data.label === "" ? "hidden" : "visible";
-                })
-                .attrTween("points", function(d) {
-                    this._current = this._current;
-                    const interpolate = d3.interpolate(this._current, d);
-                    const _this = this;
-                    return function(t) {
-                        const d2 = interpolate(t);
-                        _this._current = d2;
-                        const pos = that.outer_arc.centroid(d2);
-                        pos[0] = that.model.get("radius") * 0.95 *
-                            (that.mid_angle_location(d2) === "left" ? -1 : 1);
-                        return [that.arc.centroid(d2), that.outer_arc.centroid(d2), pos];
-                    };
-                });
-
-            polylines.exit().remove();
+        if (display_labels === 'outside') {
+            polylinesTransition.attrTween("points", function(d) {
+                this._current = this._current;
+                const interpolate = d3.interpolate(this._current, d);
+                const _this = this;
+                return function(t) {
+                    const d2 = interpolate(t);
+                    _this._current = d2;
+                    const pos = that.outer_arc.centroid(d2);
+                    pos[0] = that.model.get("radius") * 0.95 *
+                        (that.mid_angle_location(d2) === "left" ? -1 : 1);
+                    return [that.arc.centroid(d2), that.outer_arc.centroid(d2), pos];
+                };
+            });
         }
 
-        this.update_labels();
+        polylines.exit().remove();
+
         this.update_values();
         this.apply_styles();
     }
@@ -384,20 +384,6 @@ export class Pie extends Mark {
               return (d.data.color !== undefined && color_scale !== undefined) ?
                   color_scale.scale(d.data.color) : that.get_colors(d.data.index);
           });
-    }
-
-    update_labels() {
-        const display_labels = this.model.get("display_labels");
-
-        const labels = this.pie_g.selectAll(".labels text")
-            .style("visibility",  display_labels === "none" ? "hidden" : "visible")
-            .style("font-weight", this.model.get("font_weight"))
-            .style("font-size", this.model.get("font_size"));
-
-        const color = this.model.get("label_color");
-        if(color !== undefined) {
-            labels.style("fill", color);
-        }
     }
 
     update_values() {

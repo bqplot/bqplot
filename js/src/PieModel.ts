@@ -26,6 +26,7 @@ export class PieModel extends MarkModel {
             _view_name: "Pie",
 
             sizes: [],
+            labels: [],
             color: null,
             x: 0.5,
             y: 0.5,
