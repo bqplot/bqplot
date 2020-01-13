@@ -18,15 +18,19 @@ import * as d3 from 'd3';
 import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { OHLCModel } from './OHLCModel';
+const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 
 export class OHLC extends Mark {
 
     render() {
         const base_creation_promise = super.render();
+        this.selected_indices = this.model.get("selected");
+        this.selected_style = this.model.get("selected_style");
+        this.unselected_style = this.model.get("unselected_style");
 
+        this.display_el_classes = ["stick_body", "stick_tail", "stick_head"];
+        
         const that = this;
-        this.display_el_classes = ["stick_body", "stick_tail", "stick_head"] ;
-
         this.displayed.then(function() {
             that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
             that.create_tooltip();
@@ -79,7 +83,7 @@ export class OHLC extends Mark {
 
         this.listenTo(this.model, "change:tooltip", this.create_tooltip);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
-
+        this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:stroke", this.update_stroke);
         this.listenTo(this.model, "change:stroke_width", this.update_stroke_width);
         this.listenTo(this.model, "change:colors", this.update_colors);
@@ -87,6 +91,108 @@ export class OHLC extends Mark {
         this.listenTo(this.model, "change:marker", this.update_marker);
         this.listenTo(this.model, "format_updated", this.draw);
         this.listenTo(this.model, "data_updated", this.draw);
+        this.listenTo(this.parent, "bg_clicked", function() {
+            this.event_dispatcher("parent_clicked");
+        });
+    }
+
+    /**
+     * Sets event listeners depending on the interaction typr
+     * @param interaction - string representing the interaction
+     */
+    process_click(interaction) {
+        super.process_click(interaction);
+        if (interaction === "select") {
+            this.event_listeners.parent_clicked = this.reset_selection;
+            this.event_listeners.element_clicked = this.ohlc_click_handler;
+        }
+    }
+
+    /**
+     * Resets model state for selected indices
+     */
+    reset_selection() {
+        this.model.set("selected", null);
+        this.selected_indices = null;
+        this.touch();
+    }
+
+    /**
+     * Updates model state with selected indices
+     * @param model - model object
+     * @param value - array of indices
+     */
+    update_selected(model, value) {
+        this.selected_indices = value;
+        this.apply_styles();
+    }
+
+    /**
+     * Updates model state with selected indices (adapted from Bars.ts)
+     * @param args - data object of {x, y, index}
+     */
+    ohlc_click_handler (args) {
+        const index = args.index;
+        const that = this;
+        const idx = this.model.get("selected") || [];
+        let selected: number[] = Array.from(idx);
+
+        // index of candle i. Checking if it is already present in the list.
+        const elem_index = selected.indexOf(index);
+        // Replacement for "Accel" modifier.
+        const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
+        if(elem_index > -1 && accelKey) {
+            // if the index is already selected and if accel key is
+            // pressed, remove the element from the list
+            selected.splice(elem_index, 1);
+        } else {
+            if(d3GetEvent().shiftKey) {
+                //If shift is pressed and the element is already
+                //selected, do not do anything
+                if(elem_index > -1) {
+                    return;
+                }
+                //Add elements before or after the index of the current
+                //candle which has been clicked
+                const min_index = (selected.length !== 0) ?
+                    d3.min(selected) : -1;
+                const max_index = (selected.length !== 0) ?
+                    d3.max(selected) : that.model.mark_data.length;
+                if(index > max_index){
+                    _.range(max_index+1, index+1).forEach(function(i) {
+                        selected.push(i);
+                    });
+                } else if(index < min_index){
+                    _.range(index, min_index).forEach(function(i) {
+                        selected.push(i);
+                    });
+                }
+            } else if(accelKey) {
+                //If accel is pressed and the candle is not already selcted
+                //add the candle to the list of selected candles.
+                selected.push(index);
+            }
+            // updating the array containing the candle indexes selected
+            // and updating the style
+            else {
+                //if accel is not pressed, then clear the selected ones
+                //and set the current element to the selected
+                selected = [];
+                selected.push(index);
+            }
+        }
+        this.model.set("selected",
+                       ((selected.length === 0) ? null : selected),
+                       {updated_view: this});
+        this.touch();
+        const e = d3GetEvent();
+        if(e.cancelBubble !== undefined) { // IE
+            e.cancelBubble = true;
+        }
+        if(e.stopPropagation) {
+            e.stopPropagation();
+        }
+        e.preventDefault();
     }
 
     update_stroke() {
@@ -278,6 +384,11 @@ export class OHLC extends Mark {
                                      y_scale.offset) + ")";
              });
         }
+
+        this.d3el.selectAll(".stick").on("click", (d, i) => {
+            return that.event_dispatcher("element_clicked",
+                                         {"data": d, "index": i});
+        });
 
         // Draw the mark paths
         this.draw_mark_paths(this.model.get("marker"), this.d3el,
