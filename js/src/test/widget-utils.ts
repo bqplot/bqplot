@@ -108,6 +108,32 @@ async function create_figure_lines(manager, x, y, default_scales={}) {
 }
 
 export
+async function create_figure_pie(manager, sizes, labels) {
+    let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
+
+    let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {allow_padding: false})
+    let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {allow_padding: false})
+
+    let pieModel = await create_model_bqplot(manager, 'Pie', 'pie1', {
+        sizes: sizes, labels: labels,
+        visible: true, default_size: 64,
+        preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})
+    let figureModel;
+    try {
+        figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scale_x.toJSON(), scale_y: scale_y.toJSON(),
+            layout: layout.toJSON(), _dom_classes: [],
+            figure_padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
+            marks: [pieModel.toJSON()]})
+    } catch(e) {
+        console.error('error', e)
+    }
+    let figure  = await create_view(manager, figureModel);
+    await manager.display_view(undefined, figure);
+    await figure._initial_marks_created;
+    return {figure: figure, pie: await figure.mark_views.views[0]}
+}
+
+export
 async function create_figure_bars(manager, x, y) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false})
