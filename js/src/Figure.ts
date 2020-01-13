@@ -82,10 +82,14 @@ class Figure extends widgets.DOMWidgetView {
     }
 
     render () {
-        this.displayed.then(this.renderImpl.bind(this));
+        // we cannot use Promise.all here, since this.layoutPromise is resolved, and will be overwritten later on
+        this.displayed.then(() => {
+            // make sure we render after all layouts styles are set, since they can affect the size
+            this.layoutPromise.then(this.renderImpl.bind(this));
+        });
     }
 
-    private renderImpl (args: any) {
+    private renderImpl () {
         const figureSize = this.getFigureSize();
         this.width = figureSize.width;
         this.height = figureSize.height;
@@ -249,15 +253,15 @@ class Figure extends widgets.DOMWidgetView {
 
             document.body.appendChild(this.tooltip_div.node());
             this.create_listeners();
-            if(args === undefined || args.add_to_dom_only !== true) {
-                //do not relayout if it is only being added to the DOM
-                //and not displayed.
-                this.relayout();
-            }
+
             // In the classic notebook, we should relayout the figure on
             // resize of the main window.
-            window.addEventListener('resize', () => {
+            this.debouncedRelayout = _.debounce(() => {
                 this.relayout();
+            }, 300);
+            window.addEventListener('resize', this.debouncedRelayout);
+            this.once('remove', () => {
+                window.removeEventListener('resize', this.debouncedRelayout);
             });
 
             return Promise.all([mark_views_updated, axis_views_updated]);
@@ -547,18 +551,20 @@ class Figure extends widgets.DOMWidgetView {
         super.processPhosphorMessage.apply(this, arguments);
         switch (msg.type) {
         case 'resize':
-        case 'after-attach':
-            this.relayout();
+            const figureSize = this.getFigureSize();
+            if ((this.width !== figureSize.width) || (this.height !== figureSize.height)) {
+                this.debouncedRelayout();
+            }
             break;
         }
     }
 
     relayout() {
-        const figureSize = this.getFigureSize();
-        this.width = figureSize.width;
-        this.height = figureSize.height;
-
-        window.requestAnimationFrame(() => {
+        const relayoutImpl = () => {
+            this.relayoutRequested = false; // reset relayout request
+            const figureSize = this.getFigureSize();
+            this.width = figureSize.width;
+            this.height = figureSize.height;
             // update ranges
             this.margin = this.model.get("fig_margin");
             this.update_plotarea_dimensions();
@@ -597,8 +603,12 @@ class Figure extends widgets.DOMWidgetView {
             this.trigger("margin_updated");
             this.update_legend();
             this.layout_webgl_canvas();
-        });
+        };
 
+        if (!this.relayoutRequested) {
+            this.relayoutRequested = true; // avoid scheduling a relayout twice
+            requestAnimationFrame(relayoutImpl.bind(this))
+        }
     }
 
     layout_webgl_canvas() {
@@ -954,6 +964,7 @@ class Figure extends widgets.DOMWidgetView {
     change_layout: any;
     clip_id: any;
     clip_path: any;
+    debouncedRelayout: any;
     fig_axes: any;
     fig_interaction: any;
     fig_marks: any;
@@ -984,6 +995,7 @@ class Figure extends widgets.DOMWidgetView {
     y_padding_arr: any;
 
     private _update_requested: boolean;
+    private relayoutRequested: boolean = false;
     // this is public for the test framework, but considered a private API
     public _initial_marks_created: Promise<any>;
     private _initial_marks_created_resolve: Function;
