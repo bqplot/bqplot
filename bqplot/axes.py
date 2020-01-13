@@ -104,7 +104,7 @@ class Axis(BaseAxis):
     label_offset: string or None (default: None)
         Label displacement from the axis line. Units allowed are 'em', 'px'
         and 'ex'. Positive values are away from the figure and negative
-        values are towards the figure with resepect to the axis line.
+        values are towards the figure with respect to the axis line.
     visible: bool (default: True)
         A visibility toggle for the axis
     tick_style: Dict (default: {})
