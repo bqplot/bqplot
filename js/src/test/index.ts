@@ -3,6 +3,7 @@ import './binary_serialization';
 import './scales';
 import './scatter';
 import './scatter-mega';
+import './pie';
 import './lines';
 import './bars';
 import './hist';
