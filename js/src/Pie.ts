@@ -113,26 +113,30 @@ export class Pie extends Mark {
             const animate = true;
             this.draw(animate);
         });
-        this.listenTo(this.model, "change:colors", this.update_colors);
-        this.listenTo(this.model, "colors_updated", this.update_colors);
+        this.listenTo(this.model, "colors_updated", this.updateSlices);
         this.model.on_some_change(["inner_radius", "radius"], function() {
             this.compute_view_padding();
             const animate = true;
             this.update_radius(animate);
         }, this);
-        this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
-        this.model.on_some_change(["x", "y"], this.position_center, this);
-        this.model.on_some_change(["display_labels", "label_color", "font_size", "font_weight", "start_angle", "end_angle", "sort"], function() {
+        this.model.on_some_change(["colors", "stroke", "opacities"], this.updateSlices, this);
+        this.model.on_some_change(["x", "y"], function() {
+            const animate = true;
+            this.position_center(animate);
+        }, this);
+        this.model.on_some_change(["display_labels", "label_color", "font_size", "font_weight", "display_values", "values_format"], function() {
+            const animate = true;
+            this.updateLabels(animate);
+        }, this);
+        this.model.on_some_change(["start_angle", "end_angle", "sort"], function() {
             const animate = true;
             this.draw(animate);
         }, this);
 
-        this.model.on_some_change(["display_values", "values_format"],
-                                  this.update_values, this);
-
         this.listenTo(this.model, "labels_updated", function() {
             const animate = true;
-            this.draw(animate);
+            this.updateLabels(animate);
+            this.updatePolylines(animate);
         });
 
         this.listenTo(this.model, "change:selected", function() {
@@ -195,7 +199,7 @@ export class Pie extends Mark {
 
         const that = this;
 
-        slices.selectAll("path.slice")
+        slices.selectAll(".slice")
             .transition("update_radius").duration(animation_duration)
             .attr("d", this.arc);
 
@@ -235,13 +239,19 @@ export class Pie extends Mark {
         this.set_ranges();
         this.position_center(animate);
 
-        const pie = d3.pie()
+        this.d3Pie = d3.pie()
             .startAngle(this.model.get("start_angle") * 2 * Math.PI/360)
             .endAngle(this.model.get("end_angle") * 2 * Math.PI/360)
             .value(function(d: any) { return d.size; });
 
-        if(!this.model.get("sort")) { pie.sort(null); }
+        if(!this.model.get("sort")) { this.d3Pie.sort(null); }
 
+        this.updateSlices(animate);
+        this.updateLabels(animate);
+        this.updatePolylines(animate);
+    }
+
+    updateSlices (animate?: boolean) {
         const that = this;
         const animation_duration = animate === true ?
             this.parent.model.get("animation_duration") : 0;
@@ -249,12 +259,15 @@ export class Pie extends Mark {
         // update pie slices
         const slices = this.pie_g.select(".slices")
             .selectAll(".slice")
-            .data(pie(this.model.mark_data));
+            .data(this.d3Pie(this.model.mark_data));
+
+        const stroke = this.model.get("stroke");
+        const opacities = this.model.get("opacities");
+        const colorScale = this.scales.color;
 
         slices.enter()
             .append('path')
             .attr('class', 'slice')
-            .style('fill', d => this.get_colors(d.data.index))
             .each(function(d) {
                 this._current = d;
             })
@@ -264,7 +277,12 @@ export class Pie extends Mark {
             .merge(slices)
             .transition("draw")
             .duration(animation_duration)
-            .style('opacity', d => d.value == 0 ? 0 : 1)
+            .style("fill", function(d, i) {
+                return (d.data.color !== undefined && colorScale !== undefined) ?
+                    colorScale.scale(d.data.color) : that.get_colors(d.data.index);
+            })
+            .style('stroke', stroke)
+            .style('opacity', (d, i) => opacities[i])
             .attrTween("d", function(d) {
                 const interpolate = d3.interpolate(this._current, d);
                 this._current = d;
@@ -277,26 +295,47 @@ export class Pie extends Mark {
             .style('opacity', 0)
             .remove();
 
+        this.apply_styles();
+    }
+
+    updateLabels (animate?: boolean) {
+        const that = this;
+        const animation_duration = animate === true ?
+            this.parent.model.get("animation_duration") : 0;
+
         // Update labels
         const display_labels = this.model.get("display_labels");
+        const display_values = this.model.get("display_values");
+
+        const values_format = d3.format(this.model.get("values_format"));
 
         const labels = this.pie_g.select(".labels")
             .selectAll("text")
-            .data(pie(this.model.mark_data));
+            .data(this.d3Pie(this.model.mark_data));
 
         const labelsTransition = labels.enter()
             .append("text")
             .attr("dy", ".35em")
-            .text(d => d.data.label)
-            .style("opacity", 1)
-            .style("font-weight", this.model.get("font_weight"))
-            .style("font-size", this.model.get("font_size"))
+            .style("opacity", 0)
             .each(function(d) {
                 this._current = d;
             })
             .merge(labels)
             .transition("draw")
             .duration(animation_duration)
+            .text((d) => {
+                if (d.data.label === '') {
+                    return '';
+                }
+
+                if (display_values) {
+                    return d.data.label + ": " + values_format(d.data.size);
+                }
+
+                return d.data.label
+            })
+            .style("font-weight", this.model.get("font_weight"))
+            .style("font-size", this.model.get("font_size"))
             .style("opacity", d => (display_labels === "none" || d.value == 0) ? 0 : 1);
 
         const color = this.model.get("label_color");
@@ -330,10 +369,18 @@ export class Pie extends Mark {
         }
 
         labels.exit().remove();
+    }
+
+    updatePolylines (animate?: boolean) {
+        const that = this;
+        const animation_duration = animate === true ?
+            this.parent.model.get("animation_duration") : 0;
+
+        const display_labels = this.model.get("display_labels");
 
         const polylines = this.pie_g.select(".lines")
             .selectAll("polyline")
-            .data(pie(this.model.mark_data));
+            .data(this.d3Pie(this.model.mark_data));
 
         const polylinesTransition = polylines.enter()
             .append("polyline")
@@ -362,46 +409,13 @@ export class Pie extends Mark {
         }
 
         polylines.exit().remove();
-
-        this.update_values();
-        this.apply_styles();
-    }
-
-    update_stroke_and_opacities() {
-        const stroke = this.model.get("stroke");
-        const opacities = this.model.get("opacities");
-        this.pie_g.selectAll("path.slice")
-            .style("stroke", stroke)
-            .style("opacity", function(d, i) { return opacities[i]; });
-    }
-
-    update_colors() {
-        const that = this;
-        const color_scale = this.scales.color;
-        this.pie_g.select(".slices")
-          .selectAll("path.slice")
-          .style("fill", function(d, i) {
-              return (d.data.color !== undefined && color_scale !== undefined) ?
-                  color_scale.scale(d.data.color) : that.get_colors(d.data.index);
-          });
-    }
-
-    update_values() {
-        const display_values = this.model.get("display_values");
-        const values_format = d3.format(this.model.get("values_format"));
-
-        this.pie_g.selectAll(".labels text")
-            .text(function(d) {
-                return d.data.label +
-                    (display_values ? ": " + values_format(d.data.size) : "");
-            })
     }
 
     clear_style(style_dict, indices?) {
         // Function to clear the style of a dict on some or all the elements of the
         // chart. If indices is null, clears the style on all elements. If
         // not, clears on only the elements whose indices are matching.
-        let elements = this.pie_g.selectAll("path.slice");
+        let elements = this.pie_g.selectAll(".slice");
         if(indices) {
             elements = elements.filter(function(d, index) {
                 return indices.indexOf(index) !== -1;
@@ -430,8 +444,21 @@ export class Pie extends Mark {
     set_default_style(indices?) {
         // For all the elements with index in the list indices, the default
         // style is applied.
-        this.update_colors();
-        this.update_stroke_and_opacities();
+        const that = this;
+
+        const stroke = this.model.get("stroke");
+        const opacities = this.model.get("opacities");
+        const colorScale = this.scales.color;
+
+        // Update pie slices
+        this.pie_g.select(".slices")
+            .selectAll(".slice")
+            .style('fill', function(d, i) {
+                return (d.data.color !== undefined && colorScale !== undefined) ?
+                    colorScale.scale(d.data.color) : that.get_colors(d.data.index);
+            })
+            .style('stroke', stroke)
+            .style('opacity', (d, i) => opacities[i]);
     }
 
     click_handler (args) {
@@ -514,6 +541,7 @@ export class Pie extends Mark {
         }
     }
 
+    d3Pie: any;
     pie_g: any;
     arc: any;
     outer_arc: any;
