@@ -5,6 +5,7 @@ import './scatter';
 import './scatter-mega';
 import './pie';
 import './lines';
+import './gridheatmap';
 import './bars';
 import './hist';
 import './utils';
