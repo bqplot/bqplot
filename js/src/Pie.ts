@@ -18,8 +18,9 @@ import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
 // Hack to fix problem with webpack providing multiple d3 objects
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
-import { Mark } from './Mark';
 import * as _ from 'underscore';
+import { Mark } from './Mark';
+import { getDate } from './utils';
 
 export class Pie extends Mark {
     render() {
@@ -164,9 +165,9 @@ export class Pie extends Mark {
         const x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
         const y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
         const x = (x_scale.model.type === "date") ?
-            this.model.get_date_elem("x") : this.model.get("x");
+            getDate(this.model.get("x")) : this.model.get("x");
         const y = (y_scale.model.type === "date") ?
-            this.model.get_date_elem("y") : this.model.get("y");
+            getDate(this.model.get("y")) : this.model.get("y");
         const transform = "translate(" + (x_scale.scale(x) + x_scale.offset) +
                                 ", " + (y_scale.scale(y) + y_scale.offset) + ")";
         this.pie_g

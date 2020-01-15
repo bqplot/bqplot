@@ -13,15 +13,18 @@
  * limitations under the License.
  */
 
-import { unpack_models } from '@jupyter-widgets/base';
-import { BaseModel } from './BaseModel';
+import {
+    WidgetModel, unpack_models
+} from '@jupyter-widgets/base';
+
 import { semver_range } from './version';
 import * as serialize from './serialize';
 
-export class SelectorModel extends BaseModel {
+export
+class SelectorModel extends WidgetModel {
 
     defaults() {
-        return {...BaseModel.prototype.defaults(),
+        return {...WidgetModel.prototype.defaults(),
             _model_name: "SelectorModel",
             _model_module: "bqplot",
             _view_module: "bqplot",
@@ -32,7 +35,7 @@ export class SelectorModel extends BaseModel {
     }
 
     static serializers = {
-        ...BaseModel.serializers,
+        ...WidgetModel.serializers,
         marks: { deserialize: unpack_models }
     }
 }
@@ -95,7 +98,7 @@ export class IndexSelectorModel extends OneDSelectorModel {
             color: null
         }
     }
-    
+
     static serializers = {...OneDSelectorModel.serializers,
         selected: serialize.array_or_json
     }

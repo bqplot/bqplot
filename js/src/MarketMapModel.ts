@@ -15,15 +15,13 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-scale"));
-import {BaseModel} from './BaseModel';
 import * as serialize from './serialize';
 import { semver_range } from './version';
 
-export class MarketMapModel extends BaseModel {
+export class MarketMapModel extends widgets.WidgetModel {
 
     defaults() {
-        return {...BaseModel.prototype.defaults(), 
+        return {...widgets.WidgetModel.prototype.defaults(),
             _model_name: "MarketMapModel",
             _view_name: "MarketMap",
             _model_module: "bqplot",
@@ -72,7 +70,7 @@ export class MarketMapModel extends BaseModel {
             tooltip_widget: null
         };
     }
-    static serializers = {...BaseModel.serializers,
+    static serializers = {...widgets.WidgetModel.serializers,
         scales: { deserialize: widgets.unpack_models },
         axes: { deserialize: widgets.unpack_models },
         tooltip_widget: { deserialize: widgets.unpack_models },

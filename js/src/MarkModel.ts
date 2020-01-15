@@ -14,14 +14,13 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 import * as serialize from './serialize';
 
-export class MarkModel extends BaseModel {
+export class MarkModel extends widgets.WidgetModel {
 
     defaults() {
-        return {...BaseModel.prototype.defaults(),
+        return {...widgets.WidgetModel.prototype.defaults(),
             _model_name: "MarkModel",
             _model_module: "bqplot",
             _view_module: "bqplot",
@@ -120,7 +119,7 @@ export class MarkModel extends BaseModel {
     }
 
     static serializers = {
-        ...BaseModel.serializers,
+        ...widgets.WidgetModel.serializers,
         scales: { deserialize: widgets.unpack_models },
         tooltip: { deserialize: widgets.unpack_models },
         selected: serialize.array_or_json

@@ -14,6 +14,7 @@
  */
 
 import { ColorScaleModel } from './ColorScaleModel';
+import { getDate } from './utils';
 
 export class DateColorScaleModel extends ColorScaleModel {
 
@@ -36,8 +37,8 @@ export class DateColorScaleModel extends ColorScaleModel {
     }
 
     min_max_changed() {
-        this.min = this.get_date_elem("min");
-        this.max = this.get_date_elem("max");
+        this.min = getDate(this.get("min"));
+        this.max = getDate(this.get("max"));
         this.min_from_data = (this.min === null);
         this.max_from_data = (this.max === null);
         this.update_domain();

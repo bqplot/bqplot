@@ -14,13 +14,13 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 
-export class FigureModel extends BaseModel {
+export
+class FigureModel extends widgets.DOMWidgetModel {
 
     defaults() {
-        return {...BaseModel.prototype.defaults(),
+        return {...widgets.DOMWidgetModel.prototype.defaults(),
             _model_name: "FigureModel",
             _view_name: "Figure",
             _model_module: "bqplot",
@@ -78,7 +78,7 @@ export class FigureModel extends BaseModel {
         this.trigger("save_png");
     }
     static serializers = {
-        ...BaseModel.serializers,
+        ...widgets.DOMWidgetModel.serializers,
         marks: { deserialize: widgets.unpack_models },
         axes:  { deserialize: widgets.unpack_models },
         interaction: { deserialize: widgets.unpack_models },

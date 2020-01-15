@@ -14,14 +14,14 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 import * as _ from 'underscore';
 
-export class PanZoomModel extends BaseModel {
+export
+class PanZoomModel extends widgets.WidgetModel {
 
     defaults() {
-        return {...BaseModel.prototype.defaults(), 
+        return {...widgets.WidgetModel.prototype.defaults(),
             _model_name: "PanZoomModel",
             _view_name: "PanZoom",
             _model_module: "bqplot",
@@ -63,7 +63,7 @@ export class PanZoomModel extends BaseModel {
     }
 
     static serializers = {
-        ...BaseModel.serializers,
+        ...widgets.WidgetModel.serializers,
         scales: { deserialize: widgets.unpack_models }
     };
 

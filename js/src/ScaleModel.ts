@@ -13,13 +13,14 @@
  * limitations under the License.
  */
 
-import { BaseModel } from './BaseModel';
+import { WidgetModel } from '@jupyter-widgets/base';
 import { semver_range } from './version';
 
-export abstract class ScaleModel extends BaseModel {
+export
+abstract class ScaleModel extends WidgetModel {
 
     defaults() {
-        return {...BaseModel.prototype.defaults(),
+        return {...WidgetModel.prototype.defaults(),
             _model_name: "ScaleModel",
              _view_name: "Scale",
             _model_module: "bqplot",

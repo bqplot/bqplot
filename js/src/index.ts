@@ -25,7 +25,6 @@ export * from './OHLC';
 export * from './BarsModel';
 export * from './Hist';
 export * from './OHLCModel';
-export * from './BaseModel';
 export * from './HistModel';
 export * from './SelectorModel';
 export * from './Boxplot';

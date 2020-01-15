@@ -17,7 +17,6 @@ import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
-import { BaseModel } from './BaseModel';
 
 export class Interaction extends widgets.WidgetView {
 
@@ -65,5 +64,4 @@ export class Interaction extends widgets.WidgetView {
     mark_views: any;
     d3el: any;
     parent: any;
-    model: BaseModel;
 }
