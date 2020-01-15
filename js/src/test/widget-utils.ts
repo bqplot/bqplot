@@ -191,6 +191,35 @@ async function create_figure_hist(manager, sample, bins) {
 }
 
 export
+async function create_figure_gridheatmap(manager, color) {
+    let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'});
+    let scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {min:0, max:1, allow_padding: false});
+    let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:0, max:1, allow_padding: false});
+    let scale_row = await create_model_bqplot(manager, 'OrdinalScale', 'scale_row', {reverse: true});
+    let scale_column = await create_model_bqplot(manager, 'OrdinalScale', 'scale_column', {});
+    let scale_color = await create_model_bqplot(manager, 'ColorScale', 'scale_color', {scheme: 'RdYlGn', colors: []});
+    let scales = {color: scale_color.toJSON(), row: scale_row.toJSON(), column: scale_column.toJSON()};
+
+    let gridModel = await create_model_bqplot(manager, 'GridHeatMap', 'gridheatmap1', {scales: scales,
+        color: color,
+        visible: true, default_size: 64,
+        preserve_domain: {}, _view_module_version: '*', _view_module: 'bqplot'})
+    let figureModel;
+    try {
+        figureModel = await create_model_bqplot(manager, 'Figure', 'figure1', {scale_x: scale_x.toJSON(), scale_y: scale_y.toJSON(),
+            layout: layout.toJSON(), _dom_classes: [],
+            padding_y: 0, fig_margin: {bottom: 0, left: 0, right: 0, top: 0},
+            marks: [gridModel.toJSON()]})
+    } catch(e) {
+        console.error('error', e)
+    }
+    let figure  = await create_view(manager, figureModel);
+    await manager.display_view(undefined, figure);
+    await figure._initial_marks_created;
+    return {figure: figure, grid: await figure.mark_views.views[0]}
+}
+
+export
 function getFills (selection: any) {
     return selection.nodes().map((el) => el.style.fill);
 }
