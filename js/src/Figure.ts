@@ -92,7 +92,7 @@ class Figure extends widgets.DOMWidgetView {
         });
     }
 
-    private renderImpl () {
+    protected renderImpl () {
         const figureSize = this.getFigureSize();
         this.width = figureSize.width;
         this.height = figureSize.height;
@@ -232,7 +232,7 @@ class Figure extends widgets.DOMWidgetView {
             const axis_views_updated = this.axis_views.update(this.model.get("axes"));
 
             // TODO: move to the model
-            this.model.on_some_change(["fig_margin", "min_aspect_ratio", "max_aspect_ratio"], this.relayout, this);
+            this.model.on_some_change(["fig_margin", "min_aspect_ratio", "max_aspect_ratio"], this.debouncedRelayout, this);
             this.model.on_some_change(["padding_x", "padding_y"], () => {
                 this.figure_padding_x = this.model.get("padding_x");
                 this.figure_padding_y = this.model.get("padding_y");

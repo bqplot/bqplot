@@ -33,16 +33,16 @@ import popper from 'popper.js';
 
 export class MarketMap extends Figure {
 
-    render(options?) {
-        this.id = widgets.uuid();
-
+    protected renderImpl () {
         const figureSize = this.getFigureSize();
         this.width = figureSize.width;
         this.height = figureSize.height;
 
+        this.id = widgets.uuid();
+
         this.scales = {};
         this.set_top_el_style();
-        const that = this;
+
         this.margin = this.model.get("map_margin");
         this.num_rows = this.model.get("rows");
         this.num_cols = this.model.get("cols");
@@ -101,22 +101,28 @@ export class MarketMap extends Figure {
           .text(this.model.get("title"));
         this.title.styles(this.model.get("title_style"));
 
-        const scale_creation_promise = this.create_scale_views();
-        scale_creation_promise.then(function() {
-            that.create_listeners();
-            that.axis_views = new widgets.ViewList(that.add_axis, null, that);
-            that.axis_views.update(that.model.get("axes"));
-            that.model.on("change:axes", function(model, value, options) {
-                that.axis_views.update(value);
+        return this.create_scale_views().then(() => {
+            this.create_listeners();
+
+            this.axis_views = new widgets.ViewList(this.add_axis, null, this);
+            const axis_views_updated = this.axis_views.update(this.model.get("axes"));
+            this.model.on("change:axes", (model, value, options) => {
+                this.axis_views.update(value);
             });
+
+            this.draw_map();
+            document.body.appendChild(this.tooltip_div.node())
+            this.create_tooltip_widget();
+
+            // In the classic notebook, we should relayout the figure on
+            // resize of the main window.
+            window.addEventListener('resize', this.debouncedRelayout);
+            this.once('remove', () => {
+                window.removeEventListener('resize', this.debouncedRelayout);
+            });
+
+            return Promise.all([Promise.resolve(), axis_views_updated]);
         });
-        this.displayed.then(function() {
-            document.body.appendChild(that.tooltip_div.node())
-            that.relayout();
-            that.draw_group_names();
-            that.create_tooltip_widget();
-        });
-        return scale_creation_promise;
     }
 
     set_top_el_style() {
