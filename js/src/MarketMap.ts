@@ -408,16 +408,11 @@ export class MarketMap extends Figure {
 
             // Grouping calls to style into a single call to styles
             // leads to build error despite the import of d3-selection-multi
-            let text = new_groups.append("text")
+            new_groups.append("text")
                 .classed("market_map_text", true)
                 .style("text-anchor", "middle")
-                .style('fill', 'black')
                 .style("pointer-events", "none")
                 .style("dominant-baseline", "central");
-            let fontStyle = that.model.get("font_style");
-            for (let i in Object.keys(fontStyle)) {
-                text.style(i, fontStyle[i]);
-            }
 
             groups = new_groups.merge(groups);
 
@@ -462,6 +457,7 @@ export class MarketMap extends Figure {
                        "height": "100%", "justify-content": "center", "word-wrap": "break-word", "font": "24px sans-serif", "color": "black"})
                 .text(that.groups[i]);
         });
+        this.update_font_style();
         this.draw_group_names();
     }
 
@@ -497,11 +493,11 @@ export class MarketMap extends Figure {
         });
     }
 
-    update_font_style(model, value) {
+    update_font_style() {
         // This is a bit awkward because we did not figure out how to get
         // Typescript to recognize the d3-select-multi typings.
         const x: any = this.svg.selectAll(".market_map_text");
-        x.styles(value);
+        x.styles(this.model.get('font_style'));
     }
 
     update_map_colors() {
