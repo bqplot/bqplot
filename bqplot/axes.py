@@ -117,8 +117,7 @@ class Axis(BaseAxis):
     icon = 'fa-arrows'
     orientation = Enum(['horizontal', 'vertical'], default_value='horizontal')\
         .tag(sync=True)
-    side = Enum(['bottom', 'top', 'left', 'right'],
-                allow_none=True, default_value=None).tag(sync=True)
+    side = Enum(['bottom', 'top', 'left', 'right'], default_value="left").tag(sync=True)
     label = Unicode().tag(sync=True)
     grid_lines = Enum(['none', 'solid', 'dashed'], default_value='solid')\
         .tag(sync=True)
