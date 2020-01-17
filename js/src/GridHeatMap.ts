@@ -151,8 +151,8 @@ export class GridHeatMap extends Mark {
         const row = args.row_num;
         const column = args.column_num;
         const that = this;
-        let idx = this.model.get("selected") || [];
-        let selected = this._cell_nums_from_indices(Array.from(idx));
+        let idx = Array.from(this.model.get("selected") || []);
+        let selected = this._cell_nums_from_indices(idx);
         const elem_index = selected.indexOf(index);
         const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
         //TODO: This is a shim for when accelKey is supported by chrome.
