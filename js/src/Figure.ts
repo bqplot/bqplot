@@ -36,6 +36,8 @@ export
 class Figure extends widgets.DOMWidgetView {
 
     initialize() {
+        super.initialize.apply(this, arguments);
+
         // Internet Explorer does not support classList for svg elements
         this.el.classList.add("bqplot");
         this.el.classList.add("figure");
@@ -59,7 +61,18 @@ class Figure extends widgets.DOMWidgetView {
             this._initial_marks_created_resolve = resolve;
         });
 
-        super.initialize.apply(this, arguments);
+        this.debouncedRelayout = _.debounce(() => {
+            this.hasBeenShown.then(() => {
+                this.relayout();
+            });
+        }, 300);
+
+        this.hasBeenAttached = this.displayed;
+        this.hasBeenShown = new Promise((resolve, reject) => {
+            this.once('shown', () => {
+                resolve();
+            });
+        });
     }
 
     protected getFigureSize (): IFigureSize {
@@ -82,14 +95,24 @@ class Figure extends widgets.DOMWidgetView {
     }
 
     render () {
-        // we cannot use Promise.all here, since this.layoutPromise is resolved, and will be overwritten later on
-        this.displayed.then(() => {
-            // make sure we render after all layouts styles are set, since they can affect the size
-            this.layoutPromise.then(this.renderImpl.bind(this));
+        // Make sure the widget is attached to the DOM
+        this.hasBeenAttached.then(() => {
+            // Make sure the CSS layout has been applied
+            this.layoutPromise.then(() => {
+                // If there is available space, render
+                const availableSpace = this.getFigureSize();
+                if (availableSpace.width != 0 && availableSpace.height != 0) {
+                    this.hasBeenShown = Promise.resolve();
+                    return this.renderImpl();
+                } else {
+                    // Make sure the widget is visible (which implies that the widget has a minimum client size)
+                    return this.hasBeenShown.then(this.renderImpl.bind(this));
+                }
+            });
         });
     }
 
-    private renderImpl () {
+    private renderImpl () : Promise<any> {
         const figureSize = this.getFigureSize();
         this.width = figureSize.width;
         this.height = figureSize.height;
@@ -223,7 +246,7 @@ class Figure extends widgets.DOMWidgetView {
             const axis_views_updated = this.axis_views.update(this.model.get("axes"));
 
             // TODO: move to the model
-            this.model.on_some_change(["fig_margin", "min_aspect_ratio", "max_aspect_ratio"], this.relayout, this);
+            this.model.on_some_change(["fig_margin", "min_aspect_ratio", "max_aspect_ratio"], this.debouncedRelayout, this);
             this.model.on_some_change(["padding_x", "padding_y"], () => {
                 this.figure_padding_x = this.model.get("padding_x");
                 this.figure_padding_y = this.model.get("padding_y");
@@ -256,9 +279,6 @@ class Figure extends widgets.DOMWidgetView {
 
             // In the classic notebook, we should relayout the figure on
             // resize of the main window.
-            this.debouncedRelayout = _.debounce(() => {
-                this.relayout();
-            }, 300);
             window.addEventListener('resize', this.debouncedRelayout);
             this.once('remove', () => {
                 window.removeEventListener('resize', this.debouncedRelayout);
@@ -556,6 +576,9 @@ class Figure extends widgets.DOMWidgetView {
                 this.debouncedRelayout();
             }
             break;
+        case 'after-show':
+            this.trigger('shown');
+            break;
         }
     }
 
@@ -595,7 +618,6 @@ class Figure extends widgets.DOMWidgetView {
             this.bg_events
                 .attr("width", this.plotarea_width)
                 .attr("height", this.plotarea_height);
-
 
             this.clip_path.attr("width", this.plotarea_width)
                 .attr("height", this.plotarea_height);
@@ -993,6 +1015,9 @@ class Figure extends widgets.DOMWidgetView {
     x_padding_arr: any;
     y_pad_dict: any;
     y_padding_arr: any;
+
+    private hasBeenAttached: Promise<any>;
+    private hasBeenShown: Promise<void>;
 
     private _update_requested: boolean;
     private relayoutRequested: boolean = false;
