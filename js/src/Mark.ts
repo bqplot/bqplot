@@ -208,6 +208,28 @@ export abstract class Mark extends widgets.WidgetView {
         return this.colors[index % len];
     }
 
+    get_mark_color(data, index) {
+        const colorScale = this.scales.color;
+        const defaultColors = this.model.get('colors');
+
+        if(colorScale && data.color !== undefined && data.color !== null) {
+            return colorScale.scale(data.color);
+        }
+
+        return defaultColors[index % defaultColors.length];
+    }
+
+    get_mark_opacity(data, index) {
+        const opacityScale = this.scales.opacity;
+        const defaultOpacities = this.model.get('opacities');
+
+        if(opacityScale && data.opacity !== undefined && data.opacity !== null) {
+            return opacityScale.scale(data.opacity);
+        }
+
+        return defaultOpacities[index % defaultOpacities.length];
+    }
+
     // Style related functions
     selected_style_updated(model, style) {
         this.selected_style = style;

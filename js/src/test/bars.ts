@@ -9,7 +9,7 @@ import {
 } from './dummy-manager';
 
 import {
-    create_figure_bars, getFills
+    create_figure_bars, getFills, getStrokes, getStrokeWidth
 } from './widget-utils';
 
 import * as bqplot from '..';
@@ -113,7 +113,7 @@ describe("bars >", () => {
         const objects = await create_figure_bars(this.manager, x, y);
 
         const bars = objects.bars;
-        const rects = bars.d3el.selectAll('.bargroup').selectAll('rect');
+        const rects = bars.d3el.selectAll('.bargroup').selectAll('.bar');
 
         bars.model.set('selected_style', {'fill': 'orange'});
         bars.model.set('unselected_style', {'fill': 'red'});
@@ -136,5 +136,32 @@ describe("bars >", () => {
 
         bars.model.set('selected_style', {});
         expect(getFills(rects)).to.eql(['black', 'black', 'black', 'black', 'steelblue', 'steelblue']);
+
+        bars.model.set('selected', null);
+        expect(getFills(rects)).to.eql(['steelblue', 'steelblue', 'steelblue', 'steelblue', 'steelblue', 'steelblue']);
+    });
+
+    it("styles", async function() {
+        const x = [0, 1, 2, 3, 5, 6];
+        const y = [2, 3, 4, 5, 1, 2];
+        const objects = await create_figure_bars(this.manager, x, y);
+
+        const bars = objects.bars;
+        const rects = bars.d3el.selectAll('.bargroup').selectAll('.bar');
+
+        bars.model.set('fill', false);
+
+        // No fill
+        expect(getFills(rects)).to.eql(['none', 'none', 'none', 'none', 'none', 'none']);
+        expect(getStrokes(rects)).to.eql(['steelblue', 'steelblue', 'steelblue', 'steelblue', 'steelblue', 'steelblue']);
+        expect(getStrokeWidth(rects)).to.eql(['1', '1', '1', '1', '1', '1']);
+
+        bars.model.set('stroke', 'red');
+        expect(getStrokes(rects)).to.eql(['red', 'red', 'red', 'red', 'red', 'red']);
+        expect(getStrokeWidth(rects)).to.eql(['1', '1', '1', '1', '1', '1']);
+
+        bars.model.set('stroke_width', 3);
+        expect(getStrokes(rects)).to.eql(['red', 'red', 'red', 'red', 'red', 'red']);
+        expect(getStrokeWidth(rects)).to.eql(['3', '3', '3', '3', '3', '3']);
     });
 });

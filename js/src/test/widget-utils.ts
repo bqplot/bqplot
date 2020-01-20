@@ -223,3 +223,13 @@ export
 function getFills (selection: any) {
     return selection.nodes().map((el) => el.style.fill);
 }
+
+export
+function getStrokes (selection: any) {
+    return selection.nodes().map((el) => el.style.stroke);
+}
+
+export
+function getStrokeWidth (selection: any) {
+    return selection.nodes().map((el) => el.style.strokeWidth);
+}
