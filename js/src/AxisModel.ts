@@ -30,7 +30,7 @@ export class AxisModel extends BaseModel {
             _view_module_version: semver_range,
 
             orientation: "horizontal",
-            side: "left",
+            side: null,
             label: "",
             grid_lines: "solid",
             tick_format: null,
@@ -58,27 +58,28 @@ export class AxisModel extends BaseModel {
     }
 
     validate_side() {
-        const orientation = this.get("orientation");
-        const side = this.get("side");
-        if (orientation === "vertical" && (side !== "left" && side !== "right")) {
-            this.set("side", "left");
-            this.save_changes();
+        const orientation = this.get('orientation');
+        const side = this.get('side');
+        if(orientation === 'vertical') {
+            if (side !== 'left' && side !== 'right') {
+                this.set('side', 'left');
+            }
+        } else {
+            if (side !== 'bottom' && side !== 'top') {
+                this.set('side', 'bottom');
+            }
         }
-        if (orientation === "horizontal" && (side !== "bottom" && side !== "top")) {
-            this.set("side", "bottom");
-            this.save_changes();
-        }
+        this.save_changes();
     }
 
     validate_orientation() {
-        const orientation = this.get("orientation");
-        const side = this.get("side");
-        if ((side === "left" || side === "right") && orientation !== "vertical") {
-            this.set("orientation", "vertical");
-            this.save_changes();
-        }
-        if ((side === "bottom" || side === "top") && orientation !== "horizontal") {
-            this.set("orientation", "horizontal");
+        const side = this.get('side');
+        if (side) {
+            if(side === 'left' || side === 'right') {
+                this.set('orientation', 'vertical');
+            } else {
+                this.set('orientation', 'horizontal');
+            }
             this.save_changes();
         }
     }
