@@ -415,8 +415,8 @@ export class Hist extends Mark {
             return [];
         }
         const pixels = this.pixel_coords;
-        const indices = _.range(pixels.length);
-        const selected_bins = _.filter(indices, function(index) {
+        const indices = new Uint32Array(_.range(pixels.length));
+        const selected_bins = indices.filter(index => {
             return rect_selector(pixels[index]);
         });
         this.model.set("selected", this.calc_data_indices(selected_bins));
@@ -433,7 +433,8 @@ export class Hist extends Mark {
 
         const x_data = this.model.get("sample");
         const num_intervals = intervals.length;
-        const selected = _.filter(_.range(x_data.length), function(index) {
+        const indices_data = new Uint32Array(_.range(x_data.length));
+        const selected = indices_data.filter(index => {
             const elem = x_data[index];
             for(let iter=0; iter < num_intervals; iter++) {
                 if(elem <= intervals[iter][1] && elem >= intervals[iter][0]) {

@@ -271,8 +271,8 @@ export class Lines extends Mark {
             return [];
         }
         const pixels = this.pixel_coords;
-        const indices = _.range(pixels.length);
-        const selected = _.filter(indices, function(index) {
+        const indices = new Uint32Array(_.range(pixels.length));
+        const selected = indices.filter(index => {
             return point_selector(pixels[index]);
         });
         this.model.set("selected", selected);
@@ -288,7 +288,7 @@ export class Lines extends Mark {
 
         const index = Math.min(this.bisect(this.x_pixels, pixel),
           Math.max((this.x_pixels.length - 1), 0));
-        this.model.set("selected", [index]);
+        this.model.set("selected", new Uint32Array([index]));
         this.touch();
     }
 

@@ -234,8 +234,8 @@ export class Boxplot extends Mark {
             return [];
         }
         const pixels = this.pixel_coords;
-        const indices = _.range(pixels.length);
-        const selected = _.filter(indices, function(index) {
+        const indices = new Uint32Array(_.range(pixels.length));
+        const selected = indices.filter(index => {
             return rect_selector(pixels[index]);
         });
         this.update_selected_colors(selected)
@@ -254,7 +254,7 @@ export class Boxplot extends Mark {
         const abs_diff = this.x_pixels.map(function(elem) { return Math.abs(elem - pixel); });
         const sel_index = abs_diff.indexOf(d3.min(abs_diff));
 
-        this.model.set("selected", [sel_index]);
+        this.model.set("selected", new Uint32Array([sel_index]));
         this.update_selected_colors([sel_index]);
         this.touch();
         return sel_index;
@@ -373,7 +373,7 @@ export class Boxplot extends Mark {
             }
         }
         this.model.set("selected",
-                       ((selected.length === 0) ? null : selected),
+                       ((selected.length === 0) ? null : new Uint32Array(selected)),
                        {updated_view: this});
         this.touch();
         const e = d3GetEvent();

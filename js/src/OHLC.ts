@@ -288,9 +288,9 @@ export class OHLC extends Mark {
             return selected;
         }
 
-        const indices = _.range(this.model.mark_data.length);
+        const indices = new Uint32Array(_.range(this.model.mark_data.length));
         const that = this;
-        const selected = _.filter(indices, function(index) {
+        const selected = indices.filter(index => {
             const elem = that.x_pixels[index];
             return (elem >= start_pxl && elem <= end_pxl);
         });

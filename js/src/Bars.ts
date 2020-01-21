@@ -220,7 +220,7 @@ export class Bars extends Mark {
         }
 
         const abs_diff = this.x_pixels.map(function (elem) { return Math.abs(elem - pixel); });
-        this.model.set("selected", [abs_diff.indexOf(d3.min(abs_diff))]);
+        this.model.set("selected", new Uint32Array([abs_diff.indexOf(d3.min(abs_diff))]));
         this.touch();
     }
 
@@ -231,10 +231,10 @@ export class Bars extends Mark {
             return [];
         }
         const pixels = this.pixel_coords;
-        const indices = _.range(pixels.length);
+        const indices = new Uint32Array(_.range(pixels.length));
         // Here we only select bar groups. It shouldn't be too hard to select
         // individual bars, the `selected` attribute would then be a list of pairs.
-        const selected_groups = _.filter(indices, function (index) {
+        const selected_groups = indices.filter(index => {
             let bars = pixels[index];
             for (let i = 0; i < bars.length; i++) {
                 if (rect_selector(bars[i])) { return true; }
@@ -915,7 +915,7 @@ export class Bars extends Mark {
             }
         }
         this.model.set("selected",
-            ((selected.length === 0) ? null : selected),
+            ((selected.length === 0) ? null : new Uint32Array(selected)),
             { updated_view: this });
         this.touch();
         const e = d3GetEvent();
