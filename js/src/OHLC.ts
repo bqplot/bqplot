@@ -308,7 +308,7 @@ export class OHLC extends Mark {
         this.update_selected_colors(idx_start, idx_end);
         this.model.set("selected", selected);
         this.touch();
-        return selected;
+        return super.invert_range(start_pxl, end_pxl);
     }
 
     invert_point(pixel) {
