@@ -55,6 +55,10 @@ class Figure extends widgets.DOMWidgetView {
         this.el.appendChild(svg_background)
         this.el.appendChild(svg);
 
+        // Create an observer which observes the plot visibility on the page
+        this.visibilityObserver = new IntersectionObserver(this.computeVisibility.bind(this), { threshold: 0 });
+        this.visibilityObserver.observe(this.el);
+
         // For testing we need to know when the mark_views is created, the tests
         // can wait for this promise.
         this._initial_marks_created = new Promise((resolve) => {
@@ -69,9 +73,7 @@ class Figure extends widgets.DOMWidgetView {
 
         this.hasBeenAttached = this.displayed;
         this.hasBeenShown = new Promise((resolve, reject) => {
-            this.once('shown', () => {
-                resolve();
-            });
+            this.shown = resolve;
         });
     }
 
@@ -94,20 +96,33 @@ class Figure extends widgets.DOMWidgetView {
         return figureSize;
     }
 
+    private computeVisibility (entries: IntersectionObserverEntry[]) {
+        if (!entries.length) {
+            return;
+        }
+
+        const observerEntry = entries[0];
+
+        this.visible = observerEntry.intersectionRatio != 0;
+
+        if (this.visible) {
+            this.shown();
+
+            if (this.needsResize) {
+                this.resize();
+            }
+        }
+    }
+
     render () {
         // Make sure the widget is attached to the DOM
         this.hasBeenAttached.then(() => {
             // Make sure the CSS layout has been applied
             this.layoutPromise.then(() => {
-                // If there is available space, render
-                const availableSpace = this.getFigureSize();
-                if (availableSpace.width != 0 && availableSpace.height != 0) {
-                    this.hasBeenShown = Promise.resolve();
-                    return this.renderImpl();
-                } else {
-                    // Make sure the widget is visible (which implies that the widget has a minimum client size)
-                    return this.hasBeenShown.then(this.renderImpl.bind(this));
-                }
+                this.computeVisibility(this.visibilityObserver.takeRecords());
+
+                // Make sure the plot is visible before rendering
+                this.hasBeenShown.then(this.renderImpl.bind(this));
             });
         });
     }
@@ -279,9 +294,10 @@ class Figure extends widgets.DOMWidgetView {
 
             // In the classic notebook, we should relayout the figure on
             // resize of the main window.
-            window.addEventListener('resize', this.debouncedRelayout);
+            const resizeFunc = this.resize.bind(this);
+            window.addEventListener('resize', resizeFunc);
             this.once('remove', () => {
-                window.removeEventListener('resize', this.debouncedRelayout);
+                window.removeEventListener('resize', resizeFunc);
             });
 
             return Promise.all([mark_views_updated, axis_views_updated]);
@@ -571,14 +587,20 @@ class Figure extends widgets.DOMWidgetView {
         super.processPhosphorMessage.apply(this, arguments);
         switch (msg.type) {
         case 'resize':
+            this.resize();
+            break;
+        }
+    }
+
+    resize () {
+        if (this.visible) {
             const figureSize = this.getFigureSize();
             if ((this.width !== figureSize.width) || (this.height !== figureSize.height)) {
                 this.debouncedRelayout();
             }
-            break;
-        case 'after-show':
-            this.trigger('shown');
-            break;
+            this.needsResize = false;
+        } else {
+            this.needsResize = true;
         }
     }
 
@@ -774,6 +796,9 @@ class Figure extends widgets.DOMWidgetView {
         if(this.tooltip_div !== undefined) {
             this.tooltip_div.remove();
         }
+
+        this.visibilityObserver.disconnect();
+
         return super.remove.apply(this, arguments);
     }
 
@@ -1018,6 +1043,14 @@ class Figure extends widgets.DOMWidgetView {
 
     private hasBeenAttached: Promise<any>;
     private hasBeenShown: Promise<void>;
+
+    // Whether the DOM element is visible on the page or not
+    private visible: boolean = false;
+    private visibilityObserver: IntersectionObserver;
+    private shown: Function;
+
+    // Whether the plot should be resized next time it is visible on the page
+    private needsResize: boolean = false;
 
     private _update_requested: boolean;
     private relayoutRequested: boolean = false;
