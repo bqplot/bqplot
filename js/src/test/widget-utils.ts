@@ -27,14 +27,6 @@ async function create_view(manager, model, options = {}) {
 }
 
 export
-async function create_widget(manager, name: string, id: string, args: Object) {
-    let model = await create_model_bqplot(manager, name, id, args)
-    let view = await manager.create_view(model);
-    await manager.display_view(undefined, view);
-    return {model: model, view:view};
-}
-
-export
 async function create_figure_scatter(manager, x, y, mega=false, log=false) {
     let layout = await create_model(manager, '@jupyter-widgets/base', 'LayoutModel', 'LayoutView', 'layout_figure1', {_dom_classes: '', width: '400px', height: '500px'})
     let scale_x;

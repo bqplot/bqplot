@@ -69,6 +69,10 @@ class DummyManager extends base.ManagerBase<HTMLElement> {
             view.on('remove', () => console.log('view removed', view));
             (<any>window).last_view = view
             view.trigger('displayed')
+
+            // @ts-ignore: This will tell the bqplot figure it can render
+            view.shown();
+
             return view.el;
         });
     }
