@@ -671,12 +671,11 @@ def _infer_x_for_line(y):
 
 
 @_process_data('color')
-def plot(*args, **kwargs):
+def plot(x, y=None, marker_str=None, **kwargs):
     """Draw lines in the current context figure.
 
-    Signature: `plot(x, y, **kwargs)` or `plot(y, **kwargs)`, depending of the
-    length of the list of positional arguments. In the case where the `x` array
-    is not provided.
+    Signature: `plot(x, y, marker_str=None, **kwargs)` or `plot(y, marker_str=None, **kwargs)`, depending on the number of
+    positional arguments.
 
     Parameters
     ----------
@@ -702,29 +701,27 @@ def plot(*args, **kwargs):
         The figure to which the line is to be added.
         If the value is None, the current figure is used.
     """
-    marker_str = None
-    if len(args) == 1:
-        kwargs['y'] = args[0]
+    if y is not None:
+        if isinstance(y, str):
+            # The signature is plot(y, marker_str)
+            marker_str = y
+            y = None
+        else:
+            # The signature is plot(x, y)
+            kwargs['x'] = x
+            kwargs['y'] = y
+
+    if y is None:
+        y = x
+
+        kwargs['y'] = y
         if kwargs.get('index_data', None) is not None:
             kwargs['x'] = kwargs['index_data']
         else:
-            kwargs['x'] = _infer_x_for_line(args[0])
-    elif len(args) == 2:
-        if type(args[1]) == str:
-            kwargs['y'] = args[0]
-            kwargs['x'] = _infer_x_for_line(args[0])
-            marker_str = args[1].strip()
-        else:
-            kwargs['x'] = args[0]
-            kwargs['y'] = args[1]
-    elif len(args) == 3:
-        kwargs['x'] = args[0]
-        kwargs['y'] = args[1]
-        if type(args[2]) == str:
-            marker_str = args[2].strip()
+            kwargs['x'] = _infer_x_for_line(y)
 
     if marker_str:
-        line_style, color, marker = _get_line_styles(marker_str)
+        line_style, color, marker = _get_line_styles(marker_str.strip())
 
         # only marker specified => draw scatter
         if marker and not line_style:
