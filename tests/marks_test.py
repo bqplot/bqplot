@@ -36,16 +36,16 @@ def test_lines_ordinal(scale_ordinal, scale_y):
 
 def test_bars(scales):
     with pytest.raises(ValueError, match='.*Unsupported dtype object*'):
-        lines = bqplot.Bars(x=[0, 1], y=[[0, 1], [1, 0, -1]], scales=scales)
+        bars = bqplot.Bars(x=[0, 1], y=[[0, 1], [1, 0, -1]], scales=scales)
 
-    lines = bqplot.Bars(x=[0, 1], y=[[1, 2], [3, 4]], scales=scales)
-    state = lines.get_state()
+    bars = bqplot.Bars(x=[0, 1], y=[[1, 2], [3, 4]], scales=scales)
+    state = bars.get_state()
 
-    lines2 = bqplot.Lines(scales=scales)
-    lines2.set_state(state)
-    assert lines.x[0] == 0
-    assert lines.x[1] == 1
-    assert lines.y[0][0] == 1
-    assert lines.y[0][1] == 2
-    assert lines.y[1][0] == 3
-    assert lines.y[1][1] == 4
+    bars2 = bqplot.Bars(scales=scales)
+    bars2.set_state(state)
+    assert bars.x[0] == 0
+    assert bars.x[1] == 1
+    assert bars.y[0][0] == 1
+    assert bars.y[0][1] == 2
+    assert bars.y[1][0] == 3
+    assert bars.y[1][1] == 4
