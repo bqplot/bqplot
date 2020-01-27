@@ -1,5 +1,6 @@
 import bqplot
 import numpy as np
+import pandas as pd
 from bqplot.traits import array_to_json
 import pytest
 
@@ -12,7 +13,7 @@ def test_binary_serialize_1d(figure):
     state = scatter.get_state()
     assert state['x']['dtype'] == 'float64'
     assert state['y']['dtype'] == 'int32'
-    
+
     assert state['x']['value'] == memoryview(x)
     assert state['y']['value'] == memoryview(y)
 
@@ -34,6 +35,13 @@ def test_binary_serialize_1d(figure):
 def test_binary_serialize_datetime():
     x = np.arange('2005-02-25', '2005-03', dtype='datetime64[D]')
     x_ms = np.array([1109289600000, 1109376000000, 1109462400000, 1109548800000], dtype=np.int64)
+    scatter = bqplot.Scatter(x=x)
+
+    state = scatter.get_state()
+    assert state['x']['dtype'] == 'float64'
+    assert np.array(state['x']['value'], dtype=np.float64).astype(np.int64).tolist() == x_ms.tolist()
+
+    x = np.array([pd.Timestamp('2005-02-25'), pd.Timestamp('2005-02-26'), pd.Timestamp('2005-02-27'), pd.Timestamp('2005-02-28')])
     scatter = bqplot.Scatter(x=x)
 
     state = scatter.get_state()
@@ -67,7 +75,7 @@ def test_dtype_with_str():
     # dtype object is not supported
     text = np.array(['foo', None, 'bar'])
     assert text.dtype == np.object
-    with pytest.raises(ValueError, match='.*unsupported dtype: object.*'), pytest.warns(UserWarning):
+    with pytest.raises(ValueError, match='.*Unsupported dtype object*'), pytest.warns(UserWarning):
         array_to_json(text)
     # but if they contain all strings, it should convert them.
     # This is for backward compatibility of expecting pandas dataframe
