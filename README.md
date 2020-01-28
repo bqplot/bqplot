@@ -118,6 +118,43 @@ To get started with using `bqplot`, check out the full documentation
 
 https://bqplot.readthedocs.io/
 
+## Install a previous bqplot version
+
+In order to install a previous bqplot version, you need to know which front-end version (JavaScript) matches with the back-end version (Python).
+
+For example, in order to install bqplot `0.11.9`, you need the labextension version `0.4.9`.
+
+```
+$ pip install bqplot==0.11.9
+$ jupyter labextension install bqplot@0.4.9
+```
+
+Versions lookup table:
+
+| `back-end (Python)` | `front-end (JavaScript)` |
+|---------------------|--------------------------|
+| 0.12.2              | 0.5.2                    |
+| 0.12.1              | 0.5.1                    |
+| 0.12.0              | 0.5.0                    |
+| 0.11.9              | 0.4.9                    |
+| 0.11.8              | 0.4.8                    |
+| 0.11.7              | 0.4.7                    |
+| 0.11.6              | 0.4.6                    |
+| 0.11.5              | 0.4.5                    |
+| 0.11.4              | 0.4.5                    |
+| 0.11.3              | 0.4.4                    |
+| 0.11.2              | 0.4.3                    |
+| 0.11.1              | 0.4.1                    |
+| 0.11.0              | 0.4.0                    |
+| 0.10.5              | 0.3.6                    |
+| 0.10.4              | 0.3.5                    |
+| 0.10.3              | 0.3.3                    |
+| 0.10.2              | 0.3.2                    |
+| 0.10.1              | 0.3.1                    |
+| 0.10.0              | 0.3.0                    |
+| 0.9.1               | 0.3.0beta                |
+| 0.9.0               | 0.2.3                    |
+
 ## License
 
 This software is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file
