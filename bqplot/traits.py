@@ -84,45 +84,6 @@ class Date(TraitType):
         self.tag(**date_serialization)
 
 
-def convert_to_date(array, fmt='%m-%d-%Y'):
-    # If array is a np.ndarray with type == np.datetime64, the array can be
-    # returned as such. If it is an np.ndarray of dtype 'object' then conversion
-    # to string is tried according to the fmt parameter.
-
-    if(isinstance(array, np.ndarray) and np.issubdtype(array.dtype, np.datetime64)):
-        # no need to perform any conversion in this case
-        return array
-    elif(isinstance(array, list) or (isinstance(array, np.ndarray) and array.dtype == 'object')):
-        return_value = []
-        # Pandas to_datetime handles all the cases where the passed in
-        # data could be any of the combinations of
-        #            [list, nparray] X [python_datetime, np.datetime]
-        # Because of the coerce=True flag, any non-compatible datetime type
-        # will be converted to pd.NaT. By this comparison, we can figure
-        # out if it is date castable or not.
-        if(len(np.shape(array)) == 2):
-            for elem in array:
-                temp_val = pd.to_datetime(
-                    elem, errors='coerce', box=False, infer_datetime_format=True)
-                temp_val = elem if (
-                    temp_val[0] == np.datetime64('NaT')) else temp_val
-                return_value.append(temp_val)
-        elif(isinstance(array, list)):
-            temp_val = pd.to_datetime(
-                array, errors='coerce', box=False, infer_datetime_format=True)
-            return_value = array if (
-                temp_val[0] == np.datetime64('NaT')) else temp_val
-        else:
-            temp_val = pd.to_datetime(
-                array, errors='coerce', box=False, infer_datetime_format=True)
-            temp_val = array if (
-                temp_val[0] == np.datetime64('NaT')) else temp_val
-            return_value = temp_val
-        return return_value
-    elif(isinstance(array, np.ndarray)):
-        warnings.warn("Array could not be converted into a date")
-        return array
-
 def array_from_json(value, obj=None):
     if value is not None:
         # this will accept regular json data, like an array of values, which can be useful it you want
