@@ -477,7 +477,7 @@ export class Pie extends Mark {
             selected.push(index);
         }
         this.model.set("selected",
-            ((selected.length === 0) ? null : selected),
+            ((selected.length === 0) ? null : new Uint32Array(selected)),
             {updated_view: this});
         this.touch();
         const e = d3GetEvent();

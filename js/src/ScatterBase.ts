@@ -342,9 +342,9 @@ export abstract class ScatterBase extends Mark {
     }
 
     scatter_click_handler(args) {
-        const index = args.index;
+        const index : number = args.index;
         const idx = this.model.get("selected") || [];
-        let selected = Array.from(idx);
+        let selected : Array<number> = Array.from(idx);
         // index of bar i. Checking if it is already present in the list.
         const elem_index = selected.indexOf(index);
         // Replacement for "Accel" modifier.
@@ -370,7 +370,7 @@ export abstract class ScatterBase extends Mark {
             }
         }
         this.model.set("selected",
-                       ((selected.length === 0) ? null : selected),
+                       ((selected.length === 0) ? null : new Uint32Array(selected)),
                        {updated_view: this});
         this.touch();
         let e = d3GetEvent();
@@ -461,7 +461,7 @@ export abstract class ScatterBase extends Mark {
         const abs_diff = this.x_pixels.map((elem) => { return Math.abs(elem - pixel); });
         const sel_index = abs_diff.indexOf(d3.min(abs_diff));
 
-        this.model.set("selected", [sel_index]);
+        this.model.set("selected", new Uint32Array([sel_index]));
         this.touch();
     }
 
@@ -472,8 +472,8 @@ export abstract class ScatterBase extends Mark {
             return [];
         }
         const pixels = this.pixel_coords;
-        const indices = _.range(pixels.length);
-        const selected = _.filter(indices, function(index) {
+        const indices = new Uint32Array(_.range(pixels.length));
+        const selected = indices.filter(index => {
             return point_selector(pixels[index]);
         });
         this.model.set("selected", selected);

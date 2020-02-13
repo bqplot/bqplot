@@ -366,7 +366,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
 
     empty_selection() {
         this.update_mark_selected();
-        this.model.set("selected", []);
+        this.model.set("selected", new Uint32Array([]));
         this.touch();
     }
 

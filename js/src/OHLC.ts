@@ -288,9 +288,9 @@ export class OHLC extends Mark {
             return selected;
         }
 
-        const indices = _.range(this.model.mark_data.length);
+        const indices = new Uint32Array(_.range(this.model.mark_data.length));
         const that = this;
-        const selected = _.filter(indices, function(index) {
+        const selected = indices.filter(index => {
             const elem = that.x_pixels[index];
             return (elem >= start_pxl && elem <= end_pxl);
         });
@@ -308,7 +308,7 @@ export class OHLC extends Mark {
         this.update_selected_colors(idx_start, idx_end);
         this.model.set("selected", selected);
         this.touch();
-        return selected;
+        return super.invert_range(start_pxl, end_pxl);
     }
 
     invert_point(pixel) {
