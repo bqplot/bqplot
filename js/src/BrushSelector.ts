@@ -268,12 +268,12 @@ export class BrushSelector extends BrushMixinXYSelector {
             // d3 does not always (!) give the selection in [[xmin, xmax], [ymin, ymax]] order
             // so we sort it to be sure
             var sortFunction = (a: number, b: number) => a - b;
-            pixel_extent_x.sort(sortFunction)
-            pixel_extent_y.sort(sortFunction)
+            pixel_extent_x.sort(sortFunction);
+            pixel_extent_y.sort(sortFunction);
 
-            const extent_x = pixel_extent_x.map(this.x_scale.scale.invert).sort(
+            const extent_x = pixel_extent_x.map(this.x_scale.invert.bind(this.x_scale)).sort(
                 (a: number, b: number) => a - b);
-            const extent_y = pixel_extent_y.map(this.y_scale.scale.invert).sort(
+            const extent_y = pixel_extent_y.map(this.y_scale.invert.bind(this.y_scale)).sort(
                 (a: number, b: number) => a - b);
 
             this.update_mark_selected(pixel_extent_x, pixel_extent_y);
@@ -377,7 +377,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
             this.empty_selection();
         } else {
             const pixel_extent = e.selection;
-            const extent = pixel_extent.map(this.scale.scale.invert).sort(
+            const extent = pixel_extent.map(this.scale.invert.bind(this.scale)).sort(
                 (a, b) => a - b);
             this.update_mark_selected(pixel_extent);
 
@@ -608,7 +608,7 @@ export class MultiSelector extends BrushMixinXSelector {
             this.touch();
         } else {
             const selected = utils.deepCopy(this.model.get("_selected"));
-            selected[this.get_label(item)] = extent.map(this.scale.scale.invert);
+            selected[this.get_label(item)] = extent.map(this.scale.invert.bind(this.scale));
             this.update_mark_selected(extent);
             this.model.set("_selected", selected);
             this.touch();
