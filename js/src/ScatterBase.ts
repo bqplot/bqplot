@@ -561,12 +561,12 @@ export abstract class ScatterBase extends Mark {
 
         if (!this.model.get("restrict_y")){
             const x = this.model.get('x').slice(); // copy
-            x[i] = x_scale.scale.invert(d[0]);
+            x[i] = x_scale.invert(d[0]);
             this.model.set("x", x);
         }
         if (!this.model.get("restrict_x")){
             const y = this.model.get('y').slice()
-            y[i] = y_scale.scale.invert(d[1]);
+            y[i] = y_scale.invert(d[1]);
             this.model.set("y", y);
         }
         this.touch();
@@ -663,8 +663,8 @@ export abstract class ScatterBase extends Mark {
         const yn = new y.constructor(y.length+1)
         xn.set(x)
         yn.set(y)
-        xn[x.length] = x_scale.scale.invert(curr_pos[0]);
-        yn[y.length] = y_scale.scale.invert(curr_pos[1]);
+        xn[x.length] = x_scale.invert(curr_pos[0]);
+        yn[y.length] = y_scale.invert(curr_pos[1]);
         this.model.set("x", xn);
         this.model.set("y", yn);
         this.touch();
