@@ -56,7 +56,9 @@
     "webpack-cli": "^3.0.8"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^2.0.0",
+    "@jupyter-widgets/base": "^2 || ^3",
+    "@phosphor/messaging": "^1",
+    "@phosphor/widgets": "^1",
     "d3": "^5.7.0",
     "d3-selection-multi": "^1.0.1",
     "is-typedarray": "^1.0.0",
