@@ -40,6 +40,74 @@ describe("interacts >", () => {
         expect(indices).to.be.an.instanceof(Uint32Array)
     });
 
+    it.only("brush selector ellipse", async function() {
+        let x = {dtype: 'float32', value: new DataView((new Float32Array([0,1])).buffer)};
+        let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)};
+        let {figure, scatter} = await create_figure_scatter(this.manager, x, y);
+
+        let brush_selector = await create_model_bqplot(this.manager, 'BrushEllipseSelector', 'brush_selector_1', {
+            'x_scale': figure.model.get('scale_x').toJSON(), 'y_scale': figure.model.get('scale_y').toJSON(),
+            'marks': [scatter.model.toJSON()]
+        });
+        let brush_selector_view = await figure.set_interaction(brush_selector);
+        await brush_selector_view.displayed;
+        // all the events in figure are async, and we don't have access
+        // to the promises, so we manually call these methods
+        await brush_selector_view.create_scales()
+        await brush_selector_view.mark_views_promise;
+        brush_selector_view.relayout()
+        brush_selector.set('selected_x', [-0.5, 0.5])
+        brush_selector.set('selected_y', [1.5, 2.5])
+        let indices = scatter.model.get('selected')
+        expect([...indices]).to.deep.equal([0]);
+        expect(indices).to.be.an.instanceof(Uint32Array)
+
+        brush_selector.set('selected_x', [0.5, 1.5])
+        brush_selector.set('selected_y', [2.5, 3.5])
+        indices = scatter.model.get('selected')
+        expect([...indices]).to.deep.equal([1]);
+
+        brush_selector.set('selected_x', [0, 1])
+        brush_selector.set('selected_y', [2, 3])
+        indices = scatter.model.get('selected')
+        expect([...indices]).to.deep.equal([]);
+
+        brush_selector.set('selected_x', [-2, 3])
+        brush_selector.set('selected_y', [0, 5])
+        indices = scatter.model.get('selected')
+        expect([...indices]).to.deep.equal([0, 1]);
+
+        // div/figure size in pixels
+        const width = 400;
+        const height = 500;
+        // test drag events
+        brush_selector_view._moveStart({x: 0, y:0})
+        expect(brush_selector.get('brushing')).to.equal(true);
+
+        brush_selector_view._moveDrag({x: width, y:0})
+        expect([...brush_selector.get('selected_x')]).to.deep.equal([-1, 4])
+        expect([...brush_selector.get('selected_y')]).to.deep.equal([0, 5])
+
+        brush_selector_view._moveEnd({x: width, y:height})
+        expect([...brush_selector.get('selected_x')]).to.deep.equal([-1, 4])
+        expect([...brush_selector.get('selected_y')]).to.deep.equal([-1, 4])
+        expect(brush_selector.get('brushing')).to.equal(false);
+
+        // test brushing a new ellipse
+        brush_selector_view._brushStart({x: 0, y:height/2}); // left, center
+        expect(brush_selector.get('brushing')).to.equal(true);
+        brush_selector_view._brushDrag({x: 1, y:height/2+1}); // drag a bit
+        indices = scatter.model.get('selected')
+        expect([...indices]).to.deep.equal([]);
+        brush_selector_view._brushDrag({x: width-1, y:1}); // drag to the top right, but not on top of the other point
+        indices = scatter.model.get('selected')
+        expect([...indices]).to.deep.equal([0]);
+        brush_selector_view._brushEnd({x: width+1, y:-1}); // drag to the top right
+        indices = scatter.model.get('selected')
+        expect([...indices]).to.deep.equal([0, 1]);
+        expect(brush_selector.get('brushing')).to.equal(false);
+    });
+
     it("brush interval selector basics", async function() {
         let x = {dtype: 'float32', value: new DataView((new Float32Array([0,1])).buffer)};
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)};

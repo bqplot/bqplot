@@ -89,5 +89,7 @@ export * from './Image';
 export * from './ImageModel';
 export * from './ScatterGL';
 export * from './ScatterGLModel';
+export * from './BrushEllipseSelectorModel';
+export * from './BrushEllipseSelector';
 
 export let version = require('../package.json').version;
