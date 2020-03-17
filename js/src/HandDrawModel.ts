@@ -14,13 +14,12 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import { BaseModel } from './BaseModel';
 import { semver_range } from './version';
 
-export class HandDrawModel extends BaseModel {
+export class HandDrawModel extends widgets.WidgetModel {
 
     defaults() {
-        return {...BaseModel.prototype.defaults(),
+        return {...widgets.WidgetModel.prototype.defaults(),
             _model_name: "HandDrawModel",
             _view_name: "HandDraw",
             _model_module: "bqplot",

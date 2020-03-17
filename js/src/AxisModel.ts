@@ -14,11 +14,11 @@
  */
 
 import * as widgets from '@jupyter-widgets/base';
-import { BaseModel } from './BaseModel';
 import * as serialize from './serialize';
 import { semver_range } from './version';
 
-export class AxisModel extends BaseModel {
+export
+class AxisModel extends widgets.WidgetModel {
 
     defaults() {
         return {...widgets.WidgetModel.prototype.defaults(),

@@ -132,11 +132,11 @@ export class HandDraw extends Interaction {
     set_limits() {
         const is_date = (this.lines_view.scales.x.model.type == "date");
         if(is_date) {
-            this.min_x = this.model.get_date_elem("min_x");
+            this.min_x = utils.getDate(this.model.get("min_x"));
             this.valid_min = !(this.min_x === null ||
                                this.min_x === undefined ||
                                isNaN(this.min_x.getTime()));
-            this.max_x = this.model.get_date_elem("max_x");
+            this.max_x = utils.getDate(this.model.get("max_x"));
             this.valid_max = !(this.max_x === null ||
                                this.max_x === undefined ||
                                isNaN(this.max_x.getTime()));

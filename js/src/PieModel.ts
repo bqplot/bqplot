@@ -16,6 +16,7 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"), require("d3-scale-chromatic"));
 import { MarkModel } from './MarkModel';
+import { getDate } from './utils';
 import * as serialize from './serialize';
 
 export class PieModel extends MarkModel {
@@ -121,7 +122,7 @@ export class PieModel extends MarkModel {
 
         if(x_scale) {
             const x = (x_scale.type === "date") ?
-                this.get_date_elem("x") : this.get("x");
+                getDate(this.get("x")) : this.get("x");
             if(!this.get("preserve_domain").x) {
                 x_scale.compute_and_set_domain([x], this.model_id + "_x");
             } else {

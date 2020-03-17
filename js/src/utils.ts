@@ -86,3 +86,12 @@ export function is_valid_time_format(format) {
 export function is_array(x) {
     return (x instanceof Array) || isTypedArray(x)
 }
+
+export
+function getDate(elem: undefined | null | number | string) : Date | null {
+    if (elem === undefined || elem === null) {
+        return null;
+    }
+
+    return new Date(elem);
+}

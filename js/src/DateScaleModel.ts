@@ -13,8 +13,11 @@
  * limitations under the License.
  */
 
-import { LinearScaleModel } from './LinearScaleModel';
 import * as _ from 'underscore';
+
+import { LinearScaleModel } from './LinearScaleModel';
+import { getDate } from './utils';
+
 
 export class DateScaleModel extends LinearScaleModel{
 
@@ -34,8 +37,8 @@ export class DateScaleModel extends LinearScaleModel{
     }
 
     min_max_changed() {
-        this.min = this.get_date_elem("min");
-        this.max = this.get_date_elem("max");
+        this.min = getDate(this.get("min"));
+        this.max = getDate(this.get("max"));
         this.min_from_data = (this.min === null);
         this.max_from_data = (this.max === null);
         this.update_domain();
