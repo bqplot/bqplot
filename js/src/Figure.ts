@@ -552,12 +552,12 @@ class Figure extends widgets.DOMWidgetView {
         switch (msg.type) {
         case 'resize':
         case 'after-show':
+        case 'after-attach':
             if (this.pWidget.isVisible) {
                 const figureSize = this.getFigureSize();
                 if ((this.width !== figureSize.width) || (this.height !== figureSize.height)) {
                     this.debouncedRelayout();
                 }
-    
             }
             break;
         }
