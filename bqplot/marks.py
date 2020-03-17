@@ -586,6 +586,8 @@ class Scatter(_ScatterBase):
         of points, the colors are reused.
     default_colors: Deprecated
         Same as `colors`, deprecated as of version 0.8.4
+    fill: Bool (default: True)
+        Whether to fill the markers or not
     stroke: Color or None (default: None)
         Stroke color of the marker
     stroke_width: Float (default: 1.5)
@@ -979,10 +981,14 @@ class Bars(Mark):
         Specifies whether the bar chart is drawn horizontally or vertically.
         If a horizontal bar chart is drawn, the x data is drawn vertically.
     padding: float (default: 0.05)
-        attribute to control the spacing between the bars value is specified
+        Attribute to control the spacing between the bars value is specified
         as a percentage of the width of the bar
+    fill: Bool (default: True)
+        Whether to fill the bars or not
     stroke: Color or None (default: None)
-        stroke color for the bars
+        Stroke color for the bars
+    stroke_width: Float (default: 0.)
+        Stroke width of the bars
     opacities: list of floats (default: [])
         Opacities for the bars. Defaults to 1 when the list is too
         short, or the element of the list is set to None.
@@ -1062,7 +1068,9 @@ class Bars(Mark):
                   default_value=['steelblue'])\
         .tag(sync=True, display_name='Colors')
     padding = Float(0.05).tag(sync=True)
+    fill = Bool(True).tag(sync=True)
     stroke = Color(None, allow_none=True).tag(sync=True)
+    stroke_width = Float(1.).tag(sync=True, display_name='Stroke width')
     base = Float().tag(sync=True)
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
         .tag(sync=True, display_name='Opacities')

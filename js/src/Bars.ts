@@ -35,18 +35,17 @@ export class Bars extends Mark {
 
         this.display_el_classes = ["bar", "legendtext"];
 
-        const that = this;
-        this.displayed.then(function () {
-            that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
-            that.create_tooltip();
+        this.displayed.then(() => {
+            this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+            this.create_tooltip();
         });
 
-        return base_creation_promise.then(function () {
-            that.event_listeners = {};
-            that.process_interactions();
-            that.create_listeners();
-            that.compute_view_padding();
-            that.draw();
+        return base_creation_promise.then(() => {
+            this.event_listeners = {};
+            this.process_interactions();
+            this.create_listeners();
+            this.compute_view_padding();
+            this.draw();
         });
     }
 
@@ -97,8 +96,6 @@ export class Bars extends Mark {
         this.x1 = d3.scaleBand();
     }
 
-
-
     adjust_offset() {
         // In the case of a linear scale, and when plotting ordinal data,
         // the value have to be negatively offset by half of the width of
@@ -145,22 +142,22 @@ export class Bars extends Mark {
         this.listenTo(this.model, "change:colors", this.update_colors);
         this.listenTo(this.model, "colors_updated", this.update_colors);
         this.listenTo(this.model, "change:type", this.update_type);
-        this.listenTo(this.model, "change:align", this.realign);
-        this.listenTo(this.model, "change:orientation", this.relayout)
         // FIXME: These are expensive calls for changing padding and align
+        this.listenTo(this.model, "change:align", this.relayout);
         this.listenTo(this.model, "change:padding", this.relayout)
+        this.listenTo(this.model, "change:orientation", this.relayout)
         this.listenTo(this.model, "change:tooltip", this.create_tooltip);
-        this.model.on_some_change(["stroke", "opacities"], this.update_stroke_and_opacities, this);
+        this.model.on_some_change(['stroke', 'opacities', 'fill', 'stroke_width'], this.apply_styles, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
         this.listenTo(this.parent, "bg_clicked", function () {
             this.event_dispatcher("parent_clicked");
         });
         this.model.on_some_change([
-            "label_display_format", 
-            "label_font_style", 
-            "label_display", 
-            "label_display_vertical_offset", 
+            "label_display_format",
+            "label_font_style",
+            "label_display",
+            "label_display_vertical_offset",
             "label_display_horizontal_offset"],
             this.draw, this);
     }
@@ -171,13 +168,6 @@ export class Bars extends Mark {
             this.event_listeners.parent_clicked = this.reset_selection;
             this.event_listeners.element_clicked = this.bar_click_handler;
         }
-
-    }
-
-    realign() {
-        //TODO: Relayout is an expensive call on realigning. Need to change
-        //this.
-        this.relayout();
     }
 
     draw_zero_line() {
@@ -512,7 +502,7 @@ export class Bars extends Mark {
         const baseLine = this.baseLine;
         const barOrientation = this.barOrientation;
         const barLabels = barGroups.selectAll(".bar_label");
-        
+
         barLabels
             .attr(dom, d => 0)
             .attr(rang, d => {
@@ -525,23 +515,23 @@ export class Bars extends Mark {
             .style("font-weight", "400")
             .style("text-anchor", (d, i) => {
                 return this.styleBarLabelTextAnchor(
-                    d, 
-                    barOrientation, 
+                    d,
+                    barOrientation,
                     baseLine);
             })
             .style("dominant-baseline", (d, i) => {
                 return this.styleBarLabelDominantBaseline(
-                    d, 
-                    baseLine, 
+                    d,
+                    baseLine,
                     barOrientation);
             })
             .attr("transform", (d, i) => {
                 return this.transformBarLabel(
-                    d, 
-                    baseLine, 
-                    this.offsetHorizontal, 
-                    this.offsetVertical, 
-                    bandWidth, 
+                    d,
+                    baseLine,
+                    this.offsetHorizontal,
+                    this.offsetVertical,
+                    bandWidth,
                     barOrientation);
             })
     }
@@ -555,7 +545,7 @@ export class Bars extends Mark {
         const baseLine = this.baseLine;
         const barOrientation = this.barOrientation;
         const barLabels = barGroups.selectAll(".bar_label")
-        
+
         barLabels
             .attr("x", (d, i) => {
                 if (barOrientation === "horizontal") {
@@ -574,23 +564,23 @@ export class Bars extends Mark {
             .style("font-weight", "400")
             .style("text-anchor", (d, i) => {
                 return this.styleBarLabelTextAnchor(
-                    d, 
-                    barOrientation, 
+                    d,
+                    barOrientation,
                     baseLine);
             })
             .style("dominant-baseline", (d, i) => {
                 return this.styleBarLabelDominantBaseline(
-                    d, 
-                    baseLine, 
+                    d,
+                    baseLine,
                     barOrientation);
             })
             .attr("transform", (d, i) => {
                 return this.transformBarLabel(
-                    d, 
-                    baseLine, 
-                    this.offsetHorizontal, 
-                    this.offsetVertical, 
-                    bandWidth, 
+                    d,
+                    baseLine,
+                    this.offsetHorizontal,
+                    this.offsetVertical,
+                    bandWidth,
                     barOrientation);
             })
     }
@@ -606,29 +596,29 @@ export class Bars extends Mark {
      * @param barOrientation - Orientation of the bar chart (horizontal/vertical)
      */
     transformBarLabel(
-        d: any, 
-        baseLine: number, 
-        offsetHorizontal: number, 
-        offsetVertical: number, 
-        bandWidth: number, 
+        d: any,
+        baseLine: number,
+        offsetHorizontal: number,
+        offsetVertical: number,
+        bandWidth: number,
         barOrientation: string): string {
         if (barOrientation === "horizontal") {
-            return (d.y <= baseLine) 
-            ? `translate(${(d.y0 <= baseLine) 
-                ? (0 - offsetVertical) 
-                : (0 + offsetVertical)}, ${bandWidth / 2 + offsetHorizontal})` 
-            : `translate(${(d.y1 <= baseLine) 
-                ? (0 - offsetVertical) 
+            return (d.y <= baseLine)
+            ? `translate(${(d.y0 <= baseLine)
+                ? (0 - offsetVertical)
+                : (0 + offsetVertical)}, ${bandWidth / 2 + offsetHorizontal})`
+            : `translate(${(d.y1 <= baseLine)
+                ? (0 - offsetVertical)
                 : (0 + offsetVertical)}, ${bandWidth / 2 + offsetHorizontal})`;
         } else {
-            return (d.y <= baseLine) 
-            ? `translate(${bandWidth / 2 + offsetHorizontal}, 
-                ${(d.y0 <= baseLine) 
-                    ? (0 - offsetVertical) 
-                    : (0 + offsetVertical)})` 
-            : `translate(${bandWidth / 2 + offsetHorizontal}, 
-                ${(d.y1 <= baseLine) 
-                    ? (0 - offsetVertical) 
+            return (d.y <= baseLine)
+            ? `translate(${bandWidth / 2 + offsetHorizontal},
+                ${(d.y0 <= baseLine)
+                    ? (0 - offsetVertical)
+                    : (0 + offsetVertical)})`
+            : `translate(${bandWidth / 2 + offsetHorizontal},
+                ${(d.y1 <= baseLine)
+                    ? (0 - offsetVertical)
                     : (0 + offsetVertical)})`;
         }
     }
@@ -669,8 +659,8 @@ export class Bars extends Mark {
      */
     updateBarLabelsStyle(): void {
         const displayFormatStr = this.model.get("label_display_format");
-        const displayFormat = displayFormatStr 
-        ? d3.format(displayFormatStr) 
+        const displayFormat = displayFormatStr
+        ? d3.format(displayFormatStr)
         : null;
 
         let fonts = this.d3el.selectAll(".bar_label")
@@ -691,16 +681,6 @@ export class Bars extends Mark {
         // changed when we switch from stacked to grouped.
         this.model.update_domains();
         this.draw();
-    }
-
-    update_stroke_and_opacities() {
-        const stroke = this.model.get("stroke");
-        const opacities = this.model.get("opacities");
-        this.d3el.selectAll(".bar")
-            .style("stroke", stroke || "none")
-            .style("opacity", function (d, i) {
-                return opacities[i];
-            });
     }
 
     update_colors() {
@@ -809,39 +789,36 @@ export class Bars extends Mark {
         return [this.model.mark_data[0].values.length, max_length];
     }
 
-    clear_style(style_dict, indices) {
-        // Function to clear the style of a dict on some or all the elements of the
-        // chart. If indices is null, clears the style on all elements. If
-        // not, clears on only the elements whose indices are mathcing.
-        //
-        // This function is not used right now. But it can be used if we
-        // decide to accommodate more properties than those set by default.
-        // Because those have to cleared specifically.
-        let elements = this.d3el.selectAll(".bargroup");
-        if (indices !== undefined) {
-            elements = elements.filter(function (d, index) {
-                return indices.indexOf(index) !== -1;
-            });
+    clear_style(style, indices) {
+        if (!indices || indices.length === 0) {
+            return;
         }
+
+        if (Object.keys(style).length === 0) {
+            return;
+        }
+
+        const elements = this.d3el.selectAll(".bargroup").filter((d, index) => {
+            return indices.indexOf(index) !== -1;
+        });
+
         const clearing_style = {};
-        for (const key in style_dict) {
+        for (const key in style) {
             clearing_style[key] = null;
         }
         elements.selectAll(".bar").styles(clearing_style);
     }
 
     set_style_on_elements(style, indices) {
-        // If the index array is undefined or of length=0, exit the
-        // function without doing anything
-        if (indices === undefined || indices === null || indices.length === 0) {
+        if (!indices || indices.length === 0) {
             return;
         }
-        // Also, return if the style object itself is blank
+
         if (Object.keys(style).length === 0) {
             return;
         }
-        let elements = this.d3el.selectAll(".bargroup");
-        elements = elements.filter(function (data, index) {
+
+        const elements = this.d3el.selectAll(".bargroup").filter((data, index) => {
             return indices.indexOf(index) !== -1;
         });
         elements.selectAll(".bar").styles(style);
@@ -850,8 +827,23 @@ export class Bars extends Mark {
     set_default_style(indices) {
         // For all the elements with index in the list indices, the default
         // style is applied.
-        this.update_colors();
-        this.update_stroke_and_opacities();
+        if (!indices || indices.length === 0) {
+            return;
+        }
+
+        const elements = this.d3el.selectAll(".bargroup").filter((data, index) => {
+            return indices.indexOf(index) !== -1;
+        });
+
+        const fill = this.model.get("fill"),
+            stroke = this.model.get("stroke"),
+            stroke_width = this.model.get("stroke_width");
+
+        elements.selectAll('.bar')
+          .style("fill", fill ? this.get_mark_color.bind(this) : "none")
+          .style("stroke", stroke ? stroke : this.get_mark_color.bind(this))
+          .style("opacity", this.get_mark_opacity.bind(this))
+          .style("stroke-width", stroke_width);
     }
 
     set_x_range() {
