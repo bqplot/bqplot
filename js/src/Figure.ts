@@ -115,6 +115,12 @@ class Figure extends widgets.DOMWidgetView {
         this.margin = this.model.get("fig_margin");
 
         this.update_plotarea_dimensions();
+        // we hide it when the plot area is too small
+        if ((this.plotarea_width < 1) || (this.plotarea_width < 1) ) {
+            this.el.style.visibility = "hidden";
+        } else {
+            this.el.style.visibility = "";
+        }
         // this.fig is the top <g> element to be impacted by a rescaling / change of margins
 
         this.fig = this.svg.append("g")
@@ -552,12 +558,12 @@ class Figure extends widgets.DOMWidgetView {
         switch (msg.type) {
         case 'resize':
         case 'after-show':
+        case 'after-attach':
             if (this.pWidget.isVisible) {
                 const figureSize = this.getFigureSize();
                 if ((this.width !== figureSize.width) || (this.height !== figureSize.height)) {
                     this.debouncedRelayout();
                 }
-    
             }
             break;
         }
@@ -572,6 +578,13 @@ class Figure extends widgets.DOMWidgetView {
             // update ranges
             this.margin = this.model.get("fig_margin");
             this.update_plotarea_dimensions();
+            // we hide it when the plot area is too small
+            if ((this.plotarea_width < 1) || (this.plotarea_width < 1) ) {
+                this.el.style.visibility = "hidden";
+                return; // no need to continue setting properties, which can only produce errors in the js console
+            } else {
+                this.el.style.visibility = "";
+            }
 
             if (this.scale_x !== undefined && this.scale_x !== null) {
                 this.scale_x.set_range([0, this.plotarea_width]);
