@@ -117,7 +117,7 @@ export class HandDraw extends Interaction {
             this.lines_view.d3el.select("#curve" + (this.line_index + 1))
                 .attr("d", function(d) {
                     return this.lines_view.line(xy_data);
-                });
+                }.bind(this));
             this.previous_pos = mouse_pos;
         }
     }
