@@ -892,7 +892,7 @@ class Figure extends widgets.DOMWidgetView {
         });
     }
 
-    get_rendered_canvas(scale) {
+    get_rendered_canvas(scale) : Promise<HTMLCanvasElement> {
         // scale up the underlying canvas for high dpi screens
         // such that image is of the same quality
         scale = scale || window.devicePixelRatio;
@@ -939,6 +939,14 @@ class Figure extends widgets.DOMWidgetView {
             document.body.removeChild(a);
         });
     }
+
+    async getPixel(x, y) {
+        const canvas = await this.get_rendered_canvas(window.devicePixelRatio);
+        const context = canvas.getContext("2d");
+        const pixel = context.getImageData(x*window.devicePixelRatio, y*window.devicePixelRatio, 1, 1);
+        return pixel.data;
+    }
+
 
     update_gl() {
         if(!this._update_requested) {
