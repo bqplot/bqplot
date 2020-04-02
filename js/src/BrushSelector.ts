@@ -326,7 +326,6 @@ export class BrushSelector extends BrushMixinXYSelector {
             const range_y = this.model.get("selected_y").map(this.y_scale.scale).sort(
                 function(a, b) { return a - b; });
             this.brush.move(this.d3el, [[range_x[0], range_y[0]], [range_x[1], range_y[1]]]);
-            this.brushsel = this.d3el.call(this.brush);
         }
     }
 
