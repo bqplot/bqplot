@@ -29,7 +29,8 @@ export class Image extends Mark {
             .attr("y", 0)
             .attr("width", 1)
             .attr("height", 1)
-            .attr("preserveAspectRatio", "none");
+            .attr("preserveAspectRatio", "none")
+            .classed("image_pixelated", this.model.get('pixelated'));
         this.update_image();
 
         this.event_metadata = {
@@ -98,6 +99,9 @@ export class Image extends Mark {
             //animate on data update
             const animate = true;
             this.draw(animate);
+        });
+        this.listenTo(this.model, "change:pixelated", () => {
+            this.im.classed("image_pixelated", this.model.get('pixelated'));
         });
     }
 

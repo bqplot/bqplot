@@ -23,6 +23,7 @@ export class ImageModel extends MarkModel {
         return {...MarkModel.prototype.defaults(),
             _model_name: "ImageModel",
             _view_name: "Image",
+            pixelated: false,
             x: [0.0, 1.0],
             y: [0.0, 1.0],
             scales_metadata: {
