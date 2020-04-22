@@ -2,6 +2,12 @@
   "name": "bqplot",
   "version": "0.5.6",
   "description": "bqplot",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab notebook",
+    "jupyterlab-extension"
+  ],
   "author": {
     "name": "BQPlot Development team",
     "email": "bqplot@bloomberg.net"
