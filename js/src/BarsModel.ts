@@ -63,7 +63,7 @@ export class BarsModel extends markmodel.MarkModel {
         }, this);
         // FIXME: replace this with on("change:preserve_domain"). It is not done here because
         // on_some_change depends on the GLOBAL backbone on("change") handler which
-        // is called AFTER the specific handlers on("change:foobar") and we make that
+        // is called AFTER the specific handlers on("change:foobar") and we make this
         // assumption.
         this.on_some_change(["preserve_domain"], this.update_domains, this);
         this.update_data();
@@ -76,7 +76,6 @@ export class BarsModel extends markmodel.MarkModel {
         let y_data = this.get("y");
         y_data = (y_data.length === 0 || !_.isNumber(y_data[0])) ?
             y_data : [y_data];
-        const that = this;
 
         this.base_value = this.get("base");
         if(this.base_value === undefined || this.base_value === null) {
@@ -86,48 +85,54 @@ export class BarsModel extends markmodel.MarkModel {
         if (x_data.length === 0 || y_data.length === 0) {
             this.mark_data = [];
             this.is_y_2d = false;
-        }
-        else {
-            x_data = x_data.slice(0, d3.min(y_data.map(function(d) {
-                return d.length;
-            })));
-            // since x_data may be a TypedArray, explicitly use Array.map
-            this.mark_data = Array.prototype.map.call(x_data, function (x_elem, index) {
-                const data: any = {};
-                let y0 = that.base_value;
-                let y0_neg = that.base_value;
-                let y0_left = that.base_value;
-                data.key = x_elem;
-                // since y_data may be a TypedArray, explicitly use Array.map
-                data.values = Array.prototype.map.call(y_data, function(y_elem, y_index) {
-                    const value = y_elem[index] - that.base_value;
-                    const positive = (value >= 0);
-                    return {
-                        index: index,
-                        sub_index: y_index,
-                        x: x_elem,
-                        // In the following code, the values y0, y1 are
-                        // only relevant for a stacked bar chart. grouped
-                        // bars only deal with base_value and y.
+        } else {
+            x_data = x_data.slice(0, d3.min(y_data.map(d => d.length)));
 
-                        // y0 is the value on the y scale for the upper end
-                        // of the bar.
-                        y0: (positive) ? y0 : (function() {
-                            y0_left += value;
-                            return y0_left
-                        }()),
-                        // y1 is the value on the y scale for the lower end
-                        // of the bar.
-                        y1: (positive) ? (y0 += value) : (function() {
-                            y0_neg += value;
-                            return (y0_neg - value);
-                        }()),
-                        // y_ref is the value on the y scale which represents
-                        // the height of the bar
-                        y_ref: value,
-                        y: y_elem[index],
-                    };
-                });
+            // since x_data may be a TypedArray, explicitly use Array.map
+            this.mark_data = Array.prototype.map.call(x_data, (x_elem, index) => {
+                const data: any = {};
+                let y0 = this.base_value;
+                let y0_neg = this.base_value;
+                let y0_left = this.base_value;
+                data.key = x_elem;
+
+                const reducer = (values, y_elem, y_index) => {
+                    // Drop NaNs
+                    if (!isNaN(y_elem[index])) {
+                        const value = y_elem[index] - this.base_value;
+                        const positive = (value >= 0);
+                        values.push({
+                            index: index,
+                            sub_index: y_index,
+                            x: x_elem,
+                            // In the following code, the values y0, y1 are
+                            // only relevant for a stacked bar chart. grouped
+                            // bars only deal with base_value and y.
+
+                            // y0 is the value on the y scale for the upper end
+                            // of the bar.
+                            y0: (positive) ? y0 : (function() {
+                                y0_left += value;
+                                return y0_left
+                            }()),
+                            // y1 is the value on the y scale for the lower end
+                            // of the bar.
+                            y1: (positive) ? (y0 += value) : (function() {
+                                y0_neg += value;
+                                return (y0_neg - value);
+                            }()),
+                            // y_ref is the value on the y scale which represents
+                            // the height of the bar
+                            y_ref: value,
+                            y: y_elem[index],
+                        });
+                    }
+                    return values;
+                };
+
+                // since y_data may be a TypedArray, explicitly use Array.reduce
+                data.values = Array.prototype.reduce.call(y_data, reducer, []);
+
                 // pos_max is the maximum positive value for a group of
                 // bars.
                 data.pos_max = y0;
