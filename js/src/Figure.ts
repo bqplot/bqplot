@@ -36,6 +36,9 @@ export
 class Figure extends widgets.DOMWidgetView {
 
     initialize() {
+        this.debouncedRelayout = _.debounce(() => {
+            this.relayout();
+        }, 300);
         // Internet Explorer does not support classList for svg elements
         this.el.classList.add("bqplot");
         this.el.classList.add("figure");
@@ -262,9 +265,6 @@ class Figure extends widgets.DOMWidgetView {
 
             // In the classic notebook, we should relayout the figure on
             // resize of the main window.
-            this.debouncedRelayout = _.debounce(() => {
-                this.relayout();
-            }, 300);
             window.addEventListener('resize', this.debouncedRelayout);
             this.once('remove', () => {
                 window.removeEventListener('resize', this.debouncedRelayout);
