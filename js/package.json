@@ -27,7 +27,7 @@
     "test": "karma start --single-run"
   },
   "devDependencies": {
-    "@jupyter-widgets/controls": "^1.5.0",
+    "@jupyter-widgets/controls": "^1.5.0 || ^2",
     "@types/chai": "^4.1.7",
     "@types/d3": "^5.7.2",
     "@types/expect.js": "^0.3.29",
