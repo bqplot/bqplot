@@ -10,6 +10,7 @@ import * as d3Timer from 'd3-timer';
 const test_x = 200;
 const test_y = 250;
 const pixel_red = [255, 0, 0, 255];
+const pixel_green = [0, 255, 0, 255];
 const pixel_background = [255, 255, 255, 255];
 
 describe("interacts >", () => {
@@ -24,20 +25,42 @@ describe("interacts >", () => {
 
         let brush_selector = await create_model_bqplot(this.manager, 'BrushSelector', 'brush_selector_1', {
             'x_scale': figure.model.get('scale_x').toJSON(), 'y_scale': figure.model.get('scale_y').toJSON(),
-            'marks': [scatter.model.toJSON()]
+            'marks': [scatter.model.toJSON()],
+            'color': '#0f0' // green
         });
-        let brush_selector_view = await figure.set_interaction(brush_selector);
-        await brush_selector_view.displayed;
-        // all the events in figure are async, and we don't have access
-        // to the promises, so we manually call these methods
-        await brush_selector_view.create_scales()
-        await brush_selector_view.mark_views_promise;
-        brush_selector_view.relayout()
         brush_selector.set('selected_x', [0.5, 1.5])
         brush_selector.set('selected_y', [2.5, 3.5])
+        let brush_selector_view = await figure.set_interaction(brush_selector);
         let indices = scatter.model.get('selected')
         expect([...indices]).to.deep.equal([1]);
         expect(indices).to.be.an.instanceof(Uint32Array)
+
+        brush_selector_view.d3el.select(".selection").attr('fill-opacity', 1.0) // make sure it's full green
+        let brushColorData = await figure.getPixel(390, 10); // upper right corner
+        expect([...brushColorData]).to.deep.equals(pixel_green);
+
+        // removing the selector should not deselect
+        figure.set_interaction(null);
+        expect([...scatter.model.get('selected')]).to.deep.equal([1]);
+        // changing a disconnected brush, should not change the selection
+        brush_selector.set('selected_x', [-0.5, 0.5])
+        brush_selector.set('selected_y', [1.5, 2.5])
+        expect([...scatter.model.get('selected')]).to.deep.equal([1]);
+
+        // we restore the brush
+        brush_selector_view = await figure.set_interaction(brush_selector);
+        brush_selector_view.d3el.select(".selection").attr('fill-opacity', 1.0) // make sure it's full green
+        // and the selection should be updated
+        expect([...scatter.model.get('selected')]).to.deep.equal([0]);
+        brushColorData = await figure.getPixel(10, 490); // lower left corner
+        expect([...brushColorData]).to.deep.equals(pixel_green);
+
+        // we set the initial selection, and it should update the selection AND the DOM
+        brush_selector.set('selected_x', [0.5, 1.5])
+        brush_selector.set('selected_y', [2.5, 3.5])
+        expect([...scatter.model.get('selected')]).to.deep.equal([1]);
+        brushColorData = await figure.getPixel(390, 10); // upper right corner
+        expect([...brushColorData]).to.deep.equals(pixel_green);
     });
 
     it("brush interval selector basics", async function() {
@@ -47,19 +70,41 @@ describe("interacts >", () => {
 
         let brush_interval_selector = await create_model_bqplot(this.manager, 'BrushIntervalSelector', 'brush_interval_selector_1', {
             'scale': figure.model.get('scale_y').toJSON(), 'orientation': 'vertical',
-            'marks': [scatter.model.toJSON()]
+            'marks': [scatter.model.toJSON()],
+            'color': '#0f0' // green
         });
         let brush_interval_selector_view = await figure.set_interaction(brush_interval_selector);
-        await brush_interval_selector_view.displayed;
-        // all the events in figure are async, and we don't have access
-        // to the promises, so we manually call these methods
-        await brush_interval_selector_view.create_scales()
-        await brush_interval_selector_view.mark_views_promise;
-        brush_interval_selector_view.relayout()
         brush_interval_selector.set('selected', [2.5, 3.5])
         expect([...scatter.model.get('selected')]).to.deep.equal([1]);
         brush_interval_selector.set('selected', [1.5, 2.5])
         expect([...scatter.model.get('selected')]).to.deep.equal([0]);
+        brush_interval_selector_view.relayout();
+
+        brush_interval_selector_view.d3el.select(".selection").attr('fill-opacity', 1.0) // make sure it's full green
+        let brushColorData = await figure.getPixel(test_x, 490); // bottom edge
+        expect([...brushColorData]).to.deep.equals(pixel_green);
+
+        figure.set_interaction(null);
+        expect([...scatter.model.get('selected')]).to.deep.equal([0]);
+        // changing a disconnected brush, should not change the selection
+        brush_interval_selector.set('selected', [2.5, 3.5])
+        expect([...scatter.model.get('selected')]).to.deep.equal([0]);
+
+        // we restore the brush
+        brush_interval_selector_view = await figure.set_interaction(brush_interval_selector);
+        brush_interval_selector_view.d3el.select(".selection").attr('fill-opacity', 1.0) // make sure it's full green
+        // and the selection should be updated
+        brush_interval_selector_view.relayout()
+        expect([...scatter.model.get('selected')]).to.deep.equal([1]);
+        brushColorData = await figure.getPixel(test_x, 10); // top edge
+        expect([...brushColorData]).to.deep.equals(pixel_green);
+
+        // we set the initial selection, and it should update the selection AND the DOM
+        brush_interval_selector.set('selected', [1.5, 2.5])
+        expect([...scatter.model.get('selected')]).to.deep.equal([0]);
+        brushColorData = await figure.getPixel(test_x, 490); // bottom edge
+        expect([...brushColorData]).to.deep.equals(pixel_green);
+
     });
 
     it("brush interval selector on bars", async function() {
