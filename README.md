@@ -1,8 +1,8 @@
 # bqplot
 
-[![Travis](https://travis-ci.com/bloomberg/bqplot.svg?branch=master)](https://travis-ci.com/bloomberg/bqplot)
+[![Travis](https://travis-ci.com/bqplot/bqplot.svg?branch=master)](https://travis-ci.com/bqplot/bqplot)
 [![Documentation](https://readthedocs.org/projects/bqplot/badge/?version=latest)](http://bqplot.readthedocs.org)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bloomberg/bqplot/stable?filepath=examples/Index.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/stable?filepath=examples/Index.ipynb)
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jupyter-widgets/Lobby)
 
 2-D plotting library for Project Jupyter
@@ -14,7 +14,7 @@ the *Grammar of Graphics*.
 
 ## Usage
 
-[![Wealth of Nations](./wealth-of-nations.gif)](https://github.com/bloomberg/bqplot/blob/master/examples/Applications/Wealth%20of%20Nations.ipynb)
+[![Wealth of Nations](./wealth-of-nations.gif)](https://github.com/bqplot/bqplot/blob/master/examples/Applications/Wealth%20of%20Nations.ipynb)
 
 In bqplot, every component of a plot is an interactive widget. This allows the
 user to integrate visualizations with other Jupyter interactive widgets to
@@ -38,7 +38,7 @@ Two APIs are provided
 To try out bqplot interactively in your web browser, just click on the binder
 link:
 
-[![Binder](docs/source/binder-logo.svg)](https://mybinder.org/v2/gh/bloomberg/bqplot/0.11.x?filepath=examples/Index.ipynb)
+[![Binder](docs/source/binder-logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/0.11.x?filepath=examples/Index.ipynb)
 
 ### Dependencies
 
@@ -74,7 +74,7 @@ $ jupyter labextension install bqplot
 For a development installation (requires npm (version >= 3.8) and node (version >= 4.0)):
 
 ```
-$ git clone https://github.com/bloomberg/bqplot.git
+$ git clone https://github.com/bqplot/bqplot.git
 $ cd bqplot
 $ pip install -e .
 $ jupyter nbextension install --py --symlink --sys-prefix bqplot
@@ -106,11 +106,11 @@ That's it! You're ready to go!
 
 ### Using the `pyplot` API
 
-[![Pyplot Screenshot](/pyplot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Basic%20Plotting/Pyplot.ipynb)
+[![Pyplot Screenshot](/pyplot.png)](https://github.com/bqplot/bqplot/blob/master/examples/Basic%20Plotting/Pyplot.ipynb)
 
 ### Using the `bqplot` internal object model
 
-[![Bqplot Screenshot](/bqplot.png)](https://github.com/bloomberg/bqplot/blob/master/examples/Advanced%20Plotting/Advanced%20Plotting.ipynb)
+[![Bqplot Screenshot](/bqplot.png)](https://github.com/bqplot/bqplot/blob/master/examples/Advanced%20Plotting/Advanced%20Plotting.ipynb)
 
 ## Documentation
 
