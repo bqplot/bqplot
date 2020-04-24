@@ -262,9 +262,6 @@ class Figure extends widgets.DOMWidgetView {
 
             // In the classic notebook, we should relayout the figure on
             // resize of the main window.
-            this.debouncedRelayout = _.debounce(() => {
-                this.relayout();
-            }, 300);
             window.addEventListener('resize', this.debouncedRelayout);
             this.once('remove', () => {
                 window.removeEventListener('resize', this.debouncedRelayout);
@@ -272,6 +269,12 @@ class Figure extends widgets.DOMWidgetView {
 
             return Promise.all([mark_views_updated, axis_views_updated]);
         });
+    }
+
+    debouncedRelayout() {
+        _.debounce(() => {
+            this.relayout();
+        }, 300);
     }
 
     createWebGLRenderer() {
@@ -981,7 +984,6 @@ class Figure extends widgets.DOMWidgetView {
     change_layout: any;
     clip_id: any;
     clip_path: any;
-    debouncedRelayout: any;
     fig_axes: any;
     fig_interaction: any;
     fig_marks: any;
