@@ -296,7 +296,7 @@ export class BrushSelector extends BrushMixinXYSelector {
         } else {
             const extent = [[selected_x[0], selected_y[0]],
                           [selected_x[1], selected_y[1]]];
-            this.brush.extent(extent);
+            this.brush.move(this.d3el, extent);
             const pixel_extent_x = selected_x.map(this.x_scale.scale).sort(
                 function(a, b) { return a - b; });
             const pixel_extent_y = selected_y.map(this.y_scale.scale).sort(
@@ -317,7 +317,9 @@ export class BrushSelector extends BrushMixinXYSelector {
 
         this.brush.extent([[0, 0], [this.width, this.height]]);
         this.syncModelToBrush();
+        this.brushsel = this.d3el.call(this.brush);
     }
+
 
     private syncModelToBrush() {
         if(this.model.get("selected_x") && this.model.get("selected_y")) {
@@ -327,6 +329,7 @@ export class BrushSelector extends BrushMixinXYSelector {
                 function(a, b) { return a - b; });
             this.brush.move(this.d3el, [[range_x[0], range_y[0]], [range_x[1], range_y[1]]]);
         }
+        this.brushsel = this.d3el.call(this.brush);
     }
 
     // TODO: check that we've properly overridden the mixin.
