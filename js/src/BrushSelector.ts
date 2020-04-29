@@ -43,9 +43,9 @@ abstract class BrushMixinXYSelector extends selector.BaseXYSelector {
     }
 
     brush_start () {
+        this.brushing = true;
         this.model.set("brushing", true);
         this.touch();
-        this.brushing = true;
     }
 
     brush_move () {
@@ -123,9 +123,9 @@ abstract class BrushMixinXSelector extends selector.BaseXSelector {
     }
 
     brush_start () {
+        this.brushing = true;
         this.model.set("brushing", true);
         this.touch();
-        this.brushing = true;
     }
 
     brush_move () {
@@ -587,6 +587,7 @@ export class MultiSelector extends BrushMixinXSelector {
         const sel = d3GetEvent().selection;
         this.model.set("brushing", false);
         this.convert_and_save(sel, item);
+        this.brushing = false;
     }
 
     set_text_location(brush_g, extent) {
