@@ -759,6 +759,10 @@ export class Axis extends WidgetView {
 
     _linear_scale_precision(ticks?: any[]) {
         ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
+        // Case where all data is concentrated into one point.
+        if (ticks.length === 1) {
+            return 1;
+        }
         const diff = Math.abs(ticks[1] - ticks[0]);
         const max = Math.max(Math.abs(ticks[0]), Math.abs(ticks[ticks.length - 1]));
 
