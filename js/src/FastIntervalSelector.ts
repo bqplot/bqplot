@@ -125,6 +125,7 @@ export class FastIntervalSelector extends BaseXSelector {
             _.each(this.mark_views, function(mark_view: any) {
                 return mark_view.selector_changed();
             });
+            return;
         }
         let x, y;
         if (extent_y === undefined) {
