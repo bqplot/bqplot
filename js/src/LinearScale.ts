@@ -39,7 +39,12 @@ export class LinearScale extends Scale {
         // To handle the case for a clamped scale for which we have to
         // expand the domain, the copy should be unclamped.
         unpadded_scale.clamp(false);
-        unpadded_scale.domain(this.model.domain);
+        if (this.model.domain.length) {
+            unpadded_scale.domain(this.model.domain);
+        } else {
+            // if the domain is empty, it will lead to NaN/NaN
+            console.error('No domain exists for scale, is that any data associated with this scale?')
+        }
         unpadded_scale.range(old_range);
         this.scale.domain(new_range.map(function(limit) {
             return unpadded_scale.invert(limit);
