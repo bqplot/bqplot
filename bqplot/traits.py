@@ -42,7 +42,10 @@ def date_to_json(value, obj):
     if value is None:
         return value
     else:
-        return value.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        # Droping microseconds and only keeping milliseconds to conform
+        # with JavaScript's Data.toJSON's behavior - and prevent bouncing
+        # back updates from the front-end.
+        return value.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
 def date_from_json(value, obj):
     if value:
