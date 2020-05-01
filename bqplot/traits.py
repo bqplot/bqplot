@@ -42,11 +42,11 @@ def date_to_json(value, obj):
     if value is None:
         return value
     else:
-        return value.strftime('%Y-%m-%dT%H:%M:%S.%f')
+        return value.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
 def date_from_json(value, obj):
     if value:
-        return dt.datetime.strptime(value.strip('Z'), '%Y-%m-%dT%H:%M:%S.%f')
+        return dt.datetime.strptime(value.rstrip('Z'), '%Y-%m-%dT%H:%M:%S.%f')
     else:
         return value
 

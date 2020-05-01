@@ -20,7 +20,6 @@ const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as interaction from './Interaction';
 import * as _ from 'underscore';
 
-// TODO avoid code duplication for 'x' and 'y'
 
 export class PanZoom extends interaction.Interaction {
 
@@ -129,8 +128,8 @@ export class PanZoom extends interaction.Interaction {
                             // shift pixels, and convert to new domain
                             const domain_min = scale.invert(pixel_min - mouse_delta[dimension]);
                             const domain_max = scale.invert(pixel_max - mouse_delta[dimension]);
-                            this.set_scale_attribute(view.model, "min", domain_min);
-                            this.set_scale_attribute(view.model, "max", domain_max);
+                            view.model.set("min", domain_min);
+                            view.model.set("max", domain_max);
                             view.touch();
                         }
                     });
@@ -171,18 +170,14 @@ export class PanZoom extends interaction.Interaction {
                             // and translate that back to the domain
                             domain_min = scale.invert((1 - factor) * mouse[dimension] + factor * pixel_min);
                             domain_max = scale.invert((1 - factor) * mouse[dimension] + factor * pixel_max);
-                            this.set_scale_attribute(view.model, "min", domain_min);
-                            this.set_scale_attribute(view.model, "max", domain_max);
+                            view.model.set("min", domain_min);
+                            view.model.set("max", domain_max);
                             view.touch();
                         }
                     });
                 });
             });
         }
-    }
-
-    set_scale_attribute(scale, attribute_name, value) {
-        scale.set(attribute_name, value);
     }
 
     active: boolean;
