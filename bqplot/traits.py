@@ -46,7 +46,7 @@ def date_to_json(value, obj):
 
 def date_from_json(value, obj):
     if value:
-        return dt.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+        return dt.datetime.strptime(value.strip('Z'), '%Y-%m-%dT%H:%M:%S.%f')
     else:
         return value
 

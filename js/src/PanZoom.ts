@@ -182,16 +182,7 @@ export class PanZoom extends interaction.Interaction {
     }
 
     set_scale_attribute(scale, attribute_name, value) {
-        // The difference of two dates is an int. So we want to cast it to
-        // a date when setting the attribute for the date scale
-        if(scale.type == "date") {
-            value = (value instanceof Date) ? value : new Date(value);
-            //TODO: function for setting date can be made the same as for
-            //other scale once the _pack_models is fixes
-            scale.set_date_elem(attribute_name, value);
-        } else {
-            scale.set(attribute_name, value);
-        }
+        scale.set(attribute_name, value);
     }
 
     active: boolean;
