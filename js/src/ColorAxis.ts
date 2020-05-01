@@ -99,7 +99,7 @@ class ColorBar extends Axis {
             that.axis_scale = view;
             // TODO: eventually removes what follows
             if(that.axis_scale.model.type === "date_color_linear") {
-                that.axis_line_scale = d3.scaleTime().nice();
+                that.axis_line_scale = d3.scaleUtc().nice();
             } else if(that.axis_scale.model.type === "ordinal") {
                 that.axis_line_scale = d3.scaleBand();
                 that.ordinal = true;
