@@ -47,7 +47,7 @@ export class Tooltip extends DOMWidgetView {
                 return function(d) { return d; };
             } else {
                 if(utils.is_valid_time_format(fmt)) {
-                    return d3.timeFormat(fmt);
+                    return d3.utcFormat(fmt);
                 }
                 else {
                     return d3.format(fmt);
