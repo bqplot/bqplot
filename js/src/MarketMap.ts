@@ -514,7 +514,7 @@ export class MarketMap extends Figure {
 
     cell_click_handler(data, id, cell) {
         if(this.model.get("enable_select")) {
-            const selected = this.model.get("selected").slice();
+            const selected = Object.assign(this.model.get("selected").slice(), this.model.get("selected"));
             const index = selected.indexOf(data.name);
             if(index == -1) {
                 // not already selected, so add to selected

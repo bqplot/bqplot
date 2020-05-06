@@ -29,7 +29,7 @@ export function deepCopy(obj) {
     // Backbone model attributes must be JSON parsable. Hence there is
     // no need for a fancier logic, and it is surprisingly efficient.
     if(isTypedArray(obj))
-        return obj.slice()
+        return Object.assign(obj.slice(), obj)
     else if(_.isArray(obj)) {
         return obj.map(x => deepCopy(x))
     } else if(_.isNumber(obj) || _.isString(obj)) {
