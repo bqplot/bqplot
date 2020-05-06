@@ -81,7 +81,7 @@ export class ColorScaleModel extends LinearScaleModel {
         if (mid === undefined || mid === null){
             scale.domain([0, n_colors - 1]).range([min, max]);
         } else {
-            const mid_index = n_colors / 2;
+            const mid_index = (n_colors - 1) / 2;
             scale.domain([0, mid_index, n_colors - 1]).range([min, mid, max]);
         }
 
