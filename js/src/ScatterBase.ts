@@ -560,12 +560,12 @@ export abstract class ScatterBase extends Mark {
             y_scale = this.scales.y;
 
         if (!this.model.get("restrict_y")){
-            const x = this.model.get('x').slice(); // copy
+            const x = Object.assign(this.model.get('x').slice(), this.model.get('x')); // copy
             x[i] = x_scale.invert(d[0]);
             this.model.set("x", x);
         }
         if (!this.model.get("restrict_x")){
-            const y = this.model.get('y').slice()
+            const y = Object.assign(this.model.get('y').slice(), this.model.get('y'))
             y[i] = y_scale.invert(d[1]);
             this.model.set("y", y);
         }
@@ -677,8 +677,8 @@ export abstract class ScatterBase extends Mark {
         const index = args.index;
 
         // copy data to avoid modifying in place (will not detect a change)
-        let x = this.model.get("x").slice();
-        let y = this.model.get("y").slice();
+        let x = Object.assign(this.model.get("x").slice(), this.model.get("x"));
+        let y = Object.assign(this.model.get("y").slice(), this.model.get("y"));
         x.copyWithin(index, index+1, x.length);
         y.copyWithin(index, index+1, y.length);
         x = x.slice(0, x.length-1);
