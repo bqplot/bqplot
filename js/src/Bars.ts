@@ -689,35 +689,21 @@ export class Bars extends Mark {
         //if y is 1-d, each bar should be of 1 color.
         //if y is multi-dimensional, the corresponding values should be of
         //the same color.
-        const that = this;
-        const color_scale = this.scales.color;
         if (this.model.mark_data.length > 0) {
             if (!(this.model.is_y_2d)) {
-                this.d3el.selectAll(".bar").style("fill", function (d, i) {
-                    return (d.color !== undefined && color_scale !== undefined) ?
-                        color_scale.scale(d.color) : that.get_colors(d.color_index);
-                });
+                this.d3el.selectAll(".bar").style("fill", this.get_mark_color.bind(this));
             } else {
                 this.d3el.selectAll(".bargroup")
                     .selectAll(".bar")
-                    .style("fill", function (d, i) {
-                        return (d.color !== undefined && color_scale !== undefined) ?
-                            color_scale.scale(d.color) : that.get_colors(d.color_index);
-                    });
+                    .style("fill", this.get_mark_color.bind(this));
             }
         }
         //legend color update
         if (this.legend_el) {
             this.legend_el.selectAll(".legendrect")
-                .style("fill", function (d, i) {
-                    return (d.color && color_scale) ?
-                        color_scale.scale(d.color) : that.get_colors(d.color_index);
-                });
+                .style("fill", this.get_mark_color.bind(this));
             this.legend_el.selectAll(".legendtext")
-                .style("fill", function (d, i) {
-                    return (d.color !== undefined && color_scale !== undefined) ?
-                        color_scale.scale(d.color) : that.get_colors(d.color_index);
-                });
+                .style("fill", this.get_mark_color.bind(this));
         }
     }
 
@@ -735,7 +721,6 @@ export class Bars extends Mark {
                 color_index: data.color_index
             };
         });
-        const color_scale = this.scales.color;
         this.legend_el = elem.selectAll(".legend" + this.uuid)
             .data(legend_data);
 
@@ -759,10 +744,7 @@ export class Bars extends Mark {
 
         legend.append("rect")
             .classed("legendrect", true)
-            .style("fill", function (d, i) {
-                return (d.color !== undefined && color_scale !== undefined) ?
-                    color_scale.scale(d.color) : that.get_colors(d.color_index);
-            })
+            .style("fill", this.get_mark_color.bind(this))
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", rect_dim)
@@ -774,10 +756,7 @@ export class Bars extends Mark {
             .attr("y", rect_dim / 2)
             .attr("dy", "0.35em")
             .text(function (d, i) { return that.model.get("labels")[i]; })
-            .style("fill", function (d, i) {
-                return (d.color !== undefined && color_scale !== undefined) ?
-                    color_scale.scale(d.color) : that.get_colors(d.color_index);
-            });
+            .style("fill", this.get_mark_color.bind(this));
 
         legend.merge(this.legend_el);
 
@@ -831,19 +810,23 @@ export class Bars extends Mark {
             return;
         }
 
-        const elements = this.d3el.selectAll(".bargroup").filter((data, index) => {
-            return indices.indexOf(index) !== -1;
-        });
-
         const fill = this.model.get("fill"),
             stroke = this.model.get("stroke"),
             stroke_width = this.model.get("stroke_width");
 
-        elements.selectAll('.bar')
-          .style("fill", fill ? this.get_mark_color.bind(this) : "none")
-          .style("stroke", stroke ? stroke : this.get_mark_color.bind(this))
-          .style("opacity", this.get_mark_opacity.bind(this))
-          .style("stroke-width", stroke_width);
+        this.d3el.selectAll(".bargroup").filter((data, index) => {
+                return indices.indexOf(index) !== -1;
+            })
+            .selectAll('.bar')
+            .style("fill", fill ? this.get_mark_color.bind(this) : "none")
+            .style("stroke", stroke ? stroke : this.get_mark_color.bind(this))
+            .style("opacity", this.get_mark_opacity.bind(this))
+            .style("stroke-width", stroke_width);
+    }
+
+    get_mark_color(data, index) {
+        // Workaround for the bargroup, the color index is not the same as the bar index
+        return super.get_mark_color(data, data.color_index);
     }
 
     set_x_range() {
