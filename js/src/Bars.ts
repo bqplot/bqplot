@@ -92,8 +92,8 @@ export class Bars extends Mark {
 
     set_internal_scales() {
         // Two scales to draw the bars.
-        this.x = d3.scaleBand();
-        this.x1 = d3.scaleBand();
+        this.stacked_scale = d3.scaleBand();
+        this.grouped_scale = d3.scaleBand();
     }
 
     adjust_offset() {
@@ -104,9 +104,9 @@ export class Bars extends Mark {
         const dom_scale = this.dom_scale;
         if (dom_scale.model.type !== "ordinal") {
             if (this.model.get("align") === "center") {
-                this.dom_offset = -(this.x.bandwidth() / 2).toFixed(2);
+                this.dom_offset = -(this.stacked_scale.bandwidth() / 2).toFixed(2);
             } else if (this.model.get("align") === "left") {
-                this.dom_offset = -(this.x.bandwidth()).toFixed(2);
+                this.dom_offset = -(this.stacked_scale.bandwidth()).toFixed(2);
             } else {
                 this.dom_offset = 0;
             }
@@ -114,9 +114,9 @@ export class Bars extends Mark {
             if (this.model.get("align") === "center") {
                 this.dom_offset = 0;
             } else if (this.model.get("align") === "left") {
-                this.dom_offset = -(this.x.bandwidth() / 2);
+                this.dom_offset = -(this.stacked_scale.bandwidth() / 2);
             } else {
-                this.dom_offset = (this.x.bandwidth() / 2);
+                this.dom_offset = (this.stacked_scale.bandwidth() / 2);
             }
         }
     }
@@ -190,14 +190,14 @@ export class Bars extends Mark {
     }
 
     update_internal_scales() {
-      this.x.rangeRound(this.set_x_range());
+      this.stacked_scale.rangeRound(this.set_x_range());
       // This padding logic is duplicated from OrdinalScale
       // and should be factorized somewhere
       const padding = this.model.get("padding");
-      this.x.paddingInner(padding);
-      this.x.paddingOuter(padding / 2.0);
+      this.stacked_scale.paddingInner(padding);
+      this.stacked_scale.paddingOuter(padding / 2.0);
       this.adjust_offset();
-      this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
+      this.grouped_scale.rangeRound([0, this.stacked_scale.bandwidth().toFixed(2)]);
     }
 
     relayout() {
@@ -254,23 +254,23 @@ export class Bars extends Mark {
             });
 
         const dom_scale = this.dom_scale;
-        // this.x is the ordinal scale used to draw the bars. If a linear
+        // this.stacked_scale is the ordinal scale used to draw the bars. If a linear
         // scale is given, then the ordinal scale is created from the
         // linear scale.
         if (dom_scale.model.type !== "ordinal") {
             const model_domain = this.model.mark_data.map(function (elem) {
                 return elem.key;
             });
-            this.x.domain(model_domain);
+            this.stacked_scale.domain(model_domain);
         } else {
-            this.x.domain(dom_scale.scale.domain());
+            this.stacked_scale.domain(dom_scale.scale.domain());
         }
 
         this.update_internal_scales();
 
         if (this.model.mark_data.length > 0) {
-            this.x1.domain(_.range(this.model.mark_data[0].values.length))
-                .rangeRound([0, this.x.bandwidth().toFixed(2)]);
+            this.grouped_scale.domain(_.range(this.model.mark_data[0].values.length))
+                .rangeRound([0, this.stacked_scale.bandwidth().toFixed(2)]);
         }
 
         // Since we will assign the enter and update selection of bar_groups to
@@ -385,7 +385,7 @@ export class Bars extends Mark {
         const is_stacked = (this.model.get("type") === "stacked");
         let band_width = 1.0;
         if (is_stacked) {
-            band_width = Math.max(1.0, this.x.bandwidth());
+            band_width = Math.max(1.0, this.stacked_scale.bandwidth());
             bars_sel.transition(transition_name).duration(animation_duration)
                 .attr(dom, 0)
                 .attr(dom_control, band_width.toFixed(2))
@@ -396,10 +396,10 @@ export class Bars extends Mark {
                     return Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1));
                 });
         } else {
-            band_width = Math.max(1.0, this.x1.bandwidth());
+            band_width = Math.max(1.0, this.grouped_scale.bandwidth());
             bars_sel.transition(transition_name).duration(animation_duration)
                 .attr(dom, function (datum, index) {
-                    return that.x1(index);
+                    return that.grouped_scale(index);
                 })
                 .attr(dom_control, band_width.toFixed(2))
                 .attr(rang, function (d) {
@@ -418,7 +418,7 @@ export class Bars extends Mark {
             const group_dom = dom_scale.scale(key) + that.dom_offset;
             return d.values.map(function (d) {
                 const rect_coords = {};
-                rect_coords[dom] = is_stacked ? group_dom : group_dom + that.x1(d.sub_index);
+                rect_coords[dom] = is_stacked ? group_dom : group_dom + that.grouped_scale(d.sub_index);
                 rect_coords[rang] = is_stacked ?
                     (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0) :
                     d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
@@ -556,12 +556,12 @@ export class Bars extends Mark {
                 if (barOrientation === "horizontal") {
                     return this.range_scale.scale(d.y);
                 } else {
-                    return this.x1(i);
+                    return this.grouped_scale(i);
                 }
             })
             .attr("y", (d, i) => {
                 if (barOrientation === "horizontal") {
-                    return this.x1(i);
+                    return this.grouped_scale(i);
                 } else {
                     return this.range_scale.scale(d.y);
                 }
@@ -839,8 +839,8 @@ export class Bars extends Mark {
         if (dom_scale.model.type === "ordinal") {
             return dom_scale.scale.range();
         } else {
-            return [dom_scale.scale(d3.min(this.x.domain())),
-            dom_scale.scale(d3.max(this.x.domain()))];
+            return [dom_scale.scale(d3.min(this.stacked_scale.domain())),
+            dom_scale.scale(d3.max(this.stacked_scale.domain()))];
         }
     }
 
@@ -923,19 +923,19 @@ export class Bars extends Mark {
         let x_padding = 0;
         const avail_space = (orient === "vertical") ? this.parent.plotarea_width : this.parent.plotarea_height;
         if (dom_scale) {
-            if (this.x !== null && this.x !== undefined &&
-                this.x.domain().length !== 0) {
+            if (this.stacked_scale !== null && this.stacked_scale !== undefined &&
+                this.stacked_scale.domain().length !== 0) {
                 if (dom_scale.model.type !== "ordinal") {
                     if (this.model.get("align") === "center") {
-                        x_padding = (avail_space / (2.0 * this.x.domain().length) + 1);
+                        x_padding = (avail_space / (2.0 * this.stacked_scale.domain().length) + 1);
                     } else if (this.model.get("align") === "left" ||
                         this.model.get("align") === "right") {
-                        x_padding = (avail_space / (this.x.domain().length) + 1);
+                        x_padding = (avail_space / (this.stacked_scale.domain().length) + 1);
                     }
                 } else {
                     if (this.model.get("align") === "left" ||
                         this.model.get("align") === "right") {
-                        x_padding = parseFloat((this.x.bandwidth() / 2).toFixed(2));
+                        x_padding = parseFloat((this.stacked_scale.bandwidth() / 2).toFixed(2));
                     }
                 }
             }
@@ -962,8 +962,8 @@ export class Bars extends Mark {
     range_offset: any;
     range_scale: any;
     x_pixels: any;
-    x: any;
-    x1: any;
+    stacked_scale: any;
+    grouped_scale: any;
 
     // Overriding super class
     model: BarsModel;
