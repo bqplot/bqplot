@@ -189,16 +189,22 @@ export class Bars extends Mark {
         }
     }
 
+    update_internal_scales() {
+      this.x.rangeRound(this.set_x_range());
+      // This padding logic is duplicated from OrdinalScale
+      // and should be factorized somewhere
+      const padding = this.model.get("padding");
+      this.x.paddingInner(padding);
+      this.x.paddingOuter(padding / 2.0);
+      this.adjust_offset();
+      this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
+    }
+
     relayout() {
         this.set_ranges();
         this.compute_view_padding();
-
         this.draw_zero_line();
-
-        this.x.rangeRound(this.set_x_range());
-        this.x.padding(this.model.get("padding"));
-        this.adjust_offset();
-        this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
+        this.update_internal_scales();
         this.draw_bars();
     }
 
@@ -259,10 +265,8 @@ export class Bars extends Mark {
         } else {
             this.x.domain(dom_scale.scale.domain());
         }
-        this.x.rangeRound(this.set_x_range());
-        this.x.padding(this.model.get("padding"));
-        this.adjust_offset();
-        this.x1.rangeRound([0, this.x.bandwidth().toFixed(2)]);
+
+        this.update_internal_scales();
 
         if (this.model.mark_data.length > 0) {
             this.x1.domain(_.range(this.model.mark_data[0].values.length))
@@ -368,6 +372,7 @@ export class Bars extends Mark {
                 }
             });
         } else {
+
             bar_groups.attr("transform", function (d) {
                 if (orient === "vertical") {
                     return "translate(" + (dom_scale.scale(d.key) + that.dom_offset) + ", 0)";
