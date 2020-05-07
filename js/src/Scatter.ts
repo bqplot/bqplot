@@ -47,17 +47,12 @@ export class Scatter extends ScatterBase {
 
     update_colors(model, new_colors) {
         if(!this.model.dirty) {
-            const that = this;
             const stroke = this.model.get("stroke");
             const len = new_colors.length;
             this.d3el.selectAll(".dot")
             .style("fill", this.model.get("fill") ?
-                function(d, i) {
-                    return that.get_element_color(d, i);
-                } : "none")
-            .style("stroke", stroke ? stroke: function(d, i) {
-                return that.get_element_color(d, i);
-            });
+                this.get_mark_color.bind(this) : "none")
+            .style("stroke", stroke ? stroke : this.get_mark_color.bind(this));
 
             if (this.legend_el) {
                 this.legend_el.select("path")
@@ -78,12 +73,9 @@ export class Scatter extends ScatterBase {
     }
 
     update_fill(model, fill) {
-        const that = this;
         const colors = this.model.get("colors");
         const len = colors.length;
-        this.d3el.selectAll(".dot").style("fill", fill  ? function(d, i) {
-            return that.get_element_color(d, i);
-        } : "none");
+        this.d3el.selectAll(".dot").style("fill", fill  ? this.get_mark_color.bind(this) : "none");
         if (this.legend_el) {
             this.legend_el.selectAll("path")
                 .style("fill", fill  ? function(d, i) {
@@ -105,12 +97,9 @@ export class Scatter extends ScatterBase {
     }
 
     update_stroke(model, fill) {
-        const that = this;
         const stroke = this.model.get("stroke");
         this.d3el.selectAll(".dot")
-            .style("stroke", stroke ? stroke: function(d, i) {
-                return that.get_element_color(d, i);
-            });
+            .style("stroke", stroke ? stroke : this.get_mark_color.bind(this));
 
         if (this.legend_el) {
             this.legend_el.selectAll("path")
@@ -208,22 +197,16 @@ export class Scatter extends ScatterBase {
     }
 
     color_scale_updated(animate) {
-        const that = this,
-            fill = this.model.get("fill"),
+        const fill = this.model.get("fill"),
             stroke = this.model.get("stroke");
-            const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
+        const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         this.d3el.selectAll(".object_grp")
           .select("path")
           .transition("color_scale_updated")
           .duration(animation_duration)
-          .style("fill", fill ?
-              function(d, i) {
-                  return that.get_element_color(d, i);
-              } : "none")
-          .style("stroke", stroke ? stroke: function(d, i) {
-                  return that.get_element_color(d, i);
-              });
+          .style("fill", fill ? this.get_mark_color.bind(this) : "none")
+          .style("stroke", stroke ? stroke: this.get_mark_color.bind(this));
     }
 
     draw_elements(animate, elements_added) {
@@ -280,12 +263,8 @@ export class Scatter extends ScatterBase {
             stroke_width = this.model.get("stroke_width"),
             that = this;
         elements
-          .style("fill", fill ? function(d, i) {
-             return that.get_element_color(d, i);
-          } : "none")
-          .style("stroke", stroke ? stroke: function(d, i) {
-              return that.get_element_color(d, i);
-          }).style("opacity", function(d, i) {
+          .style("fill", fill ? this.get_mark_color.bind(this) : "none")
+          .style("stroke", stroke ? stroke: this.get_mark_color.bind(this)).style("opacity", function(d, i) {
               return that.get_element_opacity(d, i);
           }).style("stroke-width", stroke_width);
     }
@@ -308,7 +287,7 @@ export class Scatter extends ScatterBase {
 
     reset_drag_style(d, i, dragged_node) {
         const stroke = this.model.get("stroke"),
-            original_color = this.get_element_color(d, i);
+            original_color = this.get_mark_color(d, i);
 
         d3.select(dragged_node)
           .select("path")

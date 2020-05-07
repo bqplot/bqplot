@@ -119,22 +119,17 @@ export class Label extends ScatterBase {
             .style("text-anchor", this.model.get("align"));
 
         this.d3el.selectAll(".label")
-            .style("fill", function(d, i) {
-                    return that.get_element_color(d,i);
-            });
+            .style("fill", this.get_mark_color.bind(this));
     }
 
     color_scale_updated(animate) {
-        const that = this;
         const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         this.d3el.selectAll(".object_grp")
             .select("text")
             .transition("color_scale_updated")
             .duration(animation_duration)
-            .style("fill", function(d, i) {
-                  return that.get_element_color(d, i);
-            });
+            .style("fill", this.get_mark_color.bind(this));
     }
 
     set_default_style(indices) {
@@ -153,9 +148,7 @@ export class Label extends ScatterBase {
             })
             .style("font-weight", this.model.get("font_weight"))
             .style("text-anchor", this.model.get("align"))
-            .style("fill", function(d, i) {
-                    return that.get_element_color(d, i);
-            });
+            .style("fill", this.get_mark_color.bind(this));
     }
 
     set_drag_style(d, i, dragged_node) {

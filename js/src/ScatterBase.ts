@@ -197,21 +197,11 @@ export abstract class ScatterBase extends Mark {
         });
     }
 
-    // The following three functions are convenience functions to get
-    // the fill color / opacity / size of an element given the data.
+    // The following functions are convenience functions to get
+    // the opacity / size of an element given the data.
     // In fact they are more than convenience functions as they limit the
     // points of entry to that logic which makes it easier to manage and to
     // keep consistent across different places where we use it.
-    get_element_color(data, index) {
-        const color_scale = this.scales.color;
-        const colors = this.model.get("colors");
-        const len = colors.length;
-        if(color_scale && data.color !== undefined && data.color !== null) {
-            return color_scale.scale(data.color);
-        }
-        return colors[index % len];
-    }
-
     get_element_size(data) {
         const size_scale = this.scales.size;
         if(size_scale && data.size !== undefined) {
