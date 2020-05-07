@@ -108,7 +108,8 @@ export class HandDraw extends Interaction {
                     lines_model.y_data[this.line_index][i] = newy;
                 }
             }
-            const xy_data = lines_model.x_data[xindex].map((d, i) => {
+            // since x_data may be a TypedArray, explicitly use Array.map
+            const xy_data = Array.prototype.map.call(lines_model.x_data[xindex], (d, i) => {
                 return {
                     x: d,
                     y: lines_model.y_data[this.line_index][i]
