@@ -41,7 +41,7 @@ export class ScatterBaseModel extends MarkModel {
         hovered_style: {},
         unhovered_style: {},
         colors: ['steelblue'],
-        default_opacities: [1.0],
+        opacities: [1.0],
         enable_move: false,
         enable_delete: false,
         restrict_x: false,
@@ -138,6 +138,6 @@ export class ScatterBaseModel extends MarkModel {
         opacity: serialize.array_or_json,
         size: serialize.array_or_json,
         rotation: serialize.array_or_json,
-        default_opacities: serialize.array_or_json
+        opacities: serialize.array_or_json
     }
 }

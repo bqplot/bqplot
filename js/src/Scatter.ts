@@ -37,7 +37,7 @@ export class Scatter extends ScatterBase {
         this.listenTo(this.model, "change:colors", this.update_colors);
         this.listenTo(this.model, "change:stroke", this.update_stroke);
         this.listenTo(this.model, "change:stroke_width", this.update_stroke_width);
-        this.listenTo(this.model, "change:default_opacities", this.update_default_opacities);
+        this.listenTo(this.model, "change:opacities", this.update_opacities);
         this.listenTo(this.model, "change:default_skew", this.update_default_skew);
         this.listenTo(this.model, "change:marker", this.update_marker);
         this.listenTo(this.model, "change:default_size", this.update_default_size);
@@ -107,18 +107,18 @@ export class Scatter extends ScatterBase {
         }
     }
 
-    update_default_opacities(animate) {
+    update_opacities(animate) {
         if (!this.model.dirty) {
-            const default_opacities = this.model.get("default_opacities");
+            const opacities = this.model.get("opacities");
             const colors = this.model.get("colors");
             const len = colors.length;
-            const len_opac = default_opacities.length;
+            const len_opac = opacities.length;
             const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             // update opacity scale range?
             const that = this;
             this.d3el.selectAll(".dot")
-                .transition("update_default_opacities")
+                .transition("update_opacities")
                 .duration(animation_duration)
                 .style("opacity", function(d, i) {
                     return that.get_element_opacity(d, i);
@@ -126,7 +126,7 @@ export class Scatter extends ScatterBase {
             if (this.legend_el) {
                 this.legend_el.select("path")
                 .style("opacity", function(d, i) {
-                    return default_opacities[i % len_opac];
+                    return opacities[i % len_opac];
                 })
                 .style("fill", function(d, i) {
                     return colors[i % len];
@@ -264,7 +264,8 @@ export class Scatter extends ScatterBase {
             that = this;
         elements
           .style("fill", fill ? this.get_mark_color.bind(this) : "none")
-          .style("stroke", stroke ? stroke: this.get_mark_color.bind(this)).style("opacity", function(d, i) {
+          .style("stroke", stroke ? stroke: this.get_mark_color.bind(this))
+          .style("opacity", function(d, i) {
               return that.get_element_opacity(d, i);
           }).style("stroke-width", stroke_width);
     }

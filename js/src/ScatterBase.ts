@@ -156,7 +156,7 @@ export abstract class ScatterBase extends Mark {
         if (opacity_scale) {
             this.listenTo(opacity_scale, "domain_changed", () => {
                 const animate = true;
-                this.update_default_opacities(animate);
+                this.update_opacities(animate);
             });
         }
         if (skew_scale) {
@@ -212,12 +212,12 @@ export abstract class ScatterBase extends Mark {
 
     get_element_opacity(data, index) {
         const opacity_scale = this.scales.opacity;
-        const default_opacities = this.model.get("default_opacities");
-        const len = default_opacities.length;
+        const opacities = this.model.get("opacities");
+        const len = opacities.length;
         if(opacity_scale && data.opacity !== undefined) {
             return opacity_scale.scale(data.opacity);
         }
-        return default_opacities[index % len];
+        return opacities[index % len];
     }
 
     get_element_skew(data) {
@@ -680,7 +680,7 @@ export abstract class ScatterBase extends Mark {
     }
 
     abstract color_scale_updated(animate?);
-    abstract update_default_opacities(animate?);
+    abstract update_opacities(animate?);
     abstract update_default_skew(animate?);
     abstract update_default_size(animate?);
 

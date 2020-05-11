@@ -85,26 +85,26 @@ describe("scatter mega >", () => {
         const objects = await create_figure_scatter(this.manager, x, y, true);
         const scatter = objects.scatter;
 
-        const default_opacities = new Float32Array([1.]);
-        expect(scatter.opacity.array).to.deep.equal(default_opacities);
+        const opacities = new Float32Array([1.]);
+        expect(scatter.opacity.array).to.deep.equal(opacities);
         expect(scatter.opacity.meshPerAttribute).to.equal(3);
-        expect(scatter.opacity_previous.array).to.deep.equal(default_opacities);
+        expect(scatter.opacity_previous.array).to.deep.equal(opacities);
         expect(scatter.opacity_previous.meshPerAttribute).to.equal(3);
 
-        const default_opacities2 = new Float32Array([0.5]);
-        scatter.model.set('default_opacities', default_opacities2);
+        const opacities2 = new Float32Array([0.5]);
+        scatter.model.set('opacities', opacities2);
         expect(scatter.opacity.meshPerAttribute).to.equal(3);
-        expect(scatter.opacity.array).to.deep.equal(default_opacities2);
-        expect(scatter.opacity_previous.array).to.deep.equal(default_opacities);
+        expect(scatter.opacity.array).to.deep.equal(opacities2);
+        expect(scatter.opacity_previous.array).to.deep.equal(opacities);
         expect(scatter.opacity.meshPerAttribute).to.equal(3);
 
-        // We push an array of size 2 for the default_opacities. We have 3 markers
-        // so the default_opacities should be used periodicly
-        scatter.model.set('default_opacities', new Float32Array([0.5, 1.0]));
+        // We push an array of size 2 for the opacities. We have 3 markers
+        // so the opacities should be used periodicly
+        scatter.model.set('opacities', new Float32Array([0.5, 1.0]));
         expect(scatter.opacity.array).to.deep.equal(new Float32Array([0.5, 1.0, 0.5]));
         expect(scatter.opacity.meshPerAttribute).to.equal(1);
         expect(scatter.opacity_previous.meshPerAttribute).to.equal(3);
-        expect(scatter.opacity_previous.array).to.deep.equal(default_opacities2);
+        expect(scatter.opacity_previous.array).to.deep.equal(opacities2);
 
         const new_opacity = new Float32Array([0.5, 1.0, 0.8]);
         scatter.model.set('opacity', new_opacity);
@@ -113,7 +113,7 @@ describe("scatter mega >", () => {
         expect(scatter.opacity_previous.array).to.deep.equal(new Float32Array([0.5, 1.0, 0.5]))
         expect(scatter.opacity_previous.meshPerAttribute).to.equal(1);
 
-        // We push an array that is too short, default_opacities should be used
+        // We push an array that is too short, opacities should be used
         scatter.model.set('opacity', new Float32Array([0.8]));
         expect(scatter.opacity.array).to.deep.equal(new Float32Array([0.8, 1.0, 0.5]));
         expect(scatter.opacity.meshPerAttribute).to.equal(1);
@@ -227,7 +227,7 @@ describe("scatter mega >", () => {
 
         const steelblue = new Float32Array([0.27450981736183167, 0.5098039507865906, 0.7058823704719543]);
         const default_size = scatter.model.get('default_size');
-        const default_opacities = new Float32Array([1.]);
+        const opacities = new Float32Array([1.]);
 
         expect(scatter.markers_number).to.equal(2);
         expect(scatter.instanced_geometry.maxInstancedCount).to.equal(2);
@@ -236,7 +236,7 @@ describe("scatter mega >", () => {
         expect(scatter.size.array).to.deep.equal(new Float32Array([default_size]));
         expect(scatter.size.meshPerAttribute).to.equal(2);
 
-        expect(scatter.opacity.array).to.deep.equal(default_opacities);
+        expect(scatter.opacity.array).to.deep.equal(opacities);
         expect(scatter.opacity.meshPerAttribute).to.equal(2);
 
         expect(scatter.color.array).to.deep.equal(steelblue);
@@ -275,7 +275,7 @@ describe("scatter mega >", () => {
         expect(scatter.size.array).to.deep.equal(new Float32Array([default_size]));
         expect(scatter.size.meshPerAttribute).to.equal(3);
 
-        expect(scatter.opacity.array).to.deep.equal(default_opacities);
+        expect(scatter.opacity.array).to.deep.equal(opacities);
         expect(scatter.opacity.meshPerAttribute).to.equal(3);
 
         expect(scatter.color.array).to.deep.equal(steelblue);
@@ -297,7 +297,7 @@ describe("scatter mega >", () => {
 
         const steelblue = new Float32Array([0.27450981736183167, 0.5098039507865906, 0.7058823704719543]);
         const default_size = scatter.model.get('default_size');
-        const default_opacities = new Float32Array([1.]);
+        const opacities = new Float32Array([1.]);
 
         expect(scatter.markers_number).to.equal(2);
         expect(scatter.instanced_geometry.maxInstancedCount).to.equal(2);
@@ -306,7 +306,7 @@ describe("scatter mega >", () => {
         expect(scatter.size.array).to.deep.equal(new Float32Array([default_size]));
         expect(scatter.size.meshPerAttribute).to.equal(2);
 
-        expect(scatter.opacity.array).to.deep.equal(default_opacities);
+        expect(scatter.opacity.array).to.deep.equal(opacities);
         expect(scatter.opacity.meshPerAttribute).to.equal(2);
 
         expect(scatter.color.array).to.deep.equal(steelblue);
@@ -335,7 +335,7 @@ describe("scatter mega >", () => {
         expect(scatter.size.array).to.deep.equal(new Float32Array([default_size]));
         expect(scatter.size.meshPerAttribute).to.equal(2);
 
-        expect(scatter.opacity.array).to.deep.equal(default_opacities);
+        expect(scatter.opacity.array).to.deep.equal(opacities);
         expect(scatter.opacity.meshPerAttribute).to.equal(2);
 
         expect(scatter.color.array).to.deep.equal(steelblue);

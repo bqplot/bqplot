@@ -319,9 +319,9 @@ export class ScatterGL extends Mark {
     }
 
     get_opacity_attribute_parameters() {
-        let default_opacities = this.model.get('default_opacities') || [1.];
+        let opacities = this.model.get('opacities') || [1.];
 
-        if (default_opacities.length == 0) default_opacities = [1.];
+        if (opacities.length == 0) opacities = [1.];
 
         if (this.model.get('opacity')) {
             const opacity = this.model.get('opacity');
@@ -333,7 +333,7 @@ export class ScatterGL extends Mark {
 
                 _.each(_.range(this.markers_number - opacity.length), (i) => {
                     i = i + opacity.length;
-                    array[i] = default_opacities[i % default_opacities.length];
+                    array[i] = opacities[i % opacities.length];
                 });
             }
             else {
@@ -344,14 +344,14 @@ export class ScatterGL extends Mark {
         } else {
             let array: Float32Array;
             let mesh_per_attribute: number;
-            if (default_opacities.length == 1) {
-                array = to_float_array(default_opacities);
+            if (opacities.length == 1) {
+                array = to_float_array(opacities);
                 mesh_per_attribute = this.markers_number;
             } else {
                 array = to_float_array(this.markers_number);
                 mesh_per_attribute = 1;
                 _.each(_.range(this.markers_number), (i) => {
-                    array[i] = default_opacities[i % default_opacities.length];
+                    array[i] = opacities[i % opacities.length];
                 });
             }
 
@@ -497,7 +497,7 @@ export class ScatterGL extends Mark {
         this.listenTo(this.model, "change:y", this.update_y);
 
         this.listenTo(this.model, "change:color change:colors change:unselected_style", this.update_color);
-        this.listenTo(this.model, "change:opacity change:default_opacities", this.update_opacity);
+        this.listenTo(this.model, "change:opacity change:opacities", this.update_opacity);
         this.listenTo(this.model, "change:size change:default_size", this.update_size);
         this.listenTo(this.model, "change:rotation", this.update_rotation);
         this.listenTo(this.model, "change:selected", this.update_selected);
