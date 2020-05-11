@@ -358,7 +358,7 @@ export class Bars extends Mark {
         const rang = (orient === "vertical") ? "y" : "x";
 
         const dom_control = (orient === "vertical") ? "width" : "height";
-        const rang_control = (orient === "vertical") ? "height" : "width";
+        const range_control = (orient === "vertical") ? "height" : "width";
 
         if (dom_scale.model.type === "ordinal") {
             const dom_max = d3.max(this.parent.range(dom));
@@ -392,7 +392,7 @@ export class Bars extends Mark {
                 .attr(rang, function (d) {
                     return (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0);
                 })
-                .attr(rang_control, function (d) {
+                .attr(range_control, function (d) {
                     return Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1));
                 });
         } else {
@@ -405,7 +405,7 @@ export class Bars extends Mark {
                 .attr(rang, function (d) {
                     return d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
                 })
-                .attr(rang_control, function (d) {
+                .attr(range_control, function (d) {
                     return Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y)));
                 });
         }
@@ -423,7 +423,7 @@ export class Bars extends Mark {
                     (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0) :
                     d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
                 rect_coords[dom_control] = band_width;
-                rect_coords[rang_control] = is_stacked ?
+                rect_coords[range_control] = is_stacked ?
                     Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1)) :
                     Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y_ref)));
                 return [[rect_coords["x"], rect_coords["x"] + rect_coords["width"]],
