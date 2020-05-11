@@ -834,6 +834,11 @@ export class Bars extends Mark {
         return super.get_mark_color(data, data.color_index);
     }
 
+    get_mark_opacity(data, index) {
+        // Workaround for the bargroup, the color index is not the same as the bar index
+        return super.get_mark_opacity(data, data.color_index);
+    }
+
     set_x_range() {
         const dom_scale = this.dom_scale;
         if (dom_scale.model.type === "ordinal") {
