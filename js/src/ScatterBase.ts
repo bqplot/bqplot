@@ -431,6 +431,8 @@ export abstract class ScatterBase extends Mark {
               return colors[i % len];
           });
 
+        this.legend_el = el_added.merge(this.legend_el);
+
         const max_length = d3.max(this.model.get("labels"), (d: any) => {
             return Number(d.length);
         });
