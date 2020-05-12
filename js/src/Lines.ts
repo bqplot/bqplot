@@ -378,7 +378,7 @@ export class Lines extends Mark {
             })
             .style("opacity", function(d, i) { return opacities[i]; });
 
-        legend.merge(this.legend_el);
+        this.legend_el = legend.merge(this.legend_el);
 
         const max_length = d3.max(curve_labels, function(d: any) {
             return d.length;
@@ -676,7 +676,7 @@ export class Lines extends Mark {
 
     clear_style(style_dict, indices?) {
     }
-    
+
     set_default_style(indices) {
     }
 

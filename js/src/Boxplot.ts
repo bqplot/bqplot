@@ -645,6 +645,8 @@ export class Boxplot extends Mark {
             .text(function(d, i) { return that.model.get("labels")[i]; })
             .style("fill", stroke);
 
+        this.legend_el = leg.merge(this.legend_el);
+
         const max_length = d3.max(this.model.get("labels"), function(d: any[]) {
             return d.length;
         });

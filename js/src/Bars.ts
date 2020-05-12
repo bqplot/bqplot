@@ -763,7 +763,7 @@ export class Bars extends Mark {
             .text(function (d, i) { return that.model.get("labels")[i]; })
             .style("fill", this.get_mark_color.bind(this));
 
-        legend.merge(this.legend_el);
+        this.legend_el = legend.merge(this.legend_el);
 
         const max_length = d3.max(this.model.get("labels"), function (d: any[]) {
             return d.length;

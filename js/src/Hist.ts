@@ -335,7 +335,7 @@ export class Hist extends Mark {
               return that.get_colors(i);
           });
 
-        new_legend.merge(this.legend_el);
+        this.legend_el = new_legend.merge(this.legend_el);
 
         const max_length = d3.max(this.model.get("labels"), function(d: any[]) {
             return d.length;
