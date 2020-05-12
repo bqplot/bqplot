@@ -121,17 +121,9 @@ export class FlexLine extends Lines {
                 .attr("x2", function(d: any) { return x_scale.scale(d.x2); })
                 .attr("y1", function(d: any) { return y_scale.scale(d.y1); })
                 .attr("y2", function(d: any) { return y_scale.scale(d.y2); })
-                .attr("stroke", function(d) { return that.get_element_color(d); })
+                .attr("stroke", that.get_mark_color.bind(that))
                 .attr("stroke-width", function(d) { return that.get_element_width(d); });
         });
-    }
-
-    get_element_color(d) {
-        const color_scale = this.scales.color;
-        if(color_scale !== undefined && d.color !== undefined) {
-            return color_scale.scale(d.color);
-        }
-        return this.model.get("colors")[0];
     }
 
     get_element_width(d) {
