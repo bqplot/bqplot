@@ -536,7 +536,7 @@ export class Lines extends Mark {
 
     draw(animate) {
         this.set_ranges();
-        let curves_sel = this.d3el.selectAll(".curve")
+        const curves_sel = this.d3el.selectAll(".curve")
           .data(this.model.mark_data);
 
         const y_scale = this.scales.y;
@@ -558,7 +558,7 @@ export class Lines extends Mark {
 
         const fill = this.model.get("fill"),
             area = (fill === "top" || fill === "bottom" || fill === "between");
-        curves_sel = this.d3el.selectAll(".curve");
+
         curves_sel.select(".line")
           .attr("id", function(d, i) { return "curve" + (i+1); })
           .on("click", _.bind(function() {
