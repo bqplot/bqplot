@@ -192,7 +192,7 @@ export class Lines extends Mark {
         curves.select(".line")
           .style("opacity", function(d, i) { return opacities[i]; })
           .style("stroke", function(d, i) {
-              return that.get_element_color(d, i) || fill_color[i];
+              return that.get_mark_color(d, i) || fill_color[i];
           })
           .style("fill", function(d, i) {
               return fill === "inside" ? that.get_fill_color(d, i) : "";
@@ -208,7 +208,7 @@ export class Lines extends Mark {
         if (this.legend_el){
             this.legend_el.select(".line")
               .style("stroke", function(d, i) {
-                  return that.get_element_color(d, i) || fill_color[i];
+                  return that.get_mark_color(d, i) || fill_color[i];
               })
               .style("opacity", function(d, i) { return opacities[i]; })
               .style("fill", function(d, i) {
@@ -217,15 +217,15 @@ export class Lines extends Mark {
               });
             this.legend_el.select(".dot")
               .style("stroke", function(d, i) {
-                  return that.get_element_color(d, i) || fill_color[i];
+                  return that.get_mark_color(d, i) || fill_color[i];
               })
               .style("opacity", function(d, i) { return opacities[i]; })
               .style("fill", function(d, i) {
-                  return that.get_element_color(d, i) || fill_color[i];
+                  return that.get_mark_color(d, i) || fill_color[i];
               });
             this.legend_el.select("text")
               .style("fill", function(d, i) {
-                  return that.get_element_color(d, i) || fill_color[i];
+                  return that.get_mark_color(d, i) || fill_color[i];
               })
               .style("opacity", function(d, i) {
                   return opacities[i];
@@ -349,7 +349,7 @@ export class Lines extends Mark {
             .attr("fill", "none")
             .attr("d", this.legend_line(this.legend_path_data) + this.path_closure())
             .style("stroke", function(d, i) {
-                return that.get_element_color(d, i) || fill_colors[i];
+                return that.get_mark_color(d, i) || fill_colors[i];
             })
             .style("fill", function(d, i) {
                 return that.model.get("fill") === "none" ?
@@ -364,7 +364,7 @@ export class Lines extends Mark {
                 .attr("class", "dot")
                 .attr("transform", "translate(" + rect_dim / 2 + ",0)")
                 .attr("d", that.dot.size(25))
-                .style("fill", function(d, i) { return that.get_element_color(d, i); });
+                .style("fill", function(d, i) { return that.get_mark_color(d, i); });
         }
 
         legend.append("text")
@@ -374,7 +374,7 @@ export class Lines extends Mark {
             .attr("dy", "0.35em")
             .text(function(d, i) { return curve_labels[i]; })
             .style("fill", function(d, i) {
-              return that.get_element_color(d, i) || fill_colors[i];
+              return that.get_mark_color(d, i) || fill_colors[i];
             })
             .style("opacity", function(d, i) { return opacities[i]; });
 
@@ -456,19 +456,10 @@ export class Lines extends Mark {
         }
     }
 
-    get_element_color(data, index) {
-        const color_scale = this.scales.color;
-        if(color_scale && data.color !== undefined && data.color !== null) {
-            return color_scale.scale(data.color);
-        }
-        return this.get_colors(index);
-    }
-
     get_fill_color(data, index) {
         const fill_colors = this.model.get("fill_colors");
-        const that = this;
         return fill_colors.length === 0 ?
-            that.get_element_color(data, index) : fill_colors[index];
+            this.get_mark_color(data, index) : fill_colors[index];
     }
 
     update_line_xy(animate) {
@@ -649,7 +640,7 @@ export class Lines extends Mark {
             const curve = d3.select(this);
             curve.selectAll(".dot")
                 .style("opacity", opacities[i])
-                .style("fill", that.get_element_color(d, i) || fill_color[i]);
+                .style("fill", that.get_mark_color(d, i) || fill_color[i]);
         });
     }
 
