@@ -26,7 +26,6 @@ export class Lines extends Mark {
 
     render() {
         const base_render_promise = super.render();
-        const that = this;
         this.dot = bqSymbol().size(this.model.get("marker_size"));
         if (this.model.get("marker")) {
             this.dot.type(this.model.get("marker"));
@@ -36,18 +35,18 @@ export class Lines extends Mark {
         // because some of the functions depend on child scales being
         // created. Make sure none of the event handler functions make that
         // assumption.
-        this.displayed.then(function() {
-            that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
-            that.create_tooltip();
+        this.displayed.then(() => {
+            this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+            this.create_tooltip();
         });
 
         this.display_el_classes = ["line", "legendtext", "dot"];
-        return base_render_promise.then(function() {
-            that.event_listeners = {};
-            that.process_interactions();
-            that.create_listeners();
-            that.compute_view_padding();
-            that.draw(false);
+        return base_render_promise.then(() => {
+            this.event_listeners = {};
+            this.process_interactions();
+            this.create_listeners();
+            this.compute_view_padding();
+            this.draw(false);
         });
     }
 
