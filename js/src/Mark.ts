@@ -56,8 +56,6 @@ export abstract class Mark extends widgets.WidgetView {
             this.set_scale_views().then(_.bind(this.draw, this));
         });
 
-        this.colors = this.model.get("colors");
-
         if(this.options.clip_id && this.model.get("apply_clip")) {
             this.d3el.attr("clip-path", "url(#" + this.options.clip_id + ")");
         }
@@ -205,20 +203,18 @@ export abstract class Mark extends widgets.WidgetView {
 
     get_colors(index) {
         // cycles over the list of colors when too many items
-        this.colors = this.model.get("colors");
-        const len = this.colors.length;
-        return this.colors[index % len];
+        const colors = this.model.get("colors");
+        return colors[index % colors.length];
     }
 
     get_mark_color(data, index) {
         const colorScale = this.scales.color;
-        const defaultColors = this.model.get('colors');
 
         if(colorScale && data.color !== undefined && data.color !== null) {
             return colorScale.scale(data.color);
         }
 
-        return defaultColors[index % defaultColors.length];
+        return this.get_colors(index);
     }
 
     get_mark_opacity(data, index) {
@@ -516,7 +512,6 @@ export abstract class Mark extends widgets.WidgetView {
     }
 
     bisect: any;
-    colors: any;
     d3el: any;
     display_el_classes: string[];
     event_listeners: any;
