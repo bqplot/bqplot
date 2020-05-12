@@ -184,12 +184,11 @@ export class Lines extends Mark {
         const that = this,
             fill = this.model.get("fill"),
             fill_color = this.model.get("fill_colors"),
-            opacities = this.model.get("opacities"),
             fill_opacities = this.model.get("fill_opacities");
         // update curve colors
         const curves = this.d3el.selectAll(".curve")
         curves.select(".line")
-          .style("opacity", function(d, i) { return opacities[i]; })
+          .style("opacity", this.get_mark_opacity.bind(this))
           .style("stroke", function(d, i) {
               return that.get_mark_color(d, i) || fill_color[i];
           })
@@ -209,7 +208,7 @@ export class Lines extends Mark {
               .style("stroke", function(d, i) {
                   return that.get_mark_color(d, i) || fill_color[i];
               })
-              .style("opacity", function(d, i) { return opacities[i]; })
+              .style("opacity", this.get_mark_opacity.bind(this))
               .style("fill", function(d, i) {
                   return that.model.get("fill") === "none" ?
                       "" : that.get_fill_color(d, i);
@@ -218,7 +217,7 @@ export class Lines extends Mark {
               .style("stroke", function(d, i) {
                   return that.get_mark_color(d, i) || fill_color[i];
               })
-              .style("opacity", function(d, i) { return opacities[i]; })
+              .style("opacity", this.get_mark_opacity.bind(this))
               .style("fill", function(d, i) {
                   return that.get_mark_color(d, i) || fill_color[i];
               });
@@ -226,9 +225,7 @@ export class Lines extends Mark {
               .style("fill", function(d, i) {
                   return that.get_mark_color(d, i) || fill_color[i];
               })
-              .style("opacity", function(d, i) {
-                  return opacities[i];
-              });
+              .style("opacity", this.get_mark_opacity.bind(this));
         }
         this.update_stroke_width(this.model, this.model.get("stroke_width"));
         this.update_line_style();
@@ -315,8 +312,7 @@ export class Lines extends Mark {
 
         const that = this,
             rect_dim = inter_y_disp * 0.8,
-            fill_colors = this.model.get("fill_colors"),
-            opacities = this.model.get("opacities");
+            fill_colors = this.model.get("fill_colors");
 
         this.legend_line = d3.line()
             .curve(this.get_interpolation())
@@ -354,7 +350,7 @@ export class Lines extends Mark {
                 return that.model.get("fill") === "none" ?
                     "" : that.get_fill_color(d, i);
             })
-            .style("opacity", function(d, i) { return opacities[i]; })
+            .style("opacity", this.get_mark_opacity.bind(this))
             .style("stroke-width", this.model.get("stroke_width"))
             .style("stroke-dasharray", _.bind(this.get_line_style, this));
 
@@ -375,7 +371,7 @@ export class Lines extends Mark {
             .style("fill", function(d, i) {
               return that.get_mark_color(d, i) || fill_colors[i];
             })
-            .style("opacity", function(d, i) { return opacities[i]; });
+            .style("opacity", this.get_mark_opacity.bind(this));
 
         this.legend_el = legend.merge(this.legend_el);
 
