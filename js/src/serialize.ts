@@ -25,17 +25,13 @@ const arrayToTypes = {
 }
 
 
-function deserialize_typed_array(data, manager) {
+function deserialize_typed_array(data) {
     const type = typesToArray[data.dtype];
-    if(data == null) {
-        console.log('data is null')
+
+    if(data == null || !data.value || !data.value.buffer) {
+        throw new Error('Failed to deserialize data');
     }
-    if(!data.value) {
-        console.log('data.buffer is null')
-    }
-    if(!data.value.buffer) {
-        console.log('data.buffer is null')
-    }
+
     const ar = new type(data.value.buffer);
     ar.type = data.type;
     if(data.shape && data.shape.length >= 2) {
@@ -53,54 +49,51 @@ function deserialize_typed_array(data, manager) {
     }
 }
 
-function serialize_typed_array(ar, manager) {
+function serialize_typed_array(ar) {
     if(ar == null) {
-        console.log('data is null')
+        console.log('data is null');
     }
     if(!ar.buffer) {
-        console.log('ar.buffer is null or not defined')
+        console.log('ar.buffer is null or not defined');
     }
     const dtype = arrayToTypes[ar.constructor.name];
     const type = ar.type || null;
-    const wire = {dtype: dtype, value: new DataView(ar.buffer), shape: [ar.length], type: type}
+    const wire = {dtype: dtype, value: new DataView(ar.buffer), shape: [ar.length], type: type};
     return wire;
 }
 
 function deserialize_array_or_json(data, manager) {
-    if(data == null)
-        return null;
-    let value = null;
-    if(_.isNumber(data)) { // plain number
+    if (!_.isArray(data) && !_.isObject(data)) {
         return data;
     }
-    else if(_.isArray(data)) {
-        if(data.length == 0) {
-            /* no-op */
-        } else {
-            if(_.isArray(data[0])) { // 2d array
-                value = _.map(data, function(data1d) { return deserialize_array_or_json(data1d, manager)})
-            } else { // it contains a plain array most likely
-                value = data;
-            }
-        }
-    } else if(data.value && data.dtype) { // binary data
-        value = deserialize_typed_array(data, undefined)
-    } else {
-        console.error('not sure what the data is')
+
+    if (_.isArray(data)) {
+        return _.map(data, (subdata) => {
+            return deserialize_array_or_json(subdata, manager);
+        });
     }
-    return value;
+
+    if(data.value && data.dtype) {
+        return deserialize_typed_array(data);
+    }
+
+    throw new Error('Failed to deserialize data');
 }
 
 function serialize_array_or_json(data, manager) {
-    if(data == null)
-        return null;
-    if(_.isNumber(data)) {
-        return data; // return numbers directly
-    } else if(_.isArray(data)) {
-        return data.map((ar) => serialize_array_or_json(ar, manager))
-    } else if(isTypedArray(data)) {
-        return serialize_typed_array(data, manager)
+    if(!_.isArray(data) && !_.isObject(data)) {
+        return data;
     }
+
+    if(_.isArray(data)) {
+        return _.map(data, serialize_array_or_json);
+    }
+
+    if(isTypedArray(data)) {
+        return serialize_typed_array(data);
+    }
+
+    throw new Error('Failed to serialize data');
 }
 
 export const array_or_json = { deserialize: deserialize_array_or_json, serialize: serialize_array_or_json };

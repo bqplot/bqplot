@@ -1,46 +1,54 @@
 import { array_or_json } from "../serialize";
 import { expect } from 'chai';
-// import {DummyManager} from './dummy-manager';
-// import bqplot = require('..');
-// import {Figure} from '../src/Figure.js';
-// import {FigureModel} from '../src/FigureModel.js';
-// import {create_model, create_model_bqplot, create_view, create_figure_scatter} from './widget-utils'
-// import * as d3 from 'd3';
 
 
 describe("binary serialization >", () => {
     beforeEach(async function() {
     });
 
-    it("arrays", async function() {
-        let x_wire = {dtype: 'float32', value: new DataView((new Float32Array([0,0.5,1])).buffer)}
-        let x_ar = array_or_json.deserialize(x_wire, null);
-        let x =  Array.prototype.slice.call(x_ar);
-        expect(x).to.deep.equal([0, 0.5, 1.0])
-        let x_wire_bytes = Array.prototype.slice.call(new Uint8Array(x_wire.value.buffer))
+    it("deserialize/serialize number arrays", async function() {
+        const x = {dtype: 'float32', value: new DataView((new Float32Array([0, 0.5, 1])).buffer), shape: [3], type: null};
+        const deserialized_x = array_or_json.deserialize(x, null);
+        expect([...deserialized_x]).to.deep.equal([0, 0.5, 1.0]);
 
-        let x_ar2 = new Float32Array([0, 0.5, 1.])
-        let x_wire2 = array_or_json.serialize(x_ar2, null);
-        let x_wire2_bytes = Array.prototype.slice.call(new Uint8Array(x_wire2.value.buffer))
-        expect(x_wire_bytes).to.deep.equal(x_wire2_bytes)
+        const serialized_x = array_or_json.serialize(deserialized_x, null);
+        expect(serialized_x).to.deep.equal(x);
     });
 
-    it("date arrays", async function() {
+    it("deserialize/serialize date arrays", async function() {
         // 2005-02-25 and 2 days after:
-        let x_wire = {dtype: 'float64', value: new DataView((new Float64Array([1109289600000, 1109376000000, 1109462400000])).buffer), type: 'date'}
-        let x_ar = array_or_json.deserialize(x_wire, null);
-        expect(x_ar.type).to.equal('date')
-        let x =  Array.prototype.slice.call(x_ar);
-        expect(x).to.deep.equal([1109289600000, 1109376000000, 1109462400000])
-        let x_wire_bytes = Array.prototype.slice.call(new Uint8Array(x_wire.value.buffer))
+        const x = {dtype: 'float64', value: new DataView((new Float64Array([1109289600000, 1109376000000, 1109462400000])).buffer), shape: [3], type: 'date'};
+        const deserialized_x = array_or_json.deserialize(x, null);
+        expect(deserialized_x.type).to.equal('date');
+        expect([...deserialized_x]).to.deep.equal([1109289600000, 1109376000000, 1109462400000]);
 
+        const serialized_x = array_or_json.serialize(deserialized_x, null);
+        expect(serialized_x).to.deep.equal(x);
+    });
 
-        let x_ar2 :any = new Float64Array(['2005-02-25', '2005-02-26', '2005-02-27'].map((x) => Number(new Date(x))))
-        x_ar2.type = 'date'
-        let x_wire2 = array_or_json.serialize(x_ar2, null);
-        let x_wire2_bytes = Array.prototype.slice.call(new Uint8Array(x_wire2.value.buffer))
-        expect(x_wire_bytes).to.deep.equal(x_wire2_bytes)
-        expect(x_wire2.dtype).to.equal('float64')
-        expect(x_wire2.type).to.equal('date')
+    it("deserialize/serialize string arrays", async function() {
+        // String arrays are not sent using binary buffers from the Python side
+        const strlist = ['H', 'E', 'L', 'L', 'O'];
+        const deserialized_strlist = array_or_json.deserialize(strlist, null);
+        expect(deserialized_strlist).to.deep.equal(strlist);
+
+        const serialized_strlist = array_or_json.serialize(deserialized_strlist, null);
+        expect(serialized_strlist).to.deep.equal(strlist);
+    });
+
+    it("deserialize/serialize nested arrays", async function() {
+        const x = [
+            {dtype: 'float32', value: new DataView((new Float32Array([0, 0.5, 1])).buffer), shape: [3], type: null},
+            {dtype: 'float32', value: new DataView((new Float32Array([0, 0.5])).buffer), shape: [2], type: null},
+            {dtype: 'float32', value: new DataView((new Float32Array([0, 0.5, 2, 3])).buffer), shape: [4], type: null},
+        ];
+        const deserialized_x = array_or_json.deserialize(x, null);
+        expect(deserialized_x.length).to.equal(3);
+        expect([...deserialized_x[0]]).to.deep.equal([0, 0.5, 1.0]);
+        expect([...deserialized_x[1]]).to.deep.equal([0, 0.5]);
+        expect([...deserialized_x[2]]).to.deep.equal([0, 0.5, 2., 3.]);
+
+        const serialized_x = array_or_json.serialize(deserialized_x, null);
+        expect(serialized_x).to.deep.equal(x);
     });
 });

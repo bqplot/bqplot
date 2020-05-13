@@ -53,7 +53,7 @@ async function create_figure_scatter(manager, x, y, mega=false, log=false) {
     let size     = null;
     let opacity  = null;
     let rotation = null;
-    let skew     = {type: null, values: null};
+    let skew     = null;
 
     let scatterModel = await create_model_bqplot(manager, mega ? 'ScatterGL' : 'Scatter' , 'scatter1', {scales: scales,
         x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew, colors: ['steelblue'],
@@ -83,10 +83,10 @@ async function create_figure_lines(manager, x, y, default_scales={}) {
     let scales = {x: scale_x.toJSON(), y: scale_y.toJSON()}
     let scales_mark = {x: default_scales['x'] || scale_x.toJSON(), y: default_scales['y'] || scale_y.toJSON()}
     let color    = null;
-    let size     = {type: null, values: null};
-    let opacity  = {type: null, values: null};
-    let rotation = {type: null, values: null};
-    let skew     = {type: null, values: null};
+    let size     = null;
+    let opacity  = null;
+    let rotation = null;
+    let skew     = null;
 
     let linesModel = await create_model_bqplot(manager, 'Lines', 'lines1', {scales: scales_mark,
         x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew,
@@ -140,10 +140,10 @@ async function create_figure_bars(manager, x, y) {
     let scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {min:0, max:3, allow_padding: false})
     let scales = {x: scale_x.toJSON(), y: scale_y.toJSON()}
     let color    = null;
-    let size     = {type: null, values: null};
-    let opacity  = {type: null, values: null};
-    let rotation = {type: null, values: null};
-    let skew     = {type: null, values: null};
+    let size     = null;
+    let opacity  = null;
+    let rotation = null;
+    let skew     = null;
 
     let barsModel = await create_model_bqplot(manager, 'Bars', 'bars1', {scales: scales,
         x: x, y: y, color: color, size: size, opacity: opacity, rotation: rotation, skew: skew,

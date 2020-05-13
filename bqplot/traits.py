@@ -152,49 +152,48 @@ def array_from_json(value, obj=None):
 def array_to_json(ar, obj=None, force_contiguous=True):
     if ar is None:
         return None
-    if ar.dtype.kind in ['O']:
-        has_strings = False
-        all_strings = True  # empty array we can interpret as an empty list
-        for el in ar:
-            if isinstance(el, six.string_types):
-                has_strings = True
-            else:
-                all_strings = False
-        if all_strings:
+
+    array_type = None
+
+    if ar.dtype.kind == 'O':
+        # Try to serialize the array of objects
+        isstring = np.vectorize(lambda x: isinstance(x, six.string_types))
+        islist = np.vectorize(lambda x: isinstance(x, list))
+        istimestamp = np.vectorize(lambda x: isinstance(x, pd.Timestamp))
+
+        if np.all(istimestamp(ar)):
+            ar = ar.astype('datetime64[ms]').astype(np.float64)
+            array_type = 'date'
+        elif np.all(isstring(ar)):
             ar = ar.astype('U')
+        elif np.all(islist(ar)):
+            return [array_to_json(np.array(row), obj, force_contiguous) for row in ar]
         else:
-            if has_strings:
-                warnings.warn('Your array contains mixed strings and other types')
+            raise ValueError("Unsupported dtype object")
 
     if ar.dtype.kind in ['S', 'U']:  # strings to as plain json
         return ar.tolist()
-    type = None
-
-    if ar.dtype.kind == 'O':
-        # If it's a Timestamp object
-        istimestamp = np.vectorize(lambda x: isinstance(x, pd.Timestamp))
-        if np.all(istimestamp(ar)):
-            ar = ar.astype('datetime64[ms]').astype(np.float64)
-            type = 'date'
-        else:
-            raise ValueError("Unsupported dtype object")
 
     if ar.dtype.kind == 'M':
         # since there is no support for int64, we'll use float64 but as ms
         # resolution, since that is the resolution the js Date object understands
         ar = ar.astype('datetime64[ms]').astype(np.float64)
-        type = 'date'
+        array_type = 'date'
 
     if ar.dtype.kind not in ['u', 'i', 'f']:  # ints and floats, and datetime
         raise ValueError("Unsupported dtype: %s" % (ar.dtype))
+
     if ar.dtype == np.int64:  # JS does not support int64
         ar = ar.astype(np.int32)
+
     if force_contiguous and not ar.flags["C_CONTIGUOUS"]:  # make sure it's contiguous
         ar = np.ascontiguousarray(ar)
+
     if not ar.dtype.isnative:
         dtype = ar.dtype.newbyteorder()
         ar = ar.astype(dtype)
-    return {'value': memoryview(ar), 'dtype': str(ar.dtype), 'shape': ar.shape, 'type': type}
+
+    return {'value': memoryview(ar), 'dtype': str(ar.dtype), 'shape': ar.shape, 'type': array_type}
 
 
 array_serialization = dict(to_json=array_to_json, from_json=array_from_json)

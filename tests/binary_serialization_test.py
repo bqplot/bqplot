@@ -82,3 +82,41 @@ def test_dtype_with_str():
     # string columns to work (which are of dtype==np.object)
     text[1] = 'foobar'
     assert array_to_json(text) == ['foo', 'foobar', 'bar']
+
+def test_nested_list():
+    data = np.array([
+        [0, 1, 2, 3, 4, 5, 6],
+        [0, 1, 2, 2, 3],
+        [0, 1, 2, 3, 4, 5, 6, 7],
+    ])
+
+    serialized_data = array_to_json(data)
+
+    assert len(serialized_data) == 3
+
+    assert serialized_data[0]['dtype'] == 'int32'
+    assert serialized_data[0]['value'] == memoryview(np.array(data[0]))
+
+    assert serialized_data[1]['dtype'] == 'int32'
+    assert serialized_data[1]['value'] == memoryview(np.array(data[1]))
+
+    assert serialized_data[2]['dtype'] == 'int32'
+    assert serialized_data[2]['value'] == memoryview(np.array(data[2]))
+
+    data = np.array([
+        [0, 1, 2, 3, 4, 5, 6],
+        [0, 1, 2, 2, 3],
+        ['foo', 'foobar', 'bar'],
+    ])
+
+    serialized_data = array_to_json(data)
+
+    assert len(serialized_data) == 3
+
+    assert serialized_data[0]['dtype'] == 'int32'
+    assert serialized_data[0]['value'] == memoryview(np.array(data[0]))
+
+    assert serialized_data[1]['dtype'] == 'int32'
+    assert serialized_data[1]['value'] == memoryview(np.array(data[1]))
+
+    assert serialized_data[2] == ['foo', 'foobar', 'bar']
