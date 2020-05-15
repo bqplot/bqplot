@@ -233,7 +233,7 @@ class Mark(Widget):
                                      name)
             else:
                 # Check scale range type compatibility
-                if scales[name].rtype != trait.get_metadata('rtype'):
+                if scales[name].rtype != trait.metadata['rtype']:
                     raise TraitError("Range type mismatch for scale %s." %
                                      name)
         return scales
