@@ -312,13 +312,19 @@ export abstract class Mark extends widgets.WidgetView {
     hide_tooltip() {
         //this function hides the tooltip. But the location of the tooltip
         //is the last location set by a call to show_tooltip.
-        this.parent.popper.disableEventListeners();
-        this.tooltip_div.style("pointer-events", "none");
-        this.tooltip_div.style("opacity", 0)
-            .style("display", "none");
+        if(this.tooltip_view) {
+            this.parent.popper.disableEventListeners();
+            this.tooltip_div.style("pointer-events", "none");
+            this.tooltip_div.style("opacity", 0)
+                .style("display", "none");
+        }
     }
 
     refresh_tooltip(tooltip_interactions = false) {
+        if (!this.tooltip_view) {
+            return;
+        }
+
         //the argument controls pointer interactions with the tooltip. a
         //true value enables pointer interactions while a false value
         //disables them
@@ -468,10 +474,11 @@ export abstract class Mark extends widgets.WidgetView {
             const el = d3.select(d3GetEvent().target);
             if(this.is_hover_element(el)) {
                 const data: any = el.data()[0];
-                //make tooltip visible
+
+                // Make tooltip visible
+                this.refresh_tooltip();
+
                 const hovered_data = this.model.get_data_dict(data, data.index);
-                this.trigger("update_tooltip", hovered_data);
-                this.show_tooltip();
                 this.send({
                     event: "hover",
                     point: hovered_data,
