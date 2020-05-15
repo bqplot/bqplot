@@ -105,7 +105,7 @@ def test_nested_list():
 
     data = np.array([
         [0, 1, 2, 3, 4, 5, 6],
-        [0, 1, 2, 2, 3],
+        np.array([0, 1, 2, 2, 3]),
         ['foo', 'foobar', 'bar'],
     ])
 

@@ -157,16 +157,16 @@ def array_to_json(ar, obj=None, force_contiguous=True):
 
     if ar.dtype.kind == 'O':
         # Try to serialize the array of objects
-        isstring = np.vectorize(lambda x: isinstance(x, six.string_types))
-        islist = np.vectorize(lambda x: isinstance(x, list))
-        istimestamp = np.vectorize(lambda x: isinstance(x, pd.Timestamp))
+        is_string = np.vectorize(lambda x: isinstance(x, six.string_types))
+        is_timestamp = np.vectorize(lambda x: isinstance(x, pd.Timestamp))
+        is_array_like = np.vectorize(lambda x: isinstance(x, (list, np.ndarray)))
 
-        if np.all(istimestamp(ar)):
+        if np.all(is_timestamp(ar)):
             ar = ar.astype('datetime64[ms]').astype(np.float64)
             array_type = 'date'
-        elif np.all(isstring(ar)):
+        elif np.all(is_string(ar)):
             ar = ar.astype('U')
-        elif np.all(islist(ar)):
+        elif np.all(is_array_like(ar)):
             return [array_to_json(np.array(row), obj, force_contiguous) for row in ar]
         else:
             raise ValueError("Unsupported dtype object")
