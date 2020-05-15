@@ -1,7 +1,7 @@
 import bqplot
 import numpy as np
 import pandas as pd
-from bqplot.traits import array_to_json
+from bqplot.traits import array_to_json, array_from_json
 import pytest
 
 
@@ -32,6 +32,7 @@ def test_binary_serialize_1d(figure):
     assert scatter2.x.tolist() == x.tolist()
     assert scatter2.y.tolist() == y.tolist()
 
+
 def test_binary_serialize_datetime():
     x = np.arange('2005-02-25', '2005-03', dtype='datetime64[D]')
     x_ms = np.array([1109289600000, 1109376000000, 1109462400000, 1109548800000], dtype=np.int64)
@@ -56,6 +57,7 @@ def test_binary_serialize_datetime():
     assert scatter2.x.dtype.kind == 'M'
     assert scatter2.x.astype(np.int64).tolist() == x_ms.tolist()
 
+
 def test_binary_serialize_text():
     # string do not get serialized in binary (since numpy uses utf32, and js/browsers do not support that)
     text = np.array(['aap', 'noot', 'mies'])
@@ -71,6 +73,7 @@ def test_binary_serialize_text():
 
     assert label2.text.tolist() == label.text.tolist()
 
+
 def test_dtype_with_str():
     # dtype object is not supported
     text = np.array(['foo', None, 'bar'])
@@ -83,7 +86,8 @@ def test_dtype_with_str():
     text[1] = 'foobar'
     assert array_to_json(text) == ['foo', 'foobar', 'bar']
 
-def test_nested_list():
+
+def test_serialize_nested_list():
     data = np.array([
         [0, 1, 2, 3, 4, 5, 6],
         [0, 1, 2, 2, 3],
@@ -103,10 +107,15 @@ def test_nested_list():
     assert serialized_data[2]['dtype'] == 'int32'
     assert serialized_data[2]['value'] == memoryview(np.array(data[2]))
 
+    deserialized_data = array_from_json(serialized_data)
+
+    for el, deserialized_el in zip(data, deserialized_data):
+        assert np.all(el == deserialized_el)
+
     data = np.array([
         [0, 1, 2, 3, 4, 5, 6],
         np.array([0, 1, 2, 2, 3]),
-        ['foo', 'foobar', 'bar'],
+        [0, 1, 2, 3]
     ])
 
     serialized_data = array_to_json(data)
@@ -119,4 +128,26 @@ def test_nested_list():
     assert serialized_data[1]['dtype'] == 'int32'
     assert serialized_data[1]['value'] == memoryview(np.array(data[1]))
 
-    assert serialized_data[2] == ['foo', 'foobar', 'bar']
+    assert serialized_data[2]['dtype'] == 'int32'
+    assert serialized_data[2]['value'] == memoryview(np.array(data[2]))
+
+    deserialized_data = array_from_json(serialized_data)
+
+    for el, deserialized_el in zip(data, deserialized_data):
+        assert np.all(el == deserialized_el)
+
+    data = np.array([
+        ['Hello', 'Hallo'],
+        ['Coucou', 'Hi', 'Ciao']
+    ])
+
+    serialized_data = array_to_json(data)
+
+    assert len(serialized_data) == 2
+
+    assert serialized_data[0] == ['Hello', 'Hallo']
+    assert serialized_data[1] == ['Coucou', 'Hi', 'Ciao']
+
+    deserialized_data = array_from_json(serialized_data)
+
+    assert np.all(data == deserialized_data)
