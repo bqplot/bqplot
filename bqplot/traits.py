@@ -26,15 +26,13 @@ Traits Types
    Date
 """
 
-from traitlets import Instance, TraitError, TraitType, Undefined
+from traitlets import TraitError, TraitType
 
-import traittypes as tt
 import numpy as np
 import pandas as pd
 import warnings
 import datetime as dt
 import six
-import warnings
 
 # Date
 
