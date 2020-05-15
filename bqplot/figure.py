@@ -31,7 +31,6 @@ from traitlets import (
     validate
 )
 from ipywidgets import DOMWidget, register, widget_serialization
-from ipywidgets.widgets.widget_layout import LayoutTraitType
 
 from .scales import Scale, LinearScale
 from .interacts import Interaction

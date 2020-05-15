@@ -26,7 +26,7 @@ Market Map
    MarketMap
 """
 
-from traitlets import Int, Unicode, List, Dict, Enum, Bool, Instance, Float
+from traitlets import Int, Unicode, List, Dict, Bool, Instance, Float
 from traittypes import Array, DataFrame
 from ipywidgets import (DOMWidget, CallbackDispatcher, Color,
                         widget_serialization)
