@@ -23,9 +23,8 @@ import { GraphModel } from './GraphModel';
 
 export class Graph extends Mark {
     render() {
-        let base_creation_promise = super.render();
+        const base_creation_promise = super.render();
 
-        const that = this;
         this.selected_style = this.model.get("selected_style");
         this.unselected_style = this.model.get("unselected_style");
         this.selected_indices = this.model.get("selected");
@@ -36,24 +35,24 @@ export class Graph extends Mark {
 
         this.display_el_classes = ["element"];
         this.event_metadata = {
-            "mouse_over": {
-                "msg_name": "hover",
-                "lookup_data": false,
-                "hit_test": true
+            mouse_over: {
+                msg_name: "hover",
+                lookup_data: false,
+                hit_test: true
             },
-            "element_clicked": {
-                "msg_name": "element_click",
-                "lookup_data": false,
-                "hit_test": true
+            element_clicked: {
+                msg_name: "element_click",
+                lookup_data: false,
+                hit_test: true
             },
-            "parent_clicked": {
-                "msg_name": "background_click",
-                "hit_test": false
+            parent_clicked: {
+                msg_name: "background_click",
+                hit_test: false
             }
         };
-        this.displayed.then(function() {
-            that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
-            that.create_tooltip();
+        this.displayed.then(() => {
+            this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+            this.create_tooltip();
         });
 
         this.d3el.attr("class", "network");
@@ -70,12 +69,12 @@ export class Graph extends Mark {
             .attr("class", "linkarrow")
             .attr("d", "M0,0 L0,6 L9,3 z");
 
-        return base_creation_promise.then(function() {
-            that.event_listeners = {};
-            that.process_interactions();
-            that.create_listeners();
-            that.compute_view_padding();
-            that.draw();
+        return base_creation_promise.then(() => {
+            this.event_listeners = {};
+            this.process_interactions();
+            this.create_listeners();
+            this.compute_view_padding();
+            this.draw();
         });
     }
 
@@ -199,16 +198,6 @@ export class Graph extends Mark {
         this.relayout();
     }
 
-    get_node_color(data, index) {
-        const color_scale = this.scales.color;
-        const colors = this.model.get("colors");
-        const len = colors.length;
-        if (color_scale && data.color !== undefined) {
-            return color_scale.scale(data.color);
-        }
-        return colors[index % len];
-    }
-
     draw() {
         this.set_ranges();
         const x_scale = this.scales.x;
@@ -256,16 +245,14 @@ export class Graph extends Mark {
         this.force_layout.nodes(this.model.mark_data)
             .force("link", d3.forceLink(this.model.link_data).distance(this.model.get("link_distance")));
 
-        const that = this;
         this.nodes = this.d3el.selectAll(".node")
             .data(this.force_layout.nodes())
             .enter().append("g")
             .attr("class", "node")
             .call(d3.drag()
-                .on("start", _.bind(that.dragstarted, that))
-                .on("drag", _.bind(that.dragged, that))
-                .on("end", _.bind(that.dragended, that)));
-
+                .on("start", this.dragstarted.bind(this))
+                .on("drag", this.dragged.bind(this))
+                .on("end", this.dragended.bind(this)));
 
         this.nodes
             .append(function(d) {
@@ -278,9 +265,7 @@ export class Graph extends Mark {
                     node.attr(key, d.shape_attrs[key]);
                 }
             })
-            .style("fill", function(d, i) {
-                return that.get_node_color(d, i);
-            });
+            .style("fill", this.get_mark_color.bind(this));
 
         this.nodes.append("text")
             .attr("class", "label")
@@ -347,12 +332,9 @@ export class Graph extends Mark {
     }
 
     color_scale_updated() {
-        const that = this;
         this.nodes
             .selectAll(".element")
-            .style("fill", function(d, i) {
-                return that.get_node_color(d, i);
-            });
+            .style("fill", this.get_mark_color.bind(this));
     }
 
     link_color_scale_updated() {
