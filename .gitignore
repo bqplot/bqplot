@@ -43,6 +43,7 @@ _templates/
 
 # Jupyter notebook checkpoints
 .ipynb_checkpoints/
+*Untitled*.ipynb
 
 # Compiled javascript
 bqplot/static/
