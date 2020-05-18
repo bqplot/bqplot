@@ -45,8 +45,9 @@ export class Map extends Mark {
         });
     }
 
-    set_ranges() {
-    }
+    set_ranges() {}
+
+    relayout() {}
 
     set_positional_scales() {
         const geo_scale = this.scales.projection;
