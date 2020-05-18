@@ -50,7 +50,7 @@
     --bq-selector-fill: var(--jp-border-color1);
 
     --bq-mark-tooltip-border: 2px solid var(--jp-border-color0);
-    --bq-mark-tooltip-box-shadow: 1px 1px 2px rgba(245, 245, 245, 0.8);
+    --bq-mark-tooltip-box-shadow: var(--jp-elevation-z6);
     --bq-mark-tooltip-background-color: var(--jp-layout-color0);
     --bq-mark-tooltip-td-border: 1px solid var(--jp-border-color1);
 
@@ -287,23 +287,15 @@
 .mark_tooltip {
     pointer-events: none;
     z-index: 1001;
-    border: var(--bq-mark-tooltip-border);
-    border-radius : var(--bq-mark-tooltip-border-radius);
+    border: var(--jp-border-width) solid var(--jp-border-color1);
     box-shadow: var(--bq-mark-tooltip-box-shadow);
+    background-color: var(--bq-mark-tooltip-background-color);
     -webkit-user-select: var(--bq-mark-tooltip--webkit-user-select);
     -moz-user-select: var(--bq-mark-tooltip--moz-user-select);
-    background-color: var(--bq-mark-tooltip-background-color);
 }
 .mark_tooltip > .bqplot.figure {
-  width: 427px;
-  height: 320px;
-}
-.mark_tooltip td{
-    border: var(--bq-mark-tooltip-td-border);
-}
-.mark_tooltip table {
-    border-radius: 5px;
-    background: var(--bq-mark-tooltip-background);
+    width: 427px;
+    height: 320px;
 }
 .mark_tooltip .tooltiptext {
     text-align: center;

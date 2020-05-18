@@ -70,7 +70,7 @@ export class Tooltip extends DOMWidgetView {
         const fields = this.model.get("fields");
         const labels = _.clone(this.model.get("labels"));
         for (let ind = labels.length; ind < fields.length; ind++) {
-            labels[ind] = fields[ind];
+            labels[ind] = fields[ind] + ':';
         }
 
         this.d3el.select("table").remove();
