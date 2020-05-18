@@ -10,7 +10,7 @@ describe("lines >", () => {
         this.manager = new DummyManager({bqplot: bqplot});
     });
 
-    it.skip("create 1d ordinal", async function() {
+    it("create 1d ordinal", async function() {
         let x = ['a', 'b'];
         let scale_x = await create_model_bqplot(this.manager, 'OrdinalScale', 'scale_x_ordinal', {allow_padding: false, domain: []});
         let y = {dtype: 'float32', value: new DataView((new Float32Array([2,3])).buffer)};
