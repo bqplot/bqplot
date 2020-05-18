@@ -13,25 +13,34 @@
  * limitations under the License.
  */
 
+import * as d3 from 'd3';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
 export class GraphModel extends MarkModel {
     defaults() {
         return { ...MarkModel.prototype.defaults(),
-        _model_name: "GraphModel",
-        _view_name: "Graph",
-
-        x: [],
-        y: [],
-        color: null,
-        hovered_point: null,
-        scales_metadata: {
-            x: { orientation: "horizontal", dimension: "x" },
-            y: { orientation: "vertical", dimension: "y" },
-            color: { dimension: "color" }
-        },
-        colors: [],
+            _model_name: "GraphModel",
+            _view_name: "Graph",
+            node_data: [],
+            link_matrix: [],
+            link_data: [],
+            charge: 300,
+            link_distance: 100,
+            link_type: 'arc',
+            directed: true,
+            highlight_links: true,
+            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
+            x: [],
+            y: [],
+            color: null,
+            link_color: null,
+            hovered_point: null,
+            scales_metadata: {
+                x: { orientation: "horizontal", dimension: "x" },
+                y: { orientation: "vertical", dimension: "y" },
+                color: { dimension: "color" }
+            },
         };
     }
 
