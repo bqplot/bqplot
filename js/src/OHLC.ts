@@ -30,7 +30,7 @@ export class OHLC extends Mark {
         this.unselected_style = this.model.get("unselected_style");
 
         this.display_el_classes = ["stick_body", "stick_tail", "stick_head"];
-        
+
         const that = this;
         this.displayed.then(function() {
             that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
@@ -41,7 +41,7 @@ export class OHLC extends Mark {
             that.event_listeners = {};
             that.process_interactions();
             that.create_listeners();
-            that.draw(); 
+            that.draw();
         });
     }
 
@@ -622,7 +622,6 @@ export class OHLC extends Mark {
     }
 
     relayout() {
-        super.relayout();
         this.set_ranges();
         this.d3el.select(".intselmouse")
             .attr("width", this.width)

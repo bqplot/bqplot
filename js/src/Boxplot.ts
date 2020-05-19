@@ -603,7 +603,6 @@ export class Boxplot extends Mark {
     }
 
     relayout() {
-        super.relayout.apply(this);
         this.set_ranges();
         this.compute_view_padding();
         this.d3el.select(".intselmouse")

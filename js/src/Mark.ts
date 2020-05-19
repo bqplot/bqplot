@@ -180,11 +180,6 @@ export abstract class Mark extends widgets.WidgetView {
         });
     }
 
-    relayout() {
-        // Called when the figure margins are updated. To be overloaded in
-        // specific mark implementation.
-    }
-
     invert_range(start_pxl, end_pxl) {
         return [start_pxl, end_pxl];
     }
@@ -275,6 +270,9 @@ export abstract class Mark extends widgets.WidgetView {
     abstract set_default_style(indices, elements?);
 
     abstract set_style_on_elements(style, indices, elements?);
+
+    // Called when the figure margins are updated.
+    abstract relayout();
 
     /**
      * This function sets the x and y view paddings for the mark using the
