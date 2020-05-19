@@ -17,13 +17,14 @@
     --bq-content-font-color: var(--jp-content-font-color1);
     --bq-plotarea-background-fill: var(--jp-layout-color1);
     --bq-background: var(--jp-layout-color0);
+    --bq-font: 12px sans-serif;
 
     --bq-axislabel-font: 14px sans-serif;
 
     --bq-axis-rect-opacity: 1.0;
     --bq-axis-tick-stroke-width: 1.0;
     --bq-axis-tick-opacity: 1.0;
-    --bq-axis-tick-text-font: 12px sans-serif;
+    --bq-axis-tick-text-font: var(--bq-font);
 
     --bq-mark-tooltip-border-radius : 5px;
     --bq-mark-tooltip--webkit-user-select: none;
@@ -45,12 +46,12 @@
     --bq-network-link-stroke-width: 1.5px;
 
     --bq-network-node-label-pointer-events: none;
-    --bq-network-node-label-font: 12px sans-serif;
+    --bq-network-node-label-font: var(--bq-font);
 
     --bq-selector-fill: var(--jp-border-color1);
 
     --bq-mark-tooltip-border: 2px solid var(--jp-border-color0);
-    --bq-mark-tooltip-box-shadow: 1px 1px 2px rgba(245, 245, 245, 0.8);
+    --bq-mark-tooltip-box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2 ), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
     --bq-mark-tooltip-background-color: var(--jp-layout-color0);
     --bq-mark-tooltip-td-border: 1px solid var(--jp-border-color1);
 
@@ -287,23 +288,16 @@
 .mark_tooltip {
     pointer-events: none;
     z-index: 1001;
-    border: var(--bq-mark-tooltip-border);
-    border-radius : var(--bq-mark-tooltip-border-radius);
+    font: var(--bq-font);
+    border: var(--jp-border-width) solid var(--jp-border-color1);
     box-shadow: var(--bq-mark-tooltip-box-shadow);
+    background-color: var(--bq-mark-tooltip-background-color);
     -webkit-user-select: var(--bq-mark-tooltip--webkit-user-select);
     -moz-user-select: var(--bq-mark-tooltip--moz-user-select);
-    background-color: var(--bq-mark-tooltip-background-color);
 }
 .mark_tooltip > .bqplot.figure {
-  width: 427px;
-  height: 320px;
-}
-.mark_tooltip td{
-    border: var(--bq-mark-tooltip-td-border);
-}
-.mark_tooltip table {
-    border-radius: 5px;
-    background: var(--bq-mark-tooltip-background);
+    width: 427px;
+    height: 320px;
 }
 .mark_tooltip .tooltiptext {
     text-align: center;
