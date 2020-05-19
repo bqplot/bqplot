@@ -295,7 +295,7 @@ export abstract class Mark extends widgets.WidgetView {
             }
             this.tooltip_div.styles(this.model.get("tooltip_style"))
                 .style("display", null);
-            MessageLoop.sendMessage(this.tooltip_view.pWidget, Widget.Msg.AfterAttach);
+            MessageLoop.sendMessage(this.tooltip_view.pWidget, Widget.Msg.AfterShow);
             this.parent.popper.enableEventListeners();
             this.move_tooltip();
         }
@@ -335,17 +335,17 @@ export abstract class Mark extends widgets.WidgetView {
         //create tooltip widget. To be called after mark has been displayed
         //and whenever the tooltip object changes
         const tooltip_model = this.model.get("tooltip");
-        const that = this;
         //remove previous tooltip
         if(this.tooltip_view) {
             this.tooltip_view.remove();
+            this.tooltip_view = null;
         }
         if(tooltip_model) {
-            this.create_child_view(tooltip_model).then(function(view) {
-                that.tooltip_view = view;
+            this.create_child_view(tooltip_model).then((view) => {
+                this.tooltip_view = view;
 
                 MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
-                that.tooltip_div.node().appendChild(view.el);
+                this.tooltip_div.node().appendChild(view.el);
                 MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
             });
         }
