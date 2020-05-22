@@ -15,7 +15,6 @@
 
 :root {
     --bq-content-font-color: var(--jp-content-font-color1);
-    --bq-plotarea-background-fill: var(--jp-layout-color1);
     --bq-background: var(--jp-layout-color0);
     --bq-font: 12px sans-serif;
 
@@ -64,37 +63,62 @@
     --bq-network-node-element-fill: #666;
     --bq-network-node-label-text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
     --bq-linkarrow-fill: #ccc;
-}
 
-/* Ideally this should be in :root */
-.common() {
-    --bq-axis-rect-stroke: var(--bq-tick-color);
-    --bq-axis-path-stroke: var(--bq-tick-color);
-    --bq-axis-tick-stroke: var(--bq-tick-color);
-    --bq-axis-tick-short-stroke: var(--bq-tick-color);
-
-    --bq-mainheading-fill: var(--bq-content-font-color);
-    --bq-axislabel-fill: var(--bq-content-font-color);
-
+    --bq-default-stroke: var(--bq-content-font-color);
     --bq-stick-stroke: var(--bq-content-font-color);
     --bq-stick-fill: var(--bq-content-font-color);
     --bq-sticktext-fill: var(--bq-content-font-color);
-    --bq-default-stroke: var(--bq-content-font-color);
+}
+
+/*
+ * gg and classic bqplot themes differ in the styling of the svg-background.
+ *
+ * plot area background fill: 
+ *   - gg: contrasted with the jupyterlab background. var(--jp-layout-color2);
+ *   - classic: less contrasted: var(--jp-layout-color1);
+ *
+ * tick text fill:
+ *   - gg: less contrasted with background: var(--jp-content-font-color2);
+ *   - classic: more contrasted with background: var(--jp-content-font-color1);
+ *
+ * grid, axes, and tick colors:
+ *   - gg: grid, axes, and tick marks are all of the same (grid) color
+ *   - classic: grid has little contrast with respect to the background while the axes,
+ *     and tick marks are more contrasted.
+ */
+
+.common() {
+    --bq-mainheading-fill: var(--bq-content-font-color);
+    --bq-axislabel-fill: var(--bq-content-font-color);
 }
 
 .gg {
-    --bq-axis-lines-color: var(--jp-layout-color1);
-    --bq-plotarea-background-fill: var(--jp-layout-color2);
-    --bq-tick-color: var(--bq-axis-lines-color);
+    --bq-plotarea-background-fill: var(--jp-layout-color1);
     --bq-axis-tick-text-fill: var(--jp-content-font-color2);
+
+    --bq-grid-color: var(--jp-layout-color0);
+    --bq-axis-rect-stroke: var(--bq-grid-color);
+    --bq-axis-path-stroke: var(--bq-grid-color);
+    --bq-axis-tick-stroke: var(--bq-grid-color);
+    --bq-axis-tick-short-stroke: var(--bq-grid-color);
 
     .common()
 }
 
+[data-jp-theme-light="true"] .gg {
+    --bq-plotarea-background-fill: var(--jp-layout-color2);
+}
+
 .classic {
-    --bq-axis-lines-color: var(--jp-ui-font-color3);
-    --bq-tick-color: var(--bq-axis-lines-color);
-    --bq-axis-tick-text-fill: var(--jp-ui-font-color2);
+    --bq-plotarea-background-fill: var(--jp-layout-color0);
+    --bq-axis-tick-text-fill: var(--jp-content-font-color2);
+
+    --bq-grid-color: var(--jp-layout-color2);
+    --bq-axis-border-color: var(--jp-content-font-color2);
+    --bq-axis-path-stroke: var(--bq-axis-border-color);
+    --bq-axis-rect-stroke: var(--bq-axis-border-color);
+    --bq-axis-tick-stroke: var(--bq-grid-color);
+    --bq-axis-tick-short-stroke: var(--bq-axis-border-color);
 
     .common()
 }
