@@ -413,19 +413,19 @@ export class Bars extends Mark {
         // adding/updating bar data labels
         this.manageBarLabels(bar_groups, band_width, dom, rang);
 
-        this.pixel_coords = this.model.mark_data.map(function (d) {
+        this.pixel_coords = this.model.mark_data.map(d => {
             const key = d.key;
-            const group_dom = dom_scale.scale(key) + that.dom_offset;
+            const group_dom = dom_scale.scale(key) + this.dom_offset;
             return d.values.map(function (d) {
                 const rect_coords = {};
-                rect_coords[dom] = is_stacked ? group_dom : group_dom + that.grouped_scale(d.sub_index);
+                rect_coords[dom] = is_stacked ? group_dom : group_dom + this.grouped_scale(d.sub_index);
                 rect_coords[rang] = is_stacked ?
                     (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0) :
-                    d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
+                    d3.min([range_scale.scale(d.y), range_scale.scale(this.model.base_value)]);
                 rect_coords[dom_control] = band_width;
                 rect_coords[range_control] = is_stacked ?
                     Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1)) :
-                    Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y_ref)));
+                    Math.abs(range_scale.scale(this.model.base_value) - (range_scale.scale(d.y_ref)));
                 return [[rect_coords["x"], rect_coords["x"] + rect_coords["width"]],
                 [rect_coords["y"], rect_coords["y"] + rect_coords["height"]]];
             })

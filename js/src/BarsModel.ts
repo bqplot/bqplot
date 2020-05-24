@@ -98,7 +98,10 @@ export class BarsModel extends markmodel.MarkModel {
 
                 // since y_data may be a TypedArray, explicitly use Array.map
                 data.values = Array.prototype.map.call(y_data, (y_elem, y_index) => {
-                    const value = y_elem[index] - this.base_value;
+                    let value = y_elem[index] - this.base_value;
+                    if (isNaN(value)) {
+                        value = 0;
+                    }
                     const positive = (value >= 0);
                     return {
                         index: index,
