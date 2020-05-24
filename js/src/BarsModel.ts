@@ -96,42 +96,39 @@ export class BarsModel extends markmodel.MarkModel {
                 let y0_left = this.base_value;
                 data.key = x_elem;
 
-                const reducer = (values, y_elem, y_index) => {
-                    // Drop NaNs
-                    if (!isNaN(y_elem[index])) {
-                        const value = y_elem[index] - this.base_value;
-                        const positive = (value >= 0);
-                        values.push({
-                            index: index,
-                            sub_index: y_index,
-                            x: x_elem,
-                            // In the following code, the values y0, y1 are
-                            // only relevant for a stacked bar chart. grouped
-                            // bars only deal with base_value and y.
-
-                            // y0 is the value on the y scale for the upper end
-                            // of the bar.
-                            y0: (positive) ? y0 : (function() {
-                                y0_left += value;
-                                return y0_left
-                            }()),
-                            // y1 is the value on the y scale for the lower end
-                            // of the bar.
-                            y1: (positive) ? (y0 += value) : (function() {
-                                y0_neg += value;
-                                return (y0_neg - value);
-                            }()),
-                            // y_ref is the value on the y scale which represents
-                            // the height of the bar
-                            y_ref: value,
-                            y: y_elem[index],
-                        });
+                // since y_data may be a TypedArray, explicitly use Array.map
+                data.values = Array.prototype.map.call(y_data, (y_elem, y_index) => {
+                    let value = y_elem[index] - this.base_value;
+                    if (isNaN(value)) {
+                        value = 0;
                     }
-                    return values;
-                };
+                    const positive = (value >= 0);
+                    return {
+                        index: index,
+                        sub_index: y_index,
+                        x: x_elem,
+                        // In the following code, the values y0, y1 are
+                        // only relevant for a stacked bar chart. grouped
+                        // bars only deal with base_value and y.
 
-                // since y_data may be a TypedArray, explicitly use Array.reduce
-                data.values = Array.prototype.reduce.call(y_data, reducer, []);
+                        // y0 is the value on the y scale for the upper end
+                        // of the bar.
+                        y0: (positive) ? y0 : (function() {
+                            y0_left += value;
+                            return y0_left
+                        }()),
+                        // y1 is the value on the y scale for the lower end
+                        // of the bar.
+                        y1: (positive) ? (y0 += value) : (function() {
+                            y0_neg += value;
+                            return (y0_neg - value);
+                        }()),
+                        // y_ref is the value on the y scale which represents
+                        // the height of the bar
+                        y_ref: value,
+                        y: y_elem[index],
+                    };
+                });
 
                 // pos_max is the maximum positive value for a group of
                 // bars.
