@@ -124,17 +124,17 @@ export class Bars extends Mark {
     create_listeners() {
         super.create_listeners.apply(this);
         this.d3el
-            .on("mouseover", _.bind(function () {
+            .on("mouseover", () => {
                 this.event_dispatcher("mouse_over");
-            }, this))
-            .on("mousemove", _.bind(function () {
+            })
+            .on("mousemove", () => {
                 this.event_dispatcher("mouse_move");
-            }, this))
-            .on("mouseout", _.bind(function () {
+            })
+            .on("mouseout", () => {
                 this.event_dispatcher("mouse_out");
-            }, this));
+            });
 
-        this.listenTo(this.model, "data_updated", function () {
+        this.listenTo(this.model, "data_updated", () => {
             //animate bars on data update
             const animate = true;
             this.draw(animate);
@@ -150,7 +150,7 @@ export class Bars extends Mark {
         this.model.on_some_change(['stroke', 'opacities', 'fill', 'stroke_width'], this.apply_styles, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
-        this.listenTo(this.parent, "bg_clicked", function () {
+        this.listenTo(this.parent, "bg_clicked", () => {
             this.event_dispatcher("parent_clicked");
         });
         this.model.on_some_change([
@@ -215,7 +215,7 @@ export class Bars extends Mark {
             return;
         }
 
-        const abs_diff = this.x_pixels.map(function (elem) { return Math.abs(elem - pixel); });
+        const abs_diff = this.x_pixels.map((elem) => { return Math.abs(elem - pixel); });
         this.model.set("selected", new Uint32Array([abs_diff.indexOf(d3.min(abs_diff))]));
         this.touch();
     }
@@ -249,18 +249,14 @@ export class Bars extends Mark {
         this.set_ranges();
         const that = this;
         let bar_groups = this.d3el.selectAll(".bargroup")
-            .data(this.model.mark_data, function (d) {
-                return d.key;
-            });
+            .data(this.model.mark_data, (d) => d.key);
 
         const dom_scale = this.dom_scale;
         // this.stacked_scale is the ordinal scale used to draw the bars. If a linear
         // scale is given, then the ordinal scale is created from the
         // linear scale.
         if (dom_scale.model.type !== "ordinal") {
-            const model_domain = this.model.mark_data.map(function (elem) {
-                return elem.key;
-            });
+            const model_domain = this.model.mark_data.map((elem) => elem.key);
             this.stacked_scale.domain(model_domain);
         } else {
             this.stacked_scale.domain(dom_scale.scale.domain());
@@ -292,9 +288,7 @@ export class Bars extends Mark {
         });
 
         const bars_sel = bar_groups.selectAll(".bar")
-            .data(function (d) {
-                return d.values;
-            });
+            .data((d) => d.values);
 
         // default values for width and height are to ensure smooth
         // transitions
@@ -312,9 +306,7 @@ export class Bars extends Mark {
 
         if (this.model.get("label_display")) {
             const bar_labels = bar_groups.selectAll(".bar_label")
-            .data(function (d) {
-                return d.values;
-            });
+            .data((d) => d.values);
 
             bar_labels.exit().remove();
 
@@ -416,7 +408,7 @@ export class Bars extends Mark {
         this.pixel_coords = this.model.mark_data.map(d => {
             const key = d.key;
             const group_dom = dom_scale.scale(key) + this.dom_offset;
-            return d.values.map(function (d) {
+            return d.values.map((d) => {
                 const rect_coords = {};
                 rect_coords[dom] = is_stacked ? group_dom : group_dom + this.grouped_scale(d.sub_index);
                 rect_coords[rang] = is_stacked ?
@@ -430,7 +422,7 @@ export class Bars extends Mark {
                 [rect_coords["y"], rect_coords["y"] + rect_coords["height"]]];
             })
         })
-        this.x_pixels = this.model.mark_data.map(function (el) {
+        this.x_pixels = this.model.mark_data.map((el) => {
             return dom_scale.scale(el.key) + dom_scale.offset;
         });
     }
@@ -719,7 +711,7 @@ export class Bars extends Mark {
             return [0, 0];
         }
 
-        const legend_data = this.model.mark_data[0].values.map(function (data) {
+        const legend_data = this.model.mark_data[0].values.map((data) => {
             return {
                 index: data.sub_index,
                 color: data.color,
@@ -734,18 +726,18 @@ export class Bars extends Mark {
         const legend = this.legend_el.enter()
             .append("g")
             .attr("class", "legend" + this.uuid)
-            .attr("transform", function (d, i) {
+            .attr("transform", (d, i) => {
                 return "translate(0, " + (i * inter_y_disp + y_disp) + ")";
             })
-            .on("mouseover", _.bind(function () {
+            .on("mouseover", () => {
                 this.event_dispatcher("legend_mouse_over");
-            }, this))
-            .on("mouseout", _.bind(function () {
+            })
+            .on("mouseout", () => {
                 this.event_dispatcher("legend_mouse_out");
-            }, this))
-            .on("click", _.bind(function () {
+            })
+            .on("click", () => {
                 this.event_dispatcher("legend_clicked");
-            }, this));
+            });
 
         legend.append("rect")
             .classed("legendrect", true)
@@ -760,14 +752,12 @@ export class Bars extends Mark {
             .attr("x", rect_dim * 1.2)
             .attr("y", rect_dim / 2)
             .attr("dy", "0.35em")
-            .text(function (d, i) { return that.model.get("labels")[i]; })
+            .text((d, i) => { return that.model.get("labels")[i]; })
             .style("fill", this.get_mark_color.bind(this));
 
         this.legend_el = legend.merge(this.legend_el);
 
-        const max_length = d3.max(this.model.get("labels"), function (d: any[]) {
-            return d.length;
-        });
+        const max_length = d3.max(this.model.get("labels"), (d: any[]) => d.length);
 
         this.legend_el.exit().remove();
         return [this.model.mark_data[0].values.length, max_length];
@@ -877,11 +867,11 @@ export class Bars extends Mark {
                 const max_index = (selected.length !== 0) ?
                     d3.max(selected) : that.model.mark_data.length;
                 if (index > max_index) {
-                    _.range(max_index + 1, index + 1).forEach(function (i) {
+                    _.range(max_index + 1, index + 1).forEach((i) => {
                         selected.push(i);
                     });
                 } else if (index < min_index) {
-                    _.range(index, min_index).forEach(function (i) {
+                    _.range(index, min_index).forEach((i) => {
                         selected.push(i);
                     });
                 }
