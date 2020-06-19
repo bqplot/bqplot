@@ -973,6 +973,8 @@ class Bars(Mark):
         'element' means for every dimension of y, all bars have same color.
         'auto' picks 'group' and 'element' for 1-d and 2-d values of
         Y respectively.
+    opacity_mode: {'auto', 'group', 'element'}
+        Same as the `color_mode` attribute, but for the opacity.
     type: {'stacked', 'grouped'}
         whether 2-dimensional bar charts should appear grouped or stacked.
     colors: list of colors (default: ['steelblue'])
@@ -1060,6 +1062,8 @@ class Bars(Mark):
         'color': {'dimension': 'color'}
     }).tag(sync=True)
     color_mode = Enum(['auto', 'group', 'element'], default_value='auto')\
+        .tag(sync=True)
+    opacity_mode = Enum(['auto', 'group', 'element'], default_value='auto')\
         .tag(sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked')\
         .tag(sync=True, display_name='Type')
