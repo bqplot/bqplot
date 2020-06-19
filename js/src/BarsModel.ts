@@ -163,14 +163,22 @@ export class BarsModel extends markmodel.MarkModel {
         const color_mode = this.get("color_mode");
         const apply_color_to_groups = ((color_mode === "group") ||
                                      (color_mode === "auto" && !(this.is_y_2d)));
+        const apply_color_to_group_element = ((color_mode === "element") ||
+                                     (color_mode === "auto" && this.is_y_2d));
+
         const opacity_mode = this.get("opacity_mode");
         const apply_opacity_to_groups = ((opacity_mode === "group") ||
                                      (opacity_mode === "auto" && !(this.is_y_2d)));
+        const apply_opacity_to_group_element = ((opacity_mode === "element") ||
+                                     (opacity_mode === "auto" && this.is_y_2d));
 
+        let element_idx = 0;
         this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
             single_bar_d.values.forEach(function(bar_d, bar_index) {
-                bar_d.color_index = (apply_color_to_groups) ? bar_grp_index : bar_index;
-                bar_d.opacity_index = (apply_opacity_to_groups) ? bar_grp_index : bar_index;
+                bar_d.color_index = apply_color_to_groups ? bar_grp_index : apply_color_to_group_element ? bar_index : element_idx;
+                bar_d.opacity_index = apply_opacity_to_groups ? bar_grp_index : apply_opacity_to_group_element ? bar_index : element_idx;
+
+                element_idx++;
             });
         });
 

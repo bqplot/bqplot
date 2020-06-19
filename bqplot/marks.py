@@ -966,14 +966,16 @@ class Bars(Mark):
         font-awesome icon for that mark
     name: string (class-level attribute)
         user-friendly name of the mark
-    color_mode: {'auto', 'group', 'element'}
-        enum attribute to specify if color should be the same for all bars with
-        the same x or for all bars which belong to the same array in Y
-        'group' means for every x all bars have same color.
-        'element' means for every dimension of y, all bars have same color.
-        'auto' picks 'group' and 'element' for 1-d and 2-d values of
-        Y respectively.
-    opacity_mode: {'auto', 'group', 'element'}
+    color_mode: {'auto', 'group', 'element', 'no_group'}
+        Specify how default colors are applied to bars.
+        The 'group' mode means colors are assigned per group. If the list
+        of colors is shorter than the number of groups, colors are reused.
+        The 'element' mode means colors are assigned per group element. If the list
+        of colors is shorter than the number of bars in a group, colors are reused.
+        The 'no_group' mode means colors are assigned per bar, discarding the fact
+        that there are groups or stacks. If the list of colors is shorter than the
+        total number of bars, colors are reused.
+    opacity_mode: {'auto', 'group', 'element', 'no_group'}
         Same as the `color_mode` attribute, but for the opacity.
     type: {'stacked', 'grouped'}
         whether 2-dimensional bar charts should appear grouped or stacked.
@@ -1061,9 +1063,9 @@ class Bars(Mark):
         'y': {'orientation': 'vertical', 'dimension': 'y'},
         'color': {'dimension': 'color'}
     }).tag(sync=True)
-    color_mode = Enum(['auto', 'group', 'element'], default_value='auto')\
+    color_mode = Enum(['auto', 'group', 'element', 'no_group'], default_value='auto')\
         .tag(sync=True)
-    opacity_mode = Enum(['auto', 'group', 'element'], default_value='auto')\
+    opacity_mode = Enum(['auto', 'group', 'element', 'no_group'], default_value='auto')\
         .tag(sync=True)
     type = Enum(['stacked', 'grouped'], default_value='stacked')\
         .tag(sync=True, display_name='Type')
