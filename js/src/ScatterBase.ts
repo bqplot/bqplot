@@ -401,7 +401,7 @@ export abstract class ScatterBase extends Mark {
             len = colors.length;
 
         const rect_dim = inter_y_disp * 0.8;
-        const el_added = this.legend_el.enter()
+        const legend = this.legend_el.enter()
           .append("g")
             .attr("class", "legend" + this.uuid)
             .attr("transform", (d, i) => {
@@ -417,9 +417,9 @@ export abstract class ScatterBase extends Mark {
                 this.event_dispatcher("legend_clicked");
             });
 
-        this.draw_legend_elements(el_added, rect_dim)
+        this.draw_legend_elements(legend, rect_dim)
 
-        this.legend_el.append("text")
+        legend.append("text")
           .attr("class","legendtext")
           .attr("x", rect_dim * 1.2)
           .attr("y", rect_dim / 2)
@@ -431,7 +431,7 @@ export abstract class ScatterBase extends Mark {
               return colors[i % len];
           });
 
-        this.legend_el = el_added.merge(this.legend_el);
+        this.legend_el = legend.merge(this.legend_el);
 
         const max_length = d3.max(this.model.get("labels"), (d: any) => {
             return Number(d.length);
