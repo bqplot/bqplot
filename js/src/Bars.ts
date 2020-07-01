@@ -814,7 +814,7 @@ export class Bars extends Mark {
             })
             .selectAll('.bar')
             .style("fill", fill ? this.get_mark_color.bind(this) : "none")
-            .style("stroke", stroke ? stroke : this.get_mark_color.bind(this))
+            .style("stroke", stroke ? stroke : "none")
             .style("opacity", this.get_mark_opacity.bind(this))
             .style("stroke-width", stroke_width);
     }
