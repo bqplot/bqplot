@@ -153,7 +153,7 @@ describe("bars >", () => {
 
         // No fill
         expect(getFills(rects)).to.eql(['none', 'none', 'none', 'none', 'none', 'none']);
-        expect(getStrokes(rects)).to.eql(['steelblue', 'steelblue', 'steelblue', 'steelblue', 'steelblue', 'steelblue']);
+        expect(getStrokes(rects)).to.eql(['none', 'none', 'none', 'none', 'none', 'none']);
         expect(getStrokeWidth(rects)).to.eql(['1', '1', '1', '1', '1', '1']);
 
         bars.model.set('stroke', 'red');
