@@ -38,6 +38,8 @@ export class ScatterBaseModel extends MarkModel {
             opacity: { dimension: "opacity" },
             rotation: { dimension: "rotation" }
         },
+        name_offset_x: null,
+        name_offset_y: null,
         hovered_style: {},
         unhovered_style: {},
         colors: ['steelblue'],
