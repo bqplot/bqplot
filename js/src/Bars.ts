@@ -140,6 +140,7 @@ export class Bars extends Mark {
             this.draw(animate);
         });
         this.listenTo(this.model, "change:colors", this.update_colors);
+        this.listenTo(this.model, "change:opacities", this.update_colors);
         this.listenTo(this.model, "colors_updated", this.update_colors);
         this.listenTo(this.model, "change:type", this.update_type);
         // FIXME: These are expensive calls for changing padding and align
@@ -147,7 +148,7 @@ export class Bars extends Mark {
         this.listenTo(this.model, "change:padding", this.relayout)
         this.listenTo(this.model, "change:orientation", this.relayout)
         this.listenTo(this.model, "change:tooltip", this.create_tooltip);
-        this.model.on_some_change(['stroke', 'opacities', 'fill', 'stroke_width'], this.apply_styles, this);
+        this.model.on_some_change(['stroke', 'fill', 'stroke_width'], this.apply_styles, this);
         this.listenTo(this.model, "change:selected", this.update_selected);
         this.listenTo(this.model, "change:interactions", this.process_interactions);
         this.listenTo(this.parent, "bg_clicked", () => {
@@ -686,21 +687,31 @@ export class Bars extends Mark {
         //if y is 1-d, each bar should be of 1 color.
         //if y is multi-dimensional, the corresponding values should be of
         //the same color.
+        const stroke = this.model.get("stroke");
         if (this.model.mark_data.length > 0) {
             if (!(this.model.is_y_2d)) {
-                this.d3el.selectAll(".bar").style("fill", this.get_mark_color.bind(this));
+                this.d3el.selectAll(".bar")
+                    .style("fill", this.get_mark_color.bind(this))
+                    .style("stroke", stroke ? stroke : this.get_mark_color.bind(this))
+                    .style("opacity", this.get_mark_opacity.bind(this));
             } else {
                 this.d3el.selectAll(".bargroup")
                     .selectAll(".bar")
-                    .style("fill", this.get_mark_color.bind(this));
+                    .style("fill", this.get_mark_color.bind(this))
+                    .style("stroke", stroke ? stroke : this.get_mark_color.bind(this))
+                    .style("opacity", this.get_mark_opacity.bind(this));
             }
         }
         //legend color update
         if (this.legend_el) {
             this.legend_el.selectAll(".legendrect")
-                .style("fill", this.get_mark_color.bind(this));
+                .style("fill", this.get_mark_color.bind(this))
+                .style("stroke", stroke ? stroke : this.get_mark_color.bind(this))
+                .style("opacity", this.get_mark_opacity.bind(this));
             this.legend_el.selectAll(".legendtext")
-                .style("fill", this.get_mark_color.bind(this));
+                .style("fill", this.get_mark_color.bind(this))
+                .style("stroke", stroke ? stroke : this.get_mark_color.bind(this))
+                .style("opacity", this.get_mark_opacity.bind(this));
         }
     }
 
@@ -714,8 +725,8 @@ export class Bars extends Mark {
         const legend_data = this.model.mark_data[0].values.map((data) => {
             return {
                 index: data.sub_index,
-                color: data.color,
-                color_index: data.color_index
+                color_index: data.color_index,
+                opacity_index: data.opacity_index,
             };
         });
         this.legend_el = elem.selectAll(".legend" + this.uuid)
@@ -826,7 +837,7 @@ export class Bars extends Mark {
 
     get_mark_opacity(data, index) {
         // Workaround for the bargroup, the color index is not the same as the bar index
-        return super.get_mark_opacity(data, data.color_index);
+        return super.get_mark_opacity(data, data.opacity_index);
     }
 
     set_x_range() {

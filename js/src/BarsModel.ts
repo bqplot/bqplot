@@ -35,6 +35,7 @@ export class BarsModel extends markmodel.MarkModel {
                 color: { dimension: "color" }
             },
             color_mode: "auto",
+            opacity_mode: "auto",
             type: "stacked",
             colors: ['steelblue'],
             padding: 0.05,
@@ -57,7 +58,7 @@ export class BarsModel extends markmodel.MarkModel {
         super.initialize(attributes, options);
         this.is_y_2d = false;
         this.on_some_change(["x", "y", "base"], this.update_data, this);
-        this.on("change:color", function() {
+        this.on_some_change(["color", "opacities", "color_mode", "opacity_mode"], function() {
             this.update_color();
             this.trigger("colors_updated");
         }, this);
@@ -162,18 +163,31 @@ export class BarsModel extends markmodel.MarkModel {
         const color_mode = this.get("color_mode");
         const apply_color_to_groups = ((color_mode === "group") ||
                                      (color_mode === "auto" && !(this.is_y_2d)));
+        const apply_color_to_group_element = ((color_mode === "element") ||
+                                     (color_mode === "auto" && this.is_y_2d));
+
+        const opacity_mode = this.get("opacity_mode");
+        const apply_opacity_to_groups = ((opacity_mode === "group") ||
+                                     (opacity_mode === "auto" && !(this.is_y_2d)));
+        const apply_opacity_to_group_element = ((opacity_mode === "element") ||
+                                     (opacity_mode === "auto" && this.is_y_2d));
+
+        let element_idx = 0;
         this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
             single_bar_d.values.forEach(function(bar_d, bar_index) {
-                bar_d.color_index = (apply_color_to_groups) ? bar_grp_index : bar_index;
-                bar_d.color = color[bar_d.color_index];
+                bar_d.color_index = apply_color_to_groups ? bar_grp_index : apply_color_to_group_element ? bar_index : element_idx;
+                bar_d.opacity_index = apply_opacity_to_groups ? bar_grp_index : apply_opacity_to_group_element ? bar_index : element_idx;
+
+                element_idx++;
             });
         });
+
         if(color_scale && color.length > 0) {
-                if(!this.get("preserve_domain").color) {
-                    color_scale.compute_and_set_domain(color, this.model_id + "_color");
-                } else {
-                    color_scale.del_domain([], this.model_id + "_color");
-                }
+            if(!this.get("preserve_domain").color) {
+                color_scale.compute_and_set_domain(color, this.model_id + "_color");
+            } else {
+                color_scale.del_domain([], this.model_id + "_color");
+            }
         }
     }
 
