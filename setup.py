@@ -178,7 +178,7 @@ setup_args = dict(
             'bqplot/static/index.js',
             'bqplot/static/index.js.map',
         ]),
-        ('etc/jupyter/nbconfig/notebook.d' , ['bqplot.json'])
+        ('etc/jupyter/nbconfig/notebook.d', ['bqplot.json'])
     ],
     install_requires=[
         'ipywidgets>=7.5.0',
@@ -186,7 +186,7 @@ setup_args = dict(
         'traittypes>=0.0.6',
         'numpy>=1.10.4',
         'pandas'],
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests"]),
     zip_safe=False,
     cmdclass={
         'build_py': js_prerelease(build_py),
