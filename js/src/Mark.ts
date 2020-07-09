@@ -350,11 +350,13 @@ export abstract class Mark extends widgets.WidgetView {
     }
 
     event_dispatcher(event_name, data?) {
-        //sends a custom mssg to the python side if required
-        this.custom_msg_sender(event_name);
         if(this.event_listeners[event_name] !== undefined) {
             _.bind(this.event_listeners[event_name], this, data)();
         }
+        // Sends a custom mssg to the python side if required
+        // This must be done after calling the event_listeners so that needed
+        // properties (like "selected") are updated
+        this.custom_msg_sender(event_name);
     }
 
     custom_msg_sender(event_name) {
