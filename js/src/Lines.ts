@@ -540,7 +540,11 @@ export class Lines extends Mark {
           .attr("class", "curve");
         new_curves.append("path")
           .attr("class", "line")
-          .attr("fill", "none");
+          .attr("fill", "none")
+          .attr("id", (d, i) => "curve" + (i + 1))
+          .on("click", () => {
+              this.event_dispatcher("element_clicked");
+          });
         new_curves.append("path")
           .attr("class", "area");
         new_curves.append("text")
@@ -549,16 +553,10 @@ export class Lines extends Mark {
           .attr("dy", ".35em")
           .attr("display", this.model.get("labels_visibility") !== "label" ?
                 "none" : "inline")
-          .text(function(d) { return d.name; });
+          .text((d) => d.name);
 
         const fill = this.model.get("fill"),
             area = (fill === "top" || fill === "bottom" || fill === "between");
-
-        curves_sel.select(".line")
-          .attr("id", function(d, i) { return "curve" + (i+1); })
-          .on("click", _.bind(function() {
-              this.event_dispatcher("element_clicked");
-          }, this));
 
         this.draw_dots();
 
