@@ -1,7 +1,14 @@
-Reach out to us on the ipywidgets gitter chat if you have any questions:
+# Contributing to bqplot
 
-Help / Documentation
---------------------
+## Governance and code of conduct
+
+Bqplot is subject to the [bqplot governance](https://github.com/bqplot/governance/blob/master/governance.md) and the [bqplot code of conduct](https://github.com/bqplot/governance/blob/master/code_of_conduct.md).
+
+## Questions
+
+Should you have any question, please do not hesitate to reach out to us on the [ipywidgets gitter chat](https://gitter.im/jupyter-widgets/Lobby).
+
+## Help / Documentation
 
 - API reference documentation: [![Read the documentation of the stable version](https://readthedocs.org/projects/pip/badge/?version=stable)](http://bqplot.readthedocs.org/en/stable/) [![Read the documentation of the development version](https://readthedocs.org/projects/pip/badge/?version=latest)](http://bqplot.readthedocs.org/en/latest/)
 
