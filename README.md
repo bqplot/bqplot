@@ -158,6 +158,10 @@ Versions lookup table:
 | 0.11.1              | 0.4.1                    |
 | 0.11.0              | 0.4.0                    |
 
+## Development
+
+See our [contributing guidelines](CONTRIBUTING.md) to know how to contribute and set up a development environment.
+
 ## License
 
 This software is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file
