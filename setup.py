@@ -23,7 +23,7 @@ import sys
 from distutils import log
 
 here = os.path.dirname(os.path.abspath(__file__))
-node_root = os.path.join(here, 'js')
+node_root = os.path.join(here, 'ts')
 is_repo = os.path.exists(os.path.join(here, '.git'))
 
 npm_path = os.pathsep.join([
