@@ -80,12 +80,12 @@ export class Bars extends Mark {
         const x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function () {
             if (!this.model.dirty) {
-                this.draw(false);
+                this.draw(true);
             }
         });
         this.listenTo(y_scale, "domain_changed", function () {
             if (!this.model.dirty) {
-                this.draw(false);
+                this.draw(true);
             }
         });
     }
