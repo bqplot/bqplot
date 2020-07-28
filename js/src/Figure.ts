@@ -119,7 +119,7 @@ class Figure extends widgets.DOMWidgetView {
 
         this.update_plotarea_dimensions();
         // we hide it when the plot area is too small
-        if ((this.plotarea_width < 1) || (this.plotarea_width < 1) ) {
+        if ((this.plotarea_width < 1) || (this.plotarea_height < 1) ) {
             this.el.style.visibility = "hidden";
         } else {
             this.el.style.visibility = "";
@@ -846,6 +846,8 @@ class Figure extends widgets.DOMWidgetView {
             svg.setAttribute("version", "1.1");
             svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
             svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+            svg.setAttribute("width", this.width);
+            svg.setAttribute("height", this.height);
             svg.style.background = window.getComputedStyle(document.body).background;
 
             const computedStyle = window.getComputedStyle(this.el);
