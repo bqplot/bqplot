@@ -18,9 +18,6 @@ import * as d3 from 'd3';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-//@ts-ignore
-window.d3 = d3;
-
 export class HistModel extends MarkModel {
 
     defaults() {
@@ -86,9 +83,8 @@ export class HistModel extends MarkModel {
             const x_data_ind =  Array.prototype.map.call(x_data, function (d,i) {
                 return {index: i, value: d};
             });
-
+            
             this.x_bins = d3.range(this.min_x, this.max_x, (this.max_x - this.min_x) / this.num_bins);
-
             this.x_mid = this.x_bins.map(function(d, i) {
                 return 0.5 * (d + that.x_bins[i - 1]);
             }).slice(1);
