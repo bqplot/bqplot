@@ -18,6 +18,9 @@ import * as d3 from 'd3';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
+//@ts-ignore
+window.d3 = d3;
+
 export class HistModel extends MarkModel {
 
     defaults() {
@@ -84,7 +87,8 @@ export class HistModel extends MarkModel {
                 return {index: i, value: d};
             });
 
-            this.x_bins =  this.create_uniform_bins(this.min_x, this.max_x, this.num_bins);
+            this.x_bins = d3.range(this.min_x, this.max_x, (this.max_x - this.min_x) / this.num_bins);
+
             this.x_mid = this.x_bins.map(function(d, i) {
                 return 0.5 * (d + that.x_bins[i - 1]);
             }).slice(1);
@@ -154,17 +158,6 @@ export class HistModel extends MarkModel {
                 return d.y;
             }) * 1.05], this.model_id + "_count");
         }
-    }
-
-    create_uniform_bins(min_val, max_val, num_bins) {
-        const diff = max_val - min_val;
-        const step_size = (diff) / num_bins;
-        const return_val = [];
-        for(let i=0; i<num_bins; i++) {
-            return_val[i] = min_val+ i * step_size;
-        }
-        return_val[num_bins] = max_val;
-        return return_val;
     }
 
     static serializers = {
