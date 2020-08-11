@@ -45,7 +45,7 @@ export class Bars extends Mark {
             this.process_interactions();
             this.create_listeners();
             this.compute_view_padding();
-            this.draw();
+            this.draw(false);
         });
     }
 
@@ -80,12 +80,12 @@ export class Bars extends Mark {
         const x_scale = this.scales.x, y_scale = this.scales.y;
         this.listenTo(x_scale, "domain_changed", function () {
             if (!this.model.dirty) {
-                this.draw();
+                this.draw(true);
             }
         });
         this.listenTo(y_scale, "domain_changed", function () {
             if (!this.model.dirty) {
-                this.draw();
+                this.draw(true);
             }
         });
     }
@@ -335,12 +335,6 @@ export class Bars extends Mark {
         const bar_groups = this.d3el.selectAll(".bargroup");
         const bars_sel = bar_groups.selectAll(".bar");
         const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
-        // We need two different transitions because draw_bars can be called in the following cases:
-        // - after the scale has been updated, in that case animate === false
-        // - after the data has been updated, in that case animate === true
-        // However, if we use the same transition, the animation_duration won't be updated and the
-        // "immediate" transition will always be used...
-        const transition_name = animate === true ? "update_bars" : "draw_bars";
         const that = this;
         const orient = this.model.get("orientation");
 
@@ -379,7 +373,7 @@ export class Bars extends Mark {
         let band_width = 1.0;
         if (is_stacked) {
             band_width = Math.max(1.0, this.stacked_scale.bandwidth());
-            bars_sel.transition(transition_name).duration(animation_duration)
+            bars_sel.transition().duration(animation_duration)
                 .attr(dom, 0)
                 .attr(dom_control, band_width.toFixed(2))
                 .attr(rang, function (d) {
@@ -390,7 +384,7 @@ export class Bars extends Mark {
                 });
         } else {
             band_width = Math.max(1.0, this.grouped_scale.bandwidth());
-            bars_sel.transition(transition_name).duration(animation_duration)
+            bars_sel.transition().duration(animation_duration)
                 .attr(dom, function (datum, index) {
                     return that.grouped_scale(index);
                 })
