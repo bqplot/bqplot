@@ -17,34 +17,22 @@ import "../css/bqplot.css";
 
 import { IJupyterWidgetRegistry } from "@jupyter-widgets/base";
 
-const { version } = require("../package.json");
+const packageJSON = require("../package.json");
 
 /**
  * The widget manager provider.
  */
-module.exports = {
-  id: "bqplot",
+const plugin = {
+  id: name,
   requires: [IJupyterWidgetRegistry],
   activate: function (app, widgets) {
     widgets.registerWidget({
-      name: "bqplot",
-      version,
-      exports: function () {
-        return new Promise(function (resolve, reject) {
-          require.ensure(
-            ["./index"],
-            function (require) {
-              resolve(require("./index"));
-            },
-            function (err) {
-              console.error(err);
-              reject(err);
-            },
-            "bqplot"
-          );
-        });
-      },
+      name: packageJSON.name,
+      version: packageJSON.version,
+      exports: () => import(/* webpackChunkName: "bqplot" */ "./index"),
     });
   },
   autoStart: true,
 };
+
+export default plugin;
