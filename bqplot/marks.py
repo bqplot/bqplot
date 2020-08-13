@@ -610,6 +610,12 @@ class Scatter(_ScatterBase):
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
+    label_display_horizontal_offset: float (default: None)
+        Adds an offset, in pixels, to the horizontal positioning of the 'names'
+        label above each data point
+    label_display_vertical_offset: float (default: None)
+        Adds an offset, in pixels, to the vertical positioning of the 'names'
+        label above each data point
     enable_move: bool (default: False)
         Controls whether points can be moved by dragging. Refer to restrict_x,
         restrict_y for more options.
@@ -704,6 +710,8 @@ class Scatter(_ScatterBase):
     names = Array(None, allow_none=True)\
         .tag(sync=True, **array_serialization).valid(array_squeeze)
     display_names = Bool(True).tag(sync=True, display_name='Display names')
+    label_display_horizontal_offset = Float(allow_none=True).tag(sync=True)
+    label_display_vertical_offset = Float(allow_none=True).tag(sync=True)
     fill = Bool(True).tag(sync=True)
     drag_color = Color(None, allow_none=True).tag(sync=True)
     drag_size = Float(5.).tag(sync=True)

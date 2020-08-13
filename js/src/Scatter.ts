@@ -23,7 +23,7 @@ const bqSymbol: any = markers.symbol;
 export class Scatter extends ScatterBase {
 
     render() {
-
+        
         this.dot = bqSymbol()
           .type(this.model.get("marker"))
           .size(this.model.get("default_size"))
@@ -43,6 +43,7 @@ export class Scatter extends ScatterBase {
         this.listenTo(this.model, "change:default_size", this.update_default_size);
         this.listenTo(this.model, "change:fill", this.update_fill);
         this.listenTo(this.model, "change:display_names", this.update_names);
+        this.listenTo(this.model, "change:label_display_horizontal_offset change:label_display_vertical_offset", this.update_names);
     }
 
     update_colors(model, new_colors) {
@@ -189,8 +190,14 @@ export class Scatter extends ScatterBase {
             .transition("update_names")
             .duration(animation_duration)
             .attr("transform", function(d) {
+                const label_display_horizontal_offset = that.model.get('label_display_horizontal_offset');
+                const label_display_vertical_offset = that.model.get('label_display_vertical_offset');
                 const text_loc = Math.sqrt(that.get_element_size(d)) / 2.0;
-                return "translate(" + (text_loc) + "," + (-text_loc) + ")";})
+                
+                return "translate(" 
+                        + (label_display_horizontal_offset ? label_display_horizontal_offset : text_loc) + "," 
+                        + (label_display_vertical_offset ? -label_display_vertical_offset : -text_loc) + ")";
+            })
             .attr("display", function(d) {
                 return (show_names) ? "inline": "none";
             });
