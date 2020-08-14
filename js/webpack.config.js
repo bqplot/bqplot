@@ -18,7 +18,8 @@ module.exports = [
         output: {
             filename: 'extension.js',
             path: path.resolve(__dirname, '../bqplot/static'),
-            libraryTarget: 'amd'
+            libraryTarget: 'amd',
+            devtoolModuleFilenameTemplate: 'webpack://jupyter-widgets/bqplot/[resource-path]?[loaders]',
         },
         externals: ['@jupyter-widgets/base'],
         mode: 'production'
@@ -28,7 +29,8 @@ module.exports = [
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, '../bqplot/static'),
-            libraryTarget: 'amd'
+            libraryTarget: 'amd',
+            devtoolModuleFilenameTemplate: 'webpack://jupyter-widgets/bqplot/[resource-path]?[loaders]',
         },
         devtool: 'source-map',
         module: {
@@ -42,7 +44,8 @@ module.exports = [
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, './dist/'),
-            libraryTarget: 'amd'
+            libraryTarget: 'amd',
+            devtoolModuleFilenameTemplate: 'webpack://jupyter-widgets/bqplot/[resource-path]?[loaders]',
         },
         devtool: 'source-map',
         module: {
