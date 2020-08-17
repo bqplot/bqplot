@@ -110,9 +110,15 @@ export class Image extends Mark {
             URL.revokeObjectURL(this.im.attr("href"));
         }
         const image = this.model.get("image");
-        const blob = new Blob([image.get("value")], {type: "image/" + image.get("format")});
-        const url = URL.createObjectURL(blob);
-        this.im.attr("href", url);
+        const format = image.get("format");
+        if (format === "url") {
+            const url = new TextDecoder('utf-8').decode(image.get("value"));
+            this.im.attr("href", url);
+        } else {
+            const blob = new Blob([image.get("value")], {type: "image/" + image.get("format")});
+            const url = URL.createObjectURL(blob);
+            this.im.attr("href", url);
+        }
     }
 
     remove() {
