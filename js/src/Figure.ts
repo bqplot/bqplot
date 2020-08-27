@@ -877,8 +877,8 @@ class Figure extends widgets.DOMWidgetView {
             // and add the webgl canvas as an image
             if (this.renderer) {
                 const data_url = this.renderer.domElement.toDataURL('image/png');
-                const marks = d3.select(g_root.children[2]);
-                marks.append("image")
+                const marks = d3.select(g_root.children[3]);
+                marks.insert("image", ":first-child")
                     .attr("x", 0)
                     .attr("y", 0)
                     .attr("width", 1)
