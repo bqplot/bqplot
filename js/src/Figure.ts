@@ -833,7 +833,7 @@ class Figure extends widgets.DOMWidgetView {
         // Even though the canvas may display the rendering already, it is not guaranteed it can be read of the canvas
         // or we have to set preserveDrawingBuffer to true, which may impact performance.
         // Instead, we render again, and directly afterwards we do get the pixel data using canvas.toDataURL
-        return this.render_gl().then(() => {
+        return this.render_gl().then(async () => {
             // Create standalone SVG string
             const node_background: any = this.svg_background.node();
             const node_foreground: any = this.svg.node();
@@ -843,6 +843,21 @@ class Figure extends widgets.DOMWidgetView {
             // Creates a standalone SVG string from an inline SVG element
             // containing all the computed style attributes.
             const svg = node_foreground.cloneNode(true);
+            // images can contain blob urls, we transform those to data urls
+            const blobToDataUrl = async (el) => {
+                const blob = await (await fetch(el.getAttribute('href'))).blob();
+                const reader = new FileReader();
+                const readerPromise = new Promise((resolve, reject) => {
+                    reader.onloadend = resolve
+                    reader.onerror = reject;
+                    reader.abort = reject;
+                });
+                reader.readAsDataURL(blob);
+                await readerPromise;
+                el.setAttribute("href", reader.result);
+            }
+            const images = [...svg.querySelectorAll('image')];
+            await Promise.all(images.map(blobToDataUrl));
             svg.setAttribute("version", "1.1");
             svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
             svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
