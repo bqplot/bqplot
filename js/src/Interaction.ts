@@ -41,7 +41,7 @@ export class Interaction extends widgets.WidgetView {
                             this.parent.margin.bottom)
             .attr("pointer-events", "all")
             .attr("visibility", "hidden");
-        this.parent.on("margin_updated", this.relayout, this);
+        this.listenTo(this.parent, "margin_updated", this.relayout);
     }
 
     relayout() {

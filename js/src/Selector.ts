@@ -40,7 +40,7 @@ export abstract class BaseSelector extends Interaction {
     }
 
     create_listeners() {
-        this.parent.on("margin_updated", this.relayout, this);
+        this.listenTo(this.parent, "margin_updated", this.relayout);
         this.listenTo(this.model, "change:selected", this.selected_changed);
         this.listenTo(this.model, "change:marks", this.marks_changed);
         this.listenTo(this.model, "msg:custom", this.handle_custom_messages);

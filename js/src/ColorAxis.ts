@@ -57,7 +57,7 @@ class ColorBar extends Axis {
         this.axis_scale.on("highlight_axis", this.highlight, this);
         this.axis_scale.on("unhighlight_axis", this.unhighlight, this);
 
-        this.parent.on("margin_updated", this.parent_margin_updated, this);
+        this.listenTo(this.parent, "margin_updated", this.parent_margin_updated);
         this.listenTo(this.model, "change:visible", this.update_visibility);
         this.listenTo(this.model, "change:label", this.update_label);
         this.model.on_some_change(["side", "orientation"], this.update_display, this);

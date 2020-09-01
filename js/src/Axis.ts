@@ -79,7 +79,7 @@ export class Axis extends WidgetView {
         this.listenTo(this.model, "change:visible", this.update_visibility);
         this.model.on_some_change(["side", "orientation"], this.update_display, this);
         this.listenTo(this.model, "change:offset", this.update_offset);
-        this.parent.on("margin_updated", this.parent_margin_updated, this);
+        this.listenTo(this.parent, "margin_updated", this.parent_margin_updated);
     }
 
     update_offset() {
