@@ -143,7 +143,7 @@ export abstract class Mark extends widgets.WidgetView {
         this.listenTo(this.model, "change:selected_style", this.selected_style_updated);
         this.listenTo(this.model, "change:unselected_style", this.unselected_style_updated);
 
-        this.parent.on("margin_updated", this.relayout, this);
+        this.listenTo(this.parent, "margin_updated", this.relayout);
         this.model.on_some_change(["labels", "display_legend"], function() {
             this.model.trigger("redraw_legend");
         }, this);
