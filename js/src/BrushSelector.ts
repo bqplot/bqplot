@@ -317,7 +317,6 @@ export class BrushSelector extends BrushMixinXYSelector {
 
         this.brush.extent([[0, 0], [this.width, this.height]]);
         this.syncModelToBrush();
-        this.brushsel = this.d3el.call(this.brush);
     }
 
 
@@ -411,7 +410,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
             return;
         } else {
             const extent = [selected[0], selected[1]];
-            this.brush.extent(extent);
+            this.brush.move(this.d3el, extent);
             const pixel_extent = extent.map(this.scale.scale).sort(
                 (a: number, b: number) => a - b);
             this.update_mark_selected(pixel_extent);
@@ -438,6 +437,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
                 function(a, b) { return a - b; });
             this.brush.move(this.d3el, range);
         }
+        this.brushsel = this.d3el.call(this.brush);
     }
     reset() { }
 }
