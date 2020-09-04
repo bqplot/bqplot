@@ -1,0 +1,44 @@
+name: Tests
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  run:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [2.7, 3.6, 3.7, 3.8]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup conda
+      uses: goanpeca/setup-miniconda@v1
+      with:
+        channels: conda-forge
+
+    - name: Conda install dependencies
+      shell: bash -l {0}
+      run: conda env create -f test-environment.yml python=${{ matrix.python-version }} pip nodejs=14 pyyaml flake8
+
+    - name: Install bqplot
+      shell: bash -l {0}
+      run: pip install .
+
+    - name: Run tests
+      shell: bash -l {0}
+      run: py.test --cov-report=term --cov=bqplot tests
+
+    - name: Run flake8
+      shell: bash -l {0}
+      run: flake8 bqplot --ignore=E501
