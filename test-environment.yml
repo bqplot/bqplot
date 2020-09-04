@@ -17,4 +17,5 @@ dependencies:
     - pytest-cov  # test dependency
     - selenium  # test dependency
     - mock  # test dependency
+    - flake8
     - nose
