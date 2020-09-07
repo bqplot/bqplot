@@ -62,7 +62,7 @@
     "style-loader": "^1.2.0",
     "typescript": "^3.5.2",
     "webpack": "^4.35.0",
-    "webpack-cli": "^3.0.8"
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "@jupyter-widgets/base": "^2 || ^3",
