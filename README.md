@@ -14,7 +14,7 @@ the *Grammar of Graphics*.
 
 ## Usage
 
-[![Wealth of Nations](./wealth-of-nations.gif)](https://github.com/bqplot/bqplot/blob/master/examples/Applications/Wealth%20of%20Nations.ipynb)
+[![Wealth of Nations](./wealth-of-nations.gif)](https://github.com/bqplot/bqplot/blob/master/examples/Applications/Wealth%20Of%20Nations/Bubble%20Chart.ipynb)
 
 In bqplot, every component of a plot is an interactive widget. This allows the
 user to integrate visualizations with other Jupyter interactive widgets to
