@@ -440,18 +440,19 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
     }
 
     private syncModelToBrush() {
-        if(this.model.get("selected")) {
-            const range = this.model.get("selected").map(this.scale.scale).sort(
-                function(a, b) { return a - b; });
+        // Move and redraw the brush selector, preventing move events to be triggered
+        this.ignoreBrushEvents = true;
+        try {
+            if(this.model.get("selected")) {
+                const range = this.model.get("selected").map(this.scale.scale).sort(
+                    function(a, b) { return a - b; });
 
-            // Move and redraw the brush selector, preventing move events to be triggered
-            this.ignoreBrushEvents = true;
-            try {
                 this.brush.move(this.d3el, range);
-                this.brushsel = this.d3el.call(this.brush);
-            } finally {
-                this.ignoreBrushEvents = false;
             }
+
+            this.brushsel = this.d3el.call(this.brush);
+        } finally {
+            this.ignoreBrushEvents = false;
         }
     }
 
