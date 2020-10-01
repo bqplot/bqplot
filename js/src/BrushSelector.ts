@@ -123,16 +123,25 @@ abstract class BrushMixinXSelector extends selector.BaseXSelector {
     }
 
     brush_start () {
+        if (this.ignoreBrushEvents) {
+            return;
+        }
         this.brushing = true;
         this.model.set("brushing", true);
         this.touch();
     }
 
     brush_move () {
+        if (this.ignoreBrushEvents) {
+            return;
+        }
         this.convert_and_save();
     }
 
     brush_end () {
+        if (this.ignoreBrushEvents) {
+            return;
+        }
         this.model.set("brushing", false);
         this.convert_and_save();
         this.brushing = false;
@@ -214,6 +223,8 @@ abstract class BrushMixinXSelector extends selector.BaseXSelector {
 
     // TODO: should this be mark_views_promises?
     mark_views: any;
+
+    ignoreBrushEvents: boolean = false;
 }
 
 export class BrushSelector extends BrushMixinXYSelector {
@@ -317,9 +328,7 @@ export class BrushSelector extends BrushMixinXYSelector {
 
         this.brush.extent([[0, 0], [this.width, this.height]]);
         this.syncModelToBrush();
-        this.brushsel = this.d3el.call(this.brush);
     }
-
 
     private syncModelToBrush() {
         if(this.model.get("selected_x") && this.model.get("selected_y")) {
@@ -359,7 +368,6 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
         this.color_change();
         this.create_listeners();
         this.selected_changed();
-
     }
 
     create_listeners() {
@@ -370,7 +378,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
 
     empty_selection() {
         this.update_mark_selected();
-        this.model.set("selected", new Uint32Array([]));
+        this.model.set("selected", null);
         this.touch();
     }
 
@@ -383,9 +391,9 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
             const pixel_extent = e.selection;
             const extent = pixel_extent.map(this.scale.invert.bind(this.scale)).sort(
                 (a, b) => a - b);
-            this.update_mark_selected(pixel_extent);
 
-            this.set_selected("selected", extent);
+            this.update_mark_selected(pixel_extent);
+            this.set_selected("selected", Float32Array.from(extent));
             this.touch();
         }
     }
@@ -411,8 +419,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
             return;
         } else {
             const extent = [selected[0], selected[1]];
-            this.brush.extent(extent);
-            const pixel_extent = extent.map(this.scale.scale).sort(
+            const pixel_extent = extent.map((v) => this.scale.offset + this.scale.scale(v)).sort(
                 (a: number, b: number) => a - b);
             this.update_mark_selected(pixel_extent);
         }
@@ -433,12 +440,24 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
     }
 
     private syncModelToBrush() {
-        if(this.model.get("selected")) {
-            const range = this.model.get("selected").map(this.scale.scale).sort(
-                function(a, b) { return a - b; });
-            this.brush.move(this.d3el, range);
+        // Move and redraw the brush selector, preventing move events to be triggered
+        this.ignoreBrushEvents = true;
+        try {
+            if (this.model.get("selected")) {
+                const range = this.model.get("selected").map((v) => this.scale.offset + this.scale.scale(v)).sort(
+                    function(a, b) { return a - b; });
+
+                this.brush.move(this.d3el, range);
+            } else {
+                this.brush.move(this.d3el, null);
+            }
+
+            this.brushsel = this.d3el.call(this.brush);
+        } finally {
+            this.ignoreBrushEvents = false;
         }
     }
+
     reset() { }
 }
 
