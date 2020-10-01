@@ -123,16 +123,25 @@ abstract class BrushMixinXSelector extends selector.BaseXSelector {
     }
 
     brush_start () {
+        if (this.ignoreBrushEvents) {
+            return;
+        }
         this.brushing = true;
         this.model.set("brushing", true);
         this.touch();
     }
 
     brush_move () {
+        if (this.ignoreBrushEvents) {
+            return;
+        }
         this.convert_and_save();
     }
 
     brush_end () {
+        if (this.ignoreBrushEvents) {
+            return;
+        }
         this.model.set("brushing", false);
         this.convert_and_save();
         this.brushing = false;
@@ -214,6 +223,8 @@ abstract class BrushMixinXSelector extends selector.BaseXSelector {
 
     // TODO: should this be mark_views_promises?
     mark_views: any;
+
+    ignoreBrushEvents: boolean = false;
 }
 
 export class BrushSelector extends BrushMixinXYSelector {
@@ -319,7 +330,6 @@ export class BrushSelector extends BrushMixinXYSelector {
         this.syncModelToBrush();
     }
 
-
     private syncModelToBrush() {
         if(this.model.get("selected_x") && this.model.get("selected_y")) {
             const range_x = this.model.get("selected_x").map(this.x_scale.scale).sort(
@@ -358,7 +368,6 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
         this.color_change();
         this.create_listeners();
         this.selected_changed();
-
     }
 
     create_listeners() {
@@ -435,10 +444,17 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
         if(this.model.get("selected")) {
             const range = this.model.get("selected").map(this.scale.scale).sort(
                 function(a, b) { return a - b; });
-            this.brush.move(this.d3el, range);
+
+            this.ignoreBrushEvents = true;
+            try {
+                this.brush.move(this.d3el, range);
+            } finally {
+                this.ignoreBrushEvents = false;
+            }
         }
         this.brushsel = this.d3el.call(this.brush);
     }
+
     reset() { }
 }
 
