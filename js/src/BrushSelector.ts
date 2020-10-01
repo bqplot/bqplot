@@ -378,7 +378,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
 
     empty_selection() {
         this.update_mark_selected();
-        this.model.set("selected", new Uint32Array([]));
+        this.model.set("selected", new Float32Array());
         this.touch();
     }
 
@@ -391,9 +391,9 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
             const pixel_extent = e.selection;
             const extent = pixel_extent.map(this.scale.invert.bind(this.scale)).sort(
                 (a, b) => a - b);
-            this.update_mark_selected(pixel_extent);
 
-            this.set_selected("selected", extent);
+            this.update_mark_selected(pixel_extent);
+            this.set_selected("selected", Float32Array.from(extent));
             this.touch();
         }
     }
