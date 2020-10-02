@@ -118,7 +118,7 @@ export abstract class BaseXSelector extends BaseSelector {
     set_range(array) {
         const xy = (this.model.get("orientation") == "vertical") ? "y" : "x"
         for(let iter = 0; iter < array.length; iter++) {
-            array[iter].set_range(this.parent.padded_range(xy, array[iter].model));
+            array[iter].set_range(this.parent.range(xy));
         }
     }
 

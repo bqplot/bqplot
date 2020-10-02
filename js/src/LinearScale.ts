@@ -57,8 +57,7 @@ export class LinearScale extends Scale {
 
     invert_range(pixels) {
         //Pixels is a non-decreasing array of pixel values
-        const that = this;
-        return pixels.map(function(pix) { return that.invert(pix); });
+        return pixels.map((pix) => this.invert(pix));
     }
 }
 

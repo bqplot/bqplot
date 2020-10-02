@@ -74,7 +74,7 @@
 /*
  * gg and classic bqplot themes differ in the styling of the svg-background.
  *
- * plot area background fill: 
+ * plot area background fill:
  *   - gg: contrasted with the jupyterlab background. var(--jp-layout-color2);
  *   - classic: less contrasted: var(--jp-layout-color1);
  *
@@ -236,6 +236,11 @@
         stroke: red;
     }
     .brushintsel {
+        text {
+            fill: var(--bq-content-font-color);
+            font: var(--bq-font);
+            text-anchor: middle;
+        }
         .selection {
             fill: var(--bq-selector-fill);
             stroke: none;
