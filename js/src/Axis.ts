@@ -652,6 +652,9 @@ export class Axis extends WidgetView {
         if(this.axis_scale.model.type === "ordinal") {
             data_array = this.axis_scale.scale.domain();
         }
+        if(this.axis_scale.model.type === "linear") {
+            data_array = this.axis_scale.scale.ticks();
+        }
         if(num_ticks !== undefined && num_ticks !== null && num_ticks < 2) {
             return [];
         }
