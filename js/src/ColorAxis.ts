@@ -37,7 +37,6 @@ class ColorBar extends Axis {
         const that = this;
         return scale_promise.then(function() {
             that.create_listeners();
-            that.tick_format = that.generate_tick_formatter();
             that.set_scales_range();
             that.append_axis();
         });
@@ -141,7 +140,7 @@ class ColorBar extends Axis {
             this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale)
                                             : d3.axisBottom(this.axis_scale.scale);
         }
-        this.axis = this.axis.tickFormat(this.tick_format);
+        this.axis = this.axis.tickFormat(this.get_formatter());
         this.redraw_axisline();
     }
 
