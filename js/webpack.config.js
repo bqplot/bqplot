@@ -31,6 +31,7 @@ module.exports = [
             path: path.resolve(__dirname, '../share/jupyter/nbextensions/bqplot'),
             libraryTarget: 'amd',
             devtoolModuleFilenameTemplate: 'webpack://jupyter-widgets/bqplot/[resource-path]?[loaders]',
+            publicPath: '',
         },
         devtool: 'source-map',
         module: {

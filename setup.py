@@ -31,9 +31,11 @@ from distutils import log
 
 here = os.path.dirname(os.path.abspath(__file__))
 
-log.set_verbosity(log.DEBUG)
-log.info('setup.py entered')
-log.info('$PATH=%s' % os.environ['PATH'])
+# due to https://github.com/jupyterlab/jupyterlab/blob/136d2ec216ebfc429a696e6ee75fee5f8ead73e2/jupyterlab/federated_labextensions.py#L347
+# we should not print out anything, otherwise setup.py --name gives noise
+# log.set_verbosity(log.ERROR)
+# log.info('setup.py entered')
+# log.info('$PATH=%s' % os.environ['PATH'])
 
 name = 'bqplot'
 
@@ -82,6 +84,7 @@ jstargets = [
 
 data_files_spec = [
     ('share/jupyter/nbextensions/bqplot', 'share/jupyter/nbextensions/bqplot', '*.js'),
+    ('share/jupyter/labextensions/bqplot/', 'share/jupyter/labextensions/bqplot/', '**'),
     ('etc/jupyter/nbconfig/notebook.d', 'etc/jupyter/nbconfig/notebook.d', 'bqplot.json'),
 ]
 

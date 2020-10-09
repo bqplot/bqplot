@@ -31,16 +31,14 @@ install:
   - pip install . coveralls
   - conda list
 script:
+  - test -d $HOME/miniconda/envs/bqplot-test/share/jupyter/nbextensions/bqplot
+  - test -f $HOME/miniconda/envs/bqplot-test/share/jupyter/nbextensions/bqplot/extension.js
+  - test -f $HOME/miniconda/envs/bqplot-test/share/jupyter/nbextensions/bqplot/index.js
+  - test -d $HOME/miniconda/envs/bqplot-test/share/jupyter/labextensions/bqplot
+  - test -f $HOME/miniconda/envs/bqplot-test/share/jupyter/labextensions/bqplot/package.json
+  - test -d $HOME/miniconda/envs/bqplot-test/share/jupyter/labextensions/bqplot/static
+  - jupyter labextension list 2>&1 | grep -q bqplot
   - jupyter nbextension list 2>&1 | grep -ie "bqplot/extension.*enabled" -
   - py.test --cov-report=term --cov=bqplot tests
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
-      export DISPLAY=:99.0;
-      sh -e /etc/init.d/xvfb start || true;
-      jupyter labextension install js @jupyter-widgets/jupyterlab-manager;
-      python -m jupyterlab.selenium_check;
-      (rm -rf js/node_modules);
-      (cd js; npm install);
-      (cd js; npm run test);
-    fi
 after_success:
     - coveralls

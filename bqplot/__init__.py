@@ -81,6 +81,13 @@ def _prefix():
     return prefix
 
 
+def _jupyter_labextension_paths():
+    return [{
+        'src': f'{_prefix()}/share/jupyter/labextensions/bqplot/',
+        'dest': 'bqplot',
+    }]
+
+
 def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',

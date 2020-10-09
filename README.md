@@ -64,7 +64,7 @@ Using conda
 $ conda install -c conda-forge bqplot
 ```
 
-To enable bqplot with Jupyter lab:
+To enable bqplot for JupyterLab version 1 or 2 (not needed for JupyterLab 3.0):
 
 ```
 $ jupyter labextension install bqplot
@@ -88,9 +88,8 @@ with Windows.
 For the experimental JupyterLab extension, install the Python package, make sure the Jupyter widgets extension is installed, and install the bqplot extension:
 
 ```
-$ pip install bqplot
-$ jupyter labextension install @jupyter-widgets/jupyterlab-manager # install the Jupyter widgets extension
-$ jupyter labextension install bqplot
+$ pip install "ipywidgets>=7.6"
+$ jupyter labextension develop . --overwrite
 ```
 
 ### Loading `bqplot`
@@ -166,4 +165,3 @@ See our [contributing guidelines](CONTRIBUTING.md) to know how to contribute and
 
 This software is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file
 for details.
-

@@ -1,14 +1,15 @@
 name: bqplot-test
 channels:
     - conda-forge
-    - defaults
 dependencies:
     - python
+    - yarn
     - ipywidgets >=5.2.2
     - traitlets >=4.3.0
     - traittypes >=0.0.6
     - numpy >=1.10.4
     - pandas
+    - jupyterlab=3  # to build the lab federated bundle
     - pytest  # test dependency
     - pytest-cov  # test dependency
     - jupyterlab  # test dependency

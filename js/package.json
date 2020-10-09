@@ -19,17 +19,19 @@
     "url": "https://github.com/bloomberg/bqplot.git"
   },
   "scripts": {
-    "build": "npm run build:css && npm run build:js && webpack --mode=production",
+    "build": "jlpm run build:css && jlpm run build:js && jlpm run build:labextension && webpack --mode=production",
     "build:css": "lessc less/bqplot.less css/bqplot.css",
     "build:js": "tsc",
+    "build:labextension": "jupyter labextension build .",
     "watch": "npm-run-all -p watch:*",
     "watch:js": "tsc --watch",
     "watch:nbextension": "webpack --watch --mode=development",
-    "prepare": "npm run build",
+    "prepare": "jlpm run build",
     "test": "karma start --single-run"
   },
   "devDependencies": {
-    "@jupyter-widgets/controls": "^1.5.0 || ^2",
+    "@jupyter-widgets/controls": "^1.5.0 || ^2 || ^3",
+    "@jupyterlab/builder": "^3.0.0",
     "@types/chai": "^4.1.7",
     "@types/d3": "^5.7.2",
     "@types/expect.js": "^0.3.29",
@@ -37,7 +39,7 @@
     "@types/node": "^13.13.2",
     "@types/sinon": "^9.0.0",
     "chai": "^4.1.2",
-    "css-loader": "^3.0.0",
+    "css-loader": "^5.0.0",
     "file-loader": "^6.0.0",
     "imports-loader": "^0.8.0",
     "json-loader": "^0.5.7",
@@ -61,13 +63,13 @@
     "sinon-chai": "^3.3.0",
     "style-loader": "^1.2.0",
     "typescript": "^3.5.2",
-    "webpack": "^4.35.0",
+    "webpack": "^5",
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^2 || ^3",
-    "@phosphor/messaging": "^1",
-    "@phosphor/widgets": "^1",
+    "@jupyter-widgets/base": "^2 || ^3 || ^4.0.0",
+    "@lumino/messaging": "^1",
+    "@lumino/widgets": "^1",
     "d3": "^5.7.0",
     "d3-selection-multi": "^1.0.1",
     "is-typedarray": "^1.0.0",
@@ -76,13 +78,21 @@
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   },
+  "jupyterlab": {
+    "extension": "lib/jupyterlab-plugin",
+    "outputDir": "../share/jupyter/labextensions/bqplot",
+    "sharedPackages": {
+      "@jupyter-widgets/base": {
+        "bundled": false,
+        "singleton": true
+      },
+      "d3": false
+    }
+  },
   "files": [
     "dist/",
     "css/",
     "lib/",
     "shaders/"
-  ],
-  "jupyterlab": {
-    "extension": "lib/jupyterlab-plugin"
-  }
+  ]
 }

@@ -390,6 +390,7 @@ export class GridHeatMap extends Mark {
                 return [r, s];
             });
         });
+        // @ts-ignore
         selected = _.flatten(selected, true);
         this.model.set("selected", selected);
         this.touch();
