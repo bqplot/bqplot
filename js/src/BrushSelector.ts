@@ -274,8 +274,8 @@ export class BrushSelector extends BrushMixinXYSelector {
             const extent_y = pixel_extent_y.map(this.y_scale.invert.bind(this.y_scale)).sort(sort);
 
             this.update_mark_selected(pixel_extent_x, pixel_extent_y);
-            this.set_selected("selected_x", Float32Array.from(extent_x as ArrayLike<number>));
-            this.set_selected("selected_y", Float32Array.from(extent_y as ArrayLike<number>));
+            this.set_selected("selected_x", this.x_scale.model.typed((extent_x as ArrayLike<number>)));
+            this.set_selected("selected_y", this.y_scale.model.typed((extent_y as ArrayLike<number>)));
             this.touch();
         }
     }
@@ -385,7 +385,7 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
             const extent = pixel_extent.map(this.scale.invert.bind(this.scale)).sort(sort);
 
             this.update_mark_selected(pixel_extent);
-            this.set_selected("selected", Float32Array.from(extent));
+            this.set_selected("selected", this.scale.model.typed(extent));
             this.touch();
         }
     }

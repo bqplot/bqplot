@@ -26,6 +26,10 @@ export class OrdinalScaleModel extends ScaleModel {
         };
     }
 
+    typed(values) {
+        return new Int32Array(values.map(Number));
+    }
+
     initialize(attributes, options) {
         super.initialize(attributes, options);
     }
