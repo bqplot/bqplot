@@ -31,6 +31,10 @@ export class LinearScaleModel extends ScaleModel {
         };
     }
 
+    typedRange(values) {
+        return new Float64Array(values.map(Number));
+    }
+
     set_init_state() {
         this.type = "linear";
         this.global_min = Number.NEGATIVE_INFINITY;

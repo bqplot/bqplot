@@ -30,6 +30,12 @@ export class DateScaleModel extends LinearScaleModel{
         };
     }
 
+    typedRange(values) {
+        const ar: any = new Float64Array(values.map(Number));
+        ar.type = 'date';
+        return ar
+    }
+
     set_init_state() {
         this.type = "date";
         this.global_min = (new Date()).setTime(0);
