@@ -71,9 +71,16 @@ from ._version import version_info, __version__
 
 
 def _jupyter_nbextension_paths():
+    import sys
+    from pathlib import Path
+    prefix = sys.prefix
+    here = Path(__file__).parent
+    # for when in dev mode
+    if (here.parent / 'share/jupyter/nbextensions/bqplot').parent.exists():
+        prefix = here.parent
     return [{
         'section': 'notebook',
-        'src': 'static',
+        'src': f'{prefix}/share/jupyter/nbextensions/bqplot/',
         'dest': 'bqplot',
         'require': 'bqplot/extension'
     }]
