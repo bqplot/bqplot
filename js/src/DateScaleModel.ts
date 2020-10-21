@@ -30,7 +30,7 @@ export class DateScaleModel extends LinearScaleModel{
         };
     }
 
-    typed(values) {
+    typedRange(values) {
         const ar: any = new Float64Array(values.map(Number));
         ar.type = 'date';
         return ar

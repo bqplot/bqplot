@@ -26,7 +26,7 @@ export class OrdinalScaleModel extends ScaleModel {
         };
     }
 
-    typed(values) {
+    typedRange(values) {
         return new Int32Array(values.map(Number));
     }
 

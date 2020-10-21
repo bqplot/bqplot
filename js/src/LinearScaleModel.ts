@@ -31,7 +31,7 @@ export class LinearScaleModel extends ScaleModel {
         };
     }
 
-    typed(values) {
+    typedRange(values) {
         return new Float64Array(values.map(Number));
     }
 
