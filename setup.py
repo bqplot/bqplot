@@ -96,6 +96,7 @@ setup_args = dict(
     license='Apache',
     author='The BQplot Development Team',
     url='https://github.com/bloomberg/bqplot',
+    package_data={'bqplot.map_data': ['*.json']},
     include_package_data=True,
     cmdclass=cmdclass,
     install_requires=[
