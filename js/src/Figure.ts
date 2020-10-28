@@ -292,7 +292,9 @@ class Figure extends widgets.DOMWidgetView {
 
     replace_dummy_nodes(views) {
         _.each(views, function(view: any) {
-            if (view.dummy_node !== null) {
+            // It could be that the dummy node is removed before we got a change to replace it
+            // This happens when the marks list is changed rapidly
+            if (view.dummy_node !== null && view.dummy_node.parentNode) {
                 view.dummy_node.parentNode.replaceChild(view.el, view.dummy_node);
                 view.dummy_node = null;
                 this.displayed.then(function() {
@@ -513,6 +515,15 @@ class Figure extends widgets.DOMWidgetView {
             if (view.render_gl) {
                 this.createWebGLRenderer();
             }
+            // If the marks list changes before replace_dummy_nodes is called, we are not DOM
+            // attached, and view.remove() in Figure.remove_mark will not remove this view from the DOM
+            // but a later call to Figure.replace_dummy_nodes will attach it to the DOM again, leading
+            // to a 'ghost' mark, originally reported in https://github.com/spacetelescope/jdaviz/issues/270
+            view.on("remove", () => {
+                if(dummy_node.parentNode) {
+                    dummy_node.remove()
+                }
+            })
 
             return view;
         });
