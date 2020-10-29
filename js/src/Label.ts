@@ -28,14 +28,14 @@ export class Label extends ScatterBase {
                                    "rotate_angle"], this.update_position, this);
     }
 
-    update_default_opacities(animate) {
+    update_opacities(animate) {
         if (!this.model.dirty) {
             const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
             // update opacity scale range?
             const that = this;
             this.d3el.selectAll(".label")
-                .transition("update_default_opacities")
+                .transition("update_opacities")
                 .duration(animation_duration)
                 .style("opacity", function(d, i) {
                     return that.get_element_opacity(d, i);
@@ -69,7 +69,7 @@ export class Label extends ScatterBase {
 
         this.update_text();
         this.update_style();
-        this.update_default_opacities(true);
+        this.update_opacities(true);
     }
 
     update_text() {

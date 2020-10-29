@@ -522,7 +522,7 @@ class _ScatterBase(Mark):
         'opacity': {'dimension': 'opacity'},
         'rotation': {'dimension': 'rotation'}
     }).tag(sync=True)
-    default_opacities = Array([1.0])\
+    opacities = Array([1.0])\
         .tag(sync=True, display_name='Opacities', **array_serialization)\
         .valid(array_squeeze, array_dimension_bounds(1, 1))
     hovered_style = Dict().tag(sync=True)
@@ -592,7 +592,7 @@ class Scatter(_ScatterBase):
         Stroke color of the marker
     stroke_width: Float (default: 1.5)
         Stroke width of the marker
-    default_opacities: list of floats (default: [1.0])
+    opacities: list of floats (default: [1.0])
         Default opacities of the markers. If the list is shorter than
         the number
         of points, the opacities are reused.
@@ -700,6 +700,16 @@ class Scatter(_ScatterBase):
         warn("default_colors is deprecated, use colors instead.",
              DeprecationWarning)
         self.colors = value
+
+    @property
+    def default_opacities(self):
+        return self.opacities
+
+    @default_opacities.setter
+    def default_opacities(self, value):
+        warn("default_opacities is deprecated, use opacities instead.",
+             DeprecationWarning)
+        self.opacities = value
 
     stroke = Color(None, allow_none=True).tag(sync=True,
                                               display_name='Stroke color')
