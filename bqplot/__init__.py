@@ -70,10 +70,21 @@ from .default_tooltip import *
 from ._version import version_info, __version__
 
 
+def _prefix():
+    import sys
+    from pathlib import Path
+    prefix = sys.prefix
+    here = Path(__file__).parent
+    # for when in dev mode
+    if (here.parent / 'share/jupyter/nbextensions/bqplot').parent.exists():
+        prefix = here.parent
+    return prefix
+
+
 def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
-        'src': 'static',
+        'src': f'{_prefix()}/share/jupyter/nbextensions/bqplot/',
         'dest': 'bqplot',
         'require': 'bqplot/extension'
     }]

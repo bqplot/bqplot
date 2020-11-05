@@ -17,7 +17,7 @@ module.exports = [
         entry: './lib/extension.js',
         output: {
             filename: 'extension.js',
-            path: path.resolve(__dirname, '../bqplot/static'),
+            path: path.resolve(__dirname, '../share/jupyter/nbextensions/bqplot'),
             libraryTarget: 'amd',
             devtoolModuleFilenameTemplate: 'webpack://jupyter-widgets/bqplot/[resource-path]?[loaders]',
         },
@@ -28,7 +28,7 @@ module.exports = [
         entry: './lib/index-classic.js',
         output: {
             filename: 'index.js',
-            path: path.resolve(__dirname, '../bqplot/static'),
+            path: path.resolve(__dirname, '../share/jupyter/nbextensions/bqplot'),
             libraryTarget: 'amd',
             devtoolModuleFilenameTemplate: 'webpack://jupyter-widgets/bqplot/[resource-path]?[loaders]',
         },

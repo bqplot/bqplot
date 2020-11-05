@@ -46,7 +46,7 @@ _templates/
 *Untitled*.ipynb
 
 # Compiled javascript
-bqplot/static/
+share/jupyter/nbextensions/bqplot/
 js/css/bqplot.css
 
 # Node modules
