@@ -99,6 +99,7 @@ js_dir = pjoin(here, 'js')
 jstargets = [
     pjoin(js_dir, 'lib', 'jupyterlab-plugin.js'),
     pjoin(js_dir, 'lib', 'index.js'),
+    pjoin('share', 'jupyter', 'nbextensions', 'bqplot', 'index.js'),
 ]
 
 data_files_spec = [
@@ -107,7 +108,7 @@ data_files_spec = [
 ]
 
 js_command = combine_commands(
-    install_npm(js_dir, build_dir='js/lib', source_dir='js/src', build_cmd='build'), ensure_targets(jstargets),
+    install_npm(js_dir, build_dir='share/jupyter/', source_dir='js/src', build_cmd='build'), ensure_targets(jstargets),
 )
 
 cmdclass = create_cmdclass('jsdeps', data_files_spec=data_files_spec)
