@@ -226,6 +226,9 @@ export class MarketMap extends Figure {
 
     update_data() {
         const that = this;
+        const selected = this.model.get("selected");
+        selected.length = 0; 
+        this.model.set("selected", selected);
         this.data = this.model.get("names") || [];
         this.ref_data = this.model.get("ref_data");
         this.group_data = this.model.get("groups");
