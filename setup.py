@@ -14,7 +14,7 @@
 
 from __future__ import print_function
 
-from setuptools import setup, find_packages, Command
+from setuptools import setup, find_packages
 
 from jupyter_packaging import (
     create_cmdclass,
@@ -22,11 +22,11 @@ from jupyter_packaging import (
     ensure_targets,
     combine_commands,
     get_version,
+    skip_if_exists,
 )
 
 import os
 from os.path import join as pjoin
-from pathlib import Path
 from distutils import log
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -67,28 +67,6 @@ Usage
     plt.plot(x,y, axes_options={'y': {'grid_lines': 'dashed'}})
     plt.show()
 """
-
-def skip_if_exists(paths, CommandClass):
-    """Skip a command if list of paths exists."""
-    def should_skip():
-        return any(not Path(path).exist() for path in paths)
-    class SkipIfExistCommand(Command):
-        def initialize_options(self):
-            if not should_skip:
-                self.command = CommandClass(self.distribution)
-                self.command.initialize_options()
-            else:
-                self.command = None
-
-        def finalize_options(self):
-            if self.command is not None:
-                self.command.finalize_options()
-
-        def run(self):
-            if self.command is not None:
-                self.command.run()
-
-    return SkipIfExistCommand
 
 # Get bqplot version
 version = get_version(pjoin(name, '_version.py'))
