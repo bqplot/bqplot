@@ -111,7 +111,9 @@ js_command = combine_commands(
     install_npm(js_dir, build_dir='share/jupyter/', source_dir='js/src', build_cmd='build'), ensure_targets(jstargets),
 )
 
-cmdclass = create_cmdclass('jsdeps', data_files_spec=data_files_spec)
+# Adding "map_data" as package_data manually, this should not be needed because it's already
+# specified in MANIFEST and include_package_data=True. This might be a bug in jupyter-packaging?
+cmdclass = create_cmdclass('jsdeps', data_files_spec=data_files_spec, package_data_spec={"bqplot": ["map_data/*.json"]})
 is_repo = os.path.exists(os.path.join(here, '.git'))
 if is_repo:
     cmdclass['jsdeps'] = js_command
