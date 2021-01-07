@@ -77,9 +77,8 @@ js_dir = pjoin(here, 'js')
 
 # Representative files that should exist after a successful build
 jstargets = [
-    pjoin(js_dir, 'lib', 'jupyterlab-plugin.js'),
-    pjoin(js_dir, 'lib', 'index.js'),
     pjoin('share', 'jupyter', 'nbextensions', 'bqplot', 'index.js'),
+    pjoin('share', 'jupyter', 'labextensions', 'bqplot', 'package.json'),
 ]
 
 data_files_spec = [
