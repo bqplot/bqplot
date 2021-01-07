@@ -18,11 +18,11 @@ import * as _ from 'underscore';
 
 import {
     MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
     Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 import * as d3 from 'd3';
 import 'd3-selection-multi';

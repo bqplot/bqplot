@@ -63,6 +63,7 @@ class DummyManager extends base.ManagerBase<HTMLElement> {
         this.library = library;
     }
 
+    // @ts-ignore
     display_view(msg: services.KernelMessage.IMessage, view: Backbone.View<Backbone.Model>, options: any) {
         return Promise.resolve(view).then(view => {
             this.el.appendChild(view.el);
@@ -105,4 +106,3 @@ class DummyManager extends base.ManagerBase<HTMLElement> {
     el: HTMLElement;
     library: any;
 }
-

@@ -47,6 +47,7 @@ _templates/
 
 # Compiled javascript
 share/jupyter/nbextensions/bqplot/
+share/jupyter/labextensions/bqplot/
 js/css/bqplot.css
 
 # Node modules

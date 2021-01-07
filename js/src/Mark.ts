@@ -19,11 +19,11 @@ import 'd3-selection-multi';
 
 import {
     MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
     Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
