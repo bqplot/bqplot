@@ -245,7 +245,7 @@ export class FlexLineModel extends LinesModel {
                 this.y_data : [this.y_data];
             curve_labels = this.get_labels();
             const color_data = this.get("color") || [];
-            const width_data = this.get("width") || [];
+            const width_data = [this.get("width") || []];
             this.data_len = Math.min(this.x_data[0].length, this.y_data[0].length);
 
             this.mark_data = [{
@@ -257,7 +257,7 @@ export class FlexLineModel extends LinesModel {
                         x2: that.x_data[0][index + 1],
                         y2: that.y_data[0][index + 1],
                         color: color_data[index],
-                        size: width_data[index]
+                        size: width_data[0][index]
                     };
                 })
             }];
@@ -312,6 +312,11 @@ export class FlexLineModel extends LinesModel {
             }
         }
     }
+
+    static serializers = {
+        ...LinesModel.serializers,
+        width: serialize.array_or_json
+    };
 
     data_len: any;
 }
