@@ -67,7 +67,7 @@ $ conda install -c conda-forge bqplot
 To enable bqplot for JupyterLab version 1 or 2 (not needed for JupyterLab 3.0):
 
 ```
-$ jupyter labextension install bqplot
+$ jupyter labextension install @jupyter-widgets/jupyterlab-manager bqplot
 ```
 
 
@@ -91,6 +91,15 @@ For the experimental JupyterLab extension, install the Python package, make sure
 $ pip install "ipywidgets>=7.6"
 $ jupyter labextension develop . --overwrite
 ```
+
+Whenever you make a change of the JavaScript code, you will need to rebuild:
+
+```
+cd js
+yarn run build
+```
+
+Then refreshing the JupyterLab/Jupyter Notebook is enough to reload the changes.
 
 ### Loading `bqplot`
 
