@@ -135,7 +135,6 @@ export class FlexLine extends Lines {
     }
 
     relayout() {
-        super.relayout();
         this.set_ranges();
 
         const x_scale = this.scales.x, y_scale = this.scales.y;
