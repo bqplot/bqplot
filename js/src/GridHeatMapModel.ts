@@ -57,7 +57,7 @@ export class GridHeatMapModel extends MarkModel {
     update_data() {
         this.dirty = true;
         // Handling data updates
-        this.colors = this.get("color");
+        this.colors = this.get("color") || [[]];
 
         const num_rows = this.colors.length;
         const num_cols = this.colors[0].length;
