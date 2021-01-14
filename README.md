@@ -77,7 +77,7 @@ For a development installation (requires npm (version >= 3.8) and node (version 
 $ git clone https://github.com/bqplot/bqplot.git
 $ cd bqplot
 $ pip install -e .
-$ jupyter nbextension install --py --symlink --sys-prefix bqplot
+$ jupyter nbextension install --py --overwrite --symlink --sys-prefix bqplot
 $ jupyter nbextension enable --py --sys-prefix bqplot
 ```
 
@@ -126,7 +126,7 @@ To get started with using `bqplot`, check out the full documentation
 
 https://bqplot.readthedocs.io/
 
-## Install a previous bqplot version
+## Install a previous bqplot version (Only for JupyterLab <= 2)
 
 In order to install a previous bqplot version, you need to know which front-end version (JavaScript) matches with the back-end version (Python).
 
