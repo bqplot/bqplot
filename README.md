@@ -38,7 +38,7 @@ Two APIs are provided
 To try out bqplot interactively in your web browser, just click on the binder
 link:
 
-[![Binder](docs/source/binder-logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/0.11.x?filepath=examples/Index.ipynb)
+[![Binder](docs/source/binder-logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/stable?filepath=examples/Index.ipynb)
 
 ### Dependencies
 
