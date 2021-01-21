@@ -88,7 +88,7 @@ data_files_spec = [
 ]
 
 js_command = combine_commands(
-    install_npm(js_dir, build_dir='share/jupyter/', source_dir='js/src', build_cmd='build'), ensure_targets(jstargets),
+    install_npm(js_dir, npm=["jlpm"], build_dir='share/jupyter/', source_dir='js/src', build_cmd='build:extensions'), ensure_targets(jstargets),
 )
 
 # Adding "map_data" as package_data manually, this should not be needed because it's already

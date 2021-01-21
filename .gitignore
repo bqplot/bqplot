@@ -9,6 +9,7 @@
 dist
 build
 eggs
+MANIFEST
 parts
 bin
 var
@@ -63,3 +64,5 @@ node_modules
 *.swp
 
 *.tsbuildinfo
+
+js/package-lock.json
