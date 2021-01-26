@@ -11,10 +11,10 @@ dependencies:
     - numpy >=1.10.4
     - pandas
     - jupyter
-    - jupyterlab=3  # to build the lab federated bundle
-    - jupyter-packaging # to build the wheel
-    - pytest  # test dependency
-    - pytest-cov  # test dependency
-    - selenium  # test dependency
-    - mock  # test dependency
+    - jupyterlab=3
+    - jupyter-packaging
+    - pytest
+    - pytest-cov
+    - selenium
+    - mock
     - nose

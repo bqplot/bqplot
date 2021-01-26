@@ -33,7 +33,7 @@ jobs:
 
     - name: Install the package
       run: |
-        pip install .
+        pip install -e .
 
     - name: Test installation files
       run: |
@@ -49,6 +49,14 @@ jobs:
 
     - name: Validate the labextension
       run: jupyter labextension list 2>&1 | grep bqplot
+
+    - name: Run pytest
+      run: py.test --cov-report=term --cov=bqplot tests
+
+    - name: Run JS tests
+      run: |
+        cd js
+        yarn run test
 
   build:
     runs-on: ubuntu-latest
