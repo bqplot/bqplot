@@ -15,13 +15,13 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 import * as _ from 'underscore';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
 import { WidgetView } from '@jupyter-widgets/base';
+import {applyAttrs, applyStyles} from './utils';
 
 THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl').default;
 
@@ -142,8 +142,8 @@ class Figure extends widgets.DOMWidgetView {
           .attr("x", 0).attr("y", 0)
           .attr("width", this.plotarea_width)
           .attr("height", this.plotarea_height)
-          .styles(this.model.get("background_style"))
           .style("pointer-events", "inherit");
+        applyStyles(this.bg, this.model.get("background_style"));
 
         this.bg_events = this.fig.append("rect")
           .attr("class", "plotarea_events")
@@ -205,7 +205,7 @@ class Figure extends widgets.DOMWidgetView {
           .attr("x", 0.5 * (this.plotarea_width))
           .attr("y", -(this.margin.top / 2.0))
           .attr("dy", "1em")
-          .styles(this.model.get("title_style"));
+        applyStyles(this.title, this.model.get("title_style"));
 
         this.title.text(this.model.get("title"));
 
@@ -320,21 +320,19 @@ class Figure extends widgets.DOMWidgetView {
     }
 
     title_style_updated() {
-        this.title.styles(this.model.get("title_style"));
+        applyStyles(this.title, this.model.get("title_style"));
     }
 
     background_style_updated() {
-        this.bg.styles(this.model.get("background_style"));
+        applyStyles(this.bg, this.model.get("background_style"));
     }
 
     legend_style_updated() {
-        this.fig_marks.selectAll(".g_legend").selectAll(".axis").selectAll("rect")
-            .styles(this.model.get("legend_style"));
+        applyStyles(this.fig_marks.selectAll(".g_legend").selectAll(".axis").selectAll("rect"), this.model.get("legend_style"));
     }
 
     legend_text_updated() {
-        this.fig_marks.selectAll(".g_legend").selectAll("text.legendtext")
-            .styles(this.model.get("legend_text"));
+        applyStyles(this.fig_marks.selectAll(".g_legend").selectAll("text.legendtext"), this.model.get("legend_text"));
     }
 
     create_figure_scales() {
@@ -611,7 +609,7 @@ class Figure extends widgets.DOMWidgetView {
                                                       this.margin.top + ")");
             this.fig_background.attr("transform", "translate(" + this.margin.left + "," +
                                                       this.margin.top + ")");
-            this.title.attrs({
+            applyAttrs(this.title, {
                 x: (0.5 * (this.plotarea_width)),
                 y: -(this.margin.top / 2.0),
                 dy: "1em"
@@ -691,9 +689,9 @@ class Figure extends widgets.DOMWidgetView {
                 legend_g.attr("transform", "translate(" + String(coords[0] + max_label_len * em) + " " +
                                                           String(coords[1]) + ") ");
 
-                legend_g.selectAll("text.legendtext").styles(that.model.get("legend_text"));
+                applyStyles(legend_g.selectAll("text.legendtext"), that.model.get("legend_text"));
 
-                legend_g.selectAll(".axis").selectAll("rect").styles(that.model.get("legend_style"));
+                applyStyles(legend_g.selectAll(".axis").selectAll("rect"), that.model.get("legend_style"));
 
             });
         }

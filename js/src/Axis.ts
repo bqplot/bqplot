@@ -19,6 +19,7 @@ import 'd3-selection-multi';
 // const d3 =Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-time"), require("d3-time-format"));
 import * as utils from './utils';
 import * as _ from 'underscore';
+import { applyAttrs, applyStyles } from './utils';
 
 // Polyfill for Math.log10 in IE11
 Math.log10 = Math.log10 || function(x) {
@@ -183,10 +184,9 @@ export class Axis extends WidgetView {
 
     apply_tick_styling () {
         // Applies current tick styling to all displayed ticks
-
-        this.g_axisline.selectAll(".tick text")
-                .styles(this.model.get("tick_style"))
-                .attr("transform", this.get_tick_transforms());
+        const tickText = this.g_axisline.selectAll(".tick text");
+        applyStyles(tickText, this.model.get("tick_style"));
+        tickText.attr("transform", this.get_tick_transforms());
     }
 
     get_tick_transforms() {
@@ -306,11 +306,11 @@ export class Axis extends WidgetView {
             .call(this.axis);
 
         // Create element for axis label
-        this.g_axisline.append("text")
+        const lineText = this.g_axisline.append("text")
             .attr("class", "axislabel")
-            .attrs(this.get_label_attributes())
-            .styles(this.get_text_styling())
             .text(this.model.get("label"));
+        applyStyles(lineText, this.get_text_styling());
+        applyAttrs(lineText, this.get_label_attributes());
 
         // Apply custom settings
         this.set_tick_values();
@@ -482,9 +482,9 @@ export class Axis extends WidgetView {
     }
 
     update_label_location() {
-        this.g_axisline.select("text.axislabel")
-            .attrs(this.get_label_attributes())
-            .styles(this.get_text_styling());
+        const axisLabel = this.g_axisline.select("text.axislabel");
+        applyStyles(axisLabel, this.get_text_styling());
+        applyAttrs(axisLabel, this.get_label_attributes());
     }
 
     update_label_offset(model, offset) {
@@ -612,9 +612,9 @@ export class Axis extends WidgetView {
         this.update_scales();
         this.g_axisline.attr("transform", this.get_axis_transform());
         this.g_axisline.call(this.axis);
-        this.g_axisline.select("text.axislabel")
-            .attrs(this.get_label_attributes())
-            .styles(this.get_text_styling());
+        const axisLabel = this.g_axisline.select("text.axislabel");
+        applyAttrs(axisLabel, this.get_label_attributes());
+        applyStyles(axisLabel, this.get_text_styling());
         // TODO: what follows is currently part of redraw_axisline
         this.set_tick_values();
         this.update_grid_lines();

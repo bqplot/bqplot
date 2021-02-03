@@ -95,3 +95,15 @@ function getDate(elem: undefined | null | number | string) : Date | null {
 
     return new Date(elem);
 }
+
+export
+function applyStyles(d3el, styles) {
+    Object.keys(styles).forEach(key => d3el.style(key, styles[key]));
+    return d3el
+}
+
+export
+function applyAttrs(d3el, styles) {
+    Object.keys(styles).forEach(key => d3el.attr(key, styles[key]));
+    return d3el
+}

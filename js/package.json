@@ -72,7 +72,6 @@
     "@lumino/messaging": "^1",
     "@lumino/widgets": "^1",
     "d3": "^5.7.0",
-    "d3-selection-multi": "^1.0.1",
     "is-typedarray": "^1.0.0",
     "popper.js": "^1.0.0",
     "three": "^0.91.0",
@@ -86,8 +85,7 @@
       "@jupyter-widgets/base": {
         "bundled": false,
         "singleton": true
-      },
-      "d3": false
+      }
     }
   },
   "files": [
