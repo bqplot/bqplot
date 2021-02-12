@@ -15,7 +15,6 @@
 
 import { WidgetView } from '@jupyter-widgets/base';
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 // const d3 =Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-time"), require("d3-time-format"));
 import * as utils from './utils';
 import * as _ from 'underscore';

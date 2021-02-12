@@ -14,7 +14,6 @@
  */
 
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"));
 // Hack to fix problem with webpack providing multiple d3 objects
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
