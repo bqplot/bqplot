@@ -21,6 +21,7 @@ const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { BoxplotModel } from './BoxplotModel';
+import { applyStyles } from './utils';
 
 export class Boxplot extends Mark {
 
@@ -169,7 +170,7 @@ export class Boxplot extends Mark {
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) != -1;
         });
-        elements.styles(style);
+        applyStyles(elements, style);
     }
 
     set_default_style(indices) {
@@ -192,7 +193,7 @@ export class Boxplot extends Mark {
         for(let key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.styles(clearing_style);
+        applyStyles(elements, clearing_style);
     }
 
     style_updated(new_style, indices) {

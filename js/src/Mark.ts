@@ -29,6 +29,7 @@ import {
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import { MarkModel } from './MarkModel'
+import { applyStyles } from './utils';
 
 // Check that value is defined and not null
 function is_defined(value){
@@ -291,7 +292,7 @@ export abstract class Mark extends widgets.WidgetView {
             } else {
                 this.tooltip_div.style("pointer-events", "all");
             }
-            this.tooltip_div.styles(this.model.get("tooltip_style"))
+            applyStyles(this.tooltip_div, this.model.get("tooltip_style"))
                 .style("display", null);
             MessageLoop.sendMessage(this.tooltip_view.pWidget, Widget.Msg.AfterShow);
             this.parent.popper.enableEventListeners();

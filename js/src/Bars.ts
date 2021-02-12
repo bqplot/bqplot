@@ -23,6 +23,7 @@ const d3GetEvent = function () { return require("d3-selection").event }.bind(thi
 import * as _ from 'underscore';
 import { Mark } from './Mark'
 import { BarsModel } from './BarsModel'
+import { applyStyles } from './utils';
 
 export class Bars extends Mark {
 
@@ -785,7 +786,7 @@ export class Bars extends Mark {
         for (const key in style) {
             clearing_style[key] = null;
         }
-        elements.selectAll(".bar").styles(clearing_style);
+        applyStyles(elements.selectAll(".bar"), clearing_style);
     }
 
     set_style_on_elements(style, indices) {
@@ -800,7 +801,7 @@ export class Bars extends Mark {
         const elements = this.d3el.selectAll(".bargroup").filter((data, index) => {
             return indices.indexOf(index) !== -1;
         });
-        elements.selectAll(".bar").styles(style);
+        applyStyles(elements.selectAll(".bar"), style);
     }
 
     set_default_style(indices) {

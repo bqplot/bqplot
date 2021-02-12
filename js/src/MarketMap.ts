@@ -30,6 +30,7 @@ import 'd3-selection-multi';
 import {Figure} from './Figure';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
+import { applyAttrs, applyStyles } from './utils';
 
 export class MarketMap extends Figure {
 
@@ -76,7 +77,7 @@ export class MarketMap extends Figure {
         // code for tool tip to be displayed
         this.tooltip_div = d3.select(document.createElement("div"))
             .attr("class", "mark_tooltip");
-        this.tooltip_div.styles({"opacity": 0, "pointer-events": "none"});
+        applyStyles(this.tooltip_div, {"opacity": 0, "pointer-events": "none"});
 
         const freeze_tooltip_loc = this.model.get("freeze_tooltip_location");
         if (freeze_tooltip_loc) {
@@ -97,9 +98,9 @@ export class MarketMap extends Figure {
 
         this.title = this.fig.append("text")
           .attr("class", "mainheading")
-          .attrs({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
           .text(this.model.get("title"));
-        this.title.styles(this.model.get("title_style"));
+        applyAttrs(this.title, {x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"});
+        applyStyles(this.title, this.model.get("title_style"));
 
         return this.create_scale_views().then(() => {
             this.create_listeners();
@@ -203,7 +204,7 @@ export class MarketMap extends Figure {
             // transform figure
             that.fig.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
-            that.title.attrs({
+            applyAttrs(that.title, {
                 x: (0.5 * (that.plotarea_width)),
                 y: -(that.margin.top / 2.0),
                 dy: "1em"
@@ -503,7 +504,7 @@ export class MarketMap extends Figure {
         // This is a bit awkward because we did not figure out how to get
         // Typescript to recognize the d3-select-multi typings.
         const x: any = this.svg.selectAll(".market_map_text");
-        x.styles(this.model.get('font_style'));
+        applyStyles(x, this.model.get('font_style'));
     }
 
     update_map_colors() {

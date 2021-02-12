@@ -22,6 +22,7 @@ const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as utils from './utils';
 import { Mark } from './Mark';
 import { HistModel } from './HistModel'
+import { applyStyles } from './utils';
 
 export class Hist extends Mark {
 
@@ -361,7 +362,7 @@ export class Hist extends Mark {
         for (const key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.selectAll(".bar").styles(clearing_style);
+        applyStyles(elements.selectAll(".bar"), clearing_style);
     }
 
     set_default_style(indices, elements?) {
@@ -383,7 +384,7 @@ export class Hist extends Mark {
         elements = elements.filter(function (data, index) {
             return indices.indexOf(index) !== -1;
         });
-        elements.selectAll(".rect").styles(style);
+        applyStyles(elements.selectAll(".rect"), style);
     }
 
     invert_point(pixel) {
