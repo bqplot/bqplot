@@ -26,6 +26,7 @@
     "watch": "npm-run-all -p watch:*",
     "watch:js": "tsc --watch",
     "watch:nbextension": "webpack --watch --mode=development",
+    "watch:labextension": "jupyter labextension watch .",
     "prepare": "jlpm run build",
     "test": "karma start --single-run"
   },
@@ -71,7 +72,6 @@
     "@lumino/messaging": "^1",
     "@lumino/widgets": "^1",
     "d3": "^5.7.0",
-    "d3-selection-multi": "^1.0.1",
     "is-typedarray": "^1.0.0",
     "popper.js": "^1.0.0",
     "three": "^0.91.0",
@@ -85,8 +85,7 @@
       "@jupyter-widgets/base": {
         "bundled": false,
         "singleton": true
-      },
-      "d3": false
+      }
     }
   },
   "files": [

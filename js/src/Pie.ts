@@ -14,13 +14,12 @@
  */
 
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
 // Hack to fix problem with webpack providing multiple d3 objects
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import { Mark } from './Mark';
-import { getDate } from './utils';
+import { applyStyles, getDate } from './utils';
 
 export class Pie extends Mark {
     render() {
@@ -426,7 +425,7 @@ export class Pie extends Mark {
         for(let key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.styles(clearing_style);
+        applyStyles(elements, clearing_style);
     }
 
     set_style_on_elements(style, indices?) {
@@ -439,7 +438,7 @@ export class Pie extends Mark {
         elements = elements.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        elements.styles(style);
+        applyStyles(elements, style);
     }
 
     set_default_style(indices?) {

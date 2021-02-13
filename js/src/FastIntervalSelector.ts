@@ -18,6 +18,7 @@ import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 import { BaseXSelector } from './Selector';
 import * as sel_utils from './selector_utils';
+import { applyAttrs } from './utils';
 
 export class FastIntervalSelector extends BaseXSelector {
 
@@ -195,7 +196,7 @@ export class FastIntervalSelector extends BaseXSelector {
             let pixels = selected.map(this.scale.scale);
             pixels = pixels.sort(function(a, b) { return a - b; });
 
-            this.rect.attrs({
+            applyAttrs(this.rect, {
                 x: pixels[0],
                 width: (pixels[1] - pixels[0])
             }).style("display", "inline");

@@ -14,11 +14,11 @@
  */
 
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 // const d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import { Mark } from './Mark';
 import * as _ from 'underscore';
+import { applyStyles } from './utils';
 
 export abstract class ScatterBase extends Mark {
 
@@ -515,7 +515,7 @@ export abstract class ScatterBase extends Mark {
         for(let key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.styles(clearing_style);
+        applyStyles(elements, clearing_style);
     }
 
     set_style_on_elements(style, indices) {
@@ -532,7 +532,7 @@ export abstract class ScatterBase extends Mark {
         elements = elements.filter((data, index) => {
             return indices.indexOf(index) !== -1;
         });
-        elements.styles(style);
+        applyStyles(elements, style);
     }
 
     compute_view_padding() {

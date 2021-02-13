@@ -14,12 +14,12 @@
  */
 
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-force"), require("d3-selection"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { GraphModel } from './GraphModel';
+import { applyStyles } from './utils';
 
 export class Graph extends Mark {
     render() {
@@ -482,7 +482,7 @@ export class Graph extends Mark {
         for(let key in style_dict) {
             clearing_style[key] = null;
         }
-        nodes.styles(clearing_style);
+        applyStyles(nodes, clearing_style);
     }
 
     set_style_on_elements(style, indices) {
@@ -499,7 +499,7 @@ export class Graph extends Mark {
         nodes = nodes.filter(function(data, index) {
             return indices.indexOf(index) !== -1;
         });
-        nodes.styles(style);
+        applyStyles(nodes, style);
     }
 
     compute_view_padding() {

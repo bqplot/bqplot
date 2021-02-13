@@ -16,6 +16,7 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-axis"), require("d3-scale"), require("d3-selection"), require("d3-selection-multi"));
 import { Axis } from './Axis';
+import { applyAttrs } from './utils';
 
 class ColorBar extends Axis {
 
@@ -182,40 +183,39 @@ class ColorBar extends Axis {
                 });
             }
         } else {
-            colorBar.append("g")
+            const gradient = colorBar.append("g")
                 .attr("class", "g-defs")
                 .append("defs")
-                .append("linearGradient")
-                .attrs({
-                    id : "colorBarGradient" + this.cid,
-                    x1 : "0%",
-                    y1 : "0%",
-                    x2 : "100%",
-                    y2 : "0%"
-                })
-                .selectAll("stop")
+                .append("linearGradient");
+            applyAttrs(gradient, {
+                id : "colorBarGradient" + this.cid,
+                x1 : "0%",
+                y1 : "0%",
+                x2 : "100%",
+                y2 : "0%"
+            });
+            const stop = gradient.selectAll("stop")
                 .data(this.colors)
                 .enter()
-                .append("stop")
-                .attrs({
-                    "offset": function(d,i) {
-                        return colorSpacing * (i) + "%";
-                    },
-                    "stop-color": function(d,i) { return that.colors[i]; },
-                    "stop-opacity": 1
-                });
+                .append("stop");
+            applyAttrs(stop, {
+                "offset": function(d,i) {
+                    return colorSpacing * (i) + "%";
+                },
+                "stop-color": function(d,i) { return that.colors[i]; },
+                "stop-opacity": 1
+            });
 
-            colorBar.append("g")
+            const rect = colorBar.append("g")
                 .attr("class", "g-rect axis")
                 .append("rect")
-                .attrs({
-                    "width": this.get_color_bar_width(),
-                    "height": this.bar_height,
-                    x: (this.vertical) ? -(this.height - 2 * this.x_offset) : 0,
-                    y: 0,
-                    "stroke-width": 1
-                })
-                .style("fill","url(#colorBarGradient" + this.cid + ")");
+            applyAttrs(rect, {
+                "width": this.get_color_bar_width(),
+                "height": this.bar_height,
+                x: (this.vertical) ? -(this.height - 2 * this.x_offset) : 0,
+                y: 0,
+                "stroke-width": 1
+            }).style("fill","url(#colorBarGradient" + this.cid + ")");
         }
         if(this.vertical) {
             colorBar.select(".g-rect")

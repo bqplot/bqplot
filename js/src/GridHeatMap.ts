@@ -14,12 +14,12 @@
  */
 
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import { Mark} from './Mark';
 import { GridHeatMapModel } from './GridHeatMapModel'
+import { applyStyles } from './utils';
 
 export class GridHeatMap extends Mark {
 
@@ -232,7 +232,7 @@ export class GridHeatMap extends Mark {
             return;
         }
         elements = (!elements || elements.length === 0) ? this._filter_cells_by_cell_num(this._cell_nums_from_indices(indices)) : elements;
-        elements.styles(style);
+        applyStyles(elements, style);
     }
 
     set_default_style(indices, elements) {
@@ -283,7 +283,7 @@ export class GridHeatMap extends Mark {
         for(let key in style_dict) {
             clearing_style[key] = null;
         }
-        elements.styles(clearing_style);
+        applyStyles(elements, clearing_style);
     }
 
     _filter_cells_by_cell_num(cell_numbers) {
