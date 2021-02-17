@@ -61,13 +61,13 @@ into visual properties (typically a number of pixels, a color, etc.).  ::
 
 """
 
-from .figure import *
-from .axes import *
-from .marks import *
-from .scales import *
-from .toolbar import *
-from .default_tooltip import *
-from ._version import version_info, __version__
+from .figure import *  # noqa
+from .axes import *  # noqa
+from .marks import *  # noqa
+from .scales import *  # noqa
+from .toolbar import *  # noqa
+from .default_tooltip import *  # noqa
+from ._version import version_info, __version__  # noqa
 
 
 def _prefix():

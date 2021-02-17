@@ -50,6 +50,12 @@ jobs:
     - name: Validate the labextension
       run: jupyter labextension list 2>&1 | grep bqplot
 
+    - name: PEP8 check
+      run: flake8 bqplot --ignore=E501,W504,W503
+
+    - name: Run pytest
+      run: pytest .
+
   build:
     runs-on: ubuntu-latest
     steps:

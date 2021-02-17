@@ -4,9 +4,10 @@ import argparse
 from os.path import dirname, abspath, join
 from notebook.nbextensions import install_nbextension
 
+
 def install(user=False, symlink=False, overwrite=False, **kwargs):
     """Install the bqplot nbextension.
-    
+
     Parameters
     ----------
 
@@ -24,7 +25,7 @@ def install(user=False, symlink=False, overwrite=False, **kwargs):
                         symlink=symlink, user=user, overwrite=overwrite,
                         **kwargs)
 
-    
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Installs the bqplot widget")
     parser.add_argument("-u", "--user",
