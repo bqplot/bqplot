@@ -64,14 +64,14 @@ Using conda
 $ conda install -c conda-forge bqplot
 ```
 
-To enable bqplot for JupyterLab version 1 or 2 (not needed for JupyterLab 3.0):
+If you are using JupyterLab <=2:
 
 ```
 $ jupyter labextension install @jupyter-widgets/jupyterlab-manager bqplot
 ```
 
 
-For a development installation (requires npm (version >= 3.8) and node (version >= 4.0)):
+For a development installation (requires JupyterLab (version >= 3) and yarn):
 
 ```
 $ git clone https://github.com/bqplot/bqplot.git
