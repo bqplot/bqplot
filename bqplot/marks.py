@@ -51,7 +51,10 @@ from traittypes import Array
 from numpy import histogram
 import numpy as np
 
+from IPython.core.display import display
+
 from .scales import Scale, OrdinalScale, LinearScale
+
 from .traits import (Date, array_serialization,
                      array_squeeze, array_dimension_bounds, array_supported_kinds)
 from ._version import __frontend_version__
@@ -188,7 +191,6 @@ class Mark(Widget):
     _view_module = Unicode('bqplot').tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
-    _ipython_display_ = None
 
     def _get_dimension_scales(self, dimension, preserve_domain=False):
         """
@@ -240,6 +242,7 @@ class Mark(Widget):
 
     def __init__(self, **kwargs):
         super(Mark, self).__init__(**kwargs)
+        self._figure = None
         self._hover_handlers = CallbackDispatcher()
         self._click_handlers = CallbackDispatcher()
         self._legend_click_handlers = CallbackDispatcher()
@@ -279,6 +282,21 @@ class Mark(Widget):
             self._element_click_handlers(self, content)
         elif content.get('event', '') == 'background_click':
             self._bg_click_handlers(self, content)
+
+    def _ipython_display_(self):
+        if self._figure is not None:
+            display(figure)
+            return
+
+        from .figure import Figure
+        from .axes import Axis
+
+        ax_x = Axis(scale=self.scales['x'])
+        ax_y = Axis(scale=self.scales['y'], orientation='vertical')
+
+        self._figure = Figure(marks=[self], axes=[ax_x, ax_y])
+
+        display(self._figure)
 
 
 @register_mark('bqplot.Lines')
