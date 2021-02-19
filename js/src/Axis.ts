@@ -31,7 +31,7 @@ const UNITS_ARRAY = ["em", "ex", "px"];
 export class Axis extends WidgetView {
 
     initialize() {
-        this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "g") as HTMLElement);
         this.d3el = d3.select(this.el);
         super.initialize.apply(this, arguments);
     }

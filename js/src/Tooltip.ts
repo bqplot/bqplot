@@ -90,7 +90,7 @@ export class Tooltip extends DOMWidgetView {
         this.update_formats();
     }
 
-    d3el: d3.Selection<HTMLDivElement, any, any, any>;
+    d3el: d3.Selection<HTMLElement, any, any, any>;
     parent: DOMWidgetView;
     tooltip_formats: ((x: any) => string)[];
 }

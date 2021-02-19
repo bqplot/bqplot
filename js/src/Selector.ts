@@ -22,7 +22,7 @@ import { WidgetView } from '@jupyter-widgets/base';
 export abstract class BaseSelector extends Interaction {
 
     initialize(parameters) {
-        this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "g") as HTMLElement);
         this.d3el = d3.select(this.el);
         // The following line is a workaround to avoid calling the initialize
         // method from Interaction. Indeed this last one wraps the area responsible

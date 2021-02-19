@@ -41,7 +41,7 @@ export abstract class Mark extends widgets.WidgetView {
     initialize () {
         this.display_el_classes = ["mark"]; //classes on the element which
         //trigger the tooltip to be displayed when they are hovered over
-        this.setElement(document.createElementNS(d3.namespaces.svg, "g"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "g") as HTMLElement);
         this.d3el = d3.select(this.el);
         super.initialize.apply(this, arguments);
     }

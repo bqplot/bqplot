@@ -21,7 +21,7 @@ import * as _ from 'underscore';
 export class Interaction extends widgets.WidgetView {
 
     initialize(parameters) {
-        this.setElement(document.createElementNS(d3.namespaces.svg, "rect"));
+        this.setElement(document.createElementNS(d3.namespaces.svg, "rect") as HTMLElement);
         this.d3el = d3.select(this.el);
         super.initialize.call(this, parameters);
     }
