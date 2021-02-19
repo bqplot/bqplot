@@ -19,6 +19,8 @@ import * as d3 from 'd3';
 import * as utils from './utils';
 import * as _ from 'underscore';
 import { applyAttrs, applyStyles } from './utils';
+import { Figure } from './Figure';
+import { Scale } from './Scale';
 
 // Polyfill for Math.log10 in IE11
 Math.log10 = Math.log10 || function(x) {
@@ -57,7 +59,7 @@ export class Axis extends WidgetView {
         this.listenTo(this.model, "change:scale", (model, value) => {
             this.update_scale(model.previous("scale"), value);
             // TODO: rescale_axis does too many things. Decompose
-            this.axis.scale(this.axis_scale.scale); // TODO: this is in redraw_axisline
+            this.axis.scale(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>); // TODO: this is in redraw_axisline
             this.rescale_axis();
         });
 
@@ -119,11 +121,13 @@ export class Axis extends WidgetView {
                 const numDateTicks = (this.width < DATESCALE_WIDTH_THRESHOLD) ?
                                         5 :
                                         undefined;
-                this.axis.tickValues(this.axis_scale.scale.ticks(numDateTicks));
+                const scale = this.axis_scale.scale as d3.ScaleTime<Date, number>;
+                this.axis.tickValues(scale.ticks(numDateTicks));
             } else if (this.axis_scale.model.type === "log") {
                 let i, r;
-                const allticks = this.axis_scale.scale.ticks();
-                const oom = Math.abs(Math.log10(this.axis_scale.scale.domain()[1] / this.axis_scale.scale.domain()[0]));
+                const scale = this.axis_scale.scale as d3.ScaleLogarithmic<number, number>;
+                const allticks = scale.ticks();
+                const oom = Math.abs(Math.log10((scale.domain()[1]) / (scale.domain()[0])));
                 if (oom < 2) {
                     this.axis.tickValues(allticks);
                 } else if (oom < 7) {
@@ -150,12 +154,15 @@ export class Axis extends WidgetView {
                     this.axis.tickValues(useticks);
                 }
             } else {
-                this.axis.tickValues(this.axis_scale.scale.ticks());
+                const scale = this.axis_scale.scale as (d3.ScaleLinear<number, number> |
+                                                        d3.ScaleTime<Date, number> |
+                                                        d3.ScaleLogarithmic<number, number>);
+                this.axis.tickValues(scale.ticks());
             }
         }
         if(this.model.get("tick_format") === null ||
             this.model.get("tick_format") === undefined) {
-                if(this.axis_scale.type !== "ordinal") {
+                if(this.axis_scale.model.type !== "ordinal") {
                     this.tick_format = this.guess_tick_format(this.axis.tickValues());
                 }
         }
@@ -217,7 +224,7 @@ export class Axis extends WidgetView {
             this.parent.range("y") : this.parent.range("x");
 
         this.axis_scale.expand_domain(initial_range, target_range);
-        this.axis.scale(this.axis_scale.scale);
+        this.axis.scale(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
     }
 
     update_offset_scale_domain() {
@@ -286,11 +293,11 @@ export class Axis extends WidgetView {
         const side = this.model.get("side");
 
         if (is_vertical) {
-            this.axis = side === "right" ? d3.axisRight(this.axis_scale.scale)
-                                         : d3.axisLeft(this.axis_scale.scale);
+            this.axis = side === "right" ? d3.axisRight(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
+                                         : d3.axisLeft(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
         } else {
-            this.axis = side === "top" ? d3.axisTop(this.axis_scale.scale)
-                                       : d3.axisBottom(this.axis_scale.scale);
+            this.axis = side === "top" ? d3.axisTop(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
+                                       : d3.axisBottom(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
         }
     }
 
@@ -337,9 +344,9 @@ export class Axis extends WidgetView {
             } else {
                 return_promise = this.create_child_view(offset.scale)
                     .then((view) => {
-                        this.offset_scale = view;
+                        this.offset_scale = view as WidgetView as Scale;
                         if(this.offset_scale.model.type !== "ordinal") {
-                            this.offset_scale.scale.clamp(true);
+                            (this.offset_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).clamp(true);
                         }
                         this.offset_scale.on("domain_changed", () => {
                             this.update_offset_scale_domain();
@@ -626,7 +633,7 @@ export class Axis extends WidgetView {
         const target_range = (this.vertical) ?
             this.parent.range("y") : this.parent.range("x");
         this.axis_scale.expand_domain(initial_range, target_range);
-        this.axis.scale(this.axis_scale.scale);
+        this.axis.scale(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
     }
 
     parent_margin_updated() {
@@ -667,21 +674,21 @@ export class Axis extends WidgetView {
         }
         const scale_range = this.axis_scale.scale.domain();
         const max_index = (this.axis_scale.scale.domain().length - 1);
-        step = (scale_range[max_index] - scale_range[0]) / (num_ticks - 1);
+        step = ((scale_range[max_index] as any) - (scale_range[0] as any)) / (num_ticks - 1);
         if(this.axis_scale.model.type === "date" ||
            this.axis_scale.model.type === "date_color_linear") {
         //For date scale, the dates have to be converted into milliseconds
         //since epoch time and then back.
-            scale_range[0] = scale_range[0].getTime();
-            scale_range[max_index] = scale_range[max_index].getTime();
-            max = (scale_range[max_index] + (step * 0.5));
-            const range_in_times = _.range(scale_range[0], max, step);
+            scale_range[0] = (scale_range[0] as Date).getTime();
+            scale_range[max_index] = (scale_range[max_index] as Date).getTime();
+            max = (scale_range[max_index] as any) + (step * 0.5);
+            const range_in_times = _.range(scale_range[0] as any, max, step);
             return range_in_times.map((elem) => {
                 return new Date(elem);
             });
         } else {
-            max = (scale_range[max_index] + (step * 0.5));
-            return _.range(scale_range[0], max, step);
+            max = ((scale_range[max_index]) as any) + (step * 0.5);
+            return _.range(scale_range[0] as any, max, step);
         }
     }
 
@@ -693,7 +700,7 @@ export class Axis extends WidgetView {
             this.displayed.then(() => {
                 view.trigger("displayed");
             });
-            this.axis_scale = view;
+            this.axis_scale = view as WidgetView as Scale;
             this.axis_scale.on("domain_changed", this.redraw_axisline, this);
             this.axis_scale.on("highlight_axis", this.highlight, this);
             this.axis_scale.on("unhighlight_axis", this.unhighlight, this);
@@ -757,7 +764,7 @@ export class Axis extends WidgetView {
     }
 
     _linear_scale_precision(ticks?: any[]) {
-        ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
+        ticks = (ticks === undefined || ticks === null) ? (this.axis_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).ticks() : ticks;
         // Case where all data is concentrated into one point.
         if (ticks.length === 1) {
             return 1;
@@ -795,7 +802,7 @@ export class Axis extends WidgetView {
 
     date_sc_format(ticks?: any[]) {
         // assumes that scale is a linear date scale
-        ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
+        ticks = (ticks === undefined || ticks === null) ? (this.axis_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).ticks() : ticks;
         // diff is the difference between ticks in milliseconds
         const diff = Math.abs(ticks[1] - ticks[0]);
 
@@ -871,7 +878,7 @@ export class Axis extends WidgetView {
     }
 
     _log_sc_precision(ticks?: any[]) {
-        ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
+        ticks = (ticks === undefined || ticks === null) ? (this.axis_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).ticks() : ticks;
         const ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
 
         if(ratio >= 0.3010) {
@@ -907,14 +914,14 @@ export class Axis extends WidgetView {
         return this.parent.margin;
     }
 
-    axis_scale: any;
-    axis: any;
-    d3el: any;
-    g_axisline: any;
-    label_offset: any;
-    offset_scale: any;
+    axis_scale: Scale;
+    axis: d3.Axis<d3.AxisDomain>;
+    d3el: d3.Selection<HTMLElement, any, any, any>;
+    g_axisline: d3.Selection<SVGGElement, any, any, any>;
+    label_offset: string;
+    offset_scale: Scale;
     offset_value: any;
-    parent: any;
-    tick_format: any;
+    parent: Figure;
+    tick_format: (d: number) => string;
     vertical: boolean;
 }

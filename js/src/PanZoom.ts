@@ -182,7 +182,7 @@ export class PanZoom extends interaction.Interaction {
 
     active: boolean;
     scale_promises: any;
-    previous_pos: any;
-    domains_in_order: any;
+    previous_pos: [number, number];
+    domains_in_order: {x: any[], y: any[]};
 }
 

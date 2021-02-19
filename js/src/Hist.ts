@@ -100,7 +100,7 @@ export class Hist extends Mark {
 
     update_colors() {
         this.d3el.selectAll(".bargroup").selectAll("rect")
-          .style("fill", (d, i) => {
+          .style("fill", (d: any, i) => {
               return this.get_colors(d.index);
           });
         if (this.model.get("labels")) {
@@ -147,7 +147,7 @@ export class Hist extends Mark {
         const x_scale = this.scales.sample,
             y_scale = this.scales.count;
         this.d3el.selectAll(".bargroup")
-            .attr("transform", function(d) {
+            .attr("transform", function(d: any) {
               return "translate(" + x_scale.scale(d.x0) +
                               "," + y_scale.scale(d.y) + ")";
             });
@@ -157,7 +157,7 @@ export class Hist extends Mark {
           .duration(this.parent.model.get("animation_duration"))
           .attr("x", 2)
           .attr("width", bar_width)
-          .attr("height", function(d) {
+          .attr("height", function(d: any) {
               return y_scale.scale(0) - y_scale.scale(d.y);
           });
     }
@@ -174,7 +174,7 @@ export class Hist extends Mark {
             y_scale = this.scales.count;
         const that = this;
         const bar_width = this.calculate_bar_width();
-        let bar_groups = this.d3el.selectAll(".bargroup")
+        let bar_groups: d3.Selection<any, any, any, any> = this.d3el.selectAll(".bargroup")
             .data(this.model.mark_data);
 
         bar_groups.exit().remove();
@@ -524,10 +524,10 @@ export class Hist extends Mark {
     compute_view_padding() {
     }
 
-    selected_indices: Array<number> | null;
-    legend_el: any;
-    bin_pixels: Array<number>;
-    pixel_coords: Array<Array<number>>;
+    selected_indices: number[];
+    legend_el: d3.Selection<SVGGElement, any, any, any>;
+    bin_pixels: number[];
+    pixel_coords: number[][];
 
     model: HistModel;
 }

@@ -22,6 +22,7 @@ import popper from 'popper.js';
 import * as THREE from 'three';
 import { WidgetView } from '@jupyter-widgets/base';
 import {applyAttrs, applyStyles} from './utils';
+import {Scale} from './Scale';
 
 THREE.ShaderChunk['scales'] = require('../shaders/scales.glsl').default;
 
@@ -341,15 +342,15 @@ class Figure extends widgets.DOMWidgetView {
         const that = this;
         const x_scale_promise = this.create_child_view(this.model.get("scale_x"))
             .then(function(view) {
-                that.scale_x = view;
-                that.scale_x.scale.clamp(true);
+                that.scale_x = view as WidgetView as Scale;
+                (that.scale_x.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).clamp(true);
                 that.scale_x.set_range([0, that.plotarea_width]);
             });
 
         const y_scale_promise = this.create_child_view(this.model.get("scale_y"))
             .then(function(view) {
-                that.scale_y = view;
-                that.scale_y.scale.clamp(true);
+                that.scale_y = view as WidgetView as Scale;
+                (that.scale_y.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).clamp(true);
                 that.scale_y.set_range([that.plotarea_height, 0]);
             });
         return Promise.all([x_scale_promise, y_scale_promise]);
@@ -538,7 +539,7 @@ class Figure extends widgets.DOMWidgetView {
         const that = this;
         _.forEach(this.x_pad_dict, function(dict: any, scale_id) {
             let max = 0;
-            _.forEach(dict, function(value: any, key) {
+            _.forEach(dict, function(value: number, key) {
                 max = Math.max(max, value);
             });
             that.x_padding_arr[scale_id] = max;
@@ -546,7 +547,7 @@ class Figure extends widgets.DOMWidgetView {
 
         _.forEach(this.y_pad_dict, function(dict: any, scale_id) {
             let max = 0;
-            _.forEach(dict, function(value: any, key) {
+            _.forEach(dict, function(value: number, key) {
                 max = Math.max(max, value);
             });
             that.y_padding_arr[scale_id] = max;
@@ -931,8 +932,8 @@ class Figure extends widgets.DOMWidgetView {
                     canvas.classList.add('bqplot');
                     canvas.width = this.width * scale;
                     canvas.height = this.height * scale;
-                    canvas.style.width = this.width;
-                    canvas.style.height = this.height;
+                    canvas.style.width = this.width.toString();
+                    canvas.style.height = this.height.toString();
                     const context = canvas.getContext("2d");
                     context.scale(scale, scale);
                     context.drawImage(image, 0, 0);
@@ -1009,41 +1010,40 @@ class Figure extends widgets.DOMWidgetView {
         this.el.classList.add(this.model.get("theme"));
     }
 
-    axis_views: any;
-    bg: any;
-    bg_events: any;
-    change_layout: any;
-    clip_id: any;
-    clip_path: any;
-    debouncedRelayout: any;
-    fig_axes: any;
-    fig_interaction: any;
-    fig_marks: any;
-    fig_background: any;
-    fig: any;
-    figure_padding_x: any;
-    figure_padding_y: any;
-    height: any;
-    interaction_view: any;
-    interaction: any;
-    margin: any;
-    mark_views: any;
-    plotarea_height: any;
-    plotarea_width: any;
-    popper_reference: any;
-    popper: any;
+    axis_views: widgets.ViewList<widgets.DOMWidgetView>;
+    bg: d3.Selection<SVGRectElement, any, any, any>;
+    bg_events: d3.Selection<SVGRectElement, any, any, any>;
+    change_layout: () => void;
+    clip_id: string;
+    clip_path: d3.Selection<SVGRectElement, any, any, any>;
+    debouncedRelayout: () => void;
+    fig_axes: d3.Selection<SVGGraphicsElement, any, any, any>;
+    fig_marks: d3.Selection<SVGGraphicsElement, any, any, any>;
+    fig_background: d3.Selection<SVGGraphicsElement, any, any, any>;
+    fig: d3.Selection<SVGGraphicsElement, any, any, any>;
+    figure_padding_x: number;
+    figure_padding_y: number;
+    height: number;
+    interaction_view: widgets.DOMWidgetView;
+    interaction: d3.Selection<SVGGElement, any, any, any>;
+    margin: {top: number, bottom: number, left: number, right: number};
+    mark_views: widgets.ViewList<any>;
+    plotarea_height: number;
+    plotarea_width: number;
+    popper_reference: popper.ReferenceObject;
+    popper: popper;
     renderer: THREE.WebGLRenderer | null;
-    scale_x: any;
-    scale_y: any;
+    scale_x: Scale;
+    scale_y: Scale;
     svg: d3.Selection<SVGElement, any, any, any>;
     svg_background: d3.Selection<SVGElement, any, any, any>;
-    title: any;
-    tooltip_div: any;
-    width: any;
-    x_pad_dict: any;
-    x_padding_arr: any;
-    y_pad_dict: any;
-    y_padding_arr: any;
+    title: d3.Selection<SVGTextElement, any, any, any>;
+    tooltip_div: d3.Selection<HTMLDivElement, any, any, any>;
+    width: number;
+    x_pad_dict: {[id: string]: number};
+    x_padding_arr: {[id: string]: number};
+    y_pad_dict: {[id: string]: number};
+    y_padding_arr: {[id: string]: number};
 
     private _update_requested: boolean;
     private relayoutRequested: boolean = false;

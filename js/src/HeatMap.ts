@@ -113,8 +113,8 @@ export class HeatMap extends Mark {
 
         const plottingData = this.getPlottingData();
 
-        this.canvas.setAttribute('width', plottingData.totalWidth);
-        this.canvas.setAttribute('height', plottingData.totalHeight);
+        this.canvas.setAttribute('width', plottingData.totalWidth.toString());
+        this.canvas.setAttribute('height', plottingData.totalHeight.toString());
 
         const ctx = this.canvas.getContext('2d');
         const colors = this.model.mark_data.color;
@@ -228,6 +228,6 @@ export class HeatMap extends Mark {
     set_style_on_elements(style, indices, elements?) {
     }
 
-    image: any;
-    canvas: any;
+    image: d3.Selection<SVGImageElement, any, any, any>;
+    canvas: HTMLCanvasElement;
 }

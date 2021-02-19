@@ -24,7 +24,7 @@ export class Image extends Mark {
     render() {
         const base_render_promise = super.render();
         const el = this.d3el || this.el;
-        this.im = el.append("image")
+        this.im = (el.append("image") as d3.Selection<SVGImageElement, any, any, any>)
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", 1)
@@ -159,7 +159,7 @@ export class Image extends Mark {
         const y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
 
         const animation_duration = animate ? this.parent.model.get("animation_duration") : 0;
-        const el = this.d3el || this.el;
+        const el = (this.d3el || this.el) as d3.Selection<any, any, any, any>;
         const x_scaled = this.model.mark_data["x"].map(x_scale.scale),
             y_scaled = this.model.mark_data["y"].map(y_scale.scale);
 
@@ -179,7 +179,7 @@ export class Image extends Mark {
 
     clear_style(style_dict, indices?, elements?) {
     }
-    
+
     compute_view_padding() {
     }
 
@@ -188,6 +188,6 @@ export class Image extends Mark {
 
     set_style_on_elements(style, indices, elements?) {
     }
-    
-    im: any;
+
+    im: d3.Selection<SVGImageElement, any, any, any>;
 }

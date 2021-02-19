@@ -27,6 +27,9 @@ import {
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
 import {Figure} from './Figure';
+import {Tooltip} from './Tooltip';
+import {Scale} from './Scale';
+import {ColorScale} from './ColorScale';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import { applyAttrs, applyStyles } from './utils';
@@ -71,7 +74,6 @@ export class MarketMap extends Figure {
         this.fig_click.classed("g-click", true);
         this.fig_hover.classed("g-hover", true);
         this.fig_names.classed("g-names", true);
-        this.axis = [];
 
         // code for tool tip to be displayed
         this.tooltip_div = d3.select(document.createElement("div"))
@@ -184,7 +186,7 @@ export class MarketMap extends Figure {
     }
 
     update_title(model, value) {
-        this.title.text(this.model.get("title"))
+        this.title.text(this.model.get("title"));
         applyStyles(this.title, this.model.get("title_style"));
     }
 
@@ -332,8 +334,8 @@ export class MarketMap extends Figure {
         const formats = this.model.get("tooltip_formats");
         this.tooltip_formats = this.tooltip_fields.map(function(field, index) {
             const fmt = formats[index];
-            if(fmt === undefined || fmt === "") {return function(d) { return d; }; }
-            else return d3.format(fmt);
+            if (fmt === undefined || fmt === "") return d => d;
+            else return d3.format(fmt) as (d: number) => string;
         });
     }
 
@@ -347,7 +349,7 @@ export class MarketMap extends Figure {
         _.each(scale_models, function(model : widgets.WidgetModel, key) {
             scale_promises[key] = that.create_child_view(model);
         });
-        return widgets.resolvePromisesDict(scale_promises).then(function(d) {
+        return widgets.resolvePromisesDict(scale_promises).then(function(d: {[key: string]: Scale}) {
             that.scales = d;
             that.set_scales();
         });
@@ -355,7 +357,7 @@ export class MarketMap extends Figure {
 
     set_scales() {
         const that = this;
-        const color_scale = this.scales.color;
+        const color_scale = this.scales.color as ColorScale ;
         if(color_scale) {
             color_scale.set_range();
             color_scale.on("color_scale_range_changed", that.update_map_colors, that);
@@ -387,7 +389,7 @@ export class MarketMap extends Figure {
             .append("g")
             .attr("class", "element_group")
             .attr("transform", function(d, i) { return that.get_group_transform(i); })
-            .merge(this.rect_groups);
+            .merge(this.rect_groups as d3.Selection<SVGGElement, any, SVGGraphicsElement, any>);
 
         this.rect_groups.exit().remove();
         this.end_points = [];
@@ -539,7 +541,7 @@ export class MarketMap extends Figure {
             selected.forEach(function(data) {
                 const selected_cell = that.fig_map
                     .selectAll(".rect_element")
-                    .filter(function(d, i) {
+                    .filter(function(d: any, i) {
                         return d.name === data;
                     });
 
@@ -637,8 +639,8 @@ export class MarketMap extends Figure {
     }
 
     move_tooltip() {
-        this.popper_reference.x = d3.event.clientX;
-        this.popper_reference.y = d3.event.clientY;
+        (this.popper_reference as any).x = d3.event.clientX;
+        (this.popper_reference as any).y = d3.event.clientY;
         this.popper.scheduleUpdate();
     }
 
@@ -661,7 +663,7 @@ export class MarketMap extends Figure {
         if(tooltip_model) {
             const tooltip_widget_creation_promise = this.create_child_view(tooltip_model);
             tooltip_widget_creation_promise.then(function(view) {
-                that.tooltip_view = view;
+                that.tooltip_view = view as Tooltip;
 
                 MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
                 that.tooltip_div.node().appendChild(view.el);
@@ -1040,19 +1042,18 @@ export class MarketMap extends Figure {
         return[{'x': curr_x * this.column_width, 'y': curr_y * this.row_height}];
     }
 
-    scales: any;
+    scales: {[key: string]: Scale};
     num_rows: number;
     num_cols: number;
-    row_groups: any;
-    enable_select: any;
-    data: any[];
-    fig_map: any;
-    fig_click: any;
-    fig_hover: any;
-    fig_names: any;
-    axis: any[];
-    selected_stroke: any;
-    hovered_stroke: any;
+    row_groups: number;
+    enable_select: boolean;
+    data: string[];
+    fig_map: d3.Selection<SVGGElement, any, any, any>;
+    fig_click: d3.Selection<SVGGElement, any, any, any>;
+    fig_hover: d3.Selection<SVGGElement, any, any, any>;
+    fig_names: d3.Selection<SVGGElement, any, any, any>;
+    selected_stroke: string;
+    hovered_stroke: string;
     column_width: number;
     row_height: number;
     prev_x: number;
@@ -1060,17 +1061,17 @@ export class MarketMap extends Figure {
     y_direction: number;
     x_direction: number;
     group_iter: number;
-    ref_data: any;
-    group_data: any;
-    groups: any;
-    colors: any;
+    ref_data: any[];
+    group_data: number[];
+    groups: any[];
+    colors: string[];
     colors_map: any;
-    grouped_data: any;
-    running_sums: any[];
-    tooltip_fields: any;
-    tooltip_formats: any;
-    rect_groups: any;
-    end_points: any[];
-    tooltip_view: any;
-    row_limits: any[];
+    grouped_data: {[key: string]: {[key: string]: any}[]};
+    running_sums: number[];
+    tooltip_fields: (number | string)[];
+    tooltip_formats: ((d: number | string) => (number | string))[];
+    rect_groups: d3.Selection<d3.BaseType, any, SVGGraphicsElement, any>;
+    end_points: number[];
+    tooltip_view: Tooltip;
+    row_limits: number[];
 }

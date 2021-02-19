@@ -281,7 +281,20 @@ export class Boxplot extends Mark {
         for(let i = 0; i<this.model.mark_data.length; ++i) {
             const values = this.model.mark_data[i];
 
-            const displayValue: any = {};
+            let displayValue: {
+                whiskerMax: number,
+                whiskerMin: number,
+                x: number,
+                boxUpper: number,
+                boxLower: number,
+                boxMedian: number,
+                data_dict: {
+                    x: number,
+                    q1: number,
+                    q3: number,
+                    median: number
+                }
+            };
 
             displayValue.data_dict = {
                 x: values[0],
@@ -677,13 +690,18 @@ export class Boxplot extends Mark {
         return [1, max_length];
     }
 
-    height: any;
-    legend_el: any;
-    outlierData: any[];
-    pixel_coords: any;
-    plotData: any[];
-    rect_dim: any
-    width: any;
-    x_pixels: any[];
+    height: number;
+    legend_el: d3.Selection<any, any, any, any>;
+    outlierData: {x: number, y: number}[];
+    pixel_coords: [[number, number], [number, number]][];
+    plotData: {whiskerMax: number,
+               whiskerMin: number,
+               x: number,
+               boxUpper: number,
+               boxLower: number,
+               boxMedian: number}[];
+    rect_dim: number;
+    width: number;
+    x_pixels: number[];
     model: BoxplotModel;
 }

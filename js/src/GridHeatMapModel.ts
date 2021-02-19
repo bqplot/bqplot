@@ -162,8 +162,8 @@ export class GridHeatMapModel extends MarkModel {
         color: serialize.array_or_json
     };
 
-    colors: any;
-    rows: any;
-    columns: any;
-    modes: any;
+    colors: number[][];
+    rows: number[];
+    columns: number[];
+    modes: {column: string, row: string};
 }

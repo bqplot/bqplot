@@ -125,6 +125,4 @@ export class MarkModel extends widgets.WidgetModel {
 
     dirty: boolean;
     mark_data: any;
-
 }
-

@@ -75,7 +75,7 @@ export class Label extends ScatterBase {
     update_text() {
         this.d3el.selectAll(".object_grp")
             .select(".label")
-            .text(function(d) { return d.text; });
+            .text(function(d: any) { return d.text; });
     }
 
     get_element_size(data) {
@@ -100,7 +100,7 @@ export class Label extends ScatterBase {
         const x_offset = this.model.get("x_offset"),
             y_offset = this.model.get("y_offset");
         this.d3el.selectAll(".object_grp")
-            .attr("transform", function(d) {
+            .attr("transform", function(d: any) {
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset + x_offset) +
                                 "," + (y_scale.scale(d.y) + y_scale.offset + y_offset) + ")" +
                        that.get_element_rotation(d);

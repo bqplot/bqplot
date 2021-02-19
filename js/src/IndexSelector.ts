@@ -172,7 +172,7 @@ export class IndexSelector extends BaseXSelector {
 
     active: boolean;
     dirty: boolean;
-    line: any;
-    background: any;
+    line: d3.Selection<SVGLineElement, any, any, any>;
+    background: d3.Selection<SVGRectElement, any, any, any>;
 }
 

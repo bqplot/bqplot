@@ -35,8 +35,8 @@ export class GeoScale extends widgets.WidgetView {
         this.trigger("domain_changed", null);
     }
 
-    path: any;
-    scale: any;
+    path: d3.GeoPath<any, d3.GeoPermissibleObjects>;
+    scale: d3.GeoProjection;
 
     model: GeoScaleModel;
 }
@@ -61,4 +61,3 @@ export class Gnomonic extends GeoScale {
 
 export class Stereographic extends GeoScale {
 }
-

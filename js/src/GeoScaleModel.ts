@@ -28,11 +28,11 @@ export class GeoScaleModel extends ScaleModel {
 
     compute_and_set_domain(data_array, id) {
     }
-    
+
     update_domain() {
     }
 
-    projection: any;
+    projection: d3.GeoProjection;
 }
 
 export class MercatorModel extends GeoScaleModel {
@@ -260,4 +260,3 @@ export class StereographicModel extends GeoScaleModel {
         this.trigger("attribute_changed");
     }
 }
-

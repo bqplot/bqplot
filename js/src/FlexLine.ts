@@ -97,8 +97,8 @@ export class FlexLine extends Lines {
 
     draw() {
         this.set_ranges();
-        let curves_sel = this.d3el.selectAll(".curve")
-            .data(this.model.mark_data, function(d, i) { return d.name; });
+        let curves_sel: d3.Selection<any, any, any, any> = this.d3el.selectAll(".curve")
+            .data(this.model.mark_data, function(d: any, i) { return d.name; });
 
         curves_sel.exit()
             .transition("draw")
@@ -142,9 +142,9 @@ export class FlexLine extends Lines {
         this.d3el.selectAll(".curve").selectAll(".line-elem")
             .transition("relayout")
             .duration(this.parent.model.get("animation_duration"))
-            .attr("x1", function(d) { return x_scale.scale(d.x1); })
-            .attr("x2", function(d) { return x_scale.scale(d.x2); })
-            .attr("y1", function(d) { return y_scale.scale(d.y1); })
-            .attr("y2", function(d) { return y_scale.scale(d.y2); });
+            .attr("x1", function(d: any) { return x_scale.scale(d.x1); })
+            .attr("x2", function(d: any) { return x_scale.scale(d.x2); })
+            .attr("y1", function(d: any) { return y_scale.scale(d.y1); })
+            .attr("y2", function(d: any) { return y_scale.scale(d.y2); });
     }
 }

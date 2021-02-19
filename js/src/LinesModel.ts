@@ -191,9 +191,9 @@ export class LinesModel extends MarkModel {
         color: serialize.array_or_json
     };
 
-    x_data: any;
-    y_data: any;
-    color_data: any;
+    x_data: any[];
+    y_data: any[];
+    color_data: number[];
 }
 
 export class FlexLineModel extends LinesModel {
@@ -318,6 +318,5 @@ export class FlexLineModel extends LinesModel {
         width: serialize.array_or_json
     };
 
-    data_len: any;
+    data_len: number;
 }
-

@@ -189,5 +189,5 @@ export class GraphModel extends MarkModel {
         link_matrix: serialize.array_or_json
     }
 
-    link_data: any;
+    link_data: {source: number, target: number, value: number}[];
 }

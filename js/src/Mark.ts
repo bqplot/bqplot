@@ -27,7 +27,8 @@ import {
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
-import { MarkModel } from './MarkModel'
+import { MarkModel } from './MarkModel';
+import { Figure } from './Figure';
 import { applyStyles } from './utils';
 
 // Check that value is defined and not null
@@ -301,8 +302,8 @@ export abstract class Mark extends widgets.WidgetView {
 
     move_tooltip(mouse_events?) {
         if(this.tooltip_view) {
-            this.parent.popper_reference.x = d3GetEvent().clientX;
-            this.parent.popper_reference.y = d3GetEvent().clientY;
+            (this.parent.popper_reference as any).x = d3GetEvent().clientX;
+            (this.parent.popper_reference as any).y = d3GetEvent().clientY;
             this.parent.popper.scheduleUpdate();
         }
     }
@@ -511,21 +512,41 @@ export abstract class Mark extends widgets.WidgetView {
         return (_.compact(hit_check).length > 0);
     }
 
-    bisect: any;
-    d3el: any;
+    bisect: (x: number[], y: number) => number;
+    d3el: d3.Selection<HTMLElement, any, any, any>;
     display_el_classes: string[];
-    event_listeners: any;
-    event_metadata: any;
-    parent: any;
-    scales: any;
-    selected_indices: any;
-    selected_style: any;
-    tooltip_div: any;
-    tooltip_view: any;
-    unselected_style: any;
-    uuid: any;
-    x_padding: any;
-    y_padding: any;
+    event_listeners: {element_clicked?: (args) => void,
+                      parent_clicked?: (args) => void,
+                      legend_mouse_out?: (args) => void,
+                      legend_mouse_over?: (args) => void,
+                      legend_clicked?: (args) => void,
+                      mouse_out?: (args) => void,
+                      mouse_move?: (args) => void,
+                      mouse_over?: (args) => void};
+    event_metadata: {[key: string]: {[key: string]: any}};
+    parent: Figure;
+    scales: {rotation?,
+             skew?,
+             opacity?,
+             size?,
+             x?,
+             y?,
+             color?,
+             projection?,
+             count?,
+             sample?,
+             column?,
+             row?,
+             link_color?,
+             width?};
+    selected_indices: (number | [number, number])[];
+    selected_style: {[key: string]: string};
+    tooltip_div: d3.Selection<any, any, any, any>;
+    tooltip_view: widgets.DOMWidgetView;
+    unselected_style: {[key: string]: string};
+    uuid: string;
+    x_padding: number;
+    y_padding: number;
 
     // Overriding super class
     model: MarkModel;

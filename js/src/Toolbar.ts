@@ -16,6 +16,7 @@
 import * as widgets from '@jupyter-widgets/base';
 import { semver_range } from './version';
 import * as _ from 'underscore';
+import { Interaction } from './Interaction';
 
 export class ToolbarModel extends widgets.DOMWidgetModel {
 
@@ -144,7 +145,7 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
         });
     }
 
-    cached_interaction: any
+    cached_interaction: Interaction
 
     static serializers = {
         ...widgets.DOMWidgetModel.serializers,
@@ -224,6 +225,6 @@ export class Toolbar extends widgets.DOMWidgetView {
         }
     }
 
-    model: ToolbarModel
-    _panzoom: any
+    model: ToolbarModel;
+    _panzoom: HTMLButtonElement;
 };
