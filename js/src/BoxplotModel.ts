@@ -48,6 +48,10 @@ export class BoxplotModel extends MarkModel {
         this.update_domains();
     }
 
+    get_data_dict(data, index) {
+        return data.data_dict;
+    }
+
     update_data() {
         let x_data = this.get("x");
         let y_data = this.get("y");

@@ -24,19 +24,25 @@ import { applyStyles } from './utils';
 
 export class Boxplot extends Mark {
 
-    render() {
+    async render() {
         const base_creation_promise = super.render.apply(this);
-        const that = this;
 
         this.selected_style = this.model.get("selected_style");
         this.unselected_style = this.model.get("unselected_style");
 
-        return base_creation_promise.then(function() {
-            that.event_listeners = {};
-            that.create_listeners();
-            that.process_interactions();
-            that.draw();
-        }, null);
+        this.display_el_classes = ["box"];
+
+        this.displayed.then(() => {
+            this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+            this.create_tooltip();
+        });
+
+        await base_creation_promise;
+
+        this.event_listeners = {};
+        this.create_listeners();
+        this.process_interactions();
+        this.draw();
     }
 
     set_ranges() {
@@ -65,6 +71,7 @@ export class Boxplot extends Mark {
 
     create_listeners() {
         super.create_listeners.apply(this);
+        this.listenTo(this.model, "change:tooltip", this.create_tooltip);
         this.listenTo(this.model, "change:stroke", this.update_stroke);
         this.listenTo(this.model, "change:opacities", this.update_opacities);
         this.listenTo(this.model, "change:marker", this.update_marker);
@@ -276,10 +283,17 @@ export class Boxplot extends Mark {
 
             const displayValue: any = {};
 
-            displayValue.x         = x_scale.scale(values[0]);
-            displayValue.boxUpper  = y_scale.scale(d3.quantile(values[1], 0.75));
-            displayValue.boxLower  = y_scale.scale(d3.quantile(values[1], 0.25));
-            displayValue.boxMedian = y_scale.scale(d3.quantile(values[1], 0.5));
+            displayValue.data_dict = {
+                x: values[0],
+                q1: d3.quantile(values[1], 0.25),
+                q3: d3.quantile(values[1], 0.75),
+                median: d3.quantile(values[1], 0.5)
+            };
+
+            displayValue.x         = x_scale.scale(displayValue.data_dict.x);
+            displayValue.boxUpper  = y_scale.scale(displayValue.data_dict.q3);
+            displayValue.boxLower  = y_scale.scale(displayValue.data_dict.q1);
+            displayValue.boxMedian = y_scale.scale(displayValue.data_dict.median);
 
             // The domain Y to screen Y is an inverse scale, so be aware of that
             // The max from the domain Y becomes min on the screen (display) scale
@@ -473,7 +487,7 @@ export class Boxplot extends Mark {
                 return "translate(" + (d.x + xOffset) + ", 0)";
             });
 
-       //Box
+        //Box
         const width = this.get_box_width();
 
         selector.selectAll(".box").data(plotData)
@@ -485,9 +499,19 @@ export class Boxplot extends Mark {
             })
             .attr("height", function (d, i) {
                 return (d.boxLower - d.boxUpper);
-            }).on("click", function(d, i) {
+            })
+            .on("click", function(d, i) {
                 return that.event_dispatcher("element_clicked",
                                             {"data": d, "index": i});
+            })
+            .on("mouseover", (d, i) => {
+                that.event_dispatcher("mouse_over", {"data": d, "index": i});
+            })
+            .on("mousemove", (d, i) => {
+                that.event_dispatcher("mouse_move");
+            })
+            .on("mouseout", (d, i) => {
+                that.event_dispatcher("mouse_out");
             });
 
         //Median line
