@@ -7,3 +7,4 @@ bqplot: Plotting for Jupyter
    introduction
    usage
    api_documentation
+   auto_examples/index
