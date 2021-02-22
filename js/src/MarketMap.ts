@@ -185,7 +185,7 @@ export class MarketMap extends Figure {
 
     update_title(model, value) {
         this.title.text(this.model.get("title"))
-           .styles(this.model.get("title_style"));
+        applyStyles(this.title, this.model.get("title_style"));
     }
 
     relayout() {
@@ -453,15 +453,15 @@ export class MarketMap extends Figure {
             const min_x = d3.min(ends, function(end_point: any) { return end_point.x;});
             const min_y = d3.min(ends, function(end_point: any) { return end_point.y;});
 
-            that.fig_names.append("foreignObject")
+            const obj = that.fig_names.append("foreignObject")
                 .attr("class", "names_object")
                 .attr("x", min_x)
                 .attr("y", min_y)
                 .append("xhtml:div")
                 .attr("class", "names_div")
-                .styles({"display": "flex", "flex-direction": "row", "align-content": "center", "align-items": "center", "width": "100%",
-                       "height": "100%", "justify-content": "center", "word-wrap": "break-word", "font": "24px sans-serif", "color": "black"})
                 .text(that.groups[i]);
+            applyStyles(obj, {"display": "flex", "flex-direction": "row", "align-content": "center", "align-items": "center", "width": "100%",
+                       "height": "100%", "justify-content": "center", "word-wrap": "break-word", "font": "24px sans-serif", "color": "black"})
         });
         this.update_font_style();
         this.draw_group_names();
@@ -542,15 +542,15 @@ export class MarketMap extends Figure {
                         return d.name === data;
                     });
 
-                that.fig_click
+                const rect = that.fig_click
                     .append("rect")
                     .data(selected_cell.data())
                     .attr("transform", selected_cell.attr("transform"))
                     .attr("x", 0)
                     .attr("y", 0)
                     .attr("width", that.column_width)
-                    .attr("height", that.row_height)
-                    .styles({"stroke": that.selected_stroke,
+                    .attr("height", that.row_height);
+                applyStyles(rect, {"stroke": that.selected_stroke,
                             "stroke-width": "3px",
                             "fill": "none"});
             });
@@ -564,14 +564,14 @@ export class MarketMap extends Figure {
     mouseover_handler(data, id, cell) {
         const transform = d3.select(cell).attr("transform");
         if(this.model.get("enable_hover")) {
-            this.fig_hover.append("rect")
+            const rect = this.fig_hover.append("rect")
                 .attr("class", "hover_" + id)
                 .attr("transform", transform)
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", this.column_width)
-                .attr("height", this.row_height)
-                .styles({'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none',
+                .attr("height", this.row_height);
+            applyStyles(rect, {'stroke': this.hovered_stroke, 'stroke-width': '3px', 'fill': 'none',
                          'pointer-events': 'none'});
             this.show_tooltip(d3.event, data);
             this.send({event: "hover", data: data.name, ref_data: data.ref_data});
@@ -604,7 +604,8 @@ export class MarketMap extends Figure {
         } else {
             const tooltip_div = this.tooltip_div;
             tooltip_div.transition()
-                .styles({"opacity": 0.9, "display": null});
+                       .style("opacity", 0.9)
+                       .style("display", null);
 
             this.move_tooltip();
             tooltip_div.select("table").remove();
@@ -643,7 +644,8 @@ export class MarketMap extends Figure {
     hide_tooltip() {
          this.tooltip_div.style("pointer-events", "none");
          this.tooltip_div.transition()
-            .styles({"opacity": 0, "display": "none"});
+                         .style("opacity", 0)
+                         .style("display", "none");
         this.popper.disableEventListeners();
     }
 
