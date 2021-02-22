@@ -429,7 +429,6 @@ export class Boxplot extends Mark {
     }
 
     draw_mark_paths(parentClass, selector) {
-        const that = this;
         const plotData = this.plotData;
         const outlierData = this.outlierData;
 
@@ -501,17 +500,17 @@ export class Boxplot extends Mark {
                 return (d.boxLower - d.boxUpper);
             })
             .on("click", function(d, i) {
-                return that.event_dispatcher("element_clicked",
+                return this.event_dispatcher("element_clicked",
                                             {"data": d, "index": i});
             })
             .on("mouseover", (d, i) => {
-                that.event_dispatcher("mouse_over", {"data": d, "index": i});
+                this.event_dispatcher("mouse_over", {"data": d, "index": i});
             })
             .on("mousemove", (d, i) => {
-                that.event_dispatcher("mouse_move");
+                this.event_dispatcher("mouse_move");
             })
             .on("mouseout", (d, i) => {
-                that.event_dispatcher("mouse_out");
+                this.event_dispatcher("mouse_out");
             });
 
         //Median line
