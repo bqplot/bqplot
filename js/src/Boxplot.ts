@@ -499,7 +499,7 @@ export class Boxplot extends Mark {
             .attr("height", function (d, i) {
                 return (d.boxLower - d.boxUpper);
             })
-            .on("click", function(d, i) {
+            .on("click", (d, i) => {
                 return this.event_dispatcher("element_clicked",
                                             {"data": d, "index": i});
             })
