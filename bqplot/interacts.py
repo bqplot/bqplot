@@ -47,7 +47,6 @@ from .scales import Scale
 from .traits import Date, array_serialization, iterable_of_array_serialization, _array_equal
 from .marks import Lines
 from ._version import __frontend_version__
-import numpy as np
 
 
 def register_interaction(key=None):
