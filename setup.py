@@ -84,6 +84,7 @@ jstargets = [
 data_files_spec = [
     ('share/jupyter/nbextensions/bqplot', 'share/jupyter/nbextensions/bqplot', '*.js'),
     ('share/jupyter/labextensions/bqplot/', 'share/jupyter/labextensions/bqplot/', '**'),
+    ('share/jupyter/labextensions/bqplot/', here, 'install.json'),
     ('etc/jupyter/nbconfig/notebook.d', 'etc/jupyter/nbconfig/notebook.d', 'bqplot.json'),
 ]
 
