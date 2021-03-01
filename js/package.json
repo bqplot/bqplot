@@ -75,7 +75,7 @@
     "d3-selection": "^1",
     "is-typedarray": "^1.0.0",
     "popper.js": "^1.0.0",
-    "three": "^0.91.0",
+    "three": "^0.125.0",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   },
