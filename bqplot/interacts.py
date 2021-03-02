@@ -34,7 +34,9 @@ Interacts
    PanZoom
    Selector
    TwoDSelector
+   LassoSelector
 """
+import numpy as np
 
 from traitlets import (Bool, Int, Float, Unicode, Dict,
                        Instance, List, Enum, observe)
@@ -42,10 +44,9 @@ from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization, register
 
 from .scales import Scale
-from .traits import Date, array_serialization, _array_equal
+from .traits import Date, array_serialization, iterable_of_array_serialization, _array_equal
 from .marks import Lines
 from ._version import __frontend_version__
-import numpy as np
 
 
 def register_interaction(key=None):
@@ -550,8 +551,42 @@ class LassoSelector(TwoDSelector):
         List of marks on which lasso selector will be applied.
     color: Color (default: None)
         Color of the lasso.
+    brushing: bool
+        True while a lasso is being drawn.
+    selected_x: List of numpy.ndarray, read-only
+        The x-coordinates of each lasso drawn on the view. The order
+        in the list is the order in which the lassos were drawn. The
+        property is updated after each lasso is drawn.
+    selected_y: List of numpy.ndarray, read-only
+        The y-coordinates of each lasso drawn on the view. The order
+        in the list is the order in which the lassos were drawn. The
+        property is updated after each lasso is drawn.
+    selected: List of numpy.ndarray, read-only
+        This property is constructed from selected_x and selected_y
+        and provided for consistency with other selectors. Each entry
+        in the list is a 2 x N numpy array, where N is the number of
+        points in that lasso. There is one array for each lasso on
+        the screen.
     """
     color = Color(None, allow_none=True).tag(sync=True)
+    brushing = Bool().tag(sync=True)
 
+    selected_x = List(None, read_only=True,
+                      allow_none=True).tag(sync=True,
+                                           **iterable_of_array_serialization)
+    selected_y = List(None, read_only=True,
+                      allow_none=True).tag(sync=True,
+                                           **iterable_of_array_serialization)
+
+    # Do not sync this...it is constructed from selected_x, y
+    selected = List(None, allow_none=True, read_only=True).tag(sync=False)
     _view_name = Unicode('LassoSelector').tag(sync=True)
     _model_name = Unicode('LassoSelectorModel').tag(sync=True)
+
+    @observe('selected_x', 'selected_y')
+    def update_selected(self, change):
+        new_selected = [
+            np.array([lasso_x, lasso_y])
+            for lasso_x, lasso_y in zip(self.selected_x, self.selected_y)
+        ]
+        self.set_trait('selected', new_selected)

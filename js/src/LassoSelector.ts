@@ -81,6 +81,8 @@ export class LassoSelector extends BaseXYSelector {
     }
 
     drag_start() {
+        this.model.set("brushing", true);
+        this.brushing = true;
         this.current_vertices = [];
         this.create_new_lasso();
     }
@@ -99,7 +101,11 @@ export class LassoSelector extends BaseXYSelector {
         // Add the current vertices to the global lasso vertices
         this.all_vertices[lasso_name] = this.current_vertices;
         // Update selected for each mark
-        this.update_mark_selected(this.all_vertices)
+        this.update_mark_selected(this.all_vertices);
+        // set the model value for all_vertices
+        this.update_lasso_paths();
+        this.model.set("brushing", false);
+        this.brushing = false;
     }
 
     update_mark_selected(vertices?) {
@@ -126,6 +132,31 @@ export class LassoSelector extends BaseXYSelector {
         }, this);
     }
 
+    update_lasso_paths() {
+        var path_labels = [];
+        var selected_x = [];
+        var selected_y = [];
+
+        // Get a list of lasso names so we can sort it
+        for (var label in this.all_vertices) {
+            path_labels.push(label);
+        }
+        for (var p of path_labels.sort().values()) {
+            var this_x = [];
+            var this_y = [];
+
+            for (var v of this.all_vertices[p]) {
+                this_x.push(this.x_scale.invert(v[0]));
+                this_y.push(this.y_scale.invert(v[1]));
+            };
+            selected_x.push(this_x);
+            selected_y.push(this_y)
+        }
+        this.set_selected("selected_x", this.x_scale.model.typedRange((selected_x as ArrayLike<number>)));
+        this.set_selected("selected_y", this.x_scale.model.typedRange((selected_y as ArrayLike<number>)));
+        this.touch();
+    }
+
     relayout() {
         super.relayout();
         this.background.attr("width", this.width).attr("height", this.height);
@@ -144,6 +175,7 @@ export class LassoSelector extends BaseXYSelector {
            });
            lassos_to_delete.remove();
            this.update_mark_selected(this.all_vertices);
+           this.update_lasso_paths();
       }
     }
 
@@ -152,8 +184,8 @@ export class LassoSelector extends BaseXYSelector {
         this.all_vertices = {};
         this.d3el.selectAll("path").remove();
         this.update_mark_selected();
+        this.update_lasso_paths();
     }
-
     // TODO: this is here to provide an implementation of an abstract method
     // from the base class.
     selected_changed() {}
@@ -163,5 +195,6 @@ export class LassoSelector extends BaseXYSelector {
     lasso_counter: number;
     background: any;
     current_vertices: any[];
+    brushing: boolean;
 
 }

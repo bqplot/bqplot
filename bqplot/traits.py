@@ -202,6 +202,50 @@ def array_to_json(ar, obj=None, force_contiguous=True):
 array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
 
 
+def iterable_of_array_from_json(value, obj=None):
+    """
+    We are receiving a list of arrays. Iterate
+    through the list here, using array_from_json to convert
+    """
+    return_list = []
+    value_type = value['type']
+    json_values = value['values']
+
+    for value in json_values:
+        single_value_json = {'type': value_type,
+                             'values': value}
+        return_list.append(
+            array_from_json(single_value_json, obj=obj)
+        )
+
+    return return_list
+
+
+def iterable_of_array_to_json(value, obj=None):
+    """
+    We need to translate a list of arrays to json. Hand off
+    the array serialization to array_to_json and handle
+    the list here.
+    """
+
+    # Handle the trivial case immediately...
+    if not value:
+        return dict(values=value, type=None)
+
+    # We have data; use existing array_to_json to pack
+    # up the individual bits.
+    json_arrays = []
+    for array in value:
+        single_array_json = array_to_json(array, obj=obj)
+        json_arrays.append(single_array_json['values'])
+        array_type = single_array_json['type']
+    return dict(values=json_arrays, type=array_type)
+
+
+iterable_of_array_serialization = dict(to_json=iterable_of_array_to_json,
+                                       from_json=iterable_of_array_from_json)
+
+
 def array_squeeze(trait, value):
     if len(value.shape) > 1:
         return np.squeeze(value)
