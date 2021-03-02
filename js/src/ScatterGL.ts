@@ -193,8 +193,8 @@ export class ScatterGL extends Mark {
                 stroke_width: {type: 'f', value: 1.5},
                 marker_scale: {type: 'f', value: 1.0}
             },
-            vertexShader: require('raw-loader!../shaders/scatter-vertex.glsl').default,
-            fragmentShader: require('raw-loader!../shaders/scatter-fragment.glsl').default,
+            vertexShader: require('../shaders/scatter-vertex.glsl').default,
+            fragmentShader: require('../shaders/scatter-fragment.glsl').default,
             transparent: true,
             depthTest: false,
             depthWrite: false,
