@@ -9,7 +9,8 @@ var rules = [
     { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, use: "url?limit=10000&mimetype=application/font-woff" },
     { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, use: "url?limit=10000&mimetype=application/octet-stream" },
     { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, use: "file" },
-    { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: "url?limit=10000&mimetype=image/svg+xml" }
+    { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: "url?limit=10000&mimetype=image/svg+xml" },
+    { test: /\.glsl$/, use: "raw-loader" }
 ];
 
 module.exports = [

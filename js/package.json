@@ -81,6 +81,7 @@
   },
   "jupyterlab": {
     "extension": "lib/jupyterlab-plugin",
+    "webpackConfig": "lab.webpack.config.js",
     "outputDir": "../share/jupyter/labextensions/bqplot",
     "sharedPackages": {
       "@jupyter-widgets/base": {
