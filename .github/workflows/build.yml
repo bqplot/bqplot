@@ -56,6 +56,12 @@ jobs:
     - name: Run pytest
       run: pytest .
 
+    - name: Run JavaScript tests
+      run: |
+        cd js
+        yarn install
+        yarn run test
+
   build:
     runs-on: ubuntu-latest
     steps:

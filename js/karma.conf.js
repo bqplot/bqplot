@@ -27,8 +27,7 @@ module.exports = function (config) {
             devtool: 'inline-source-map',
             mode: 'development',
             resolve: {
-                extensions: ['.js'],
-                alias: {ipysheet$: path.resolve(__dirname, './lib/index')}
+                extensions: ['.js']
             },
         },
         reporters: ['progress', 'mocha'],
