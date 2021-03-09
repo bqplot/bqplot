@@ -17,6 +17,7 @@ import * as d3 from 'd3';
 // const d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import { Mark } from './Mark';
+import { Scale } from './Scale';
 import * as _ from 'underscore';
 import { applyStyles } from './utils';
 
@@ -245,7 +246,7 @@ export abstract class ScatterBase extends Mark {
 
         this.d3el.selectAll(".object_grp").transition("update_position")
             .duration(animation_duration)
-            .attr("transform", (d) => {
+            .attr("transform", (d: any) => {
                 return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                                 "," + (y_scale.scale(d.y) + y_scale.offset) + ")" +
                        this.get_element_rotation(d);
@@ -262,7 +263,7 @@ export abstract class ScatterBase extends Mark {
         this.set_ranges();
 
         const elements = this.d3el.selectAll(".object_grp")
-            .data(this.model.mark_data, (d) => { return d.unique_id; });
+            .data(this.model.mark_data, (d: any) => { return d.unique_id; });
 
         const elements_added = elements.enter().append("g")
             .attr("class", "object_grp")
@@ -499,8 +500,8 @@ export abstract class ScatterBase extends Mark {
 
     clear_style(style_dict, indices) {
         // Function to clear the style of a dict on some or all the elements of the
-        // chart.If indices is null, clears the style on all elements. If
-        // not, clears on only the elements whose indices are mathcing.
+        // chart. If indices is null, clears the style on all elements. If
+        // not, clears on only the elements whose indices are matching.
         //
         // This function is not used right now. But it can be used if we
         // decide to accommodate more properties than those set by default.
@@ -686,14 +687,14 @@ export abstract class ScatterBase extends Mark {
     abstract update_default_skew(animate?);
     abstract update_default_size(animate?);
 
-    hovered_index: any;
-    hovered_style: any;
-    unhovered_style: any;
-    drag_listener: any;
-    pixel_coords: any;
+    hovered_index: number[];
+    hovered_style: {[key: string]: string};
+    unhovered_style: {[key: string]: string};
+    drag_listener: d3.DragBehavior<Element, unknown, unknown>;
+    pixel_coords: number[];
     legend_el: any;
-    x_pixels: any;
-    y_pixels: any;
-    x_scale: any;
-    y_scale: any;
+    x_pixels: number[];
+    y_pixels: number[];
+    x_scale: Scale;
+    y_scale: Scale;
 };

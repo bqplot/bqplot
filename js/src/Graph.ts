@@ -18,6 +18,7 @@ import * as d3 from 'd3';
 const d3GetEvent = function(){return require("d3-selection").event}.bind(this);
 import * as _ from 'underscore';
 import { Mark } from './Mark';
+import { Scale } from './Scale';
 import { GraphModel } from './GraphModel';
 import { applyStyles } from './utils';
 
@@ -239,7 +240,7 @@ export class Graph extends Mark {
             .style("stroke", function(d) {
                 return link_color_scale ? link_color_scale.scale(d.value) : null;
             })
-            .style("stroke-width", function(d) { return d.link_width; })
+            .style("stroke-width", function(d: any) { return d.link_width; })
             .attr("marker-mid", directed ? "url(#arrow)" : null);
 
         this.force_layout.nodes(this.model.mark_data)
@@ -503,13 +504,13 @@ export class Graph extends Mark {
     }
 
     compute_view_padding() {
-        const x_padding = d3.max(this.model.mark_data.map(function(d) {
+        const x_padding = d3.max<number>(this.model.mark_data.map(function(d) {
                 return (d.shape_attrs.r ||
                         d.shape_attrs.width / 2 ||
                         d.shape_attrs.rx) + 1.0;
             }));
 
-        const y_padding = d3.max(this.model.mark_data.map(function(d) {
+        const y_padding = d3.max<number>(this.model.mark_data.map(function(d) {
                 return (d.shape_attrs.r ||
                         d.shape_attrs.height / 2 ||
                         d.shape_attrs.ry) + 1.0;
@@ -533,7 +534,7 @@ export class Graph extends Mark {
 
         const link_dist = this.model.get("link_distance");
         if (!x_scale && !y_scale) {
-            this.force_layout.linkDistance(link_dist).start();
+            (this.force_layout as any).linkDistance(link_dist).start();
         }
     }
 
@@ -543,7 +544,7 @@ export class Graph extends Mark {
 
         const charge = this.model.get("charge");
         if (!x_scale && !y_scale) {
-            this.force_layout.charge(charge).start();
+            (this.force_layout as any).charge(charge).start();
         }
     }
 
@@ -607,15 +608,15 @@ export class Graph extends Mark {
     set_default_style(indices) {
     }
 
-    hovered_style: any;
-    unhovered_style: any;
-    hovered_index: any;
-    arrow: any;
-    x_scale: any;
-    y_scale: any;
-    force_layout: any;
-    links: any;
-    nodes: any;
+    hovered_style: {[key: string]: string};
+    unhovered_style: {[key: string]: string};
+    hovered_index: number[];
+    arrow: d3.Selection<SVGPathElement, any, any, any>;
+    x_scale: Scale;
+    y_scale: Scale;
+    force_layout: d3.Simulation<d3.SimulationNodeDatum, any>;
+    links: d3.Selection<SVGPathElement, { source: any, target: any, value: number}, HTMLElement, any>;
+    nodes: d3.Selection<SVGGElement, any, HTMLElement, any>;
 
     model: GraphModel;
 }

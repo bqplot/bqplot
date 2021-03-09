@@ -16,6 +16,7 @@
 import * as d3 from 'd3';
 // const d3 =Object.assign({}, require("d3-selection"));
 import { Interaction } from './Interaction';
+import { LinearScale } from './LinearScale';
 const convert_dates = require('./utils').convert_dates;
 import { WidgetView } from '@jupyter-widgets/base';
 
@@ -82,9 +83,9 @@ export abstract class BaseSelector extends Interaction {
         this.model.set(name, convert_dates(value))
     }
 
-    width: any
-    height: any;
-    mark_views_promise: any;
+    width: number;
+    height: number;
+    mark_views_promise: Promise<void>;
 }
 
 export abstract class BaseXSelector extends BaseSelector {
@@ -96,7 +97,7 @@ export abstract class BaseXSelector extends BaseSelector {
         if(this.model.get("scale")) {
             const that = this;
             return this.create_child_view(this.model.get("scale")).then(function(view) {
-                that.scale = view;
+                that.scale = view as WidgetView as LinearScale;
                 // The argument is to suppress the update to gui
                 that.update_scale_domain(true);
                 that.set_range([that.scale]);
@@ -122,7 +123,7 @@ export abstract class BaseXSelector extends BaseSelector {
         }
     }
 
-    scale: any;
+    scale: LinearScale;
 }
 
 export abstract class BaseXYSelector extends BaseSelector {
@@ -138,7 +139,7 @@ export abstract class BaseXYSelector extends BaseSelector {
         const scale_promises = [];
         if(this.model.get("x_scale")) {
             scale_promises.push(this.create_child_view(this.model.get("x_scale")).then(function(view) {
-                that.x_scale = view;
+                that.x_scale = view as WidgetView as LinearScale;
                 that.update_xscale_domain();
                 that.set_x_range([that.x_scale]);
                 that.x_scale.on("domain_changed", that.update_xscale_domain, that);
@@ -147,7 +148,7 @@ export abstract class BaseXYSelector extends BaseSelector {
         }
         if(this.model.get("y_scale")) {
             scale_promises.push(this.create_child_view(this.model.get("y_scale")).then(function(view) {
-                that.y_scale = view;
+                that.y_scale = view as WidgetView as LinearScale;
                 that.update_yscale_domain();
                 that.set_y_range([that.y_scale]);
                 that.y_scale.on("domain_changed", that.update_yscale_domain, that);
@@ -186,6 +187,6 @@ export abstract class BaseXYSelector extends BaseSelector {
         this.y_scale.expand_domain(initial_range, target_range);
     }
 
-    x_scale: any
-    y_scale: any;
+    x_scale: LinearScale;
+    y_scale: LinearScale;
 }

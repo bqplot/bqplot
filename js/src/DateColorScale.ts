@@ -22,5 +22,6 @@ export class DateColorScale extends ColorScale {
     create_d3_scale() {
         this.scale = d3.scaleUtc();
     }
-}
 
+    scale: d3.ScaleTime<Date, number>;
+}

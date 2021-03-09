@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
+import { WidgetView } from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-axis"), require("d3-scale"), require("d3-selection"), require("d3-selection-multi"));
 import { Axis } from './Axis';
 import { applyAttrs } from './utils';
+import { ColorScale } from './ColorScale';
 
 class ColorBar extends Axis {
 
@@ -68,12 +70,12 @@ class ColorBar extends Axis {
         this.side = this.model.get("side");
         this.vertical = this.model.get("orientation") === "vertical";
         if(this.vertical) {
-            this.axis = this.side === "right" ? d3.axisRight(this.axis_scale.scale)
-                                              : d3.axisLeft(this.axis_scale.scale);
+            this.axis = this.side === "right" ? d3.axisRight(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
+                                              : d3.axisLeft(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
         }
         else {
-            this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale)
-                                            : d3.axisBottom(this.axis_scale.scale);
+            this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
+                                            : d3.axisBottom(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
         }
         this.g_axisline.remove();
         this.g_axisline = this.d3el.select("#colorBarG" + this.cid)
@@ -97,7 +99,7 @@ class ColorBar extends Axis {
             that.displayed.then(function() {
                 view.trigger("displayed");
             });
-            that.axis_scale = view;
+            that.axis_scale = view as WidgetView as ColorScale;
             // TODO: eventually removes what follows
             if(that.axis_scale.model.type === "date_color_linear") {
                 that.axis_line_scale = d3.scaleUtc().nice();
@@ -135,12 +137,12 @@ class ColorBar extends Axis {
             .attr("class", "axis");
 
         if(this.vertical) {
-            this.axis = this.side === "right" ? d3.axisRight(this.axis_scale.scale)
-                                              : d3.axisLeft(this.axis_scale.scale);
+            this.axis = this.side === "right" ? d3.axisRight(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
+                                              : d3.axisLeft(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
         }
         else {
-            this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale)
-                                            : d3.axisBottom(this.axis_scale.scale);
+            this.axis = this.side === "top" ? d3.axisTop(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
+                                            : d3.axisBottom(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
         }
         this.axis = this.axis.tickFormat(this.tick_format);
         this.redraw_axisline();
@@ -155,7 +157,7 @@ class ColorBar extends Axis {
         colorBar.selectAll(".g-defs")
             .remove();
 
-        this.colors = this.axis_scale.scale.range();
+        this.colors = this.axis_scale.scale.range() as number[];
         const colorSpacing = 100 / (this.colors.length - 1);
 
         if(this.ordinal) {
@@ -171,7 +173,7 @@ class ColorBar extends Axis {
                 .attr("height", this.bar_height)
                 .attr("width", bar_width)
                 .style("fill", function(d) { return d; })
-                .merge(rects);
+                .merge(rects as d3.Selection<SVGRectElement, number, SVGGElement, any>);
 
             if(this.vertical) {
                 rects.attr("x", function(d, i) {
@@ -257,7 +259,7 @@ class ColorBar extends Axis {
         const range = (this.vertical) ?
             [this.height - 2 * this.x_offset, 0] : [0, this.width -  2 * this.x_offset];
         if(this.ordinal) {
-            this.axis_line_scale.rangeRound(range).padding(0.05);
+            (this.axis_line_scale as d3.ScaleBand<string>).rangeRound(range as [number, number]).padding(0.05);
         } else {
             const mid = this.axis_scale.model.mid;
             if (mid === undefined || mid === null) {
@@ -363,14 +365,15 @@ class ColorBar extends Axis {
         this.redraw_axisline();
     }
 
-    axis_line_scale: any;
+    axis_scale: ColorScale;
+    axis_line_scale: d3.ScaleLinear<number, number> | d3.ScaleTime<number, number> | d3.ScaleBand<string>;
     ordinal: boolean;
     bar_height: number;
     side: string;
     x_offset: number;
     y_offset: number;
     num_ticks: number;
-    colors: Array<number>;
+    colors: number[];
 }
 
 export { ColorBar as ColorAxis };

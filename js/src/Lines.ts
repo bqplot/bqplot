@@ -18,6 +18,8 @@ import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-shape"), require("d3-transition"));
 import { Mark } from './Mark';
 import { LinesModel } from './LinesModel'
+import { BaseSelector } from './Selector'
+import { SelectorModel } from './SelectorModel'
 import * as markers from './Markers';
 
 const bqSymbol = markers.symbol;
@@ -142,7 +144,7 @@ export class Lines extends Mark {
         this.d3el.selectAll(".curve")
           .data(this.model.mark_data)
           .select(".curve_label")
-          .text(function(d) { return d.name; });
+          .text(function(d: any) { return d.name; });
     }
 
     get_line_style() {
@@ -241,13 +243,13 @@ export class Lines extends Mark {
         this.area.curve(interpolation);
         const that = this;
         this.d3el.selectAll(".curve").select(".line")
-          .attr("d", function(d) {
+          .attr("d", function(d: any) {
               return that.line(d.values) + that.path_closure();
           });
         this.d3el.selectAll(".curve").select(".area")
           .transition("update_path_style")
           .duration(0) //FIXME
-          .attr("d", function(d) { return that.area(d.values); });
+          .attr("d", function(d: any) { return that.area(d.values); });
         if (this.legend_el) {
             this.legend_line.curve(interpolation);
             this.legend_el.selectAll("path")
@@ -425,17 +427,17 @@ export class Lines extends Mark {
 
         const y_scale = this.scales.y;
 
-        this.area.defined(function(d) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
+        this.area.defined(function(d: any) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
         if (fill == "bottom") {
             this.area.y0(this.parent.plotarea_height);
         } else if (fill == "top") {
             this.area.y0(0)
         } else if (fill == "between") {
-            this.area.y0(function(d) { return y_scale.scale(d.y0) + y_scale.offset; })
+            this.area.y0(function(d: any) { return y_scale.scale(d.y0) + y_scale.offset; })
         }
         const that = this;
         this.d3el.selectAll(".curve").select(".area")
-          .attr("d", function(d) {
+          .attr("d", function(d: any) {
               return that.area(d.values);
           })
         this.d3el.selectAll(".curve").select(".line")
@@ -462,20 +464,20 @@ export class Lines extends Mark {
         const animation_duration = animate === true ? this.parent.model.get("animation_duration") : 0;
 
         this.line
-          .x(function(d) { return x_scale.scale(d.x) + x_scale.offset; })
-          .y(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
+          .x(function(d: any) { return x_scale.scale(d.x) + x_scale.offset; })
+          .y(function(d: any) { return y_scale.scale(d.y) + y_scale.offset; })
 
         const fill = this.model.get("fill");
         this.area
-          .x(function(d) { return x_scale.scale(d.x) + x_scale.offset; })
-          .y1(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
+          .x(function(d: any) { return x_scale.scale(d.x) + x_scale.offset; })
+          .y1(function(d: any) { return y_scale.scale(d.y) + y_scale.offset; })
 
         if (fill == "bottom") {
             this.area.y0(this.parent.plotarea_height);
         } else if (fill == "top") {
             this.area.y0(0)
         } else if (fill == "between") {
-            this.area.y0(function(d) { return y_scale.scale(d.y0) + y_scale.offset; })
+            this.area.y0(function(d: any) { return y_scale.scale(d.y0) + y_scale.offset; })
         }
 
         const that = this;
@@ -483,14 +485,14 @@ export class Lines extends Mark {
 
         curves_sel.select(".line")
           .transition("update_line_xy")
-          .attr("d", function(d) {
+          .attr("d", function(d: any) {
               return that.line(d.values) + that.path_closure();
           })
           .duration(animation_duration);
 
         curves_sel.select(".area")
           .transition("update_line_xy")
-          .attr("d", function(d, i) {
+          .attr("d", function(d: any, i) {
             return that.area(d.values);
           })
           .duration(animation_duration);
@@ -498,7 +500,7 @@ export class Lines extends Mark {
 
         curves_sel.select(".curve_label")
           .transition("update_line_xy")
-          .attr("transform", function(d) {
+          .attr("transform", function(d: any) {
               const last_xy = d.values[d.values.length - 1];
               return "translate(" + x_scale.scale(last_xy.x) +
                               "," + y_scale.scale(last_xy.y) + ")";
@@ -553,7 +555,7 @@ export class Lines extends Mark {
           .attr("dy", ".35em")
           .attr("display", this.model.get("labels_visibility") !== "label" ?
                 "none" : "inline")
-          .text((d) => d.name);
+          .text((d: any) => d.name);
 
         const fill = this.model.get("fill"),
             area = (fill === "top" || fill === "bottom" || fill === "between");
@@ -581,7 +583,7 @@ export class Lines extends Mark {
     draw_dots() {
         if (this.model.get("marker")) {
             const dots = this.d3el.selectAll(".curve").selectAll(".dot")
-                .data(function(d, i) {
+                .data(function(d: any, i) {
                     return d.values.map(function(e) {
                         return {x: e.x, y: e.y, sub_index: e.sub_index}; });
                 });
@@ -597,7 +599,7 @@ export class Lines extends Mark {
             const dots = this.d3el.selectAll(".curve").selectAll(".dot");
 
             dots.transition("update_dots_xy").duration(animation_duration)
-                .attr("transform", function(d) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
+                .attr("transform", function(d: any) { return "translate(" + (x_scale.scale(d.x) + x_scale.offset) +
                         "," + (y_scale.scale(d.y) + y_scale.offset) + ")";
                 })
                 .attr("d", this.dot.size(this.model.get("marker_size"))
@@ -668,18 +670,17 @@ export class Lines extends Mark {
     }
 
     dot: any;
-    legend_el: any;
-    legend_line: any;
-    legend_path_data: any;
-    selector: any;
-    selector_model: any;
-    area: any;
-    line: any;
-    x_pixels: Array<number>;
-    y_pixels: Array<number>;
-    pixel_coords: Array<number>;
+    legend_el: d3.Selection<SVGGElement, any, any, any>;
+    legend_line: d3.Line<[number, number]>;
+    legend_path_data: [number, number][];
+    selector: BaseSelector;
+    selector_model: SelectorModel;
+    area: d3.Area<[number, number]>;
+    line: d3.Line<[number, number]>;
+    x_pixels: number[];
+    y_pixels: number[];
+    pixel_coords: number[];
 
     // Overriding super class
     model: LinesModel;
 }
-

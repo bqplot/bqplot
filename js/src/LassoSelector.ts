@@ -158,10 +158,10 @@ export class LassoSelector extends BaseXYSelector {
     // from the base class.
     selected_changed() {}
 
-    line: any;
-    all_vertices: any;
+    line: d3.Line<[number, number]>;
+    all_vertices: {[key: string]: [number, number][]};
     lasso_counter: number;
-    background: any;
-    current_vertices: any[];
+    background: d3.Selection<SVGRectElement, any, any, any>;
+    current_vertices: [number, number][];
 
 }

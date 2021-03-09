@@ -15,11 +15,12 @@
 
 import * as d3Scale from 'd3-scale';
 import { Scale } from './Scale';
+import { LinearScaleModel } from './LinearScaleModel';
 
 export class LinearScale extends Scale {
 
     render() {
-        this.scale = d3Scale.scaleLinear();
+        this.scale = d3Scale.scaleLinear() as d3.ScaleLinear<number, number>;
         if(this.model.domain.length > 0)
             this.scale.domain(this.model.domain);
         this.offset = 0;
@@ -51,7 +52,7 @@ export class LinearScale extends Scale {
         }));
     }
 
-    invert(pixel): number {
+    invert(pixel): number | Date {
         return this.scale.invert(pixel);
     }
 
@@ -59,5 +60,11 @@ export class LinearScale extends Scale {
         //Pixels is a non-decreasing array of pixel values
         return pixels.map((pix) => this.invert(pix));
     }
+
+    scale: d3.ScaleLinear<number, number> |
+           d3.ScaleTime<Date, number> |
+           d3.ScaleLogarithmic<number, number>;
+
+    model: LinearScaleModel;
 }
 

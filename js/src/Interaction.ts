@@ -17,6 +17,8 @@ import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
+import { Figure } from './Figure';
+import { Mark } from './Mark';
 
 export class Interaction extends widgets.WidgetView {
 
@@ -61,7 +63,7 @@ export class Interaction extends widgets.WidgetView {
         super.remove.apply(this);
     }
 
-    mark_views: any;
-    d3el: any;
-    parent: any;
+    mark_views: Mark[];
+    d3el: d3.Selection<Element, any, any, any>;
+    parent: Figure;
 }

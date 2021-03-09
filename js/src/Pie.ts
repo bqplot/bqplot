@@ -21,6 +21,18 @@ import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { applyStyles, getDate } from './utils';
 
+interface SVGPathElement2 extends SVGPathElement {
+    _current: any;
+}
+
+interface SVGTextElement2 extends SVGTextElement {
+    _current: any;
+}
+
+interface SVGPolylineElement2 extends SVGPolylineElement {
+    _current: any;
+}
+
 export class Pie extends Mark {
     render() {
         const base_creation_promise = super.render();
@@ -206,13 +218,13 @@ export class Pie extends Mark {
         if(display_labels === "inside") {
             labels.selectAll("text")
                 .transition("update_radius").duration(animation_duration)
-                .attr("transform", function(d) {
+                .attr("transform", function(d: d3.DefaultArcObject) {
                     return "translate(" + that.arc.centroid(d) + ")";
                 });
         } else if(display_labels === "outside") {
             labels.selectAll("text")
                 .transition("update_radius").duration(animation_duration)
-                .attr("transform", function(d) {
+                .attr("transform", function(d: d3.DefaultArcObject) {
                     const pos = that.outer_arc.centroid(d);
                     pos[0] = radius * (that.mid_angle_location(d) === "left" ? -1 : 1);
                     return "translate(" + pos + ")";
@@ -220,10 +232,10 @@ export class Pie extends Mark {
 
             lines.selectAll("polyline")
                 .transition("update_radius").duration(animation_duration)
-                .attr("points", function(d) {
+                .attr("points", function(d: d3.DefaultArcObject) {
                     const pos = that.outer_arc.centroid(d);
                     pos[0] = radius * 0.95 * (that.mid_angle_location(d) === "left" ? -1 : 1);
-                    return [that.arc.centroid(d), that.outer_arc.centroid(d), pos];
+                    return [that.arc.centroid(d), that.outer_arc.centroid(d), pos].toString();
                 });
         }
     }
@@ -257,7 +269,7 @@ export class Pie extends Mark {
             this.parent.model.get("animation_duration") : 0;
 
         // update pie slices
-        const slices = this.pie_g.select(".slices")
+        const slices: d3.Selection<d3.BaseType, any, any, any> = this.pie_g.select(".slices")
             .selectAll(".slice")
             .data(this.d3Pie(this.model.mark_data));
 
@@ -269,12 +281,12 @@ export class Pie extends Mark {
             .append('path')
             .attr('class', 'slice')
             .each(function(d) {
-                this._current = d;
+                (this as SVGPathElement2)._current = d;
             })
             .on("click", function(d, i) {
                 return that.event_dispatcher("element_clicked", {data: d, index: i});}
             )
-            .merge(slices)
+            .merge(slices as d3.Selection<SVGPathElement, any, any, any>)
             .transition("draw")
             .duration(animation_duration)
             .style("fill", function(d, i) {
@@ -284,8 +296,8 @@ export class Pie extends Mark {
             .style('stroke', stroke)
             .style('opacity', (d, i) => opacities[i])
             .attrTween("d", function(d) {
-                const interpolate = d3.interpolate(this._current, d);
-                this._current = d;
+                const interpolate = d3.interpolate((this as SVGPathElement2)._current, d);
+                (this as SVGPathElement2)._current = d;
                 return function(t) { return that.arc(interpolate(t)); };
             });
 
@@ -309,7 +321,7 @@ export class Pie extends Mark {
 
         const values_format = d3.format(this.model.get("values_format"));
 
-        const labels = this.pie_g.select(".labels")
+        const labels: d3.Selection<d3.BaseType, any, d3.BaseType, any> = this.pie_g.select(".labels")
             .selectAll("text")
             .data(this.d3Pie(this.model.mark_data));
 
@@ -318,9 +330,9 @@ export class Pie extends Mark {
             .attr("dy", ".35em")
             .style("opacity", 0)
             .each(function(d) {
-                this._current = d;
+                (this as SVGTextElement2)._current = d;
             })
-            .merge(labels)
+            .merge(labels as d3.Selection<SVGTextElement, any, d3.BaseType, any>)
             .transition("draw")
             .duration(animation_duration)
             .text((d) => {
@@ -348,11 +360,11 @@ export class Pie extends Mark {
                 .style("text-anchor", "middle");
         } else if (display_labels === "outside") {
             labelsTransition.attrTween("transform", function(d) {
-                const interpolate = d3.interpolate(this._current, d);
+                const interpolate = d3.interpolate((this as SVGTextElement2)._current, d);
                 const _this = this;
                 return function(t) {
                     const d2 = interpolate(t);
-                    _this._current = d2;
+                    (_this as SVGTextElement2)._current = d2;
                     const pos = that.outer_arc.centroid(d2);
                     pos[0] = that.model.get("radius") *
                         (that.mid_angle_location(d) === "left" ?  -1 : 1);
@@ -360,7 +372,7 @@ export class Pie extends Mark {
                 };
             })
             .styleTween("text-anchor", function(d) {
-                const interpolate = d3.interpolate(this._current, d);
+                const interpolate = d3.interpolate((this as SVGTextElement2)._current, d);
                 return function(t) {
                     const d2 = interpolate(t);
                     return that.mid_angle_location(d2) === "left" ? "end" : "start";
@@ -385,25 +397,24 @@ export class Pie extends Mark {
         const polylinesTransition = polylines.enter()
             .append("polyline")
             .each(function(d) {
-                this._current = d;
+                (this as SVGPolylineElement2)._current = d;
             })
-            .merge(polylines)
+            .merge(polylines as d3.Selection<SVGPolylineElement, any, d3.BaseType, any>)
             .transition("draw")
             .duration(animation_duration)
-            .style("opacity", d => (display_labels !== "outside" || d.value == 0 || d.data.label === "") ? 0 : 1);
+            .style("opacity", (d: any) => (display_labels !== "outside" || d.value == 0 || d.data.label === "") ? 0 : 1);
 
         if (display_labels === 'outside') {
-            polylinesTransition.attrTween("points", function(d) {
-                this._current = this._current;
-                const interpolate = d3.interpolate(this._current, d);
+            polylinesTransition.attrTween("points", function(d: any) {
+                const interpolate = d3.interpolate((this as SVGPolylineElement2)._current, d);
                 const _this = this;
                 return function(t) {
                     const d2 = interpolate(t);
-                    _this._current = d2;
+                    (_this as SVGPolylineElement2)._current = d2;
                     const pos = that.outer_arc.centroid(d2);
                     pos[0] = that.model.get("radius") * 0.95 *
                         (that.mid_angle_location(d2) === "left" ? -1 : 1);
-                    return [that.arc.centroid(d2), that.outer_arc.centroid(d2), pos];
+                    return [that.arc.centroid(d2), that.outer_arc.centroid(d2), pos].toString();
                 };
             });
         }
@@ -453,7 +464,7 @@ export class Pie extends Mark {
         // Update pie slices
         this.pie_g.select(".slices")
             .selectAll(".slice")
-            .style('fill', function(d, i) {
+            .style('fill', function(d: any, i) {
                 return (d.data.color !== undefined && colorScale !== undefined) ?
                     colorScale.scale(d.data.color) : that.get_colors(d.data.index);
             })
@@ -541,10 +552,10 @@ export class Pie extends Mark {
         }
     }
 
-    d3Pie: any;
-    pie_g: any;
-    arc: any;
-    outer_arc: any;
-    x_offset: any;
-    y_offset: any;
+    d3Pie: d3.Pie<any, number | { valueOf(): number; }>;
+    pie_g: d3.Selection<SVGGElement, any, any, any>;
+    arc: d3.Arc<any, d3.DefaultArcObject>;
+    outer_arc: d3.Arc<any, d3.DefaultArcObject>;
+    x_offset: number;
+    y_offset: number;
 }

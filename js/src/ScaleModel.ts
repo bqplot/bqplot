@@ -74,7 +74,7 @@ abstract class ScaleModel extends WidgetModel {
     abstract update_domain();
 
     domains: any;
-    domain: Array<number>;
+    domain: any[];
     reverse: boolean;
     type: string;
 }

@@ -18,6 +18,7 @@ import * as markers from './Markers';
 import * as _ from 'underscore';
 import { deepCopy } from './utils';
 import { ScatterGLModel } from './ScatterGLModel';
+import { Scale } from './Scale';
 import * as THREE from 'three';
 
 type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array;
@@ -1052,18 +1053,18 @@ export class ScatterGL extends Mark {
     set_default_style(indices, elements?) {}
     set_style_on_elements(style, indices, elements?) {}
 
-    transitions: any;
-    x_scale: any;
-    y_scale: any;
-    pixel_x: any;
-    pixel_y: any;
+    transitions: any[];
+    x_scale: Scale;
+    y_scale: Scale;
+    pixel_x: Float64Array;
+    pixel_y: Float64Array;
     trottled_selector_changed: any;
-    invalidated_pixel_position: any;
-    camera: any;
-    scene: any;
-    instanced_geometry: any;
-    scatter_material: any;
-    mesh: any;
+    invalidated_pixel_position: boolean;
+    camera: THREE.OrthographicCamera;
+    scene: THREE.Scene;
+    instanced_geometry: THREE.InstancedBufferGeometry;
+    scatter_material: THREE.RawShaderMaterial;
+    mesh: THREE.Mesh;
 
     markers_number: number;
 
@@ -1086,7 +1087,7 @@ export class ScatterGL extends Mark {
 
     selected: THREE.InstancedBufferAttribute;
 
-    legend_el: any;
+    legend_el: d3.Selection<any, any, any, any>;
     dot: any;
 
     model: ScatterGLModel;

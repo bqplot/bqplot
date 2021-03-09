@@ -83,4 +83,6 @@ export class OrdinalScale extends Scale {
         });
         return filtered_ind.map(function(ind) { return domain[ind]; });
     }
+
+    scale: d3.ScaleBand<string>;
 }

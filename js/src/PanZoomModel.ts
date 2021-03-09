@@ -67,5 +67,5 @@ class PanZoomModel extends widgets.WidgetModel {
         scales: { deserialize: widgets.unpack_models }
     };
 
-    scales_states: any;
+    scales_states: {[key: string]: any[]};
 }

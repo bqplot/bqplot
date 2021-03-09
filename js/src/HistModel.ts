@@ -83,7 +83,7 @@ export class HistModel extends MarkModel {
             const x_data_ind =  Array.prototype.map.call(x_data, function (d,i) {
                 return {index: i, value: d};
             });
-            
+
             this.x_bins = d3.range(this.min_x, this.max_x, (this.max_x - this.min_x) / this.num_bins);
             this.x_mid = this.x_bins.map(function(d, i) {
                 return 0.5 * (d + that.x_bins[i - 1]);
@@ -163,9 +163,9 @@ export class HistModel extends MarkModel {
     };
 
     num_bins: number;
-    x_bins: Array<any>;
-    x_mid: Array<any>;
-    count: Array<number>;
+    x_bins: number[];
+    x_mid: number[];
+    count: number[];
     min_x: number;
     max_x: number;
 }

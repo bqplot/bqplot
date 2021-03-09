@@ -20,6 +20,7 @@ import * as d3 from 'd3';
 const d3GetEvent = function () { return require("d3-selection").event }.bind(this);
 
 import * as _ from 'underscore';
+import { Scale } from './Scale'
 import { Mark } from './Mark'
 import { BarsModel } from './BarsModel'
 import { applyStyles } from './utils';
@@ -173,18 +174,18 @@ export class Bars extends Mark {
 
     draw_zero_line() {
         this.set_scale_orientation();
-        const range_scale = this.range_scale;
+        const range_scale = this.range_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleLogarithmic<number, number>);
         const orient = this.model.get("orientation");
         if (orient === "vertical") {
             this.d3el.select(".zeroLine")
                 .attr("x1", 0)
                 .attr("x2", this.parent.plotarea_width)
-                .attr("y1", range_scale.scale(this.model.base_value))
-                .attr("y2", range_scale.scale(this.model.base_value));
+                .attr("y1", range_scale(this.model.base_value))
+                .attr("y2", range_scale(this.model.base_value));
         } else {
             this.d3el.select(".zeroLine")
-                .attr("x1", range_scale.scale(this.model.base_value))
-                .attr("x2", range_scale.scale(this.model.base_value))
+                .attr("x1", range_scale(this.model.base_value))
+                .attr("x2", range_scale(this.model.base_value))
                 .attr("y1", 0)
                 .attr("y2", this.parent.plotarea_height);
         }
@@ -198,7 +199,7 @@ export class Bars extends Mark {
       this.stacked_scale.paddingInner(padding);
       this.stacked_scale.paddingOuter(padding / 2.0);
       this.adjust_offset();
-      this.grouped_scale.rangeRound([0, this.stacked_scale.bandwidth().toFixed(2)]);
+      this.grouped_scale.rangeRound([0, Math.round(this.stacked_scale.bandwidth() * 100) / 100]);
     }
 
     relayout() {
@@ -249,8 +250,8 @@ export class Bars extends Mark {
     draw(animate?: boolean) {
         this.set_ranges();
         const that = this;
-        let bar_groups = this.d3el.selectAll(".bargroup")
-            .data(this.model.mark_data, (d) => d.key);
+        let bar_groups: d3.Selection<any, any, any, any> = this.d3el.selectAll(".bargroup")
+            .data(this.model.mark_data, (d: any) => d.key);
 
         const dom_scale = this.dom_scale;
         // this.stacked_scale is the ordinal scale used to draw the bars. If a linear
@@ -267,7 +268,7 @@ export class Bars extends Mark {
 
         if (this.model.mark_data.length > 0) {
             this.grouped_scale.domain(_.range(this.model.mark_data[0].values.length))
-                .rangeRound([0, this.stacked_scale.bandwidth().toFixed(2)]);
+                .rangeRound([0, Math.round(this.stacked_scale.bandwidth() * 100) / 100]);
         }
 
         // Since we will assign the enter and update selection of bar_groups to
@@ -339,7 +340,7 @@ export class Bars extends Mark {
         const orient = this.model.get("orientation");
 
         const dom_scale = this.dom_scale;
-        const range_scale = this.range_scale;
+        const range_scale = this.range_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleLogarithmic<number, number>);
 
         const dom = (orient === "vertical") ? "x" : "y";
         const rang = (orient === "vertical") ? "y" : "x";
@@ -349,7 +350,7 @@ export class Bars extends Mark {
 
         if (dom_scale.model.type === "ordinal") {
             const dom_max = d3.max(this.parent.range(dom));
-            bar_groups.attr("transform", function (d) {
+            bar_groups.attr("transform", function (d: any) {
                 if (orient === "vertical") {
                     return "translate(" + ((dom_scale.scale(d.key) !== undefined ?
                         dom_scale.scale(d.key) : dom_max) + that.dom_offset) + ", 0)"
@@ -360,7 +361,7 @@ export class Bars extends Mark {
             });
         } else {
 
-            bar_groups.attr("transform", function (d) {
+            bar_groups.attr("transform", function (d: any) {
                 if (orient === "vertical") {
                     return "translate(" + (dom_scale.scale(d.key) + that.dom_offset) + ", 0)";
                 } else {
@@ -376,11 +377,11 @@ export class Bars extends Mark {
             bars_sel.transition().duration(animation_duration)
                 .attr(dom, 0)
                 .attr(dom_control, band_width.toFixed(2))
-                .attr(rang, function (d) {
-                    return (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0);
+                .attr(rang, function (d: any) {
+                    return (rang === "y") ? range_scale(d.y1) : range_scale(d.y0);
                 })
-                .attr(range_control, function (d) {
-                    return Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1));
+                .attr(range_control, function (d: any) {
+                    return Math.abs(range_scale(d.y1 + d.y_ref) - range_scale(d.y1));
                 });
         } else {
             band_width = Math.max(1.0, this.grouped_scale.bandwidth());
@@ -389,11 +390,11 @@ export class Bars extends Mark {
                     return that.grouped_scale(index);
                 })
                 .attr(dom_control, band_width.toFixed(2))
-                .attr(rang, function (d) {
-                    return d3.min([range_scale.scale(d.y), range_scale.scale(that.model.base_value)]);
+                .attr(rang, function (d: any) {
+                    return d3.min([range_scale(d.y), range_scale(that.model.base_value)]);
                 })
-                .attr(range_control, function (d) {
-                    return Math.abs(range_scale.scale(that.model.base_value) - (range_scale.scale(d.y)));
+                .attr(range_control, function (d: any) {
+                    return Math.abs(range_scale(that.model.base_value) - (range_scale(d.y)));
                 });
         }
 
@@ -407,12 +408,12 @@ export class Bars extends Mark {
                 const rect_coords = {};
                 rect_coords[dom] = is_stacked ? group_dom : group_dom + this.grouped_scale(d.sub_index);
                 rect_coords[rang] = is_stacked ?
-                    (rang === "y") ? range_scale.scale(d.y1) : range_scale.scale(d.y0) :
-                    d3.min([range_scale.scale(d.y), range_scale.scale(this.model.base_value)]);
+                    (rang === "y") ? range_scale(d.y1) : range_scale(d.y0) :
+                    d3.min([range_scale(d.y), range_scale(this.model.base_value)]);
                 rect_coords[dom_control] = band_width;
                 rect_coords[range_control] = is_stacked ?
-                    Math.abs(range_scale.scale(d.y1 + d.y_ref) - range_scale.scale(d.y1)) :
-                    Math.abs(range_scale.scale(this.model.base_value) - (range_scale.scale(d.y_ref)));
+                    Math.abs(range_scale(d.y1 + d.y_ref) - range_scale(d.y1)) :
+                    Math.abs(range_scale(this.model.base_value) - (range_scale(d.y_ref)));
                 return [[rect_coords["x"], rect_coords["x"] + rect_coords["width"]],
                 [rect_coords["y"], rect_coords["y"] + rect_coords["height"]]];
             })
@@ -656,7 +657,7 @@ export class Bars extends Mark {
         : null;
 
         let fonts = this.d3el.selectAll(".bar_label")
-            .text((d, i) => displayFormat ? displayFormat(d.y) : null);
+            .text((d: any, i) => displayFormat ? displayFormat(d.y) : null);
 
         const fontStyle = this.model.get("label_font_style");
 
@@ -834,10 +835,10 @@ export class Bars extends Mark {
         return super.get_mark_opacity(data, data.opacity_index);
     }
 
-    set_x_range() {
+    set_x_range(): [number, number] {
         const dom_scale = this.dom_scale;
         if (dom_scale.model.type === "ordinal") {
-            return dom_scale.scale.range();
+            return dom_scale.scale.range() as [number, number];
         } else {
             return [dom_scale.scale(d3.min(this.stacked_scale.domain())),
             dom_scale.scale(d3.max(this.stacked_scale.domain()))];
@@ -955,15 +956,15 @@ export class Bars extends Mark {
         }
     }
 
-    dom_offset: any;
-    dom_scale: any;
-    legend_el: any;
-    pixel_coords: any;
-    range_offset: any;
-    range_scale: any;
-    x_pixels: any;
-    stacked_scale: any;
-    grouped_scale: any;
+    dom_offset: number;
+    dom_scale: Scale;
+    legend_el: d3.Selection<any, any, any, any>;
+    pixel_coords: [[number, number], [number, number]][];
+    range_offset: number;
+    range_scale: Scale;
+    x_pixels: number[];
+    stacked_scale: d3.ScaleBand<any>;
+    grouped_scale: d3.ScaleBand<any>;
 
     // Overriding super class
     model: BarsModel;

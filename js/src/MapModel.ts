@@ -102,6 +102,6 @@ export class MapModel extends MarkModel {
         return {...data.properties, 'id': data.id};
     }
 
-    geodata: any;
-    color_data: any;
+    geodata: any[];
+    color_data: {[key: string]: number};
 };

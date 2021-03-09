@@ -17,6 +17,7 @@ import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
 import * as utils from './utils';
 import { Interaction } from './Interaction';
+import { Lines } from './Lines';
 const convert_dates = require('./utils').convert_dates;
 
 export class HandDraw extends Interaction {
@@ -167,11 +168,11 @@ export class HandDraw extends Interaction {
     }
 
     active: boolean;
-    lines_view: any;
-    line_index: any;
-    min_x: any;
-    max_x: any;
-    valid_min: any;
-    valid_max: any;
-    previous_pos: any;
+    lines_view: Lines;
+    line_index: number;
+    min_x: number | Date;
+    max_x: number | Date;
+    valid_min: boolean;
+    valid_max: boolean;
+    previous_pos: [number, number];
 };

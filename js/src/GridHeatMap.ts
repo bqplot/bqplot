@@ -151,7 +151,7 @@ export class GridHeatMap extends Mark {
         const row = args.row_num;
         const column = args.column_num;
         const that = this;
-        let idx = Array.from(this.model.get("selected") || []);
+        let idx: [number, number][] = Array.from(this.model.get("selected") || []);
         let selected = this._cell_nums_from_indices(idx);
         const elem_index = selected.indexOf(index);
         const accelKey = d3GetEvent().ctrlKey || d3GetEvent().metaKey;
@@ -257,8 +257,8 @@ export class GridHeatMap extends Mark {
 
     clear_style(style_dict, indices?, elements?) {
         // Function to clear the style of a dict on some or all the elements of the
-        // chart.If indices is null, clears the style on all elements. If
-        // not, clears on only the elements whose indices are mathcing.
+        // chart. If indices is null, clears the style on all elements. If
+        // not, clears on only the elements whose indices are matching.
         //
         // If elements are passed, then indices are ignored and the style
         // is cleared only on the elements that are passed.
@@ -286,9 +286,10 @@ export class GridHeatMap extends Mark {
         applyStyles(elements, clearing_style);
     }
 
-    _filter_cells_by_cell_num(cell_numbers) {
+    _filter_cells_by_cell_num(cell_numbers: number[]): d3.Selection<any, any, any, any> {
         if (cell_numbers === null || cell_numbers === undefined) {
-            return [];
+            // FIXME: return an empty selection
+            return this.d3el.selectAll("thisNameDoesntExist");
         }
         return this.display_cells.filter(function(el) {
            return (cell_numbers.indexOf(el._cell_num) !== -1);});
@@ -316,7 +317,7 @@ export class GridHeatMap extends Mark {
 
         this.set_default_style([], this.display_cells);
 
-        const selected_cell_nums = this._cell_nums_from_indices(this.selected_indices);
+        const selected_cell_nums = this._cell_nums_from_indices(this.selected_indices as [number, number][]);
         const unsel_cell_nums = (selected_cell_nums === null || selected_cell_nums.length === 0) ? []
                                 : _.difference(_.range(num_rows*num_cols), selected_cell_nums);
 
@@ -358,7 +359,7 @@ export class GridHeatMap extends Mark {
         this.draw();
     }
 
-    _cell_nums_from_indices(indices) {
+    _cell_nums_from_indices(indices: [number, number][]): number[] {
         if(indices === null || indices === undefined) {
             return null;
         }
@@ -509,7 +510,7 @@ export class GridHeatMap extends Mark {
         const display_format = display_format_str ? d3.format(display_format_str) : null;
 
         let fonts = this.d3el.selectAll(".heatmapcell_label")
-            .text(function(d, i) { return display_format ? display_format(d.color) : null; });
+            .text(function(d: any, i) { return display_format ? display_format(d.color) : null; });
 
         const fontStyle = this.model.get("font_style");
         for (const styleKey in fontStyle) {
@@ -638,15 +639,15 @@ export class GridHeatMap extends Mark {
     compute_view_padding() {
     }
 
-    anchor_style: any;
-    anchor_cell_index: any;
-    display_cells: any;
-    display_cell_labels: any;
-    selected_elements: any;
-    unselected_elements: any;
-    anchor_element: any;
-    row_pixels: any;
-    column_pixels: any;
-    display_rows: any;
+    anchor_style: {[key: string]: string};
+    anchor_cell_index: [number, number];
+    display_cells: d3.Selection<any, any, any, any>;
+    display_cell_labels: d3.Selection<any, any, any, any>;
+    selected_elements: d3.Selection<any, any, any, any>;
+    unselected_elements: d3.Selection<any, any, any, any>;
+    anchor_element: d3.Selection<any, any, any, any>;
+    row_pixels: [number, number][];
+    column_pixels: [number, number][];
+    display_rows: d3.Selection<any, number, HTMLElement, any>;
     model: GridHeatMapModel;
 }

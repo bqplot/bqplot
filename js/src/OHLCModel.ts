@@ -210,5 +210,5 @@ export class OHLCModel extends MarkModel {
         y: serialize.array_or_json
     }
 
-    px: any;
+    px: {o: number, h: number, l: number, c: number};
 }

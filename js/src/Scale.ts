@@ -28,7 +28,7 @@ export class Scale extends widgets.WidgetView {
         this.listenTo(this.model, "unhighlight_axis", this.unhighlight_axis);
     }
 
-    set_range(range, padding) {
+    set_range(range, padding?) {
         this.scale.range(range);
     }
 
@@ -63,9 +63,12 @@ export class Scale extends widgets.WidgetView {
 
 
     offset: number;
-    scale: any;
+    scale: d3.ScaleTime<Date, number> |
+           d3.ScaleOrdinal<string, number> |
+           d3.ScaleBand<string> |
+           d3.ScaleLinear<number, number> |
+           d3.ScaleLogarithmic<number, number>;
 
     // Overriding super class
     model: widgets.WidgetModel & ScaleModel;
 }
-

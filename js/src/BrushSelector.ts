@@ -20,6 +20,7 @@ import * as _ from 'underscore';
 import * as selector from './Selector';
 import * as utils from './utils';
 import * as sel_utils from './selector_utils';
+import { Mark } from './Mark';
 
 // TODO: examine refactoring the two abstract base classes belowing using an
 // up-to-date mixin pattern.
@@ -159,11 +160,11 @@ abstract class BrushMixinXYSelector extends selector.BaseXYSelector {
 
     abstract convert_and_save(extent?, item?);
 
-    brush: any;
+    brush: d3.BrushBehavior<any>;
     brushing: boolean;
 
     // TODO: should this be mark_views_promises?
-    mark_views: any;
+    mark_views: Mark[];
 
     ignoreBrushEvents: boolean = false;
 }
@@ -214,11 +215,11 @@ abstract class BrushMixinXSelector extends selector.BaseXSelector {
 
     abstract convert_and_save(extent?, item?);
 
-    brush: any
+    brush: d3.BrushBehavior<any>;
     brushing: boolean;
 
     // TODO: should this be mark_views_promises?
-    mark_views: any;
+    mark_views: Mark[];
 
     ignoreBrushEvents: boolean = false;
 }
@@ -338,6 +339,8 @@ export class BrushSelector extends BrushMixinXYSelector {
     adjust_rectangle() {
     }
     reset() { }
+
+    d3el: d3.Selection<SVGGElement, any, any, any>;
 }
 
 
@@ -449,6 +452,8 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
     }
 
     reset() { }
+
+    d3el: d3.Selection<SVGGElement, any, any, any>;
 }
 
 
@@ -520,13 +525,13 @@ export class MultiSelector extends BrushMixinXSelector {
         const index = this.curr_index;
 
         const vertical = (this.model.get("orientation") == "vertical");
-        const brush = (vertical ? d3.brushY() : d3.brushX())
+        const brush: d3.BrushBehavior<any> = (vertical ? d3.brushY() : d3.brushX())
           .on("start", () => { this.brush_start(); })
           .on("brush", () => { this.multi_brush_move(index); })
           .on("end", () => { this.multi_brush_end(index); });
         brush.extent([[0, 0], [this.width, this.height]]);
 
-        const new_brush_g = this.d3el.append("g")
+        const new_brush_g: d3.Selection<SVGGElement, any, any, any> = this.d3el.append("g")
           .attr("class", "selector brushintsel active");
 
         new_brush_g.append("text")
@@ -696,10 +701,10 @@ export class MultiSelector extends BrushMixinXSelector {
         super.remove();
     }
 
-    brushes: any[] = [];
-    brush_g: any[] = [];
+    brushes: d3.BrushBehavior<any>[] = [];
+    brush_g: d3.Selection<SVGGElement, any, any, any>[] = [];
 
     curr_index: number;
     selecting_brush: boolean;
-    names: any;
+    names: string[];
 }

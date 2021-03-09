@@ -108,7 +108,7 @@ export class ColorScaleModel extends LinearScaleModel {
         return value;
     }
 
-    color_range: Array<number>;
+    color_range: number[];
     mid: number;
     reverse: boolean;
 }

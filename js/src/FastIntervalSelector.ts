@@ -221,7 +221,7 @@ export class FastIntervalSelector extends BaseXSelector {
     freeze_dont_move: boolean;
     active: boolean;
     dirty: boolean;
-    size: any;
-    background: any;
-    rect: any;
+    size: number;
+    background: d3.Selection<SVGRectElement, any, any, any>;
+    rect: d3.Selection<SVGRectElement, any, any, any>;
 }

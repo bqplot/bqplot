@@ -218,7 +218,7 @@ export class OHLC extends Mark {
         const down_color = (colors[1] ? colors[1] : "none");
 
         // Fill candles based on the opening and closing values
-        this.d3el.selectAll(".stick").style("fill", function(d) {
+        this.d3el.selectAll(".stick").style("fill", function(d: any) {
             return (d.y[that.model.px.o] > d.y[that.model.px.c] ?
                 down_color : up_color);
         });
@@ -363,7 +363,7 @@ export class OHLC extends Mark {
         }
         // Update all of the marks
         this.d3el.selectAll(".stick")
-            .style("fill", function(d, i) {
+            .style("fill", function(d: any, i) {
                 return (d.y[px.o] > d.y[px.c]) ? down_color : up_color;
             })
             .attr("stroke-width", this.model.get("stroke_width"));
@@ -371,14 +371,14 @@ export class OHLC extends Mark {
             // If we are out of range, we just set the mark in the final
             // bucket's range band. FIXME?
             const x_max = d3.max(this.parent.range("x"));
-            this.d3el.selectAll(".stick").attr( "transform", function(d, i) {
+            this.d3el.selectAll(".stick").attr( "transform", function(d: any, i) {
                 return "translate(" + ((x_scale.scale(that.model.mark_data[i][0]) !== undefined ?
                                         x_scale.scale(that.model.mark_data[i][0]) : x_max) +
                                         x_scale.scale.bandwidth()/2) + "," +
                                       (y_scale.scale(d.y[y_index]) + y_scale.offset) + ")";
             });
         } else {
-            this.d3el.selectAll(".stick").attr( "transform", function(d, i) {
+            this.d3el.selectAll(".stick").attr( "transform", function(d: any, i) {
                  return "translate(" + (x_scale.scale(that.model.mark_data[i][0]) +
                                      x_scale.offset) + "," +
                                      (y_scale.scale(d.y[y_index]) +
@@ -713,10 +713,9 @@ export class OHLC extends Mark {
     set_style_on_elements() {}
 
     model: OHLCModel;
-    legend_el: any;
-    rect_dim: any;
-    x_pixels: any[];
-    width: any;
-    height: any;
-
+    legend_el: d3.Selection<d3.BaseType, any, any, any>;
+    rect_dim: number;
+    x_pixels: number[];
+    width: number;
+    height: number;
 }

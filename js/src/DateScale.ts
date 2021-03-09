@@ -25,5 +25,6 @@ export class DateScale extends LinearScale {
         this.offset = 0;
         this.create_event_listeners();
     }
-}
 
+    scale: d3.ScaleTime<Date, number>;
+}

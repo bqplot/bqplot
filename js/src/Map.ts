@@ -301,10 +301,10 @@ export class Map extends Mark {
         });
         const nodes = this.stroke_g.selectAll("path");
         for (let i=0; i<temp.length; i++) {
-            if(select.indexOf(temp[i].id) > -1) {
+            if(select.indexOf((temp[i] as any).id) > -1) {
                 this.highlight_g.append(() => {
-                    return nodes.nodes()[i].cloneNode(true);
-                }).attr("id", temp[i].id)
+                    return (nodes.nodes()[i] as any).cloneNode(true);
+                }).attr("id", (temp[i] as any).id)
                 .style("fill-opacity", () => {
                     if (this.validate_color(this.model.get("selected_styles").selected_fill)) {
                         return 1.0;
@@ -331,10 +331,10 @@ export class Map extends Mark {
         this.model.set("selected", []);
         this.touch();
         this.highlight_g.selectAll(".selected").remove();
-        d3.select(this.d3el.parentNode)
+        d3.select(this.d3el.node().parentNode)
             .selectAll("path")
             .classed("selected", false);
-        d3.select(this.d3el.parentNode)
+        d3.select(this.d3el.node().parentNode)
             .selectAll("path")
             .classed("hovered", false);
 
@@ -393,9 +393,9 @@ export class Map extends Mark {
         const colors = this.model.get("colors");
 
         if (selection.indexOf(d.id) > -1) {
-		    return this.model.get("selected_styles").selected_fill;
+            return this.model.get("selected_styles").selected_fill;
         } else if (this.is_object_empty(color_data)) {
-		    return colors[d.id] || colors.default_color;
+            return colors[d.id] || colors.default_color;
         } else if (color_data[d.id] === undefined ||
                    color_data[d.id] === null ||
                    color_data[d.id] === "nan" ||
@@ -411,15 +411,15 @@ export class Map extends Mark {
     set_default_style() {}
     set_style_on_elements() {}
 
-    map: any;
-    map_id: any;
-    width: any;
-    height: any;
-    enable_hover: any;
-    stroke_g: any;
-    fill_g: any;
-    highlight_g: any;
-    transformed_g: any;
-    zoom: any;
+    map: d3.Selection<SVGSVGElement, any, any, any>;
+    map_id: string;
+    width: number;
+    height: number;
+    enable_hover: boolean;
+    stroke_g: d3.Selection<SVGGElement, any, any, any>;
+    fill_g: d3.Selection<SVGGElement, any, any, any>;
+    highlight_g: d3.Selection<SVGGElement, any, any, any>;
+    transformed_g: d3.Selection<SVGGElement, any, any, any>;
+    zoom: d3.ZoomBehavior<Element, any>;
     model: MapModel;
 };

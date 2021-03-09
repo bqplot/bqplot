@@ -46,4 +46,6 @@ export class OrdinalColorScale extends Scale {
     colors_changed() {
         this.set_range();
     }
+
+    scale: d3.ScaleOrdinal<string, number>;
 }
