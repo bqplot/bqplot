@@ -21,6 +21,12 @@ import * as _ from 'underscore';
 import { applyAttrs, applyStyles } from './utils';
 import { Figure } from './Figure';
 import { Scale } from './Scale';
+import { OrdinalScale } from './OrdinalScale';
+import { DateScale } from './DateScale';
+import { LogScale } from './LogScale';
+import { LinearScale } from './LinearScale';
+import { DateColorScale } from './DateColorScale';
+import { ColorScale } from './ColorScale';
 
 // Polyfill for Math.log10 in IE11
 Math.log10 = Math.log10 || function(x) {
@@ -112,20 +118,20 @@ export class Axis extends WidgetView {
         } else if (num_ticks !== undefined && num_ticks !== null) {
             this.axis.tickValues(this.get_ticks_from_array_or_length());
         } else {
-            if (this.axis_scale.model.type === "ordinal") {
+            if (this.axis_scale instanceof OrdinalScale) {
                 this.axis.tickValues(this.axis_scale.scale.domain());
-            } else if (this.axis_scale.model.type === "date") {
+            } else if (this.axis_scale instanceof DateScale) {
                 // Reduce number of suggested ticks if figure width is below the
                 // threshold. Note: "undefined" will result in the D3 default
                 // setting
                 const numDateTicks = (this.width < DATESCALE_WIDTH_THRESHOLD) ?
                                         5 :
                                         undefined;
-                const scale = this.axis_scale.scale as d3.ScaleTime<Date, number>;
+                const scale = this.axis_scale.scale;
                 this.axis.tickValues(scale.ticks(numDateTicks));
-            } else if (this.axis_scale.model.type === "log") {
+            } else if (this.axis_scale instanceof LogScale) {
                 let i, r;
-                const scale = this.axis_scale.scale as d3.ScaleLogarithmic<number, number>;
+                const scale = this.axis_scale.scale;
                 const allticks = scale.ticks();
                 const oom = Math.abs(Math.log10((scale.domain()[1]) / (scale.domain()[0])));
                 if (oom < 2) {
@@ -153,16 +159,13 @@ export class Axis extends WidgetView {
                     }
                     this.axis.tickValues(useticks);
                 }
-            } else {
-                const scale = this.axis_scale.scale as (d3.ScaleLinear<number, number> |
-                                                        d3.ScaleTime<Date, number> |
-                                                        d3.ScaleLogarithmic<number, number>);
-                this.axis.tickValues(scale.ticks());
+            } else if (this.axis_scale instanceof LinearScale || this.axis_scale instanceof DateScale) {
+                this.axis.tickValues(this.axis_scale.scale.ticks());
             }
         }
         if(this.model.get("tick_format") === null ||
             this.model.get("tick_format") === undefined) {
-                if(this.axis_scale.model.type !== "ordinal") {
+                if(!(this.axis_scale instanceof OrdinalScale)) {
                     this.tick_format = this.guess_tick_format(this.axis.tickValues());
                 }
         }
@@ -246,14 +249,13 @@ export class Axis extends WidgetView {
     }
 
     generate_tick_formatter() {
-        if(this.axis_scale.model.type === "date" ||
-           this.axis_scale.model.type === "date_color_linear") {
+        if(this.axis_scale instanceof DateScale || this.axis_scale instanceof DateColorScale) {
             if(this.model.get("tick_format")) {
                 return d3.utcFormat(this.model.get("tick_format"));
             } else {
                 return this.guess_tick_format();
             }
-        } else if (this.axis_scale.model.type === "ordinal") {
+        } else if (this.axis_scale instanceof OrdinalScale) {
             const tick_format = this.model.get("tick_format");
             if(tick_format) {
                 //TODO: This may not be the best way to do this. We can
@@ -345,8 +347,8 @@ export class Axis extends WidgetView {
                 return_promise = this.create_child_view(offset.scale)
                     .then((view) => {
                         this.offset_scale = view as WidgetView as Scale;
-                        if(this.offset_scale.model.type !== "ordinal") {
-                            (this.offset_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).clamp(true);
+                        if(this.offset_scale instanceof LinearScale || this.offset_scale instanceof DateScale || this.offset_scale instanceof LogScale) {
+                            this.offset_scale.scale.clamp(true);
                         }
                         this.offset_scale.on("domain_changed", () => {
                             this.update_offset_scale_domain();
@@ -655,7 +657,7 @@ export class Axis extends WidgetView {
         let step, max;
         const num_ticks = this.model.get("num_ticks");
 
-        if(this.axis_scale.model.type === "ordinal") {
+        if(this.axis_scale instanceof OrdinalScale) {
             data_array = this.axis_scale.scale.domain();
         }
         if(num_ticks !== undefined && num_ticks !== null && num_ticks < 2) {
@@ -675,8 +677,8 @@ export class Axis extends WidgetView {
         const scale_range = this.axis_scale.scale.domain();
         const max_index = (this.axis_scale.scale.domain().length - 1);
         step = ((scale_range[max_index] as any) - (scale_range[0] as any)) / (num_ticks - 1);
-        if(this.axis_scale.model.type === "date" ||
-           this.axis_scale.model.type === "date_color_linear") {
+        if(this.axis_scale instanceof DateScale ||
+           this.axis_scale instanceof DateColorScale) {
         //For date scale, the dates have to be converted into milliseconds
         //since epoch time and then back.
             scale_range[0] = (scale_range[0] as Date).getTime();
@@ -764,7 +766,10 @@ export class Axis extends WidgetView {
     }
 
     _linear_scale_precision(ticks?: any[]) {
-        ticks = (ticks === undefined || ticks === null) ? (this.axis_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).ticks() : ticks;
+        if (!(this.axis_scale instanceof LinearScale)) {
+            return;
+        }
+        ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
         // Case where all data is concentrated into one point.
         if (ticks.length === 1) {
             return 1;
@@ -802,7 +807,10 @@ export class Axis extends WidgetView {
 
     date_sc_format(ticks?: any[]) {
         // assumes that scale is a linear date scale
-        ticks = (ticks === undefined || ticks === null) ? (this.axis_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).ticks() : ticks;
+        if (!(this.axis_scale instanceof DateScale)) {
+            return;
+        }
+        ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
         // diff is the difference between ticks in milliseconds
         const diff = Math.abs(ticks[1] - ticks[0]);
 
@@ -878,7 +886,10 @@ export class Axis extends WidgetView {
     }
 
     _log_sc_precision(ticks?: any[]) {
-        ticks = (ticks === undefined || ticks === null) ? (this.axis_scale.scale as (d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number> | d3.ScaleLogarithmic<number, number>)).ticks() : ticks;
+        if (!(this.axis_scale instanceof LogScale)) {
+            return;
+        }
+        ticks = (ticks === undefined || ticks === null) ? this.axis_scale.scale.ticks() : ticks;
         const ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
 
         if(ratio >= 0.3010) {
@@ -891,13 +902,13 @@ export class Axis extends WidgetView {
     }
 
     guess_tick_format(ticks?: any[]) {
-        if(this.axis_scale.model.type == "linear" ||
-           this.axis_scale.model.type == "color_linear") {
+        if(this.axis_scale instanceof LinearScale ||
+           this.axis_scale instanceof ColorScale) {
             return this.linear_sc_format(ticks);
-        } else if (this.axis_scale.model.type == "date" ||
-                   this.axis_scale.model.type == "date_color_linear") {
+        } else if (this.axis_scale instanceof DateScale ||
+                   this.axis_scale instanceof DateColorScale) {
             return this.date_sc_format(ticks);
-        } else if (this.axis_scale.model.type == "log") {
+        } else if (this.axis_scale instanceof LogScale) {
             return this.log_sc_format(ticks);
         }
     }
