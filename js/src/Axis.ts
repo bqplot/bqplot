@@ -118,9 +118,7 @@ export class Axis extends WidgetView {
         } else if (num_ticks !== undefined && num_ticks !== null) {
             this.axis.tickValues(this.get_ticks_from_array_or_length());
         } else {
-            if (this.axis_scale instanceof OrdinalScale) {
-                this.axis.tickValues(this.axis_scale.scale.domain());
-            } else if (this.axis_scale instanceof DateScale) {
+            if (this.axis_scale instanceof DateScale) {
                 // Reduce number of suggested ticks if figure width is below the
                 // threshold. Note: "undefined" will result in the D3 default
                 // setting
@@ -129,6 +127,8 @@ export class Axis extends WidgetView {
                                         undefined;
                 const scale = this.axis_scale.scale;
                 this.axis.tickValues(scale.ticks(numDateTicks));
+            } else if (this.axis_scale instanceof OrdinalScale) {
+                this.axis.tickValues(this.axis_scale.scale.domain());
             } else if (this.axis_scale instanceof LogScale) {
                 let i, r;
                 const scale = this.axis_scale.scale;
@@ -159,7 +159,7 @@ export class Axis extends WidgetView {
                     }
                     this.axis.tickValues(useticks);
                 }
-            } else if (this.axis_scale instanceof LinearScale || this.axis_scale instanceof DateScale) {
+            } else if (this.axis_scale instanceof LinearScale) {
                 this.axis.tickValues(this.axis_scale.scale.ticks());
             }
         }
@@ -902,12 +902,10 @@ export class Axis extends WidgetView {
     }
 
     guess_tick_format(ticks?: any[]) {
-        if(this.axis_scale instanceof LinearScale ||
-           this.axis_scale instanceof ColorScale) {
-            return this.linear_sc_format(ticks);
-        } else if (this.axis_scale instanceof DateScale ||
-                   this.axis_scale instanceof DateColorScale) {
+        if (this.axis_scale instanceof DateScale || this.axis_scale instanceof DateColorScale) {
             return this.date_sc_format(ticks);
+        } else if(this.axis_scale instanceof LinearScale || this.axis_scale instanceof ColorScale) {
+            return this.linear_sc_format(ticks);
         } else if (this.axis_scale instanceof LogScale) {
             return this.log_sc_format(ticks);
         }
