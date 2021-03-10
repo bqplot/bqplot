@@ -14,16 +14,37 @@
  */
 
 import * as d3 from 'd3';
-// import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-array"), require("d3-scale"), require("d3-scale-chromatic"));
 import * as _ from 'underscore';
-import * as markmodel from './MarkModel';
+import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export class BarsModel extends markmodel.MarkModel {
+export
+interface BarGroupValue {
+    index: number,
+    subIndex: number,
+    y0: number,
+    y1: number,
+    yRef: number,
+    x: number,
+    y: number,
+    colorIndex: number,
+    opacityIndex: number,
+    color: string
+}
+
+export
+interface BarData {
+    key: number,
+    values: BarGroupValue[],
+    posMax: number,
+    negMax: number,
+}
+
+export
+class BarsModel extends MarkModel {
 
     defaults() {
-        return {...markmodel.MarkModel.prototype.defaults(),
+        return {...MarkModel.prototype.defaults(),
             _model_name: "BarsModel",
             _view_name: "Bars",
             x: [],
@@ -56,7 +77,7 @@ export class BarsModel extends markmodel.MarkModel {
 
     initialize(attributes, options) {
         super.initialize(attributes, options);
-        this.is_y_2d = false;
+        this.yIs2d = false;
         this.on_some_change(["x", "y", "base"], this.update_data, this);
         this.on_some_change(["color", "opacities", "color_mode", "opacity_mode"], function() {
             this.update_color();
@@ -78,39 +99,39 @@ export class BarsModel extends markmodel.MarkModel {
         y_data = (y_data.length === 0 || !_.isNumber(y_data[0])) ?
             y_data : [y_data];
 
-        this.base_value = this.get("base");
-        if(this.base_value === undefined || this.base_value === null) {
-            this.base_value = 0;
+        this.baseValue = this.get("base");
+        if(this.baseValue === undefined || this.baseValue === null) {
+            this.baseValue = 0;
         }
 
         if (x_data.length === 0 || y_data.length === 0) {
             this.mark_data = [];
-            this.is_y_2d = false;
+            this.yIs2d = false;
         } else {
             x_data = x_data.slice(0, d3.min(y_data.map(d => d.length)));
 
             // since x_data may be a TypedArray, explicitly use Array.map
             this.mark_data = Array.prototype.map.call(x_data, (x_elem, index) => {
                 const data: any = {};
-                let y0 = this.base_value;
-                let y0_neg = this.base_value;
-                let y0_left = this.base_value;
+                let y0 = this.baseValue;
+                let y0_neg = this.baseValue;
+                let y0_left = this.baseValue;
                 data.key = x_elem;
 
                 // since y_data may be a TypedArray, explicitly use Array.map
                 data.values = Array.prototype.map.call(y_data, (y_elem, y_index) => {
-                    let value = y_elem[index] - this.base_value;
+                    let value = y_elem[index] - this.baseValue;
                     if (isNaN(value)) {
                         value = 0;
                     }
                     const positive = (value >= 0);
                     return {
                         index: index,
-                        sub_index: y_index,
+                        subIndex: y_index,
                         x: x_elem,
                         // In the following code, the values y0, y1 are
                         // only relevant for a stacked bar chart. grouped
-                        // bars only deal with base_value and y.
+                        // bars only deal with baseValue and y.
 
                         // y0 is the value on the y scale for the upper end
                         // of the bar.
@@ -124,22 +145,22 @@ export class BarsModel extends markmodel.MarkModel {
                             y0_neg += value;
                             return (y0_neg - value);
                         }()),
-                        // y_ref is the value on the y scale which represents
+                        // yRef is the value on the y scale which represents
                         // the height of the bar
-                        y_ref: value,
+                        yRef: value,
                         y: y_elem[index],
                     };
                 });
 
-                // pos_max is the maximum positive value for a group of
+                // posMax is the maximum positive value for a group of
                 // bars.
-                data.pos_max = y0;
-                // neg_max is the minimum negative value for a group of
+                data.posMax = y0;
+                // negMax is the minimum negative value for a group of
                 // bars.
-                data.neg_max = y0_neg;
+                data.negMax = y0_neg;
                 return data;
             });
-            this.is_y_2d = (this.mark_data[0].values.length > 1);
+            this.yIs2d = (this.mark_data[0].values.length > 1);
             this.update_color();
         }
         this.update_domains();
@@ -162,31 +183,31 @@ export class BarsModel extends markmodel.MarkModel {
         const color_scale = this.get("scales").color;
         const color_mode = this.get("color_mode");
         const apply_color_to_groups = ((color_mode === "group") ||
-                                     (color_mode === "auto" && !(this.is_y_2d)));
+                                     (color_mode === "auto" && !(this.yIs2d)));
         const apply_color_to_group_element = ((color_mode === "element") ||
-                                     (color_mode === "auto" && this.is_y_2d));
+                                     (color_mode === "auto" && this.yIs2d));
 
         const opacity_mode = this.get("opacity_mode");
         const apply_opacity_to_groups = ((opacity_mode === "group") ||
-                                     (opacity_mode === "auto" && !(this.is_y_2d)));
+                                     (opacity_mode === "auto" && !(this.yIs2d)));
         const apply_opacity_to_group_element = ((opacity_mode === "element") ||
-                                     (opacity_mode === "auto" && this.is_y_2d));
+                                     (opacity_mode === "auto" && this.yIs2d));
 
         let element_idx = 0;
         this.mark_data.forEach(function(single_bar_d, bar_grp_index) {
             single_bar_d.values.forEach(function(bar_d, bar_index) {
-                bar_d.color_index = apply_color_to_groups 
-                    ? bar_grp_index 
-                    : apply_color_to_group_element 
-                        ? bar_index 
+                bar_d.colorIndex = apply_color_to_groups
+                    ? bar_grp_index
+                    : apply_color_to_group_element
+                        ? bar_index
                         : element_idx;
-                bar_d.opacity_index = apply_opacity_to_groups 
-                    ? bar_grp_index 
-                    : apply_opacity_to_group_element 
-                        ? bar_index 
+                bar_d.opacityIndex = apply_opacity_to_groups
+                    ? bar_grp_index
+                    : apply_opacity_to_group_element
+                        ? bar_index
                         : element_idx;
-                bar_d.color = color[bar_d.color_index];
-                
+                bar_d.color = color[bar_d.colorIndex];
+
                 element_idx++;
             });
         });
@@ -219,22 +240,22 @@ export class BarsModel extends markmodel.MarkModel {
 
         if(!this.get("preserve_domain").y) {
             if(this.get("type") === "stacked") {
-                range_scale.compute_and_set_domain([d3.min(this.mark_data, function(c: any) { return c.neg_max; }),
-                                                d3.max(this.mark_data, function(c: any) { return c.pos_max; }), this.base_value],
+                range_scale.compute_and_set_domain([d3.min(this.mark_data, function(c: any) { return c.negMax; }),
+                                                d3.max(this.mark_data, function(c: any) { return c.posMax; }), this.baseValue],
                                                 this.model_id + "_y");
             } else {
                 const min = d3.min(this.mark_data,
                     function(c: any) {
                         return d3.min(c.values, function(val: any) {
-                            return val.y_ref;
+                            return val.yRef;
                         });
                     });
                 const max = d3.max(this.mark_data, function(c: any) {
                     return d3.max(c.values, function(val: any) {
-                        return val.y_ref;
+                        return val.yRef;
                     });
                 });
-                range_scale.compute_and_set_domain([min, max, this.base_value], this.model_id + "_y");
+                range_scale.compute_and_set_domain([min, max, this.baseValue], this.model_id + "_y");
             }
         } else {
             range_scale.del_domain([], this.model_id + "_y");
@@ -242,12 +263,13 @@ export class BarsModel extends markmodel.MarkModel {
     }
 
     static serializers = {
-        ...markmodel.MarkModel.serializers,
+        ...MarkModel.serializers,
         x: serialize.array_or_json,
         y: serialize.array_or_json,
         color: serialize.array_or_json
     };
 
-    is_y_2d: boolean;
-    base_value: number;
+    yIs2d: boolean;
+    baseValue: number;
+    mark_data: BarData[]
 }
