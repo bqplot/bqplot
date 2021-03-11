@@ -36,7 +36,8 @@ export class BoxplotModel extends MarkModel {
             outlier_fill_color: "gray",
             opacities: [],
             box_width: null, // auto calculate box width
-            auto_detect_outliers: true
+            auto_detect_outliers: true,
+            precomputed_statistics: false
         };
     }
 
