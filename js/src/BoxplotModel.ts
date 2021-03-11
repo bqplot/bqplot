@@ -14,12 +14,12 @@
  */
 
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-array"));
 import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
-export class BoxplotModel extends MarkModel {
+export
+class BoxplotModel extends MarkModel {
 
     defaults() {
         return {...MarkModel.prototype.defaults(),
@@ -40,55 +40,54 @@ export class BoxplotModel extends MarkModel {
         };
     }
 
-    initialize() {
+    initialize(): void {
         super.initialize.apply(this, arguments);
-        this.on_some_change(["x", "y"], this.update_data, this);
-        this.on_some_change(["preserve_domain"], this.update_domains, this);
-        this.update_data();
+
+        this.on_some_change(["x", "y"], this.updateData, this);
+        this.on_some_change(["preserve_domain"], this.updateDomains, this);
+        this.updateData();
         this.update_domains();
     }
 
     get_data_dict(data, index) {
-        return data.data_dict;
+        return data.dataDict;
     }
 
-    update_data() {
-        let x_data = this.get("x");
-        let y_data = this.get("y");
+    private updateData() {
+        let xData = this.get("x");
+        let yData = this.get("y");
 
-        y_data.forEach(function(elm) {
+        yData.forEach(function(elm) {
             elm.sort(function(a, b) {
                 return a - b;
             });
         });
 
-        if(x_data.length > y_data.length) {
-            x_data = x_data.slice(0, y_data.length);
-        } else if(x_data.length < y_data.length) {
-            y_data = y_data.slice(0, x_data.length);
+        if(xData.length > yData.length) {
+            xData = xData.slice(0, yData.length);
+        } else if(xData.length < yData.length) {
+            yData = yData.slice(0, xData.length);
         }
 
-        this.mark_data = _.zip(x_data, y_data);
+        this.mark_data = _.zip(xData, yData);
 
-        this.update_domains();
+        this.updateDomains();
         this.trigger("data_updated");
     }
 
-    update_domains() {
+    private updateDomains() {
         // color scale needs an issue in DateScaleModel to be fixed. It
         // should be moved here as soon as that is fixed.
-
         const scales = this.get("scales");
-        const x_scale = scales.x;
-        const y_scale = scales.y;
 
         if(!this.get("preserve_domain").x && this.mark_data) {
-            x_scale.compute_and_set_domain(this.mark_data.map(function(elem) {
+            scales.x.compute_and_set_domain(this.mark_data.map(function(elem) {
                 return elem[0];
             }), this.model_id + "_x");
         } else {
-            x_scale.del_domain([], this.model_id + "_x");
+            scales.x.del_domain([], this.model_id + "_x");
         }
+
         if(!this.get("preserve_domain").y && this.mark_data) {
            //The values are sorted, so we are using that to calculate the min/max
 
@@ -100,10 +99,10 @@ export class BoxplotModel extends MarkModel {
                 return values[values.length-1];
             }));
 
-            y_scale.set_domain([min,max], this.model_id + "_y");
+            scales.y.set_domain([min,max], this.model_id + "_y");
 
         } else {
-            y_scale.del_domain([], this.model_id + "_y");
+            scales.y.del_domain([], this.model_id + "_y");
         }
     }
 
@@ -112,7 +111,4 @@ export class BoxplotModel extends MarkModel {
         x: serialize.array_or_json,
         y: serialize.array_or_json
     }
-
-    max_x: number;
-    min_x: number;
 }
