@@ -109,20 +109,16 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
             for elem in array:
                 temp_val = pd.to_datetime(
                     elem, errors='coerce', infer_datetime_format=True)
-                temp_val = elem if (
-                    temp_val[0] == np.datetime64('NaT')) else temp_val
+                temp_val = elem if isinstance(temp_val[0], type(pd.NaT)) else temp_val
                 return_value.append(temp_val)
         elif(isinstance(array, list)):
             temp_val = pd.to_datetime(
                 array, errors='coerce', infer_datetime_format=True)
-            return_value = array if (
-                temp_val[0] == np.datetime64('NaT')) else temp_val
+            return_value = array if isinstance(temp_val[0], type(pd.NaT)) else temp_val
         else:
             temp_val = pd.to_datetime(
                 array, errors='coerce', infer_datetime_format=True)
-            temp_val = array if (
-                temp_val[0] == np.datetime64('NaT')) else temp_val
-            return_value = temp_val
+            return_value = array if isinstance(temp_val[0], type(pd.NaT)) else temp_val
         return return_value
     elif(isinstance(array, np.ndarray)):
         warnings.warn("Array could not be converted into a date")
