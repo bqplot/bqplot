@@ -54,7 +54,7 @@ jobs:
       run: flake8 bqplot --ignore=E501,W504,W503
 
     - name: Run pytest
-      run: pytest .
+      run: pytest tests examples/Marks
 
     - name: Run JavaScript tests
       run: |

@@ -10,11 +10,13 @@ dependencies:
     - traittypes >=0.0.6
     - numpy >=1.10.4
     - pandas
+    - scipy
     - jupyter
     - jupyterlab=3  # to build the lab federated bundle
     - jupyter-packaging # to build the wheel
-    - pytest  # test dependency
-    - pytest-cov  # test dependency
-    - selenium  # test dependency
+    - pytest
+    - nbval
+    - pytest-cov
+    - selenium
     - flake8
     - nose
