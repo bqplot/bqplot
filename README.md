@@ -9,7 +9,7 @@
 
 ## Introduction
 
-bqplot is a 2-D visualization system for Jupyter, based on the constructs of
+`bqplot` is a 2-D visualization system for Jupyter, based on the constructs of
 the *Grammar of Graphics*.
 
 ## Usage
@@ -18,20 +18,19 @@ the *Grammar of Graphics*.
 
 In bqplot, every component of a plot is an interactive widget. This allows the
 user to integrate visualizations with other Jupyter interactive widgets to
-create integrated GUIs with a few simple lines of Python code.
+create integrated GUIs with a few lines of Python code.
 
 ## Goals
 
--   provide a unified framework for 2-D visualizations with a pythonic API.
--   provide a sensible API for adding user interactions (panning, zooming, selection, etc)
+-   Provide a unified framework for 2-D visualizations with a pythonic API
+-   Provide a sensible API for adding user interactions (panning, zooming, selection, etc)
 
 Two APIs are provided
 
-- Users can build custom visualizations using the internal object model, which
+- `Object Model`, which
   is inspired by the constructs of the Grammar of Graphics (figure, marks, axes,
-  scales), and enrich their visualization with our Interaction Layer.
-- Or they can use the context-based API similar to Matplotlib's pyplot, which
-  provides sensible default choices for most parameters.
+  scales). This API is verbose but is fully customizable
+- `pyplot`, which is a context-based API similar to Matplotlib's pyplot. `pyplot` provides sensible default choices for most parameters
 
 ## Trying it online
 
@@ -101,30 +100,19 @@ yarn run build
 
 Then refreshing the JupyterLab/Jupyter Notebook is enough to reload the changes.
 
-### Loading `bqplot`
-
-```python
-# In a Jupyter notebook
-import bqplot
-```
-
-That's it! You're ready to go!
-
 ## Examples
 
 ### Using the `pyplot` API
 
 [![Pyplot Screenshot](/pyplot.png)](https://github.com/bqplot/bqplot/blob/master/examples/Basic%20Plotting/Pyplot.ipynb)
 
-### Using the `bqplot` internal object model
+### Using the `Object Model` API
 
 [![Bqplot Screenshot](/bqplot.png)](https://github.com/bqplot/bqplot/blob/master/examples/Advanced%20Plotting/Advanced%20Plotting.ipynb)
 
 ## Documentation
 
-To get started with using `bqplot`, check out the full documentation
-
-https://bqplot.readthedocs.io/
+Full documentation is available at https://bqplot.readthedocs.io/
 
 ## Install a previous bqplot version (Only for JupyterLab <= 2)
 
