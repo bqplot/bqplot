@@ -17,25 +17,25 @@ import * as widgets from '@jupyter-widgets/base';
 import { semver_range } from './version';
 
 export class HandDrawModel extends widgets.WidgetModel {
+  defaults() {
+    return {
+      ...widgets.WidgetModel.prototype.defaults(),
+      _model_name: 'HandDrawModel',
+      _view_name: 'HandDraw',
+      _model_module: 'bqplot',
+      _view_module: 'bqplot',
+      _model_module_version: semver_range,
+      _view_module_version: semver_range,
 
-    defaults() {
-        return {...widgets.WidgetModel.prototype.defaults(),
-            _model_name: "HandDrawModel",
-            _view_name: "HandDraw",
-            _model_module: "bqplot",
-            _view_module: "bqplot",
-            _model_module_version: semver_range,
-            _view_module_version: semver_range,
-
-            lines: null,
-            line_index: 0,
-            min_x: null,
-            max_x: null
-        };
-    }
-
-    static serializers = {
-        ...widgets.DOMWidgetModel.serializers,
-        lines:  { deserialize: widgets.unpack_models }
+      lines: null,
+      line_index: 0,
+      min_x: null,
+      max_x: null,
     };
-};
+  }
+
+  static serializers = {
+    ...widgets.DOMWidgetModel.serializers,
+    lines: { deserialize: widgets.unpack_models },
+  };
+}

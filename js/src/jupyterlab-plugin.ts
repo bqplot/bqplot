@@ -14,7 +14,7 @@
  */
 
 import * as bqplot from './index';
-require("../css/bqplot.css");
+require('../css/bqplot.css');
 
 import * as base from '@jupyter-widgets/base';
 
@@ -24,12 +24,12 @@ import * as base from '@jupyter-widgets/base';
 module.exports = {
   id: 'bqplot',
   requires: [base.IJupyterWidgetRegistry],
-  activate: function(app, widgets) {
-      widgets.registerWidget({
-          name: 'bqplot',
-          version: bqplot.version,
-          exports: bqplot
-      });
-    },
-  autoStart: true
+  activate: function (app, widgets) {
+    widgets.registerWidget({
+      name: 'bqplot',
+      version: bqplot.version,
+      exports: bqplot,
+    });
+  },
+  autoStart: true,
 };

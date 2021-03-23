@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
-require("../css/bqplot.css");
+require('../css/bqplot.css');
 module.exports = require('./index');

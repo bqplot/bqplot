@@ -89,4 +89,4 @@ export * from './ImageModel';
 export * from './ScatterGL';
 export * from './ScatterGLModel';
 
-export let version = require('../package.json').version;
+export const version = require('../package.json').version;

@@ -18,53 +18,57 @@ import { Scale } from './Scale';
 import { LinearScaleModel } from './LinearScaleModel';
 
 export class LinearScale extends Scale {
-
-    render() {
-        this.scale = d3Scale.scaleLinear() as d3.ScaleLinear<number, number>;
-        if(this.model.domain.length > 0)
-            this.scale.domain(this.model.domain);
-        this.offset = 0;
-        this.create_event_listeners();
+  render() {
+    this.scale = d3Scale.scaleLinear() as d3.ScaleLinear<number, number>;
+    if (this.model.domain.length > 0) {
+      this.scale.domain(this.model.domain);
     }
+    this.offset = 0;
+    this.create_event_listeners();
+  }
 
-    expand_domain(old_range, new_range) {
-        // If you have a current range and then a new range and want to
-        // expand the domain to expand to the new range but keep it
-        // consistent with the previous one, this is the function you use.
+  expand_domain(old_range, new_range) {
+    // If you have a current range and then a new range and want to
+    // expand the domain to expand to the new range but keep it
+    // consistent with the previous one, this is the function you use.
 
-        // The following code is required to make a copy of the actual
-        // state of the scale. Referring to the model domain and then
-        // setting the range to be the old range in case it is not.
-        const unpadded_scale = this.scale.copy();
+    // The following code is required to make a copy of the actual
+    // state of the scale. Referring to the model domain and then
+    // setting the range to be the old range in case it is not.
+    const unpadded_scale = this.scale.copy();
 
-        // To handle the case for a clamped scale for which we have to
-        // expand the domain, the copy should be unclamped.
-        unpadded_scale.clamp(false);
-        if (this.model.domain.length) {
-            unpadded_scale.domain(this.model.domain);
-        } else {
-            // if the domain is empty, it will lead to NaN/NaN
-            console.error('No domain exists for scale, is that any data associated with this scale?')
-        }
-        unpadded_scale.range(old_range);
-        this.scale.domain(new_range.map(function(limit) {
-            return unpadded_scale.invert(limit);
-        }));
+    // To handle the case for a clamped scale for which we have to
+    // expand the domain, the copy should be unclamped.
+    unpadded_scale.clamp(false);
+    if (this.model.domain.length) {
+      unpadded_scale.domain(this.model.domain);
+    } else {
+      // if the domain is empty, it will lead to NaN/NaN
+      console.error(
+        'No domain exists for scale, is that any data associated with this scale?'
+      );
     }
+    unpadded_scale.range(old_range);
+    this.scale.domain(
+      new_range.map((limit) => {
+        return unpadded_scale.invert(limit);
+      })
+    );
+  }
 
-    invert(pixel): number | Date {
-        return this.scale.invert(pixel);
-    }
+  invert(pixel): number | Date {
+    return this.scale.invert(pixel);
+  }
 
-    invert_range(pixels) {
-        //Pixels is a non-decreasing array of pixel values
-        return pixels.map((pix) => this.invert(pix));
-    }
+  invert_range(pixels) {
+    //Pixels is a non-decreasing array of pixel values
+    return pixels.map((pix) => this.invert(pix));
+  }
 
-    scale: d3.ScaleLinear<number, number> |
-           d3.ScaleTime<Date, number> |
-           d3.ScaleLogarithmic<number, number>;
+  scale:
+    | d3.ScaleLinear<number, number>
+    | d3.ScaleTime<Date, number>
+    | d3.ScaleLogarithmic<number, number>;
 
-    model: LinearScaleModel;
+  model: LinearScaleModel;
 }
-

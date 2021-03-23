@@ -16,65 +16,65 @@
 import { WidgetModel } from '@jupyter-widgets/base';
 import { semver_range } from './version';
 
-export
-abstract class ScaleModel extends WidgetModel {
+export abstract class ScaleModel extends WidgetModel {
+  defaults() {
+    return {
+      ...WidgetModel.prototype.defaults(),
+      _model_name: 'ScaleModel',
+      _view_name: 'Scale',
+      _model_module: 'bqplot',
+      _view_module: 'bqplot',
+      _model_module_version: semver_range,
+      _view_module_version: semver_range,
+      reverse: false,
+      allow_padding: true,
+    };
+  }
 
-    defaults() {
-        return {...WidgetModel.prototype.defaults(),
-            _model_name: "ScaleModel",
-             _view_name: "Scale",
-            _model_module: "bqplot",
-            _view_module: "bqplot",
-            _model_module_version: semver_range,
-            _view_module_version: semver_range,
-            reverse: false,
-            allow_padding: true
-        };
+  initialize(attributes, options) {
+    super.initialize(attributes, options);
+    this.domains = {};
+    this.domain = [];
+    this.set_init_state();
+    this.set_listeners();
+  }
+
+  set_init_state() {
+    this.type = 'base';
+  }
+
+  set_listeners() {
+    // Function to be implementd by inherited classes.
+  }
+
+  set_domain(domain, id) {
+    // Call function only if you have computed the domain yourself. If
+    // you want the scale to compute the domain based on the data for
+    // your scale view, then call compute_and_set_domain
+    this.domains[id] = domain;
+    this.update_domain();
+  }
+
+  del_domain(domain, id) {
+    if (this.domains[id] !== undefined) {
+      delete this.domains[id];
+      this.update_domain();
     }
+  }
 
-    initialize(attributes, options) {
-        super.initialize(attributes, options);
-        this.domains = {};
-        this.domain = [];
-        this.set_init_state();
-        this.set_listeners();
+  get_domain_slice_in_order() {
+    if (this.reverse) {
+      return this.domain.slice().reverse();
+    } else {
+      return this.domain.slice();
     }
+  }
 
-    set_init_state() {
-        this.type = "base";
-    }
+  abstract compute_and_set_domain(data_array, id);
+  abstract update_domain();
 
-    set_listeners() {
-        // Function to be implementd by inherited classes.
-    }
-
-    set_domain(domain, id) {
-        // Call function only if you have computed the domain yourself. If
-        // you want the scale to compute the domain based on the data for
-        // your scale view, then call compute_and_set_domain
-        this.domains[id] = domain;
-        this.update_domain();
-    }
-
-    del_domain(domain, id) {
-        if(this.domains[id] !== undefined) {
-            delete this.domains[id];
-            this.update_domain();
-        }
-    }
-
-    get_domain_slice_in_order() {
-        if(this.reverse)
-            return this.domain.slice().reverse();
-        else
-            return this.domain.slice();
-    }
-
-    abstract compute_and_set_domain(data_array, id);
-    abstract update_domain();
-
-    domains: any;
-    domain: any[];
-    reverse: boolean;
-    type: string;
+  domains: any;
+  domain: any[];
+  reverse: boolean;
+  type: string;
 }

@@ -19,41 +19,44 @@ import { Scale } from './Scale';
 import { ColorScaleModel } from './ColorScaleModel';
 
 export class ColorScale extends Scale {
+  render() {
+    this.create_d3_scale();
+    this.update_extrapolation();
+    if (this.model.domain.length > 0) {
+      this.scale.domain(this.model.domain);
+    }
+    this.offset = 0;
+    this.create_event_listeners();
+    this.set_range();
+  }
 
-    render(){
-        this.create_d3_scale();
+  create_d3_scale() {
+    this.scale = d3.scaleLinear() as d3.ScaleLinear<number, number>;
+  }
+
+  create_event_listeners() {
+    super.create_event_listeners();
+    this.listenTo(this.model, 'colors_changed', this.set_range);
+    this.model.on(
+      'change:extrapolation',
+      function () {
         this.update_extrapolation();
-        if(this.model.domain.length > 0) {
-            this.scale.domain(this.model.domain);
-        }
-        this.offset = 0;
-        this.create_event_listeners();
-        this.set_range();
-    }
+        this.trigger('color_scale_range_changed');
+      },
+      this
+    );
+  }
 
-    create_d3_scale(){
-        this.scale = d3.scaleLinear() as d3.ScaleLinear<number, number>;
-    }
+  update_extrapolation() {
+    this.scale.clamp(this.model.get('extrapolation') === 'constant');
+  }
 
-    create_event_listeners() {
-        super.create_event_listeners();
-        this.listenTo(this.model, "colors_changed", this.set_range);
-        this.model.on("change:extrapolation", function() {
-            this.update_extrapolation();
-            this.trigger("color_scale_range_changed"); }, this);
-    }
+  set_range() {
+    this.scale.range(this.model.color_range);
+    this.trigger('color_scale_range_changed');
+  }
 
-    update_extrapolation() {
-        this.scale.clamp((this.model.get("extrapolation") === "constant"));
-    }
-
-    set_range() {
-        this.scale.range(this.model.color_range);
-        this.trigger("color_scale_range_changed");
-    }
-
-    scale: d3.ScaleLinear<number, number> |
-           d3.ScaleTime<Date, number>;
-    // Overriding super class
-    model: ColorScaleModel;
+  scale: d3.ScaleLinear<number, number> | d3.ScaleTime<Date, number>;
+  // Overriding super class
+  model: ColorScaleModel;
 }

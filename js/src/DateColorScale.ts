@@ -18,10 +18,9 @@ import * as d3 from 'd3';
 import { ColorScale } from './ColorScale';
 
 export class DateColorScale extends ColorScale {
+  create_d3_scale() {
+    this.scale = d3.scaleUtc();
+  }
 
-    create_d3_scale() {
-        this.scale = d3.scaleUtc();
-    }
-
-    scale: d3.ScaleTime<Date, number>;
+  scale: d3.ScaleTime<Date, number>;
 }

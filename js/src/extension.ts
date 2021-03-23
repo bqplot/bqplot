@@ -14,13 +14,13 @@
  */
 
 if ((window as any).require) {
-    (window as any).require.config({
-        map: {
-            "*" : {
-                "bqplot": "nbextensions/bqplot/index",
-            }
-        }
-    });
+  (window as any).require.config({
+    map: {
+      '*': {
+        bqplot: 'nbextensions/bqplot/index',
+      },
+    },
+  });
 }
 
 // Export the required load_ipython_extension

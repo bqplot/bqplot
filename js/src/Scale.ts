@@ -17,58 +17,57 @@ import * as widgets from '@jupyter-widgets/base';
 import { ScaleModel } from './ScaleModel';
 
 export class Scale extends widgets.WidgetView {
+  render() {
+    this.offset = 0;
+  }
 
-    render() {
-        this.offset = 0;
-    }
+  create_event_listeners() {
+    this.listenTo(this.model, 'domain_changed', this.model_domain_changed);
+    this.listenTo(this.model, 'highlight_axis', this.highlight_axis);
+    this.listenTo(this.model, 'unhighlight_axis', this.unhighlight_axis);
+  }
 
-    create_event_listeners() {
-        this.listenTo(this.model, "domain_changed", this.model_domain_changed);
-        this.listenTo(this.model, "highlight_axis", this.highlight_axis);
-        this.listenTo(this.model, "unhighlight_axis", this.unhighlight_axis);
-    }
+  set_range(range, padding?) {
+    this.scale.range(range);
+  }
 
-    set_range(range, padding?) {
-        this.scale.range(range);
-    }
+  compute_and_set_domain(array, id) {
+    this.model.compute_and_set_domain(array, id);
+  }
 
-    compute_and_set_domain(array, id) {
-        this.model.compute_and_set_domain(array, id);
-    }
+  set_domain(array, id) {
+    this.model.set_domain(array, id);
+  }
 
-    set_domain(array, id) {
-        this.model.set_domain(array, id);
-    }
+  model_domain_changed() {
+    this.scale.domain(this.model.domain);
+    this.trigger('domain_changed');
+  }
 
-    model_domain_changed() {
-        this.scale.domain(this.model.domain);
-        this.trigger("domain_changed");
-    }
+  highlight_axis() {
+    this.trigger('highlight_axis');
+  }
 
-    highlight_axis() {
-        this.trigger("highlight_axis");
-    }
+  unhighlight_axis() {
+    this.trigger('unhighlight_axis');
+  }
 
-    unhighlight_axis() {
-        this.trigger("unhighlight_axis");
-    }
+  expand_domain(old_range, new_range) {
+    // Base class function. No implementation.
+    // Implementation is particular to the child class
+    // if you have a current range and then a new range and want to
+    // expand the domain to expand to the new range but keep it
+    // consistent with the previous one, this is the function you use.
+  }
 
-    expand_domain(old_range, new_range) {
-        // Base class function. No implementation.
-        // Implementation is particular to the child class
-        // if you have a current range and then a new range and want to
-        // expand the domain to expand to the new range but keep it
-        // consistent with the previous one, this is the function you use.
-    }
+  offset: number;
+  scale:
+    | d3.ScaleTime<Date, number>
+    | d3.ScaleOrdinal<string, number>
+    | d3.ScaleBand<string>
+    | d3.ScaleLinear<number, number>
+    | d3.ScaleLogarithmic<number, number>;
 
-
-    offset: number;
-    scale: d3.ScaleTime<Date, number> |
-           d3.ScaleOrdinal<string, number> |
-           d3.ScaleBand<string> |
-           d3.ScaleLinear<number, number> |
-           d3.ScaleLogarithmic<number, number>;
-
-    // Overriding super class
-    model: widgets.WidgetModel & ScaleModel;
+  // Overriding super class
+  model: widgets.WidgetModel & ScaleModel;
 }

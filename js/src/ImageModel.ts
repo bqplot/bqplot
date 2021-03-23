@@ -18,64 +18,71 @@ import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
 export class ImageModel extends MarkModel {
-
-    defaults() {
-        return {...MarkModel.prototype.defaults(),
-            _model_name: "ImageModel",
-            _view_name: "Image",
-            pixelated: false,
-            x: [0.0, 1.0],
-            y: [0.0, 1.0],
-            scales_metadata: {
-                'x': {'orientation': 'horizontal', 'dimension': 'x'},
-                'y': {'orientation': 'vertical', 'dimension': 'y'},
-            },
-        };
-    }
-
-    initialize(attributes, options) {
-        super.initialize(attributes, options);
-        this.on_some_change(['x', 'y'], this.update_data, this);
-        this.on_some_change(["preserve_domain"], this.update_domains, this);
-        this.update_data();
-    }
-
-    update_data() {
-        this.mark_data = {
-            x: this.get("x"), y: this.get("y")
-        };
-        this.update_domains();
-        this.trigger("data_updated");
-    }
-
-    update_domains() {
-        if(!this.mark_data) {
-            return;
-        }
-        const scales = this.get("scales");
-        const x_scale = scales.x;
-        const y_scale = scales.y;
-
-        if(x_scale) {
-            if(!this.get("preserve_domain").x) {
-                x_scale.compute_and_set_domain(this.mark_data['x'], this.model_id + "_x");
-            } else {
-                x_scale.del_domain([], this.model_id + "_x");
-            }
-        }
-        if(y_scale) {
-            if(!this.get("preserve_domain").y) {
-                y_scale.compute_and_set_domain(this.mark_data['y'], this.model_id + "_y");
-            } else {
-                y_scale.del_domain([], this.model_id + "_y");
-            }
-        }
-    }
-
-    static serializers = {
-        ...MarkModel.serializers,
-        image: { deserialize: widgets.unpack_models },
-        x: serialize.array_or_json,
-        y: serialize.array_or_json
+  defaults() {
+    return {
+      ...MarkModel.prototype.defaults(),
+      _model_name: 'ImageModel',
+      _view_name: 'Image',
+      pixelated: false,
+      x: [0.0, 1.0],
+      y: [0.0, 1.0],
+      scales_metadata: {
+        x: { orientation: 'horizontal', dimension: 'x' },
+        y: { orientation: 'vertical', dimension: 'y' },
+      },
     };
+  }
+
+  initialize(attributes, options) {
+    super.initialize(attributes, options);
+    this.on_some_change(['x', 'y'], this.update_data, this);
+    this.on_some_change(['preserve_domain'], this.update_domains, this);
+    this.update_data();
+  }
+
+  update_data() {
+    this.mark_data = {
+      x: this.get('x'),
+      y: this.get('y'),
+    };
+    this.update_domains();
+    this.trigger('data_updated');
+  }
+
+  update_domains() {
+    if (!this.mark_data) {
+      return;
+    }
+    const scales = this.get('scales');
+    const x_scale = scales.x;
+    const y_scale = scales.y;
+
+    if (x_scale) {
+      if (!this.get('preserve_domain').x) {
+        x_scale.compute_and_set_domain(
+          this.mark_data['x'],
+          this.model_id + '_x'
+        );
+      } else {
+        x_scale.del_domain([], this.model_id + '_x');
+      }
+    }
+    if (y_scale) {
+      if (!this.get('preserve_domain').y) {
+        y_scale.compute_and_set_domain(
+          this.mark_data['y'],
+          this.model_id + '_y'
+        );
+      } else {
+        y_scale.del_domain([], this.model_id + '_y');
+      }
+    }
+  }
+
+  static serializers = {
+    ...MarkModel.serializers,
+    image: { deserialize: widgets.unpack_models },
+    x: serialize.array_or_json,
+    y: serialize.array_or_json,
+  };
 }
