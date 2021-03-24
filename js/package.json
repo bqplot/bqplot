@@ -47,7 +47,6 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "file-loader": "^6.0.0",
-    "husky": "^5.2.0",
     "imports-loader": "^0.8.0",
     "json-loader": "^0.5.7",
     "karma": "^5.0.2",
@@ -102,14 +101,6 @@
         "singleton": true
       }
     }
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "prettier"
-    }
-  },
-  "prettier": {
-    "singleQuote": true
   },
   "files": [
     "dist/",
