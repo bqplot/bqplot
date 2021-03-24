@@ -29,8 +29,8 @@
     "watch:labextension": "jupyter labextension watch .",
     "prepare": "jlpm run build",
     "test": "karma start --single-run",
-    "prettify": "yarn prettier --write . ",
-    "lint:" "eslint . --ext .ts --fix ",
+    "prettify": "yarn prettier --write .",
+    "lint": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
     "@jupyter-widgets/controls": "^1.5.0 || ^2 || ^3",
