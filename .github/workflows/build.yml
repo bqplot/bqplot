@@ -64,7 +64,9 @@ jobs:
         yarn run test
 
     - name: Run prettyfier
-      run: yarn run prettier --check .
+      run: |
+        cd js
+        yarn run prettier --check .
 
   build:
     runs-on: ubuntu-latest
