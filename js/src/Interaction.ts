@@ -21,49 +21,56 @@ import { Figure } from './Figure';
 import { Mark } from './Mark';
 
 export class Interaction extends widgets.WidgetView {
+  initialize(parameters) {
+    this.setElement(
+      document.createElementNS(d3.namespaces.svg, 'rect') as HTMLElement
+    );
+    this.d3el = d3.select(this.el);
+    super.initialize.call(this, parameters);
+  }
 
-    initialize(parameters) {
-        this.setElement(document.createElementNS(d3.namespaces.svg, "rect") as HTMLElement);
-        this.d3el = d3.select(this.el);
-        super.initialize.call(this, parameters);
-    }
+  render() {
+    this.parent = this.options.parent;
 
-    render() {
-        this.parent = this.options.parent;
+    // Opaque interation layer
+    this.d3el
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr(
+        'width',
+        this.parent.width - this.parent.margin.left - this.parent.margin.right
+      )
+      .attr(
+        'height',
+        this.parent.height - this.parent.margin.top - this.parent.margin.bottom
+      )
+      .attr('pointer-events', 'all')
+      .attr('visibility', 'hidden');
+    this.listenTo(this.parent, 'margin_updated', this.relayout);
+  }
 
-        // Opaque interation layer
-        this.d3el
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", this.parent.width -
-                           this.parent.margin.left -
-                           this.parent.margin.right)
-            .attr("height", this.parent.height -
-                            this.parent.margin.top -
-                            this.parent.margin.bottom)
-            .attr("pointer-events", "all")
-            .attr("visibility", "hidden");
-        this.listenTo(this.parent, "margin_updated", this.relayout);
-    }
+  relayout() {
+    // Called when the figure margins are updated.
+    this.d3el
+      .attr(
+        'width',
+        this.parent.width - this.parent.margin.left - this.parent.margin.right
+      )
+      .attr(
+        'height',
+        this.parent.height - this.parent.margin.top - this.parent.margin.bottom
+      );
+  }
 
-    relayout() {
-        // Called when the figure margins are updated.
-        this.d3el
-            .attr("width", this.parent.width -
-                           this.parent.margin.left -
-                           this.parent.margin.right)
-            .attr("height", this.parent.height -
-                            this.parent.margin.top -
-                            this.parent.margin.bottom);
-    }
+  remove() {
+    _.each(this.mark_views, (mark: any) => {
+      mark.invert_range();
+    });
+    this.d3el.remove();
+    super.remove.apply(this);
+  }
 
-    remove() {
-        _.each(this.mark_views, function(mark: any) { mark.invert_range(); });
-        this.d3el.remove();
-        super.remove.apply(this);
-    }
-
-    mark_views: Mark[];
-    d3el: d3.Selection<Element, any, any, any>;
-    parent: Figure;
+  mark_views: Mark[];
+  d3el: d3.Selection<Element, any, any, any>;
+  parent: Figure;
 }

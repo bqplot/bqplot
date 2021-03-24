@@ -2,24 +2,20 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
+    "lib": ["es2015", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noUnusedLocals": true,
     "outDir": "lib",
-    "preserveWatchOutput": true,
+    "resolveJsonModule": true,
     "rootDir": "src",
-    "inlineSourceMap": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "target": "es2017",
-    "types": ["mocha", "node"]
+    "sourceMap": true,
+    "strict": false,
+    "strictPropertyInitialization": false,
+    "target": "es2015"
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["src/**/__tests__"]
 }

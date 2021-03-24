@@ -16,12 +16,12 @@
 import { OrdinalScaleModel } from './OrdinalScaleModel';
 
 export class OrdinalColorScaleModel extends OrdinalScaleModel {
-
-    defaults() {
-        return {...OrdinalScaleModel.prototype.defaults(),
-            _model_name: "OrdinalColorScaleModel",
-            _view_name: "OrdinalColorScale",
-            domain: [],
-        };
-    }
+  defaults() {
+    return {
+      ...OrdinalScaleModel.prototype.defaults(),
+      _model_name: 'OrdinalColorScaleModel',
+      _view_name: 'OrdinalColorScale',
+      domain: [],
+    };
+  }
 }

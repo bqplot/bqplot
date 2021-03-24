@@ -44,6 +44,7 @@ jobs:
         test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
         test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
 
+
     - name: Validate the nbextension
       run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
 
@@ -61,6 +62,11 @@ jobs:
         cd js
         yarn install
         yarn run test
+
+    - name: Run prettyfier
+      run: |
+        cd js
+        yarn run prettier --check .
 
   build:
     runs-on: ubuntu-latest

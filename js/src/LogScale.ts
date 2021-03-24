@@ -18,14 +18,14 @@ import * as d3 from 'd3';
 import { LinearScale } from './LinearScale';
 
 export class LogScale extends LinearScale {
-    render() {
-        this.scale = d3.scaleLog();
-        if(this.model.domain.length > 0) {
-            this.scale.domain(this.model.domain);
-        }
-        this.offset = 0;
-        this.create_event_listeners();
+  render() {
+    this.scale = d3.scaleLog();
+    if (this.model.domain.length > 0) {
+      this.scale.domain(this.model.domain);
     }
+    this.offset = 0;
+    this.create_event_listeners();
+  }
 
-    scale: d3.ScaleLogarithmic<number, number>;
+  scale: d3.ScaleLogarithmic<number, number>;
 }

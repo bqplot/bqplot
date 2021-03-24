@@ -17,19 +17,20 @@ import { DOMWidgetModel } from '@jupyter-widgets/base';
 import { semver_range } from './version';
 
 export class TooltipModel extends DOMWidgetModel {
-    defaults() {
-        return {...DOMWidgetModel.prototype.defaults(), 
-            _model_name: "TooltipModel",
-            _view_name: "Tooltip",
-            _model_module: "bqplot",
-            _view_module: "bqplot",
-            _model_module_version: semver_range,
-            _view_module_version: semver_range,
+  defaults() {
+    return {
+      ...DOMWidgetModel.prototype.defaults(),
+      _model_name: 'TooltipModel',
+      _view_name: 'Tooltip',
+      _model_module: 'bqplot',
+      _view_module: 'bqplot',
+      _model_module_version: semver_range,
+      _view_module_version: semver_range,
 
-            fields: [],
-            formats: [],
-            show_labels: true,
-            labels: []
-        };
-    }
+      fields: [],
+      formats: [],
+      show_labels: true,
+      labels: [],
+    };
+  }
 }

@@ -17,35 +17,34 @@ import { ColorScaleModel } from './ColorScaleModel';
 import { getDate } from './utils';
 
 export class DateColorScaleModel extends ColorScaleModel {
+  defaults() {
+    return {
+      ...ColorScaleModel.prototype.defaults(),
+      _model_name: 'DateColorScaleModel',
+      _view_name: 'DateColorScale',
+      min: null,
+      max: null,
+      mid: null,
+    };
+  }
 
-    defaults() {
-        return {...ColorScaleModel.prototype.defaults(),
-            _model_name: "DateColorScaleModel",
-            _view_name: "DateColorScale",
-            min: null,
-            max: null,
-            mid: null
-        };
-    }
+  set_init_state() {
+    this.type = 'date_color_linear';
+    this.color_range = [];
+    this.mid = null;
+    this.global_min = new Date().setTime(0);
+    this.global_max = new Date();
+  }
 
-    set_init_state() {
-        this.type = "date_color_linear";
-        this.color_range = [];
-        this.mid = null;
-        this.global_min = (new Date()).setTime(0);
-        this.global_max = new Date();
-    }
+  min_max_changed() {
+    this.min = getDate(this.get('min'));
+    this.max = getDate(this.get('max'));
+    this.min_from_data = this.min === null;
+    this.max_from_data = this.max === null;
+    this.update_domain();
+  }
 
-    min_max_changed() {
-        this.min = getDate(this.get("min"));
-        this.max = getDate(this.get("max"));
-        this.min_from_data = (this.min === null);
-        this.max_from_data = (this.max === null);
-        this.update_domain();
-    }
-
-    protected toDomainType(value: number) : Date {
-        return new Date(value);
-    }
+  protected toDomainType(value: number): Date {
+    return new Date(value);
+  }
 }
-

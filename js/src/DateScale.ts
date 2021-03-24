@@ -18,13 +18,14 @@ import * as d3 from 'd3';
 import { LinearScale } from './LinearScale';
 
 export class DateScale extends LinearScale {
-    render() {
-        this.scale = d3.scaleUtc();
-        if(this.model.domain.length > 0)
-            this.scale.domain(this.model.domain);
-        this.offset = 0;
-        this.create_event_listeners();
+  render() {
+    this.scale = d3.scaleUtc();
+    if (this.model.domain.length > 0) {
+      this.scale.domain(this.model.domain);
     }
+    this.offset = 0;
+    this.create_event_listeners();
+  }
 
-    scale: d3.ScaleTime<Date, number>;
+  scale: d3.ScaleTime<Date, number>;
 }
