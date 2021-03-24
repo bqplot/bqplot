@@ -12,10 +12,9 @@
     "rootDir": "src",
     "skipLibCheck": true,
     "sourceMap": true,
-    "strict": true,
+    "strict": false,
     "strictPropertyInitialization": false,
-    "target": "es2015",
-    "types": ["jest"]
+    "target": "es2015"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["src/**/__tests__"]
