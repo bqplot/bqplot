@@ -82,6 +82,10 @@ class Figure extends widgets.DOMWidgetView {
             figureSize.width = figureSize.height * maxRatio;
         }
 
+        // Use round pixel values
+        figureSize.width = Math.floor(figureSize.width);
+        figureSize.height = Math.floor(figureSize.height);
+
         return figureSize;
     }
 
