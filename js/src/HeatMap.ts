@@ -14,22 +14,17 @@
  */
 
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
+import { HeatMapModel } from './HeatMapModel';
 import { Mark } from './Mark';
 
 export class HeatMap extends Mark {
-  render() {
-    const base_render_promise = super.render();
-    const that = this;
+  async render() {
+    const baseRenderPromise = super.render();
 
-    // TODO: create_listeners is put inside the promise success handler
-    // because some of the functions depend on child scales being
-    // created. Make sure none of the event handler functions make that
-    // assumption.
     this.displayed.then(() => {
-      that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
-      that.create_tooltip();
+      this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+      this.create_tooltip();
     });
 
     this.image = d3
@@ -41,49 +36,43 @@ export class HeatMap extends Mark {
 
     this.canvas = document.createElement('canvas');
 
-    return base_render_promise.then(() => {
-      that.event_listeners = {};
-      that.process_interactions();
-      that.create_listeners();
-      that.compute_view_padding();
-      that.draw();
-    });
+    await baseRenderPromise;
+
+    this.event_listeners = {};
+    this.process_interactions();
+    this.create_listeners();
+    this.compute_view_padding();
+    this.draw();
   }
 
   set_ranges() {
-    const x_scale = this.scales.x;
-    if (x_scale) {
-      const x_range = this.parent.padded_range('x', x_scale.model);
-      x_scale.set_range(x_range);
+    if (this.scales.x) {
+      const xRange = this.parent.padded_range('x', this.scales.x.model);
+      this.scales.x.set_range(xRange);
     }
-    const y_scale = this.scales.y;
-    if (y_scale) {
-      y_scale.set_range(this.parent.padded_range('y', y_scale.model));
+
+    if (this.scales.y) {
+      this.scales.y.set_range(
+        this.parent.padded_range('y', this.scales.y.model)
+      );
     }
   }
 
   set_positional_scales() {
-    const x_scale = this.scales.x,
-      y_scale = this.scales.y;
-    this.listenTo(x_scale, 'domain_changed', function () {
-      if (!this.model.dirty) {
-        this.draw();
-      }
+    this.listenTo(this.scales.x, 'domain_changed', () => {
+      if (!this.model.dirty) this.draw();
     });
-    this.listenTo(y_scale, 'domain_changed', function () {
-      if (!this.model.dirty) {
-        this.draw();
-      }
+    this.listenTo(this.scales.y, 'domain_changed', () => {
+      if (!this.model.dirty) this.draw();
     });
   }
 
   initialize_additional_scales() {
-    const color_scale = this.scales.color;
-    if (color_scale) {
-      this.listenTo(color_scale, 'domain_changed', function () {
+    if (this.scales.color) {
+      this.listenTo(this.scales.color, 'domain_changed', function () {
         this.draw();
       });
-      color_scale.on('color_scale_range_changed', this.draw, this);
+      this.scales.color.on('color_scale_range_changed', this.draw, this);
     }
   }
 
@@ -91,33 +80,22 @@ export class HeatMap extends Mark {
     super.create_listeners();
 
     this.d3el
-      .on(
-        'mouseover',
-        _.bind(function () {
-          this.event_dispatcher('mouse_over');
-        }, this)
-      )
-      .on(
-        'mousemove',
-        _.bind(function () {
-          this.event_dispatcher('mouse_move');
-        }, this)
-      )
-      .on(
-        'mouseout',
-        _.bind(function () {
-          this.event_dispatcher('mouse_out');
-        }, this)
-      );
+      .on('mouseover', () => {
+        this.event_dispatcher('mouse_over');
+      })
+      .on('mousemove', () => {
+        this.event_dispatcher('mouse_move');
+      })
+      .on('mouseout', () => {
+        this.event_dispatcher('mouse_out');
+      });
     this.listenTo(this.model, 'data_updated', this.draw);
     this.listenTo(this.model, 'change:tooltip', this.create_tooltip);
-    this.listenTo(this.parent, 'bg_clicked', function () {
+    this.listenTo(this.parent, 'bg_clicked', () => {
       this.event_dispatcher('parent_clicked');
     });
     this.listenTo(this.model, 'change:interactions', this.process_interactions);
   }
-
-  click_handler(args) {}
 
   relayout() {
     this.set_ranges();
@@ -125,7 +103,7 @@ export class HeatMap extends Mark {
     this.draw();
   }
 
-  drawCanvas() {
+  private drawCanvas() {
     this.image.attr('href', this.canvas.toDataURL('image/png'));
   }
 
@@ -139,11 +117,11 @@ export class HeatMap extends Mark {
 
     const ctx = this.canvas.getContext('2d');
     const colors = this.model.mark_data.color;
-    colors.forEach((row, i) => {
+    colors.forEach((row: number[], i: number) => {
       const height = plottingData.heights[i];
       const y = plottingData.yOrigin + plottingData.yStartPoints[i];
 
-      row.forEach((d, j) => {
+      row.forEach((d: number, j: number) => {
         const width = plottingData.widths[j];
         const x = plottingData.xOrigin + plottingData.xStartPoints[j];
         ctx.fillStyle = this.getElementFill(d);
@@ -160,12 +138,12 @@ export class HeatMap extends Mark {
     this.drawCanvas();
   }
 
-  expandRect(value) {
+  private expandRect(value: number): number {
     // Add 0.5px to width and height to fill gaps between rectangles
     return value > 0 ? value + 0.5 : value - 0.5;
   }
 
-  getPlottingData() {
+  private getPlottingData() {
     const xData: Array<number> = Array.from(this.model.mark_data.x).map(
       this.scales.x.scale
     );
@@ -225,7 +203,7 @@ export class HeatMap extends Mark {
     };
   }
 
-  getPadding(xData, yData) {
+  private getPadding(xData: number[], yData: number[]) {
     const numCols = xData.length;
     const numRows = yData.length;
 
@@ -251,10 +229,11 @@ export class HeatMap extends Mark {
     });
   }
 
-  getElementFill(color) {
+  private getElementFill(color: number | null) {
     if (color === null) {
       return this.model.get('null_color');
     }
+
     return this.scales.color.scale(color);
   }
 
@@ -266,6 +245,8 @@ export class HeatMap extends Mark {
 
   set_style_on_elements(style, indices, elements?) {}
 
-  image: d3.Selection<SVGImageElement, any, any, any>;
-  canvas: HTMLCanvasElement;
+  private image: d3.Selection<SVGImageElement, any, any, any>;
+  private canvas: HTMLCanvasElement;
+
+  model: HeatMapModel;
 }
