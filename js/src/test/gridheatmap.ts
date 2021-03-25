@@ -8,7 +8,7 @@ import { DummyManager } from './dummy-manager';
 
 import { create_figure_gridheatmap, getFills } from './widget-utils';
 
-describe('pie >', () => {
+describe('gridheatmap >', () => {
   beforeEach(async function () {
     this.manager = new DummyManager({ bqplot: bqplot });
   });

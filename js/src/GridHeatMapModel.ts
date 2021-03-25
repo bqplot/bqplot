@@ -17,6 +17,22 @@ import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
+export interface GridCellData {
+  rowNum: number;
+  row: number;
+  column: number;
+  columnNum: number;
+  color: number;
+  cellNum: number;
+}
+
+export enum AxisMode {
+  Middle,
+  Boundaries,
+  ExpandOne,
+  ExpandTwo,
+}
+
 export class GridHeatMapModel extends MarkModel {
   defaults() {
     return {
@@ -45,10 +61,6 @@ export class GridHeatMapModel extends MarkModel {
   initialize(attributes, options) {
     super.initialize(attributes, options);
     this.on_some_change(['row', 'column', 'color'], this.update_data, this);
-    // FIXME: replace this with on("change:preserve_domain"). It is not done here because
-    // on_some_change depends on the GLOBAL backbone on("change") handler which
-    // is called AFTER the specific handlers on("change:foobar") and we make that
-    // assumption.
     this.on_some_change(['preserve_domain'], this.update_domains, this);
     this.update_data();
     this.update_domains();
@@ -57,33 +69,27 @@ export class GridHeatMapModel extends MarkModel {
   update_data() {
     this.dirty = true;
     // Handling data updates
-    this.colors = this.get('color') || [[]];
+    const numCols = this.colors[0].length;
 
-    const num_rows = this.colors.length;
-    const num_cols = this.colors[0].length;
-
-    this.rows = this.get('row') || _.range(num_rows);
-    this.columns = this.get('column') || _.range(num_cols);
-
-    const flat_colors = [].concat.apply(
+    const flatColors = [].concat.apply(
       [],
       this.colors.map((x) => Array.prototype.slice.call(x, 0))
     );
 
-    this.mark_data = flat_colors.map((data, index) => {
-      const row_num = Math.floor(index / num_cols);
-      const col_num = index % num_cols;
+    this.mark_data = flatColors.map((data, index) => {
+      const rowNum = Math.floor(index / numCols);
+      const colNum = index % numCols;
 
       return {
-        row_num: row_num,
-        row: this.rows[row_num],
-        column: this.columns[col_num],
-        column_num: col_num,
+        rowNum: rowNum,
+        row: this.rows[rowNum],
+        column: this.columns[colNum],
+        columnNum: colNum,
         color: data,
-        _cell_num: index,
+        cellNum: index,
       };
     });
-    this.identify_modes();
+    this.identifyModes();
     this.update_domains();
     this.dirty = false;
     this.trigger('data_updated');
@@ -112,9 +118,7 @@ export class GridHeatMapModel extends MarkModel {
     if (color_scale !== null && color_scale !== undefined) {
       if (!this.get('preserve_domain').color) {
         color_scale.compute_and_set_domain(
-          this.mark_data.map((elem) => {
-            return elem.color;
-          }),
+          this.mark_data.map((elem) => elem.color),
           this.model_id + '_color'
         );
       } else {
@@ -127,39 +131,62 @@ export class GridHeatMapModel extends MarkModel {
     return data;
   }
 
-  identify_modes() {
+  get colors(): number[][] {
+    if (this.get('color')) {
+      return this.get('color');
+    }
+
+    return [[]];
+  }
+
+  get rows(): number[] {
+    if (this.get('row')) {
+      return Array.from(this.get('row'));
+    }
+
+    return _.range(this.colors.length);
+  }
+
+  get columns(): number[] {
+    if (this.get('column')) {
+      return Array.from(this.get('column'));
+    }
+
+    return _.range(this.colors[0].length);
+  }
+
+  private identifyModes() {
     //based on the data, identify the mode in which the heatmap should
     //be plotted.
-    const modes: any = {};
     const scales = this.get('scales');
-    const row_scale = scales.row;
-    const column_scale = scales.column;
-    const data_nrow = this.colors.length;
-    const data_ncol = this.colors[0].length;
+    const rowScale = scales.row;
+    const columnScale = scales.column;
+    const nRows = this.colors.length;
+    const nColumns = this.colors[0].length;
+    this.modes = { column: AxisMode.Middle, row: AxisMode.Middle };
 
-    if (row_scale.type === 'ordinal') {
-      modes.row = 'middle';
+    if (rowScale.type === 'ordinal') {
+      this.modes.row = AxisMode.Middle;
     } else {
-      if (data_nrow === this.rows.length - 1) {
-        modes.row = 'boundaries';
-      } else if (data_nrow === this.rows.length) {
-        modes.row = 'expand_one';
-      } else if (data_nrow === this.rows.length + 1) {
-        modes.row = 'expand_two';
+      if (nRows === this.rows.length - 1) {
+        this.modes.row = AxisMode.Boundaries;
+      } else if (nRows === this.rows.length) {
+        this.modes.row = AxisMode.ExpandOne;
+      } else if (nRows === this.rows.length + 1) {
+        this.modes.row = AxisMode.ExpandTwo;
       }
     }
-    if (column_scale.type === 'ordinal') {
-      modes.column = 'middle';
+    if (columnScale.type === 'ordinal') {
+      this.modes.column = AxisMode.Middle;
     } else {
-      if (data_ncol === this.columns.length - 1) {
-        modes.column = 'boundaries';
-      } else if (data_ncol === this.columns.length) {
-        modes.column = 'expand_one';
-      } else if (data_ncol === this.columns.length + 1) {
-        modes.column = 'expand_two';
+      if (nColumns === this.columns.length - 1) {
+        this.modes.column = AxisMode.Boundaries;
+      } else if (nColumns === this.columns.length) {
+        this.modes.column = AxisMode.ExpandOne;
+      } else if (nColumns === this.columns.length + 1) {
+        this.modes.column = AxisMode.ExpandTwo;
       }
     }
-    this.modes = modes;
   }
 
   static serializers = {
@@ -169,8 +196,6 @@ export class GridHeatMapModel extends MarkModel {
     color: serialize.array_or_json,
   };
 
-  colors: number[][];
-  rows: number[];
-  columns: number[];
-  modes: { column: string; row: string };
+  modes: { column: AxisMode; row: AxisMode };
+  mark_data: GridCellData[];
 }
