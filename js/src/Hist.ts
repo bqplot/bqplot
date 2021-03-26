@@ -15,7 +15,6 @@
 
 import * as _ from 'underscore';
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-array"), require("d3-selection"));
 // Hack to fix problem with webpack providing multiple d3 objects
 const d3GetEvent = function () {
   return require('d3-selection').event;
@@ -23,13 +22,14 @@ const d3GetEvent = function () {
 
 import * as utils from './utils';
 import { Mark } from './Mark';
-import { HistModel } from './HistModel';
+import { HistModel, BinData } from './HistModel';
 import { applyStyles } from './utils';
 
 export class Hist extends Mark {
-  render() {
+  async render() {
     const base_creation_promise = super.render();
-    this.selected_indices = this.calc_bar_indices_from_data_idx(
+
+    this.selected_indices = this.dataIndexToBarIndex(
       this.model.get('selected')
     );
     this.selected_style = this.model.get('selected_style');
@@ -37,19 +37,18 @@ export class Hist extends Mark {
 
     this.display_el_classes = ['rect', 'legendtext'];
 
-    const that = this;
     this.displayed.then(() => {
-      that.parent.tooltip_div.node().appendChild(that.tooltip_div.node());
-      that.create_tooltip();
+      this.parent.tooltip_div.node().appendChild(this.tooltip_div.node());
+      this.create_tooltip();
     });
 
-    return base_creation_promise.then(() => {
-      that.event_listeners = {};
-      that.process_interactions();
-      that.create_listeners();
-      that.draw();
-      that.update_selected(that.model, that.model.get('selected'));
-    });
+    await base_creation_promise;
+
+    this.event_listeners = {};
+    this.process_interactions();
+    this.create_listeners();
+    this.draw();
+    this.update_selected(this.model, this.model.get('selected'));
   }
 
   set_ranges() {
@@ -83,31 +82,22 @@ export class Hist extends Mark {
   create_listeners() {
     super.create_listeners();
     this.d3el
-      .on(
-        'mouseover',
-        _.bind(function () {
-          this.event_dispatcher('mouse_over');
-        }, this)
-      )
-      .on(
-        'mousemove',
-        _.bind(function () {
-          this.event_dispatcher('mouse_move');
-        }, this)
-      )
-      .on(
-        'mouseout',
-        _.bind(function () {
-          this.event_dispatcher('mouse_out');
-        }, this)
-      );
+      .on('mouseover', () => {
+        this.event_dispatcher('mouse_over');
+      })
+      .on('mousemove', () => {
+        this.event_dispatcher('mouse_move');
+      })
+      .on('mouseout', () => {
+        this.event_dispatcher('mouse_out');
+      });
 
     this.listenTo(this.model, 'change:tooltip', this.create_tooltip);
     this.listenTo(this.model, 'data_updated', this.draw);
-    this.listenTo(this.model, 'change:colors', this.update_colors);
+    this.listenTo(this.model, 'change:colors', this.updateColors);
     this.model.on_some_change(
       ['stroke', 'opacities'],
-      this.update_stroke_and_opacities,
+      this.updateStrokeAndOpacities,
       this
     );
     this.listenTo(this.model, 'change:selected', this.update_selected);
@@ -120,56 +110,58 @@ export class Hist extends Mark {
   process_click(interaction) {
     super.process_click(interaction);
     if (interaction === 'select') {
-      this.event_listeners.parent_clicked = this.reset_selection;
-      this.event_listeners.element_clicked = this.bar_click_handler;
+      this.event_listeners.parent_clicked = this.resetSelection;
+      this.event_listeners.element_clicked = this.barClickHandler;
     }
   }
 
-  update_colors() {
+  private updateColors() {
     this.d3el
       .selectAll('.bargroup')
       .selectAll('rect')
-      .style('fill', (d: any, i) => {
+      .style('fill', (d: BinData) => {
         return this.get_colors(d.index);
       });
     if (this.model.get('labels')) {
       this.d3el
         .selectAll('.bargroup')
         .selectAll('text')
-        .style('fill', (d, i) => {
-          return this.get_colors(i);
+        .style('fill', (d: BinData) => {
+          return this.get_colors(d.index);
         });
     }
     if (this.legend_el) {
-      this.legend_el.selectAll('rect').style('fill', (d, i) => {
-        return this.get_colors(i);
+      this.legend_el.selectAll('rect').style('fill', (d: BinData) => {
+        return this.get_colors(d.index);
       });
-      this.legend_el.selectAll('text').style('fill', (d, i) => {
-        return this.get_colors(i);
+      this.legend_el.selectAll('text').style('fill', (d: BinData) => {
+        return this.get_colors(d.index);
       });
     }
   }
 
-  update_stroke_and_opacities() {
+  private updateStrokeAndOpacities() {
     const stroke = this.model.get('stroke');
     const opacities = this.model.get('opacities');
     this.d3el
       .selectAll('.rect')
       .style('stroke', stroke)
-      .style('opacity', (d, i) => {
-        return opacities[i];
+      .style('opacity', (d: BinData) => {
+        return opacities[d.index];
       });
   }
 
-  calculate_bar_width() {
-    const x_scale = this.scales.sample;
-    let bar_width =
-      (x_scale.scale(this.model.max_x) - x_scale.scale(this.model.min_x)) /
-      this.model.num_bins;
-    if (bar_width >= 10) {
-      bar_width -= 2;
+  private computeBarWidth() {
+    const xScale = this.scales.sample;
+    let width =
+      (xScale.scale(this.model.maxX) - xScale.scale(this.model.minX)) /
+      this.model.bins;
+
+    if (width >= 10) {
+      width -= 2;
     }
-    return bar_width;
+
+    return width;
   }
 
   relayout() {
@@ -177,12 +169,18 @@ export class Hist extends Mark {
 
     const x_scale = this.scales.sample,
       y_scale = this.scales.count;
-    this.d3el.selectAll('.bargroup').attr('transform', (d: any) => {
-      return (
-        'translate(' + x_scale.scale(d.x0) + ',' + y_scale.scale(d.y) + ')'
-      );
-    });
-    const bar_width = this.calculate_bar_width();
+    this.d3el
+      .selectAll('.bargroup')
+      .attr('transform', (d: BinData, i: number) => {
+        return (
+          'translate(' +
+          x_scale.scale(d.bin.x0) +
+          ',' +
+          y_scale.scale(this.model.count[i]) +
+          ')'
+        );
+      });
+    const bar_width = this.computeBarWidth();
     this.d3el
       .selectAll('.bargroup')
       .select('rect')
@@ -190,23 +188,17 @@ export class Hist extends Mark {
       .duration(this.parent.model.get('animation_duration'))
       .attr('x', 2)
       .attr('width', bar_width)
-      .attr('height', (d: any) => {
-        return y_scale.scale(0) - y_scale.scale(d.y);
+      .attr('height', (d: BinData, i: number) => {
+        return y_scale.scale(0) - y_scale.scale(this.model.count[i]);
       });
   }
 
   draw() {
     this.set_ranges();
 
-    const indices = [];
-    this.model.mark_data.forEach((d, i) => {
-      indices.push(i);
-    });
-
     const x_scale = this.scales.sample,
       y_scale = this.scales.count;
-    const that = this;
-    const bar_width = this.calculate_bar_width();
+    const bar_width = this.computeBarWidth();
     let bar_groups: d3.Selection<any, any, any, any> = this.d3el
       .selectAll('.bargroup')
       .data(this.model.mark_data);
@@ -225,19 +217,23 @@ export class Hist extends Mark {
 
     bar_groups = bars_added.merge(bar_groups);
 
-    bar_groups.attr('transform', (d) => {
+    bar_groups.attr('transform', (d: BinData, i: number) => {
       return (
-        'translate(' + x_scale.scale(d.x0) + ',' + y_scale.scale(d.y) + ')'
+        'translate(' +
+        x_scale.scale(d.bin.x0) +
+        ',' +
+        y_scale.scale(this.model.count[i]) +
+        ')'
       );
     });
 
     bar_groups
       .select('.rect')
-      .style('fill', (d, i) => {
+      .style('fill', (d: BinData, i) => {
         return this.get_colors(d.index);
       })
       .on('click', (d, i) => {
-        return that.event_dispatcher('element_clicked', {
+        return this.event_dispatcher('element_clicked', {
           data: d,
           index: i,
         });
@@ -248,27 +244,31 @@ export class Hist extends Mark {
       .transition('draw')
       .duration(this.parent.model.get('animation_duration'))
       .attr('width', bar_width)
-      .attr('height', (d) => {
-        return y_scale.scale(0) - y_scale.scale(d.y);
+      .attr('height', (d: BinData, i: number) => {
+        return y_scale.scale(0) - y_scale.scale(this.model.count[i]);
       });
 
     //bin_pixels contains the pixel values of the start points of each
     //of the bins and the end point of the last bin.
-    this.bin_pixels = this.model.x_bins.map((el) => {
+    this.bin_pixels = this.model.xBins.map((el) => {
       return x_scale.scale(el) + x_scale.offset;
     });
     // pixel coords contains the [x0, x1] and [y0, y1] of each bin
-    this.pixel_coords = this.model.mark_data.map((d) => {
-      const x = x_scale.scale(d.x0);
-      return [[x, x + bar_width], [0, d.y].map(y_scale.scale)];
+    this.pixel_coords = this.model.mark_data.map((d, i) => {
+      const x: number = x_scale.scale(d.bin.x0);
+      const y0: number = y_scale.scale(0);
+      const y1: number = y_scale.scale(this.model.count[i]);
+      return [
+        [x, x + bar_width],
+        [y0, y1],
+      ];
     });
-    this.update_stroke_and_opacities();
+    this.updateStrokeAndOpacities();
   }
 
-  bar_click_handler(args) {
+  private barClickHandler(args) {
     const index = args.index;
     //code repeated from bars. We should unify the two.
-    const that = this;
     const idx = this.selected_indices;
     let selected: number[] = idx ? utils.deepCopy(idx) : [];
     // index of bar i. Checking if it is already present in the list.
@@ -292,7 +292,7 @@ export class Hist extends Mark {
         const max_index =
           selected.length !== 0
             ? d3.max(selected)
-            : that.model.mark_data.length;
+            : this.model.mark_data.length;
         if (index > max_index) {
           _.range(max_index + 1, index + 1).forEach((i) => {
             selected.push(i);
@@ -319,7 +319,7 @@ export class Hist extends Mark {
     this.selected_indices = selected;
     this.model.set(
       'selected',
-      selected.length === 0 ? null : this.calc_data_indices(selected),
+      selected.length === 0 ? null : this.computeDataIndices(selected),
       { updated_view: this }
     );
     this.touch();
@@ -339,7 +339,6 @@ export class Hist extends Mark {
       .selectAll('.legend' + this.uuid)
       .data([this.model.mark_data[0]]);
 
-    const that = this;
     const rect_dim = inter_y_disp * 0.8;
     const new_legend = this.legend_el
       .enter()
@@ -348,29 +347,20 @@ export class Hist extends Mark {
       .attr('transform', (d, i) => {
         return 'translate(0, ' + (i * inter_y_disp + y_disp) + ')';
       })
-      .on(
-        'mouseover',
-        _.bind(function () {
-          this.event_dispatcher('legend_mouse_over');
-        }, this)
-      )
-      .on(
-        'mouseout',
-        _.bind(function () {
-          this.event_dispatcher('legend_mouse_out');
-        }, this)
-      )
-      .on(
-        'click',
-        _.bind(function () {
-          this.event_dispatcher('legend_clicked');
-        }, this)
-      );
+      .on('mouseover', () => {
+        this.event_dispatcher('legend_mouse_over');
+      })
+      .on('mouseout', () => {
+        this.event_dispatcher('legend_mouse_out');
+      })
+      .on('click', () => {
+        this.event_dispatcher('legend_clicked');
+      });
 
     new_legend
       .append('rect')
       .style('fill', (d, i) => {
-        return that.get_colors(i);
+        return this.get_colors(i);
       })
       .attr('x', 0)
       .attr('y', 0)
@@ -384,10 +374,10 @@ export class Hist extends Mark {
       .attr('y', rect_dim / 2)
       .attr('dy', '0.35em')
       .text((d, i) => {
-        return that.model.get('labels')[i];
+        return this.model.get('labels')[i];
       })
       .style('fill', (d, i) => {
-        return that.get_colors(i);
+        return this.get_colors(i);
       });
 
     this.legend_el = new_legend.merge(this.legend_el);
@@ -401,7 +391,7 @@ export class Hist extends Mark {
   }
 
   update_selected(model, value) {
-    this.selected_indices = this.calc_bar_indices_from_data_idx(value);
+    this.selected_indices = this.dataIndexToBarIndex(value);
     this.apply_styles();
   }
 
@@ -420,8 +410,8 @@ export class Hist extends Mark {
   }
 
   set_default_style(indices, elements?) {
-    this.update_colors();
-    this.update_stroke_and_opacities();
+    this.updateColors();
+    this.updateStrokeAndOpacities();
   }
 
   set_style_on_elements(style, indices) {
@@ -451,7 +441,7 @@ export class Hist extends Mark {
       return;
     }
 
-    const bar_width = this.calculate_bar_width();
+    const bar_width = this.computeBarWidth();
 
     //adding "bar_width / 2.0" to bin_pixels as we need to select the
     //bar whose center is closest to the current location of the mouse.
@@ -459,7 +449,7 @@ export class Hist extends Mark {
       return Math.abs(elem + bar_width / 2.0 - pixel);
     });
     const sel_index = abs_diff.indexOf(d3.min(abs_diff));
-    this.model.set('selected', this.calc_data_indices([sel_index]));
+    this.model.set('selected', this.computeDataIndices([sel_index]));
     this.touch();
   }
 
@@ -474,14 +464,14 @@ export class Hist extends Mark {
     const selected_bins = indices.filter((index) => {
       return rect_selector(pixels[index]);
     });
-    this.model.set('selected', this.calc_data_indices(selected_bins));
+    this.model.set('selected', this.computeDataIndices(selected_bins));
     this.touch();
   }
 
-  calc_data_indices(indices) {
+  private computeDataIndices(indices) {
     //input is a list of indices corresponding to the bars. Output is
     //the list of indices in the data
-    const intervals = this.reduce_intervals(indices);
+    const intervals = this.reduceIntervals(indices);
     if (intervals.length === 0) {
       return [];
     }
@@ -501,7 +491,7 @@ export class Hist extends Mark {
     return selected;
   }
 
-  reduce_intervals(indices) {
+  private reduceIntervals(indices) {
     //for a series of indices, reduces them to the minimum possible
     //intervals on which the search can be performed.
     //return value is an array of arrays containing the start and end
@@ -516,43 +506,21 @@ export class Hist extends Mark {
           end_index++;
         } else {
           intervals.push([
-            this.model.x_bins[start_index],
-            this.model.x_bins[end_index + 1],
+            this.model.xBins[start_index],
+            this.model.xBins[end_index + 1],
           ]);
           start_index = end_index = indices[iter];
         }
       }
       intervals.push([
-        this.model.x_bins[start_index],
-        this.model.x_bins[end_index + 1],
+        this.model.xBins[start_index],
+        this.model.xBins[end_index + 1],
       ]);
     }
     return intervals;
   }
 
-  calc_data_indices_from_data_range(start_pixel, end_pixel) {
-    //Input is pixel values and output is the list of indices for which
-    //the `sample` value lies in the interval
-    const idx_start = d3.max([
-      0,
-      d3.bisectLeft(this.bin_pixels, start_pixel) - 1,
-    ]);
-    const idx_end = d3.min([
-      this.model.num_bins,
-      d3.bisectRight(this.bin_pixels, end_pixel),
-    ]);
-
-    const x_data = this.model.get('sample');
-    const that = this;
-    return _.filter(_.range(x_data.length), (iter) => {
-      return (
-        x_data[iter] >= that.model.x_bins[idx_start] &&
-        x_data[iter] <= that.model.x_bins[idx_end]
-      );
-    });
-  }
-
-  calc_bar_indices_from_data_idx(selected) {
+  private dataIndexToBarIndex(selected) {
     //function to calculate bar indices for a given list of data
     //indices
     if (selected === null) {
@@ -565,16 +533,16 @@ export class Hist extends Mark {
     });
     let bar_indices = [];
     for (let iter = 0; iter < data.length; iter++) {
-      //x_bins is of length num_bars+1. So if the max element is
+      //xBins is of length num_bars+1. So if the max element is
       //selected, we get a bar index which is equal to num_bars.
       let index = Math.min(
-        _.indexOf(this.model.x_bins, data[iter], true),
-        this.model.x_bins.length - 2
+        _.indexOf(this.model.xBins, data[iter], true),
+        this.model.xBins.length - 2
       );
       //if the data point is not one of the bins, then find the index
       //where it is to be inserted.
       if (index === -1) {
-        index = _.sortedIndex(this.model.x_bins, data[iter]) - 1;
+        index = _.sortedIndex(this.model.xBins, data[iter]) - 1;
       }
       bar_indices.push(index);
     }
@@ -583,7 +551,7 @@ export class Hist extends Mark {
     return bar_indices;
   }
 
-  reset_selection() {
+  private resetSelection() {
     this.selected_indices = [];
     this.model.set('selected', null);
     this.touch();
@@ -594,7 +562,7 @@ export class Hist extends Mark {
   selected_indices: number[];
   legend_el: d3.Selection<SVGGElement, any, any, any>;
   bin_pixels: number[];
-  pixel_coords: number[][];
+  pixel_coords: [number[], number[]][];
 
   model: HistModel;
 }
