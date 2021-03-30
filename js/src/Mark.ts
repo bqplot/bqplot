@@ -217,13 +217,7 @@ export abstract class Mark extends widgets.WidgetView {
   }
 
   get_mark_color(data, index) {
-    const colorScale = this.scales.color;
-
-    if (colorScale && data.color !== undefined && data.color !== null) {
-      return colorScale.scale(data.color);
-    }
-
-    return this.get_colors(index);
+    return 'blue';
   }
 
   get_mark_opacity(data, index) {
