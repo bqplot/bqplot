@@ -1,0 +1,19 @@
+{
+  "name": "bqplot-ui-tests",
+  "version": "1.0.0",
+  "description": "bqplot UI Tests",
+  "private": true,
+  "scripts": {
+    "start-jlab": "jupyter lab --config ./jupyter_server_config.py",
+    "start-jlab:detached": "npm run start-jlab&",
+    "test": "rimraf tests/notebooks/.ipynb_checkpoints && galata",
+    "update-references": "galata --update-references"
+  },
+  "author": "bqplot",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@jupyterlab/galata": "3.0.3-3",
+    "klaw-sync": "^6.0.0",
+    "rimraf": "^3.0.2"
+  }
+}
