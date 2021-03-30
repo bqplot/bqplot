@@ -111,6 +111,7 @@ jobs:
 
   visual-regression-tests:
     runs-on: ubuntu-latest
+    container: docker://dvcorg/cml-py3:latest
     needs: [build]
 
     steps:
@@ -160,6 +161,15 @@ jobs:
         with:
           name: ui-test-output
           path: ui-tests/test-output
+
+      - name: Publish failure message
+        if: failure()
+        run: |
+          echo "## Visual Regression detected" > report.md
+
+          find ../../ui-tests/test-output/test/screenshots/diff -iname '*.png' -exec cml-publish {} --md >> report.md \;
+
+          cml-send-comment report.md
 
   install:
     runs-on: ${{ matrix.os }}-latest
