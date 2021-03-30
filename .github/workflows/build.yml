@@ -164,6 +164,8 @@ jobs:
 
       - name: Publish failure message
         if: failure()
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "## Visual Regression detected" > report.md
 
