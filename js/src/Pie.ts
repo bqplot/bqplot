@@ -668,11 +668,11 @@ export class Pie extends Mark {
       this.model.get('inner_radius'),
     ]);
 
-    const x_padding = scales.x ? r + 1 : 0;
-    const y_padding = scales.y ? r + 1 : 0;
-    if (x_padding !== this.x_padding || y_padding !== this.y_padding) {
-      this.x_padding = x_padding;
-      this.y_padding = y_padding;
+    const xPadding = scales.x ? r + 1 : 0;
+    const yPadding = scales.y ? r + 1 : 0;
+    if (xPadding !== this.xPadding || yPadding !== this.yPadding) {
+      this.xPadding = xPadding;
+      this.yPadding = yPadding;
       this.trigger('mark_padding_updated');
     }
   }

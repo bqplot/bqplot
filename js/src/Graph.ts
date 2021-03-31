@@ -589,15 +589,15 @@ export class Graph extends Mark {
   }
 
   compute_view_padding() {
-    const x_padding = d3.max<number>(
-      this.model.mark_data.map((d) => {
+    const xPadding = d3.max<number>(
+      this.model.mark_data.map(function (d) {
         return (
           (d.shape_attrs.r || d.shape_attrs.width / 2 || d.shape_attrs.rx) + 1.0
         );
       })
     );
 
-    const y_padding = d3.max<number>(
+    const yPadding = d3.max<number>(
       this.model.mark_data.map((d) => {
         return (
           (d.shape_attrs.r || d.shape_attrs.height / 2 || d.shape_attrs.ry) +
@@ -606,9 +606,9 @@ export class Graph extends Mark {
       })
     );
 
-    if (x_padding !== this.x_padding || y_padding !== this.y_padding) {
-      this.x_padding = x_padding;
-      this.y_padding = x_padding;
+    if (xPadding !== this.xPadding || yPadding !== this.yPadding) {
+      this.xPadding = xPadding;
+      this.yPadding = xPadding;
       this.trigger('mark_padding_updated');
     }
   }

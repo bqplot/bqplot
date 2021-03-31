@@ -965,7 +965,7 @@ export class Bars extends Mark {
     // mark.
     const domScale = this.domScale;
     const orient = this.model.get('orientation');
-    let x_padding = 0;
+    let xPadding = 0;
     const avail_space =
       orient === 'vertical'
         ? this.parent.plotarea_width
@@ -978,14 +978,14 @@ export class Bars extends Mark {
       ) {
         if (!(domScale instanceof OrdinalScale)) {
           if (this.align === 'center') {
-            x_padding =
+            xPadding =
               avail_space / (2.0 * this.stackedScale.domain().length) + 1;
           } else if (this.align === 'left' || this.align === 'right') {
-            x_padding = avail_space / this.stackedScale.domain().length + 1;
+            xPadding = avail_space / this.stackedScale.domain().length + 1;
           }
         } else {
           if (this.align === 'left' || this.align === 'right') {
-            x_padding = parseFloat(
+            xPadding = parseFloat(
               (this.stackedScale.bandwidth() / 2).toFixed(2)
             );
           }
@@ -993,14 +993,14 @@ export class Bars extends Mark {
       }
     }
     if (orient === 'vertical') {
-      if (x_padding !== this.x_padding) {
-        this.x_padding = x_padding;
+      if (xPadding !== this.xPadding) {
+        this.xPadding = xPadding;
         this.trigger('mark_padding_updated');
         //dispatch the event
       }
     } else {
-      if (x_padding !== this.y_padding) {
-        this.y_padding = x_padding;
+      if (xPadding !== this.yPadding) {
+        this.yPadding = xPadding;
         this.trigger('mark_padding_updated');
         //dispatch the event
       }

@@ -111,9 +111,8 @@ export class Figure extends widgets.DOMWidgetView {
     // If there is no restriction on the plottable area of the figure,
     // then these two variables are the maximum of the values in the
     // corresponding variables x_pad_dict, y_pad_dict.
-    this.x_padding_arr = {};
-    this.y_padding_arr = {};
-
+    this.xPaddingArr = {};
+    this.yPaddingArr = {};
     this.figure_padding_x = this.model.get('padding_x');
     this.figure_padding_y = this.model.get('padding_y');
     this.clip_id = 'clip_path_' + this.id;
@@ -349,7 +348,7 @@ export class Figure extends widgets.DOMWidgetView {
   replace_dummy_nodes(views) {
     _.each(
       views,
-      function (view: any) {
+      (view: any) => {
         // It could be that the dummy node is removed before we got a change to replace it
         // This happens when the marks list is changed rapidly
         if (view.dummy_node !== null && view.dummy_node.parentNode) {
@@ -450,8 +449,8 @@ export class Figure extends widgets.DOMWidgetView {
 
     if (direction === 'x') {
       const scale_padding =
-        this.x_padding_arr[scale_id] !== undefined
-          ? this.x_padding_arr[scale_id]
+        this.xPaddingArr[scale_id] !== undefined
+          ? this.xPaddingArr[scale_id]
           : 0;
       const fig_padding = this.plotarea_width * this.figure_padding_x;
       return [
@@ -460,8 +459,8 @@ export class Figure extends widgets.DOMWidgetView {
       ];
     } else if (direction === 'y') {
       const scale_padding =
-        this.y_padding_arr[scale_id] !== undefined
-          ? this.y_padding_arr[scale_id]
+        this.yPaddingArr[scale_id] !== undefined
+          ? this.yPaddingArr[scale_id]
           : 0;
       const fig_padding = this.plotarea_height * this.figure_padding_y;
       return [
@@ -485,9 +484,7 @@ export class Figure extends widgets.DOMWidgetView {
     }
     const scale_id = scale_model.model_id;
     const scale_padding =
-      this.y_padding_arr[scale_id] !== undefined
-        ? this.y_padding_arr[scale_id]
-        : 0;
+      this.yPaddingArr[scale_id] !== undefined ? this.yPaddingArr[scale_id] : 0;
     return (
       this.plotarea_height * (1 - this.figure_padding_y) -
       scale_padding -
@@ -502,9 +499,7 @@ export class Figure extends widgets.DOMWidgetView {
 
     const scale_id = scale_model.model_id;
     const scale_padding =
-      this.x_padding_arr[scale_id] !== undefined
-        ? this.x_padding_arr[scale_id]
-        : 0;
+      this.xPaddingArr[scale_id] !== undefined ? this.xPaddingArr[scale_id] : 0;
     return (
       this.plotarea_width * (1 - this.figure_padding_x) -
       scale_padding -
@@ -564,13 +559,13 @@ export class Figure extends widgets.DOMWidgetView {
       this.x_pad_dict,
       view,
       scale_models[model.get_key_for_orientation('horizontal')],
-      view.x_padding
+      view.xPadding
     );
     this.update_padding_dict(
       this.y_pad_dict,
       view,
       scale_models[model.get_key_for_orientation('vertical')],
-      view.y_padding
+      view.yPadding
     );
 
     this.update_paddings();
@@ -584,13 +579,13 @@ export class Figure extends widgets.DOMWidgetView {
       this.x_pad_dict,
       view,
       scale_models[model.get_key_for_orientation('horizontal')],
-      view.x_padding
+      view.xPadding
     );
     this.update_padding_dict(
       this.y_pad_dict,
       view,
       scale_models[model.get_key_for_orientation('vertical')],
-      view.y_padding
+      view.yPadding
     );
 
     this.update_paddings();
@@ -665,13 +660,13 @@ export class Figure extends widgets.DOMWidgetView {
           this.x_pad_dict,
           view,
           child_x_scale,
-          view.x_padding
+          view.xPadding
         );
         this.update_padding_dict(
           this.y_pad_dict,
           view,
           child_y_scale,
-          view.y_padding
+          view.yPadding
         );
 
         // If the mark needs a WebGL renderer, we create it
@@ -696,10 +691,10 @@ export class Figure extends widgets.DOMWidgetView {
   update_paddings() {
     // Iterate over the paddings of the marks for each scale and store
     // the maximum padding for each scale on the X and Y in
-    // x_padding_arr and y_padding_arr
+    // xPaddingArr and yPaddingArr
 
-    this.x_padding_arr = {};
-    this.y_padding_arr = {};
+    this.xPaddingArr = {};
+    this.yPaddingArr = {};
 
     const that = this;
     _.forEach(this.x_pad_dict, (dict: any, scale_id) => {
@@ -707,7 +702,7 @@ export class Figure extends widgets.DOMWidgetView {
       _.forEach(dict, (value: number, key) => {
         max = Math.max(max, value);
       });
-      that.x_padding_arr[scale_id] = max;
+      that.xPaddingArr[scale_id] = max;
     });
 
     _.forEach(this.y_pad_dict, (dict: any, scale_id) => {
@@ -715,7 +710,7 @@ export class Figure extends widgets.DOMWidgetView {
       _.forEach(dict, (value: number, key) => {
         max = Math.max(max, value);
       });
-      that.y_padding_arr[scale_id] = max;
+      that.yPaddingArr[scale_id] = max;
     });
     // This is for the figure to relayout everything to account for the
     // updated margins.
@@ -985,11 +980,11 @@ export class Figure extends widgets.DOMWidgetView {
   get_svg() {
     // Returns the outer html of the figure svg
 
-    const replaceAll = function (find, replace, str) {
+    const replaceAll = (find, replace, str) => {
       return str.replace(new RegExp(find, 'g'), replace);
     };
 
-    const get_css = function (node, regs) {
+    const get_css = (node, regs) => {
       /**
        * Gathers all the css rules applied to elements of the svg
        * node. Removes the parent element selectors specified in
@@ -1262,12 +1257,13 @@ export class Figure extends widgets.DOMWidgetView {
   tooltip_div: d3.Selection<HTMLDivElement, any, any, any>;
   width: number;
   x_pad_dict: { [id: string]: number };
-  x_padding_arr: { [id: string]: number };
+  xPaddingArr: { [id: string]: number };
   y_pad_dict: { [id: string]: number };
-  y_padding_arr: { [id: string]: number };
+  yPaddingArr: { [id: string]: number };
 
   private _update_requested: boolean;
-  private relayoutRequested = false;
+  private relayoutRequested: boolean = false;
+
   // this is public for the test framework, but considered a private API
   public _initial_marks_created: Promise<any>;
   private _initial_marks_created_resolve: Function;

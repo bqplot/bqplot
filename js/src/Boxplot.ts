@@ -167,10 +167,10 @@ export class Boxplot extends Mark {
 
   compute_view_padding() {
     //This function sets the padding for the view through the constiables
-    //x_padding and y_padding which are view specific paddings in pixel
-    const x_padding = this.getBoxWidth() / 2.0 + 1;
-    if (x_padding !== this.x_padding) {
-      this.x_padding = x_padding;
+    //xPadding and y_padding which are view specific paddings in pixel
+    const xPadding = this.getBoxWidth() / 2.0 + 1;
+    if (xPadding !== this.xPadding) {
+      this.xPadding = xPadding;
       this.trigger('mark_padding_updated');
     }
   }

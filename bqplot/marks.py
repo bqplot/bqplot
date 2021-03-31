@@ -390,6 +390,7 @@ class Lines(Mark):
     line_style = Enum(['solid', 'dashed', 'dotted', 'dash_dotted'],
                       default_value='solid')\
         .tag(sync=True, display_name='Line style')
+    # TODO: Only Lines have interpolatoin but we can extend for other types of graphs
     interpolation = Enum(['linear', 'basis', 'basis-open',
                           'basis-closed', 'bundle',
                           'cardinal', 'cardinal-open',

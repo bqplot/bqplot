@@ -604,11 +604,11 @@ export abstract class ScatterBase extends Mark {
   compute_view_padding() {
     //This function computes the padding along the x and y directions.
     //The value is in pixels.
-    const x_padding = Math.sqrt(this.model.get('default_size')) / 2 + 1.0;
+    const xPadding = Math.sqrt(this.model.get('default_size')) / 2 + 1.0;
 
-    if (x_padding !== this.x_padding || x_padding !== this.y_padding) {
-      this.x_padding = x_padding;
-      this.y_padding = x_padding;
+    if (xPadding !== this.xPadding || xPadding !== this.yPadding) {
+      this.xPadding = xPadding;
+      this.yPadding = xPadding;
       this.trigger('mark_padding_updated');
     }
   }

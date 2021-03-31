@@ -69,6 +69,7 @@ If you are using JupyterLab <=2:
 $ jupyter labextension install @jupyter-widgets/jupyterlab-manager bqplot
 ```
 
+##### Development installation
 
 For a development installation (requires JupyterLab (version >= 3) and yarn):
 
@@ -99,6 +100,32 @@ yarn run build
 ```
 
 Then refreshing the JupyterLab/Jupyter Notebook is enough to reload the changes.
+
+##### Running tests
+
+You can install the dependencies necessary to run the tests with:
+
+```bash
+    conda env update -f test-environment.yml
+```
+
+And run it with for Python tests:
+
+```bash
+    pytest
+```
+
+And `cd js` to run the JS tests with:
+
+```bash
+yarn run test
+```
+
+Every time you make a change on your tests it's necessary to rebuild the JS side:
+
+```bash
+yarn run build
+```
 
 ## Examples
 
