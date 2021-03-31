@@ -5,7 +5,7 @@ import { galata, describe, test } from '@jupyterlab/galata';
 import * as path from 'path';
 const klaw = require('klaw-sync');
 
-jest.setTimeout(100000);
+jest.setTimeout(600000);
 
 const filterUpdateNotebooks = item => {
   const basename = path.basename(item.path);

@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "start-jlab": "jupyter lab --config ./jupyter_server_config.py",
-    "start-jlab:detached": "npm run start-jlab&",
-    "test": "rimraf tests/notebooks/.ipynb_checkpoints && galata",
+    "start-jlab:detached": "yarn run start-jlab&",
+    "clean": "rimraf tests/notebooks/.ipynb_checkpoints && rimraf test-output",
+    "test": "yarn run clean && galata --image-match-threshold 0.25",
     "update-references": "galata --update-references"
   },
   "author": "bqplot",
