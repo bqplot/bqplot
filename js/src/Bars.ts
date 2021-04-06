@@ -999,7 +999,8 @@ export class Bars extends Mark {
         //dispatch the event
       }
     } else {
-      if (x_padding !== this.y_padding) {
+      if (x_padding !== this.y_padding)
+      {
         this.y_padding = x_padding;
         this.trigger('mark_padding_updated');
         //dispatch the event
