@@ -32,8 +32,7 @@ jobs:
         channels: conda-forge
 
     - name: Install the package
-      run: |
-        pip install .
+      run: pip install .
 
     - name: Test installation files
       run: |
@@ -43,7 +42,6 @@ jobs:
         test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot
         test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
         test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
-
 
     - name: Validate the nbextension
       run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
@@ -57,8 +55,18 @@ jobs:
     - name: JavaScript prettyfier
       run: |
         yarn install
-        yarn run prettier --check .
+        if ! yarn run prettier --check . ; then
+          yarn run prettify
+          exit 1
+        fi
       working-directory: js
+
+    - name: Commit pretty code
+      if: failure()
+      uses: EndBug/add-and-commit@v7
+      with:
+        add: 'js/src'
+        message: 'Prettify TypeScript'
 
     - name: Python tests
       run: pytest tests examples/Marks
