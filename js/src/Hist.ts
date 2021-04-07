@@ -235,7 +235,7 @@ export class Hist extends Mark {
       .on('click', (d, i) => {
         return this.event_dispatcher('element_clicked', {
           data: d,
-          index: i,
+          index: d.index,
         });
       })
       .attr('id', (d, i) => {
@@ -491,30 +491,37 @@ export class Hist extends Mark {
     return selected;
   }
 
-  private reduceIntervals(indices) {
+  private reduceIntervals(indices: number[]) {
     //for a series of indices, reduces them to the minimum possible
     //intervals on which the search can be performed.
     //return value is an array of arrays containing the start and end
     //points of the intervals represented by the indices.
     const intervals = [];
+    const nBins = this.model.bins;
+    const barWidth = (this.model.maxX - this.model.minX) / this.model.bins;
+
     if (indices.length !== 0) {
       indices.sort();
-      let start_index = indices[0];
-      let end_index = indices[0];
+      let start = indices[0];
+      let end = indices[0];
       for (let iter = 1; iter < indices.length; iter++) {
-        if (indices[iter] === end_index + 1) {
-          end_index++;
+        if (indices[iter] === end + 1) {
+          end++;
         } else {
           intervals.push([
-            this.model.xBins[start_index],
-            this.model.xBins[end_index + 1],
+            this.model.xBins[start],
+            end + 1 == nBins
+              ? this.model.xBins[nBins - 1] + barWidth
+              : this.model.xBins[end + 1],
           ]);
-          start_index = end_index = indices[iter];
+          start = end = indices[iter];
         }
       }
       intervals.push([
-        this.model.xBins[start_index],
-        this.model.xBins[end_index + 1],
+        this.model.xBins[start],
+        end + 1 == nBins
+          ? this.model.xBins[nBins - 1] + barWidth
+          : this.model.xBins[end + 1],
       ]);
     }
     return intervals;
