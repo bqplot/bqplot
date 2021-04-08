@@ -24,7 +24,9 @@ import { WidgetView } from '@jupyter-widgets/base';
 import { applyAttrs, applyStyles } from './utils';
 import { Scale } from './Scale';
 
-THREE.ShaderChunk['scales'] = require('../shaders/scales.glsl').default;
+THREE.ShaderChunk[
+  'scales'
+] = require('raw-loader!../shaders/scales.glsl').default;
 
 interface IFigureSize {
   width: number;

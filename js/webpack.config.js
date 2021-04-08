@@ -32,7 +32,6 @@ const rules = [
     test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
     use: 'url?limit=10000&mimetype=image/svg+xml',
   },
-  { test: /\.glsl$/, use: 'raw-loader' },
 ];
 
 module.exports = [
