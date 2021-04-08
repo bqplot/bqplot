@@ -775,7 +775,7 @@ export class Lines extends Mark {
       curve
         .selectAll('.dot')
         .style('opacity', opacities[i])
-        .style('fill:', that.get_mark_color(d, i) || fillColor[i]);
+        .style('fill', that.get_mark_color(d, i) || fillColor[i]);
     });
   }
 
