@@ -9,6 +9,25 @@ describe('lines >', () => {
     this.manager = new DummyManager({ bqplot: bqplot });
   });
 
+  it('model mark set methods', async function () {
+    const x = {
+      dtype: 'float32',
+      value: new DataView(new Float32Array([0, 1]).buffer),
+    };
+    const y = {
+      dtype: 'float32',
+      value: new DataView(new Float32Array([2, 3]).buffer),
+    };
+    const objects = await create_figure_lines(this.manager, x, y);
+    const lines = objects.lines;
+    lines.model.set('marker_size', 7);
+    lines.model.set('marker', 'circle');
+    lines.model.set('stroke_width', 3);
+    lines.model.set('labels_visibility', 'label');
+    lines.model.set('curves_subset', [2, 4, 5]);
+    lines.model.set('line_style', 'solid');
+  });
+
   it('create 1d ordinal', async function () {
     const x = ['a', 'b'];
     const scale_x = await create_model_bqplot(
@@ -202,6 +221,7 @@ describe('lines >', () => {
       .map((el) => el.getAttribute('d'));
     const width = objects.figure.plotarea_width;
     const height = objects.figure.plotarea_height;
+
     expect(paths).to.deep.equal([
       `M0,${height}L${width / 2},${height}L${width},0`,
       `M0,${height}L${width / 2},${height / 2}L${width},0`,

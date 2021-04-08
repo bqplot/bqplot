@@ -46,8 +46,8 @@ export abstract class Mark extends widgets.WidgetView {
   }
 
   render() {
-    this.x_padding = 0;
-    this.y_padding = 0;
+    this.xPadding = 0;
+    this.yPadding = 0;
     this.parent = this.options.parent;
     this.uuid = widgets.uuid();
     const scale_creation_promise = this.set_scale_views();
@@ -210,13 +210,13 @@ export abstract class Mark extends widgets.WidgetView {
     this.d3el.style('display', visible ? 'inline' : 'none');
   }
 
-  get_colors(index) {
+  get_colors(index): string {
     // cycles over the list of colors when too many items
     const colors = this.model.get('colors');
     return colors[index % colors.length];
   }
 
-  get_mark_color(data, index) {
+  get_mark_color(data, index): string {
     const colorScale = this.scales.color;
 
     if (colorScale && data.color !== undefined && data.color !== null) {
@@ -295,7 +295,7 @@ export abstract class Mark extends widgets.WidgetView {
 
   /**
    * This function sets the x and y view paddings for the mark using the
-   * variables x_padding and y_padding
+   * variables xPadding and yPadding
    */
   abstract compute_view_padding();
 
@@ -543,6 +543,24 @@ export abstract class Mark extends widgets.WidgetView {
     return _.compact(hit_check).length > 0;
   }
 
+  // For backward-compatibility with bqplot plugins
+  // TODO Remove it when we make a backward-incompatible release
+  set x_padding(value: number) {
+    this.xPadding = value;
+  }
+
+  get x_padding(): number {
+    return this.xPadding;
+  }
+
+  set y_padding(value: number) {
+    this.yPadding = value;
+  }
+
+  get y_padding(): number {
+    return this.yPadding;
+  }
+
   bisect: (x: number[], y: number) => number;
   d3el: d3.Selection<HTMLElement, any, any, any>;
   display_el_classes: string[];
@@ -580,9 +598,8 @@ export abstract class Mark extends widgets.WidgetView {
   tooltip_view: widgets.DOMWidgetView;
   unselected_style: { [key: string]: string };
   uuid: string;
-  x_padding: number;
-  y_padding: number;
-
+  xPadding: number;
+  yPadding: number;
   // Overriding super class
   model: MarkModel;
 }

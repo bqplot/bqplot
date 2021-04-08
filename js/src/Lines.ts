@@ -15,6 +15,7 @@
 
 import * as _ from 'underscore';
 import * as d3 from 'd3';
+import * as d3Shape from 'd3-shape';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-shape"), require("d3-transition"));
 import { Mark } from './Mark';
 import { LinesModel } from './LinesModel';
@@ -25,8 +26,8 @@ import * as markers from './Markers';
 const bqSymbol = markers.symbol;
 
 export class Lines extends Mark {
-  render() {
-    const base_render_promise = super.render();
+  async render() {
+    const baseRenderPromise = super.render();
     this.dot = bqSymbol().size(this.model.get('marker_size'));
     if (this.model.get('marker')) {
       this.dot.type(this.model.get('marker'));
@@ -42,69 +43,70 @@ export class Lines extends Mark {
     });
 
     this.display_el_classes = ['line', 'legendtext', 'dot'];
-    return base_render_promise.then(() => {
-      this.event_listeners = {};
-      this.process_interactions();
-      this.create_listeners();
-      this.compute_view_padding();
-      this.draw(false);
-    });
+
+    await baseRenderPromise;
+
+    this.event_listeners = {};
+    this.process_interactions();
+    this.create_listeners();
+    this.compute_view_padding();
+    this.draw(false);
   }
 
-  set_ranges() {
-    const x_scale = this.scales.x;
-    if (x_scale) {
-      x_scale.set_range(this.parent.padded_range('x', x_scale.model));
+  set_ranges(): void {
+    const xScale = this.scales.x;
+    if (xScale) {
+      xScale.set_range(this.parent.padded_range('x', xScale.model));
     }
-    const y_scale = this.scales.y;
-    if (y_scale) {
-      y_scale.set_range(this.parent.padded_range('y', y_scale.model));
+    const yScale = this.scales.y;
+    if (yScale) {
+      yScale.set_range(this.parent.padded_range('y', yScale.model));
     }
   }
 
-  set_positional_scales() {
-    const x_scale = this.scales.x,
-      y_scale = this.scales.y;
-    this.listenTo(x_scale, 'domain_changed', function () {
+  set_positional_scales(): void {
+    const xScale = this.scales.x,
+      yScale = this.scales.y;
+    this.listenTo(xScale, 'domain_changed', function () {
       if (!this.model.dirty) {
         this.update_line_xy();
       }
     });
-    this.listenTo(y_scale, 'domain_changed', function () {
+    this.listenTo(yScale, 'domain_changed', function () {
       if (!this.model.dirty) {
         this.update_line_xy();
       }
     });
   }
 
-  initialize_additional_scales() {
-    const color_scale = this.scales.color;
-    if (color_scale) {
-      this.listenTo(color_scale, 'domain_changed', function () {
+  initialize_additional_scales(): void {
+    const colorScale = this.scales.color;
+    if (colorScale) {
+      this.listenTo(colorScale, 'domain_changed', function () {
         this.update_style();
       });
-      color_scale.on('color_scale_range_changed', this.update_style, this);
+      colorScale.on('color_scale_range_changed', this.update_style, this);
     }
   }
 
-  create_listeners() {
+  create_listeners(): void {
     super.create_listeners();
     this.d3el
       .on(
         'mouseover',
-        _.bind(function () {
+        _.bind(() => {
           this.event_dispatcher('mouse_over');
         }, this)
       )
       .on(
         'mousemove',
-        _.bind(function () {
+        _.bind(() => {
           this.event_dispatcher('mouse_move');
         }, this)
       )
       .on(
         'mouseout',
-        _.bind(function () {
+        _.bind(() => {
           this.event_dispatcher('mouse_out');
         }, this)
       );
@@ -149,7 +151,7 @@ export class Lines extends Mark {
     this.listenTo(this.model, 'change:marker_size', this.update_marker_size);
   }
 
-  update_legend_labels() {
+  update_legend_labels(): void {
     if (this.model.get('labels_visibility') === 'none') {
       this.d3el.selectAll('.legend').attr('display', 'none');
       this.d3el.selectAll('.curve_label').attr('display', 'none');
@@ -162,7 +164,7 @@ export class Lines extends Mark {
     }
   }
 
-  update_labels() {
+  update_labels(): void {
     this.d3el
       .selectAll('.curve')
       .data(this.model.mark_data)
@@ -172,7 +174,7 @@ export class Lines extends Mark {
       });
   }
 
-  get_line_style() {
+  get_line_style(): string {
     switch (this.model.get('line_style')) {
       case 'solid':
         return 'none';
@@ -188,83 +190,82 @@ export class Lines extends Mark {
   // Updating the style of the curve, stroke, colors, dashed etc...
   // Could be fused in a single function for increased readability
   // and to avoid code repetition
-  update_line_style() {
+  update_line_style(): void {
     this.d3el
       .selectAll('.curve')
       .select('.line')
       .style('stroke-dasharray', _.bind(this.get_line_style, this));
-    if (this.legend_el) {
-      this.legend_el
+    if (this.legendEl) {
+      this.legendEl
         .select('path')
         .style('stroke-dasharray', _.bind(this.get_line_style, this));
     }
   }
 
-  update_stroke_width(model, stroke_width) {
+  update_stroke_width(model, strokeWidth): void {
     this.compute_view_padding();
     this.d3el
       .selectAll('.curve')
       .select('.line')
-      .style('stroke-width', stroke_width);
-    if (this.legend_el) {
-      this.legend_el.select('path').style('stroke-width', stroke_width);
+      .style('stroke-width', strokeWidth);
+    if (this.legendEl) {
+      this.legendEl.select('path').style('stroke-width', strokeWidth);
     }
   }
 
-  update_style() {
-    const that = this,
-      fill = this.model.get('fill'),
-      fill_color = this.model.get('fill_colors'),
-      fill_opacities = this.model.get('fill_opacities');
+  update_style(): void {
+    const fill = this.model.get('fill'),
+      fillColor = this.model.get('fill_colors'),
+      fillOpacities = this.model.get('fill_opacities');
     // update curve colors
     const curves = this.d3el.selectAll('.curve');
     curves
       .select('.line')
       .style('opacity', this.get_mark_opacity.bind(this))
       .style('stroke', (d, i) => {
-        return that.get_mark_color(d, i) || fill_color[i];
+        return this.get_mark_color(d, i) || fillColor[i];
       })
       .style('fill', (d, i) => {
-        return fill === 'inside' ? that.get_fill_color(d, i) : '';
+        return fill === 'inside' ? this.get_fill_color(d, i) : '';
       })
       .style('fill-opacity', (d, i) => {
-        return fill === 'inside' ? fill_opacities[i] : '';
+        return fill === 'inside' ? fillOpacities[i] : '';
       });
     curves
       .select('.area')
       .style('fill', (d, i) => {
-        return that.get_fill_color(d, i);
+        return this.get_fill_color(d, i);
       })
       .style('opacity', (d, i) => {
-        return fill_opacities[i];
+        return fillOpacities[i];
       });
     this.update_marker_style();
     // update legend style
-    if (this.legend_el) {
-      this.legend_el
+    if (this.legendEl) {
+      this.legendEl
         .select('.line')
         .style('stroke', (d, i) => {
-          return that.get_mark_color(d, i) || fill_color[i];
+          return this.get_mark_color(d, i) || fillColor[i];
         })
         .style('opacity', this.get_mark_opacity.bind(this))
         .style('fill', (d, i) => {
-          return that.model.get('fill') === 'none'
+          return this.model.get('fill') === 'none'
             ? ''
-            : that.get_fill_color(d, i);
+            : this.get_fill_color(d, i);
         });
-      this.legend_el
+      this.legendEl
         .select('.dot')
         .style('stroke', (d, i) => {
-          return that.get_mark_color(d, i) || fill_color[i];
+          return this.get_mark_color(d, i) || fillColor[i];
         })
         .style('opacity', this.get_mark_opacity.bind(this))
         .style('fill', (d, i) => {
-          return that.get_mark_color(d, i) || fill_color[i];
+          return this.get_mark_color(d, i) || fillColor[i];
         });
-      this.legend_el
+      this.legendEl
         .select('text')
         .style('fill', (d, i) => {
-          return that.get_mark_color(d, i) || fill_color[i];
+          return this.get_mark_color(d, i) || fillColor[i];
         })
         .style('opacity', this.get_mark_opacity.bind(this));
     }
@@ -272,20 +273,19 @@ export class Lines extends Mark {
     this.update_line_style();
   }
 
-  path_closure() {
+  path_closure(): string {
     return this.model.get('close_path') ? 'Z' : '';
   }
 
-  update_path_style() {
+  update_path_style(): void {
     const interpolation = this.get_interpolation();
     this.line.curve(interpolation);
     this.area.curve(interpolation);
-    const that = this;
     this.d3el
       .selectAll('.curve')
       .select('.line')
       .attr('d', (d: any) => {
-        return that.line(d.values) + that.path_closure();
+        return this.line(d.values) + this.path_closure();
       });
     this.d3el
       .selectAll('.curve')
@@ -293,40 +293,37 @@ export class Lines extends Mark {
       .transition('update_path_style')
       .duration(0) //FIXME
       .attr('d', (d: any) => {
-        return that.area(d.values);
+        return this.area(d.values);
       });
-    if (this.legend_el) {
-      this.legend_line.curve(interpolation);
-      this.legend_el
+    if (this.legendEl) {
+      this.legendLine.curve(interpolation);
+      this.legendEl
         .selectAll('path')
-        .attr(
-          'd',
-          this.legend_line(this.legend_path_data) + this.path_closure()
-        );
+        .attr('d', this.legendLine(this.legendPathData) + this.path_closure());
     }
   }
 
-  relayout() {
+  relayout(): void {
     this.set_ranges();
     this.update_line_xy(false);
   }
 
-  selector_changed(point_selector, rect_selector) {
-    if (point_selector === undefined) {
+  selector_changed(pointSelector, rectSelector): [] {
+    if (pointSelector === undefined) {
       this.model.set('selected', null);
       this.touch();
       return [];
     }
-    const pixels = this.pixel_coords;
+    const pixels = this.pixelCoords;
     const indices = new Uint32Array(_.range(pixels.length));
     const selected = indices.filter((index) => {
-      return point_selector(pixels[index]);
+      return pointSelector(pixels[index]);
     });
     this.model.set('selected', selected);
     this.touch();
   }
 
-  invert_point(pixel) {
+  invert_point(pixel): void {
     if (pixel === undefined) {
       this.model.set('selected', null);
       this.touch();
@@ -334,43 +331,41 @@ export class Lines extends Mark {
     }
 
     const index = Math.min(
-      this.bisect(this.x_pixels, pixel),
-      Math.max(this.x_pixels.length - 1, 0)
+      this.bisect(this.xPixels, pixel),
+      Math.max(this.xPixels.length - 1, 0)
     );
     this.model.set('selected', new Uint32Array([index]));
     this.touch();
   }
 
-  update_multi_range(brush_extent) {
-    const x_start = brush_extent[0];
-    const x_end = brush_extent[1];
-
+  update_multi_range(brushExtent): void {
+    const xStart = brushExtent[0];
+    const xEnd = brushExtent[1];
     const data =
       this.model.x_data[0] instanceof Array
         ? this.model.x_data[0]
         : this.model.x_data;
-    const idx_start = this.bisect(data, x_start);
-    const idx_end = Math.min(
-      this.bisect(data, x_end),
+    const idXStart = this.bisect(data, xStart);
+    const idXEnd = Math.min(
+      this.bisect(data, xEnd),
       Math.max(data.length - 1, 0)
     );
 
-    this.selector_model.set('selected', [idx_start, idx_end]);
+    this.selectorModel.set('selected', [idXStart, idXEnd]);
     this.selector.touch();
   }
 
-  draw_legend(elem, x_disp, y_disp, inter_x_disp, inter_y_disp) {
-    const curve_labels = this.model.get_labels();
-    const legend_data = this.model.mark_data.map((d) => {
+  draw_legend(elem, xDisp, yDisp, interXDisp, interYDisp: number): number[] {
+    const curveLabels = this.model.get_labels();
+    const legendData = this.model.mark_data.map((d) => {
       return { index: d.index, name: d.name, color: d.color };
     });
-    this.legend_el = elem.selectAll('.legend' + this.uuid).data(legend_data);
+    this.legendEl = elem.selectAll('.legend' + this.uuid).data(legendData);
 
-    const that = this,
-      rect_dim = inter_y_disp * 0.8,
-      fill_colors = this.model.get('fill_colors');
+    const rectDim = interYDisp * 0.8,
+      fillColors = this.model.get('fill_colors');
 
-    this.legend_line = d3
+    this.legendLine = d3
       .line()
       .curve(this.get_interpolation())
       .x((d) => {
@@ -380,34 +375,34 @@ export class Lines extends Mark {
         return d[1];
       });
 
-    this.legend_path_data = [
-      [0, rect_dim],
-      [rect_dim / 2, 0],
-      [rect_dim, rect_dim / 2],
+    this.legendPathData = [
+      [0, rectDim],
+      [rectDim / 2, 0],
+      [rectDim, rectDim / 2],
     ];
 
-    const legend = this.legend_el
+    const legend = this.legendEl
       .enter()
       .append('g')
       .attr('class', 'legend' + this.uuid)
       .attr('transform', (d, i) => {
-        return 'translate(0, ' + (i * inter_y_disp + y_disp) + ')';
+        return 'translate(0, ' + (i * interYDisp + yDisp) + ')';
       })
       .on(
         'mouseover',
-        _.bind(function () {
+        _.bind(() => {
           this.event_dispatcher('legend_mouse_over');
         }, this)
       )
       .on(
         'mouseout',
-        _.bind(function () {
+        _.bind(() => {
           this.event_dispatcher('legend_mouse_out');
         }, this)
       )
       .on(
         'click',
-        _.bind(function () {
+        _.bind(() => {
           this.event_dispatcher('legend_clicked');
         }, this)
       );
@@ -416,14 +411,14 @@ export class Lines extends Mark {
       .append('path')
       .attr('class', 'line')
       .attr('fill', 'none')
-      .attr('d', this.legend_line(this.legend_path_data) + this.path_closure())
+      .attr('d', this.legendLine(this.legendPathData) + this.path_closure())
       .style('stroke', (d, i) => {
-        return that.get_mark_color(d, i) || fill_colors[i];
+        return this.get_mark_color(d, i) || fillColors[i];
       })
       .style('fill', (d, i) => {
-        return that.model.get('fill') === 'none'
+        return this.model.get('fill') === 'none'
           ? ''
-          : that.get_fill_color(d, i);
+          : this.get_fill_color(d, i);
       })
       .style('opacity', this.get_mark_opacity.bind(this))
       .style('stroke-width', this.model.get('stroke_width'))
@@ -433,55 +428,55 @@ export class Lines extends Mark {
       legend
         .append('path')
         .attr('class', 'dot')
-        .attr('transform', 'translate(' + rect_dim / 2 + ',0)')
-        .attr('d', that.dot.size(25))
+        .attr('transform', 'translate(' + rectDim / 2 + ',0)')
+        .attr('d', this.dot.size(25))
         .style('fill', (d, i) => {
-          return that.get_mark_color(d, i);
+          return this.get_mark_color(d, i);
         });
     }
 
     legend
       .append('text')
       .attr('class', 'legendtext')
-      .attr('x', rect_dim * 1.2)
-      .attr('y', rect_dim / 2)
+      .attr('x', rectDim * 1.2)
+      .attr('y', rectDim / 2)
       .attr('dy', '0.35em')
       .text((d, i) => {
-        return curve_labels[i];
+        return curveLabels[i];
       })
       .style('fill', (d, i) => {
-        return that.get_mark_color(d, i) || fill_colors[i];
+        return this.get_mark_color(d, i) || fillColors[i];
       })
       .style('opacity', this.get_mark_opacity.bind(this));
 
-    this.legend_el = legend.merge(this.legend_el);
+    this.legendEl = legend.merge(this.legendEl);
 
-    const max_length = d3.max(curve_labels, (d: any) => {
+    const maxLength = d3.max(curveLabels, (d: any) => {
       return d.length;
     });
-    this.legend_el.exit().remove();
-    return [this.model.mark_data.length, max_length];
+    this.legendEl.exit().remove();
+    return [this.model.mark_data.length, maxLength];
   }
 
-  update_curves_subset() {
-    const display_labels = this.model.get('labels_visibility') === 'label';
+  update_curves_subset(): void {
+    const displayLabels = this.model.get('labels_visibility') === 'label';
     // Show a subset of the curves
-    const curves_subset = this.model.get('curves_subset');
-    if (curves_subset.length > 0) {
+    const curvesSubset = this.model.get('curves_subset');
+    if (curvesSubset.length > 0) {
       this.d3el
         .selectAll('.curve')
         .attr('display', (d, i) => {
-          return curves_subset.indexOf(i) !== -1 ? 'inline' : 'none';
+          return curvesSubset.indexOf(i) !== -1 ? 'inline' : 'none';
         })
         .select('.curve_label')
         .attr('display', (d, i) => {
-          return curves_subset.indexOf(i) !== -1 && display_labels
+          return curvesSubset.indexOf(i) !== -1 && displayLabels
             ? 'inline'
             : 'none';
         });
-      if (this.legend_el) {
-        this.legend_el.attr('display', (d, i) => {
-          return curves_subset.indexOf(i) !== -1 ? 'inline' : 'none';
+      if (this.legendEl) {
+        this.legendEl.attr('display', (d, i) => {
+          return curvesSubset.indexOf(i) !== -1 ? 'inline' : 'none';
         });
       }
       this.d3el.selectAll('.curve');
@@ -492,81 +487,81 @@ export class Lines extends Mark {
         .attr('display', 'inline')
         .select('.curve_label')
         .attr('display', (d) => {
-          return display_labels ? 'inline' : 'none';
+          return displayLabels ? 'inline' : 'none';
         });
-      if (this.legend_el) {
-        this.legend_el.attr('display', 'inline');
+      if (this.legendEl) {
+        this.legendEl.attr('display', 'inline');
       }
     }
   }
 
-  update_fill() {
+  update_fill(): void {
     const fill = this.model.get('fill'),
       area = fill === 'top' || fill === 'bottom' || fill === 'between';
 
-    const y_scale = this.scales.y;
+    const yScale = this.scales.y;
 
     this.area.defined((d: any) => {
-      return area && d.y !== null && isFinite(y_scale.scale(d.y));
+      return area && d.y !== null && isFinite(yScale.scale(d.y));
     });
+
     if (fill == 'bottom') {
       this.area.y0(this.parent.plotarea_height);
     } else if (fill == 'top') {
       this.area.y0(0);
     } else if (fill == 'between') {
       this.area.y0((d: any) => {
-        return y_scale.scale(d.y0) + y_scale.offset;
+        return yScale.scale(d.y0) + yScale.offset;
       });
     }
-    const that = this;
     this.d3el
       .selectAll('.curve')
       .select('.area')
       .attr('d', (d: any) => {
-        return that.area(d.values);
+        return this.area(d.values);
       });
     this.d3el
       .selectAll('.curve')
       .select('.line')
       .style('fill', (d, i) => {
-        return fill === 'inside' ? that.get_fill_color(d, i) : '';
+        return fill === 'inside' ? this.get_fill_color(d, i) : '';
       });
     // update legend fill
-    if (this.legend_el) {
-      this.legend_el.select('path').style('fill', (d, i) => {
-        return fill === 'none' ? '' : that.get_fill_color(d, i);
+    if (this.legendEl) {
+      this.legendEl.select('path').style('fill', (d, i) => {
+        return fill === 'none' ? '' : this.get_fill_color(d, i);
       });
     }
   }
 
-  get_fill_color(data, index) {
-    const fill_colors = this.model.get('fill_colors');
-    return fill_colors.length === 0
+  get_fill_color(data, index): string {
+    const fillColors: string = this.model.get('fill_colors');
+    return fillColors.length === 0
       ? this.get_mark_color(data, index)
-      : fill_colors[index];
+      : fillColors[index];
   }
 
-  update_line_xy(animate) {
-    const x_scale = this.scales.x,
-      y_scale = this.scales.y;
-    const animation_duration =
+  update_line_xy(animate): void {
+    const xScale = this.scales.x,
+      yScale = this.scales.y;
+    const animationDuration =
       animate === true ? this.parent.model.get('animation_duration') : 0;
 
     this.line
       .x((d: any) => {
-        return x_scale.scale(d.x) + x_scale.offset;
+        return xScale.scale(d.x) + xScale.offset;
       })
       .y((d: any) => {
-        return y_scale.scale(d.y) + y_scale.offset;
+        return yScale.scale(d.y) + yScale.offset;
       });
 
     const fill = this.model.get('fill');
     this.area
       .x((d: any) => {
-        return x_scale.scale(d.x) + x_scale.offset;
+        return xScale.scale(d.x) + xScale.offset;
       })
       .y1((d: any) => {
-        return y_scale.scale(d.y) + y_scale.offset;
+        return yScale.scale(d.y) + yScale.offset;
       });
 
     if (fill == 'bottom') {
@@ -575,87 +570,90 @@ export class Lines extends Mark {
       this.area.y0(0);
     } else if (fill == 'between') {
       this.area.y0((d: any) => {
-        return y_scale.scale(d.y0) + y_scale.offset;
+        return yScale.scale(d.y0) + yScale.offset;
       });
     }
 
-    const that = this;
-    const curves_sel = this.d3el.selectAll('.curve');
+    const curvesSel = this.d3el.selectAll('.curve');
 
-    curves_sel
+    curvesSel
       .select('.line')
       .transition('update_line_xy')
       .attr('d', (d: any) => {
-        return that.line(d.values) + that.path_closure();
+        return this.line(d.values) + this.path_closure();
       })
-      .duration(animation_duration);
+      .duration(animationDuration);
 
-    curves_sel
+    curvesSel
       .select('.area')
       .transition('update_line_xy')
       .attr('d', (d: any, i) => {
-        return that.area(d.values);
+        return this.area(d.values);
       })
-      .duration(animation_duration);
+      .duration(animationDuration);
 
-    curves_sel
+    curvesSel
       .select('.curve_label')
       .transition('update_line_xy')
       .attr('transform', (d: any) => {
-        const last_xy = d.values[d.values.length - 1];
+        const lastXy = d.values[d.values.length - 1];
         return (
           'translate(' +
-          x_scale.scale(last_xy.x) +
+          xScale.scale(lastXy.x) +
           ',' +
-          y_scale.scale(last_xy.y) +
+          yScale.scale(lastXy.y) +
           ')'
         );
       })
-      .duration(animation_duration);
+      .duration(animationDuration);
 
     this.update_dots_xy(animate);
-    this.x_pixels =
+    this.xPixels =
       this.model.mark_data.length > 0
         ? this.model.mark_data[0].values.map((el) => {
-            return x_scale.scale(el.x) + x_scale.offset;
+            return xScale.scale(el.x) + xScale.offset;
           })
         : [];
-    this.y_pixels =
+    this.yPixels =
       this.model.mark_data.length > 0
         ? this.model.mark_data[0].values.map((el) => {
-            return y_scale.scale(el.y) + y_scale.offset;
+            return yScale.scale(el.y) + yScale.offset;
           })
         : [];
-    this.pixel_coords =
+    this.pixelCoords =
       this.model.mark_data.length > 0
         ? this.model.mark_data[0].values.map((el) => {
             return [
-              x_scale.scale(el.x) + x_scale.offset,
-              y_scale.scale(el.y) + y_scale.offset,
+              xScale.scale(el.x) + xScale.offset,
+              yScale.scale(el.y) + yScale.offset,
             ];
           })
         : [];
   }
 
-  get_interpolation() {
-    const curve_types = {
+  get_interpolation():
+    | d3Shape.CurveFactory
+    | d3Shape.CurveFactory
+    | d3Shape.CurveFactory
+    | d3Shape.CurveFactory {
+    const curveTypes = {
       linear: d3.curveLinear,
       basis: d3.curveBasis,
       cardinal: d3.curveCardinal,
       monotone: d3.curveMonotoneY,
     };
 
-    return curve_types[this.model.get('interpolation')];
+    return curveTypes[this.model.get('interpolation')];
   }
 
-  draw(animate) {
+  draw(animate): void {
     this.set_ranges();
-    const curves_sel = this.d3el.selectAll('.curve').data(this.model.mark_data);
+    const curvesSel = this.d3el.selectAll('.curve').data(this.model.mark_data);
 
-    const y_scale = this.scales.y;
+    const yScale = this.scales.y;
 
-    const new_curves = curves_sel.enter().append('g').attr('class', 'curve');
-    new_curves
+    const newCurves = curvesSel.enter().append('g').attr('class', 'curve');
+    newCurves
       .append('path')
       .attr('class', 'line')
       .attr('fill', 'none')
@@ -663,8 +661,8 @@ export class Lines extends Mark {
       .on('click', () => {
         this.event_dispatcher('element_clicked');
       });
-    new_curves.append('path').attr('class', 'area');
-    new_curves
+    newCurves.append('path').attr('class', 'area');
+    newCurves
       .append('text')
       .attr('class', 'curve_label')
       .attr('x', 3)
@@ -684,19 +682,19 @@ export class Lines extends Mark {
       .line()
       .curve(this.get_interpolation())
       .defined((d: any) => {
-        return d.y !== null && isFinite(y_scale.scale(d.y));
+        return d.y !== null && isFinite(yScale.scale(d.y));
       });
 
     this.area = d3
       .area()
       .curve(this.get_interpolation())
       .defined((d: any) => {
-        return area && d.y !== null && isFinite(y_scale.scale(d.y));
+        return area && d.y !== null && isFinite(yScale.scale(d.y));
       });
 
     // Having a transition on exit is complicated. Please refer to
     // Scatter.js for detailed explanation.
-    curves_sel.exit().remove();
+    curvesSel.exit().remove();
     this.update_line_xy(animate);
     this.update_style();
 
@@ -704,7 +702,7 @@ export class Lines extends Mark {
     this.update_curves_subset();
   }
 
-  draw_dots() {
+  draw_dots(): void {
     if (this.model.get('marker')) {
       const dots = this.d3el
         .selectAll('.curve')
@@ -719,23 +717,23 @@ export class Lines extends Mark {
     }
   }
 
-  update_dots_xy(animate) {
+  update_dots_xy(animate): void {
     if (this.model.get('marker')) {
-      const x_scale = this.scales.x,
-        y_scale = this.scales.y;
-      const animation_duration =
+      const xScale = this.scales.x,
+        yScale = this.scales.y;
+      const animationDuration =
         animate === true ? this.parent.model.get('animation_duration') : 0;
       const dots = this.d3el.selectAll('.curve').selectAll('.dot');
 
       dots
         .transition('update_dots_xy')
-        .duration(animation_duration)
+        .duration(animationDuration)
         .attr('transform', (d: any) => {
           return (
             'translate(' +
-            (x_scale.scale(d.x) + x_scale.offset) +
+            (xScale.scale(d.x) + xScale.offset) +
             ',' +
-            (y_scale.scale(d.y) + y_scale.offset) +
+            (yScale.scale(d.y) + yScale.offset) +
             ')'
           );
         })
@@ -748,58 +746,58 @@ export class Lines extends Mark {
     }
   }
 
-  compute_view_padding() {
+  compute_view_padding(): void {
     //This function sets the padding for the view through the variables
-    //x_padding and y_padding which are view specific paddings in pixel
-    let x_padding;
+    //xPadding and yPadding which are view specific paddings in pixel
+    let xPadding;
     if (this.model.get('marker')) {
-      const marker_padding = Math.sqrt(this.model.get('marker_size')) / 2 + 1.0;
-      const line_padding = this.model.get('stroke_width') / 2.0;
-      x_padding = Math.max(marker_padding, line_padding);
+      const markerPadding = Math.sqrt(this.model.get('marker_size')) / 2 + 1.0;
+      const linePadding = this.model.get('stroke_width') / 2.0;
+      xPadding = Math.max(markerPadding, linePadding);
     } else {
-      x_padding = this.model.get('stroke_width') / 2.0;
+      xPadding = this.model.get('stroke_width') / 2.0;
     }
 
-    const y_padding = x_padding;
-    if (x_padding !== this.x_padding || y_padding !== this.y_padding) {
-      this.x_padding = x_padding;
-      this.y_padding = y_padding;
+    const yPadding = xPadding;
+    if (xPadding !== this.xPadding || yPadding !== this.yPadding) {
+      this.xPadding = xPadding;
+      this.yPadding = yPadding;
       this.trigger('mark_padding_updated');
     }
   }
 
   update_marker_style() {
     const that = this;
-    const fill_color = this.model.get('fill_colors');
+    const fillColor = this.model.get('fill_colors');
     const opacities = this.model.get('opacities');
     this.d3el.selectAll('.curve').each(function (d, i) {
       const curve = d3.select(this);
       curve
         .selectAll('.dot')
         .style('opacity', opacities[i])
-        .style('fill', that.get_mark_color(d, i) || fill_color[i]);
+        .style('fill', that.get_mark_color(d, i) || fillColor[i]);
     });
   }
 
-  update_marker(model, marker) {
+  update_marker(model, marker): void {
     if (marker) {
       this.draw_dots();
       this.update_dots_xy(false);
       this.update_marker_style();
-      if (this.legend_el) {
-        this.legend_el.select('.dot').attr('d', this.dot.type(marker).size(25));
+      if (this.legendEl) {
+        this.legendEl.select('.dot').attr('d', this.dot.type(marker).size(25));
       }
     } else {
       this.d3el.selectAll('.dot').remove();
-      if (this.legend_el) {
-        this.legend_el.select('.dot').attr('d', this.dot.size(0));
+      if (this.legendEl) {
+        this.legendEl.select('.dot').attr('d', this.dot.size(0));
       }
     }
   }
 
-  update_marker_size(model, marker_size) {
+  update_marker_size(model, markerSize): void {
     this.compute_view_padding();
-    this.d3el.selectAll('.dot').attr('d', this.dot.size(marker_size));
+    this.d3el.selectAll('.dot').attr('d', this.dot.size(markerSize));
   }
 
   clear_style(style_dict, indices?) {}
@@ -809,16 +807,16 @@ export class Lines extends Mark {
   set_style_on_elements(style, indices) {}
 
   dot: any;
-  legend_el: d3.Selection<SVGGElement, any, any, any>;
-  legend_line: d3.Line<[number, number]>;
-  legend_path_data: [number, number][];
+  legendEl: d3.Selection<any, any, any, any>;
+  legendLine: d3.Line<[number, number]>;
+  legendPathData: [number, number][];
   selector: BaseSelector;
-  selector_model: SelectorModel;
+  selectorModel: SelectorModel;
   area: d3.Area<[number, number]>;
   line: d3.Line<[number, number]>;
-  x_pixels: number[];
-  y_pixels: number[];
-  pixel_coords: number[];
+  xPixels: number[];
+  yPixels: number[];
+  pixelCoords: number[];
 
   // Overriding super class
   model: LinesModel;
