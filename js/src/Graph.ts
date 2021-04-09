@@ -66,7 +66,8 @@ export class Graph extends Mark {
       .append('defs')
       .append('marker')
       .attr('id', 'arrow')
-      .attr('refX', 0)
+      .attr('viewBox', '0 0 10 10')
+      .attr('refX', 15)
       .attr('refY', 3)
       .attr('markerWidth', 10)
       .attr('markerHeight', 10)
@@ -298,7 +299,7 @@ export class Graph extends Mark {
       .style('stroke-width', (d: any) => {
         return d.link_width;
       })
-      .attr('marker-mid', directed ? 'url(#arrow)' : null);
+      .attr('marker-end', directed ? 'url(#arrow)' : null);
 
     this.force_layout
       .nodes(this.model.mark_data)
