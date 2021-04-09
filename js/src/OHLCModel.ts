@@ -14,10 +14,11 @@
  */
 
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-array"));
 import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
+
+export type OHLCData = number[][];
 
 export class OHLCModel extends MarkModel {
   defaults() {
@@ -43,28 +44,29 @@ export class OHLCModel extends MarkModel {
 
   initialize(attributes, options) {
     super.initialize(attributes, options);
-    this.on_some_change(['x', 'y'], this.update_data, this);
+
+    this.on_some_change(['x', 'y'], this.updateData, this);
     this.on_some_change(['preserve_domain'], this.update_domains, this);
-    this.on('change:format', this.update_format, this);
+    this.on('change:format', this.updateFormat, this);
     this.px = { o: -1, h: -1, l: -1, c: -1 };
     this.mark_data = [];
-    this.update_data();
+    this.updateData();
     this.update_domains();
-    this.update_format();
+    this.updateFormat();
   }
 
-  update_format() {
-    this.update_data();
+  private updateFormat() {
+    this.updateData();
     this.trigger('format_updated');
   }
 
-  update_data() {
-    let x_data = this.get('x');
-    let y_data = this.get('y');
+  private updateData() {
+    let x = this.get('x');
+    let y = this.get('y');
     const format = this.get('format');
 
     // Local private function to report errors in format
-    function print_bad_format(format) {
+    function printBadFormat(format) {
       if (console) {
         console.error("Invalid OHLC format: '" + format + "'");
       }
@@ -77,9 +79,9 @@ export class OHLCModel extends MarkModel {
       .reduce(
         (dict, key, val) => {
           if (dict[key] !== -1) {
-            print_bad_format(format);
-            x_data = [];
-            y_data = [];
+            printBadFormat(format);
+            x = [];
+            y = [];
           }
           dict[key] = val;
           return dict;
@@ -94,23 +96,23 @@ export class OHLCModel extends MarkModel {
       format.length < 2 ||
       format.length > 4
     ) {
-      print_bad_format(format);
-      x_data = [];
-      y_data = [];
+      printBadFormat(format);
+      x = [];
+      y = [];
     } else {
       // Verify that OHLC data is valid
       const px = this.px;
       if (
         (this.px.h !== -1 &&
-          !y_data.every((d) => {
+          !y.every((d) => {
             return d[px.h] === d3.max(d) && d[px.l] === d3.min(d);
           })) ||
-        !y_data.every((d) => {
+        !y.every((d) => {
           return d.length === format.length;
         })
       ) {
-        x_data = [];
-        y_data = [];
+        x = [];
+        y = [];
         if (console) {
           console.error('Invalid OHLC data');
         }
@@ -118,16 +120,13 @@ export class OHLCModel extends MarkModel {
     }
 
     // Make x and y data the same length
-    if (x_data.length > y_data.length) {
-      x_data = x_data.slice(0, y_data.length);
-    } else if (x_data.length < y_data.length) {
-      y_data = y_data.slice(0, x_data.length);
+    if (x.length > y.length) {
+      x = x.slice(0, y.length);
+    } else if (x.length < y.length) {
+      y = y.slice(0, x.length);
     }
 
-    this.mark_data = _.zip(x_data, y_data);
-    this.mark_data.forEach((elem, i) => {
-      elem.index = i;
-    });
+    this.mark_data = _.zip(x, y);
     this.update_domains();
     this.trigger('data_updated');
   }
@@ -137,8 +136,8 @@ export class OHLCModel extends MarkModel {
       return;
     }
     const scales = this.get('scales');
-    const x_scale = scales.x,
-      y_scale = scales.y;
+    const xScale = scales.x,
+      yScale = scales.y;
     let min_x_dist = Number.POSITIVE_INFINITY;
     let max_y_height = 0;
     let dist = 0;
@@ -170,8 +169,8 @@ export class OHLCModel extends MarkModel {
     let max;
     // X Scale
     if (!this.get('preserve_domain').x && this.mark_data.length !== 0) {
-      if (x_scale.type === 'ordinal') {
-        x_scale.compute_and_set_domain(
+      if (xScale.type === 'ordinal') {
+        xScale.compute_and_set_domain(
           this.mark_data.map((d) => {
             return d[0];
           })
@@ -190,13 +189,13 @@ export class OHLCModel extends MarkModel {
         if (max instanceof Date) {
           max = max.getTime();
         }
-        x_scale.set_domain(
+        xScale.set_domain(
           [min - min_x_dist / 2, max + min_x_dist / 2],
           this.model_id + '_x'
         );
       }
     } else {
-      x_scale.del_domain([], this.model_id + '_x');
+      xScale.del_domain([], this.model_id + '_x');
     }
 
     // Y Scale
@@ -222,26 +221,28 @@ export class OHLCModel extends MarkModel {
       if (max instanceof Date) {
         max = max.getTime();
       }
-      y_scale.set_domain(
+      yScale.set_domain(
         [min - max_y_height, max + max_y_height],
         this.model_id + '_y'
       );
     } else {
-      y_scale.del_domain([], this.model_id + '_y');
+      yScale.del_domain([], this.model_id + '_y');
     }
   }
 
   get_data_dict(data, index) {
-    const that = this;
     const return_val = {
       index: index,
       x: data.x,
     };
+
     ['open', 'low', 'high', 'close'].forEach((str) => {
-      return_val[str] = data.y[that.px[str.substr(0, 1)]];
+      return_val[str] = data.y[this.px[str.substr(0, 1)]];
     });
+
     return return_val;
   }
+
   static serializers = {
     ...MarkModel.serializers,
     x: serialize.array_or_json,
@@ -249,4 +250,6 @@ export class OHLCModel extends MarkModel {
   };
 
   px: { o: number; h: number; l: number; c: number };
+
+  mark_data: OHLCData;
 }
