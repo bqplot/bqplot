@@ -14,7 +14,6 @@
  */
 
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-interpolate"), require("d3-shape"));
 // Hack to fix problem with webpack providing multiple d3 objects
 const d3GetEvent = function () {
   return require('d3-selection').event;
@@ -22,21 +21,10 @@ const d3GetEvent = function () {
 import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { applyStyles, getDate } from './utils';
-
-interface SVGPathElement2 extends SVGPathElement {
-  _current: any;
-}
-
-interface SVGTextElement2 extends SVGTextElement {
-  _current: any;
-}
-
-interface SVGPolylineElement2 extends SVGPolylineElement {
-  _current: any;
-}
+import { PieModel, Slice } from './PieModel';
 
 export class Pie extends Mark {
-  render() {
+  async render() {
     const base_creation_promise = super.render();
     this.selected_indices = this.model.get('selected');
     this.selected_style = this.model.get('selected_style');
@@ -44,10 +32,10 @@ export class Pie extends Mark {
 
     this.display_el_classes = ['slice', 'text'];
 
-    this.pie_g = this.d3el.append('g').attr('class', 'pie');
-    this.pie_g.append('g').attr('class', 'slices');
-    this.pie_g.append('g').attr('class', 'labels');
-    this.pie_g.append('g').attr('class', 'lines');
+    this.pieSelection = this.d3el.append('g').attr('class', 'pie');
+    this.pieSelection.append('g').attr('class', 'slices');
+    this.pieSelection.append('g').attr('class', 'labels');
+    this.pieSelection.append('g').attr('class', 'lines');
 
     const radius = this.model.get('radius');
     const inner_radius = this.model.get('inner_radius');
@@ -60,7 +48,7 @@ export class Pie extends Mark {
         .outerRadius(radius * 0.8)
         .innerRadius(inner_radius * 0.8);
 
-      this.outer_arc = d3
+      this.outerArc = d3
         .arc()
         .innerRadius(radius * 0.9)
         .outerRadius(radius * 0.9);
@@ -73,25 +61,26 @@ export class Pie extends Mark {
       this.create_tooltip();
     });
 
-    return base_creation_promise.then(() => {
-      this.event_listeners = {};
-      this.process_interactions();
-      this.create_listeners();
-      this.compute_view_padding();
-      this.draw();
-    }, null);
+    await base_creation_promise;
+
+    this.event_listeners = {};
+    this.process_interactions();
+    this.create_listeners();
+    this.compute_view_padding();
+    this.draw();
   }
 
   set_ranges() {
-    const x_scale = this.scales.x;
-    if (x_scale) {
-      x_scale.set_range(this.parent.padded_range('x', x_scale.model));
-      this.x_offset = x_scale.offset;
+    if (this.scales.x) {
+      this.scales.x.set_range(
+        this.parent.padded_range('x', this.scales.x.model)
+      );
     }
-    const y_scale = this.scales.y;
-    if (y_scale) {
-      y_scale.set_range(this.parent.padded_range('y', y_scale.model));
-      this.y_offset = y_scale.offset;
+
+    if (this.scales.y) {
+      this.scales.y.set_range(
+        this.parent.padded_range('y', this.scales.y.model)
+      );
     }
   }
 
@@ -100,15 +89,14 @@ export class Pie extends Mark {
     const x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
     const y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
 
-    const that = this;
     this.listenTo(x_scale, 'domain_changed', () => {
-      if (!that.model.dirty) {
-        that.draw();
+      if (!this.model.dirty) {
+        this.draw();
       }
     });
     this.listenTo(y_scale, 'domain_changed', () => {
-      if (!that.model.dirty) {
-        that.draw();
+      if (!this.model.dirty) {
+        this.draw();
       }
     });
   }
@@ -116,37 +104,25 @@ export class Pie extends Mark {
   create_listeners() {
     super.create_listeners();
     this.d3el
-      .on(
-        'mouseover',
-        _.bind(function () {
-          this.event_dispatcher('mouse_over');
-        }, this)
-      )
-      .on(
-        'mousemove',
-        _.bind(function () {
-          this.event_dispatcher('mouse_move');
-        }, this)
-      )
-      .on(
-        'mouseout',
-        _.bind(function () {
-          this.event_dispatcher('mouse_out');
-        }, this)
-      );
+      .on('mouseover', () => {
+        this.event_dispatcher('mouse_over');
+      })
+      .on('mousemove', () => {
+        this.event_dispatcher('mouse_move');
+      })
+      .on('mouseout', () => {
+        this.event_dispatcher('mouse_out');
+      });
 
     this.listenTo(this.model, 'data_updated', function () {
-      //animate on data update
-      const animate = true;
-      this.draw(animate);
+      this.draw(true);
     });
     this.listenTo(this.model, 'colors_updated', this.updateSlices);
     this.model.on_some_change(
       ['inner_radius', 'radius'],
-      function () {
+      () => {
         this.compute_view_padding();
-        const animate = true;
-        this.update_radius(animate);
+        this.updateRadius(true);
       },
       this
     );
@@ -157,9 +133,8 @@ export class Pie extends Mark {
     );
     this.model.on_some_change(
       ['x', 'y'],
-      function () {
-        const animate = true;
-        this.position_center(animate);
+      () => {
+        this.positionCenter(true);
       },
       this
     );
@@ -172,39 +147,37 @@ export class Pie extends Mark {
         'display_values',
         'values_format',
       ],
-      function () {
-        const animate = true;
-        this.updateLabels(animate);
+      () => {
+        this.updateLabels(true);
       },
       this
     );
     this.model.on_some_change(
       ['start_angle', 'end_angle', 'sort'],
-      function () {
-        const animate = true;
-        this.draw(animate);
+      () => {
+        this.draw(true);
       },
       this
     );
 
-    this.listenTo(this.model, 'labels_updated', function () {
-      const animate = true;
-      this.updateLabels(animate);
-      this.updatePolylines(animate);
+    this.listenTo(this.model, 'labels_updated', () => {
+      this.updateLabels(true);
+      this.updatePolylines(true);
     });
 
-    this.listenTo(this.model, 'change:selected', function () {
+    this.listenTo(this.model, 'change:selected', () => {
       this.selected_indices = this.model.get('selected');
       this.apply_styles();
     });
     this.listenTo(this.model, 'change:interactions', this.process_interactions);
-    this.listenTo(this.parent, 'bg_clicked', function () {
+    this.listenTo(this.parent, 'bg_clicked', () => {
       this.event_dispatcher('parent_clicked');
     });
   }
 
   process_click(interaction) {
     super.process_click(interaction);
+
     if (interaction === 'select') {
       this.event_listeners.parent_clicked = this.reset_selection;
       this.event_listeners.element_clicked = this.click_handler;
@@ -213,11 +186,11 @@ export class Pie extends Mark {
 
   relayout() {
     this.set_ranges();
-    this.position_center();
-    this.update_radius();
+    this.positionCenter();
+    this.updateRadius();
   }
 
-  position_center(animate?: boolean) {
+  private positionCenter(animate?: boolean) {
     const animation_duration =
       animate === true ? this.parent.model.get('animation_duration') : 0;
     const x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
@@ -236,13 +209,13 @@ export class Pie extends Mark {
       ', ' +
       (y_scale.scale(y) + y_scale.offset) +
       ')';
-    this.pie_g
-      .transition('position_center')
+    this.pieSelection
+      .transition('positionCenter')
       .duration(animation_duration)
       .attr('transform', transform);
   }
 
-  update_radius(animate?: boolean) {
+  private updateRadius(animate?: boolean) {
     const animation_duration =
       animate === true ? this.parent.model.get('animation_duration') : 0;
 
@@ -254,12 +227,12 @@ export class Pie extends Mark {
       this.arc.outerRadius(radius).innerRadius(inner_radius);
     } else if (display_labels === 'outside') {
       this.arc.outerRadius(radius * 0.8).innerRadius(inner_radius * 0.8);
-      this.outer_arc.innerRadius(radius * 0.9).outerRadius(radius * 0.9);
+      this.outerArc.innerRadius(radius * 0.9).outerRadius(radius * 0.9);
     }
 
-    const slices = this.pie_g.select('.slices');
-    const labels = this.pie_g.select('.labels');
-    const lines = this.pie_g.select('.lines');
+    const slices = this.pieSelection.select('.slices');
+    const labels = this.pieSelection.select('.labels');
+    const lines = this.pieSelection.select('.lines');
 
     const that = this;
 
@@ -283,8 +256,8 @@ export class Pie extends Mark {
         .transition('update_radius')
         .duration(animation_duration)
         .attr('transform', (d: d3.DefaultArcObject) => {
-          const pos = that.outer_arc.centroid(d);
-          pos[0] = radius * (that.mid_angle_location(d) === 'left' ? -1 : 1);
+          const pos = that.outerArc.centroid(d);
+          pos[0] = radius * (that.midAngleLocation(d) === 'left' ? -1 : 1);
           return 'translate(' + pos + ')';
         });
 
@@ -293,19 +266,19 @@ export class Pie extends Mark {
         .transition('update_radius')
         .duration(animation_duration)
         .attr('points', (d: d3.DefaultArcObject) => {
-          const pos = that.outer_arc.centroid(d);
+          const pos = that.outerArc.centroid(d);
           pos[0] =
-            radius * 0.95 * (that.mid_angle_location(d) === 'left' ? -1 : 1);
+            radius * 0.95 * (that.midAngleLocation(d) === 'left' ? -1 : 1);
           return [
             that.arc.centroid(d),
-            that.outer_arc.centroid(d),
+            that.outerArc.centroid(d),
             pos,
           ].toString();
         });
     }
   }
 
-  mid_angle_location(arc_data) {
+  private midAngleLocation(arc_data) {
     // decides if the location of the mid angle of the arc is toward left or right (to aid the
     // placement of label text)
     const mid_angle = (arc_data.startAngle + arc_data.endAngle) / 2;
@@ -316,13 +289,13 @@ export class Pie extends Mark {
 
   draw(animate?: boolean) {
     this.set_ranges();
-    this.position_center(animate);
+    this.positionCenter(animate);
 
     this.d3Pie = d3
-      .pie()
+      .pie<Slice>()
       .startAngle((this.model.get('start_angle') * 2 * Math.PI) / 360)
       .endAngle((this.model.get('end_angle') * 2 * Math.PI) / 360)
-      .value((d: any) => {
+      .value((d: Slice) => {
         return d.size;
       });
 
@@ -335,47 +308,38 @@ export class Pie extends Mark {
     this.updatePolylines(animate);
   }
 
-  updateSlices(animate?: boolean) {
+  private updateSlices(animate?: boolean) {
     const that = this;
     const animation_duration =
       animate === true ? this.parent.model.get('animation_duration') : 0;
 
     // update pie slices
-    const slices: d3.Selection<d3.BaseType, any, any, any> = this.pie_g
+    const slices = this.pieSelection
       .select('.slices')
       .selectAll('.slice')
       .data(this.d3Pie(this.model.mark_data));
 
     const stroke = this.model.get('stroke');
-    const opacities = this.model.get('opacities');
-    const colorScale = this.scales.color;
 
     slices
       .enter()
       .append('path')
       .attr('class', 'slice')
       .each(function (d) {
-        (this as SVGPathElement2)._current = d;
+        this._current = d;
       })
       .on('click', (d, i) => {
         return that.event_dispatcher('element_clicked', { data: d, index: i });
       })
-      .merge(slices as d3.Selection<SVGPathElement, any, any, any>)
+      .merge(slices)
       .transition('draw')
       .duration(animation_duration)
-      .style('fill', (d, i) => {
-        return d.data.color !== undefined && colorScale !== undefined
-          ? colorScale.scale(d.data.color)
-          : that.get_colors(d.data.index);
-      })
+      .style('fill', (d, i) => that.get_mark_color(d.data, i))
       .style('stroke', stroke)
-      .style('opacity', (d, i) => opacities[i])
+      .style('opacity', (d, i) => that.get_mark_opacity(d.data, i))
       .attrTween('d', function (d) {
-        const interpolate = d3.interpolate(
-          (this as SVGPathElement2)._current,
-          d
-        );
-        (this as SVGPathElement2)._current = d;
+        const interpolate = d3.interpolate(this._current, d);
+        this._current = d;
         return function (t) {
           return that.arc(interpolate(t));
         };
@@ -391,7 +355,7 @@ export class Pie extends Mark {
     this.apply_styles();
   }
 
-  updateLabels(animate?: boolean) {
+  private updateLabels(animate?: boolean) {
     const that = this;
     const animation_duration =
       animate === true ? this.parent.model.get('animation_duration') : 0;
@@ -402,12 +366,7 @@ export class Pie extends Mark {
 
     const values_format = d3.format(this.model.get('values_format'));
 
-    const labels: d3.Selection<
-      d3.BaseType,
-      any,
-      d3.BaseType,
-      any
-    > = this.pie_g
+    const labels = this.pieSelection
       .select('.labels')
       .selectAll('text')
       .data(this.d3Pie(this.model.mark_data));
@@ -418,9 +377,9 @@ export class Pie extends Mark {
       .attr('dy', '.35em')
       .style('opacity', 0)
       .each(function (d) {
-        (this as SVGTextElement2)._current = d;
+        this._current = d;
       })
-      .merge(labels as d3.Selection<SVGTextElement, any, d3.BaseType, any>)
+      .merge(labels)
       .transition('draw')
       .duration(animation_duration)
       .text((d) => {
@@ -452,29 +411,23 @@ export class Pie extends Mark {
     } else if (display_labels === 'outside') {
       labelsTransition
         .attrTween('transform', function (d) {
-          const interpolate = d3.interpolate(
-            (this as SVGTextElement2)._current,
-            d
-          );
+          const interpolate = d3.interpolate(this._current, d);
           const _this = this;
           return function (t) {
             const d2 = interpolate(t);
-            (_this as SVGTextElement2)._current = d2;
-            const pos = that.outer_arc.centroid(d2);
+            _this._current = d2;
+            const pos = that.outerArc.centroid(d2);
             pos[0] =
               that.model.get('radius') *
-              (that.mid_angle_location(d) === 'left' ? -1 : 1);
+              (that.midAngleLocation(d) === 'left' ? -1 : 1);
             return 'translate(' + pos + ')';
           };
         })
         .styleTween('text-anchor', function (d) {
-          const interpolate = d3.interpolate(
-            (this as SVGTextElement2)._current,
-            d
-          );
+          const interpolate = d3.interpolate(this._current, d);
           return function (t) {
             const d2 = interpolate(t);
-            return that.mid_angle_location(d2) === 'left' ? 'end' : 'start';
+            return that.midAngleLocation(d2) === 'left' ? 'end' : 'start';
           };
         });
     }
@@ -489,7 +442,7 @@ export class Pie extends Mark {
 
     const display_labels = this.model.get('display_labels');
 
-    const polylines = this.pie_g
+    const polylines = this.pieSelection
       .select('.lines')
       .selectAll('polyline')
       .data(this.d3Pie(this.model.mark_data));
@@ -498,11 +451,9 @@ export class Pie extends Mark {
       .enter()
       .append('polyline')
       .each(function (d) {
-        (this as SVGPolylineElement2)._current = d;
+        this._current = d;
       })
-      .merge(
-        polylines as d3.Selection<SVGPolylineElement, any, d3.BaseType, any>
-      )
+      .merge(polylines)
       .transition('draw')
       .duration(animation_duration)
       .style('opacity', (d: any) =>
@@ -513,22 +464,19 @@ export class Pie extends Mark {
 
     if (display_labels === 'outside') {
       polylinesTransition.attrTween('points', function (d: any) {
-        const interpolate = d3.interpolate(
-          (this as SVGPolylineElement2)._current,
-          d
-        );
+        const interpolate = d3.interpolate(this._current, d);
         const _this = this;
         return function (t) {
           const d2 = interpolate(t);
-          (_this as SVGPolylineElement2)._current = d2;
-          const pos = that.outer_arc.centroid(d2);
+          _this._current = d2;
+          const pos = that.outerArc.centroid(d2);
           pos[0] =
             that.model.get('radius') *
             0.95 *
-            (that.mid_angle_location(d2) === 'left' ? -1 : 1);
+            (that.midAngleLocation(d2) === 'left' ? -1 : 1);
           return [
             that.arc.centroid(d2),
-            that.outer_arc.centroid(d2),
+            that.outerArc.centroid(d2),
             pos,
           ].toString();
         };
@@ -542,7 +490,7 @@ export class Pie extends Mark {
     // Function to clear the style of a dict on some or all the elements of the
     // chart. If indices is null, clears the style on all elements. If
     // not, clears on only the elements whose indices are matching.
-    let elements = this.pie_g.selectAll('.slice');
+    let elements = this.pieSelection.selectAll('.slice');
     if (indices) {
       elements = elements.filter((d, index) => {
         return indices.indexOf(index) !== -1;
@@ -561,7 +509,7 @@ export class Pie extends Mark {
     if (indices === undefined || indices === null || indices.length === 0) {
       return;
     }
-    let elements = this.pie_g.selectAll('.slice');
+    let elements = this.pieSelection.selectAll('.slice');
     elements = elements.filter((data, index) => {
       return indices.indexOf(index) !== -1;
     });
@@ -571,23 +519,15 @@ export class Pie extends Mark {
   set_default_style(indices?) {
     // For all the elements with index in the list indices, the default
     // style is applied.
-    const that = this;
-
     const stroke = this.model.get('stroke');
-    const opacities = this.model.get('opacities');
-    const colorScale = this.scales.color;
 
     // Update pie slices
-    this.pie_g
+    this.pieSelection
       .select('.slices')
       .selectAll('.slice')
-      .style('fill', (d: any, i) => {
-        return d.data.color !== undefined && colorScale !== undefined
-          ? colorScale.scale(d.data.color)
-          : that.get_colors(d.data.index);
-      })
+      .style('fill', (d, i) => this.get_mark_color(d.data, i))
       .style('stroke', stroke)
-      .style('opacity', (d, i) => opacities[i]);
+      .style('opacity', (d, i) => this.get_mark_opacity(d.data, i));
   }
 
   click_handler(args) {
@@ -677,10 +617,11 @@ export class Pie extends Mark {
     }
   }
 
-  d3Pie: d3.Pie<any, number | { valueOf(): number }>;
-  pie_g: d3.Selection<SVGGElement, any, any, any>;
-  arc: d3.Arc<any, d3.DefaultArcObject>;
-  outer_arc: d3.Arc<any, d3.DefaultArcObject>;
-  x_offset: number;
-  y_offset: number;
+  private d3Pie: d3.Pie<any, Slice>;
+  // private pieSelection: d3.Selection<SVGGElement, Slice, any, any>;
+  private pieSelection: any;
+  private arc: d3.Arc<any, d3.DefaultArcObject>;
+  private outerArc: d3.Arc<any, d3.DefaultArcObject>;
+
+  model: PieModel;
 }

@@ -19,6 +19,13 @@ import { MarkModel } from './MarkModel';
 import { getDate } from './utils';
 import * as serialize from './serialize';
 
+export interface Slice {
+  size: number;
+  color: number;
+  label: string;
+  index: number;
+}
+
 export class PieModel extends MarkModel {
   defaults() {
     return {
@@ -57,56 +64,59 @@ export class PieModel extends MarkModel {
     this.on(
       'change:color',
       function () {
-        this.update_color();
+        this.updateColor();
         this.trigger('colors_updated');
       },
       this
     );
-    this.on('change:labels', this.update_labels, this);
+    this.on('change:labels', this.updateLabels, this);
 
-    this.on_some_change(['preserve_domain'], this.update_domains, this);
+    this.on_some_change(['preserve_domain'], this.updateDomains, this);
     this.update_data();
-    this.update_color();
-    this.update_labels();
-    this.update_domains();
+    this.updateColor();
+    this.updateLabels();
+    this.updateDomains();
   }
 
   update_data() {
-    const sizes = this.get('sizes');
+    const sizes = this.get('sizes') || [];
     const color = this.get('color') || [];
-    const labels = this.get('labels');
-    this.mark_data = Array.prototype.map.call(sizes, (d, i) => {
+    const labels = this.get('labels') || [];
+
+    this.mark_data = Array.prototype.map.call(sizes, (d: number, i: number) => {
       return {
         size: d,
         color: color[i],
-        // jshint eqnull: true
         label: labels[i] == null ? '' : labels[i],
         index: i,
       };
     });
-    this.update_color();
-    this.update_domains();
+
+    this.updateColor();
+    this.updateDomains();
     this.trigger('data_updated');
   }
 
-  update_labels() {
+  private updateLabels() {
     if (!this.mark_data) {
       return;
     }
+
     const labels = this.get('labels');
     this.mark_data.forEach((data, index) => {
-      // jshint eqnull: true
       data.label = labels[index] == null ? '' : labels[index];
     });
     this.trigger('labels_updated');
   }
 
-  update_color() {
+  private updateColor() {
     if (!this.mark_data) {
       return;
     }
+
     const color = this.get('color');
     const color_scale = this.get('scales').color;
+
     if (color_scale) {
       if (!this.get('preserve_domain').color) {
         color_scale.compute_and_set_domain(color, this.model_id + '_color');
@@ -116,28 +126,27 @@ export class PieModel extends MarkModel {
     }
   }
 
-  update_domains() {
+  private updateDomains() {
     if (!this.mark_data) {
       return;
     }
-    const scales = this.get('scales');
-    const x_scale = scales.x;
-    const y_scale = scales.y;
 
-    if (x_scale) {
+    const scales = this.get('scales');
+
+    if (scales.x) {
       const x =
-        x_scale.type === 'date' ? getDate(this.get('x')) : this.get('x');
+        scales.x.type === 'date' ? getDate(this.get('x')) : this.get('x');
       if (!this.get('preserve_domain').x) {
-        x_scale.compute_and_set_domain([x], this.model_id + '_x');
+        scales.x.compute_and_set_domain([x], this.model_id + '_x');
       } else {
-        x_scale.del_domain([], this.model_id + '_x');
+        scales.x.del_domain([], this.model_id + '_x');
       }
     }
-    if (y_scale) {
+    if (scales.y) {
       if (!this.get('preserve_domain').y) {
-        y_scale.compute_and_set_domain([this.get('y')], this.model_id + '_y');
+        scales.y.compute_and_set_domain([this.get('y')], this.model_id + '_y');
       } else {
-        y_scale.del_domain([], this.model_id + '_y');
+        scales.y.del_domain([], this.model_id + '_y');
       }
     }
   }
@@ -151,4 +160,6 @@ export class PieModel extends MarkModel {
     sizes: serialize.array_or_json,
     color: serialize.array_or_json,
   };
+
+  mark_data: Slice[];
 }
