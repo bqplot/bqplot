@@ -166,7 +166,7 @@ describe('pie >', () => {
 
     d3Timer.timerFlush();
 
-    const slices = pie.pie_g.selectAll('.slice');
+    const slices = pie.pieSelection.selectAll('.slice');
 
     // Check slice colors
     const sliceElts = slices.nodes();
