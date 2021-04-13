@@ -40,13 +40,13 @@ export class HandDraw extends Interaction {
   private async setLinesView(): Promise<void> {
     const fig = this.parent;
 
-    return Promise.all(fig.mark_views.views).then((views) => {
-      const fig_mark_ids = fig.mark_views._models.map((markModel) => {
-        return markModel.model_id; // Model ids of the marks in the figure
-      });
-      const mark_index = fig_mark_ids.indexOf(this.lines.model_id);
-      this.linesView = views[mark_index];
+    const views = await Promise.all(fig.mark_views.views);
+
+    const fig_mark_ids = fig.mark_views._models.map((markModel) => {
+      return markModel.model_id; // Model ids of the marks in the figure
     });
+    const mark_index = fig_mark_ids.indexOf(this.lines.model_id);
+    this.linesView = views[mark_index] as Lines;
   }
 
   private mousedown(): void {
