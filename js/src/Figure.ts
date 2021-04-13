@@ -20,9 +20,14 @@ import * as _ from 'underscore';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
-import { WidgetView } from '@jupyter-widgets/base';
+import { Dict, WidgetModel, WidgetView } from '@jupyter-widgets/base';
 import { applyAttrs, applyStyles } from './utils';
 import { Scale } from './Scale';
+import { ScaleModel } from './ScaleModel';
+import { AxisModel } from './AxisModel';
+import { Mark } from './Mark';
+import { MarkModel } from './MarkModel';
+import { Interaction } from './Interaction';
 
 THREE.ShaderChunk[
   'scales'
@@ -96,7 +101,7 @@ export class Figure extends widgets.DOMWidgetView {
     });
   }
 
-  protected renderImpl() {
+  protected async renderImpl() {
     const figureSize = this.getFigureSize();
     this.width = figureSize.width;
     this.height = figureSize.height;
@@ -240,89 +245,90 @@ export class Figure extends widgets.DOMWidgetView {
 
     const figure_scale_promise = this.create_figure_scales();
 
-    return figure_scale_promise.then(() => {
-      this.mark_views = new widgets.ViewList(
-        this.add_mark,
-        this.remove_mark,
-        this
-      );
-      const mark_views_updated = this.mark_views
-        .update(this.model.get('marks'))
-        .then((views) => {
+    await figure_scale_promise;
+
+    this.mark_views = new widgets.ViewList(
+      this.add_mark,
+      this.remove_mark,
+      this
+    );
+
+    const mark_views_updated = this.mark_views
+      .update(this.model.get('marks'))
+      .then((views) => {
+        this.replace_dummy_nodes(views);
+        this.update_marks(views);
+        this.update_legend();
+        // Update Interaction layer
+        // This has to be done after the marks are created
+        this.set_interaction(this.model.get('interaction'));
+        this._initial_marks_created_resolve();
+        this.update_gl();
+      });
+
+    this.axis_views = new widgets.ViewList(this.add_axis, null, this);
+    const axis_views_updated = this.axis_views.update(this.model.get('axes'));
+
+    // TODO: move to the model
+    this.model.on_some_change(
+      ['fig_margin', 'min_aspect_ratio', 'max_aspect_ratio'],
+      this.debouncedRelayout,
+      this
+    );
+    this.model.on_some_change(
+      ['padding_x', 'padding_y'],
+      () => {
+        this.figure_padding_x = this.model.get('padding_x');
+        this.figure_padding_y = this.model.get('padding_y');
+        this.trigger('margin_updated');
+      },
+      this
+    );
+    this.model.on(
+      'change:axes',
+      (model, value, options) => {
+        this.axis_views.update(value);
+      },
+      this
+    );
+    this.model.on(
+      'change:marks',
+      (model, value, options) => {
+        this.mark_views.update(value).then((views) => {
           this.replace_dummy_nodes(views);
           this.update_marks(views);
           this.update_legend();
-          // Update Interaction layer
-          // This has to be done after the marks are created
-          this.set_interaction(this.model.get('interaction'));
-          this._initial_marks_created_resolve();
           this.update_gl();
         });
+      },
+      this
+    );
+    this.model.on('change:legend_location', this.update_legend, this);
+    this.model.on('change:title', this.update_title, this);
 
-      this.axis_views = new widgets.ViewList(this.add_axis, null, this);
-      const axis_views_updated = this.axis_views.update(this.model.get('axes'));
+    this.model.on(
+      'change:interaction',
+      (model, value) => {
+        Promise.all(this.mark_views.views).then((views) => {
+          // Like above:
+          // This has to be done after the marks are created
+          this.set_interaction(value);
+        });
+      },
+      this
+    );
 
-      // TODO: move to the model
-      this.model.on_some_change(
-        ['fig_margin', 'min_aspect_ratio', 'max_aspect_ratio'],
-        this.debouncedRelayout,
-        this
-      );
-      this.model.on_some_change(
-        ['padding_x', 'padding_y'],
-        () => {
-          this.figure_padding_x = this.model.get('padding_x');
-          this.figure_padding_y = this.model.get('padding_y');
-          this.trigger('margin_updated');
-        },
-        this
-      );
-      this.model.on(
-        'change:axes',
-        (model, value, options) => {
-          this.axis_views.update(value);
-        },
-        this
-      );
-      this.model.on(
-        'change:marks',
-        (model, value, options) => {
-          this.mark_views.update(value).then((views) => {
-            this.replace_dummy_nodes(views);
-            this.update_marks(views);
-            this.update_legend();
-            this.update_gl();
-          });
-        },
-        this
-      );
-      this.model.on('change:legend_location', this.update_legend, this);
-      this.model.on('change:title', this.update_title, this);
+    document.body.appendChild(this.tooltip_div.node());
+    this.create_listeners();
 
-      this.model.on(
-        'change:interaction',
-        (model, value) => {
-          Promise.all(this.mark_views.views).then((views) => {
-            // Like above:
-            // This has to be done after the marks are created
-            this.set_interaction(value);
-          });
-        },
-        this
-      );
-
-      document.body.appendChild(this.tooltip_div.node());
-      this.create_listeners();
-
-      // In the classic notebook, we should relayout the figure on
-      // resize of the main window.
-      window.addEventListener('resize', this.debouncedRelayout);
-      this.once('remove', () => {
-        window.removeEventListener('resize', this.debouncedRelayout);
-      });
-
-      return Promise.all([mark_views_updated, axis_views_updated]);
+    // In the classic notebook, we should relayout the figure on
+    // resize of the main window.
+    window.addEventListener('resize', this.debouncedRelayout);
+    this.once('remove', () => {
+      window.removeEventListener('resize', this.debouncedRelayout);
     });
+
+    return Promise.all([mark_views_updated, axis_views_updated]);
   }
 
   createWebGLRenderer() {
@@ -347,22 +353,20 @@ export class Figure extends widgets.DOMWidgetView {
     this.layout_webgl_canvas();
   }
 
-  replace_dummy_nodes(views) {
-    _.each(
-      views,
-      (view: any) => {
-        // It could be that the dummy node is removed before we got a change to replace it
-        // This happens when the marks list is changed rapidly
-        if (view.dummy_node !== null && view.dummy_node.parentNode) {
-          view.dummy_node.parentNode.replaceChild(view.el, view.dummy_node);
-          view.dummy_node = null;
-          this.displayed.then(() => {
-            view.trigger('displayed');
-          });
-        }
-      },
-      this
-    );
+  replace_dummy_nodes(views: Mark[]) {
+    for (const view of views) {
+      const dummyNode = this.dummyNodes[view.id];
+
+      // It could be that the dummy node is removed before we got a change to replace it
+      // This happens when the marks list is changed rapidly
+      if (dummyNode !== null && dummyNode.parentNode) {
+        dummyNode.parentNode.replaceChild(view.el, dummyNode);
+        this.dummyNodes[view.id] = null;
+        this.displayed.then(() => {
+          view.trigger('displayed');
+        });
+      }
+    }
   }
 
   create_listeners() {
@@ -439,7 +443,7 @@ export class Figure extends widgets.DOMWidgetView {
     return Promise.all([x_scale_promise, y_scale_promise]);
   }
 
-  padded_range(direction, scale_model) {
+  padded_range(direction: 'x' | 'y', scale_model: ScaleModel) {
     // Functions to be called by mark which respects padding.
     // Typically all marks do this. Axis do not do this.
     // Also, if a mark does not set the domain, it can potentially call
@@ -472,7 +476,7 @@ export class Figure extends widgets.DOMWidgetView {
     }
   }
 
-  range(direction) {
+  range(direction: 'x' | 'y') {
     if (direction === 'x') {
       return [0, this.plotarea_width];
     } else if (direction === 'y') {
@@ -480,11 +484,11 @@ export class Figure extends widgets.DOMWidgetView {
     }
   }
 
-  get_mark_plotarea_height(scale_model) {
-    if (!scale_model.get('allow_padding')) {
+  get_mark_plotarea_height(scaleModel: ScaleModel) {
+    if (!scaleModel.get('allow_padding')) {
       return this.plotarea_height;
     }
-    const scale_id = scale_model.model_id;
+    const scale_id = scaleModel.model_id;
     const scale_padding =
       this.yPaddingArr[scale_id] !== undefined ? this.yPaddingArr[scale_id] : 0;
     return (
@@ -494,12 +498,12 @@ export class Figure extends widgets.DOMWidgetView {
     );
   }
 
-  get_mark_plotarea_width(scale_model) {
-    if (!scale_model.get('allow_padding')) {
+  get_mark_plotarea_width(scaleModel: ScaleModel) {
+    if (!scaleModel.get('allow_padding')) {
       return this.plotarea_width;
     }
 
-    const scale_id = scale_model.model_id;
+    const scale_id = scaleModel.model_id;
     const scale_padding =
       this.xPaddingArr[scale_id] !== undefined ? this.xPaddingArr[scale_id] : 0;
     return (
@@ -509,19 +513,19 @@ export class Figure extends widgets.DOMWidgetView {
     );
   }
 
-  add_axis(model) {
+  async add_axis(model: AxisModel) {
     // Called when an axis is added to the axes list.
-    const that = this;
-    return this.create_child_view(model).then((view) => {
-      that.fig_axes.node().appendChild(view.el);
-      that.displayed.then(() => {
-        view.trigger('displayed');
-      });
-      return view;
+    const view = await this.create_child_view(model);
+
+    this.fig_axes.node().appendChild(view.el);
+    this.displayed.then(() => {
+      view.trigger('displayed');
     });
+
+    return view;
   }
 
-  remove_from_padding_dict(dict, mark_view, scale_model) {
+  remove_from_padding_dict(dict, mark_view: Mark, scale_model: ScaleModel) {
     if (scale_model === undefined || scale_model === null) {
       return;
     }
@@ -534,7 +538,7 @@ export class Figure extends widgets.DOMWidgetView {
     }
   }
 
-  update_padding_dict(dict, mark_view, scale_model, value) {
+  update_padding_dict(dict, mark_view: Mark, scale_model: ScaleModel, value) {
     const scale_id = scale_model.model_id;
     if (!dict[scale_id]) {
       dict[scale_id] = {};
@@ -542,7 +546,7 @@ export class Figure extends widgets.DOMWidgetView {
     dict[scale_id][mark_view.model.model_id + '_' + mark_view.cid] = value;
   }
 
-  mark_scales_updated(view) {
+  mark_scales_updated(view: Mark) {
     const model = view.model;
     const prev_scale_models = model.previous('scales');
     this.remove_from_padding_dict(
@@ -573,7 +577,7 @@ export class Figure extends widgets.DOMWidgetView {
     this.update_paddings();
   }
 
-  mark_padding_updated(view) {
+  mark_padding_updated(view: Mark) {
     const model = view.model;
     const scale_models = model.get('scales');
 
@@ -597,7 +601,7 @@ export class Figure extends widgets.DOMWidgetView {
     this.update_paddings();
   }
 
-  remove_mark(view) {
+  remove_mark(view: Mark) {
     // Called when a mark is removed from the mark list.
     const model = view.model;
     model.off('redraw_legend', null, this);
@@ -619,7 +623,7 @@ export class Figure extends widgets.DOMWidgetView {
     view.remove();
   }
 
-  add_mark(model) {
+  async add_mark(model: MarkModel) {
     model.state_change.then(() => {
       model.on('data_updated redraw_legend', this.update_legend, this);
     });
@@ -628,66 +632,68 @@ export class Figure extends widgets.DOMWidgetView {
       .node()
       .appendChild(document.createElementNS(d3.namespaces.svg, 'g'));
 
-    return this.create_child_view(model, { clip_id: this.clip_id }).then(
-      (view: any) => {
-        view.dummy_node = dummy_node;
-        view.on(
-          'mark_padding_updated',
-          () => {
-            this.mark_padding_updated(view);
-          },
-          this
-        );
-        view.on(
-          'mark_scales_updated',
-          () => {
-            this.mark_scales_updated(view);
-          },
-          this
-        );
+    // @ts-ignore: We should use the type argument: this.create_child_view<Mark>
+    const view: Mark = await this.create_child_view(model, {
+      clip_id: this.clip_id,
+    });
 
-        let child_x_scale = view.model.get('scales')[
-          view.model.get_key_for_dimension('x')
-        ];
-        let child_y_scale = view.model.get('scales')[
-          view.model.get_key_for_dimension('y')
-        ];
-        if (child_x_scale === undefined) {
-          child_x_scale = this.scale_x.model;
-        }
-        if (child_y_scale === undefined) {
-          child_y_scale = this.scale_y.model;
-        }
-        this.update_padding_dict(
-          this.x_pad_dict,
-          view,
-          child_x_scale,
-          view.xPadding
-        );
-        this.update_padding_dict(
-          this.y_pad_dict,
-          view,
-          child_y_scale,
-          view.yPadding
-        );
+    this.dummyNodes[view.id] = dummy_node;
 
-        // If the mark needs a WebGL renderer, we create it
-        if (view.render_gl) {
-          this.createWebGLRenderer();
-        }
-        // If the marks list changes before replace_dummy_nodes is called, we are not DOM
-        // attached, and view.remove() in Figure.remove_mark will not remove this view from the DOM
-        // but a later call to Figure.replace_dummy_nodes will attach it to the DOM again, leading
-        // to a 'ghost' mark, originally reported in https://github.com/spacetelescope/jdaviz/issues/270
-        view.on('remove', () => {
-          if (dummy_node.parentNode) {
-            dummy_node.remove();
-          }
-        });
-
-        return view;
-      }
+    view.on(
+      'mark_padding_updated',
+      () => {
+        this.mark_padding_updated(view);
+      },
+      this
     );
+    view.on(
+      'mark_scales_updated',
+      () => {
+        this.mark_scales_updated(view);
+      },
+      this
+    );
+
+    let child_x_scale = view.model.get('scales')[
+      view.model.get_key_for_dimension('x')
+    ];
+    let child_y_scale = view.model.get('scales')[
+      view.model.get_key_for_dimension('y')
+    ];
+    if (child_x_scale === undefined) {
+      child_x_scale = this.scale_x.model;
+    }
+    if (child_y_scale === undefined) {
+      child_y_scale = this.scale_y.model;
+    }
+    this.update_padding_dict(
+      this.x_pad_dict,
+      view,
+      child_x_scale,
+      view.xPadding
+    );
+    this.update_padding_dict(
+      this.y_pad_dict,
+      view,
+      child_y_scale,
+      view.yPadding
+    );
+
+    // If the mark needs a WebGL renderer, we create it
+    if (view['render_gl']) {
+      this.createWebGLRenderer();
+    }
+    // If the marks list changes before replace_dummy_nodes is called, we are not DOM
+    // attached, and view.remove() in Figure.remove_mark will not remove this view from the DOM
+    // but a later call to Figure.replace_dummy_nodes will attach it to the DOM again, leading
+    // to a 'ghost' mark, originally reported in https://github.com/spacetelescope/jdaviz/issues/270
+    view.on('remove', () => {
+      if (dummy_node.parentNode) {
+        dummy_node.remove();
+      }
+    });
+
+    return view;
   }
 
   update_paddings() {
@@ -698,13 +704,12 @@ export class Figure extends widgets.DOMWidgetView {
     this.xPaddingArr = {};
     this.yPaddingArr = {};
 
-    const that = this;
     _.forEach(this.x_pad_dict, (dict: any, scale_id) => {
       let max = 0;
       _.forEach(dict, (value: number, key) => {
         max = Math.max(max, value);
       });
-      that.xPaddingArr[scale_id] = max;
+      this.xPaddingArr[scale_id] = max;
     });
 
     _.forEach(this.y_pad_dict, (dict: any, scale_id) => {
@@ -712,7 +717,7 @@ export class Figure extends widgets.DOMWidgetView {
       _.forEach(dict, (value: number, key) => {
         max = Math.max(max, value);
       });
-      that.yPaddingArr[scale_id] = max;
+      this.yPaddingArr[scale_id] = max;
     });
     // This is for the figure to relayout everything to account for the
     // updated margins.
@@ -726,6 +731,7 @@ export class Figure extends widgets.DOMWidgetView {
 
   processPhosphorMessage(msg) {
     super.processPhosphorMessage.apply(this, arguments);
+
     switch (msg.type) {
       case 'resize':
       case 'after-show':
@@ -828,7 +834,6 @@ export class Figure extends widgets.DOMWidgetView {
 
     const legend_g = this.fig_marks.append('g').attr('class', 'g_legend');
 
-    const that = this;
     let count = 1;
     let max_label_len = 1;
 
@@ -850,7 +855,7 @@ export class Figure extends widgets.DOMWidgetView {
           }
         });
 
-        const coords = that.get_legend_coords(
+        const coords = this.get_legend_coords(
           legend_location,
           legend_width,
           (count + 1) * (legend_height + 2),
@@ -884,18 +889,30 @@ export class Figure extends widgets.DOMWidgetView {
 
         applyStyles(
           legend_g.selectAll('text.legendtext'),
-          that.model.get('legend_text')
+          this.model.get('legend_text')
         );
 
         applyStyles(
           legend_g.selectAll('.axis').selectAll('rect'),
-          that.model.get('legend_style')
+          this.model.get('legend_style')
         );
       });
     }
   }
 
-  get_legend_coords(legend_location, width, height, disp) {
+  get_legend_coords(
+    legend_location:
+      | 'top'
+      | 'top-right'
+      | 'right'
+      | 'bottom-right'
+      | 'bottom'
+      | 'bottom-left'
+      | 'left',
+    width: number,
+    height: number,
+    disp: number
+  ) {
     let x_start = 0;
     let y_start = 0;
     const fig_width = this.plotarea_width;
@@ -937,23 +954,24 @@ export class Figure extends widgets.DOMWidgetView {
     return [x_start, y_start];
   }
 
-  set_interaction(model): Promise<WidgetView> {
+  async set_interaction(model: WidgetModel | null): Promise<WidgetView> {
     if (model) {
       // Sets the child interaction
-      return model.state_change.then(() => {
-        // Sets the child interaction
-        return this.create_child_view(model).then((view) => {
-          if (this.interaction_view) {
-            this.interaction_view.remove();
-          }
-          this.interaction_view = view;
-          this.interaction.node().appendChild(view.el);
-          this.displayed.then(() => {
-            view.trigger('displayed');
-          });
-          return view;
-        });
+      await model.state_change;
+
+      // Sets the child interaction
+      // @ts-ignore: We should use the type argument: this.create_child_view<Interaction>
+      const view: Interaction = await this.create_child_view(model);
+
+      if (this.interaction_view) {
+        this.interaction_view.remove();
+      }
+      this.interaction_view = view;
+      this.interaction.node().appendChild(view.el);
+      this.displayed.then(() => {
+        view.trigger('displayed');
       });
+      return view;
     } else {
       if (this.interaction_view) {
         this.interaction_view.remove();
@@ -1133,28 +1151,28 @@ export class Figure extends widgets.DOMWidgetView {
     });
   }
 
-  get_rendered_canvas(scale): Promise<HTMLCanvasElement> {
+  async get_rendered_canvas(scale): Promise<HTMLCanvasElement> {
     // scale up the underlying canvas for high dpi screens
     // such that image is of the same quality
     scale = scale || window.devicePixelRatio;
     // Render a SVG data into a canvas and
-    return this.get_svg().then((xml) => {
-      return new Promise((accept) => {
-        const image = new Image();
-        image.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.classList.add('bqplot');
-          canvas.width = this.width * scale;
-          canvas.height = this.height * scale;
-          canvas.style.width = this.width.toString();
-          canvas.style.height = this.height.toString();
-          const context = canvas.getContext('2d');
-          context.scale(scale, scale);
-          context.drawImage(image, 0, 0);
-          accept(canvas);
-        };
-        image.src = 'data:image/svg+xml;base64,' + btoa(xml);
-      });
+    const xml = await this.get_svg();
+
+    return new Promise((accept) => {
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.classList.add('bqplot');
+        canvas.width = this.width * scale;
+        canvas.height = this.height * scale;
+        canvas.style.width = this.width.toString();
+        canvas.style.height = this.height.toString();
+        const context = canvas.getContext('2d');
+        context.scale(scale, scale);
+        context.drawImage(image, 0, 0);
+        accept(canvas);
+      };
+      image.src = 'data:image/svg+xml;base64,' + btoa(xml);
     });
   }
 
@@ -1170,7 +1188,7 @@ export class Figure extends widgets.DOMWidgetView {
     });
   }
 
-  save_svg(filename) {
+  save_svg(filename: string) {
     this.get_svg().then((xml) => {
       const a = document.createElement('a');
       a.download = filename || 'bqplot.svg';
@@ -1205,22 +1223,23 @@ export class Figure extends widgets.DOMWidgetView {
     this._update_requested = false;
   }
 
-  render_gl(): Promise<void> {
+  async render_gl(): Promise<void> {
     // Nothing to render using a WebGL context
     if (!this.renderer) {
       return Promise.resolve();
     }
 
-    return Promise.all(this.mark_views.views).then((views) => {
-      // render all marks that have a render_gl method
-      this.renderer.autoClear = false;
-      this.renderer.autoClearColor = new (THREE.Color as (x) => void)(0x000000);
-      this.renderer.clear();
-      const marks_gl = _.filter(views, (view: any) => view.render_gl);
-      _.each(marks_gl, (mark: any) => {
-        mark.render_gl();
-      });
-    });
+    const views = await Promise.all(this.mark_views.views);
+
+    // render all marks that have a render_gl method
+    this.renderer.autoClear = false;
+    this.renderer.autoClearColor = new (THREE.Color as (x) => void)(0x000000);
+    this.renderer.clear();
+    const marks_gl = _.filter(views, (view: Mark) => view['render_gl']);
+
+    for (const mark of marks_gl) {
+      mark['render_gl']();
+    }
   }
 
   change_theme() {
@@ -1242,10 +1261,10 @@ export class Figure extends widgets.DOMWidgetView {
   figure_padding_x: number;
   figure_padding_y: number;
   height: number;
-  interaction_view: widgets.DOMWidgetView;
+  interaction_view: Interaction;
   interaction: d3.Selection<SVGGElement, any, any, any>;
   margin: { top: number; bottom: number; left: number; right: number };
-  mark_views: widgets.ViewList<any>;
+  mark_views: widgets.ViewList<Mark>;
   plotarea_height: number;
   plotarea_width: number;
   popper_reference: popper.ReferenceObject;
@@ -1262,6 +1281,8 @@ export class Figure extends widgets.DOMWidgetView {
   xPaddingArr: { [id: string]: number };
   y_pad_dict: { [id: string]: number };
   yPaddingArr: { [id: string]: number };
+
+  private dummyNodes: Dict<any> = {};
 
   private _update_requested: boolean;
   private relayoutRequested: boolean = false;

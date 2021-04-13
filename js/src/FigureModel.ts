@@ -75,6 +75,7 @@ export class FigureModel extends widgets.DOMWidgetModel {
     // and render a png. Remove this eventually.
     this.trigger('save_png');
   }
+
   static serializers = {
     ...widgets.DOMWidgetModel.serializers,
     marks: { deserialize: widgets.unpack_models },
