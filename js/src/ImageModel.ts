@@ -17,6 +17,11 @@ import * as widgets from '@jupyter-widgets/base';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
+export interface ImageData {
+  x: [number, number];
+  y: [number, number];
+}
+
 export class ImageModel extends MarkModel {
   defaults() {
     return {
@@ -35,46 +40,45 @@ export class ImageModel extends MarkModel {
 
   initialize(attributes, options) {
     super.initialize(attributes, options);
-    this.on_some_change(['x', 'y'], this.update_data, this);
-    this.on_some_change(['preserve_domain'], this.update_domains, this);
-    this.update_data();
+    this.on_some_change(['x', 'y'], this.updateData, this);
+    this.on_some_change(['preserve_domain'], this.updateDomains, this);
+    this.updateData();
   }
 
-  update_data() {
+  private updateData() {
     this.mark_data = {
       x: this.get('x'),
       y: this.get('y'),
     };
-    this.update_domains();
+    this.updateDomains();
     this.trigger('data_updated');
   }
 
-  update_domains() {
+  private updateDomains() {
     if (!this.mark_data) {
       return;
     }
-    const scales = this.get('scales');
-    const x_scale = scales.x;
-    const y_scale = scales.y;
 
-    if (x_scale) {
+    const scales = this.get('scales');
+
+    if (scales.x) {
       if (!this.get('preserve_domain').x) {
-        x_scale.compute_and_set_domain(
+        scales.x.compute_and_set_domain(
           this.mark_data['x'],
           this.model_id + '_x'
         );
       } else {
-        x_scale.del_domain([], this.model_id + '_x');
+        scales.x.del_domain([], this.model_id + '_x');
       }
     }
-    if (y_scale) {
+    if (scales.y) {
       if (!this.get('preserve_domain').y) {
-        y_scale.compute_and_set_domain(
+        scales.y.compute_and_set_domain(
           this.mark_data['y'],
           this.model_id + '_y'
         );
       } else {
-        y_scale.del_domain([], this.model_id + '_y');
+        scales.y.del_domain([], this.model_id + '_y');
       }
     }
   }
@@ -85,4 +89,6 @@ export class ImageModel extends MarkModel {
     x: serialize.array_or_json,
     y: serialize.array_or_json,
   };
+
+  mark_data: ImageData;
 }
