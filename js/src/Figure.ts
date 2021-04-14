@@ -355,13 +355,13 @@ export class Figure extends widgets.DOMWidgetView {
 
   replace_dummy_nodes(views: Mark[]) {
     for (const view of views) {
-      const dummyNode = this.dummyNodes[view.id];
+      const dummyNode = this.dummyNodes[view.cid];
 
       // It could be that the dummy node is removed before we got a change to replace it
       // This happens when the marks list is changed rapidly
       if (dummyNode !== null && dummyNode.parentNode) {
         dummyNode.parentNode.replaceChild(view.el, dummyNode);
-        this.dummyNodes[view.id] = null;
+        this.dummyNodes[view.cid] = null;
         this.displayed.then(() => {
           view.trigger('displayed');
         });
@@ -637,7 +637,7 @@ export class Figure extends widgets.DOMWidgetView {
       clip_id: this.clip_id,
     });
 
-    this.dummyNodes[view.id] = dummy_node;
+    this.dummyNodes[view.cid] = dummy_node;
 
     view.on(
       'mark_padding_updated',
