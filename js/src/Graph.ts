@@ -671,49 +671,35 @@ export class Graph extends Mark {
 
     const theta = Math.atan((targetRadius + arrowSize) / rotationRadius);
     const centerToArrow = rotateVector(centerToTarget, theta);
-    const ntarget = {
+    const actualTarget = {
       x: center.x + centerToArrow.x,
       y: center.y + centerToArrow.y,
     };
 
-    return `M${source.x},${source.y}A${rotationRadius},${rotationRadius} 0 0,1 ${ntarget.x},${ntarget.y}`;
+    return `M${source.x},${source.y}A${rotationRadius},${rotationRadius} 0 0,1 ${actualTarget.x},${actualTarget.y}`;
   }
 
   link_line(d) {
-    const midx = (d.source.x + d.target.x) / 2,
-      midy = (d.source.y + d.target.y) / 2;
-    return (
-      'M' +
-      d.source.x +
-      ',' +
-      d.source.y +
-      'L' +
-      midx +
-      ',' +
-      midy +
-      'L' +
-      d.target.x +
-      ',' +
-      d.target.y
-    );
+    const targetRadius = d.target.shape_attrs.r;
+    const source = d.source;
+    const target = d.target;
+
+    const dx = target.x - source.x;
+    const dy = target.y - source.y;
+
+    const theta = Math.atan2(dy, dx);
+
+    const actualTarget = {
+      x: target.x - (targetRadius + arrowSize) * Math.cos(theta),
+      y: target.y - (targetRadius + arrowSize) * Math.sin(theta),
+    };
+
+    return `M${source.x},${source.y}L${actualTarget.x},${actualTarget.y}`;
   }
 
   link_slant_line(d) {
     const midx = (d.source.x + d.target.x) / 2;
-    return (
-      'M' +
-      d.source.x +
-      ',' +
-      d.source.y +
-      'L' +
-      midx +
-      ',' +
-      d.target.y +
-      'L' +
-      d.target.x +
-      ',' +
-      d.target.y
-    );
+    return `M${d.source.x},${d.source.y}L${midx},${d.target.y}L${d.target.x},${d.target.y}`;
   }
 
   tick() {
