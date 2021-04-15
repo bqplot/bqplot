@@ -26,7 +26,10 @@ import { applyStyles } from './utils';
 
 const arrowSize = 10;
 
-const rotateVector = (vec: {x: number, y: number}, ang: number): {x: number, y: number} => {
+const rotateVector = (
+  vec: { x: number; y: number },
+  ang: number
+): { x: number; y: number } => {
   const cos = Math.cos(-ang);
   const sin = Math.sin(-ang);
   return {
@@ -650,7 +653,10 @@ export class Graph extends Mark {
   }
 
   link_arc(d) {
-    const targetRadius = d.target.shape_attrs.r;
+    const targetRadius =
+      d.target.shape_attrs.r ||
+      d.target.shape_attrs.width / 2 ||
+      d.target.shape_attrs.rx;
     const source = d.source;
     const target = d.target;
 
@@ -658,8 +664,8 @@ export class Graph extends Mark {
     const dy = target.y - source.y;
     const rotationRadius = Math.sqrt(dx * dx + dy * dy);
 
-    const sourceToTarget = {x: dx, y: dy};
-    const sourceToRotationCenter = rotateVector(sourceToTarget, - Math.PI / 3);
+    const sourceToTarget = { x: dx, y: dy };
+    const sourceToRotationCenter = rotateVector(sourceToTarget, -Math.PI / 3);
     const center = {
       x: source.x + sourceToRotationCenter.x,
       y: source.y + sourceToRotationCenter.y,
@@ -680,7 +686,10 @@ export class Graph extends Mark {
   }
 
   link_line(d) {
-    const targetRadius = d.target.shape_attrs.r;
+    const targetRadius =
+      d.target.shape_attrs.r ||
+      d.target.shape_attrs.width / 2 ||
+      d.target.shape_attrs.rx;
     const source = d.source;
     const target = d.target;
 
@@ -698,8 +707,30 @@ export class Graph extends Mark {
   }
 
   link_slant_line(d) {
-    const midx = (d.source.x + d.target.x) / 2;
-    return `M${d.source.x},${d.source.y}L${midx},${d.target.y}L${d.target.x},${d.target.y}`;
+    const targetRadius =
+      d.target.shape_attrs.r ||
+      d.target.shape_attrs.width / 2 ||
+      d.target.shape_attrs.rx;
+    const source = d.source;
+    const target = d.target;
+
+    let midx = (d.source.x + d.target.x) / 2;
+    let actualTargetX: number;
+
+    if (midx < target.x - (targetRadius + arrowSize)) {
+      actualTargetX = target.x - (targetRadius + arrowSize);
+    } else if (midx > target.x + (targetRadius + arrowSize)) {
+      actualTargetX = target.x + (targetRadius + arrowSize);
+    } else if (midx <= target.x) {
+      midx = target.x - (targetRadius + arrowSize);
+      actualTargetX = target.x - (targetRadius + arrowSize);
+    } else {
+      // midx > target.x
+      midx = target.x + (targetRadius + arrowSize);
+      actualTargetX = target.x + (targetRadius + arrowSize);
+    }
+
+    return `M${source.x},${source.y}L${midx},${target.y}L${actualTargetX},${target.y}`;
   }
 
   tick() {
