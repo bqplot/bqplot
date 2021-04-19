@@ -1697,9 +1697,11 @@ class Graph(Mark):
         link data passed as 2d matrix
     link_data: List
         list of link attributes for the graph
-    charge: int (default: -300)
+    charge: int (default: -600)
         charge of force layout. Will be ignored when x and y data attributes
         are set
+    static: bool (default: False)
+        whether the graph is static or not
     link_distance: float (default: 100)
         link distance in pixels between nodes. Will be ignored when x and y
         data attributes are set
@@ -1724,6 +1726,7 @@ class Graph(Mark):
         link data passed as 2d matrix
     """
     charge = Int(-600).tag(sync=True)
+    static = Bool(False).tag(sync=True)
     link_distance = Float(100).tag(sync=True)
     node_data = List().tag(sync=True)
     link_data = List().tag(sync=True)

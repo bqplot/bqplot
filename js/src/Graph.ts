@@ -219,6 +219,7 @@ export class Graph extends Mark {
       );
 
     this.listenTo(this.model, 'change:charge', this.update_charge);
+    this.listenTo(this.model, 'change:static', this.update_static);
     this.listenTo(
       this.model,
       'change:link_distance',
@@ -401,9 +402,16 @@ export class Graph extends Mark {
         this.reset_hover_points();
       }, this)
     );
+
+    if (this.model.static) {
+      this.force_layout.tick(100);
+      this.force_layout.stop();
+      this.tick();
+    }
   }
 
   dragstarted(d) {
+    if (this.model.static) return;
     if (!d3GetEvent().active) {
       this.force_layout.alphaTarget(0.4).restart();
     }
@@ -412,11 +420,13 @@ export class Graph extends Mark {
   }
 
   dragged(d) {
+    if (this.model.static) return;
     d.fx = d3GetEvent().x;
     d.fy = d3GetEvent().y;
   }
 
   dragended(d) {
+    if (this.model.static) return;
     if (!d3GetEvent().active) {
       this.force_layout.alphaTarget(0.4);
     }
@@ -649,6 +659,14 @@ export class Graph extends Mark {
     const charge = this.model.get('charge');
     if (!x_scale && !y_scale) {
       (this.force_layout as any).charge(charge).start();
+    }
+  }
+
+  update_static() {
+    if (this.model.static) {
+      this.force_layout.stop();
+    } else {
+      this.force_layout.restart();
     }
   }
 
