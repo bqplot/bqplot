@@ -26,7 +26,8 @@ export class GraphModel extends MarkModel {
       node_data: [],
       link_matrix: [],
       link_data: [],
-      charge: 300,
+      charge: -600,
+      static: false,
       link_distance: 100,
       link_type: 'arc',
       directed: true,
@@ -54,6 +55,10 @@ export class GraphModel extends MarkModel {
     );
     this.on_some_change(['preserve_domain'], this.update_domains, this);
     this.update_data();
+  }
+
+  get static(): boolean {
+    return this.get('static');
   }
 
   update_node_data() {
