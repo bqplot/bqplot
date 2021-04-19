@@ -24,6 +24,20 @@ import { Scale } from './Scale';
 import { GraphModel } from './GraphModel';
 import { applyStyles } from './utils';
 
+const arrowSize = 10;
+
+const rotateVector = (
+  vec: { x: number; y: number },
+  ang: number
+): { x: number; y: number } => {
+  const cos = Math.cos(-ang);
+  const sin = Math.sin(-ang);
+  return {
+    x: vec.x * cos - vec.y * sin,
+    y: vec.x * sin + vec.y * cos,
+  };
+};
+
 export class Graph extends Mark {
   render() {
     const base_creation_promise = super.render();
@@ -68,8 +82,8 @@ export class Graph extends Mark {
       .attr('id', 'arrow')
       .attr('refX', 0)
       .attr('refY', 3)
-      .attr('markerWidth', 10)
-      .attr('markerHeight', 10)
+      .attr('markerWidth', arrowSize)
+      .attr('markerHeight', arrowSize)
       .attr('orient', 'auto')
       .append('path')
       .attr('class', 'linkarrow')
@@ -298,7 +312,7 @@ export class Graph extends Mark {
       .style('stroke-width', (d: any) => {
         return d.link_width;
       })
-      .attr('marker-mid', directed ? 'url(#arrow)' : null);
+      .attr('marker-end', directed ? 'url(#arrow)' : null);
 
     this.force_layout
       .nodes(this.model.mark_data)
@@ -639,60 +653,84 @@ export class Graph extends Mark {
   }
 
   link_arc(d) {
-    const dx = d.target.x - d.source.x,
-      dy = d.target.y - d.source.y,
-      dr = Math.sqrt(dx * dx + dy * dy);
-    return (
-      'M' +
-      d.source.x +
-      ',' +
-      d.source.y +
-      'A' +
-      dr +
-      ',' +
-      dr +
-      ' 0 0,1 ' +
-      d.target.x +
-      ',' +
-      d.target.y
-    );
+    const targetRadius =
+      d.target.shape_attrs.r ||
+      d.target.shape_attrs.width / 2 ||
+      d.target.shape_attrs.rx;
+    const source = d.source;
+    const target = d.target;
+
+    const dx = target.x - source.x;
+    const dy = target.y - source.y;
+    const rotationRadius = Math.sqrt(dx * dx + dy * dy);
+
+    const sourceToTarget = { x: dx, y: dy };
+    const sourceToRotationCenter = rotateVector(sourceToTarget, -Math.PI / 3);
+    const center = {
+      x: source.x + sourceToRotationCenter.x,
+      y: source.y + sourceToRotationCenter.y,
+    };
+    const centerToTarget = {
+      x: target.x - center.x,
+      y: target.y - center.y,
+    };
+
+    const theta = Math.atan((targetRadius + arrowSize) / rotationRadius);
+    const centerToArrow = rotateVector(centerToTarget, theta);
+    const actualTarget = {
+      x: center.x + centerToArrow.x,
+      y: center.y + centerToArrow.y,
+    };
+
+    return `M${source.x},${source.y}A${rotationRadius},${rotationRadius} 0 0,1 ${actualTarget.x},${actualTarget.y}`;
   }
 
   link_line(d) {
-    const midx = (d.source.x + d.target.x) / 2,
-      midy = (d.source.y + d.target.y) / 2;
-    return (
-      'M' +
-      d.source.x +
-      ',' +
-      d.source.y +
-      'L' +
-      midx +
-      ',' +
-      midy +
-      'L' +
-      d.target.x +
-      ',' +
-      d.target.y
-    );
+    const targetRadius =
+      d.target.shape_attrs.r ||
+      d.target.shape_attrs.width / 2 ||
+      d.target.shape_attrs.rx;
+    const source = d.source;
+    const target = d.target;
+
+    const dx = target.x - source.x;
+    const dy = target.y - source.y;
+
+    const theta = Math.atan2(dy, dx);
+
+    const actualTarget = {
+      x: target.x - (targetRadius + arrowSize) * Math.cos(theta),
+      y: target.y - (targetRadius + arrowSize) * Math.sin(theta),
+    };
+
+    return `M${source.x},${source.y}L${actualTarget.x},${actualTarget.y}`;
   }
 
   link_slant_line(d) {
-    const midx = (d.source.x + d.target.x) / 2;
-    return (
-      'M' +
-      d.source.x +
-      ',' +
-      d.source.y +
-      'L' +
-      midx +
-      ',' +
-      d.target.y +
-      'L' +
-      d.target.x +
-      ',' +
-      d.target.y
-    );
+    const targetRadius =
+      d.target.shape_attrs.r ||
+      d.target.shape_attrs.width / 2 ||
+      d.target.shape_attrs.rx;
+    const source = d.source;
+    const target = d.target;
+
+    let midx = (d.source.x + d.target.x) / 2;
+    let actualTargetX: number;
+
+    if (midx < target.x - (targetRadius + arrowSize)) {
+      actualTargetX = target.x - (targetRadius + arrowSize);
+    } else if (midx > target.x + (targetRadius + arrowSize)) {
+      actualTargetX = target.x + (targetRadius + arrowSize);
+    } else if (midx <= target.x) {
+      midx = target.x - (targetRadius + arrowSize);
+      actualTargetX = target.x - (targetRadius + arrowSize);
+    } else {
+      // midx > target.x
+      midx = target.x + (targetRadius + arrowSize);
+      actualTargetX = target.x + (targetRadius + arrowSize);
+    }
+
+    return `M${source.x},${source.y}L${midx},${target.y}L${actualTargetX},${target.y}`;
   }
 
   tick() {
