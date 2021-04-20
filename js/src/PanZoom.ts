@@ -28,15 +28,19 @@ export class PanZoom extends interaction.Interaction {
     const that = this;
     this.d3el
       .style('cursor', 'move')
-      .on('mousedown', () => {
-        that.mousedown();
-      })
-      .on('mousemove', () => {
-        that.mousemove();
-      })
-      .on('mouseup', () => {
-        that.mouseup();
-      })
+      .call(
+        d3
+          .drag()
+          .on('start', () => {
+            that.mousedown();
+          })
+          .on('drag', () => {
+            that.mousemove();
+          })
+          .on('end', () => {
+            that.mouseup();
+          })
+      )
       .on('mousewheel', () => {
         that.mousewheel();
       })
