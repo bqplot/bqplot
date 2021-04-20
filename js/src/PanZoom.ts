@@ -15,13 +15,7 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-selection"));
-const d3GetEvent = function () {
-  // In JupyterLab we can have require('d3-selection').event
-  // be a different module as the one that is used in d3.on
-  // leading to a null event, for now we can use window.event as fallback.
-  return require('d3-selection').event || window.event;
-}.bind(this);
+import { d3GetEvent } from './utils';
 import * as interaction from './Interaction';
 import * as _ from 'underscore';
 

@@ -14,10 +14,7 @@
  */
 
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-drag"), require("d3-selection"), require("d3-shape"));
-const d3GetEvent = function () {
-  return require('d3-selection').event;
-}.bind(this);
+import { d3GetEvent } from './utils';
 import * as _ from 'underscore';
 import { BaseXYSelector } from './Selector';
 import * as sel_utils from './selector_utils';
