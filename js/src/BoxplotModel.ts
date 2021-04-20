@@ -42,9 +42,9 @@ export class BoxplotModel extends MarkModel {
   initialize(): void {
     super.initialize.apply(this, arguments);
 
-    this.on_some_change(['x', 'y'], this.updateData, this);
-    this.on_some_change(['preserve_domain'], this.updateDomains, this);
-    this.updateData();
+    this.on_some_change(['x', 'y'], this.update_data, this);
+    this.on_some_change(['preserve_domain'], this.update_domains, this);
+    this.update_data();
     this.update_domains();
   }
 
@@ -52,7 +52,7 @@ export class BoxplotModel extends MarkModel {
     return data.dataDict;
   }
 
-  private updateData() {
+  update_data() {
     let xData = this.get('x');
     let yData = this.get('y');
 
@@ -70,11 +70,11 @@ export class BoxplotModel extends MarkModel {
 
     this.mark_data = _.zip(xData, yData);
 
-    this.updateDomains();
+    this.update_domains();
     this.trigger('data_updated');
   }
 
-  private updateDomains() {
+  update_domains() {
     // color scale needs an issue in DateScaleModel to be fixed. It
     // should be moved here as soon as that is fixed.
     const scales = this.get('scales');

@@ -71,11 +71,11 @@ export class PieModel extends MarkModel {
     );
     this.on('change:labels', this.updateLabels, this);
 
-    this.on_some_change(['preserve_domain'], this.updateDomains, this);
+    this.on_some_change(['preserve_domain'], this.update_domains, this);
     this.update_data();
     this.updateColor();
     this.updateLabels();
-    this.updateDomains();
+    this.update_domains();
   }
 
   update_data() {
@@ -93,7 +93,7 @@ export class PieModel extends MarkModel {
     });
 
     this.updateColor();
-    this.updateDomains();
+    this.update_domains();
     this.trigger('data_updated');
   }
 
@@ -126,7 +126,7 @@ export class PieModel extends MarkModel {
     }
   }
 
-  private updateDomains() {
+  update_domains() {
     if (!this.mark_data) {
       return;
     }

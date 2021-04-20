@@ -45,22 +45,22 @@ export class OHLCModel extends MarkModel {
   initialize(attributes, options) {
     super.initialize(attributes, options);
 
-    this.on_some_change(['x', 'y'], this.updateData, this);
+    this.on_some_change(['x', 'y'], this.update_data, this);
     this.on_some_change(['preserve_domain'], this.update_domains, this);
     this.on('change:format', this.updateFormat, this);
     this.px = { o: -1, h: -1, l: -1, c: -1 };
     this.mark_data = [];
-    this.updateData();
+    this.update_data();
     this.update_domains();
     this.updateFormat();
   }
 
   private updateFormat() {
-    this.updateData();
+    this.update_data();
     this.trigger('format_updated');
   }
 
-  private updateData() {
+  update_data() {
     let x = this.get('x');
     let y = this.get('y');
     const format = this.get('format');
