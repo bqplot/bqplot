@@ -20,8 +20,7 @@ const d3GetEvent = function () {
 }.bind(this);
 import * as _ from 'underscore';
 import { Mark } from './Mark';
-import { Scale } from './Scale';
-import { GraphModel } from './GraphModel';
+import { GraphModel, LinkData, NodeData } from './GraphModel';
 import { applyStyles } from './utils';
 
 const arrowSize = 10;
@@ -39,7 +38,7 @@ const rotateVector = (
 };
 
 export class Graph extends Mark {
-  render() {
+  async render() {
     const base_creation_promise = super.render();
 
     this.selected_style = this.model.get('selected_style');
@@ -76,7 +75,7 @@ export class Graph extends Mark {
 
     this.d3el.attr('class', 'network');
 
-    this.arrow = this.parent.svg
+    this.parent.svg
       .append('defs')
       .append('marker')
       .attr('id', 'arrow')
@@ -89,66 +88,62 @@ export class Graph extends Mark {
       .attr('class', 'linkarrow')
       .attr('d', 'M0,0 L0,6 L9,3 z');
 
-    return base_creation_promise.then(() => {
-      this.event_listeners = {};
-      this.process_interactions();
-      this.create_listeners();
-      this.compute_view_padding();
-      this.draw();
-    });
+    await base_creation_promise;
+
+    this.event_listeners = {};
+    this.process_interactions();
+    this.create_listeners();
+    this.compute_view_padding();
+    this.draw();
   }
 
   set_ranges() {
-    const x_scale = this.scales.x,
-      y_scale = this.scales.y;
-    if (x_scale) {
-      x_scale.set_range(this.parent.padded_range('x', x_scale.model));
+    if (this.scales.x) {
+      this.scales.x.set_range(
+        this.parent.padded_range('x', this.scales.x.model)
+      );
     }
-    if (y_scale) {
-      y_scale.set_range(this.parent.padded_range('y', y_scale.model));
+    if (this.scales.y) {
+      this.scales.y.set_range(
+        this.parent.padded_range('y', this.scales.y.model)
+      );
     }
   }
 
   set_positional_scales() {
-    this.x_scale = this.scales.x;
-    this.y_scale = this.scales.y;
-
-    // If no scale for "x" or "y" is specified, figure scales are used.
-    if (!this.x_scale) {
-      this.x_scale = this.parent.scale_x;
-    }
-    if (!this.y_scale) {
-      this.y_scale = this.parent.scale_y;
-    }
-
-    this.listenTo(this.x_scale, 'domain_changed', function () {
-      if (!this.model.dirty) {
-        this.update_position();
+    this.listenTo(
+      this.scales.x || this.parent.scale_x,
+      'domain_changed',
+      function () {
+        if (!this.model.dirty) {
+          this.updatePosition();
+        }
       }
-    });
-    this.listenTo(this.y_scale, 'domain_changed', function () {
-      if (!this.model.dirty) {
-        this.update_position();
+    );
+    this.listenTo(
+      this.scales.y || this.parent.scale_y,
+      'domain_changed',
+      function () {
+        if (!this.model.dirty) {
+          this.updatePosition();
+        }
       }
-    });
+    );
   }
 
   relayout() {
-    this.set_ranges();
-    this.update_position();
+    this.updatePosition();
   }
 
-  update_position() {
-    const x_scale = this.scales.x,
-      y_scale = this.scales.y;
+  private updatePosition() {
     this.set_ranges();
 
-    if (x_scale && y_scale) {
+    if (this.scales.x && this.scales.y) {
       // set x and y positions on mark data manually
       // and redraw the force layout
       this.model.mark_data.forEach((d) => {
-        d.x = x_scale.scale(d.xval) + x_scale.offset;
-        d.y = y_scale.scale(d.yval) + y_scale.offset;
+        d.x = this.scales.x.scale(d.xval) + this.scales.x.offset;
+        d.y = this.scales.y.scale(d.yval) + this.scales.y.offset;
       });
 
       if (this.force_layout) {
@@ -176,60 +171,43 @@ export class Graph extends Mark {
   }
 
   initialize_additional_scales() {
-    const color_scale = this.scales.color;
-    if (color_scale) {
-      this.listenTo(color_scale, 'domain_changed', function () {
-        this.color_scale_updated();
-      });
-      color_scale.on(
-        'color_scale_range_changed',
-        this.color_scale_updated,
-        this
-      );
+    const colorScale = this.scales.color;
+    if (colorScale) {
+      this.listenTo(colorScale, 'domain_changed', this.colorScaleUpdated);
+      colorScale.on('color_scale_range_changed', this.colorScaleUpdated, this);
     }
 
-    const link_color_scale = this.scales.link_color;
-    if (link_color_scale) {
-      this.listenTo(link_color_scale, 'domain_changed', function () {
-        this.link_color_scale_updated();
-      });
+    const linkColorScale = this.scales.link_color;
+    if (linkColorScale) {
+      this.listenTo(
+        linkColorScale,
+        'domain_changed',
+        this.linkColorScaleUpdated
+      );
     }
   }
 
   create_listeners() {
     super.create_listeners();
     this.d3el
-      .on(
-        'mouseover',
-        _.bind(function () {
-          this.event_dispatcher('mouse_over');
-        }, this)
-      )
-      .on(
-        'mousemove',
-        _.bind(function () {
-          this.event_dispatcher('mouse_move');
-        }, this)
-      )
-      .on(
-        'mouseout',
-        _.bind(function () {
-          this.event_dispatcher('mouse_out');
-        }, this)
-      );
+      .on('mouseover', () => {
+        this.event_dispatcher('mouse_over');
+      })
+      .on('mousemove', () => {
+        this.event_dispatcher('mouse_move');
+      })
+      .on('mouseout', () => {
+        this.event_dispatcher('mouse_out');
+      });
 
-    this.listenTo(this.model, 'change:charge', this.update_charge);
-    this.listenTo(this.model, 'change:static', this.update_static);
-    this.listenTo(
-      this.model,
-      'change:link_distance',
-      this.update_link_distance
-    );
-    this.listenTo(this.model, 'data_updated', this.data_updated);
+    this.listenTo(this.model, 'change:charge', this.updateCharge);
+    this.listenTo(this.model, 'change:static', this.updateStatic);
+    this.listenTo(this.model, 'change:link_type', this.tick);
+    this.listenTo(this.model, 'change:directed', this.tick);
+    this.listenTo(this.model, 'change:link_distance', this.updateLinkDistance);
+    this.listenTo(this.model, 'data_updated', this.relayout);
     this.listenTo(this.model, 'change:tooltip', this.create_tooltip);
-    this.listenTo(this.model, 'change:enable_hover', function () {
-      this.hide_tooltip();
-    });
+    this.listenTo(this.model, 'change:enable_hover', this.hide_tooltip);
     this.listenTo(this.model, 'change:interactions', this.process_interactions);
     this.listenTo(this.model, 'change:selected', this.update_selected);
     this.listenTo(this.model, 'change:hovered_point', this.update_hovered);
@@ -247,11 +225,6 @@ export class Graph extends Mark {
     this.listenTo(this.parent, 'bg_clicked', function () {
       this.event_dispatcher('parent_clicked');
     });
-  }
-
-  data_updated() {
-    this.draw();
-    this.relayout();
   }
 
   draw() {
@@ -276,7 +249,7 @@ export class Graph extends Mark {
     const width = box.width;
     const height = box.height;
     this.force_layout = d3
-      .forceSimulation()
+      .forceSimulation<NodeData>()
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force(
         'forceX',
@@ -296,10 +269,8 @@ export class Graph extends Mark {
     if (!x_scale && !y_scale) {
       this.force_layout
         .force('charge', d3.forceManyBody().strength(this.model.get('charge')))
-        .on('tick', _.bind(this.tick, this));
+        .on('tick', this.tick.bind(this));
     }
-
-    const directed = this.model.get('directed');
 
     this.links = this.d3el
       .selectAll('.link')
@@ -313,7 +284,7 @@ export class Graph extends Mark {
       .style('stroke-width', (d: any) => {
         return d.link_width;
       })
-      .attr('marker-end', directed ? 'url(#arrow)' : null);
+      .attr('marker-end', this.model.directed ? 'url(#arrow)' : null);
 
     this.force_layout
       .nodes(this.model.mark_data)
@@ -384,24 +355,15 @@ export class Graph extends Mark {
         return d.label_display === 'none' ? 'none' : 'inline';
       });
 
-    this.nodes.on(
-      'click',
-      _.bind(function (d, i) {
-        this.event_dispatcher('element_clicked', { data: d, index: i });
-      }, this)
-    );
-    this.nodes.on(
-      'mouseover',
-      _.bind(function (d, i) {
-        this.hover_handler({ data: d, index: i });
-      }, this)
-    );
-    this.nodes.on(
-      'mouseout',
-      _.bind(function () {
-        this.reset_hover_points();
-      }, this)
-    );
+    this.nodes.on('click', (d, i) => {
+      this.event_dispatcher('element_clicked', { data: d, index: i });
+    });
+    this.nodes.on('mouseover', (d, i) => {
+      this.hover_handler({ data: d, index: i });
+    });
+    this.nodes.on('mouseout', () => {
+      this.reset_hover_points();
+    });
 
     if (this.model.static) {
       this.force_layout.tick(100);
@@ -410,7 +372,7 @@ export class Graph extends Mark {
     }
   }
 
-  dragstarted(d) {
+  private dragstarted(d: NodeData) {
     if (this.model.static) return;
     if (!d3GetEvent().active) {
       this.force_layout.alphaTarget(0.4).restart();
@@ -419,13 +381,13 @@ export class Graph extends Mark {
     d.fy = d.y;
   }
 
-  dragged(d) {
+  private dragged(d: NodeData) {
     if (this.model.static) return;
     d.fx = d3GetEvent().x;
     d.fy = d3GetEvent().y;
   }
 
-  dragended(d) {
+  private dragended(d: NodeData) {
     if (this.model.static) return;
     if (!d3GetEvent().active) {
       this.force_layout.alphaTarget(0.4);
@@ -434,13 +396,13 @@ export class Graph extends Mark {
     d.fy = null;
   }
 
-  color_scale_updated() {
+  private colorScaleUpdated() {
     this.nodes
       .selectAll('.element')
       .style('fill', this.get_mark_color.bind(this));
   }
 
-  link_color_scale_updated() {
+  private linkColorScaleUpdated() {
     const link_color_scale = this.scales.link_color;
 
     this.links.style('stroke', (d) => {
@@ -637,12 +599,7 @@ export class Graph extends Mark {
     }
   }
 
-  selected_deleter() {
-    d3GetEvent().stopPropagation();
-    return;
-  }
-
-  update_link_distance() {
+  private updateLinkDistance() {
     const x_scale = this.scales.x,
       y_scale = this.scales.y;
 
@@ -652,7 +609,7 @@ export class Graph extends Mark {
     }
   }
 
-  update_charge() {
+  private updateCharge() {
     const x_scale = this.scales.x,
       y_scale = this.scales.y;
 
@@ -662,7 +619,7 @@ export class Graph extends Mark {
     }
   }
 
-  update_static() {
+  private updateStatic() {
     if (this.model.static) {
       this.force_layout.stop();
     } else {
@@ -670,17 +627,21 @@ export class Graph extends Mark {
     }
   }
 
-  link_arc(d) {
+  private linkArc(d: LinkData) {
+    const source = d.source;
+    const target = d.target;
+    const dx = target.x - source.x;
+    const dy = target.y - source.y;
+    const rotationRadius = Math.sqrt(dx * dx + dy * dy);
+
+    if (!this.model.directed) {
+      return `M${source.x},${source.y}A${rotationRadius},${rotationRadius} 0 0,1 ${target.x},${target.y}`;
+    }
+
     const targetRadius =
       d.target.shape_attrs.r ||
       d.target.shape_attrs.width / 2 ||
       d.target.shape_attrs.rx;
-    const source = d.source;
-    const target = d.target;
-
-    const dx = target.x - source.x;
-    const dy = target.y - source.y;
-    const rotationRadius = Math.sqrt(dx * dx + dy * dy);
 
     const sourceToTarget = { x: dx, y: dy };
     const sourceToRotationCenter = rotateVector(sourceToTarget, -Math.PI / 3);
@@ -703,13 +664,18 @@ export class Graph extends Mark {
     return `M${source.x},${source.y}A${rotationRadius},${rotationRadius} 0 0,1 ${actualTarget.x},${actualTarget.y}`;
   }
 
-  link_line(d) {
+  private linkLine(d: LinkData) {
+    const source = d.source;
+    const target = d.target;
+
+    if (!this.model.directed) {
+      return `M${source.x},${source.y}L${target.x},${target.y}`;
+    }
+
     const targetRadius =
       d.target.shape_attrs.r ||
       d.target.shape_attrs.width / 2 ||
       d.target.shape_attrs.rx;
-    const source = d.source;
-    const target = d.target;
 
     const dx = target.x - source.x;
     const dy = target.y - source.y;
@@ -724,15 +690,20 @@ export class Graph extends Mark {
     return `M${source.x},${source.y}L${actualTarget.x},${actualTarget.y}`;
   }
 
-  link_slant_line(d) {
-    const targetRadius =
-      d.target.shape_attrs.r ||
-      d.target.shape_attrs.width / 2 ||
-      d.target.shape_attrs.rx;
+  private linkSlantLine(d: LinkData) {
     const source = d.source;
     const target = d.target;
 
     let midx = (d.source.x + d.target.x) / 2;
+
+    if (!this.model.directed) {
+      return `M${source.x},${source.y}L${midx},${target.y}L${target.x},${target.y}`;
+    }
+
+    const targetRadius =
+      d.target.shape_attrs.r ||
+      d.target.shape_attrs.width / 2 ||
+      d.target.shape_attrs.rx;
     let actualTargetX: number;
 
     if (midx < target.x - (targetRadius + arrowSize)) {
@@ -751,44 +722,36 @@ export class Graph extends Mark {
     return `M${source.x},${source.y}L${midx},${target.y}L${actualTargetX},${target.y}`;
   }
 
-  tick() {
+  private tick() {
     const link_type = this.model.get('link_type');
 
-    this.nodes.attr('transform', transform);
+    this.nodes.attr('transform', (d: NodeData) => {
+      return `translate(${d.x},${d.y})`;
+    });
 
     // move rects to center since x, y of rect is at the corner
-    this.nodes.select('rect').attr('transform', (d) => {
-      return (
-        'translate(' +
-        -d.shape_attrs.width / 2 +
-        ',' +
-        -d.shape_attrs.height / 2 +
-        ')'
-      );
+    this.nodes.select('rect').attr('transform', (d: NodeData) => {
+      return `translate(${-d.shape_attrs.width / 2},${
+        -d.shape_attrs.height / 2
+      })`;
     });
 
-    let link_path_func = this.link_arc;
+    let link_path_func = this.linkArc;
     switch (link_type) {
       case 'arc':
-        link_path_func = this.link_arc;
+        link_path_func = this.linkArc;
         break;
       case 'line':
-        link_path_func = this.link_line;
+        link_path_func = this.linkLine;
         break;
       case 'slant_line':
-        link_path_func = this.link_slant_line;
+        link_path_func = this.linkSlantLine;
         break;
       default:
-        link_path_func = this.link_arc;
+        link_path_func = this.linkArc;
     }
 
-    this.links.attr('d', (d) => {
-      return link_path_func(d);
-    });
-
-    function transform(d) {
-      return 'translate(' + d.x + ',' + d.y + ')';
-    }
+    this.links.attr('d', link_path_func.bind(this));
   }
 
   set_default_style(indices) {}
@@ -796,17 +759,9 @@ export class Graph extends Mark {
   hovered_style: { [key: string]: string };
   unhovered_style: { [key: string]: string };
   hovered_index: number[];
-  arrow: d3.Selection<SVGPathElement, any, any, any>;
-  x_scale: Scale;
-  y_scale: Scale;
-  force_layout: d3.Simulation<d3.SimulationNodeDatum, any>;
-  links: d3.Selection<
-    SVGPathElement,
-    { source: any; target: any; value: number },
-    HTMLElement,
-    any
-  >;
-  nodes: d3.Selection<SVGGElement, any, HTMLElement, any>;
+  private force_layout: d3.Simulation<NodeData, any>;
+  private links: d3.Selection<SVGPathElement, LinkData, HTMLElement, any>;
+  private nodes: d3.Selection<SVGGElement, any, HTMLElement, any>;
 
   model: GraphModel;
 }
