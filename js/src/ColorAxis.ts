@@ -21,7 +21,7 @@ import { applyAttrs } from './utils';
 import { ColorScale } from './ColorScale';
 
 class ColorBar extends Axis {
-  render() {
+  async render() {
     this.parent = this.options.parent;
     this.vertical = this.model.get('orientation') === 'vertical';
 
@@ -37,13 +37,12 @@ class ColorBar extends Axis {
 
     this.ordinal = false;
     this.num_ticks = this.model.get('num_ticks');
-    const that = this;
-    return scale_promise.then(() => {
-      that.create_listeners();
-      that.tick_format = that.generate_tick_formatter();
-      that.set_scales_range();
-      that.append_axis();
-    });
+
+    await scale_promise;
+
+    this.create_listeners();
+    this.set_scales_range();
+    this.append_axis();
   }
 
   create_listeners() {
@@ -161,7 +160,7 @@ class ColorBar extends Axis {
           ? d3.axisTop(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
           : d3.axisBottom(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
     }
-    this.axis = this.axis.tickFormat(this.tick_format);
+    this.axis = this.axis.tickFormat(this.get_formatter());
     this.redraw_axisline();
   }
 
