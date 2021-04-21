@@ -16,9 +16,7 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-zoom"));
-const d3GetEvent = () => {
-  return require('d3-selection').event;
-};
+import { d3GetEvent } from './utils';
 import { Mark } from './Mark';
 import { MapModel } from './MapModel';
 

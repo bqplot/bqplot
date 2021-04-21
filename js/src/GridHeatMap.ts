@@ -14,9 +14,7 @@
  */
 
 import * as d3 from 'd3';
-const d3GetEvent = function () {
-  return require('d3-selection').event;
-}.bind(this);
+import { d3GetEvent } from './utils';
 import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { GridCellData, AxisMode, GridHeatMapModel } from './GridHeatMapModel';

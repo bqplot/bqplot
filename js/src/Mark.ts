@@ -20,10 +20,7 @@ import { MessageLoop } from '@lumino/messaging';
 
 import { Widget } from '@lumino/widgets';
 
-// var d3 =Object.assign({}, require("d3-array"), require("d3-selection"), require("d3-selection-multi"));
-const d3GetEvent = function () {
-  return require('d3-selection').event;
-}.bind(this);
+import { d3GetEvent } from './utils';
 import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
 import { Figure } from './Figure';

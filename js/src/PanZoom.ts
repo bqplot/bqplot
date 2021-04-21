@@ -15,10 +15,7 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-selection"));
-const d3GetEvent = function () {
-  return require('d3-selection').event;
-}.bind(this);
+import { d3GetEvent } from './utils';
 import * as interaction from './Interaction';
 import * as _ from 'underscore';
 

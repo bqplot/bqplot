@@ -111,3 +111,10 @@ export function applyAttrs(d3el, styles) {
   Object.keys(styles).forEach((key) => d3el.attr(key, styles[key]));
   return d3el;
 }
+
+export function d3GetEvent() {
+  // In JupyterLab we can have require('d3-selection').event
+  // be a different module as the one that is used in d3.on
+  // leading to a null event, for now we can use window.event as fallback.
+  return require('d3-selection').event || window.event;
+}
