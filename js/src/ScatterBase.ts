@@ -711,11 +711,6 @@ export abstract class ScatterBase extends Mark {
     });
   }
 
-  selected_deleter() {
-    d3GetEvent().stopPropagation();
-    return;
-  }
-
   add_element() {
     const mouse_pos = d3.mouse(this.el);
     const curr_pos = [mouse_pos[0], mouse_pos[1]];
