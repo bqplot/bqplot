@@ -14,7 +14,7 @@
 
 from __future__ import print_function
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 from jupyter_packaging import (
     create_cmdclass,
@@ -27,51 +27,9 @@ from jupyter_packaging import (
 
 import os
 from os.path import join as pjoin
-from distutils import log
 
 here = os.path.dirname(os.path.abspath(__file__))
-
-# due to https://github.com/jupyterlab/jupyterlab/blob/136d2ec216ebfc429a696e6ee75fee5f8ead73e2/jupyterlab/federated_labextensions.py#L347
-# we should not print out anything, otherwise setup.py --name gives noise
-# log.set_verbosity(log.ERROR)
-# log.info('setup.py entered')
-# log.info('$PATH=%s' % os.environ['PATH'])
-
-name = 'bqplot'
-
-LONG_DESCRIPTION = """
-BQPlot
-======
-
-Plotting system for the Jupyter notebook based on the interactive Jupyter widgets.
-
-Installation
-============
-
-.. code-block:: bash
-
-    pip install bqplot
-    jupyter nbextension enable --py bqplot
-
-
-Usage
-=====
-
-.. code-block:: python
-
-    from bqplot import pyplot as plt
-    import numpy as np
-
-    plt.figure(1)
-    n = 200
-    x = np.linspace(0.0, 10.0, n)
-    y = np.cumsum(np.random.randn(n))
-    plt.plot(x,y, axes_options={'y': {'grid_lines': 'dashed'}})
-    plt.show()
-"""
-
-# Get bqplot version
-version = get_version(pjoin(name, '_version.py'))
+version = get_version(pjoin('bqplot', '_version.py'))
 
 js_dir = pjoin(here, 'js')
 
@@ -101,46 +59,4 @@ if is_repo:
 else:
     cmdclass['jsdeps'] = skip_if_exists(jstargets, js_command)
 
-
-setup_args = dict(
-    name=name,
-    version=version,
-    description='Interactive plotting for the Jupyter notebook, using d3.js and ipywidgets.',
-    long_description=LONG_DESCRIPTION,
-    license='Apache',
-    author='The BQplot Development Team',
-    url='https://github.com/bloomberg/bqplot',
-    include_package_data=True,
-    cmdclass=cmdclass,
-    install_requires=[
-        'ipywidgets>=7.5.0',
-        'traitlets>=4.3.0',
-        'traittypes>=0.0.6',
-        'numpy>=1.10.4',
-        'pandas'],
-    packages=find_packages(exclude=["tests"]),
-    zip_safe=False,
-    keywords=[
-        'ipython',
-        'jupyter',
-        'widgets',
-        'graphics',
-        'plotting',
-        'd3',
-    ],
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Science/Research',
-        'Topic :: Multimedia :: Graphics',
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-    ],
-)
-
-setup(**setup_args)
+setup(version=version, cmdclass=cmdclass)
