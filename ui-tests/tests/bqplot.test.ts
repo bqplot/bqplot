@@ -12,6 +12,109 @@ const filterUpdateNotebooks = item => {
   return basename.includes('_update');
 }
 
+const testCellOutputs = async (theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
+  const paths = klaw('tests/notebooks', {filter: item => !filterUpdateNotebooks(item), nodir: true});
+  const notebooks = paths.map(item => path.basename(item.path));
+
+  let results = [];
+
+  const contextPrefix = theme == 'JupyterLab Light' ? 'light_' : 'dark_';
+  galata.theme.setTheme(theme);
+
+  for (const notebook of notebooks) {
+    galata.context.capturePrefix = contextPrefix + notebook;
+
+    await galata.notebook.open(notebook);
+    expect(await galata.notebook.isOpen(notebook)).toBeTruthy();
+    await galata.notebook.activate(notebook);
+    expect(await galata.notebook.isActive(notebook)).toBeTruthy();
+
+    let numCellImages = 0;
+
+    const getCaptureImageName = (id: number): string => {
+      return `cell-${id}`;
+    };
+
+    await galata.notebook.runCellByCell({
+      onAfterCellRun: async (cellIndex: number) => {
+        const cell = await galata.notebook.getCellOutput(cellIndex);
+        if (cell) {
+          if (
+            await galata.capture.screenshot(
+              getCaptureImageName(numCellImages),
+              cell
+            )
+          ) {
+            numCellImages++;
+          }
+        }
+      }
+    });
+
+    for (let c = 0; c < numCellImages; ++c) {
+      results.push(await galata.capture.compareScreenshot(getCaptureImageName(c)));
+    }
+
+    await galata.notebook.close(true);
+  }
+
+  for (const result of results) {
+    expect(result).toBe('same');
+  }
+}
+
+const testPlotUpdates = async (theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
+  const paths = klaw('tests/notebooks', {filter: item => filterUpdateNotebooks(item), nodir: true});
+  const notebooks = paths.map(item => path.basename(item.path));
+
+  let results = [];
+
+  const contextPrefix = theme == 'JupyterLab Light' ? 'light_' : 'dark_';
+  galata.theme.setTheme(theme);
+
+  for (const notebook of notebooks) {
+    galata.context.capturePrefix = contextPrefix + notebook;
+
+    await galata.notebook.open(notebook);
+    expect(await galata.notebook.isOpen(notebook)).toBeTruthy();
+    await galata.notebook.activate(notebook);
+    expect(await galata.notebook.isActive(notebook)).toBeTruthy();
+
+    let numCellImages = 0;
+
+    const getCaptureImageName = (id: number): string => {
+      return `cell-${id}`;
+    };
+
+    await galata.notebook.runCellByCell({
+      onAfterCellRun: async (cellIndex: number) => {
+        // Always get first cell output which must contain the plot
+        const cell = await galata.notebook.getCellOutput(0);
+        if (cell) {
+          if (
+            await galata.capture.screenshot(
+              getCaptureImageName(numCellImages),
+              cell
+            )
+          ) {
+            numCellImages++;
+          }
+        }
+      }
+    });
+
+    for (let c = 0; c < numCellImages; ++c) {
+      results.push(await galata.capture.compareScreenshot(getCaptureImageName(c)));
+    }
+
+    await galata.notebook.close(true);
+  }
+
+  for (const result of results) {
+    expect(result).toBe('same');
+  }
+};
+
 describe('bqplot Visual Regression', () => {
   beforeAll(async () => {
     await galata.resetUI();
@@ -42,101 +145,20 @@ describe('bqplot Visual Regression', () => {
     ).toBeTruthy();
   });
 
-  test('Check bqplot first renders', async () => {
-    const paths = klaw('tests/notebooks', {filter: item => !filterUpdateNotebooks(item), nodir: true});
-    const notebooks = paths.map(item => path.basename(item.path));
-
-    let results = [];
-
-    for (const notebook of notebooks) {
-      galata.context.capturePrefix = notebook;
-
-      await galata.notebook.open(notebook);
-      expect(await galata.notebook.isOpen(notebook)).toBeTruthy();
-      await galata.notebook.activate(notebook);
-      expect(await galata.notebook.isActive(notebook)).toBeTruthy();
-
-      let numCellImages = 0;
-
-      const getCaptureImageName = (id: number): string => {
-        return `cell-${id}`;
-      };
-
-      await galata.notebook.runCellByCell({
-        onAfterCellRun: async (cellIndex: number) => {
-          const cell = await galata.notebook.getCellOutput(cellIndex);
-          if (cell) {
-            if (
-              await galata.capture.screenshot(
-                getCaptureImageName(numCellImages),
-                cell
-              )
-            ) {
-              numCellImages++;
-            }
-          }
-        }
-      });
-
-      for (let c = 0; c < numCellImages; ++c) {
-        results.push(await galata.capture.compareScreenshot(getCaptureImageName(c)));
-      }
-
-      await galata.notebook.close(true);
-    }
-
-    for (const result of results) {
-      expect(result).toBe('same');
-    }
+  test('Light theme: Check bqplot first renders', async () => {
+    await testCellOutputs('JupyterLab Light');
   });
 
-  test('Check bqplot update plot properties', async () => {
-    const paths = klaw('tests/notebooks', {filter: item => filterUpdateNotebooks(item), nodir: true});
-    const notebooks = paths.map(item => path.basename(item.path));
+  test('Dark theme: Check bqplot first renders', async () => {
+    await testCellOutputs('JupyterLab Dark');
+  });
 
-    let results = [];
+  test('Light theme: Check bqplot update plot properties', async () => {
+    await testPlotUpdates('JupyterLab Light');
+  });
 
-    for (const notebook of notebooks) {
-      galata.context.capturePrefix = notebook;
-
-      await galata.notebook.open(notebook);
-      expect(await galata.notebook.isOpen(notebook)).toBeTruthy();
-      await galata.notebook.activate(notebook);
-      expect(await galata.notebook.isActive(notebook)).toBeTruthy();
-
-      let numCellImages = 0;
-
-      const getCaptureImageName = (id: number): string => {
-        return `cell-${id}`;
-      };
-
-      await galata.notebook.runCellByCell({
-        onAfterCellRun: async (cellIndex: number) => {
-          // Always get first cell output which must contain the plot
-          const cell = await galata.notebook.getCellOutput(0);
-          if (cell) {
-            if (
-              await galata.capture.screenshot(
-                getCaptureImageName(numCellImages),
-                cell
-              )
-            ) {
-              numCellImages++;
-            }
-          }
-        }
-      });
-
-      for (let c = 0; c < numCellImages; ++c) {
-        results.push(await galata.capture.compareScreenshot(getCaptureImageName(c)));
-      }
-
-      await galata.notebook.close(true);
-    }
-
-    for (const result of results) {
-      expect(result).toBe('same');
-    }
+  test('Dark theme: Check bqplot update plot properties', async () => {
+    await testPlotUpdates('JupyterLab Dark');
   });
 
   test('Open home directory', async () => {

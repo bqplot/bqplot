@@ -474,10 +474,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@jupyterlab/galata@3.0.3-3":
-  version "3.0.3-3"
-  resolved "https://registry.yarnpkg.com/@jupyterlab/galata/-/galata-3.0.3-3.tgz#02bc90897e139eff0773dbab2689c621f4a5b8da"
-  integrity sha512-g334GMDQdSlIOngfWLW9GR8ENc9Kegu3OkCrYPdheE2lYJJsgeiO+3n7lg4Iar5b8LtQTu9P0by3IhEFRtEATA==
+"@jupyterlab/galata@3.0.7-2":
+  version "3.0.7-2"
+  resolved "https://registry.yarnpkg.com/@jupyterlab/galata/-/galata-3.0.7-2.tgz#ebbb531bae75eb1c450f5a1332cca9805df6015b"
+  integrity sha512-/SbjEIvCMbQ745HOqafq6U4PsGvz9VEo8mXDlHMI0zaAeLr39JHwkXAGxnrPnbed7Nb49J4U8K5R7i6BDpCb6Q==
   dependencies:
     "@types/dateformat" "^3.0.1"
     "@types/jest" "^25.1.2"
@@ -485,7 +485,7 @@
     "@types/node" "^13.1.1"
     "@types/pixelmatch" "^5.0.0"
     "@types/pngjs" "^3.4.1"
-    ansi_up "^4.0.4"
+    ansi_up "^5.0.0"
     axios "^0.21.1"
     chalk "^4.0.0"
     cross-spawn "^6.0.5"
@@ -736,10 +736,10 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
-ansi_up@^4.0.4:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/ansi_up/-/ansi_up-4.0.4.tgz#5b8c35f0b02e4476f3f18cf89c3bf48d15d054f6"
-  integrity sha512-vRxC8q6QY918MbehO869biJW4tiunJdjOhi5fpY6NLOliBQlZhOkKgABJKJqH+JZfb/WfjvjN1chLWI6tODerw==
+ansi_up@^5.0.0:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/ansi_up/-/ansi_up-5.0.1.tgz#b66839dba408d3d2f8548904f1ae6fc62d6917ef"
+  integrity sha512-HGOTjFQECRKZM9fIlGhJfR2pcK8PMUWzFOqcPwqBEnNIa4P2r0Di+g2hxCX0hL0n1NUtAHGRA+fUyA/OajZYFw==
 
 anymatch@^2.0.0:
   version "2.0.0"
