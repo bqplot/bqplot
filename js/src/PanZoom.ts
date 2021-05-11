@@ -19,10 +19,15 @@ import { d3GetEvent } from './utils';
 import * as interaction from './Interaction';
 import * as _ from 'underscore';
 
+const nop = () => {};
+
 export class PanZoom extends interaction.Interaction {
   render() {
     super.render();
     const that = this;
+    // chrome bug that requires a listener on the parent svg node
+    // https://github.com/d3/d3-zoom/issues/231#issuecomment-802713799
+    this.parent.svg.node().addEventListener(`wheel`, nop, { passive: false });
     this.d3el
       .style('cursor', 'move')
       .call(
@@ -53,6 +58,11 @@ export class PanZoom extends interaction.Interaction {
 
     this.set_ranges();
     this.listenTo(this.parent, 'margin_updated', this.set_ranges);
+  }
+
+  remove() {
+    this.parent.svg.node().removeEventListener(`wheel`, nop);
+    super.remove();
   }
 
   update_scales() {
