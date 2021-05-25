@@ -3,7 +3,7 @@ To release a new version of bqplot on PyPI:
 ## Create a new environment for the release
 
 ```sh
-conda create -c conda-forge --override-channels -y -n bqplotrelease jupyterlab nodejs twine ipywidgets pip
+conda create -c conda-forge --override-channels -y -n bqplotrelease jupyterlab nodejs twine ipywidgets pip jupyter_packaging
 conda activate bqplotrelease
 ```
 
