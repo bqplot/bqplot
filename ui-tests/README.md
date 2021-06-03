@@ -5,7 +5,7 @@ This directory contains visual regression tests for bqplot, using Galata.
 In order to run them, you need to install dependencies:
 
 ```bash
-const install -c conda-forge yarn jupyterlab=3.0.3
+const install -c conda-forge yarn jupyterlab=3.0.7
 
 yarn install
 ```
