@@ -63,7 +63,8 @@
   --bq-pie-polyline-stroke: var(--bq-content-font-color);
 
   --bq-network-node-element-fill: #666;
-  --bq-linkarrow-fill: rgb(0, 0, 0);
+  --bq-linkarrow-fill-dark: rgb(0, 0, 0);
+  --bq-linkarrow-fill-light: #666;
 
   --bq-default-stroke: var(--bq-content-font-color);
   --bq-stick-stroke: var(--bq-content-font-color);
@@ -108,6 +109,10 @@
 
 [data-jp-theme-light='false'] .gg {
   --bq-plotarea-background-fill: var(--jp-layout-color1);
+}
+
+[data-jp-theme-light='false'] .linkarrow {
+  fill: var(--bq-linkarrow-fill-light);
 }
 
 .classic {
@@ -399,5 +404,5 @@
 }
 
 .linkarrow {
-  fill: var(--bq-linkarrow-fill);
+  fill: var(--bq-linkarrow-fill-dark);
 }
