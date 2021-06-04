@@ -183,7 +183,10 @@ export class Axis extends WidgetView {
           }
           this.axis.tickValues(useticks);
         }
-      } else if (this.axis_scale instanceof LinearScale) {
+      } else if (
+        this.axis_scale instanceof LinearScale ||
+        this.axis_scale instanceof ColorScale
+      ) {
         this.axis.tickValues(this.axis_scale.scale.ticks());
       }
     }
@@ -800,7 +803,7 @@ export class Axis extends WidgetView {
     }
   }
 
-  get_format_func(prec) {
+  get_format_func(prec: number) {
     if (prec === 0) {
       // format this as an integer
       return (number) => {
@@ -836,9 +839,14 @@ export class Axis extends WidgetView {
     };
   }
 
-  _linear_scale_precision(ticks?: any[]) {
-    if (!(this.axis_scale instanceof LinearScale)) {
-      return;
+  _linear_scale_precision(ticks?: any[]): number {
+    if (
+      !(
+        this.axis_scale instanceof LinearScale ||
+        this.axis_scale instanceof ColorScale
+      )
+    ) {
+      return -1;
     }
     ticks =
       ticks === undefined || ticks === null
@@ -874,7 +882,7 @@ export class Axis extends WidgetView {
     }
   }
 
-  linear_sc_format(ticks) {
+  linear_sc_format(ticks?: any[]) {
     return this.get_format_func(this._linear_scale_precision(ticks));
   }
 
@@ -961,9 +969,9 @@ export class Axis extends WidgetView {
     return this.get_format_func(this._log_sc_precision(ticks));
   }
 
-  _log_sc_precision(ticks?: any[]) {
+  _log_sc_precision(ticks?: any[]): number {
     if (!(this.axis_scale instanceof LogScale)) {
-      return;
+      return -1;
     }
     ticks =
       ticks === undefined || ticks === null
