@@ -371,6 +371,7 @@ export class Pie extends Mark {
     const labelsTransition = labels
       .enter()
       .append('text')
+      .classed('pie_label', true)
       .attr('dy', '.35em')
       .style('opacity', 0)
       .each(function (d) {
