@@ -192,7 +192,6 @@ void main(void) {
     v_fill_color.rgb *= v_fill_color.a;
     v_stroke_color.rgb *= v_stroke_color.a;
 
-    // color_rgba = has_selection && has_selected_color ? (selected > 0.5 ? selected_color : unselected_color) : color_rgba;
     gl_Position = projectionMatrix * vec4(rotate_xy(position, angle) * full_size, 1.0) +
-                  projectionMatrix * modelViewMatrix * vec4(center_pixels + vec3(0., 0., 0.), 1.0);
+                  projectionMatrix * modelViewMatrix * vec4(center_pixels, 1.0);
 }
