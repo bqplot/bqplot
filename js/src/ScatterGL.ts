@@ -142,7 +142,7 @@ class SelectionAttributeParameters extends AttributeParameters {
 }
 
 export class ScatterGL extends Mark {
-  render() {
+  async render() {
     const base_render_promise = super.render();
 
     this.transitions = [];
@@ -266,82 +266,75 @@ export class ScatterGL extends Mark {
     // Create mesh
     this.mesh = new THREE.Mesh(this.instanced_geometry, this.scatter_material);
 
-    return base_render_promise.then(() => {
-      this.camera = new THREE.OrthographicCamera(
-        -1 / 2,
-        1 / 2,
-        1 / 2,
-        -1 / 2,
-        -10000,
-        10000
-      );
-      this.camera.position.z = 10;
-      this.scene = new THREE.Scene();
+    await base_render_promise;
 
-      const x_parameters = new AttributeParameters(
-        to_float_array(this.model.get('x'))
-      );
-      this.x = this.initialize_attribute('x', x_parameters);
-      this.x_previous = this.initialize_attribute('x_previous', x_parameters);
+    this.camera = new THREE.OrthographicCamera(
+      -1 / 2,
+      1 / 2,
+      1 / 2,
+      -1 / 2,
+      -10000,
+      10000
+    );
+    this.camera.position.z = 10;
+    this.scene = new THREE.Scene();
 
-      const y_parameters = new AttributeParameters(
-        to_float_array(this.model.get('y'))
-      );
-      this.y = this.initialize_attribute('y', y_parameters);
-      this.y_previous = this.initialize_attribute('y_previous', y_parameters);
+    const x_parameters = new AttributeParameters(
+      to_float_array(this.model.get('x'))
+    );
+    this.x = this.initialize_attribute('x', x_parameters);
+    this.x_previous = this.initialize_attribute('x_previous', x_parameters);
 
-      this.markers_number = Math.min(this.x.array.length, this.y.array.length);
-      this.instanced_geometry.maxInstancedCount = this.markers_number;
+    const y_parameters = new AttributeParameters(
+      to_float_array(this.model.get('y'))
+    );
+    this.y = this.initialize_attribute('y', y_parameters);
+    this.y_previous = this.initialize_attribute('y_previous', y_parameters);
 
-      const color_parameters = this.get_color_attribute_parameters();
-      this.color = this.initialize_attribute('color', color_parameters);
-      this.scatter_material.defines['USE_COLORMAP'] =
-        color_parameters.use_colormap;
+    this.markers_number = Math.min(this.x.array.length, this.y.array.length);
+    this.instanced_geometry.maxInstancedCount = this.markers_number;
 
-      const opacity_parameters = this.get_opacity_attribute_parameters();
-      this.opacity = this.initialize_attribute('opacity', opacity_parameters);
-      this.opacity_previous = this.initialize_attribute(
-        'opacity_previous',
-        opacity_parameters
-      );
+    const color_parameters = this.get_color_attribute_parameters();
+    this.color = this.initialize_attribute('color', color_parameters);
+    this.scatter_material.defines['USE_COLORMAP'] =
+      color_parameters.use_colormap;
 
-      const size_parameters = this.get_size_attribute_parameters();
-      this.size = this.initialize_attribute('size', size_parameters);
-      this.size_previous = this.initialize_attribute(
-        'size_previous',
-        size_parameters
-      );
+    const opacity_parameters = this.get_opacity_attribute_parameters();
+    this.opacity = this.initialize_attribute('opacity', opacity_parameters);
+    this.opacity_previous = this.initialize_attribute(
+      'opacity_previous',
+      opacity_parameters
+    );
 
-      const rotation_parameters = this.get_rotation_attribute_parameters();
-      this.rotation = this.initialize_attribute(
-        'rotation',
-        rotation_parameters
-      );
-      this.rotation_previous = this.initialize_attribute(
-        'rotation_previous',
-        rotation_parameters
-      );
+    const size_parameters = this.get_size_attribute_parameters();
+    this.size = this.initialize_attribute('size', size_parameters);
+    this.size_previous = this.initialize_attribute(
+      'size_previous',
+      size_parameters
+    );
 
-      const selected_parameters = this.get_selected_attribute_parameters();
-      this.selected = this.initialize_attribute(
-        'selected',
-        selected_parameters
-      );
-      this.scatter_material.uniforms['has_selection'].value =
-        selected_parameters.use_selection;
+    const rotation_parameters = this.get_rotation_attribute_parameters();
+    this.rotation = this.initialize_attribute('rotation', rotation_parameters);
+    this.rotation_previous = this.initialize_attribute(
+      'rotation_previous',
+      rotation_parameters
+    );
 
-      this.scatter_material.needsUpdate = true;
+    const selected_parameters = this.get_selected_attribute_parameters();
+    this.selected = this.initialize_attribute('selected', selected_parameters);
+    this.scatter_material.uniforms['has_selection'].value =
+      selected_parameters.use_selection;
 
-      this.scene.add(this.mesh);
+    this.scatter_material.needsUpdate = true;
 
-      this.create_listeners();
-      this.compute_view_padding();
+    this.scene.add(this.mesh);
+
+    this.create_listeners();
+    this.compute_view_padding();
+    this.update_scene();
+    this.listenTo(this.parent, 'margin_updated', () => {
       this.update_scene();
-      this.listenTo(this.parent, 'margin_updated', () => {
-        this.update_scene();
-      });
     });
-    return base_render_promise;
   }
 
   initialize_attribute(name: string, parameters: AttributeParameters) {
