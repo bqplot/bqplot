@@ -1,6 +1,3 @@
-#include <fog_pars_fragment>
-#include <alphamap_pars_fragment>
-
 precision highp float;
 precision highp int;
 

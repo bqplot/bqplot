@@ -1,4 +1,3 @@
-#include <fog_pars_vertex>
 #include <scales>
 
 uniform mat4 projectionMatrix;
