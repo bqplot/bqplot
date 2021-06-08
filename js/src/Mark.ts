@@ -97,7 +97,8 @@ export abstract class Mark extends widgets.WidgetView {
 
   abstract draw(animate?);
   abstract set_ranges();
-  set_scale_views() {
+
+  async set_scale_views() {
     // first, if this.scales was already defined, unregister from the
     // old ones.
     for (const key in this.scales) {
@@ -105,18 +106,17 @@ export abstract class Mark extends widgets.WidgetView {
     }
 
     const scale_models = this.model.get('scales');
-    const that = this;
     const scale_promises = {};
     _.each(scale_models, (model: widgets.WidgetModel, key) => {
-      scale_promises[key] = that.create_child_view(model);
+      scale_promises[key] = this.create_child_view(model);
     });
-    return widgets.resolvePromisesDict(scale_promises).then((scales) => {
-      that.scales = scales;
-      that.set_positional_scales();
-      that.initialize_additional_scales();
-      that.set_ranges();
-      that.trigger('mark_scales_updated');
-    });
+
+    const scales = await widgets.resolvePromisesDict(scale_promises);
+    this.scales = scales;
+    this.set_positional_scales();
+    this.initialize_additional_scales();
+    this.set_ranges();
+    this.trigger('mark_scales_updated');
   }
 
   set_positional_scales() {
