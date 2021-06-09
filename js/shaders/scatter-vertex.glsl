@@ -101,7 +101,6 @@ attribute float color;
 attribute vec3 color;
 #endif
 
-
 #define SCALE_X(x) scale_transform_linear(x, range_x, domain_x)
 #define SCALE_Y(x) scale_transform_linear(x, range_y, domain_y)
 #define SCALE_SIZE(x) scale_transform_linear(x, range_size, domain_size)
@@ -119,19 +118,10 @@ void main(void) {
 
     vec3 animation_time = vec3(animation_time_x, animation_time_y, animation_time_z);
 
-
-    vec3 domain_offset = vec3(domain_x.x, domain_y.x, domain_z.x);
-    vec3 domain_scale  = vec3(domain_x.y, domain_y.y, domain_z.y) - domain_offset;
-    vec3 range_offset = vec3(range_x.x, range_y.x, range_z.x);
-    vec3 range_scale  = vec3(range_x.y, range_y.y, range_z.y) - range_offset;
-
     vec3 center = mix(vec3(x_previous, y_previous, 0), vec3(x, y, 0), animation_time);
 
-    // vec3 center_normalized = (center - domain_offset) / domain_scale;
-    // vec3 center_pixels = ((center_normalized*2.)-0.) * range_scale + range_offset;
     // times 2 because the normalized coordinates go from [-1, 1]
     vec3 center_pixels = vec3(SCALE_X(center.x), SCALE_Y(center.y), 0) * 2.;
-
 
     // times 4 because of the normalized coordinates, and radius vs diameter use
     float marker_size = sqrt(mix(SCALE_SIZE(size_previous), SCALE_SIZE(size), animation_time_size)) * marker_scale * 4.;
