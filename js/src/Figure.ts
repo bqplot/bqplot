@@ -1158,7 +1158,7 @@ export class Figure extends widgets.DOMWidgetView {
     // Render a SVG data into a canvas and
     const xml = await this.get_svg();
 
-    return new Promise((accept) => {
+    return new Promise((resolve) => {
       const image = new Image();
       image.onload = () => {
         const canvas = document.createElement('canvas');
@@ -1170,9 +1170,10 @@ export class Figure extends widgets.DOMWidgetView {
         const context = canvas.getContext('2d');
         context.scale(scale, scale);
         context.drawImage(image, 0, 0);
-        accept(canvas);
+        resolve(canvas);
       };
-      image.src = 'data:image/svg+xml;base64,' + btoa(xml);
+      image.src =
+        'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(xml)));
     });
   }
 
