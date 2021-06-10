@@ -21,7 +21,7 @@ import { BarData, BarGroupValue, BarsModel } from './BarsModel';
 import { applyStyles } from './utils';
 import { LinearScale } from './LinearScale';
 import { LogScale } from './LogScale';
-import { OrdinalScale } from './OrdinalScale';
+import { isOrdinalScale } from './OrdinalScale';
 
 export class Bars extends Mark {
   async render() {
@@ -63,7 +63,7 @@ export class Bars extends Mark {
     this.setScaleOrientation();
     const dom = orient === 'vertical' ? 'x' : 'y';
     const rang = orient === 'vertical' ? 'y' : 'x';
-    if (!(this.domScale instanceof OrdinalScale)) {
+    if (!isOrdinalScale(this.domScale)) {
       this.domScale.set_range(
         this.parent.padded_range(dom, this.domScale.model)
       );
@@ -102,7 +102,7 @@ export class Bars extends Mark {
     // the value have to be negatively offset by half of the width of
     // the bars, because ordinal scales give the values corresponding
     // to the start of the bin but linear scale gives the actual value.
-    if (!(this.domScale instanceof OrdinalScale)) {
+    if (!isOrdinalScale(this.domScale)) {
       if (this.align === 'center') {
         this.domOffset = -(this.stackedScale.bandwidth() / 2).toFixed(2);
       } else if (this.align === 'left') {
@@ -282,7 +282,7 @@ export class Bars extends Mark {
     // this.stackedScale is the ordinal scale used to draw the bars. If a linear
     // scale is given, then the ordinal scale is created from the
     // linear scale.
-    if (!(this.domScale instanceof OrdinalScale)) {
+    if (!isOrdinalScale(this.domScale)) {
       const modelDomain = this.model.mark_data.map((elem) => elem.key);
       this.stackedScale.domain(modelDomain);
     } else {
@@ -371,7 +371,7 @@ export class Bars extends Mark {
     const domControl = this.orientation === 'vertical' ? 'width' : 'height';
     const rangeControl = this.orientation === 'vertical' ? 'height' : 'width';
 
-    if (domScale instanceof OrdinalScale) {
+    if (isOrdinalScale(domScale)) {
       const domMax = d3.max(this.parent.range(dom));
       barGroups.attr('transform', (d: BarData) => {
         if (this.orientation === 'vertical') {
@@ -870,7 +870,7 @@ export class Bars extends Mark {
 
   private set_x_range(): [number, number] {
     const domScale = this.domScale;
-    if (domScale instanceof OrdinalScale) {
+    if (isOrdinalScale(domScale)) {
       return domScale.scale.range() as [number, number];
     } else {
       return [
@@ -970,7 +970,7 @@ export class Bars extends Mark {
         this.stackedScale !== undefined &&
         this.stackedScale.domain().length !== 0
       ) {
-        if (!(domScale instanceof OrdinalScale)) {
+        if (!isOrdinalScale(domScale)) {
           if (this.align === 'center') {
             xPadding =
               avail_space / (2.0 * this.stackedScale.domain().length) + 1;
