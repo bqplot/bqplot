@@ -426,7 +426,7 @@ export class Figure extends widgets.DOMWidgetView {
         that.scale_x.scale as
           | d3.ScaleLinear<number, number>
           | d3.ScaleTime<Date, number>
-          | d3.ScaleLogarithmic<number, number>
+          | d3.ScaleSymLog<number, number>
       ).clamp(true);
       that.scale_x.set_range([0, that.plotarea_width]);
     });
@@ -439,7 +439,7 @@ export class Figure extends widgets.DOMWidgetView {
         that.scale_y.scale as
           | d3.ScaleLinear<number, number>
           | d3.ScaleTime<Date, number>
-          | d3.ScaleLogarithmic<number, number>
+          | d3.ScaleSymLog<number, number>
       ).clamp(true);
       that.scale_y.set_range([that.plotarea_height, 0]);
     });

@@ -20,7 +20,7 @@ import { Scale } from './Scale';
 
 export class LogScale extends LinearScale {
   render() {
-    this.scale = d3.scaleLog();
+    this.scale = d3.scaleSymlog();
     if (this.model.domain.length > 0) {
       this.scale.domain(this.model.domain);
     }
@@ -28,7 +28,7 @@ export class LogScale extends LinearScale {
     this.create_event_listeners();
   }
 
-  scale: d3.ScaleLogarithmic<number, number>;
+  scale: d3.ScaleSymLog<number, number>;
 }
 
 export function isLogScale(scale: Scale): scale is LogScale {
