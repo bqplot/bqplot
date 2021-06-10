@@ -29,9 +29,8 @@ import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
 import { Interaction } from './Interaction';
 
-THREE.ShaderChunk[
-  'scales'
-] = require('raw-loader!../shaders/scales.glsl').default;
+THREE.ShaderChunk['scales'] =
+  require('raw-loader!../shaders/scales.glsl').default;
 
 interface IFigureSize {
   width: number;
@@ -422,22 +421,26 @@ export class Figure extends widgets.DOMWidgetView {
     const x_scale_promise = this.create_child_view(
       this.model.get('scale_x')
     ).then((view) => {
-      that.scale_x = (view as WidgetView) as Scale;
-      (that.scale_x.scale as
-        | d3.ScaleLinear<number, number>
-        | d3.ScaleTime<Date, number>
-        | d3.ScaleLogarithmic<number, number>).clamp(true);
+      that.scale_x = view as WidgetView as Scale;
+      (
+        that.scale_x.scale as
+          | d3.ScaleLinear<number, number>
+          | d3.ScaleTime<Date, number>
+          | d3.ScaleLogarithmic<number, number>
+      ).clamp(true);
       that.scale_x.set_range([0, that.plotarea_width]);
     });
 
     const y_scale_promise = this.create_child_view(
       this.model.get('scale_y')
     ).then((view) => {
-      that.scale_y = (view as WidgetView) as Scale;
-      (that.scale_y.scale as
-        | d3.ScaleLinear<number, number>
-        | d3.ScaleTime<Date, number>
-        | d3.ScaleLogarithmic<number, number>).clamp(true);
+      that.scale_y = view as WidgetView as Scale;
+      (
+        that.scale_y.scale as
+          | d3.ScaleLinear<number, number>
+          | d3.ScaleTime<Date, number>
+          | d3.ScaleLogarithmic<number, number>
+      ).clamp(true);
       that.scale_y.set_range([that.plotarea_height, 0]);
     });
     return Promise.all([x_scale_promise, y_scale_promise]);
@@ -654,12 +657,10 @@ export class Figure extends widgets.DOMWidgetView {
       this
     );
 
-    let child_x_scale = view.model.get('scales')[
-      view.model.get_key_for_dimension('x')
-    ];
-    let child_y_scale = view.model.get('scales')[
-      view.model.get_key_for_dimension('y')
-    ];
+    let child_x_scale =
+      view.model.get('scales')[view.model.get_key_for_dimension('x')];
+    let child_y_scale =
+      view.model.get('scales')[view.model.get_key_for_dimension('y')];
     if (child_x_scale === undefined) {
       child_x_scale = this.scale_x.model;
     }

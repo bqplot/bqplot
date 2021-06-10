@@ -31,9 +31,7 @@ describe('binary serialization >', () => {
     const deserialized_x = array_or_json.deserialize(x, null);
     expect(deserialized_x.type).to.equal('date');
     expect([...deserialized_x]).to.deep.equal([
-      1109289600000,
-      1109376000000,
-      1109462400000,
+      1109289600000, 1109376000000, 1109462400000,
     ]);
 
     const serialized_x = array_or_json.serialize(deserialized_x, null);

@@ -198,10 +198,8 @@ export class PanZoom extends interaction.Interaction {
               // Categorical scales don't have an inversion.
               const scale = view.scale; //.copy().domain(this.domains_in_order[dimension][index]);
               // convert the initial domain to pixel coordinates
-              let [
-                domain_min,
-                domain_max,
-              ] = view.model.get_domain_slice_in_order();
+              let [domain_min, domain_max] =
+                view.model.get_domain_slice_in_order();
               const pixel_min = scale(domain_min);
               const pixel_max = scale(domain_max);
               // take a weighted average between the mouse pos and the original pixel coordinate

@@ -161,9 +161,7 @@ describe('scatter mega >', () => {
     const red = new Float32Array([1, 0, 0]);
     const blue = new Float32Array([0, 0, 1]);
     const steelblue = new Float32Array([
-      0.27450981736183167,
-      0.5098039507865906,
-      0.7058823704719543,
+      0.27450981736183167, 0.5098039507865906, 0.7058823704719543,
     ]);
 
     expect(scatter.color.array).to.deep.equal(steelblue);
@@ -294,9 +292,7 @@ describe('scatter mega >', () => {
     const scatter = objects.scatter;
 
     const steelblue = new Float32Array([
-      0.27450981736183167,
-      0.5098039507865906,
-      0.7058823704719543,
+      0.27450981736183167, 0.5098039507865906, 0.7058823704719543,
     ]);
     const default_size = scatter.model.get('default_size');
     const opacities = new Float32Array([1]);
@@ -372,9 +368,7 @@ describe('scatter mega >', () => {
     const scatter = objects.scatter;
 
     const steelblue = new Float32Array([
-      0.27450981736183167,
-      0.5098039507865906,
-      0.7058823704719543,
+      0.27450981736183167, 0.5098039507865906, 0.7058823704719543,
     ]);
     const default_size = scatter.model.get('default_size');
     const opacities = new Float32Array([1]);

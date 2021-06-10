@@ -22,12 +22,9 @@ export class Image extends Mark {
   render() {
     const base_render_promise = super.render();
     const el = this.d3el || this.el;
-    this.im = (el.append('image') as d3.Selection<
-      SVGImageElement,
-      any,
-      any,
-      any
-    >)
+    this.im = (
+      el.append('image') as d3.Selection<SVGImageElement, any, any, any>
+    )
       .attr('x', 0)
       .attr('y', 0)
       .attr('width', 1)
