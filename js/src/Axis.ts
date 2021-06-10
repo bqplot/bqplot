@@ -388,7 +388,7 @@ export class Axis extends WidgetView {
           : this.parent.scale_y;
       } else {
         return_promise = this.create_child_view(offset.scale).then((view) => {
-          this.offset_scale = (view as WidgetView) as Scale;
+          this.offset_scale = view as WidgetView as Scale;
           if (
             this.offset_scale instanceof LinearScale ||
             this.offset_scale instanceof DateScale ||
@@ -768,7 +768,7 @@ export class Axis extends WidgetView {
       this.displayed.then(() => {
         view.trigger('displayed');
       });
-      this.axis_scale = (view as WidgetView) as Scale;
+      this.axis_scale = view as WidgetView as Scale;
       this.axis_scale.on('domain_changed', this.redraw_axisline, this);
       this.axis_scale.on('highlight_axis', this.highlight, this);
       this.axis_scale.on('unhighlight_axis', this.unhighlight, this);

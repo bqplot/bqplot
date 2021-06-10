@@ -111,7 +111,7 @@ class ColorBar extends Axis {
       that.displayed.then(() => {
         view.trigger('displayed');
       });
-      that.axis_scale = (view as WidgetView) as ColorScale;
+      that.axis_scale = view as WidgetView as ColorScale;
       // TODO: eventually removes what follows
       if (that.axis_scale.model.type === 'date_color_linear') {
         that.axis_line_scale = d3.scaleUtc().nice();

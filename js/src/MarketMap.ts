@@ -826,9 +826,8 @@ export class MarketMap extends Figure {
     }
     const that = this;
     if (tooltip_model) {
-      const tooltip_widget_creation_promise = this.create_child_view(
-        tooltip_model
-      );
+      const tooltip_widget_creation_promise =
+        this.create_child_view(tooltip_model);
       tooltip_widget_creation_promise.then((view) => {
         that.tooltip_view = view as Tooltip;
 

@@ -155,18 +155,7 @@ export class ScatterGL extends Mark {
     this.instanced_geometry = new THREE.InstancedBufferGeometry();
 
     const vertices = new Float32Array([
-      -0.5,
-      0.5,
-      0,
-      0.5,
-      0.5,
-      0,
-      -0.5,
-      -0.5,
-      0,
-      0.5,
-      -0.5,
-      0,
+      -0.5, 0.5, 0, 0.5, 0.5, 0, -0.5, -0.5, 0, 0.5, -0.5, 0,
     ]);
     this.instanced_geometry.addAttribute(
       'position',
@@ -570,12 +559,10 @@ export class ScatterGL extends Mark {
     this.scatter_material.uniforms['domain_y'].value = y_scale.scale.domain();
 
     if (this.scales.size) {
-      this.scatter_material.uniforms[
-        'range_size'
-      ].value = this.scales.size.scale.range();
-      this.scatter_material.uniforms[
-        'domain_size'
-      ].value = this.scales.size.scale.domain();
+      this.scatter_material.uniforms['range_size'].value =
+        this.scales.size.scale.range();
+      this.scatter_material.uniforms['domain_size'].value =
+        this.scales.size.scale.domain();
     } else {
       const size = this.model.get('default_size');
       this.scatter_material.uniforms['range_size'].value = [0, size];
@@ -583,21 +570,17 @@ export class ScatterGL extends Mark {
     }
 
     if (this.scales.rotation) {
-      this.scatter_material.uniforms[
-        'range_rotation'
-      ].value = this.scales.rotation.scale.range();
-      this.scatter_material.uniforms[
-        'domain_rotation'
-      ].value = this.scales.rotation.scale.domain();
+      this.scatter_material.uniforms['range_rotation'].value =
+        this.scales.rotation.scale.range();
+      this.scatter_material.uniforms['domain_rotation'].value =
+        this.scales.rotation.scale.domain();
     }
 
     if (this.scales.opacity) {
-      this.scatter_material.uniforms[
-        'range_opacity'
-      ].value = this.scales.opacity.scale.range();
-      this.scatter_material.uniforms[
-        'domain_opacity'
-      ].value = this.scales.opacity.scale.domain();
+      this.scatter_material.uniforms['range_opacity'].value =
+        this.scales.opacity.scale.range();
+      this.scatter_material.uniforms['domain_opacity'].value =
+        this.scales.opacity.scale.domain();
     }
 
     const renderer = fig.renderer;
@@ -951,9 +934,8 @@ export class ScatterGL extends Mark {
     const stroke = this.model.get('stroke');
 
     if (stroke) {
-      this.scatter_material.uniforms.default_stroke_color.value = color_to_array_rgba(
-        stroke
-      );
+      this.scatter_material.uniforms.default_stroke_color.value =
+        color_to_array_rgba(stroke);
       this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = true;
     } else {
       this.scatter_material.defines['HAS_DEFAULT_STROKE_COLOR'] = false;
@@ -964,9 +946,8 @@ export class ScatterGL extends Mark {
   }
 
   update_stroke_width() {
-    this.scatter_material.uniforms.stroke_width.value = this.model.get(
-      'stroke_width'
-    );
+    this.scatter_material.uniforms.stroke_width.value =
+      this.model.get('stroke_width');
     this.update_scene();
   }
 

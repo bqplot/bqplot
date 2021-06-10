@@ -379,9 +379,8 @@ export class BrushIntervalSelector extends BrushMixinXSelector {
 
     await this.mark_views_promise;
     await this.create_scales();
-    this.brush = (this.model.get('orientation') == 'vertical'
-      ? d3.brushY()
-      : d3.brushX()
+    this.brush = (
+      this.model.get('orientation') == 'vertical' ? d3.brushY() : d3.brushX()
     )
       .on('start', _.bind(this.brush_start, this))
       .on('brush', _.bind(this.brush_move, this))
@@ -582,12 +581,9 @@ export class MultiSelector extends BrushMixinXSelector {
       [this.width, this.height],
     ]);
 
-    const new_brush_g: d3.Selection<
-      SVGGElement,
-      any,
-      any,
-      any
-    > = this.d3el.append('g').attr('class', 'selector brushintsel active');
+    const new_brush_g: d3.Selection<SVGGElement, any, any, any> = this.d3el
+      .append('g')
+      .attr('class', 'selector brushintsel active');
 
     new_brush_g
       .append('text')
