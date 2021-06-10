@@ -72,3 +72,7 @@ export class LinearScale extends Scale {
 
   model: LinearScaleModel;
 }
+
+export function isLinearScale(scale: Scale): scale is LinearScale {
+  return scale.model.type === 'linear';
+}

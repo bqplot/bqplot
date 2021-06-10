@@ -16,6 +16,7 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
 import { LinearScale } from './LinearScale';
+import { Scale } from './Scale';
 
 export class LogScale extends LinearScale {
   render() {
@@ -28,4 +29,8 @@ export class LogScale extends LinearScale {
   }
 
   scale: d3.ScaleLogarithmic<number, number>;
+}
+
+export function isLogScale(scale: Scale): scale is LogScale {
+  return scale.model.type === 'log';
 }

@@ -89,3 +89,7 @@ export class OrdinalScale extends Scale {
 
   scale: d3.ScaleBand<string>;
 }
+
+export function isOrdinalScale(scale: Scale): scale is OrdinalScale {
+  return scale.model.type === 'ordinal';
+}

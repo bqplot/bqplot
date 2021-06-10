@@ -60,3 +60,7 @@ export class ColorScale extends Scale {
   // Overriding super class
   model: ColorScaleModel;
 }
+
+export function isColorScale(scale: Scale): scale is ColorScale {
+  return scale.model.type === 'color_linear';
+}

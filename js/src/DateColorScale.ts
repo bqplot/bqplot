@@ -16,6 +16,7 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
 import { ColorScale } from './ColorScale';
+import { Scale } from './Scale';
 
 export class DateColorScale extends ColorScale {
   create_d3_scale() {
@@ -23,4 +24,8 @@ export class DateColorScale extends ColorScale {
   }
 
   scale: d3.ScaleTime<Date, number>;
+}
+
+export function isDateColorScale(scale: Scale): scale is DateColorScale {
+  return scale.model.type === 'date_color_linear';
 }
