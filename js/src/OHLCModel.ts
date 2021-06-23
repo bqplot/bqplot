@@ -245,8 +245,8 @@ export class OHLCModel extends MarkModel {
 
   static serializers = {
     ...MarkModel.serializers,
-    x: serialize.array_or_json,
-    y: serialize.array_or_json,
+    x: serialize.array_or_json_serializer,
+    y: serialize.array_or_json_serializer,
   };
 
   px: { o: number; h: number; l: number; c: number };

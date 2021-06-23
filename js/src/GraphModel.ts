@@ -244,11 +244,11 @@ export class GraphModel extends MarkModel {
 
   static serializers = {
     ...MarkModel.serializers,
-    x: serialize.array_or_json,
-    y: serialize.array_or_json,
-    color: serialize.array_or_json,
-    link_color: serialize.array_or_json,
-    link_matrix: serialize.array_or_json,
+    x: serialize.array_or_json_serializer,
+    y: serialize.array_or_json_serializer,
+    color: serialize.array_or_json_serializer,
+    link_color: serialize.array_or_json_serializer,
+    link_matrix: serialize.array_or_json_serializer,
   };
 
   mark_data: NodeData[];

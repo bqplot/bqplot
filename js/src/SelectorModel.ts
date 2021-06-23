@@ -82,7 +82,7 @@ export class FastIntervalSelectorModel extends OneDSelectorModel {
   }
   static serializers = {
     ...OneDSelectorModel.serializers,
-    selected: serialize.array_or_json,
+    selected: serialize.array_or_json_serializer,
   };
 }
 
@@ -100,7 +100,7 @@ export class IndexSelectorModel extends OneDSelectorModel {
 
   static serializers = {
     ...OneDSelectorModel.serializers,
-    selected: serialize.array_or_json,
+    selected: serialize.array_or_json_serializer,
   };
 }
 
@@ -119,7 +119,7 @@ export class BrushIntervalSelectorModel extends OneDSelectorModel {
 
   static serializers = {
     ...OneDSelectorModel.serializers,
-    selected: serialize.array_or_json,
+    selected: serialize.array_or_json_serializer,
   };
 }
 
@@ -139,8 +139,8 @@ export class BrushSelectorModel extends TwoDSelectorModel {
 
   static serializers = {
     ...TwoDSelectorModel.serializers,
-    selected_x: serialize.array_or_json,
-    selected_y: serialize.array_or_json,
+    selected_x: serialize.array_or_json_serializer,
+    selected_y: serialize.array_or_json_serializer,
   };
 }
 

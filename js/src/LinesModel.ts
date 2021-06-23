@@ -209,9 +209,9 @@ export class LinesModel extends MarkModel {
 
   static serializers = {
     ...MarkModel.serializers,
-    x: serialize.array_or_json,
-    y: serialize.array_or_json,
-    color: serialize.array_or_json,
+    x: serialize.array_or_json_serializer,
+    y: serialize.array_or_json_serializer,
+    color: serialize.array_or_json_serializer,
   };
 
   x_data: any[];
@@ -351,7 +351,7 @@ export class FlexLineModel extends LinesModel {
 
   static serializers = {
     ...LinesModel.serializers,
-    width: serialize.array_or_json,
+    width: serialize.array_or_json_serializer,
   };
 
   data_len: number;

@@ -191,9 +191,9 @@ export class GridHeatMapModel extends MarkModel {
 
   static serializers = {
     ...MarkModel.serializers,
-    row: serialize.array_or_json,
-    column: serialize.array_or_json,
-    color: serialize.array_or_json,
+    row: serialize.array_or_json_serializer,
+    column: serialize.array_or_json_serializer,
+    color: serialize.array_or_json_serializer,
   };
 
   modes: { column: AxisMode; row: AxisMode };

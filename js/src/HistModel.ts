@@ -187,8 +187,8 @@ export class HistModel extends MarkModel {
 
   static serializers = {
     ...MarkModel.serializers,
-    sample: serialize.array_or_json,
-    count: serialize.array_or_json,
+    sample: serialize.array_or_json_serializer,
+    count: serialize.array_or_json_serializer,
   };
 
   xBins: number[];

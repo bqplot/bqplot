@@ -84,7 +84,7 @@ export class ScatterModel extends ScatterBaseModel {
 
   static serializers = {
     ...ScatterBaseModel.serializers,
-    skew: serialize.array_or_json,
-    names: serialize.array_or_json,
+    skew: serialize.array_or_json_serializer,
+    names: serialize.array_or_json_serializer,
   };
 }

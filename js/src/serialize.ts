@@ -100,7 +100,7 @@ function serialize_array_or_json(data, manager) {
   throw new Error('Failed to serialize data');
 }
 
-export const array_or_json = {
+export const array_or_json_serializer = {
   deserialize: deserialize_array_or_json,
   serialize: serialize_array_or_json,
 };

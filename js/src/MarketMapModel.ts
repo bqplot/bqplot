@@ -77,9 +77,9 @@ export class MarketMapModel extends widgets.WidgetModel {
     tooltip_widget: { deserialize: widgets.unpack_models },
     style: { deserialize: widgets.unpack_models },
     layout: { deserialize: widgets.unpack_models },
-    names: serialize.array_or_json,
-    groups: serialize.array_or_json,
-    display_text: serialize.array_or_json,
-    color: serialize.array_or_json,
+    names: serialize.array_or_json_serializer,
+    groups: serialize.array_or_json_serializer,
+    display_text: serialize.array_or_json_serializer,
+    color: serialize.array_or_json_serializer,
   };
 }

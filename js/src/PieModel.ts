@@ -157,8 +157,8 @@ export class PieModel extends MarkModel {
 
   static serializers = {
     ...MarkModel.serializers,
-    sizes: serialize.array_or_json,
-    color: serialize.array_or_json,
+    sizes: serialize.array_or_json_serializer,
+    color: serialize.array_or_json_serializer,
   };
 
   mark_data: Slice[];
