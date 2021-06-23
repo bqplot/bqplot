@@ -60,6 +60,6 @@ export class LabelModel extends ScatterBaseModel {
 
   static serializers = {
     ...ScatterBaseModel.serializers,
-    text: serialize.array_or_json,
+    text: serialize.array_or_json_serializer,
   };
 }

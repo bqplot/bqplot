@@ -75,6 +75,7 @@ export * from './MapModel';
 export * from './GeoScale';
 export * from './Markers';
 export * from './utils';
+export * from './serialize';
 export * from './GeoScaleModel';
 export * from './MarketMap';
 export * from './GridHeatMap';

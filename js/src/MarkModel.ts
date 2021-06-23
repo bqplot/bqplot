@@ -120,7 +120,7 @@ export class MarkModel extends widgets.WidgetModel {
     ...widgets.WidgetModel.serializers,
     scales: { deserialize: widgets.unpack_models },
     tooltip: { deserialize: widgets.unpack_models },
-    selected: serialize.array_or_json,
+    selected: serialize.array_or_json_serializer,
   };
 
   dirty: boolean;

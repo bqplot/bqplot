@@ -87,7 +87,7 @@ export class AxisModel extends widgets.WidgetModel {
     ...widgets.WidgetModel.serializers,
     scale: { deserialize: widgets.unpack_models },
     offset: { deserialize: widgets.unpack_models },
-    tick_values: serialize.array_or_json,
+    tick_values: serialize.array_or_json_serializer,
   };
 }
 

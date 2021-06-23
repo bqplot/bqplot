@@ -113,7 +113,7 @@ export class BoxplotModel extends MarkModel {
 
   static serializers = {
     ...MarkModel.serializers,
-    x: serialize.array_or_json,
-    y: serialize.array_or_json,
+    x: serialize.array_or_json_serializer,
+    y: serialize.array_or_json_serializer,
   };
 }

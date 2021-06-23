@@ -63,12 +63,12 @@ export class ScatterGLModel extends MarkModel {
 
   static serializers = {
     ...MarkModel.serializers,
-    x: serialize.array_or_json,
-    y: serialize.array_or_json,
-    color: serialize.array_or_json,
-    size: serialize.array_or_json,
-    rotation: serialize.array_or_json,
-    opacity: serialize.array_or_json,
-    opacities: serialize.array_or_json,
+    x: serialize.array_or_json_serializer,
+    y: serialize.array_or_json_serializer,
+    color: serialize.array_or_json_serializer,
+    size: serialize.array_or_json_serializer,
+    rotation: serialize.array_or_json_serializer,
+    opacity: serialize.array_or_json_serializer,
+    opacities: serialize.array_or_json_serializer,
   };
 }
