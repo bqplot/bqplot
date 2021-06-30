@@ -42,7 +42,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'jupyter_sphinx.embed_widgets',
+    'nbsphinx',
 ]
 
 autosummary_generate = True

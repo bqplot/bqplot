@@ -246,6 +246,16 @@ class Mark(Widget):
         self._legend_hover_handlers = CallbackDispatcher()
         self._element_click_handlers = CallbackDispatcher()
         self._bg_click_handlers = CallbackDispatcher()
+
+        self._name_to_handler = {
+            'hover': self._hover_handlers,
+            'click': self._click_handlers,
+            'legend_click': self._legend_click_handlers,
+            'legend_hover': self._legend_hover_handlers,
+            'element_click': self._element_click_handlers,
+            'background_click': self._bg_click_handlers
+        }
+
         self.on_msg(self._handle_custom_msgs)
 
     def on_hover(self, callback, remove=False):
@@ -267,18 +277,12 @@ class Mark(Widget):
         self._bg_click_handlers.register_callback(callback, remove=remove)
 
     def _handle_custom_msgs(self, _, content, buffers=None):
-        if content.get('event', '') == 'hover':
-            self._hover_handlers(self, content)
-        if content.get('event', '') == 'click':
-            self._click_handlers(self, content)
-        elif content.get('event', '') == 'legend_click':
-            self._legend_click_handlers(self, content)
-        elif content.get('event', '') == 'legend_hover':
-            self._legend_hover_handlers(self, content)
-        elif content.get('event', '') == 'element_click':
-            self._element_click_handlers(self, content)
-        elif content.get('event', '') == 'background_click':
-            self._bg_click_handlers(self, content)
+        try:
+            handler = self._name_to_handler[content['event']]
+        except KeyError:
+            return
+
+        handler(self, content)
 
 
 @register_mark('bqplot.Lines')
@@ -390,6 +394,7 @@ class Lines(Mark):
     line_style = Enum(['solid', 'dashed', 'dotted', 'dash_dotted'],
                       default_value='solid')\
         .tag(sync=True, display_name='Line style')
+    # TODO: Only Lines have interpolatoin but we can extend for other types of graphs
     interpolation = Enum(['linear', 'basis', 'basis-open',
                           'basis-closed', 'bundle',
                           'cardinal', 'cardinal-open',
@@ -522,7 +527,7 @@ class _ScatterBase(Mark):
         'opacity': {'dimension': 'opacity'},
         'rotation': {'dimension': 'rotation'}
     }).tag(sync=True)
-    default_opacities = Array([1.0])\
+    opacities = Array([1.0])\
         .tag(sync=True, display_name='Opacities', **array_serialization)\
         .valid(array_squeeze, array_dimension_bounds(1, 1))
     hovered_style = Dict().tag(sync=True)
@@ -541,6 +546,12 @@ class _ScatterBase(Mark):
         self._drag_end_handlers = CallbackDispatcher()
         super(_ScatterBase, self).__init__(**kwargs)
 
+        self._name_to_handler.update({
+            'drag_start': self._drag_start_handlers,
+            'drag_end': self._drag_end_handlers,
+            'drag': self._drag_handlers
+        })
+
     def on_drag_start(self, callback, remove=False):
         self._drag_start_handlers.register_callback(callback, remove=remove)
 
@@ -549,18 +560,6 @@ class _ScatterBase(Mark):
 
     def on_drag_end(self, callback, remove=False):
         self._drag_end_handlers.register_callback(callback, remove=remove)
-
-    def _handle_custom_msgs(self, _, content, buffers=None):
-        event = content.get('event', '')
-
-        if event == 'drag_start':
-            self._drag_start_handlers(self, content)
-        elif event == 'drag':
-            self._drag_handlers(self, content)
-        elif event == 'drag_end':
-            self._drag_end_handlers(self, content)
-
-        super(_ScatterBase, self)._handle_custom_msgs(self, content)
 
 
 @register_mark('bqplot.Scatter')
@@ -592,7 +591,7 @@ class Scatter(_ScatterBase):
         Stroke color of the marker
     stroke_width: Float (default: 1.5)
         Stroke width of the marker
-    default_opacities: list of floats (default: [1.0])
+    opacities: list of floats (default: [1.0])
         Default opacities of the markers. If the list is shorter than
         the number
         of points, the opacities are reused.
@@ -610,6 +609,12 @@ class Scatter(_ScatterBase):
         Labels for the points of the chart
     display_names: bool (default: True)
         Controls whether names are displayed for points in the scatter
+    label_display_horizontal_offset: float (default: None)
+        Adds an offset, in pixels, to the horizontal positioning of the 'names'
+        label above each data point
+    label_display_vertical_offset: float (default: None)
+        Adds an offset, in pixels, to the vertical positioning of the 'names'
+        label above each data point
     enable_move: bool (default: False)
         Controls whether points can be moved by dragging. Refer to restrict_x,
         restrict_y for more options.
@@ -695,6 +700,16 @@ class Scatter(_ScatterBase):
              DeprecationWarning)
         self.colors = value
 
+    @property
+    def default_opacities(self):
+        return self.opacities
+
+    @default_opacities.setter
+    def default_opacities(self, value):
+        warn("default_opacities is deprecated, use opacities instead.",
+             DeprecationWarning)
+        self.opacities = value
+
     stroke = Color(None, allow_none=True).tag(sync=True,
                                               display_name='Stroke color')
     stroke_width = Float(1.5).tag(sync=True, display_name='Stroke width')
@@ -704,6 +719,8 @@ class Scatter(_ScatterBase):
     names = Array(None, allow_none=True)\
         .tag(sync=True, **array_serialization).valid(array_squeeze)
     display_names = Bool(True).tag(sync=True, display_name='Display names')
+    label_display_horizontal_offset = Float(allow_none=True).tag(sync=True)
+    label_display_vertical_offset = Float(allow_none=True).tag(sync=True)
     fill = Bool(True).tag(sync=True)
     drag_color = Color(None, allow_none=True).tag(sync=True)
     drag_size = Float(5.).tag(sync=True)
@@ -711,6 +728,7 @@ class Scatter(_ScatterBase):
 
     _view_name = Unicode('Scatter').tag(sync=True)
     _model_name = Unicode('ScatterModel').tag(sync=True)
+
 
 @register_mark('bqplot.ScatterGL')
 class ScatterGL(Scatter):
@@ -1677,9 +1695,11 @@ class Graph(Mark):
         link data passed as 2d matrix
     link_data: List
         list of link attributes for the graph
-    charge: int (default: -300)
+    charge: int (default: -600)
         charge of force layout. Will be ignored when x and y data attributes
         are set
+    static: bool (default: False)
+        whether the graph is static or not
     link_distance: float (default: 100)
         link distance in pixels between nodes. Will be ignored when x and y
         data attributes are set
@@ -1704,6 +1724,7 @@ class Graph(Mark):
         link data passed as 2d matrix
     """
     charge = Int(-600).tag(sync=True)
+    static = Bool(False).tag(sync=True)
     link_distance = Float(100).tag(sync=True)
     node_data = List().tag(sync=True)
     link_data = List().tag(sync=True)

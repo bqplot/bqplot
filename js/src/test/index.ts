@@ -10,7 +10,8 @@ import './bars';
 import './hist';
 import './utils';
 import './figure';
-import './interacts'
+import './interacts';
+import './image';
 
 require('@jupyter-widgets/controls/css/widgets.css');
 require('../../css/bqplot.css');

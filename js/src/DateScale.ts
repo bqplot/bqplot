@@ -16,14 +16,21 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
 import { LinearScale } from './LinearScale';
+import { Scale } from './Scale';
 
 export class DateScale extends LinearScale {
-    render() {
-        this.scale = d3.scaleUtc();
-        if(this.model.domain.length > 0)
-            this.scale.domain(this.model.domain);
-        this.offset = 0;
-        this.create_event_listeners();
+  render() {
+    this.scale = d3.scaleUtc();
+    if (this.model.domain.length > 0) {
+      this.scale.domain(this.model.domain);
     }
+    this.offset = 0;
+    this.create_event_listeners();
+  }
+
+  scale: d3.ScaleTime<Date, number>;
 }
 
+export function isDateScale(scale: Scale): scale is DateScale {
+  return scale.model.type === 'date';
+}

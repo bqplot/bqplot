@@ -13,157 +13,159 @@
  * limitations under the License.
  */
 
-import {
-    WidgetModel, unpack_models
-} from '@jupyter-widgets/base';
+import { WidgetModel, unpack_models } from '@jupyter-widgets/base';
 
 import { semver_range } from './version';
 import * as serialize from './serialize';
 
-export
-class SelectorModel extends WidgetModel {
+export class SelectorModel extends WidgetModel {
+  defaults() {
+    return {
+      ...WidgetModel.prototype.defaults(),
+      _model_name: 'SelectorModel',
+      _model_module: 'bqplot',
+      _view_module: 'bqplot',
+      _model_module_version: semver_range,
+      _view_module_version: semver_range,
+      marks: [],
+    };
+  }
 
-    defaults() {
-        return {...WidgetModel.prototype.defaults(),
-            _model_name: "SelectorModel",
-            _model_module: "bqplot",
-            _view_module: "bqplot",
-            _model_module_version: semver_range,
-            _view_module_version: semver_range,
-            marks: []
-        };
-    }
-
-    static serializers = {
-        ...WidgetModel.serializers,
-        marks: { deserialize: unpack_models }
-    }
+  static serializers = {
+    ...WidgetModel.serializers,
+    marks: { deserialize: unpack_models },
+  };
 }
 
 export class OneDSelectorModel extends SelectorModel {
+  defaults() {
+    return {
+      ...SelectorModel.prototype.defaults(),
+      _model_name: 'OneDSelectorModel',
+      scale: null,
+    };
+  }
 
-    defaults() {
-        return {...SelectorModel.prototype.defaults(),
-            _model_name: "OneDSelectorModel",
-            scale: null
-        };
-    }
-
-    static serializers = {
-        ...SelectorModel.serializers,
-        scale: { deserialize: unpack_models }
-    }
+  static serializers = {
+    ...SelectorModel.serializers,
+    scale: { deserialize: unpack_models },
+  };
 }
 
 export class TwoDSelectorModel extends SelectorModel {
+  defaults() {
+    return {
+      ...SelectorModel.prototype.defaults(),
+      _model_name: 'TwoDSelectorModel',
+      x_scale: null,
+      y_scale: null,
+    };
+  }
 
-    defaults() {
-        return {...SelectorModel.prototype.defaults(),
-            _model_name: "TwoDSelectorModel",
-            x_scale: null,
-            y_scale: null
-        }
-    }
-
-    static serializers = {...SelectorModel.serializers,
-        x_scale: { deserialize: unpack_models },
-        y_scale: { deserialize: unpack_models },
-    }
+  static serializers = {
+    ...SelectorModel.serializers,
+    x_scale: { deserialize: unpack_models },
+    y_scale: { deserialize: unpack_models },
+  };
 }
 
 export class FastIntervalSelectorModel extends OneDSelectorModel {
-
-    defaults() {
-        return {...OneDSelectorModel.prototype.defaults(),
-            _model_name: "FastIntervalSelectorModel",
-            _view_name: "FastIntervalSelector",
-            selected: null,
-            color: null,
-            size: null
-        };
-    }
-    static serializers = {...OneDSelectorModel.serializers,
-        selected: serialize.array_or_json
-    }
+  defaults() {
+    return {
+      ...OneDSelectorModel.prototype.defaults(),
+      _model_name: 'FastIntervalSelectorModel',
+      _view_name: 'FastIntervalSelector',
+      selected: null,
+      color: null,
+      size: null,
+    };
+  }
+  static serializers = {
+    ...OneDSelectorModel.serializers,
+    selected: serialize.array_or_json_serializer,
+  };
 }
 
 export class IndexSelectorModel extends OneDSelectorModel {
+  defaults() {
+    return {
+      ...OneDSelectorModel.prototype.defaults(),
+      _model_name: 'IndexSelectorModel',
+      _view_name: 'IndexSelector',
+      selected: null,
+      line_width: 2,
+      color: null,
+    };
+  }
 
-    defaults() {
-        return {...OneDSelectorModel.prototype.defaults(),
-            _model_name: "IndexSelectorModel",
-            _view_name: "IndexSelector",
-            selected: null,
-            line_width: 2,
-            color: null
-        }
-    }
-
-    static serializers = {...OneDSelectorModel.serializers,
-        selected: serialize.array_or_json
-    }
+  static serializers = {
+    ...OneDSelectorModel.serializers,
+    selected: serialize.array_or_json_serializer,
+  };
 }
 
 export class BrushIntervalSelectorModel extends OneDSelectorModel {
+  defaults() {
+    return {
+      ...OneDSelectorModel.prototype.defaults(),
+      _model_name: 'BrushIntervalSelectorModel',
+      _view_name: 'BrushIntervalSelector',
+      brushing: false,
+      selected: null,
+      color: null,
+      orientation: 'horizontal',
+    };
+  }
 
-    defaults() {
-        return {...OneDSelectorModel.prototype.defaults(),
-            _model_name: "BrushIntervalSelectorModel",
-            _view_name: "BrushIntervalSelector",
-            brushing: false,
-            selected: null,
-            color: null,
-            orientation: "horizontal"
-        }
-    }
-
-    static serializers = {...OneDSelectorModel.serializers,
-        selected: serialize.array_or_json
-    }
+  static serializers = {
+    ...OneDSelectorModel.serializers,
+    selected: serialize.array_or_json_serializer,
+  };
 }
 
 export class BrushSelectorModel extends TwoDSelectorModel {
+  defaults() {
+    return {
+      ...TwoDSelectorModel.prototype.defaults(),
+      _model_name: 'BrushSelectorModel',
+      _view_name: 'BrushSelector',
+      clear: false,
+      brushing: false,
+      selected_x: null,
+      selected_y: null,
+      color: null,
+    };
+  }
 
-    defaults() {
-        return {...TwoDSelectorModel.prototype.defaults(),
-            _model_name: "BrushSelectorModel",
-            _view_name: "BrushSelector",
-            clear: false,
-            brushing: false,
-            selected_x: null,
-            selected_y: null,
-            color: null
-        }
-    }
-
-    static serializers = {...TwoDSelectorModel.serializers,
-        selected_x: serialize.array_or_json,
-        selected_y: serialize.array_or_json
-    }
+  static serializers = {
+    ...TwoDSelectorModel.serializers,
+    selected_x: serialize.array_or_json_serializer,
+    selected_y: serialize.array_or_json_serializer,
+  };
 }
 
 export class MultiSelectorModel extends OneDSelectorModel {
-
-    defaults() {
-        return {...OneDSelectorModel.prototype.defaults(),
-            _model_name: "MultiSelectorModel",
-            _view_name: "MultiSelector",
-            names: [],
-            brushing: false,
-            selected: {},
-            _selected: {},
-            show_names: true
-        }
-    }
+  defaults() {
+    return {
+      ...OneDSelectorModel.prototype.defaults(),
+      _model_name: 'MultiSelectorModel',
+      _view_name: 'MultiSelector',
+      names: [],
+      brushing: false,
+      selected: {},
+      _selected: {},
+      show_names: true,
+    };
+  }
 }
 
 export class LassoSelectorModel extends TwoDSelectorModel {
-
-    defaults() {
-        return {...TwoDSelectorModel.prototype.defaults(),
-            _model_name: "LassoSelectorModel",
-            _view_name: "LassoSelector",
-           color: null
-        };
-    }
+  defaults() {
+    return {
+      ...TwoDSelectorModel.prototype.defaults(),
+      _model_name: 'LassoSelectorModel',
+      _view_name: 'LassoSelector',
+      color: null,
+    };
+  }
 }

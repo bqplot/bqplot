@@ -36,6 +36,7 @@ import six
 
 # Date
 
+
 def date_to_json(value, obj):
     if value is None:
         return value
@@ -45,13 +46,16 @@ def date_to_json(value, obj):
         # back updates from the front-end.
         return value.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
+
 def date_from_json(value, obj):
     if value:
         return dt.datetime.strptime(value.rstrip('Z'), '%Y-%m-%dT%H:%M:%S.%f')
     else:
         return value
 
+
 date_serialization = dict(to_json=date_to_json, from_json=date_from_json)
+
 
 class Date(TraitType):
 
@@ -105,20 +109,16 @@ def convert_to_date(array, fmt='%m-%d-%Y'):
             for elem in array:
                 temp_val = pd.to_datetime(
                     elem, errors='coerce', infer_datetime_format=True)
-                temp_val = elem if (
-                    temp_val[0] == np.datetime64('NaT')) else temp_val
+                temp_val = elem if isinstance(temp_val[0], type(pd.NaT)) else temp_val
                 return_value.append(temp_val)
         elif(isinstance(array, list)):
             temp_val = pd.to_datetime(
                 array, errors='coerce', infer_datetime_format=True)
-            return_value = array if (
-                temp_val[0] == np.datetime64('NaT')) else temp_val
+            return_value = array if isinstance(temp_val[0], type(pd.NaT)) else temp_val
         else:
             temp_val = pd.to_datetime(
                 array, errors='coerce', infer_datetime_format=True)
-            temp_val = array if (
-                temp_val[0] == np.datetime64('NaT')) else temp_val
-            return_value = temp_val
+            return_value = array if isinstance(temp_val[0], type(pd.NaT)) else temp_val
         return return_value
     elif(isinstance(array, np.ndarray)):
         warnings.warn("Array could not be converted into a date")
@@ -146,6 +146,7 @@ def array_from_json(value, obj=None):
                 assert value['dtype'] == 'float64'
                 ar = ar.astype('datetime64[ms]')
             return ar
+
 
 def array_to_json(ar, obj=None, force_contiguous=True):
     if ar is None:
@@ -196,28 +197,31 @@ def array_to_json(ar, obj=None, force_contiguous=True):
 
 array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
 
+
 def array_squeeze(trait, value):
     if len(value.shape) > 1:
         return np.squeeze(value)
     else:
         return value
 
+
 def array_dimension_bounds(mindim=0, maxdim=np.inf):
     def validator(trait, value):
         dim = len(value.shape)
         if dim < mindim or dim > maxdim:
             raise TraitError('Dimension mismatch for trait %s of class %s: expected an \
-            array of dimension comprised in interval [%s, %s] and got an array of shape %s'\
-            % (trait.name, trait.this_class, mindim, maxdim, value.shape))
+                array of dimension comprised in interval [%s, %s] and got an array of shape %s' % (
+                trait.name, trait.this_class, mindim, maxdim, value.shape))
         return value
     return validator
+
 
 def array_supported_kinds(kinds='biufMSUO'):
     def validator(trait, value):
         if value.dtype.kind not in kinds:
             raise TraitError('Array type not supported for trait %s of class %s: expected a \
-            array of kind in list %r and got an array of type %s (kind %s)'\
-            % (trait.name, trait.this_class, list(kinds), value.dtype, value.dtype.kind))
+                array of kind in list %r and got an array of type %s (kind %s)' % (
+                trait.name, trait.this_class, list(kinds), value.dtype, value.dtype.kind))
         return value
     return validator
 
@@ -230,15 +234,18 @@ def dataframe_from_json(value, obj):
     else:
         return pd.DataFrame(value)
 
+
 def dataframe_to_json(df, obj):
     if df is None:
         return None
     else:
         return df.to_dict(orient='records')
 
+
 dataframe_serialization = dict(to_json=dataframe_to_json, from_json=dataframe_from_json)
 
 # dataframe validators
+
 
 def dataframe_warn_indexname(trait, value):
     if value.index.name is not None:
@@ -248,13 +255,17 @@ def dataframe_warn_indexname(trait, value):
 
 # Series
 
+
 def series_from_json(value, obj):
     return pd.Series(value)
+
 
 def series_to_json(value, obj):
     return value.to_dict()
 
+
 series_serialization = dict(to_json=series_to_json, from_json=series_from_json)
+
 
 def _array_equal(a, b):
     """Really tests if arrays are equal, where nan == nan == True"""

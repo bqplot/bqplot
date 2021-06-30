@@ -1,25 +1,8 @@
 {
+  "extends": "./tsconfigbase",
   "compilerOptions": {
-    "declaration": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "noUnusedLocals": true,
-    "outDir": "lib",
-    "preserveWatchOutput": true,
-    "rootDir": "src",
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "target": "es2017",
-    "types": ["mocha", "node"]
+    "outDir": "./",
+    "rootDir": "./"
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "files": ["package.json"]
 }

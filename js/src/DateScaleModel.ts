@@ -18,29 +18,34 @@ import * as _ from 'underscore';
 import { LinearScaleModel } from './LinearScaleModel';
 import { getDate } from './utils';
 
+export class DateScaleModel extends LinearScaleModel {
+  defaults() {
+    return {
+      ...LinearScaleModel.prototype.defaults(),
+      _model_name: 'DateScaleModel',
+      _view_name: 'DateScale',
+      min: null,
+      max: null,
+    };
+  }
 
-export class DateScaleModel extends LinearScaleModel{
+  typedRange(values) {
+    const ar: any = new Float64Array(values.map(Number));
+    ar.type = 'date';
+    return ar;
+  }
 
-    defaults() {
-        return {...LinearScaleModel.prototype.defaults(),
-            _model_name: "DateScaleModel",
-            _view_name: "DateScale",
-            min: null,
-            max: null
-        };
-    }
+  set_init_state() {
+    this.type = 'date';
+    this.global_min = new Date().setTime(0);
+    this.global_max = new Date();
+  }
 
-    set_init_state() {
-        this.type = "date";
-        this.global_min = (new Date()).setTime(0);
-        this.global_max = new Date();
-    }
-
-    min_max_changed() {
-        this.min = getDate(this.get("min"));
-        this.max = getDate(this.get("max"));
-        this.min_from_data = (this.min === null);
-        this.max_from_data = (this.max === null);
-        this.update_domain();
-    }
+  min_max_changed() {
+    this.min = getDate(this.get('min'));
+    this.max = getDate(this.get('max'));
+    this.min_from_data = this.min === null;
+    this.max_from_data = this.max === null;
+    this.update_domain();
+  }
 }

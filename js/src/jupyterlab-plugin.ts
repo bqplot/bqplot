@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
-import "../css/bqplot.css";
+import '../css/bqplot.css';
 
-import { IJupyterWidgetRegistry } from "@jupyter-widgets/base";
+import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
 
-const packageJSON = require("../package.json");
+import packageJson from '../package.json';
+
+const { name, version } = packageJson;
 
 /**
  * The widget manager provider.
@@ -27,9 +29,9 @@ const plugin = {
   requires: [IJupyterWidgetRegistry],
   activate: function (app, widgets) {
     widgets.registerWidget({
-      name: packageJSON.name,
-      version: packageJSON.version,
-      exports: () => import(/* webpackChunkName: "bqplot" */ "./index"),
+      name,
+      version,
+      exports: async () => import('./index'),
     });
   },
   autoStart: true,

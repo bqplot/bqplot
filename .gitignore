@@ -26,6 +26,7 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
+ui-tests/test-output/*
 
 # Translations
 *.mo
@@ -46,7 +47,8 @@ _templates/
 *Untitled*.ipynb
 
 # Compiled javascript
-bqplot/static/
+share/jupyter/nbextensions/bqplot/
+share/jupyter/labextensions/bqplot/
 js/css/bqplot.css
 
 # Node modules

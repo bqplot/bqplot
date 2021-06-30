@@ -61,19 +61,37 @@ into visual properties (typically a number of pixels, a color, etc.).  ::
 
 """
 
-from .figure import *
-from .axes import *
-from .marks import *
-from .scales import *
-from .toolbar import *
-from .default_tooltip import *
-from ._version import version_info, __version__
+from .figure import *  # noqa
+from .axes import *  # noqa
+from .marks import *  # noqa
+from .scales import *  # noqa
+from .toolbar import *  # noqa
+from .default_tooltip import *  # noqa
+from ._version import version_info, __version__  # noqa
+
+
+def _prefix():
+    import sys
+    from pathlib import Path
+    prefix = sys.prefix
+    here = Path(__file__).parent
+    # for when in dev mode
+    if (here.parent / 'share/jupyter/nbextensions/bqplot').parent.exists():
+        prefix = here.parent
+    return prefix
+
+
+def _jupyter_labextension_paths():
+    return [{
+        'src': f'{_prefix()}/share/jupyter/labextensions/bqplot/',
+        'dest': 'bqplot',
+    }]
 
 
 def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
-        'src': 'static',
+        'src': f'{_prefix()}/share/jupyter/nbextensions/bqplot/',
         'dest': 'bqplot',
         'require': 'bqplot/extension'
     }]

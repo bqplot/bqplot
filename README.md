@@ -9,36 +9,35 @@
 
 ## Introduction
 
-bqplot is a 2-D visualization system for Jupyter, based on the constructs of
+`bqplot` is a 2-D visualization system for Jupyter, based on the constructs of
 the *Grammar of Graphics*.
 
 ## Usage
 
-[![Wealth of Nations](./wealth-of-nations.gif)](https://github.com/bqplot/bqplot/blob/master/examples/Applications/Wealth%20of%20Nations.ipynb)
+[![Wealth of Nations](./wealth-of-nations.gif)](https://github.com/bqplot/bqplot/blob/master/examples/Applications/Wealth%20Of%20Nations/Bubble%20Chart.ipynb)
 
 In bqplot, every component of a plot is an interactive widget. This allows the
 user to integrate visualizations with other Jupyter interactive widgets to
-create integrated GUIs with a few simple lines of Python code.
+create integrated GUIs with a few lines of Python code.
 
 ## Goals
 
--   provide a unified framework for 2-D visualizations with a pythonic API.
--   provide a sensible API for adding user interactions (panning, zooming, selection, etc)
+-   Provide a unified framework for 2-D visualizations with a pythonic API
+-   Provide a sensible API for adding user interactions (panning, zooming, selection, etc)
 
 Two APIs are provided
 
-- Users can build custom visualizations using the internal object model, which
+- `Object Model`, which
   is inspired by the constructs of the Grammar of Graphics (figure, marks, axes,
-  scales), and enrich their visualization with our Interaction Layer.
-- Or they can use the context-based API similar to Matplotlib's pyplot, which
-  provides sensible default choices for most parameters.
+  scales). This API is verbose but is fully customizable
+- `pyplot`, which is a context-based API similar to Matplotlib's pyplot. `pyplot` provides sensible default choices for most parameters
 
 ## Trying it online
 
 To try out bqplot interactively in your web browser, just click on the binder
 link:
 
-[![Binder](docs/source/binder-logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/0.11.x?filepath=examples/Index.ipynb)
+[![Binder](docs/source/binder-logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/stable?filepath=examples/Index.ipynb)
 
 ### Dependencies
 
@@ -64,20 +63,21 @@ Using conda
 $ conda install -c conda-forge bqplot
 ```
 
-To enable bqplot with Jupyter lab:
+If you are using JupyterLab <=2:
 
 ```
-$ jupyter labextension install bqplot
+$ jupyter labextension install @jupyter-widgets/jupyterlab-manager bqplot
 ```
 
+##### Development installation
 
-For a development installation (requires npm (version >= 3.8) and node (version >= 4.0)):
+For a development installation (requires JupyterLab (version >= 3) and yarn):
 
 ```
 $ git clone https://github.com/bqplot/bqplot.git
 $ cd bqplot
 $ pip install -e .
-$ jupyter nbextension install --py --symlink --sys-prefix bqplot
+$ jupyter nbextension install --py --overwrite --symlink --sys-prefix bqplot
 $ jupyter nbextension enable --py --sys-prefix bqplot
 ```
 
@@ -88,19 +88,44 @@ with Windows.
 For the experimental JupyterLab extension, install the Python package, make sure the Jupyter widgets extension is installed, and install the bqplot extension:
 
 ```
-$ pip install bqplot
-$ jupyter labextension install @jupyter-widgets/jupyterlab-manager # install the Jupyter widgets extension
-$ jupyter labextension install bqplot
+$ pip install "ipywidgets>=7.6"
+$ jupyter labextension develop . --overwrite
 ```
 
-### Loading `bqplot`
+Whenever you make a change of the JavaScript code, you will need to rebuild:
 
-```python
-# In a Jupyter notebook
-import bqplot
+```
+cd js
+yarn run build
 ```
 
-That's it! You're ready to go!
+Then refreshing the JupyterLab/Jupyter Notebook is enough to reload the changes.
+
+##### Running tests
+
+You can install the dependencies necessary to run the tests with:
+
+```bash
+    conda env update -f test-environment.yml
+```
+
+And run it with for Python tests:
+
+```bash
+    pytest
+```
+
+And `cd js` to run the JS tests with:
+
+```bash
+yarn run test
+```
+
+Every time you make a change on your tests it's necessary to rebuild the JS side:
+
+```bash
+yarn run build
+```
 
 ## Examples
 
@@ -108,17 +133,15 @@ That's it! You're ready to go!
 
 [![Pyplot Screenshot](/pyplot.png)](https://github.com/bqplot/bqplot/blob/master/examples/Basic%20Plotting/Pyplot.ipynb)
 
-### Using the `bqplot` internal object model
+### Using the `Object Model` API
 
 [![Bqplot Screenshot](/bqplot.png)](https://github.com/bqplot/bqplot/blob/master/examples/Advanced%20Plotting/Advanced%20Plotting.ipynb)
 
 ## Documentation
 
-To get started with using `bqplot`, check out the full documentation
+Full documentation is available at https://bqplot.readthedocs.io/
 
-https://bqplot.readthedocs.io/
-
-## Install a previous bqplot version
+## Install a previous bqplot version (Only for JupyterLab <= 2)
 
 In order to install a previous bqplot version, you need to know which front-end version (JavaScript) matches with the back-end version (Python).
 
@@ -166,4 +189,3 @@ See our [contributing guidelines](CONTRIBUTING.md) to know how to contribute and
 
 This software is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file
 for details.
-

@@ -1,5 +1,5 @@
 import bqplot
-from mock import Mock
+from unittest.mock import Mock
 import numpy as np
 from bqplot.traits import _array_equal
 

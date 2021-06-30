@@ -17,57 +17,58 @@ import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
 export class ScatterGLModel extends MarkModel {
+  defaults() {
+    return {
+      ...MarkModel.prototype.defaults(),
+      _model_name: 'ScatterGLModel',
+      _view_name: 'ScatterGL',
+      x: [],
+      y: [],
+      color: null,
+      skew: null,
+      marker: 'circle',
+      stroke: null,
+      stroke_width: 1.5,
+      default_skew: 0.5,
+      default_size: 64,
+      names: [],
+      display_names: true,
+      fill: true,
+      drag_color: null,
+      drag_size: 5.0,
+      names_unique: true,
+    };
+  }
 
-    defaults() {
-        return {...MarkModel.prototype.defaults(),
-            _model_name: "ScatterGLModel",
-            _view_name: "ScatterGL",
-            x: [],
-            y: [],
-            color: null,
-            skew: null,
-            marker: "circle",
-            stroke: null,
-            stroke_width: 1.5,
-            default_skew: 0.5,
-            default_size: 64,
-            names: [],
-            display_names: true,
-            fill: true,
-            drag_color: null,
-            drag_size: 5.0,
-            names_unique: true
-        };
-    }
+  initialize(attributes, options) {
+    super.initialize(attributes, options);
+    this.update_domains();
+  }
 
-    initialize(attributes, options) {
-        super.initialize(attributes, options);
-        this.update_domains();
-    }
-
-    update_domains() {
-        // color scale needs an issue in DateScaleModel to be fixed. It
-        // should be moved here as soon as that is fixed.
-        var scales = this.get("scales");
-        for (var key in scales) {
-            if(scales.hasOwnProperty(key) && key != "color") {
-                var scale = scales[key];
-                if(!this.get("preserve_domain")[key]) {
-                    scale.compute_and_set_domain(this.get(key), this.model_id + key);
-                } else {
-                    scale.del_domain([], this.model_id + key);
-                }
-            }
+  update_domains() {
+    // color scale needs an issue in DateScaleModel to be fixed. It
+    // should be moved here as soon as that is fixed.
+    const scales = this.get('scales');
+    for (const key in scales) {
+      if (scales.hasOwnProperty(key) && key != 'color') {
+        const scale = scales[key];
+        if (!this.get('preserve_domain')[key]) {
+          scale.compute_and_set_domain(this.get(key), this.model_id + key);
+        } else {
+          scale.del_domain([], this.model_id + key);
         }
+      }
     }
+  }
 
-    static serializers = {...MarkModel.serializers,
-        x: serialize.array_or_json,
-        y: serialize.array_or_json,
-        color: serialize.array_or_json,
-        size: serialize.array_or_json,
-        rotation: serialize.array_or_json,
-        opacity: serialize.array_or_json,
-        default_opacities: serialize.array_or_json
-    }
-};
+  static serializers = {
+    ...MarkModel.serializers,
+    x: serialize.array_or_json_serializer,
+    y: serialize.array_or_json_serializer,
+    color: serialize.array_or_json_serializer,
+    size: serialize.array_or_json_serializer,
+    rotation: serialize.array_or_json_serializer,
+    opacity: serialize.array_or_json_serializer,
+    opacities: serialize.array_or_json_serializer,
+  };
+}

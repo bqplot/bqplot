@@ -20,46 +20,58 @@
 export { point_in_lasso } from './lasso_test';
 
 export function point_in_rectangle(point, x, y) {
-    // Checks whether `point` is within the rectangle of coordinates
-    // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
-    // If one of x or y is undefined, treat them as [-inf, inf]
+  // Checks whether `point` is within the rectangle of coordinates
+  // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
+  // If one of x or y is undefined, treat them as [-inf, inf]
 
-    if (x.length == 0 && y.length == 0) { return false; }
+  if (x.length == 0 && y.length == 0) {
+    return false;
+  }
 
-    let is_inside = true;
+  let is_inside = true;
 
-    if (x.length != 0) {
-        is_inside = is_inside && x[0] <= point[0] && point[0] <= x[1];
-    }
-    if (y.length != 0) {
-        is_inside = is_inside && y[0] <= point[1] && point[1] <= y[1];
-    }
-    return is_inside;
+  if (x.length != 0) {
+    is_inside = is_inside && x[0] <= point[0] && point[0] <= x[1];
+  }
+  if (y.length != 0) {
+    is_inside = is_inside && y[0] <= point[1] && point[1] <= y[1];
+  }
+  return is_inside;
 }
 
 export function rect_inter_rect(x0, y0, x1, y1) {
-    // Checks whether two rectangles intersect
-    return seg_inter_seg(x0, x1) && seg_inter_seg(y0, y1);
+  // Checks whether two rectangles intersect
+  return seg_inter_seg(x0, x1) && seg_inter_seg(y0, y1);
 }
 
 export function lasso_inter_rect(x, y, vertices) {
-    // checks whether the lasso intersects the rectangle of coordinates
-    // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
+  // checks whether the lasso intersects the rectangle of coordinates
+  // (x0, y0) (x1, y0) (x1, y1) (x0, y1)
 
-    for (let i = 0; i < vertices.length; i++) {
-        if (point_in_rectangle(vertices[i], x, y)) { return true; }
+  for (let i = 0; i < vertices.length; i++) {
+    if (point_in_rectangle(vertices[i], x, y)) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
 function seg_inter_seg(p, q) {
-    // Checks whether the 1d segments [p0, p1] and [q0, q1] intersect
-    // If one of the segments is empty, treat it as [-inf, inf]
-    if (p.length == 0 || q.length == 0) {
-        return (p.length != 0 || q.length != 0);
-    }
-    p.sort(function(a, b){return a-b});
-    q.sort(function(a, b){return a-b});
-    return ((p[0] < q[0] != p[0] < q[1]) || (p[1] < q[0] != p[1] < q[1]) ||
-            (q[0] < p[0] != q[0] < p[1]) || (q[1] < p[0] != q[1] < p[1]));
+  // Checks whether the 1d segments [p0, p1] and [q0, q1] intersect
+  // If one of the segments is empty, treat it as [-inf, inf]
+  if (p.length == 0 || q.length == 0) {
+    return p.length != 0 || q.length != 0;
+  }
+  p.sort((a, b) => {
+    return a - b;
+  });
+  q.sort((a, b) => {
+    return a - b;
+  });
+  return (
+    p[0] < q[0] != p[0] < q[1] ||
+    p[1] < q[0] != p[1] < q[1] ||
+    q[0] < p[0] != q[0] < p[1] ||
+    q[1] < p[0] != q[1] < p[1]
+  );
 }

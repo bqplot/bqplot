@@ -1,0 +1,226 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: '*'
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup conda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        activate-environment: bqplot-test
+        environment-file: test-environment.yml
+        python-version: ${{ matrix.python-version }}
+        mamba-version: "*"
+        auto-activate-base: false
+        channels: conda-forge
+
+    - name: Install the package
+      run: |
+        pip install .
+
+    - name: Test installation files
+      run: |
+        test -d $CONDA_PREFIX/share/jupyter/nbextensions/bqplot
+        test -f $CONDA_PREFIX/share/jupyter/nbextensions/bqplot/extension.js
+        test -f $CONDA_PREFIX/share/jupyter/nbextensions/bqplot/index.js
+        test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot
+        test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
+        test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
+
+
+    - name: Validate the nbextension
+      run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
+
+    - name: Validate the labextension
+      run: jupyter labextension list 2>&1 | grep bqplot
+
+    - name: Python PEP8 check
+      run: flake8 bqplot --ignore=E501,W504,W503
+
+    - name: JavaScript prettyfier
+      run: |
+        yarn install
+        yarn run prettier --check .
+      working-directory: js
+
+    - name: Python tests
+      run: pytest tests examples/Marks
+
+    - name: JavaScript tests
+      run: yarn run test
+      working-directory: js
+
+    - name: Build Python package
+      run: |
+        python setup.py sdist bdist_wheel
+        cd dist
+        sha256sum * | tee SHA256SUMS
+
+    - name: Pack JavaScript package
+      run: |
+        yarn pack
+        mv bqplot*.tgz ../dist
+      working-directory: js
+
+    - name: Upload builds
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist ${{ github.run_number }}
+        path: ./dist
+
+  visual-regression-tests:
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: bqplot-test
+          environment-file: test-environment.yml
+          python-version: 3.9
+          mamba-version: "*"
+          auto-activate-base: false
+          channels: conda-forge
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist ${{ github.run_number }}
+          path: ./dist
+
+      - name: Install the package
+        run: pip install -vv bqplot*.whl
+        working-directory: dist
+
+      - name: Install Galata
+        run: yarn install
+        working-directory: ui-tests
+
+      - name: Launch JupyterLab
+        run: yarn run start-jlab:detached
+        working-directory: ui-tests
+
+      - name: Wait for JupyterLab
+        uses: ifaxity/wait-on-action@v1
+        with:
+          resource: http-get://localhost:8888/api
+          timeout: 20000
+
+      - name: Run UI Tests
+        run: yarn run test
+        working-directory: ui-tests
+
+      - name: Upload UI Test artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ui-test-output
+          path: ui-tests/test-output
+
+  install:
+    runs-on: ${{ matrix.os }}-latest
+    needs: [build]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+        python: ['3.6', '3.9']
+        include:
+          - python: '3.6'
+            dist: 'bqplot*.tar.gz'
+          - python: '3.9'
+            dist: 'bqplot*.whl'
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: bqplot-test
+          environment-file: test-environment.yml
+          python-version: ${{ matrix.python-version }}
+          mamba-version: "*"
+          auto-activate-base: false
+          channels: conda-forge
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist ${{ github.run_number }}
+          path: ./dist
+
+      - name: Install the package
+        run: |
+          cd dist
+          pip install -vv ${{ matrix.dist }}
+
+      - name: Test installation files
+        run: |
+          test -d $CONDA_PREFIX/share/jupyter/nbextensions/bqplot
+          test -f $CONDA_PREFIX/share/jupyter/nbextensions/bqplot/extension.js
+          test -f $CONDA_PREFIX/share/jupyter/nbextensions/bqplot/index.js
+          test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot
+          test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
+          test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
+
+      - name: Validate the nbextension
+        run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
+
+      - name: Validate the labextension
+        run: jupyter labextension list 2>&1 | grep bqplot
+
+  JupyterLab2-build:
+    runs-on: ${{ matrix.os }}-latest
+    needs: [build]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu]
+        python: ['3.9']
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          mamba-version: "*"
+          channels: conda-forge
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist ${{ github.run_number }}
+          path: ./dist
+
+      - name: Install JupyterLab 2
+        run: mamba install yarn jupyterlab=2
+
+      - name: Install the labextension
+        run: jupyter labextension install dist/bqplot*.tgz --debug

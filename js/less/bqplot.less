@@ -14,67 +14,68 @@
  */
 
 :root {
-    --bq-content-font-color: var(--jp-content-font-color1);
-    --bq-content-scatter-font-color: var(--jp-content-font-color1);
-    --bq-background: var(--jp-layout-color0);
-    --bq-font: 12px sans-serif;
+  --bq-content-font-color: var(--jp-content-font-color1);
+  --bq-content-scatter-font-color: var(--jp-content-font-color1);
+  --bq-background: var(--jp-layout-color0);
+  --bq-font: 12px sans-serif;
 
-    --bq-axislabel-font: 14px sans-serif;
+  --bq-axislabel-font: 14px sans-serif;
 
-    --bq-axis-rect-opacity: 1.0;
-    --bq-axis-tick-stroke-width: 1.0;
-    --bq-axis-tick-opacity: 1.0;
-    --bq-axis-tick-text-font: var(--bq-font);
+  --bq-axis-rect-opacity: 1;
+  --bq-axis-tick-stroke-width: 1;
+  --bq-axis-tick-opacity: 1;
+  --bq-axis-tick-text-font: var(--bq-font);
 
-    --bq-mark-tooltip-border-radius : 5px;
-    --bq-mark-tooltip--webkit-user-select: none;
-    --bq-mark-tooltip--moz-user-select: none;
+  --bq-mark-tooltip-border-radius: 5px;
+  --bq-mark-tooltip--webkit-user-select: none;
+  --bq-mark-tooltip--moz-user-select: none;
 
-    --bq-mainheading-font: 16px sans-serif;
-    --bq-mainheading-font-size: large;
+  --bq-mainheading-font: 16px sans-serif;
+  --bq-mainheading-font-size: large;
 
-    --bq-world-map-path-stroke-width: 0.25px;
+  --bq-world-map-path-stroke-width: 0.25px;
 
-    --bq-pie-polyline-stroke-width: 1px;
-    --bq-pie-polyline-fill: none;
+  --bq-pie-polyline-stroke-width: 1px;
+  --bq-pie-polyline-fill: none;
 
-    --bq-network-node-element-stroke: #000;
-    --bq-network-node-element-stroke-width: 1.5px;
+  --bq-network-node-element-stroke: #000;
+  --bq-network-node-element-stroke-width: 1.5px;
 
-    --bq-network-link-fill: none;
-    --bq-network-link-stroke: #666;
-    --bq-network-link-stroke-width: 1.5px;
+  --bq-network-link-fill: none;
+  --bq-network-link-stroke: #666;
+  --bq-network-link-stroke-width: 1.5px;
 
-    --bq-network-node-label-pointer-events: none;
-    --bq-network-node-label-font: var(--bq-font);
+  --bq-network-node-label-pointer-events: none;
+  --bq-network-node-label-font: var(--bq-font);
 
-    --bq-selector-fill: var(--jp-border-color1);
+  --bq-selector-fill: var(--jp-border-color1);
 
-    --bq-mark-tooltip-border: 2px solid var(--jp-border-color0);
-    --bq-mark-tooltip-box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2 ), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
-    --bq-mark-tooltip-background-color: var(--jp-layout-color0);
-    --bq-mark-tooltip-td-border: 1px solid var(--jp-border-color1);
+  --bq-mark-tooltip-border: 2px solid var(--jp-border-color0);
+  --bq-mark-tooltip-box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  --bq-mark-tooltip-background-color: var(--jp-layout-color0);
+  --bq-mark-tooltip-td-border: 1px solid var(--jp-border-color1);
 
-    --bq-world-map-path-stroke: black;
-    --bq-world-map-path-fill: seagreen;
+  --bq-world-map-path-stroke: black;
+  --bq-world-map-path-fill: seagreen;
 
-    --bq-pie-polyline-opacity: .3;
-    --bq-pie-polyline-stroke: var(--bq-content-font-color);
+  --bq-pie-polyline-opacity: 0.3;
+  --bq-pie-polyline-stroke: var(--bq-content-font-color);
 
-    --bq-network-node-element-fill: #666;
-    --bq-network-node-label-text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
-    --bq-linkarrow-fill: #ccc;
+  --bq-network-node-element-fill: #666;
+  --bq-linkarrow-fill-dark: rgb(0, 0, 0);
+  --bq-linkarrow-fill-light: #666;
 
-    --bq-default-stroke: var(--bq-content-font-color);
-    --bq-stick-stroke: var(--bq-content-font-color);
-    --bq-stick-fill: var(--bq-content-font-color);
-    --bq-sticktext-fill: var(--bq-content-font-color);
+  --bq-default-stroke: var(--bq-content-font-color);
+  --bq-stick-stroke: var(--bq-content-font-color);
+  --bq-stick-fill: var(--bq-content-font-color);
+  --bq-sticktext-fill: var(--bq-content-font-color);
 }
 
 /*
  * gg and classic bqplot themes differ in the styling of the svg-background.
  *
- * plot area background fill: 
+ * plot area background fill:
  *   - gg: contrasted with the jupyterlab background. var(--jp-layout-color2);
  *   - classic: less contrasted: var(--jp-layout-color1);
  *
@@ -89,301 +90,327 @@
  */
 
 .common() {
-    --bq-mainheading-fill: var(--bq-content-font-color);
-    --bq-axislabel-fill: var(--bq-content-font-color);
+  --bq-mainheading-fill: var(--bq-content-font-color);
+  --bq-axislabel-fill: var(--bq-content-font-color);
 }
 
 .gg {
-    --bq-plotarea-background-fill: var(--jp-layout-color2);
-    --bq-axis-tick-text-fill: var(--jp-content-font-color2);
+  --bq-plotarea-background-fill: var(--jp-layout-color2);
+  --bq-axis-tick-text-fill: var(--jp-content-font-color2);
 
-    --bq-grid-color: var(--jp-layout-color0);
-    --bq-axis-rect-stroke: var(--bq-grid-color);
-    --bq-axis-path-stroke: var(--bq-grid-color);
-    --bq-axis-tick-stroke: var(--bq-grid-color);
-    --bq-axis-tick-short-stroke: var(--bq-grid-color);
+  --bq-grid-color: var(--jp-layout-color0);
+  --bq-axis-rect-stroke: var(--bq-grid-color);
+  --bq-axis-path-stroke: var(--bq-grid-color);
+  --bq-axis-tick-stroke: var(--bq-grid-color);
+  --bq-axis-tick-short-stroke: var(--bq-grid-color);
 
-    .common()
+  .common();
 }
 
-[data-jp-theme-light="false"] .gg {
-    --bq-plotarea-background-fill: var(--jp-layout-color1);
+[data-jp-theme-light='false'] .gg {
+  --bq-plotarea-background-fill: var(--jp-layout-color1);
+}
+
+[data-jp-theme-light='false'] .linkarrow {
+  fill: var(--bq-linkarrow-fill-light);
 }
 
 .classic {
-    --bq-plotarea-background-fill: var(--jp-layout-color0);
-    --bq-axis-tick-text-fill: var(--jp-content-font-color2);
+  --bq-plotarea-background-fill: var(--jp-layout-color0);
+  --bq-axis-tick-text-fill: var(--jp-content-font-color2);
 
-    --bq-grid-color: var(--jp-layout-color2);
-    --bq-axis-border-color: var(--jp-content-font-color2);
-    --bq-axis-path-stroke: var(--bq-axis-border-color);
-    --bq-axis-rect-stroke: var(--bq-axis-border-color);
-    --bq-axis-tick-stroke: var(--bq-grid-color);
-    --bq-axis-tick-short-stroke: var(--bq-axis-border-color);
+  --bq-grid-color: var(--jp-layout-color2);
+  --bq-axis-border-color: var(--jp-content-font-color2);
+  --bq-axis-path-stroke: var(--bq-axis-border-color);
+  --bq-axis-rect-stroke: var(--bq-axis-border-color);
+  --bq-axis-tick-stroke: var(--bq-grid-color);
+  --bq-axis-tick-short-stroke: var(--bq-axis-border-color);
 
-    .common()
+  .common();
 }
 
-.bbg, [data-jp-theme-light="false"] {
-    --bq-content-font-color: orange;
+.bbg,
+[data-jp-theme-light='false'] {
+  --bq-content-font-color: orange;
 
-    .common()
-   }
+  .common();
+}
 
 .bqplot {
-    box-sizing: border-box;
-    display: flex;
-    width: auto;
-    height: 480px;
+  box-sizing: border-box;
+  display: flex;
+  width: auto;
+  height: 480px;
 }
 .bqplot > .svg-background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 .bqplot > canvas {
-    position: absolute;
-    pointer-events: none;
-    z-index: 0;
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
 }
 .bqplot > svg {
-    z-index: 0;
-    font: 11px sans-serif;
-    user-select: none;
-    -ms-user-select: none;
-    -khtml-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    flex-grow: 1;
+  z-index: 0;
+  font: 11px sans-serif;
+  user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  flex-grow: 1;
 
-    .svg-figure {
-        background: var(--bq-background);
+  .svg-figure {
+    background: var(--bq-background);
+  }
+
+  .axis {
+    rect {
+      stroke: var(--bq-axis-rect-stroke);
+      opacity: var(--bq-axis-rect-opacity);
+    }
+    .tick line {
+      stroke: var(--bq-axis-tick-stroke);
+      stroke-width: var(--bq-axis-tick-stroke-width);
+      opacity: var(--bq-axis-tick-opacity);
+    }
+    .tick.short line {
+      stroke: var(--bq-axis-tick-short-stroke);
+    }
+    .tick text {
+      fill: var(--bq-axis-tick-text-fill);
+      font: var(--bq-axis-tick-text-font);
+    }
+    line {
+      shape-rendering: crispEdges;
+      font: 10px sans-serif;
+      stroke-width: 1px;
+    }
+    path,
+    line {
+      fill: none;
+    }
+    path {
+      stroke: var(--bq-axis-path-stroke);
     }
 
-    .axis {
-        rect {
-            stroke: var(--bq-axis-rect-stroke);
-            opacity: var(--bq-axis-rect-opacity);
-        }
-        .tick line {
-            stroke: var(--bq-axis-tick-stroke);
-            stroke-width: var(--bq-axis-tick-stroke-width);
-            opacity: var(--bq-axis-tick-opacity);
-        }
-        .tick.short line {
-            stroke: var(--bq-axis-tick-short-stroke);
-        }
-        .tick text {
-            fill: var(--bq-axis-tick-text-fill);
-            font: var(--bq-axis-tick-text-font);
-        }
-        line {
-            shape-rendering: crispEdges;
-            font: 10px sans-serif;
-            stroke-width: 1px;
-        }
-        path, line { fill: none; }
-        path {
-            stroke: var(--bq-axis-path-stroke);
-        }
-
-        text.axislabel, tspan.axislabel {
-            text-anchor: end;
-            fill: var(--bq-axislabel-fill);
-            font: var(--bq-axislabel-font);
-        }
-        .tick text {
-            cursor: default;
-        }
+    text.axislabel,
+    tspan.axislabel {
+      text-anchor: end;
+      fill: var(--bq-axislabel-fill);
+      font: var(--bq-axislabel-font);
     }
-    .axis.axisbold path {
-        stroke-width: 3px;
+    .tick text {
+      cursor: default;
     }
-    .axis.axisbold text,
-    .axis.axisbold text.axislabel {
-        font-weight: bolder;
+  }
+  .axis.axisbold path {
+    stroke-width: 3px;
+  }
+  .axis.axisbold text,
+  .axis.axisbold text.axislabel {
+    font-weight: bolder;
+  }
+  .stick,
+  .zeroLine {
+    stroke: var(--bq-stick-stroke);
+    fill: var(--bq-stick-fill);
+  }
+  .sticktext {
+    fill: var(--bq-sticktext-fill);
+  }
+  .bargroup,
+  .boxplot,
+  .slice {
+    rect,
+    path,
+    line {
+      stroke: var(--bq-default-stroke);
     }
-    .stick, .zeroLine {
-        stroke: var(--bq-stick-stroke);
-        fill: var(--bq-stick-fill);
+  }
+  .zeroLine {
+    shape-rendering: crispEdges;
+  }
+  text.mainheading {
+    text-anchor: middle;
+    fill: var(--bq-mainheading-fill);
+    font: var(--bq-mainheading-font);
+    font-size: var(--bq-mainheading-font-size);
+  }
+  text.legendtext {
+    text-anchor: start;
+    font: 14px sans-serif;
+  }
+  text.dot_text {
+    fill: var(--bq-content-scatter-font-color);
+  }
+  .indsel {
+    stroke: red;
+  }
+  .brushintsel {
+    text {
+      fill: var(--bq-content-font-color);
+      font: var(--bq-font);
+      text-anchor: middle;
     }
-    .sticktext {
-        fill: var(--bq-sticktext-fill);
+    .selection {
+      fill: var(--bq-selector-fill);
+      stroke: none;
     }
-    .bargroup, .boxplot, .slice {
-        rect, path, line {
-            stroke: var(--bq-default-stroke);
-        }
+  }
+  .intsel {
+    fill: var(--bq-selector-fill);
+    stroke: none;
+    fill-opacity: 0.3;
+  }
+  .intselmouse {
+    visibility: hidden;
+    pointer-events: all; /*none?*/
+  }
+  .multiselector {
+    .active {
+      pointer-events: all;
+      .selection {
+        stroke: green;
+      }
+      .overlay {
+        pointer-events: all;
+      }
     }
-    .zeroLine {
-        shape-rendering: crispEdges;
-    }
-    text.mainheading {
-        text-anchor: middle;
-        fill: var(--bq-mainheading-fill);
-        font: var(--bq-mainheading-font);
-        font-size: var(--bq-mainheading-font-size);
-    }
-    text.legendtext {
-        text-anchor: start;
-        font: 14px sans-serif;
-    }
-    text.dot_text {
-        fill: var(--bq-content-scatter-font-color);
-    }
-    .indsel {
+    .inactive {
+      pointer-events: none;
+      .selection {
         stroke: red;
+      }
+      .overlay {
+        pointer-events: none;
+      }
     }
-    .brushintsel {
-        .selection {
-            fill: var(--bq-selector-fill);
-            stroke: none;
-        }
+    .visible {
+      pointer-events: all;
+      .selection {
+        stroke: red;
+      }
+      .overlay {
+        pointer-events: none;
+      }
     }
-    .intsel {
-        fill: var(--bq-selector-fill);
-        stroke: none;
-        fill-opacity: 0.3;
+  }
+  .lassoselector {
+    .selected {
+      opacity: 0.3;
     }
-    .intselmouse {
-        visibility: hidden;
-        pointer-events: all; /*none?*/
+    path {
+      fill: none;
+      stroke: orange;
+      stroke-width: 4;
     }
-    .multiselector {
-        .active {
-            pointer-events: all;
-            .selection {
-                stroke: green;
-            }
-            .overlay {
-                pointer-events: all;
-            }
-        }
-        .inactive {
-            pointer-events: none;
-            .selection {
-                stroke: red;
-            }
-            .overlay {
-                pointer-events: none;
-            }
-        }
-        .visible {
-            pointer-events: all;
-            .selection
-            {
-                stroke: red;
-            }
-            .overlay {
-                pointer-events: none;
-            }
-        }
-    }
-    .lassoselector {
-       .selected {
-           opacity: 0.3;
-       }
-       path {
-           fill: none;
-           stroke: orange;
-           stroke-width: 4;
-       }
-    }
-    .plotarea_background {
-        fill: var(--bq-plotarea-background-fill);
-    }
-    .plotarea_events {
-        opacity: 0; // fully transparent, only used for capturing events
-    }
-    .image_pixelated {
-      /*
+  }
+  .plotarea_background {
+    fill: var(--bq-plotarea-background-fill);
+  }
+  .plotarea_events {
+    opacity: 0; // fully transparent, only used for capturing events
+  }
+  .image_pixelated {
+    /*
       optimizespeed does not guarantee nearest neighbor, but firefox seems to do so for now
       https://www.w3.org/TR/SVG/single-page.html#painting-ImageRenderingProperty
       */
-      image-rendering: optimizespeed;
-      image-rendering: pixelated; /* chrome doesn't support optimizespeed */
-      image-rendering: -moz-crisp-edges; /* this is guaranteed to work for firefox */
-    }
-
+    image-rendering: optimizespeed;
+    image-rendering: pixelated; /* chrome doesn't support optimizespeed */
+    image-rendering: -moz-crisp-edges; /* this is guaranteed to work for firefox */
+  }
 }
 .tooltip_div {
-    z-index: 1001;
+  z-index: 1001;
 }
 .mark_tooltip {
-    pointer-events: none;
-    z-index: 1001;
-    font: var(--bq-font);
-    border: var(--jp-border-width) solid var(--jp-border-color1);
-    box-shadow: var(--bq-mark-tooltip-box-shadow);
-    background-color: var(--bq-mark-tooltip-background-color);
-    -webkit-user-select: var(--bq-mark-tooltip--webkit-user-select);
-    -moz-user-select: var(--bq-mark-tooltip--moz-user-select);
+  pointer-events: none;
+  z-index: 1001;
+  color: var(--bq-content-font-color);
+  font: var(--bq-font);
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  box-shadow: var(--bq-mark-tooltip-box-shadow);
+  background-color: var(--bq-mark-tooltip-background-color);
+  -webkit-user-select: var(--bq-mark-tooltip--webkit-user-select);
+  -moz-user-select: var(--bq-mark-tooltip--moz-user-select);
 }
 .mark_tooltip > .bqplot.figure {
-    width: 427px;
-    height: 320px;
+  width: 427px;
+  height: 320px;
 }
 .mark_tooltip .tooltiptext {
-    text-align: center;
-    padding: 0.5em;
+  text-align: center;
+  padding: 0.5em;
 }
 .world_map path {
-    stroke: var(--bq-world-map-path-stroke);
-    stroke-width: var(--bq-world-map-path-stroke-width);
-    fill: var(--bq-world-map-path-fill);;
+  stroke: var(--bq-world-map-path-stroke);
+  stroke-width: var(--bq-world-map-path-stroke-width);
+  fill: var(--bq-world-map-path-fill);
 }
 .world_map .hovered {
-    fill: Orange;
-    stroke: Orange;
-    stroke-width: 2.5px;
+  fill: Orange;
+  stroke: Orange;
+  stroke-width: 2.5px;
 }
 
 .world_map #container {
-    margin:10px 10%;
-    border:2px solid #000;
-    border-radius: 5px;
-    height:100%;
-    overflow:hidden;
-    background: #F0F8FF;
+  margin: 10px 10%;
+  border: 2px solid #000;
+  border-radius: 5px;
+  height: 100%;
+  overflow: hidden;
+  background: #f0f8ff;
 }
 
 .world_map .graticule {
-    fill: none;
-    stroke: #bbb;
-    stroke-width: .5px;
-    stroke-opacity: .5;
+  fill: none;
+  stroke: #bbb;
+  stroke-width: 0.5px;
+  stroke-opacity: 0.5;
 }
 
 .g_legend {
-    fill: none;
+  fill: none;
 }
 
 .pie polyline {
-    opacity: var(--bq-pie-polyline-opacity);
-    stroke: var(--bq-pie-polyline-stroke);
-    stroke-width: var(--bq-pie-polyline-stroke-width);
-    fill: var(--bq-pie-polyline-fill);
+  opacity: var(--bq-pie-polyline-opacity);
+  stroke: var(--bq-pie-polyline-stroke);
+  stroke-width: var(--bq-pie-polyline-stroke-width);
+  fill: var(--bq-pie-polyline-fill);
+}
+
+.pie_label {
+  fill: var(--bq-content-font-color);
+}
+
+.bar_label {
+  fill: var(--bq-content-font-color);
 }
 
 .network .node .element {
-    fill: var(--bq-network-node-element-fill);
-    stroke: var(--bq-network-node-element-stroke);
-    stroke-width: var(--bq-network-node-element-stroke-width);
+  fill: var(--bq-network-node-element-fill);
+  stroke: var(--bq-network-node-element-stroke);
+  stroke-width: var(--bq-network-node-element-stroke-width);
 }
 
 .network .link {
-    fill: var(--bq-network-link-fill);
-    stroke: var(--bq-network-link-stroke);
-    stroke-width: var(--bq-network-link-stroke-width);
+  fill: var(--bq-network-link-fill);
+  stroke: var(--bq-network-link-stroke);
+  stroke-width: var(--bq-network-link-stroke-width);
 }
 
 .network .node .label {
-    font: var(--bq-network-node-label-font);
-    pointer-events: var(--bq-network-node-label-pointer-events);
-    text-shadow: var(--bq-network-node-label-text-shadow);
+  font: var(--bq-network-node-label-font);
+  pointer-events: var(--bq-network-node-label-pointer-events);
+  text-shadow: var(--bq-network-node-label-text-shadow);
 }
 
 .linkarrow {
-    fill: var(--bq-linkarrow-fill);
+  fill: var(--bq-linkarrow-fill-dark);
 }

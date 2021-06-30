@@ -1,5 +1,19 @@
 # Contributing to bqplot
 
+## Conforming with linters
+
+This projects uses both [eslint](https://eslint.org/) and [prettier](https://github.com/prettier/prettier) and the plugin that creates the integration between both, [eslint-plugin-prettier](https://github.com/prettier/eslint-plugin-prettier) to lint its code.
+
+Currently there has been an active effort on making the project comply to all eslint rules so the eslint rules are currently not enforced.
+
+Prettier rules are enforced though and you can run them in the `js` folder with:
+
+```bash
+    yarn prettier --write . 
+```
+
+The configuration of this project linters were based in the [widgets-cookiecutter](https://github.com/jupyter-widgets/widget-ts-cookiecutter/tree/master/%7B%7Bcookiecutter.github_project_name%7D%7D).
+
 ## Governance and code of conduct
 
 Bqplot is subject to the [bqplot governance](https://github.com/bqplot/governance/blob/master/governance.md) and the [bqplot code of conduct](https://github.com/bqplot/governance/blob/master/code_of_conduct.md).

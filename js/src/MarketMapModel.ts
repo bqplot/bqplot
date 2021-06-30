@@ -19,66 +19,67 @@ import * as serialize from './serialize';
 import { semver_range } from './version';
 
 export class MarketMapModel extends widgets.WidgetModel {
+  defaults() {
+    return {
+      ...widgets.WidgetModel.prototype.defaults(),
+      _model_name: 'MarketMapModel',
+      _view_name: 'MarketMap',
+      _model_module: 'bqplot',
+      _view_module: 'bqplot',
+      _model_module_version: semver_range,
+      _view_module_version: semver_range,
 
-    defaults() {
-        return {...widgets.WidgetModel.prototype.defaults(),
-            _model_name: "MarketMapModel",
-            _view_name: "MarketMap",
-            _model_module: "bqplot",
-            _view_module: "bqplot",
-            _model_module_version: semver_range,
-            _view_module_version: semver_range,
+      map_width: 1080,
+      map_height: 800,
 
-            map_width: 1080,
-            map_height: 800,
+      names: [],
+      groups: [],
+      display_text: [],
+      ref_data: undefined,
+      title: '',
 
-            names: [],
-            groups: [],
-            display_text: [],
-            ref_data: undefined,
-            title: "",
+      tooltip_fields: [],
+      tooltip_formats: [],
+      show_groups: false,
 
-            tooltip_fields: [],
-            tooltip_formats: [],
-            show_groups: false,
+      cols: 0,
+      rows: 0,
 
-            cols: 0,
-            rows: 0,
+      row_groups: 1,
+      colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
+      scales: {},
+      axes: [],
+      color: [],
+      map_margin: {
+        top: 50,
+        right: 50,
+        left: 50,
+        bottom: 50,
+      },
+      preserve_aspect: false,
+      stroke: 'white',
+      group_stroke: 'black',
+      selected_stroke: 'dodgerblue',
+      hovered_stroke: 'orangered',
+      font_style: {},
+      title_style: {},
 
-            row_groups: 1,
-            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
-            scales: {},
-            axes: [],
-            color: [],
-            map_margin: {
-                top: 50,
-                right: 50,
-                left: 50,
-                bottom: 50
-            },
-            preserve_aspect: false,
-            stroke: "white",
-            group_stroke: "black",
-            selected_stroke: "dodgerblue",
-            hovered_stroke: "orangered",
-            font_style: {},
-            title_style: {},
-
-            selected: [],
-            enable_hover: true,
-            enable_select: true,
-            tooltip_widget: null
-        };
-    }
-    static serializers = {...widgets.WidgetModel.serializers,
-        scales: { deserialize: widgets.unpack_models },
-        axes: { deserialize: widgets.unpack_models },
-        tooltip_widget: { deserialize: widgets.unpack_models },
-        style: { deserialize: widgets.unpack_models },
-        layout:  { deserialize: widgets.unpack_models },
-        names: serialize.array_or_json,
-        groups: serialize.array_or_json,
-        display_text: serialize.array_or_json,
-        color: serialize.array_or_json,
-    }
+      selected: [],
+      enable_hover: true,
+      enable_select: true,
+      tooltip_widget: null,
+    };
+  }
+  static serializers = {
+    ...widgets.WidgetModel.serializers,
+    scales: { deserialize: widgets.unpack_models },
+    axes: { deserialize: widgets.unpack_models },
+    tooltip_widget: { deserialize: widgets.unpack_models },
+    style: { deserialize: widgets.unpack_models },
+    layout: { deserialize: widgets.unpack_models },
+    names: serialize.array_or_json_serializer,
+    groups: serialize.array_or_json_serializer,
+    display_text: serialize.array_or_json_serializer,
+    color: serialize.array_or_json_serializer,
+  };
 }

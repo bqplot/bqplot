@@ -65,7 +65,7 @@ from .interacts import (BrushIntervalSelector, FastIntervalSelector,
 from traitlets.utils.sentinel import Sentinel
 import functools
 
-SCATTER_SIZE_LIMIT = 10*1000 # above this limit, ScatterGL will be used by default
+SCATTER_SIZE_LIMIT = 10 * 1000  # above this limit, ScatterGL will be used by default
 
 Keep = Sentinel('Keep', 'bqplot.pyplot', '''
         Used in bqplot.pyplot to specify that the same scale should be used for
@@ -104,7 +104,7 @@ MARKER_CODES = {'o': 'circle', 'v': 'triangle-down', '^': 'triangle-up',
 PY2 = sys.version_info[0] == 2
 
 if PY2:
-    string_types = basestring,
+    string_types = basestring,  # noqa
 else:
     string_types = str,
 
@@ -251,13 +251,13 @@ def _process_data(*kwarg_names):
             else:
                 data_args = [data[i] if hashable(data, i) else i for i in args]
                 data_kwargs = {
-                   kw: data[kwargs[kw]] if hashable(data, kwargs[kw]) else kwargs[kw] for kw in set(kwarg_names).intersection(list(kwargs.keys()))
+                    kw: data[kwargs[kw]] if hashable(data, kwargs[kw]) else kwargs[kw] for kw in set(kwarg_names).intersection(list(kwargs.keys()))
                 }
                 try:
                     # if any of the plots want to use the index_data, they can
                     # use it by referring to this attribute.
                     data_kwargs['index_data'] = data.index
-                except AttributeError as e:
+                except AttributeError:
                     pass
                 kwargs_update = kwargs.copy()
                 kwargs_update.update(data_kwargs)
@@ -634,11 +634,10 @@ def _draw_mark(mark_type, options={}, axes_options={}, **kwargs):
             # Fetching the first matching scale for the rtype and dtype of the
             # scaled attributes of the mark.
             compat_scale_types = [
-                    Scale.scale_types[key]
-                    for key in Scale.scale_types
-                    if Scale.scale_types[key].rtype == rtype and
-                    issubdtype(dtype, Scale.scale_types[key].dtype)
-                ]
+                Scale.scale_types[key]
+                for key in Scale.scale_types
+                if Scale.scale_types[key].rtype == rtype and issubdtype(dtype, Scale.scale_types[key].dtype)
+            ]
             sorted_scales = sorted(compat_scale_types,
                                    key=lambda x: x.precedence)
             scales[name] = sorted_scales[-1](**options.get(name, {}))

@@ -75,6 +75,7 @@ export * from './MapModel';
 export * from './GeoScale';
 export * from './Markers';
 export * from './utils';
+export * from './serialize';
 export * from './GeoScaleModel';
 export * from './MarketMap';
 export * from './GridHeatMap';
@@ -88,5 +89,3 @@ export * from './Image';
 export * from './ImageModel';
 export * from './ScatterGL';
 export * from './ScatterGLModel';
-
-export let version = require('../package.json').version;

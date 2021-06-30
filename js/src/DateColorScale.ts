@@ -16,11 +16,16 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
 import { ColorScale } from './ColorScale';
+import { Scale } from './Scale';
 
 export class DateColorScale extends ColorScale {
+  create_d3_scale() {
+    this.scale = d3.scaleUtc();
+  }
 
-    create_d3_scale() {
-        this.scale = d3.scaleUtc();
-    }
+  scale: d3.ScaleTime<Date, number>;
 }
 
+export function isDateColorScale(scale: Scale): scale is DateColorScale {
+  return scale.model.type === 'date_color_linear';
+}

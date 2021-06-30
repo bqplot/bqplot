@@ -1,0 +1,20 @@
+{
+  "name": "bqplot-ui-tests",
+  "version": "1.0.0",
+  "description": "bqplot UI Tests",
+  "private": true,
+  "scripts": {
+    "start-jlab": "jupyter lab --config ./jupyter_server_config.py",
+    "start-jlab:detached": "yarn run start-jlab&",
+    "clean": "rimraf tests/notebooks/.ipynb_checkpoints && rimraf test-output",
+    "test": "yarn run clean && galata --image-match-threshold 0.33",
+    "update-references": "galata --update-references"
+  },
+  "author": "bqplot",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@jupyterlab/galata": "3.0.7-6",
+    "klaw-sync": "^6.0.0",
+    "rimraf": "^3.0.2"
+  }
+}

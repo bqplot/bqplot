@@ -14,50 +14,52 @@
  */
 
 import * as d3 from 'd3';
-import {ScatterBaseModel} from './ScatterBaseModel';
+import { ScatterBaseModel } from './ScatterBaseModel';
 import * as serialize from './serialize';
 
 export class LabelModel extends ScatterBaseModel {
+  defaults() {
+    return {
+      ...ScatterBaseModel.prototype.defaults(),
+      _model_name: 'LabelModel',
+      _view_name: 'Label',
 
-    defaults() {
-        return {...ScatterBaseModel.prototype.defaults(),
-            _model_name: "LabelModel",
-            _view_name: "Label",
+      x_offset: 0,
+      y_offset: 0,
+      colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
+      rotate_angle: 0.0,
+      text: null,
+      default_size: 16.0,
+      drag_size: 1.0,
+      font_unit: 'px',
+      font_weight: 'bold',
+      align: 'start',
+    };
+  }
 
-            x_offset: 0,
-            y_offset: 0,
-            colors: d3.scaleOrdinal(d3.schemeCategory10).range(),
-            rotate_angle: 0.0,
-            text: null,
-            default_size: 16.0,
-            drag_size: 1.0,
-            font_unit: "px",
-            font_weight: "bold",
-            align: "start",
-        };
-    }
+  initialize(attributes, options) {
+    // TODO: Normally, color, opacity and size should not require a redraw
+    super.initialize(attributes, options);
+    this.on('change:text', this.update_data, this);
+  }
 
-    initialize(attributes, options) {
-        // TODO: Normally, color, opacity and size should not require a redraw
-        super.initialize(attributes, options);
-        this.on("change:text", this.update_data, this);
-    }
+  update_mark_data() {
+    super.update_mark_data();
+    const text = this.get('text');
 
-    update_mark_data() {
-        super.update_mark_data();
-        const text = this.get("text");
+    this.mark_data.forEach((d, i) => {
+      d.text = text[i];
+    });
+  }
 
-        this.mark_data.forEach(function(d, i){ d.text = text[i]; });
-    }
+  update_unique_ids() {
+    this.mark_data.forEach((data, index) => {
+      data.unique_id = 'Label' + index;
+    });
+  }
 
-    update_unique_ids() {
-        this.mark_data.forEach(function(data, index){
-                                   data.unique_id = "Label" + index;
-        });
-    }
-
-    static serializers = {
-        ...ScatterBaseModel.serializers,
-        text: serialize.array_or_json,
-    }
+  static serializers = {
+    ...ScatterBaseModel.serializers,
+    text: serialize.array_or_json_serializer,
+  };
 }

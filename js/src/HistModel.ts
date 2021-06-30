@@ -18,154 +18,184 @@ import * as d3 from 'd3';
 import { MarkModel } from './MarkModel';
 import * as serialize from './serialize';
 
+export interface BinData {
+  index: number;
+  bin: d3.Bin<number, number>;
+}
+
 export class HistModel extends MarkModel {
-
-    defaults() {
-        return {...MarkModel.prototype.defaults(),
-            _model_name: "HistModel",
-            _view_name: "Hist",
-            sample: [],
-            count: [],
-            scales_metadata: {
-                sample: { orientation: "horizontal", dimension: "x" },
-                count: { orientation: "vertical", dimension: "y" }
-            },
-            bins: 10,
-            midpoints: [],
-            colors: ['steelblue'],
-            stroke: null,
-            opacities: [],
-            normalized: false
-        };
-    }
-
-    initialize(attributes, options) {
-        // TODO: should not need to set this.data
-        super.initialize(attributes, options);
-        this.mark_data = [];
-        // For the histogram, changing the "sample" scale changes the "count" values being plotted.
-        // Hence, on change of the value of "preserve_domain", we must call the "update_data"
-        // function, and not merely "update_domains".
-        this.on_some_change(["bins", "sample", "preserve_domain"], this.update_data, this);
-        this.update_data();
-        this.on("change:normalized", function() { this.normalize_data(true); }, this);
-        this.normalize_data(true);
-    }
-
-    update_data() {
-        let x_data = this.get("sample");
-        const scales = this.get("scales");
-        const x_scale = scales.sample;
-
-        // TODO: This potentially triggers domain_changed and therefore a
-        // Draw, while update_data is generally followed by a Draw.
-        this.num_bins = this.get("bins");
-        if (x_data.length == 0) {
-            this.mark_data = [];
-            this.x_mid = [];
-            this.count = [];
-            this.x_bins = [];
-        } else {
-            if(!this.get("preserve_domain").sample) {
-                x_scale.compute_and_set_domain(x_data, this.model_id + "_sample");
-            } else {
-                x_scale.del_domain([], this.model_id + "_sample");
-            }
-
-            this.min_x = x_scale.domain[0];
-            this.max_x = x_scale.domain[1];
-
-            const that = this;
-            x_data = x_data.filter(function(d) {
-                return (d <= that.max_x && d >= that.min_x);
-            });
-            // since x_data may be a TypedArray, explicitly use Array.map
-            const x_data_ind =  Array.prototype.map.call(x_data, function (d,i) {
-                return {index: i, value: d};
-            });
-            
-            this.x_bins = d3.range(this.min_x, this.max_x, (this.max_x - this.min_x) / this.num_bins);
-            this.x_mid = this.x_bins.map(function(d, i) {
-                return 0.5 * (d + that.x_bins[i - 1]);
-            }).slice(1);
-
-            this.mark_data = d3.histogram().thresholds(this.x_bins).value(function(d: any) {
-                return d.value;
-            })(x_data_ind);
-            //adding index attribute to mark_data of the model
-            this.mark_data.forEach(function(data, index) { data.index = index; });
-        }
-        this.normalize_data(false);
-
-        this.set("midpoints", this.x_mid);
-        this.set("count", new Float64Array(this.count));
-
-        this.update_domains();
-        this.save_changes();
-        this.trigger("data_updated");
-    }
-
-    normalize_data(save_and_update) {
-        this.count = this.mark_data.map(function(d) { return d.length; });
-        if (this.get("normalized")) {
-            let x_width = 1;
-            if(this.mark_data.length > 0) {
-                x_width = this.mark_data[0].x1 - this.mark_data[0].x0;
-            }
-
-            const sum = this.count.reduce(function(a, b) { return a + b; }, 0);
-            if (sum != 0) {
-                this.count = this.count.map(function(a) { return a / (sum * x_width); });
-            }
-        }
-
-        const that = this;
-        this.mark_data.forEach(function(el, it) { el['y'] = that.count[it]; });
-
-        if (save_and_update) {
-            this.set("count", new Float64Array(this.count));
-            this.update_domains();
-            this.save_changes();
-            this.trigger("data_updated");
-        }
-    }
-
-    get_data_dict(data, index) {
-        const return_dict : any = {};
-        return_dict.midpoint = this.x_mid[index];
-        return_dict.bin_start = this.x_bins[index];
-        return_dict.bin_end = this.x_bins[index + 1];
-        return_dict.index = index;
-        return_dict.count = this.count[index];
-        return return_dict;
-    }
-
-    update_domains() {
-        if(!this.mark_data) {
-            return;
-        }
-        // For histogram, changing the x-scale domain changes a lot of
-        // things including the data which is to be plotted. So the x-domain
-        // change is handled by the update_data function and only the
-        // y-domain change is handled by this function.
-        const y_scale = this.get("scales").count;
-        if(!this.get("preserve_domain").count) {
-            y_scale.set_domain([0, d3.max(this.mark_data, function(d: any): number {
-                return d.y;
-            }) * 1.05], this.model_id + "_count");
-        }
-    }
-
-    static serializers = {
-        ...MarkModel.serializers,
-        sample: serialize.array_or_json,
-        count: serialize.array_or_json
+  defaults() {
+    return {
+      ...MarkModel.prototype.defaults(),
+      _model_name: 'HistModel',
+      _view_name: 'Hist',
+      sample: [],
+      count: [],
+      scales_metadata: {
+        sample: { orientation: 'horizontal', dimension: 'x' },
+        count: { orientation: 'vertical', dimension: 'y' },
+      },
+      bins: 10,
+      midpoints: [],
+      colors: ['steelblue'],
+      stroke: null,
+      opacities: [],
+      normalized: false,
     };
+  }
 
-    num_bins: number;
-    x_bins: Array<any>;
-    x_mid: Array<any>;
-    count: Array<number>;
-    min_x: number;
-    max_x: number;
+  initialize(attributes, options) {
+    super.initialize(attributes, options);
+
+    this.mark_data = [];
+    // For the histogram, changing the "sample" scale changes the "count" values being plotted.
+    // Hence, on change of the value of "preserve_domain", we must call the "update_data"
+    // function, and not merely "update_domains".
+    this.on_some_change(
+      ['bins', 'sample', 'preserve_domain'],
+      this.update_data,
+      this
+    );
+    this.update_data();
+    this.on('change:normalized', () => {
+      this.normalizeData(true);
+    });
+    this.normalizeData(true);
+  }
+
+  update_data() {
+    const xScale = this.get('scales').sample;
+
+    // TODO: This potentially triggers domain_changed and therefore a
+    // Draw, while update_data is generally followed by a Draw.
+    if (this.sample.length == 0) {
+      this.mark_data = [];
+      this.xMid = [];
+      this.count = [];
+      this.xBins = [];
+    } else {
+      if (!this.get('preserve_domain').sample) {
+        xScale.compute_and_set_domain(this.sample, this.model_id + '_sample');
+      } else {
+        xScale.del_domain([], this.model_id + '_sample');
+      }
+
+      this.minX = xScale.domain[0];
+      this.maxX = xScale.domain[1];
+
+      const filtered_sample = this.sample.filter(
+        (d) => d <= this.maxX && d >= this.minX
+      );
+      // since x_data may be a TypedArray, explicitly use Array.map
+      const x_data_ind = Array.prototype.map.call(filtered_sample, (d, i) => {
+        return { index: i, value: d };
+      });
+
+      this.xBins = d3.range(
+        this.minX,
+        this.maxX,
+        (this.maxX - this.minX) / this.bins
+      );
+      this.xMid = this.xBins
+        .map((d, i) => {
+          return 0.5 * (d + this.xBins[i - 1]);
+        })
+        .slice(1);
+
+      const bins = d3
+        .histogram()
+        .thresholds(this.xBins)
+        .value((d: any) => {
+          return d.value;
+        })(x_data_ind);
+
+      this.mark_data = bins.map((bin, index) => {
+        return { bin, index };
+      });
+    }
+    this.normalizeData(false);
+
+    this.set('midpoints', this.xMid);
+    this.set('count', new Float64Array(this.count));
+
+    this.update_domains();
+    this.save_changes();
+    this.trigger('data_updated');
+  }
+
+  private normalizeData(save_and_update: boolean) {
+    this.count = this.mark_data.map((d: BinData) => d.bin.length);
+
+    if (this.get('normalized')) {
+      let x_width = 1;
+      if (this.mark_data.length > 0) {
+        x_width = this.mark_data[0].bin.x1 - this.mark_data[0].bin.x0;
+      }
+
+      const sum = this.count.reduce((a, b) => {
+        return a + b;
+      }, 0);
+
+      if (sum != 0) {
+        this.count = this.count.map((a) => {
+          return a / (sum * x_width);
+        });
+      }
+    }
+
+    if (save_and_update) {
+      this.set('count', new Float64Array(this.count));
+      this.update_domains();
+      this.save_changes();
+      this.trigger('data_updated');
+    }
+  }
+
+  get_data_dict(data: BinData, index: number) {
+    const return_dict: any = {};
+    return_dict.midpoint = this.xMid[index];
+    return_dict.bin_start = this.xBins[index];
+    return_dict.bin_end = this.xBins[index + 1];
+    return_dict.index = index;
+    return_dict.count = this.count[index];
+    return return_dict;
+  }
+
+  update_domains() {
+    if (!this.mark_data) return;
+
+    // For histogram, changing the x-scale domain changes a lot of
+    // things including the data which is to be plotted. So the x-domain
+    // change is handled by the update_data function and only the
+    // y-domain change is handled by this function.
+    const y_scale = this.get('scales').count;
+    if (!this.get('preserve_domain').count) {
+      y_scale.set_domain(
+        [0, d3.max(this.count) * 1.05],
+        this.model_id + '_count'
+      );
+    }
+  }
+
+  private get sample(): number[] {
+    return this.get('sample');
+  }
+
+  get bins(): number {
+    return this.get('bins');
+  }
+
+  static serializers = {
+    ...MarkModel.serializers,
+    sample: serialize.array_or_json_serializer,
+    count: serialize.array_or_json_serializer,
+  };
+
+  xBins: number[];
+  xMid: number[];
+  count: number[];
+  minX: number;
+  maxX: number;
+
+  mark_data: BinData[];
 }

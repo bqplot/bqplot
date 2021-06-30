@@ -16,15 +16,21 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-scale"));
 import { LinearScale } from './LinearScale';
+import { Scale } from './Scale';
 
 export class LogScale extends LinearScale {
-    render() {
-        this.scale = d3.scaleLog();
-        if(this.model.domain.length > 0) {
-            this.scale.domain(this.model.domain);
-        }
-        this.offset = 0;
-        this.create_event_listeners();
+  render() {
+    this.scale = d3.scaleLog();
+    if (this.model.domain.length > 0) {
+      this.scale.domain(this.model.domain);
     }
+    this.offset = 0;
+    this.create_event_listeners();
+  }
+
+  scale: d3.ScaleLogarithmic<number, number>;
 }
 
+export function isLogScale(scale: Scale): scale is LogScale {
+  return scale.model.type === 'log';
+}

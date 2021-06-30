@@ -1,3 +1,5 @@
-recursive-include bqplot/static *.*
 include bqplot/map_data/*.json
-include bqplot.json
+
+include LICENSE
+# include only by default in setuptools 43.0.0+
+include pyproject.toml
