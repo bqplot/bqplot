@@ -89,3 +89,9 @@ export * from './Image';
 export * from './ImageModel';
 export * from './ScatterGL';
 export * from './ScatterGLModel';
+
+import packageJson from '../package.json';
+
+const { version } = packageJson;
+
+export { version };
