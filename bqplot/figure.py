@@ -132,7 +132,7 @@ class Figure(DOMWidget):
                                                 **widget_serialization)
     scale_x = Instance(Scale).tag(sync=True, **widget_serialization)
     scale_y = Instance(Scale).tag(sync=True, **widget_serialization)
-    title_style = Dict(trait=Unicode()).tag(sync=True)
+    title_style = Dict(value_trait=Unicode()).tag(sync=True)
     background_style = Dict().tag(sync=True)
     legend_style = Dict().tag(sync=True)
     legend_text = Dict().tag(sync=True)
