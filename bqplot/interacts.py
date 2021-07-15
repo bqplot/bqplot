@@ -154,7 +154,7 @@ class PanZoom(Interaction):
     """
     allow_pan = Bool(True).tag(sync=True)
     allow_zoom = Bool(True).tag(sync=True)
-    scales = Dict(trait=List(trait=Instance(Scale)))\
+    scales = Dict(value_trait=List(trait=Instance(Scale)))\
         .tag(sync=True, **widget_serialization)
 
     _view_name = Unicode('PanZoom').tag(sync=True)

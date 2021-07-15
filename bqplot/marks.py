@@ -164,7 +164,7 @@ class Mark(Widget):
         that triggered the tooltip to be visible.
     """
     mark_types = {}
-    scales = Dict(trait=Instance(Scale)).tag(sync=True, **widget_serialization)
+    scales = Dict(value_trait=Instance(Scale)).tag(sync=True, **widget_serialization)
     scales_metadata = Dict().tag(sync=True)
     preserve_domain = Dict().tag(sync=True)
     display_legend = Bool().tag(sync=True, display_name='Display legend')
