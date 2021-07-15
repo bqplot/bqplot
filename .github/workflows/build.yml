@@ -44,12 +44,16 @@ jobs:
         test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
         test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
 
-
     - name: Validate the nbextension
       run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
 
     - name: Validate the labextension
       run: jupyter labextension list 2>&1 | grep bqplot
+
+    - name: Discover typos with codespell
+      run: |
+        pip install codespell
+        codespell --ignore-words-list="afterall,curvelinear,hist" --skip="*.csv,*.json,*.lock"
 
     - name: Python PEP8 check
       run: flake8 bqplot --ignore=E501,W504,W503
