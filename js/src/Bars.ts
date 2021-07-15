@@ -917,7 +917,7 @@ export class Bars extends Mark {
           });
         }
       } else if (accelKey) {
-        //If accel is pressed and the bar is not already selcted
+        //If accel is pressed and the bar is not already selected
         //add the bar to the list of selected bars.
         selected.push(index);
       }

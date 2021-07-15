@@ -1149,7 +1149,7 @@ def _create_selector(int_type, func, trait, **kwargs):
     int_type: type
         The type of selector to be added.
     func: function
-        The call back function. It should take atleast two arguments. The name
+        The call back function. It should take at least two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the Selector trait whose change triggers the
@@ -1171,7 +1171,7 @@ def brush_int_selector(func=None, trait='selected', **kwargs):
     ----------
 
     func: function
-        The call back function. It should take atleast two arguments. The name
+        The call back function. It should take at least two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the BrushIntervalSelector trait whose change triggers the
@@ -1190,7 +1190,7 @@ def int_selector(func=None, trait='selected', **kwargs):
     ----------
 
     func: function
-        The call back function. It should take atleast two arguments. The name
+        The call back function. It should take at least two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the IntervalSelector trait whose change triggers the
@@ -1209,7 +1209,7 @@ def index_selector(func=None, trait='selected', **kwargs):
     ----------
 
     func: function
-        The call back function. It should take atleast two arguments. The name
+        The call back function. It should take at least two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the IndexSelector trait whose change triggers the
@@ -1228,7 +1228,7 @@ def brush_selector(func=None, trait='selected', **kwargs):
     ----------
 
     func: function
-        The call back function. It should take atleast two arguments. The name
+        The call back function. It should take at least two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the BrushSelector trait whose change triggers the
@@ -1247,7 +1247,7 @@ def multi_selector(func=None, trait='selected', **kwargs):
     ----------
 
     func: function
-        The call back function. It should take atleast two arguments. The name
+        The call back function. It should take at least two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the MultiSelector trait whose change triggers the
@@ -1266,7 +1266,7 @@ def lasso_selector(func=None, trait='selected', **kwargs):
     ----------
 
     func: function
-        The call back function. It should take atleast two arguments. The name
+        The call back function. It should take at least two arguments. The name
         of the trait and the value of the trait are passed as arguments.
     trait: string
         The name of the LassoSelector trait whose change triggers the

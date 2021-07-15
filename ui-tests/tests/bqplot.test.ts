@@ -120,7 +120,7 @@ describe('bqplot Visual Regression', () => {
     await galata.resetUI();
   });
 
-  afterAll(async () => {
+  after all(async () => {
     galata.context.capturePrefix = '';
   });
 

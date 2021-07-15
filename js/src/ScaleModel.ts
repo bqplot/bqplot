@@ -44,7 +44,7 @@ export abstract class ScaleModel extends WidgetModel {
   }
 
   set_listeners() {
-    // Function to be implementd by inherited classes.
+    // Function to be implemented by inherited classes.
   }
 
   set_domain(domain, id) {

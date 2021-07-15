@@ -171,7 +171,7 @@ export class OHLC extends Mark {
           });
         }
       } else if (accelKey) {
-        //If accel is pressed and the candle is not already selcted
+        //If accel is pressed and the candle is not already selected
         //add the candle to the list of selected candles.
         selected.push(index);
       }

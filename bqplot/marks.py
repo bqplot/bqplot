@@ -667,7 +667,7 @@ class Scatter(_ScatterBase):
     icon = 'fa-cloud'
     name = 'Scatter'
 
-    # Scaled attribtes
+    # Scaled attributes
     skew = Array(None, allow_none=True).tag(sync=True, scaled=True,
                                             rtype='Number',
                                             **array_serialization)\
