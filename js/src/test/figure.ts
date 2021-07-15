@@ -95,7 +95,7 @@ describe('figure >', () => {
     let context = canvas.getContext('2d');
     let pixel = context.getImageData(test_x, test_y, 1, 1);
     expect(Array.prototype.slice.call(pixel.data)).to.deep.equals(pixel_red);
-    // add a normal (blue) scatter, which should be overlayed on top
+    // add a normal (blue) scatter, which should be overlaid on top
     const scales = {
       x: scatterGlView.model.get('scales').x.toJSON(),
       y: scatterGlView.model.get('scales').y.toJSON(),

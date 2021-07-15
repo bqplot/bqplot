@@ -53,7 +53,7 @@ def register_interaction(key=None):
 
     If no key is provided, the class name is used as a key. A key is provided
     for each core bqplot interaction type so that the frontend can use this
-    key regardless of the kernal language.
+    key regardless of the kernel language.
     """
     def wrap(interaction):
         name = key if key is not None else interaction.__module__ + \
@@ -203,7 +203,7 @@ class OneDSelector(Selector):
     ----------
     scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
-        co-ordinates. This scale is used for setting the selected attribute for
+        coordinates. This scale is used for setting the selected attribute for
         the selector.
     """
     scale = Instance(Scale, allow_none=True, default_value=None)\
@@ -222,11 +222,11 @@ class TwoDSelector(Selector):
     ----------
     x_scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
-        co-ordinates in the x-direction. This scale is used for setting the
+        coordinates in the x-direction. This scale is used for setting the
         selected attribute for the selector along with ``y_scale``.
     y_scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
-        co-ordinates in the y-direction. This scale is used for setting the
+        coordinates in the y-direction. This scale is used for setting the
         selected attribute for the selector along with ``x_scale``.
     """
     x_scale = Instance(Scale, allow_none=True, default_value=None)\

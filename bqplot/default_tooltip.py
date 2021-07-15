@@ -38,7 +38,7 @@ class Tooltip(DOMWidget):
     ----------
     fields: list (default: [])
         list of names of fields to be displayed in the tooltip
-        All the attributes  of the mark are accesible in the tooltip
+        All the attributes  of the mark are accessible in the tooltip
     formats: list (default: [])
         list of formats to be applied to each of the fields.
         if no format is specified for a field, the value is displayed as it is

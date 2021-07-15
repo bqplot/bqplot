@@ -398,7 +398,7 @@ export abstract class ScatterBase extends Mark {
       selected.splice(elem_index, 1);
     } else {
       if (accelKey) {
-        //If accel is pressed and the bar is not already selcted
+        //If accel is pressed and the bar is not already selected
         //add the bar to the list of selected bars.
         selected.push(index);
       }

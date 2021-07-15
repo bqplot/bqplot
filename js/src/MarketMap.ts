@@ -381,7 +381,7 @@ export class MarketMap extends Figure {
         num_items % this.num_rows === 0 ? this.num_cols : this.num_cols + 1;
     }
     // depending on the number of rows, we need to decide when to
-    // switch direction. The below functions tells us where to swtich
+    // switch direction. The below functions tells us where to switch
     // direction.
     this.set_row_limits();
   }
@@ -961,7 +961,7 @@ export class MarketMap extends Figure {
     let num_rows = bottom_row - top_row;
 
     if (elem_remaining !== 0) {
-      // starting corener of the path
+      // starting corner of the path
       this.calc_end_point_source(start_col, start_row, init_x, init_y).forEach(
         (d) => {
           end_points.push(d);

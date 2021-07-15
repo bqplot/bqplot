@@ -49,7 +49,7 @@ class MarketMap(DOMWidget):
         primary key for the map data. A rectangle is created for each
         unique entry in this array
     groups: numpy.ndarray (default: [])
-        attribute on which the groupby is run. If this is an empty arrray, then
+        attribute on which the groupby is run. If this is an empty array, then
         there is no group by for the map.
     display_text: numpy.ndarray or None(default: None)
         data to be displayed on each rectangle of the map.If this is empty it
