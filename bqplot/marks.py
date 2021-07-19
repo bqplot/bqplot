@@ -730,12 +730,6 @@ class Scatter(_ScatterBase):
     _model_name = Unicode('ScatterModel').tag(sync=True)
 
 
-@register_mark('bqplot.ScatterGL')
-class ScatterGL(Scatter):
-    _view_name = Unicode('ScatterGL').tag(sync=True)
-    _model_name = Unicode('ScatterGLModel').tag(sync=True)
-
-
 @register_mark('bqplot.Label')
 class Label(_ScatterBase):
 

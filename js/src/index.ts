@@ -87,7 +87,5 @@ export * from './GraphModel';
 export * from './Graph';
 export * from './Image';
 export * from './ImageModel';
-export * from './ScatterGL';
-export * from './ScatterGLModel';
 
 export const version = require('../package.json').version;
