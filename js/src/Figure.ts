@@ -28,16 +28,12 @@ import { Scale, ScaleModel } from 'bqscales';
 
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
-import * as THREE from 'three';
 import { applyAttrs, applyStyles } from './utils';
 import { AxisModel } from './AxisModel';
 import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
 import { Interaction } from './Interaction';
 import { FigureModel } from './FigureModel';
-
-THREE.ShaderChunk['scales'] =
-  require('raw-loader!../shaders/scales.glsl').default;
 
 interface IFigureSize {
   width: number;
@@ -255,6 +251,23 @@ export class Figure extends DOMWidgetView {
 
     await figure_scale_promise;
 
+    // Create WebGL context for marks
+    this.webGLCanvas = document.createElement('canvas');
+    this.webGLContext = this.webGLCanvas.getContext('webgl');
+
+    this.webGLCanvas.style.left = `${this.margin.left}px`;
+    this.webGLCanvas.style.top = `${this.margin.top}px`;
+    this.webGLCanvas.width = this.plotarea_width;
+    this.webGLCanvas.height = this.plotarea_height;
+
+    this.el.insertBefore(this.webGLCanvas, this.svg.node());
+
+    if (this.webGLContext === null) {
+      console.warn(
+        'Unable to initialize WebGL. Your browser or machine may not support it.'
+      );
+    }
+
     this.mark_views = new ViewList(this.add_mark, this.remove_mark, this);
 
     const mark_views_updated = this.mark_views
@@ -267,7 +280,6 @@ export class Figure extends DOMWidgetView {
         // This has to be done after the marks are created
         this.set_interaction(this.model.get('interaction'));
         this._initial_marks_created_resolve();
-        this.update_gl();
       });
 
     this.axis_views = new ViewList(this.add_axis, null, this);
@@ -302,7 +314,6 @@ export class Figure extends DOMWidgetView {
           this.replace_dummy_nodes(views);
           this.update_marks(views);
           this.update_legend();
-          this.update_gl();
         });
       },
       this
@@ -349,26 +360,16 @@ export class Figure extends DOMWidgetView {
     return Promise.all([mark_views_updated, axis_views_updated]);
   }
 
-  createWebGLRenderer() {
-    // a shared webgl context for all marks
-    if (!this.renderer) {
-      this.renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true,
-        premultipliedAlpha: true,
-      });
+  set needsWebGLContext(value: boolean) {
+    this._needsWebGLContext = value;
 
-      this.renderer.setSize(100, 100);
-      this.renderer.setClearAlpha(0);
-      this.renderer.setPixelRatio(
-        this.model.get('pixel_ratio') || window.devicePixelRatio
-      );
+    if (this._needsWebGLContext) {
+      this.webGLContext = this.webGLCanvas.getContext('webgl');
     }
+  }
 
-    if (this.renderer && !this.el.contains(this.renderer.domElement)) {
-      this.el.insertBefore(this.renderer.domElement, this.el.childNodes[1]);
-    }
-    this.layout_webgl_canvas();
+  get needsWebGLContext(): boolean {
+    return this._needsWebGLContext;
   }
 
   replace_dummy_nodes(views: Mark[]) {
@@ -397,14 +398,6 @@ export class Figure extends DOMWidgetView {
     this.listenTo(this.model, 'change:layout', this.change_layout);
     this.listenTo(this.model, 'change:legend_style', this.legend_style_updated);
     this.listenTo(this.model, 'change:legend_text', this.legend_text_updated);
-    this.listenTo(this.model, 'change:pixel_ratio', () => {
-      if (this.renderer) {
-        this.renderer.setPixelRatio(
-          this.model.get('pixel_ratio') || window.devicePixelRatio
-        );
-        this.update_gl();
-      }
-    });
     this.listenTo(this.model, 'change:theme', this.change_theme);
   }
 
@@ -701,10 +694,6 @@ export class Figure extends DOMWidgetView {
       view.yPadding
     );
 
-    // If the mark needs a WebGL renderer, we create it
-    if (view['render_gl']) {
-      this.createWebGLRenderer();
-    }
     // If the marks list changes before replace_dummy_nodes is called, we are not DOM
     // attached, and view.remove() in Figure.remove_mark will not remove this view from the DOM
     // but a later call to Figure.replace_dummy_nodes will attach it to the DOM again, leading
@@ -766,85 +755,79 @@ export class Figure extends DOMWidgetView {
   }
 
   relayout() {
-    const relayoutImpl = () => {
-      this.relayoutRequested = false; // reset relayout request
-      const figureSize = this.getFigureSize();
-
-      if (this.width == figureSize.width && this.height == figureSize.height) {
-        // Bypass relayout
-        return;
-      }
-
-      this.width = figureSize.width;
-      this.height = figureSize.height;
-      // update ranges
-      this.margin = this.model.get('fig_margin');
-      this.update_plotarea_dimensions();
-      // we hide it when the plot area is too small
-      if (this.plotarea_width < 1 || this.plotarea_width < 1) {
-        this.el.style.visibility = 'hidden';
-        return; // no need to continue setting properties, which can only produce errors in the js console
-      } else {
-        this.el.style.visibility = '';
-      }
-
-      if (this.scale_x !== undefined && this.scale_x !== null) {
-        this.scale_x.setRange([0, this.plotarea_width]);
-      }
-
-      if (this.scale_y !== undefined && this.scale_y !== null) {
-        this.scale_y.setRange([this.plotarea_height, 0]);
-      }
-
-      // transform figure
-      this.fig.attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
-      this.fig_background.attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
-      applyAttrs(this.title, {
-        x: 0.5 * this.plotarea_width,
-        y: -(this.margin.top / 2.0),
-        dy: '1em',
-      });
-
-      this.bg
-        .attr('width', this.plotarea_width)
-        .attr('height', this.plotarea_height);
-      this.bg_events
-        .attr('width', this.plotarea_width)
-        .attr('height', this.plotarea_height);
-
-      this.clip_path
-        .attr('width', this.plotarea_width)
-        .attr('height', this.plotarea_height);
-
-      this.trigger('margin_updated');
-      this.update_legend();
-      this.layout_webgl_canvas();
-    };
-
     if (!this.relayoutRequested) {
       this.relayoutRequested = true; // avoid scheduling a relayout twice
-      requestAnimationFrame(relayoutImpl.bind(this));
+      requestAnimationFrame(this.relayoutImpl.bind(this));
     }
   }
 
-  layout_webgl_canvas() {
-    if (this.renderer) {
-      this.renderer.domElement.style =
-        'left: ' +
-        this.margin.left +
-        'px; ' +
-        'top: ' +
-        this.margin.top +
-        'px;';
-      this.renderer.setSize(this.plotarea_width, this.plotarea_height);
-      this.update_gl();
+  relayoutImpl() {
+    this.relayoutRequested = false; // reset relayout request
+    const figureSize = this.getFigureSize();
+
+    if (this.width == figureSize.width && this.height == figureSize.height) {
+      // Bypass relayout
+      return;
     }
+
+    this.width = figureSize.width;
+    this.height = figureSize.height;
+    // update ranges
+    this.margin = this.model.get('fig_margin');
+    this.update_plotarea_dimensions();
+    // we hide it when the plot area is too small
+    if (this.plotarea_width < 1 || this.plotarea_height < 1) {
+      this.el.style.visibility = 'hidden';
+      return; // no need to continue setting properties, which can only produce errors in the js console
+    } else {
+      this.el.style.visibility = '';
+    }
+
+    if (this.scale_x !== undefined && this.scale_x !== null) {
+      this.scale_x.setRange([0, this.plotarea_width]);
+    }
+
+    if (this.scale_y !== undefined && this.scale_y !== null) {
+      this.scale_y.setRange([this.plotarea_height, 0]);
+    }
+
+    // transform figure
+    this.fig.attr(
+      'transform',
+      'translate(' + this.margin.left + ',' + this.margin.top + ')'
+    );
+    this.fig_background.attr(
+      'transform',
+      'translate(' + this.margin.left + ',' + this.margin.top + ')'
+    );
+    applyAttrs(this.title, {
+      x: 0.5 * this.plotarea_width,
+      y: -(this.margin.top / 2.0),
+      dy: '1em',
+    });
+
+    this.bg
+      .attr('width', this.plotarea_width)
+      .attr('height', this.plotarea_height);
+    this.bg_events
+      .attr('width', this.plotarea_width)
+      .attr('height', this.plotarea_height);
+
+    this.clip_path
+      .attr('width', this.plotarea_width)
+      .attr('height', this.plotarea_height);
+
+    this.webGLCanvas.style.left = `${this.margin.left}px`;
+    this.webGLCanvas.style.top = `${this.margin.top}px;`;
+    this.webGLCanvas.width = this.plotarea_width;
+    this.webGLCanvas.height = this.plotarea_height;
+
+    for (const hook in this.relayoutHooks) {
+      this.relayoutHooks[hook]();
+    }
+
+    this.trigger('margin_updated');
+    this.update_legend();
   }
 
   update_legend() {
@@ -1020,9 +1003,8 @@ export class Figure extends DOMWidgetView {
     return super.remove.apply(this, arguments);
   }
 
-  get_svg() {
+  async get_svg() {
     // Returns the outer html of the figure svg
-
     const replaceAll = (find, replace, str) => {
       return str.replace(new RegExp(find, 'g'), replace);
     };
@@ -1080,98 +1062,90 @@ export class Figure extends DOMWidgetView {
       return css;
     };
 
-    // Even though the canvas may display the rendering already, it is not guaranteed it can be read of the canvas
-    // or we have to set preserveDrawingBuffer to true, which may impact performance.
-    // Instead, we render again, and directly afterwards we do get the pixel data using canvas.toDataURL
-    return this.render_gl().then(async () => {
-      // Create standalone SVG string
-      const node_background: any = this.svg_background.node();
-      const node_foreground: any = this.svg.node();
-      const width = this.plotarea_width;
-      const height = this.plotarea_height;
+    // Create standalone SVG string
+    const node_background: any = this.svg_background.node();
+    const node_foreground: any = this.svg.node();
+    // const width = this.plotarea_width;
+    // const height = this.plotarea_height;
 
-      // Creates a standalone SVG string from an inline SVG element
-      // containing all the computed style attributes.
-      const svg = node_foreground.cloneNode(true);
-      // images can contain blob urls, we transform those to data urls
-      const blobToDataUrl = async (el) => {
-        const blob = await (await fetch(el.getAttribute('href'))).blob();
-        const reader = new FileReader();
-        const readerPromise = new Promise((resolve, reject) => {
-          reader.onloadend = resolve;
-          reader.onerror = reject;
-          reader.abort = reject;
-        });
-        reader.readAsDataURL(blob);
-        await readerPromise;
-        el.setAttribute('href', reader.result);
-      };
-      const images = [...svg.querySelectorAll('image')];
-      await Promise.all(images.map(blobToDataUrl));
-      svg.setAttribute('version', '1.1');
-      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-      svg.setAttribute('width', this.width);
-      svg.setAttribute('height', this.height);
-      svg.style.background = window.getComputedStyle(document.body).background;
+    // Creates a standalone SVG string from an inline SVG element
+    // containing all the computed style attributes.
+    const svg = node_foreground.cloneNode(true);
+    // images can contain blob urls, we transform those to data urls
+    const blobToDataUrl = async (el) => {
+      const blob = await (await fetch(el.getAttribute('href'))).blob();
+      const reader = new FileReader();
+      const readerPromise = new Promise((resolve, reject) => {
+        reader.onloadend = resolve;
+        reader.onerror = reject;
+        reader.abort = reject;
+      });
+      reader.readAsDataURL(blob);
+      await readerPromise;
+      el.setAttribute('href', reader.result);
+    };
+    const images = [...svg.querySelectorAll('image')];
+    await Promise.all(images.map(blobToDataUrl));
+    svg.setAttribute('version', '1.1');
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+    svg.setAttribute('width', this.width);
+    svg.setAttribute('height', this.height);
+    svg.style.background = window.getComputedStyle(document.body).background;
 
-      const computedStyle = window.getComputedStyle(this.el);
-      const cssCode =
-        get_css(this.el, [
-          '.theme-dark',
-          '.theme-light',
-          '.bqplot > ',
-          ':root',
-        ]) + '\n';
-      // extract all CSS variables, and generate a piece of css to define the variables
-      const cssVariables = cssCode.match(/(--\w[\w-]*)/g) || [];
-      const cssVariableCode =
-        cssVariables.reduce((cssCode, variable) => {
-          const value = computedStyle.getPropertyValue(variable);
-          return `${cssCode}\n\t${variable}: ${value};`;
-        }, ':root {') + '\n}\n';
+    const computedStyle = window.getComputedStyle(this.el);
+    const cssCode =
+      get_css(this.el, ['.theme-dark', '.theme-light', '.bqplot > ', ':root']) +
+      '\n';
+    // extract all CSS variables, and generate a piece of css to define the variables
+    const cssVariables = cssCode.match(/(--\w[\w-]*)/g) || [];
+    const cssVariableCode =
+      cssVariables.reduce((cssCode, variable) => {
+        const value = computedStyle.getPropertyValue(variable);
+        return `${cssCode}\n\t${variable}: ${value};`;
+      }, ':root {') + '\n}\n';
 
-      // and put the CSS in a style element
-      const styleElement = document.createElement('style');
-      styleElement.setAttribute('type', 'text/css');
-      styleElement.innerHTML =
-        '<![CDATA[\n' + cssVariableCode + cssCode + ']]>';
+    // and put the CSS in a style element
+    const styleElement = document.createElement('style');
+    styleElement.setAttribute('type', 'text/css');
+    styleElement.innerHTML = '<![CDATA[\n' + cssVariableCode + cssCode + ']]>';
 
-      const defs = document.createElement('defs');
-      defs.appendChild(styleElement);
-      // we put the svg background part before the marks
-      const g_root = svg.children[0];
-      const svg_background = node_background.cloneNode(true);
-      // first the axes
-      g_root.insertBefore(
-        svg_background.children[0].children[1],
-        g_root.children[0]
-      );
-      // and the background as first element
-      g_root.insertBefore(
-        svg_background.children[0].children[0],
-        g_root.children[0]
-      );
+    const defs = document.createElement('defs');
+    defs.appendChild(styleElement);
+    // we put the svg background part before the marks
+    const g_root = svg.children[0];
+    const svg_background = node_background.cloneNode(true);
+    // first the axes
+    g_root.insertBefore(
+      svg_background.children[0].children[1],
+      g_root.children[0]
+    );
+    // and the background as first element
+    g_root.insertBefore(
+      svg_background.children[0].children[0],
+      g_root.children[0]
+    );
 
-      // and add the webgl canvas as an image
-      if (this.renderer) {
-        const data_url = this.renderer.domElement.toDataURL('image/png');
-        const marks = d3.select(g_root.children[3]);
-        marks
-          .insert('image', ':first-child')
-          .attr('x', 0)
-          .attr('y', 0)
-          .attr('width', 1)
-          .attr('height', 1)
-          .attr('preserveAspectRatio', 'none')
-          .attr('transform', 'scale(' + width + ', ' + height + ')')
-          .attr('href', data_url);
-      }
+    // and add the webgl canvas as an image
+    for (const hook in this.renderHooks) {
+      this.renderHooks[hook]();
+    }
 
-      svg.insertBefore(defs, svg.firstChild);
-      // Getting the outer HTML
-      return svg.outerHTML;
-    });
+    const data_url = this.webGLCanvas.toDataURL('image/png');
+    const marks = d3.select(g_root.children[3]);
+    marks
+      .insert('image', ':first-child')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', 1)
+      .attr('height', 1)
+      .attr('preserveAspectRatio', 'none')
+      .attr('transform', 'scale(' + this.width + ', ' + this.height + ')')
+      .attr('href', data_url);
+
+    svg.insertBefore(defs, svg.firstChild);
+    // Getting the outer HTML
+    return svg.outerHTML;
   }
 
   async get_rendered_canvas(scale): Promise<HTMLCanvasElement> {
@@ -1247,37 +1221,6 @@ export class Figure extends DOMWidgetView {
       1
     );
     return pixel.data;
-  }
-
-  update_gl() {
-    if (!this._update_requested) {
-      this._update_requested = true;
-      requestAnimationFrame(this._update_gl.bind(this));
-    }
-  }
-
-  _update_gl() {
-    this.render_gl();
-    this._update_requested = false;
-  }
-
-  async render_gl(): Promise<void> {
-    // Nothing to render using a WebGL context
-    if (!this.renderer) {
-      return Promise.resolve();
-    }
-
-    const views = await Promise.all(this.mark_views.views);
-
-    // render all marks that have a render_gl method
-    this.renderer.autoClear = false;
-    this.renderer.autoClearColor = new (THREE.Color as (x) => void)(0x000000);
-    this.renderer.clear();
-    const marks_gl = _.filter(views, (view: Mark) => view['render_gl']);
-
-    for (const mark of marks_gl) {
-      mark['render_gl']();
-    }
   }
 
   change_theme() {
@@ -1380,7 +1323,6 @@ export class Figure extends DOMWidgetView {
   plotarea_width: number;
   popper_reference: popper.ReferenceObject;
   popper: popper;
-  renderer: THREE.WebGLRenderer | null;
   scale_x: Scale;
   scale_y: Scale;
   svg: d3.Selection<SVGElement, any, any, any>;
@@ -1394,9 +1336,18 @@ export class Figure extends DOMWidgetView {
   y_pad_dict: { [id: string]: number };
   yPaddingArr: { [id: string]: number };
 
+  public webGLCanvas: HTMLCanvasElement;
+  public webGLContext: WebGLRenderingContext | null;
+  private _needsWebGLContext = false;
+
+  // Extra Figure namespace available for marks
+  public extras: any = {};
+
+  public relayoutHooks: Dict<() => void> = {};
+  public renderHooks: Dict<() => void> = {};
+
   private dummyNodes: Dict<any> = {};
 
-  private _update_requested: boolean;
   private relayoutRequested = false;
 
   // this is public for the test framework, but considered a private API

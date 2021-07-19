@@ -275,7 +275,6 @@ describe('interacts >', () => {
       this.manager,
       x,
       y,
-      false,
       true
     );
     // scatter.model.set("default_size", 100*100);
