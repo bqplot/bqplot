@@ -15,7 +15,9 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import { semver_range } from './version';
-
+import { Interaction } from './Interaction';
+import {PanZoomModel} from './PanZoomModel'
+import * as _ from 'underscore';
 export class FigureModel extends widgets.DOMWidgetModel {
   defaults() {
     return {
@@ -54,6 +56,7 @@ export class FigureModel extends widgets.DOMWidgetModel {
       padding_y: 0.025,
       legend_location: 'top-right',
       animation_duration: 0,
+      show_toolbar: true,
     };
   }
 
@@ -70,11 +73,90 @@ export class FigureModel extends widgets.DOMWidgetModel {
     }
   }
 
-  save_png() {
+  save_png() {  
     // TODO: Any view of this Figure model will pick up this event
     // and render a png. Remove this eventually.
     this.trigger('save_png');
   }
+
+  panzoom() {
+    if (this._panzoomData._panning) {
+      this.set('interaction', this._panzoomData.cached_interaction);
+      this._panzoomData._panning =  false;
+      this.save_changes();
+    } else {
+      this._panzoomData.cached_interaction = this.get('interaction');
+      const panzoom = this._panzoomData._panzoom;
+      if (panzoom) {
+        this.set('interaction', panzoom);
+        this.save_changes();
+      } else {
+        this._create_panzoom_model().then((model) => {
+          this.set('interaction', model);
+          this._panzoomData._panzoom = model;
+          this.save_changes();
+        });
+      }
+      this._panzoomData._panning = true;
+    }
+  }
+
+  _create_panzoom_model(): Promise<PanZoomModel> {
+    /**
+     * Creates a panzoom interaction widget for the specified figure.
+     *
+     * It will discover the relevant scales for the specified figure.
+     */
+    return this.widget_manager
+      .new_widget({
+        model_name: 'PanZoomModel',
+        model_module: 'bqplot',
+        model_module_version: this.get('_model_module_version'),
+        view_name: 'PanZoom',
+        view_module: 'bqplot',
+        view_module_version: this.get('_view_module_version'),
+      })
+      .then((model: PanZoomModel) => {
+        return Promise.all(this.get('marks')).then((marks: any[]) => {
+          const x_scales = [],
+            y_scales = [];
+          for (let i = 0; i < marks.length; ++i) {
+            const preserve_domain = marks[i].get('preserve_domain');
+            const scales = marks[i].get('scales');
+            _.each(scales, (v, k) => {
+              const dimension = marks[i].get('scales_metadata')[k]['dimension'];
+              if (dimension === 'x' && !preserve_domain[k]) {
+                x_scales.push(scales[k]);
+              }
+              if (dimension === 'y' && !preserve_domain[k]) {
+                y_scales.push(scales[k]);
+              }
+            });
+          }
+          model.set('scales', {
+            x: x_scales,
+            y: y_scales,
+          });
+          model.save_changes();
+          return model;
+        });
+      });
+  }
+
+  /**
+   * Reset the scales, delete the PanZoom widget, set the figure
+   * interaction back to its previous value.
+   */
+  reset() {
+    this.set('interaction', this._panzoomData.cached_interaction);
+    const panzoom = this._panzoomData._panzoom;
+    panzoom.reset_scales();
+    panzoom.close();
+    this._panzoomData._panzoom = null;
+    this._panzoomData._panning = false;
+    this.save_changes();
+  }
+
 
   static serializers = {
     ...widgets.DOMWidgetModel.serializers,
@@ -85,4 +167,7 @@ export class FigureModel extends widgets.DOMWidgetModel {
     scale_y: { deserialize: widgets.unpack_models },
     layout: { deserialize: widgets.unpack_models },
   };
+
+  private _panzoomData: { _panning: boolean; cached_interaction: Interaction, _panzoom: PanZoomModel|undefined } =
+  { _panning: false, cached_interaction: null, _panzoom: undefined  };
 }

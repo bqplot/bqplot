@@ -27,7 +27,7 @@ Figure
 """
 
 from traitlets import (
-    Unicode, Instance, List, Dict, Enum, Float, Int, TraitError, default,
+    Bool, Unicode, Instance, List, Dict, Enum, Float, Int, TraitError, default,
     validate
 )
 from ipywidgets import DOMWidget, register, widget_serialization
@@ -152,6 +152,7 @@ class Figure(DOMWidget):
         .tag(sync=True, display_name='Legend position')
     animation_duration = Int().tag(sync=True,
                                    display_name='Animation duration')
+    show_toolbar = Bool(default_value=True).tag(sync=True)
 
     @default('scale_x')
     def _default_scale_x(self):

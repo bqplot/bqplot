@@ -28,6 +28,7 @@ import { AxisModel } from './AxisModel';
 import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
 import { Interaction } from './Interaction';
+import { FigureModel } from './FigureModel';
 
 THREE.ShaderChunk['scales'] =
   require('raw-loader!../shaders/scales.glsl').default;
@@ -102,6 +103,7 @@ export class Figure extends widgets.DOMWidgetView {
 
   protected async renderImpl() {
     const figureSize = this.getFigureSize();
+
     this.width = figureSize.width;
     this.height = figureSize.height;
 
@@ -326,6 +328,10 @@ export class Figure extends widgets.DOMWidgetView {
     this.once('remove', () => {
       window.removeEventListener('resize', this.debouncedRelayout);
     });
+
+    if (this.model.get('show_toolbar')) {
+      this.toolbar_div = this.create_toolbar();
+    }
 
     return Promise.all([mark_views_updated, axis_views_updated]);
   }
@@ -1249,6 +1255,76 @@ export class Figure extends widgets.DOMWidgetView {
     this.el.classList.add(this.model.get('theme'));
   }
 
+  create_toolbar() {
+    const toolbar = d3
+      .select(document.createElement('div'))
+      .attr('class', 'toolbar_div');
+
+    const _panzoom = document.createElement('button');
+    _panzoom.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    _panzoom.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    _panzoom.setAttribute('data-toggle', 'tooltip');
+    _panzoom.setAttribute('title', 'PanZoom');
+    const panzoomicon = document.createElement('i');
+    panzoomicon.style.marginRight = '0px';
+    panzoomicon.className = 'fa fa-arrows';
+    _panzoom.appendChild(panzoomicon);
+    _panzoom.onclick = (e) => {
+      e.preventDefault();
+      (this.model as FigureModel).panzoom();
+    };
+
+    const _reset = document.createElement('button');
+    _reset.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    _reset.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    _reset.setAttribute('data-toggle', 'tooltip');
+    _reset.setAttribute('title', 'Reset');
+    const refreshicon = document.createElement('i');
+    refreshicon.style.marginRight = '0px';
+    refreshicon.className = 'fa fa-refresh';
+    _reset.appendChild(refreshicon);
+    _reset.onclick = (e) => {
+      e.preventDefault();
+      (this.model as FigureModel).reset();
+    };
+
+
+    const _save = document.createElement('button');
+    _save.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    _save.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    _save.setAttribute('data-toggle', 'tooltip');
+    _save.setAttribute('title', 'Save');
+    const saveicon = document.createElement('i');
+    saveicon.style.marginRight = '0px'
+    saveicon.className = 'fa fa-save';
+    _save.appendChild(saveicon);
+    _save.onclick = (e) => {
+      e.preventDefault();
+      this.save_png(undefined, undefined);
+    };
+
+    toolbar.node().appendChild(_panzoom);
+    toolbar.node().appendChild(_reset);
+    toolbar.node().appendChild(_save);
+
+    this.el.appendChild(toolbar.node());
+    toolbar.node().style.top = `${this.margin.top / 2.0}px`;
+    toolbar.node().style.right = `${this.margin.right}px`;
+    toolbar.node().style.visibility = 'hidden';
+    toolbar.node().style.opacity = '0';
+    this.el.addEventListener('mouseenter', () => {
+      toolbar.node().style.visibility = 'visible';
+      toolbar.node().style.opacity = '1';
+    });
+    this.el.addEventListener('mouseleave', () => {
+      toolbar.node().style.visibility = 'hidden';
+      toolbar.node().style.opacity = '0';
+    });
+    return toolbar;
+  }
+
+
+
   axis_views: widgets.ViewList<widgets.DOMWidgetView>;
   bg: d3.Selection<SVGRectElement, any, any, any>;
   bg_events: d3.Selection<SVGRectElement, any, any, any>;
@@ -1278,6 +1354,7 @@ export class Figure extends widgets.DOMWidgetView {
   svg_background: d3.Selection<SVGElement, any, any, any>;
   title: d3.Selection<SVGTextElement, any, any, any>;
   tooltip_div: d3.Selection<HTMLDivElement, any, any, any>;
+  toolbar_div: d3.Selection<HTMLDivElement, any, any, any>;
   width: number;
   x_pad_dict: { [id: string]: number };
   xPaddingArr: { [id: string]: number };
