@@ -60,10 +60,14 @@ export class HeatMap extends Mark {
 
   set_positional_scales() {
     this.listenTo(this.scales.x, 'domain_changed', () => {
-      if (!this.model.dirty) this.draw();
+      if (!this.model.dirty) {
+        this.draw();
+      }
     });
     this.listenTo(this.scales.y, 'domain_changed', () => {
-      if (!this.model.dirty) this.draw();
+      if (!this.model.dirty) {
+        this.draw();
+      }
     });
   }
 

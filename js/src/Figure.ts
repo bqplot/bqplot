@@ -1288,14 +1288,13 @@ export class Figure extends widgets.DOMWidgetView {
       (this.model as FigureModel).reset();
     };
 
-
     const _save = document.createElement('button');
     _save.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
     _save.classList.add('jupyter-button'); // @jupyter-widgets/controls css
     _save.setAttribute('data-toggle', 'tooltip');
     _save.setAttribute('title', 'Save');
     const saveicon = document.createElement('i');
-    saveicon.style.marginRight = '0px'
+    saveicon.style.marginRight = '0px';
     saveicon.className = 'fa fa-save';
     _save.appendChild(saveicon);
     _save.onclick = (e) => {
@@ -1322,8 +1321,6 @@ export class Figure extends widgets.DOMWidgetView {
     });
     return toolbar;
   }
-
-
 
   axis_views: widgets.ViewList<widgets.DOMWidgetView>;
   bg: d3.Selection<SVGRectElement, any, any, any>;
@@ -1364,7 +1361,7 @@ export class Figure extends widgets.DOMWidgetView {
   private dummyNodes: Dict<any> = {};
 
   private _update_requested: boolean;
-  private relayoutRequested: boolean = false;
+  private relayoutRequested = false;
 
   // this is public for the test framework, but considered a private API
   public _initial_marks_created: Promise<any>;

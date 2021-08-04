@@ -162,7 +162,9 @@ export class HistModel extends MarkModel {
   }
 
   update_domains() {
-    if (!this.mark_data) return;
+    if (!this.mark_data) {
+      return;
+    }
 
     // For histogram, changing the x-scale domain changes a lot of
     // things including the data which is to be plotted. So the x-domain

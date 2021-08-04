@@ -16,7 +16,7 @@
 import * as widgets from '@jupyter-widgets/base';
 import { semver_range } from './version';
 import { Interaction } from './Interaction';
-import {PanZoomModel} from './PanZoomModel'
+import { PanZoomModel } from './PanZoomModel';
 import * as _ from 'underscore';
 export class FigureModel extends widgets.DOMWidgetModel {
   defaults() {
@@ -73,7 +73,7 @@ export class FigureModel extends widgets.DOMWidgetModel {
     }
   }
 
-  save_png() {  
+  save_png() {
     // TODO: Any view of this Figure model will pick up this event
     // and render a png. Remove this eventually.
     this.trigger('save_png');
@@ -82,7 +82,7 @@ export class FigureModel extends widgets.DOMWidgetModel {
   panzoom() {
     if (this._panzoomData._panning) {
       this.set('interaction', this._panzoomData.cached_interaction);
-      this._panzoomData._panning =  false;
+      this._panzoomData._panning = false;
       this.save_changes();
     } else {
       this._panzoomData.cached_interaction = this.get('interaction');
@@ -157,7 +157,6 @@ export class FigureModel extends widgets.DOMWidgetModel {
     this.save_changes();
   }
 
-
   static serializers = {
     ...widgets.DOMWidgetModel.serializers,
     marks: { deserialize: widgets.unpack_models },
@@ -168,6 +167,9 @@ export class FigureModel extends widgets.DOMWidgetModel {
     layout: { deserialize: widgets.unpack_models },
   };
 
-  private _panzoomData: { _panning: boolean; cached_interaction: Interaction, _panzoom: PanZoomModel|undefined } =
-  { _panning: false, cached_interaction: null, _panzoom: undefined  };
+  private _panzoomData: {
+    _panning: boolean;
+    cached_interaction: Interaction;
+    _panzoom: PanZoomModel | undefined;
+  } = { _panning: false, cached_interaction: null, _panzoom: undefined };
 }

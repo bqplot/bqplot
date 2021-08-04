@@ -57,7 +57,7 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
     } else {
       if (figure) {
         this.cached_interaction = figure.get('interaction');
-        const panzoom = this.get('_panzoom');     
+        const panzoom = this.get('_panzoom');
         if (panzoom) {
           figure.set('interaction', panzoom);
           figure.save_changes();

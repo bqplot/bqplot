@@ -63,7 +63,9 @@ export class HeatMapModel extends MarkModel {
   }
 
   update_domains() {
-    if (!this.mark_data) return;
+    if (!this.mark_data) {
+      return;
+    }
 
     const scales = this.get('scales');
     const flat_colors = [].concat.apply(

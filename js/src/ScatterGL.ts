@@ -114,10 +114,10 @@ class AttributeParameters {
 class ColorAttributeParameters extends AttributeParameters {
   constructor(
     array: TypedArray,
-    item_size: number = 1,
-    mesh_per_attribute: number = 1,
-    normalized: boolean = false,
-    use_colormap: boolean = true
+    item_size = 1,
+    mesh_per_attribute = 1,
+    normalized = false,
+    use_colormap = true
   ) {
     super(array, item_size, mesh_per_attribute, normalized);
     this.use_colormap = use_colormap;
@@ -129,10 +129,10 @@ class ColorAttributeParameters extends AttributeParameters {
 class SelectionAttributeParameters extends AttributeParameters {
   constructor(
     array: TypedArray,
-    item_size: number = 1,
-    mesh_per_attribute: number = 1,
-    normalized: boolean = false,
-    use_selection: boolean = true
+    item_size = 1,
+    mesh_per_attribute = 1,
+    normalized = false,
+    use_selection = true
   ) {
     super(array, item_size, mesh_per_attribute, normalized);
     this.use_selection = use_selection;
@@ -677,7 +677,7 @@ export class ScatterGL extends Mark {
     value: THREE.InstancedBufferAttribute,
     value_previous: THREE.InstancedBufferAttribute,
     new_parameters: AttributeParameters,
-    animate: boolean = true,
+    animate = true,
     after_animation: Function = () => {}
   ) {
     if (animate) {
@@ -752,7 +752,7 @@ export class ScatterGL extends Mark {
     this.transition(set, after_animation, this);
   }
 
-  update_x(rerender: boolean = true) {
+  update_x(rerender = true) {
     const x_array = to_float_array(this.model.get('x'));
 
     const new_markers_number = Math.min(x_array.length, this.y.array.length);
@@ -774,7 +774,7 @@ export class ScatterGL extends Mark {
     }
   }
 
-  update_y(rerender: boolean = true) {
+  update_y(rerender = true) {
     const y_array = to_float_array(this.model.get('y'));
 
     const new_markers_number = Math.min(this.x.array.length, y_array.length);
@@ -816,7 +816,7 @@ export class ScatterGL extends Mark {
     }
   }
 
-  update_color(rerender: boolean = true) {
+  update_color(rerender = true) {
     const color_parameters = this.get_color_attribute_parameters();
     this.color = this.update_attribute('color', this.color, color_parameters);
     this.color.normalized = color_parameters.normalized;
@@ -830,7 +830,7 @@ export class ScatterGL extends Mark {
     }
   }
 
-  update_opacity(rerender: boolean = true) {
+  update_opacity(rerender = true) {
     const opacity_parameters = this.get_opacity_attribute_parameters();
     [this.opacity, this.opacity_previous] = this.update_attributes(
       'opacity',
@@ -844,7 +844,7 @@ export class ScatterGL extends Mark {
     }
   }
 
-  update_size(rerender: boolean = true) {
+  update_size(rerender = true) {
     const size_parameters = this.get_size_attribute_parameters();
     [this.size, this.size_previous] = this.update_attributes(
       'size',
@@ -858,7 +858,7 @@ export class ScatterGL extends Mark {
     }
   }
 
-  update_rotation(rerender: boolean = true) {
+  update_rotation(rerender = true) {
     const rotation_parameters = this.get_rotation_attribute_parameters();
     [this.rotation, this.rotation_previous] = this.update_attributes(
       'rotation',
@@ -872,7 +872,7 @@ export class ScatterGL extends Mark {
     }
   }
 
-  update_selected(rerender: boolean = true) {
+  update_selected(rerender = true) {
     const selected_parameters = this.get_selected_attribute_parameters();
     this.selected = this.update_attribute(
       'selected',
