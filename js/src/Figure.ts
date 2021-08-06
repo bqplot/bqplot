@@ -330,7 +330,7 @@ export class Figure extends widgets.DOMWidgetView {
     });
 
     if (this.model.get('show_toolbar')) {
-      this.toolbar_div = this.create_toolbar();
+      this.create_toolbar();
     }
 
     return Promise.all([mark_views_updated, axis_views_updated]);
@@ -1255,7 +1255,12 @@ export class Figure extends widgets.DOMWidgetView {
     this.el.classList.add(this.model.get('theme'));
   }
 
-  create_toolbar() {
+  /**
+   * Generate an integrated toolbar which is shown on mouse over
+   * for this figure.
+   *
+   */
+  create_toolbar(): void {
     const toolbar = d3
       .select(document.createElement('div'))
       .attr('class', 'toolbar_div');
@@ -1319,7 +1324,6 @@ export class Figure extends widgets.DOMWidgetView {
       toolbar.node().style.visibility = 'hidden';
       toolbar.node().style.opacity = '0';
     });
-    return toolbar;
   }
 
   axis_views: widgets.ViewList<widgets.DOMWidgetView>;
@@ -1351,7 +1355,6 @@ export class Figure extends widgets.DOMWidgetView {
   svg_background: d3.Selection<SVGElement, any, any, any>;
   title: d3.Selection<SVGTextElement, any, any, any>;
   tooltip_div: d3.Selection<HTMLDivElement, any, any, any>;
-  toolbar_div: d3.Selection<HTMLDivElement, any, any, any>;
   width: number;
   x_pad_dict: { [id: string]: number };
   xPaddingArr: { [id: string]: number };

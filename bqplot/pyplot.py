@@ -118,7 +118,7 @@ def hashable(data, v):
     return True
 
 
-def show(key=None, display_toolbar=True):
+def show(key=None, display_toolbar=False):
     """Shows the current context figure in the output area.
 
     Parameters

@@ -79,34 +79,38 @@ export class FigureModel extends widgets.DOMWidgetModel {
     this.trigger('save_png');
   }
 
-  panzoom() {
-    if (this._panzoomData._panning) {
+  /**
+   * Start or stop pan zoom mode
+   *
+   */
+  panzoom(): void {
+    if (this._panzoomData.panning) {
       this.set('interaction', this._panzoomData.cached_interaction);
-      this._panzoomData._panning = false;
+      this._panzoomData.panning = false;
       this.save_changes();
     } else {
       this._panzoomData.cached_interaction = this.get('interaction');
-      const panzoom = this._panzoomData._panzoom;
+      const panzoom = this._panzoomData.panzoom;
       if (panzoom) {
         this.set('interaction', panzoom);
         this.save_changes();
       } else {
         this._create_panzoom_model().then((model) => {
           this.set('interaction', model);
-          this._panzoomData._panzoom = model;
+          this._panzoomData.panzoom = model;
           this.save_changes();
         });
       }
-      this._panzoomData._panning = true;
+      this._panzoomData.panning = true;
     }
   }
 
+  /**
+   * Creates a panzoom interaction widget for the this model.
+   *
+   * It will discover the relevant scales of this model.
+   */
   _create_panzoom_model(): Promise<PanZoomModel> {
-    /**
-     * Creates a panzoom interaction widget for the specified figure.
-     *
-     * It will discover the relevant scales for the specified figure.
-     */
     return this.widget_manager
       .new_widget({
         model_name: 'PanZoomModel',
@@ -147,13 +151,13 @@ export class FigureModel extends widgets.DOMWidgetModel {
    * Reset the scales, delete the PanZoom widget, set the figure
    * interaction back to its previous value.
    */
-  reset() {
+  reset(): void {
     this.set('interaction', this._panzoomData.cached_interaction);
-    const panzoom = this._panzoomData._panzoom;
+    const panzoom = this._panzoomData.panzoom;
     panzoom.reset_scales();
     panzoom.close();
-    this._panzoomData._panzoom = null;
-    this._panzoomData._panning = false;
+    this._panzoomData.panzoom = null;
+    this._panzoomData.panning = false;
     this.save_changes();
   }
 
@@ -168,8 +172,8 @@ export class FigureModel extends widgets.DOMWidgetModel {
   };
 
   private _panzoomData: {
-    _panning: boolean;
+    panning: boolean;
     cached_interaction: Interaction;
-    _panzoom: PanZoomModel | undefined;
-  } = { _panning: false, cached_interaction: null, _panzoom: undefined };
+    panzoom: PanZoomModel | undefined;
+  } = { panning: false, cached_interaction: null, panzoom: undefined };
 }

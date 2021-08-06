@@ -87,6 +87,8 @@ class Figure(DOMWidget):
     pixel_ratio:
         Pixel ratio of the WebGL canvas (2 on retina screens). Set to 1 for better performance,
         but less crisp edges. If set to None it will use the browser's window.devicePixelRatio.
+    show_toolbar: boolean (default: True)
+        Show or hide the integrated toolbar.
 
     Layout Attributes
 
