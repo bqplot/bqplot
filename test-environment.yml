@@ -8,8 +8,8 @@ dependencies:
     - ipywidgets >=5.2.2
     - traitlets >=4.3.0
     - traittypes >=0.0.6
-    - numpy >=1.10.4
-    - pandas
+    - numpy >=1.10.4,<2.0.0
+    - pandas >=1.0.0,<2.0.0
     - scipy
     - jupyter
     - jupyterlab=3.0.11  # to build the lab federated bundle
