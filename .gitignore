@@ -64,6 +64,3 @@ node_modules
 *.swp
 
 *.tsbuildinfo
-
-# VS Code settings
-.vscode/*

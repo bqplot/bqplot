@@ -1275,51 +1275,51 @@ export class Figure extends widgets.DOMWidgetView {
       .select(document.createElement('div'))
       .attr('class', 'toolbar_div');
 
-    const _panzoom = document.createElement('button');
-    _panzoom.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
-    _panzoom.classList.add('jupyter-button'); // @jupyter-widgets/controls css
-    _panzoom.setAttribute('data-toggle', 'tooltip');
-    _panzoom.setAttribute('title', 'PanZoom');
+    const panzoom = document.createElement('button');
+    panzoom.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    panzoom.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    panzoom.setAttribute('data-toggle', 'tooltip');
+    panzoom.setAttribute('title', 'PanZoom');
     const panzoomicon = document.createElement('i');
     panzoomicon.style.marginRight = '0px';
     panzoomicon.className = 'fa fa-arrows';
-    _panzoom.appendChild(panzoomicon);
-    _panzoom.onclick = (e) => {
+    panzoom.appendChild(panzoomicon);
+    panzoom.onclick = (e) => {
       e.preventDefault();
       (this.model as FigureModel).panzoom();
     };
 
-    const _reset = document.createElement('button');
-    _reset.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
-    _reset.classList.add('jupyter-button'); // @jupyter-widgets/controls css
-    _reset.setAttribute('data-toggle', 'tooltip');
-    _reset.setAttribute('title', 'Reset');
+    const reset = document.createElement('button');
+    reset.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    reset.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    reset.setAttribute('data-toggle', 'tooltip');
+    reset.setAttribute('title', 'Reset');
     const refreshicon = document.createElement('i');
     refreshicon.style.marginRight = '0px';
     refreshicon.className = 'fa fa-refresh';
-    _reset.appendChild(refreshicon);
-    _reset.onclick = (e) => {
+    reset.appendChild(refreshicon);
+    reset.onclick = (e) => {
       e.preventDefault();
       (this.model as FigureModel).reset();
     };
 
-    const _save = document.createElement('button');
-    _save.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
-    _save.classList.add('jupyter-button'); // @jupyter-widgets/controls css
-    _save.setAttribute('data-toggle', 'tooltip');
-    _save.setAttribute('title', 'Save');
+    const save = document.createElement('button');
+    save.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    save.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    save.setAttribute('data-toggle', 'tooltip');
+    save.setAttribute('title', 'Save');
     const saveicon = document.createElement('i');
     saveicon.style.marginRight = '0px';
     saveicon.className = 'fa fa-save';
-    _save.appendChild(saveicon);
-    _save.onclick = (e) => {
+    save.appendChild(saveicon);
+    save.onclick = (e) => {
       e.preventDefault();
       this.save_png(undefined, undefined);
     };
 
-    toolbar.node().appendChild(_panzoom);
-    toolbar.node().appendChild(_reset);
-    toolbar.node().appendChild(_save);
+    toolbar.node().appendChild(panzoom);
+    toolbar.node().appendChild(reset);
+    toolbar.node().appendChild(save);
 
     this.el.appendChild(toolbar.node());
     toolbar.node().style.top = `${this.margin.top / 2.0}px`;
