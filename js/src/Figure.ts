@@ -330,13 +330,13 @@ export class Figure extends widgets.DOMWidgetView {
     });
 
     this.toolbar_div = this.create_toolbar();
-    if (this.model.get('show_toolbar')) {
+    if (this.model.get('display_toolbar')) {
       this.toolbar_div.node().style.display  = 'unset'
     }
 
-    this.model.on('change:show_toolbar', (_, show_toolbar) => {
+    this.model.on('change:display_toolbar', (_, display_toolbar) => {
       const toolbar = this.toolbar_div.node()
-      if(show_toolbar){
+      if(display_toolbar){
         toolbar.style.display  = 'unset'
       } else {
         toolbar.style.display  = 'none'

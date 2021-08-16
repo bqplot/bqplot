@@ -56,7 +56,7 @@ export class FigureModel extends widgets.DOMWidgetModel {
       padding_y: 0.025,
       legend_location: 'top-right',
       animation_duration: 0,
-      show_toolbar: true,
+      display_toolbar: true,
     };
   }
 
