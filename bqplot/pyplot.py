@@ -118,7 +118,7 @@ def hashable(data, v):
     return True
 
 
-def show(key=None, display_toolbar=False):
+def show(key=None, display_toolbar=True):
     """Shows the current context figure in the output area.
 
     Parameters
@@ -152,13 +152,8 @@ def show(key=None, display_toolbar=False):
         figure = current_figure()
     else:
         figure = _context['figure_registry'][key]
-    if display_toolbar:
-        if not hasattr(figure, 'pyplot'):
-            figure.pyplot = Toolbar(figure=figure)
-            figure.pyplot_vbox = VBox([figure, figure.pyplot])
-        display(figure.pyplot_vbox)
-    else:
-        display(figure)
+    figure.display_toolbar = display_toolbar
+    display(figure)
 
 
 def figure(key=None, fig=None, **kwargs):

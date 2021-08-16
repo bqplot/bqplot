@@ -335,6 +335,7 @@ export class Figure extends widgets.DOMWidgetView {
     }
 
     this.model.on('change:display_toolbar', (_, display_toolbar) => {
+
       const toolbar = this.toolbar_div.node()
       if(display_toolbar){
         toolbar.style.display  = 'unset'
@@ -1324,8 +1325,8 @@ export class Figure extends widgets.DOMWidgetView {
     this.el.appendChild(toolbar.node());
     toolbar.node().style.top = `${this.margin.top / 2.0}px`;
     toolbar.node().style.right = `${this.margin.right}px`;
-    toolbar.node().style.visibility = 'hidden';
-    toolbar.node().style.opacity = '0';
+    toolbar.node().style.visibility = 'visible';
+    toolbar.node().style.opacity = '1';
     this.el.addEventListener('mouseenter', () => {
       toolbar.node().style.visibility = 'visible';
       toolbar.node().style.opacity = '1';
