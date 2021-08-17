@@ -331,18 +331,17 @@ export class Figure extends widgets.DOMWidgetView {
 
     this.toolbar_div = this.create_toolbar();
     if (this.model.get('display_toolbar')) {
-      this.toolbar_div.node().style.display  = 'unset'
+      this.toolbar_div.node().style.display = 'unset';
     }
 
     this.model.on('change:display_toolbar', (_, display_toolbar) => {
-
-      const toolbar = this.toolbar_div.node()
-      if(display_toolbar){
-        toolbar.style.display  = 'unset'
+      const toolbar = this.toolbar_div.node();
+      if (display_toolbar) {
+        toolbar.style.display = 'unset';
       } else {
-        toolbar.style.display  = 'none'
+        toolbar.style.display = 'none';
       }
-    })
+    });
 
     return Promise.all([mark_views_updated, axis_views_updated]);
   }
@@ -1335,7 +1334,7 @@ export class Figure extends widgets.DOMWidgetView {
       toolbar.node().style.visibility = 'hidden';
       toolbar.node().style.opacity = '0';
     });
-    toolbar.node().style.display  = 'none'
+    toolbar.node().style.display = 'none';
     return toolbar;
   }
 
@@ -1368,7 +1367,7 @@ export class Figure extends widgets.DOMWidgetView {
   svg_background: d3.Selection<SVGElement, any, any, any>;
   title: d3.Selection<SVGTextElement, any, any, any>;
   tooltip_div: d3.Selection<HTMLDivElement, any, any, any>;
-  toolbar_div: d3.Selection<HTMLDivElement, any, any, any>; 
+  toolbar_div: d3.Selection<HTMLDivElement, any, any, any>;
   width: number;
   x_pad_dict: { [id: string]: number };
   xPaddingArr: { [id: string]: number };
