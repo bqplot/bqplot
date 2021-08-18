@@ -28,6 +28,7 @@ import { AxisModel } from './AxisModel';
 import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
 import { Interaction } from './Interaction';
+import { FigureModel } from './FigureModel';
 
 THREE.ShaderChunk['scales'] =
   require('raw-loader!../shaders/scales.glsl').default;
@@ -102,6 +103,7 @@ export class Figure extends widgets.DOMWidgetView {
 
   protected async renderImpl() {
     const figureSize = this.getFigureSize();
+
     this.width = figureSize.width;
     this.height = figureSize.height;
 
@@ -325,6 +327,20 @@ export class Figure extends widgets.DOMWidgetView {
     window.addEventListener('resize', this.debouncedRelayout);
     this.once('remove', () => {
       window.removeEventListener('resize', this.debouncedRelayout);
+    });
+
+    this.toolbar_div = this.create_toolbar();
+    if (this.model.get('display_toolbar')) {
+      this.toolbar_div.node().style.display = 'unset';
+    }
+
+    this.model.on('change:display_toolbar', (_, display_toolbar) => {
+      const toolbar = this.toolbar_div.node();
+      if (display_toolbar) {
+        toolbar.style.display = 'unset';
+      } else {
+        toolbar.style.display = 'none';
+      }
     });
 
     return Promise.all([mark_views_updated, axis_views_updated]);
@@ -1249,6 +1265,79 @@ export class Figure extends widgets.DOMWidgetView {
     this.el.classList.add(this.model.get('theme'));
   }
 
+  /**
+   * Generate an integrated toolbar which is shown on mouse over
+   * for this figure.
+   *
+   */
+  create_toolbar(): d3.Selection<HTMLDivElement, any, any, any> {
+    const toolbar = d3
+      .select(document.createElement('div'))
+      .attr('class', 'toolbar_div');
+
+    const panzoom = document.createElement('button');
+    panzoom.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    panzoom.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    panzoom.setAttribute('data-toggle', 'tooltip');
+    panzoom.setAttribute('title', 'PanZoom');
+    const panzoomicon = document.createElement('i');
+    panzoomicon.style.marginRight = '0px';
+    panzoomicon.className = 'fa fa-arrows';
+    panzoom.appendChild(panzoomicon);
+    panzoom.onclick = (e) => {
+      e.preventDefault();
+      (this.model as FigureModel).panzoom();
+    };
+
+    const reset = document.createElement('button');
+    reset.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    reset.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    reset.setAttribute('data-toggle', 'tooltip');
+    reset.setAttribute('title', 'Reset');
+    const refreshicon = document.createElement('i');
+    refreshicon.style.marginRight = '0px';
+    refreshicon.className = 'fa fa-refresh';
+    reset.appendChild(refreshicon);
+    reset.onclick = (e) => {
+      e.preventDefault();
+      (this.model as FigureModel).reset();
+    };
+
+    const save = document.createElement('button');
+    save.classList.add('jupyter-widgets'); // @jupyter-widgets/controls css
+    save.classList.add('jupyter-button'); // @jupyter-widgets/controls css
+    save.setAttribute('data-toggle', 'tooltip');
+    save.setAttribute('title', 'Save');
+    const saveicon = document.createElement('i');
+    saveicon.style.marginRight = '0px';
+    saveicon.className = 'fa fa-save';
+    save.appendChild(saveicon);
+    save.onclick = (e) => {
+      e.preventDefault();
+      this.save_png(undefined, undefined);
+    };
+
+    toolbar.node().appendChild(panzoom);
+    toolbar.node().appendChild(reset);
+    toolbar.node().appendChild(save);
+
+    this.el.appendChild(toolbar.node());
+    toolbar.node().style.top = `${this.margin.top / 2.0}px`;
+    toolbar.node().style.right = `${this.margin.right}px`;
+    toolbar.node().style.visibility = 'hidden';
+    toolbar.node().style.opacity = '0';
+    this.el.addEventListener('mouseenter', () => {
+      toolbar.node().style.visibility = 'visible';
+      toolbar.node().style.opacity = '1';
+    });
+    this.el.addEventListener('mouseleave', () => {
+      toolbar.node().style.visibility = 'hidden';
+      toolbar.node().style.opacity = '0';
+    });
+    toolbar.node().style.display = 'none';
+    return toolbar;
+  }
+
   axis_views: widgets.ViewList<widgets.DOMWidgetView>;
   bg: d3.Selection<SVGRectElement, any, any, any>;
   bg_events: d3.Selection<SVGRectElement, any, any, any>;
@@ -1278,6 +1367,7 @@ export class Figure extends widgets.DOMWidgetView {
   svg_background: d3.Selection<SVGElement, any, any, any>;
   title: d3.Selection<SVGTextElement, any, any, any>;
   tooltip_div: d3.Selection<HTMLDivElement, any, any, any>;
+  toolbar_div: d3.Selection<HTMLDivElement, any, any, any>;
   width: number;
   x_pad_dict: { [id: string]: number };
   xPaddingArr: { [id: string]: number };
@@ -1287,7 +1377,7 @@ export class Figure extends widgets.DOMWidgetView {
   private dummyNodes: Dict<any> = {};
 
   private _update_requested: boolean;
-  private relayoutRequested: boolean = false;
+  private relayoutRequested = false;
 
   // this is public for the test framework, but considered a private API
   public _initial_marks_created: Promise<any>;

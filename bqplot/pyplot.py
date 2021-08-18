@@ -50,7 +50,6 @@ Pyplot
 import sys
 from collections import OrderedDict
 from IPython.display import display
-from ipywidgets import VBox
 from ipywidgets import Image as ipyImage
 from numpy import arange, issubdtype, array, column_stack, shape
 from .figure import Figure
@@ -58,7 +57,6 @@ from .scales import Scale, LinearScale, Mercator
 from .axes import Axis
 from .marks import (Lines, Scatter, ScatterGL, Hist, Bars, OHLC, Pie, Map, Image,
                     Label, HeatMap, GridHeatMap, topo_load, Boxplot, Bins)
-from .toolbar import Toolbar
 from .interacts import (BrushIntervalSelector, FastIntervalSelector,
                         BrushSelector, IndexSelector, MultiSelector,
                         LassoSelector)
@@ -152,13 +150,8 @@ def show(key=None, display_toolbar=True):
         figure = current_figure()
     else:
         figure = _context['figure_registry'][key]
-    if display_toolbar:
-        if not hasattr(figure, 'pyplot'):
-            figure.pyplot = Toolbar(figure=figure)
-            figure.pyplot_vbox = VBox([figure, figure.pyplot])
-        display(figure.pyplot_vbox)
-    else:
-        display(figure)
+    figure.display_toolbar = display_toolbar
+    display(figure)
 
 
 def figure(key=None, fig=None, **kwargs):

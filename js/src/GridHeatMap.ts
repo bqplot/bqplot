@@ -317,7 +317,7 @@ export class GridHeatMap extends Mark {
     }
 
     const clearing_style = {};
-    for (let key in style_dict) {
+    for (const key in style_dict) {
       clearing_style[key] = null;
     }
     applyStyles(elements, clearing_style);
