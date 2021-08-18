@@ -1324,8 +1324,8 @@ export class Figure extends widgets.DOMWidgetView {
     this.el.appendChild(toolbar.node());
     toolbar.node().style.top = `${this.margin.top / 2.0}px`;
     toolbar.node().style.right = `${this.margin.right}px`;
-    toolbar.node().style.visibility = 'visible';
-    toolbar.node().style.opacity = '1';
+    toolbar.node().style.visibility = 'hidden';
+    toolbar.node().style.opacity = '0';
     this.el.addEventListener('mouseenter', () => {
       toolbar.node().style.visibility = 'visible';
       toolbar.node().style.opacity = '1';
