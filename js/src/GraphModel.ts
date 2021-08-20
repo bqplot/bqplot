@@ -152,7 +152,7 @@ export class GraphModel extends MarkModel {
   }
 
   private updateLinkData() {
-    const link_color_scale = this.get('scales').link_color;
+    const link_color_scale = this.getScales().link_color;
     this.link_data = this.get('link_data') || [];
     let link_matrix = this.get('link_matrix');
     const link_color = this.get('link_color');
@@ -187,57 +187,57 @@ export class GraphModel extends MarkModel {
   }
 
   update_domains() {
-    const scales = this.get('scales');
+    const scales = this.getScales();
 
     if (scales.x) {
       if (!this.get('preserve_domain').x && this.mark_data) {
-        scales.x.compute_and_set_domain(
+        scales.x.computeAndSetDomain(
           this.mark_data.map((elem) => {
             return elem.xval;
           }),
           this.model_id + '_x'
         );
       } else {
-        scales.x.del_domain([], this.model_id + '_x');
+        scales.x.delDomain([], this.model_id + '_x');
       }
     }
 
     if (scales.y) {
       if (!this.get('preserve_domain').y && this.mark_data) {
-        scales.y.compute_and_set_domain(
+        scales.y.computeAndSetDomain(
           this.mark_data.map((elem) => {
             return elem.yval;
           }),
           this.model_id + '_y'
         );
       } else {
-        scales.y.del_domain([], this.model_id + '_y');
+        scales.y.delDomain([], this.model_id + '_y');
       }
     }
 
     if (scales.color) {
       if (!this.get('preserve_domain').color && this.mark_data) {
-        scales.color.compute_and_set_domain(
+        scales.color.computeAndSetDomain(
           this.mark_data.map((elem) => {
             return elem.color;
           }),
           this.model_id + '_color'
         );
       } else {
-        scales.color.del_domain([], this.model_id + '_color');
+        scales.color.delDomain([], this.model_id + '_color');
       }
     }
 
     if (scales.link_color) {
       if (!this.get('preserve_domain').link_color && this.link_data) {
-        scales.link_color.compute_and_set_domain(
+        scales.link_color.computeAndSetDomain(
           this.link_data.map((elem) => {
             return elem.value;
           }),
           this.model_id + '_link_color'
         );
       } else {
-        scales.link_color.del_domain([], this.model_id + '_link_color');
+        scales.link_color.delDomain([], this.model_id + '_link_color');
       }
     }
   }

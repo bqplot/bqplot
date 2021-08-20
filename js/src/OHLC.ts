@@ -14,6 +14,7 @@
  */
 
 import * as d3 from 'd3';
+import { isOrdinalScale } from 'bqscales';
 import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { OHLCModel } from './OHLCModel';
@@ -43,12 +44,12 @@ export class OHLC extends Mark {
 
   set_ranges() {
     if (this.scales.x) {
-      this.scales.x.set_range(
+      this.scales.x.setRange(
         this.parent.padded_range('x', this.scales.x.model)
       );
     }
     if (this.scales.y) {
-      this.scales.y.set_range(
+      this.scales.y.setRange(
         this.parent.padded_range('y', this.scales.y.model)
       );
     }
@@ -376,7 +377,7 @@ export class OHLC extends Mark {
         return d.y[px.o] > d.y[px.c] ? down_color : up_color;
       })
       .attr('stroke-width', this.model.get('stroke_width'));
-    if (x_scale.model.type === 'ordinal') {
+    if (isOrdinalScale(x_scale)) {
       // If we are out of range, we just set the mark in the final
       // bucket's range band. FIXME?
       const x_max = d3.max(this.parent.range('x'));
@@ -498,7 +499,7 @@ export class OHLC extends Mark {
       }
       offset_in_x_units = data_point + min_x_difference;
 
-      if (x_scale.model.type === 'ordinal') {
+      if (isOrdinalScale(x_scale)) {
         scaled_mark_widths[i] = x_scale.scale.bandwidth() * 0.75;
       } else {
         scaled_mark_widths[i] =
@@ -627,7 +628,7 @@ export class OHLC extends Mark {
      * distance between consecutive points.
      */
     let min_distance: any = Number.POSITIVE_INFINITY;
-    const scales = this.model.get('scales');
+    const scales = this.model.getScales();
 
     for (let i = 1; i < this.model.mark_data.length; i++) {
       const dist = this.model.mark_data[i][0] - this.model.mark_data[i - 1][0];

@@ -1,11 +1,11 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-//import * as widgets from '../../lib';
 import * as services from '@jupyterlab/services';
 import * as Backbone from 'backbone';
 import * as widgets from '@jupyter-widgets/controls';
 import * as base from '@jupyter-widgets/base';
+import * as bqscales from 'bqscales';
 
 let numComms = 0;
 
@@ -89,6 +89,12 @@ export class DummyManager extends base.ManagerBase<HTMLElement> {
     } else if (moduleName === '@jupyter-widgets/controls') {
       if (widgets[className]) {
         return Promise.resolve(widgets[className]);
+      } else {
+        return Promise.reject(`Cannot find class ${className}`);
+      }
+    } else if (moduleName === 'bqscales') {
+      if (bqscales[className]) {
+        return Promise.resolve(bqscales[className]);
       } else {
         return Promise.reject(`Cannot find class ${className}`);
       }

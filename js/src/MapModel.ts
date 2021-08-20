@@ -83,19 +83,19 @@ export class MapModel extends MarkModel {
   }
 
   update_domains() {
-    const scales = this.get('scales');
+    const scales = this.getScales();
     const color_scale = scales.color;
     this.color_data = this.get('color');
     if (color_scale !== null && color_scale !== undefined) {
       if (!this.get('preserve_domain').color) {
-        color_scale.compute_and_set_domain(
+        color_scale.computeAndSetDomain(
           Object.keys(this.color_data).map((d) => {
             return this.color_data[d];
           }),
           this.model_id + '_color'
         );
       } else {
-        color_scale.del_domain([], this.model_id + '_color');
+        color_scale.delDomain([], this.model_id + '_color');
       }
     }
   }

@@ -15,10 +15,10 @@
 
 import { WidgetView } from '@jupyter-widgets/base';
 import * as d3 from 'd3';
+import { ColorScale, ColorScaleModel } from 'bqscales';
 // var d3 =Object.assign({}, require("d3-axis"), require("d3-scale"), require("d3-selection"), require("d3-selection-multi"));
 import { Axis } from './Axis';
 import { applyAttrs } from './utils';
-import { ColorScale } from './ColorScale';
 
 class ColorBar extends Axis {
   render() {
@@ -76,13 +76,33 @@ class ColorBar extends Axis {
     if (this.vertical) {
       this.axis =
         this.side === 'right'
-          ? d3.axisRight(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
-          : d3.axisLeft(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
+          ? d3.axisRight(
+              this.axis_scale.scale as d3.ScaleLinear<
+                any,
+                any
+              > as d3.AxisScale<d3.AxisDomain>
+            )
+          : d3.axisLeft(
+              this.axis_scale.scale as d3.ScaleLinear<
+                any,
+                any
+              > as d3.AxisScale<d3.AxisDomain>
+            );
     } else {
       this.axis =
         this.side === 'top'
-          ? d3.axisTop(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
-          : d3.axisBottom(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
+          ? d3.axisTop(
+              this.axis_scale.scale as d3.ScaleLinear<
+                any,
+                any
+              > as d3.AxisScale<d3.AxisDomain>
+            )
+          : d3.axisBottom(
+              this.axis_scale.scale as d3.ScaleLinear<
+                any,
+                any
+              > as d3.AxisScale<d3.AxisDomain>
+            );
     }
     this.g_axisline.remove();
     this.g_axisline = this.d3el
@@ -100,7 +120,7 @@ class ColorBar extends Axis {
     this.redraw_axisline();
   }
 
-  set_scale(model) {
+  set_scale(model: ColorScaleModel) {
     // Sets the child scale
     const that = this;
     if (this.axis_scale) {
@@ -153,13 +173,33 @@ class ColorBar extends Axis {
     if (this.vertical) {
       this.axis =
         this.side === 'right'
-          ? d3.axisRight(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
-          : d3.axisLeft(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
+          ? d3.axisRight(
+              this.axis_scale.scale as d3.ScaleLinear<
+                any,
+                any
+              > as d3.AxisScale<d3.AxisDomain>
+            )
+          : d3.axisLeft(
+              this.axis_scale.scale as d3.ScaleLinear<
+                any,
+                any
+              > as d3.AxisScale<d3.AxisDomain>
+            );
     } else {
       this.axis =
         this.side === 'top'
-          ? d3.axisTop(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
-          : d3.axisBottom(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
+          ? d3.axisTop(
+              this.axis_scale.scale as d3.ScaleLinear<
+                any,
+                any
+              > as d3.AxisScale<d3.AxisDomain>
+            )
+          : d3.axisBottom(
+              this.axis_scale.scale as d3.ScaleLinear<
+                any,
+                any
+              > as d3.AxisScale<d3.AxisDomain>
+            );
     }
     this.axis = this.axis.tickFormat(this.tick_format);
     this.redraw_axisline();
@@ -339,7 +379,7 @@ class ColorBar extends Axis {
 
   set_scales_range() {
     //Setting the range of the color scale
-    this.axis_scale.set_range();
+    this.axis_scale.setRange();
     this.set_axisline_scale_range();
   }
 

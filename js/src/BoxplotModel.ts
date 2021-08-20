@@ -77,17 +77,17 @@ export class BoxplotModel extends MarkModel {
   update_domains() {
     // color scale needs an issue in DateScaleModel to be fixed. It
     // should be moved here as soon as that is fixed.
-    const scales = this.get('scales');
+    const scales = this.getScales();
 
     if (!this.get('preserve_domain').x && this.mark_data) {
-      scales.x.compute_and_set_domain(
+      scales.x.computeAndSetDomain(
         this.mark_data.map((elem) => {
           return elem[0];
         }),
         this.model_id + '_x'
       );
     } else {
-      scales.x.del_domain([], this.model_id + '_x');
+      scales.x.delDomain([], this.model_id + '_x');
     }
 
     if (!this.get('preserve_domain').y && this.mark_data) {
@@ -105,9 +105,9 @@ export class BoxplotModel extends MarkModel {
         })
       );
 
-      scales.y.set_domain([min, max], this.model_id + '_y');
+      scales.y.setDomain([min, max], this.model_id + '_y');
     } else {
-      scales.y.del_domain([], this.model_id + '_y');
+      scales.y.delDomain([], this.model_id + '_y');
     }
   }
 

@@ -79,6 +79,7 @@
     "@lumino/widgets": "^1",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
+    "bqscales": "^0.2.2",
     "d3": "^5.7.0",
     "d3-selection": "^1",
     "eslint-config-standard": "^16.0.2",
@@ -96,6 +97,10 @@
     "outputDir": "../share/jupyter/labextensions/bqplot",
     "sharedPackages": {
       "@jupyter-widgets/base": {
+        "bundled": false,
+        "singleton": true
+      },
+      "bqscales": {
         "bundled": false,
         "singleton": true
       }

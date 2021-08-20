@@ -53,28 +53,22 @@ export class ImageModel extends MarkModel {
     if (!this.mark_data) {
       return;
     }
-    const scales = this.get('scales');
+    const scales = this.getScales();
     const x_scale = scales.x;
     const y_scale = scales.y;
 
     if (x_scale) {
       if (!this.get('preserve_domain').x) {
-        x_scale.compute_and_set_domain(
-          this.mark_data['x'],
-          this.model_id + '_x'
-        );
+        x_scale.computeAndSetDomain(this.mark_data['x'], this.model_id + '_x');
       } else {
-        x_scale.del_domain([], this.model_id + '_x');
+        x_scale.delDomain([], this.model_id + '_x');
       }
     }
     if (y_scale) {
       if (!this.get('preserve_domain').y) {
-        y_scale.compute_and_set_domain(
-          this.mark_data['y'],
-          this.model_id + '_y'
-        );
+        y_scale.computeAndSetDomain(this.mark_data['y'], this.model_id + '_y');
       } else {
-        y_scale.del_domain([], this.model_id + '_y');
+        y_scale.delDomain([], this.model_id + '_y');
       }
     }
   }

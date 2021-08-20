@@ -65,13 +65,13 @@ export class GridHeatMap extends Mark {
 
   set_ranges() {
     if (this.scales.row) {
-      this.scales.row.set_range(
+      this.scales.row.setRange(
         this.parent.padded_range('y', this.scales.row.model)
       );
     }
 
     if (this.scales.column) {
-      this.scales.column.set_range(
+      this.scales.column.setRange(
         this.parent.padded_range('x', this.scales.column.model)
       );
     }
@@ -483,10 +483,7 @@ export class GridHeatMap extends Mark {
         d3.max(new_domain) > d3.max(rowScale.model.domain)
       ) {
         // Update domain if domain has changed
-        rowScale.model.compute_and_set_domain(
-          new_domain,
-          rowScale.model.model_id
-        );
+        rowScale.model.computeAndSetDomain(new_domain, rowScale.model.model_id);
       }
     }
 
@@ -505,7 +502,7 @@ export class GridHeatMap extends Mark {
         d3.max(new_domain) > d3.max(columnScale.model.domain)
       ) {
         // Update domain if domain has changed
-        columnScale.model.compute_and_set_domain(
+        columnScale.model.computeAndSetDomain(
           new_domain,
           columnScale.model.model_id
         );

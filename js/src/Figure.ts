@@ -13,17 +13,23 @@
  * limitations under the License.
  */
 
-import * as widgets from '@jupyter-widgets/base';
-import * as d3 from 'd3';
-// var d3 =Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 import * as _ from 'underscore';
+// var d3 =Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
+import * as d3 from 'd3';
+import {
+  uuid,
+  Dict,
+  WidgetModel,
+  WidgetView,
+  DOMWidgetView,
+  ViewList,
+} from '@jupyter-widgets/base';
+import { Scale, ScaleModel } from 'bqscales';
+
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
-import { Dict, WidgetModel, WidgetView } from '@jupyter-widgets/base';
 import { applyAttrs, applyStyles } from './utils';
-import { Scale } from './Scale';
-import { ScaleModel } from './ScaleModel';
 import { AxisModel } from './AxisModel';
 import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
@@ -38,7 +44,7 @@ interface IFigureSize {
   height: number;
 }
 
-export class Figure extends widgets.DOMWidgetView {
+export class Figure extends DOMWidgetView {
   initialize() {
     this.debouncedRelayout = _.debounce(() => {
       this.relayout();
@@ -107,7 +113,7 @@ export class Figure extends widgets.DOMWidgetView {
     this.width = figureSize.width;
     this.height = figureSize.height;
 
-    this.id = widgets.uuid();
+    this.id = uuid();
 
     // Dictionary which contains the mapping for each of the marks id
     // to it's padding. Dictionary is required to not recompute
@@ -248,11 +254,7 @@ export class Figure extends widgets.DOMWidgetView {
 
     await figure_scale_promise;
 
-    this.mark_views = new widgets.ViewList(
-      this.add_mark,
-      this.remove_mark,
-      this
-    );
+    this.mark_views = new ViewList(this.add_mark, this.remove_mark, this);
 
     const mark_views_updated = this.mark_views
       .update(this.model.get('marks'))
@@ -267,7 +269,7 @@ export class Figure extends widgets.DOMWidgetView {
         this.update_gl();
       });
 
-    this.axis_views = new widgets.ViewList(this.add_axis, null, this);
+    this.axis_views = new ViewList(this.add_axis, null, this);
     const axis_views_updated = this.axis_views.update(this.model.get('axes'));
 
     // TODO: move to the model
@@ -433,36 +435,38 @@ export class Figure extends widgets.DOMWidgetView {
   create_figure_scales() {
     // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
     // See the scale_x and scale_y attributes of the python Figure
-    const that = this;
     const x_scale_promise = this.create_child_view(
       this.model.get('scale_x')
     ).then((view) => {
-      that.scale_x = view as WidgetView as Scale;
+      this.scale_x = view as WidgetView as Scale;
       (
-        that.scale_x.scale as
+        this.scale_x.scale as
           | d3.ScaleLinear<number, number>
           | d3.ScaleTime<Date, number>
           | d3.ScaleLogarithmic<number, number>
       ).clamp(true);
-      that.scale_x.set_range([0, that.plotarea_width]);
+      this.scale_x.setRange([0, this.plotarea_width]);
     });
 
     const y_scale_promise = this.create_child_view(
       this.model.get('scale_y')
     ).then((view) => {
-      that.scale_y = view as WidgetView as Scale;
+      this.scale_y = view as WidgetView as Scale;
       (
-        that.scale_y.scale as
+        this.scale_y.scale as
           | d3.ScaleLinear<number, number>
           | d3.ScaleTime<Date, number>
           | d3.ScaleLogarithmic<number, number>
       ).clamp(true);
-      that.scale_y.set_range([that.plotarea_height, 0]);
+      this.scale_y.setRange([this.plotarea_height, 0]);
     });
     return Promise.all([x_scale_promise, y_scale_promise]);
   }
 
-  padded_range(direction: 'x' | 'y', scale_model: ScaleModel) {
+  padded_range(
+    direction: 'x' | 'y',
+    scale_model: ScaleModel
+  ): [number, number] {
     // Functions to be called by mark which respects padding.
     // Typically all marks do this. Axis do not do this.
     // Also, if a mark does not set the domain, it can potentially call
@@ -471,12 +475,19 @@ export class Figure extends widgets.DOMWidgetView {
       return this.range(direction);
     }
     const scale_id = scale_model.model_id;
+    // console.log('scale', scale_model)
+    // console.log('scale id', scale_model.model_id)
+    console.log('\n');
+    console.log('this.xPaddingArr', this.xPaddingArr);
+    console.log('this.yPaddingArr', this.yPaddingArr);
+    console.log('scale id', scale_id);
 
     if (direction === 'x') {
       const scale_padding =
         this.xPaddingArr[scale_id] !== undefined
           ? this.xPaddingArr[scale_id]
           : 0;
+      // console.log('scale_padding', scale_padding)
       const fig_padding = this.plotarea_width * this.figure_padding_x;
       return [
         fig_padding + scale_padding,
@@ -495,7 +506,7 @@ export class Figure extends widgets.DOMWidgetView {
     }
   }
 
-  range(direction: 'x' | 'y') {
+  range(direction: 'x' | 'y'): [number, number] {
     if (direction === 'x') {
       return [0, this.plotarea_width];
     } else if (direction === 'y') {
@@ -563,6 +574,8 @@ export class Figure extends widgets.DOMWidgetView {
       dict[scale_id] = {};
     }
     dict[scale_id][mark_view.model.model_id + '_' + mark_view.cid] = value;
+
+    console.log('update_padding_dict', dict);
   }
 
   mark_scales_updated(view: Mark) {
@@ -579,7 +592,7 @@ export class Figure extends widgets.DOMWidgetView {
       prev_scale_models[model.get_key_for_orientation('vertical')]
     );
 
-    const scale_models = model.get('scales');
+    const scale_models = model.getScales();
     this.update_padding_dict(
       this.x_pad_dict,
       view,
@@ -598,7 +611,7 @@ export class Figure extends widgets.DOMWidgetView {
 
   mark_padding_updated(view: Mark) {
     const model = view.model;
-    const scale_models = model.get('scales');
+    const scale_models = model.getScales();
 
     this.update_padding_dict(
       this.x_pad_dict,
@@ -628,7 +641,7 @@ export class Figure extends widgets.DOMWidgetView {
     model.off('scales_updated', null, this);
     model.off('mark_padding_updated', null, this);
 
-    const scale_models = model.get('scales');
+    const scale_models = model.getScales();
     this.remove_from_padding_dict(
       this.x_pad_dict,
       view,
@@ -674,9 +687,9 @@ export class Figure extends widgets.DOMWidgetView {
     );
 
     let child_x_scale =
-      view.model.get('scales')[view.model.get_key_for_dimension('x')];
+      view.model.getScales()[view.model.get_key_for_dimension('x')];
     let child_y_scale =
-      view.model.get('scales')[view.model.get_key_for_dimension('y')];
+      view.model.getScales()[view.model.get_key_for_dimension('y')];
     if (child_x_scale === undefined) {
       child_x_scale = this.scale_x.model;
     }
@@ -784,11 +797,11 @@ export class Figure extends widgets.DOMWidgetView {
       }
 
       if (this.scale_x !== undefined && this.scale_x !== null) {
-        this.scale_x.set_range([0, this.plotarea_width]);
+        this.scale_x.setRange([0, this.plotarea_width]);
       }
 
       if (this.scale_y !== undefined && this.scale_y !== null) {
-        this.scale_y.set_range([this.plotarea_height, 0]);
+        this.scale_y.setRange([this.plotarea_height, 0]);
       }
 
       // transform figure
@@ -1338,7 +1351,7 @@ export class Figure extends widgets.DOMWidgetView {
     return toolbar;
   }
 
-  axis_views: widgets.ViewList<widgets.DOMWidgetView>;
+  axis_views: ViewList<DOMWidgetView>;
   bg: d3.Selection<SVGRectElement, any, any, any>;
   bg_events: d3.Selection<SVGRectElement, any, any, any>;
   change_layout: () => void;
@@ -1355,7 +1368,7 @@ export class Figure extends widgets.DOMWidgetView {
   interaction_view: Interaction;
   interaction: d3.Selection<SVGGElement, any, any, any>;
   margin: { top: number; bottom: number; left: number; right: number };
-  mark_views: widgets.ViewList<Mark>;
+  mark_views: ViewList<Mark>;
   plotarea_height: number;
   plotarea_width: number;
   popper_reference: popper.ReferenceObject;

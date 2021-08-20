@@ -48,11 +48,11 @@ export class HeatMap extends Mark {
   set_ranges() {
     if (this.scales.x) {
       const xRange = this.parent.padded_range('x', this.scales.x.model);
-      this.scales.x.set_range(xRange);
+      this.scales.x.setRange(xRange);
     }
 
     if (this.scales.y) {
-      this.scales.y.set_range(
+      this.scales.y.setRange(
         this.parent.padded_range('y', this.scales.y.model)
       );
     }

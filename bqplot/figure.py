@@ -32,7 +32,7 @@ from traitlets import (
 )
 from ipywidgets import DOMWidget, register, widget_serialization
 
-from .scales import Scale, LinearScale
+from bqscales import Scale, LinearScale
 from .interacts import Interaction
 from .marks import Mark
 from .axes import Axis

@@ -96,12 +96,12 @@ export class Graph extends Mark {
 
   set_ranges() {
     if (this.scales.x) {
-      this.scales.x.set_range(
+      this.scales.x.setRange(
         this.parent.padded_range('x', this.scales.x.model)
       );
     }
     if (this.scales.y) {
-      this.scales.y.set_range(
+      this.scales.y.setRange(
         this.parent.padded_range('y', this.scales.y.model)
       );
     }

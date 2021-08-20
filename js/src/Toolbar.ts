@@ -127,7 +127,7 @@ export class ToolbarModel extends widgets.DOMWidgetModel {
             y_scales = [];
           for (let i = 0; i < marks.length; ++i) {
             const preserve_domain = marks[i].get('preserve_domain');
-            const scales = marks[i].get('scales');
+            const scales = marks[i].getScales();
             _.each(scales, (v, k) => {
               const dimension = marks[i].get('scales_metadata')[k]['dimension'];
               if (dimension === 'x' && !preserve_domain[k]) {
