@@ -91,48 +91,17 @@ jobs:
 
   visual-regression-tests:
     runs-on: ubuntu-latest
-    needs: [build]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: bqplot-test
-          environment-file: test-environment.yml
-          python-version: 3.9
-          mamba-version: "*"
-          auto-activate-base: false
-          channels: conda-forge
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: dist ${{ github.run_number }}
-          path: ./dist
-
-      - name: Install the package
-        run: pip install -vv bqplot*.whl
-        working-directory: dist
-
-      - name: Install Galata
-        run: yarn install
-        working-directory: ui-tests
-
-      - name: Launch JupyterLab
-        run: yarn run start-jlab:detached
-        working-directory: ui-tests
-
-      - name: Wait for JupyterLab
-        uses: ifaxity/wait-on-action@v1
-        with:
-          resource: http-get://localhost:8888/api
-          timeout: 20000
-
       - name: Run UI Tests
-        run: yarn run test
-        working-directory: ui-tests
+        run: |
+          docker-compose -f "./ui-tests/docker/docker-compose.yml" down || true
+          docker-compose -f "./ui-tests/docker/docker-compose.yml" pull || true
+          docker-compose -f "./ui-tests/docker/docker-compose.yml" build
+          docker-compose -f "./ui-tests/docker/docker-compose.yml" run --rm e2e
 
       - name: Upload UI Test artifacts
         if: always()
@@ -140,6 +109,23 @@ jobs:
         with:
           name: ui-test-output
           path: ui-tests/test-output
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "./ui-tests/docker/docker-compose.yml" down
+
+      - name: Run UI Tests
+        if: ${{ failure() }}
+        run: |
+          docker-compose -f "./ui-tests/docker/docker-compose.yml" run --rm e2e yarn run update-references --jlab-base-url=http://jupyterlab:8888
+          docker-compose -f "./ui-tests/docker/docker-compose.yml" down
+
+      - name: Upload UI Test new reference artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ui-test-new-reference
+          path: ui-tests/test-output/test/screenshots/*.png
 
   install:
     runs-on: ${{ matrix.os }}-latest

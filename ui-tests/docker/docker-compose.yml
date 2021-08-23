@@ -1,0 +1,54 @@
+version: '3.5'
+
+services:
+  lab:
+    container_name: jupyterlab
+    build:
+      context: ../..
+    command: [
+        'jupyter',
+        'lab',
+        # Set working directory as empty directory - no modified time displayed
+        '--notebook-dir=./work',
+        '--ServerApp.token=',
+        '--ServerApp.password=',
+        '--ServerApp.disable_check_xsrf=True',
+        '--LabServerApp.extra_labextensions_path=/opt/labextensions',
+        # Workaround bug: https://github.com/ipython/traitlets/issues/668
+        '--LabServerApp.extra_labextensions_path=/dev/null'
+      ]
+    networks:
+      - frontend
+    ports:
+      - 8888:8888
+    volumes:
+      - ../../share/jupyter/labextensions:/opt/labextensions
+
+  e2e:
+    build:
+      context: ../..
+    entrypoint:
+      [
+        '/tmp/e2e-tests/prepare.sh',
+        'jupyterlab:8888',
+        '--strict',
+        '--timeout=60',
+        '--'
+      ]
+    command: ['yarn', 'run', 'test']
+    environment:
+      # JupyterLab URL
+      TARGET_URL: http://jupyterlab:8888
+    # See https://playwright.dev/docs/docker/#run-the-image
+    ipc: host
+    networks:
+      - frontend
+    depends_on:
+      - lab
+    volumes:
+      - .:/tmp/e2e-tests
+      - ..:/opt/ui-tests
+    working_dir: /opt/ui-tests
+
+networks:
+  frontend:
