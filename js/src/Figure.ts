@@ -992,6 +992,7 @@ export class Figure extends widgets.DOMWidgetView {
     } else {
       if (this.interaction_view) {
         this.interaction_view.remove();
+        this.interaction_view = null;
       }
       return Promise.resolve(null);
     }
