@@ -6034,6 +6034,11 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
+kiwi.js@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/kiwi.js/-/kiwi.js-1.1.2.tgz#814fa53602f7b095361be0e771ae9b32ebe5fdef"
+  integrity sha512-O/6vug4T5j7eEBYdtxdI4BrPcJyp0qC0ai0oka2tGwJfbUXYSgCQil+dzzPmDCZxSkGcIvkaoQGy05tmCCfa5g==
+
 kleur@4.1.4:
   version "4.1.4"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.4.tgz#8c202987d7e577766d039a8cd461934c01cda04d"

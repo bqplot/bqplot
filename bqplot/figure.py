@@ -96,10 +96,12 @@ class Figure(DOMWidget):
         Dictionary containing the top, bottom, left and right margins. The user
         is responsible for making sure that the width and height are greater
         than the sum of the margins.
+    auto_layout: boolean (default: False)
+        Whether to use the auto-layout solver or not
     min_aspect_ratio: float
-         minimum width / height ratio of the figure
+        Minimum width / height ratio of the figure
     max_aspect_ratio: float
-         maximum width / height ratio of the figure
+        Maximum width / height ratio of the figure
 
     Methods
     -------
@@ -140,6 +142,7 @@ class Figure(DOMWidget):
     legend_text = Dict().tag(sync=True)
     theme = Enum(['classic', 'gg'], default_value='classic').tag(sync=True)
 
+    auto_layout = Bool(False).tag(sync=True)
     min_aspect_ratio = Float(0.01).tag(sync=True)
     max_aspect_ratio = Float(100).tag(sync=True)
     pixel_ratio = Float(None, allow_none=True).tag(sync=True)

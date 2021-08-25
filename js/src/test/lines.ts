@@ -56,8 +56,8 @@ describe('lines >', () => {
       .selectAll('.curve path.line')
       .nodes()
       .map((el) => el.getAttribute('d'));
-    const width = objects.figure.plotarea_width;
-    const height = objects.figure.plotarea_height;
+    const width = objects.figure.width;
+    const height = objects.figure.height;
     expect(paths).to.deep.equal([
       `M${(width * 1) / 4},${height}L${(width * 3) / 4},0`,
     ]);
@@ -86,8 +86,8 @@ describe('lines >', () => {
       .selectAll('.curve path.line')
       .nodes()
       .map((el) => el.getAttribute('d'));
-    const width = objects.figure.plotarea_width;
-    const height = objects.figure.plotarea_height;
+    const width = objects.figure.width;
+    const height = objects.figure.height;
     expect(paths).to.deep.equal([`M0,${height}L${width},0`]);
   });
 
@@ -125,8 +125,8 @@ describe('lines >', () => {
       .selectAll('.curve path.line')
       .nodes()
       .map((el) => el.getAttribute('d'));
-    const width = objects.figure.plotarea_width;
-    const height = objects.figure.plotarea_height;
+    const width = objects.figure.width;
+    const height = objects.figure.height;
     expect(paths).to.deep.equal([
       `M0,${height}L${width / 2},${height}L${width},0`,
       `M${width / 2},${height}L${width / 2},${height / 2}L${width},0`,
@@ -173,8 +173,8 @@ describe('lines >', () => {
       .selectAll('.curve path.line')
       .nodes()
       .map((el) => el.getAttribute('d'));
-    const width = objects.figure.plotarea_width;
-    const height = objects.figure.plotarea_height;
+    const width = objects.figure.width;
+    const height = objects.figure.height;
     expect(paths).to.deep.equal([
       `M0,${height}L${width / 2},${height}L${width},0`,
       `M${width / 2},${height}L${width / 2},${height / 2}L${width},0`,
@@ -219,8 +219,8 @@ describe('lines >', () => {
       .selectAll('.curve path.line')
       .nodes()
       .map((el) => el.getAttribute('d'));
-    const width = objects.figure.plotarea_width;
-    const height = objects.figure.plotarea_height;
+    const width = objects.figure.width;
+    const height = objects.figure.height;
 
     expect(paths).to.deep.equal([
       `M0,${height}L${width / 2},${height}L${width},0`,

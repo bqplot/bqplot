@@ -24,6 +24,7 @@ import {
   DOMWidgetView,
   ViewList,
 } from '@jupyter-widgets/base';
+import * as kiwi from 'kiwi.js';
 import { Scale, ScaleModel } from 'bqscales';
 
 import * as popperreference from './PopperReference';
@@ -34,10 +35,13 @@ import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
 import { Interaction } from './Interaction';
 import { FigureModel } from './FigureModel';
+import { Axis } from './Axis';
 
 interface IFigureSize {
   width: number;
   height: number;
+  x: number;
+  y: number;
 }
 
 export class Figure extends DOMWidgetView {
@@ -78,21 +82,150 @@ export class Figure extends DOMWidgetView {
   }
 
   protected getFigureSize(): IFigureSize {
-    const figureSize: IFigureSize = this.el.getBoundingClientRect();
-    const clientRectRatio = figureSize.width / figureSize.height;
+    const domSize: IFigureSize = this.el.getBoundingClientRect();
 
-    const minRatio: number = this.model.get('min_aspect_ratio');
-    const maxRatio: number = this.model.get('max_aspect_ratio');
+    if (!this.autoLayout) {
+      const clientRectRatio = domSize.width / domSize.height;
 
-    if (clientRectRatio < minRatio) {
-      // Too much vertical space: Keep horizontal space but compute height from min aspect ratio
-      figureSize.height = figureSize.width / minRatio;
-    } else if (clientRectRatio > maxRatio) {
-      // Too much horizontal space: Keep vertical space but compute width from max aspect ratio
-      figureSize.width = figureSize.height * maxRatio;
+      const minRatio: number = this.model.get('min_aspect_ratio');
+      const maxRatio: number = this.model.get('max_aspect_ratio');
+
+      if (clientRectRatio < minRatio) {
+        // Too much vertical space: Keep horizontal space but compute height from min aspect ratio
+        domSize.height = domSize.width / minRatio;
+      } else if (clientRectRatio > maxRatio) {
+        // Too much horizontal space: Keep vertical space but compute width from max aspect ratio
+        domSize.width = domSize.height * maxRatio;
+      }
+
+      return domSize;
     }
 
-    return figureSize;
+    let solver = new kiwi.Solver();
+    var width = new kiwi.Variable();
+    var height = new kiwi.Variable();
+
+    // calculate padding by summing up all auto sizes + fig_margins
+    var padding = { top: 0, bottom: 0, left: 0, right: 0 };
+    const fig_margin = this.model.get('fig_margin');
+    ['top', 'bottom', 'left', 'right'].forEach((side) => {
+      padding[side] = this.decorators[side].reduce((total, decorator) => {
+        decorator.setAutoOffset(total);
+        return total + decorator.calculateAutoSize();
+      }, 0);
+      padding[side] += fig_margin[side];
+    });
+
+    solver.addEditVariable(width, kiwi.Strength.strong);
+    solver.addEditVariable(height, kiwi.Strength.strong);
+    solver.suggestValue(width, domSize.width);
+    solver.suggestValue(height, domSize.height);
+
+    /*
+      We want the figure size to always be inside the dom element:
+        width + padding.left + padding.right <= domSize.width
+        width + padding.left + padding.right - domSize.width < 0
+      If we don't add these constraints, the width and height might actually grow
+    */
+    solver.addConstraint(
+      new kiwi.Constraint(
+        new kiwi.Expression(width, padding.left, padding.right, -domSize.width),
+        kiwi.Operator.Le
+      )
+    );
+    // and similarly for the height
+    solver.addConstraint(
+      new kiwi.Constraint(
+        new kiwi.Expression(
+          height,
+          padding.top,
+          padding.bottom,
+          -domSize.height
+        ),
+        kiwi.Operator.Le
+      )
+    );
+
+    /*
+      The y coordinate is the top padding plus half of the leftover space, such that we distribute the
+      leftover space equally above and below:
+      y = padding.top + (leftover_vertical)/2
+      y = padding.top + (domSize.height - height - padding.bottom - padding.top)/2
+      y - padding.top - domSize.height/2 + height/2 + padding.bottom/2 + padding.top/2 = 0
+      y - padding.top/2 - domSize.height/2 + height/2 + padding.bottom/2 = 0
+    */
+    var x = new kiwi.Variable();
+    var y = new kiwi.Variable();
+    solver.addConstraint(
+      new kiwi.Constraint(
+        new kiwi.Expression(
+          y,
+          -padding.top / 2,
+          -domSize.height / 2,
+          [0.5, height],
+          padding.bottom / 2
+        ),
+        kiwi.Operator.Le
+      )
+    );
+    // and analogous for x
+    solver.addConstraint(
+      new kiwi.Constraint(
+        new kiwi.Expression(
+          x,
+          -padding.left / 2,
+          -domSize.width / 2,
+          [0.5, width],
+          padding.right / 2
+        ),
+        kiwi.Operator.Le
+      )
+    );
+
+    /*
+      Definition of aspect ratio: aspect_ratio == width/height
+      min_aspect_ratio leads to the constrain:
+        width/height >= min_aspect_ratio
+        width >= min_aspect_ratio*height
+        width - min_aspect_ratio*height >= 0
+        -width + min_aspect_ratio*height <= 0
+      max_aspect_ratio leads to the constrain:
+        width/height <= max_aspect_ratio
+        width <= max_aspect_ratio*height
+        width - max_aspect_ratio*height <= 0
+        -width + max_aspect_ratio*height >= 0
+    Useful resources
+      https://github.com/IjzerenHein/kiwi.js/blob/master/docs/Kiwi.md
+      https://github.com/IjzerenHein/kiwi.js/blob/master/docs/Kiwi.md#module_kiwi..Expression
+    */
+    solver.addConstraint(
+      new kiwi.Constraint(
+        new kiwi.Expression(
+          [-1, width],
+          [this.model.get('min_aspect_ratio'), height]
+        ),
+        kiwi.Operator.Le
+      )
+    );
+    solver.addConstraint(
+      new kiwi.Constraint(
+        new kiwi.Expression(
+          [-1, width],
+          [this.model.get('max_aspect_ratio'), height]
+        ),
+        kiwi.Operator.Ge
+      )
+    );
+
+    // Solve the constraints
+    solver.updateVariables();
+
+    return {
+      width: width.value(),
+      height: height.value(),
+      x: x.value(),
+      y: y.value(),
+    };
   }
 
   render() {
@@ -108,6 +241,8 @@ export class Figure extends DOMWidgetView {
 
     this.width = figureSize.width;
     this.height = figureSize.height;
+    this.offsetX = figureSize.x;
+    this.offsetY = figureSize.y;
 
     this.id = uuid();
 
@@ -126,29 +261,29 @@ export class Figure extends DOMWidgetView {
     this.figure_padding_x = this.model.get('padding_x');
     this.figure_padding_y = this.model.get('padding_y');
     this.clip_id = 'clip_path_' + this.id;
-    this.margin = this.model.get('fig_margin');
 
-    this.update_plotarea_dimensions();
     // we hide it when the plot area is too small
-    if (this.plotarea_width < 1 || this.plotarea_height < 1) {
+    if (this.plotareaWidth < 1 || this.plotareaHeight < 1) {
       this.el.style.visibility = 'hidden';
     } else {
       this.el.style.visibility = '';
     }
     // this.fig is the top <g> element to be impacted by a rescaling / change of margins
 
-    this.fig = this.svg
-      .append('g')
-      .attr(
+    this.fig = this.svg.append('g');
+    this.fig_background = this.svg_background.append('g');
+
+    if (!this.autoLayout) {
+      this.fig.attr(
         'transform',
         'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
-    this.fig_background = this.svg_background
-      .append('g')
-      .attr(
+      this.fig_background.attr(
         'transform',
         'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
+    }
+
     this.tooltip_div = d3
       .select(document.createElement('div'))
       .attr('class', 'tooltip_div');
@@ -167,8 +302,8 @@ export class Figure extends DOMWidgetView {
       .attr('class', 'plotarea_background')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', this.plotarea_width)
-      .attr('height', this.plotarea_height)
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight)
       .style('pointer-events', 'inherit');
     applyStyles(this.bg, this.model.get('background_style'));
 
@@ -177,8 +312,8 @@ export class Figure extends DOMWidgetView {
       .attr('class', 'plotarea_events')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', this.plotarea_width)
-      .attr('height', this.plotarea_height)
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight)
       .style('pointer-events', 'inherit');
     this.bg_events.on('click', () => {
       this.trigger('bg_clicked');
@@ -229,15 +364,15 @@ export class Figure extends DOMWidgetView {
       .append('rect')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', this.plotarea_width)
-      .attr('height', this.plotarea_height);
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
 
     this.title = this.fig
       .append('text')
       .attr('class', 'mainheading')
-      .attr('x', 0.5 * this.plotarea_width)
-      .attr('y', -(this.margin.top / 2.0))
-      .attr('dy', '1em');
+      .attr('x', 0.5 * this.plotareaWidth)
+      .attr('y', this.autoLayout ? 0 : -this.margin.top / 2.0)
+      .attr('dy', this.autoLayout ? '0em' : '1em');
     applyStyles(this.title, this.model.get('title_style'));
 
     this.title.text(this.model.get('title'));
@@ -257,8 +392,8 @@ export class Figure extends DOMWidgetView {
 
     this.webGLCanvas.style.left = `${this.margin.left}px`;
     this.webGLCanvas.style.top = `${this.margin.top}px`;
-    this.webGLCanvas.width = this.plotarea_width;
-    this.webGLCanvas.height = this.plotarea_height;
+    this.webGLCanvas.width = this.plotareaWidth;
+    this.webGLCanvas.height = this.plotareaHeight;
 
     this.el.insertBefore(this.webGLCanvas, this.svg.node());
 
@@ -282,7 +417,7 @@ export class Figure extends DOMWidgetView {
         this._initial_marks_created_resolve();
       });
 
-    this.axis_views = new ViewList(this.add_axis, null, this);
+    this.axis_views = new ViewList(this.add_axis, this.remove_axis, this);
     const axis_views_updated = this.axis_views.update(this.model.get('axes'));
 
     // TODO: move to the model
@@ -304,6 +439,7 @@ export class Figure extends DOMWidgetView {
       'change:axes',
       (model, value, options) => {
         this.axis_views.update(value);
+        this.trigger('margin_updated');
       },
       this
     );
@@ -342,6 +478,7 @@ export class Figure extends DOMWidgetView {
     this.once('remove', () => {
       window.removeEventListener('resize', this.debouncedRelayout);
     });
+    this.updateDecorators();
 
     this.toolbar_div = this.create_toolbar();
     if (this.model.get('display_toolbar')) {
@@ -439,7 +576,7 @@ export class Figure extends DOMWidgetView {
           | d3.ScaleTime<Date, number>
           | d3.ScaleLogarithmic<number, number>
       ).clamp(true);
-      this.scale_x.setRange([0, this.plotarea_width]);
+      this.scale_x.setRange([0, this.plotareaWidth]);
     });
 
     const y_scale_promise = this.create_child_view(
@@ -452,7 +589,7 @@ export class Figure extends DOMWidgetView {
           | d3.ScaleTime<Date, number>
           | d3.ScaleLogarithmic<number, number>
       ).clamp(true);
-      this.scale_y.setRange([this.plotarea_height, 0]);
+      this.scale_y.setRange([this.plotareaHeight, 0]);
     });
     return Promise.all([x_scale_promise, y_scale_promise]);
   }
@@ -475,19 +612,19 @@ export class Figure extends DOMWidgetView {
         this.xPaddingArr[scale_id] !== undefined
           ? this.xPaddingArr[scale_id]
           : 0;
-      const fig_padding = this.plotarea_width * this.figure_padding_x;
+      const fig_padding = this.plotareaWidth * this.figure_padding_x;
       return [
         fig_padding + scale_padding,
-        this.plotarea_width - fig_padding - scale_padding,
+        this.plotareaWidth - fig_padding - scale_padding,
       ];
     } else if (direction === 'y') {
       const scale_padding =
         this.yPaddingArr[scale_id] !== undefined
           ? this.yPaddingArr[scale_id]
           : 0;
-      const fig_padding = this.plotarea_height * this.figure_padding_y;
+      const fig_padding = this.plotareaHeight * this.figure_padding_y;
       return [
-        this.plotarea_height - scale_padding - fig_padding,
+        this.plotareaHeight - scale_padding - fig_padding,
         scale_padding + fig_padding,
       ];
     }
@@ -495,39 +632,29 @@ export class Figure extends DOMWidgetView {
 
   range(direction: 'x' | 'y'): [number, number] {
     if (direction === 'x') {
-      return [0, this.plotarea_width];
+      return [0, this.plotareaWidth];
     } else if (direction === 'y') {
-      return [this.plotarea_height, 0];
+      return [this.plotareaHeight, 0];
     }
   }
 
-  get_mark_plotarea_height(scaleModel: ScaleModel) {
-    if (!scaleModel.get('allow_padding')) {
-      return this.plotarea_height;
+  async updateDecorators() {
+    if (this.autoLayout) {
+      const axisViews = await Promise.all(this.axis_views.views);
+      ['top', 'bottom', 'left', 'right'].forEach((side) => {
+        this.decorators[side] = [];
+      });
+      axisViews.forEach((view) => {
+        this.decorators[(<Axis>(<unknown>view)).model.get('side')].push(view);
+      });
+      // for the title we use a proxy with the same interface
+      this.decorators.top.push({
+        calculateAutoSize: () =>
+          this.title ? this.title.node().getBBox().height : 0,
+        setAutoOffset: (padding) => this.title.attr('y', padding),
+      });
+      this.debouncedRelayout();
     }
-    const scale_id = scaleModel.model_id;
-    const scale_padding =
-      this.yPaddingArr[scale_id] !== undefined ? this.yPaddingArr[scale_id] : 0;
-    return (
-      this.plotarea_height * (1 - this.figure_padding_y) -
-      scale_padding -
-      scale_padding
-    );
-  }
-
-  get_mark_plotarea_width(scaleModel: ScaleModel) {
-    if (!scaleModel.get('allow_padding')) {
-      return this.plotarea_width;
-    }
-
-    const scale_id = scaleModel.model_id;
-    const scale_padding =
-      this.xPaddingArr[scale_id] !== undefined ? this.xPaddingArr[scale_id] : 0;
-    return (
-      this.plotarea_width * (1 - this.figure_padding_x) -
-      scale_padding -
-      scale_padding
-    );
   }
 
   async add_axis(model: AxisModel) {
@@ -539,7 +666,27 @@ export class Figure extends DOMWidgetView {
       view.trigger('displayed');
     });
 
+    // the offset can cause the decorator to not be part of the auto layout
+    view.listenTo(
+      model,
+      'change:orientation change:side change:offset change:label_offset',
+      () => this.updateDecorators()
+    );
+    view.listenTo(model, 'change:label change:tick_rotate', () => {
+      this.debouncedRelayout();
+    });
+    this.updateDecorators();
+
     return view;
+  }
+
+  remove_axis(view) {
+    if (this.el.parentNode) {
+      // if the view is removed, we have a size of 0x0, and don't want to trigger
+      // a relayout
+      this.updateDecorators();
+    }
+    this.fig_axes.node().removeChild(view.el);
   }
 
   remove_from_padding_dict(dict, mark_view: Mark, scale_model: ScaleModel) {
@@ -735,11 +882,6 @@ export class Figure extends DOMWidgetView {
     this.trigger('margin_updated');
   }
 
-  update_plotarea_dimensions() {
-    this.plotarea_width = this.width - this.margin.left - this.margin.right;
-    this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
-  }
-
   processPhosphorMessage(msg) {
     super.processPhosphorMessage.apply(this, arguments);
 
@@ -772,11 +914,11 @@ export class Figure extends DOMWidgetView {
 
     this.width = figureSize.width;
     this.height = figureSize.height;
-    // update ranges
-    this.margin = this.model.get('fig_margin');
-    this.update_plotarea_dimensions();
+    this.offsetX = figureSize.x;
+    this.offsetY = figureSize.y;
+
     // we hide it when the plot area is too small
-    if (this.plotarea_width < 1 || this.plotarea_height < 1) {
+    if (this.plotareaWidth < 1 || this.plotareaHeight < 1) {
       this.el.style.visibility = 'hidden';
       return; // no need to continue setting properties, which can only produce errors in the js console
     } else {
@@ -784,43 +926,59 @@ export class Figure extends DOMWidgetView {
     }
 
     if (this.scale_x !== undefined && this.scale_x !== null) {
-      this.scale_x.setRange([0, this.plotarea_width]);
+      this.scale_x.setRange([0, this.plotareaWidth]);
     }
 
     if (this.scale_y !== undefined && this.scale_y !== null) {
-      this.scale_y.setRange([this.plotarea_height, 0]);
+      this.scale_y.setRange([this.plotareaHeight, 0]);
     }
 
     // transform figure
-    this.fig.attr(
-      'transform',
-      'translate(' + this.margin.left + ',' + this.margin.top + ')'
-    );
-    this.fig_background.attr(
-      'transform',
-      'translate(' + this.margin.left + ',' + this.margin.top + ')'
-    );
-    applyAttrs(this.title, {
-      x: 0.5 * this.plotarea_width,
-      y: -(this.margin.top / 2.0),
-      dy: '1em',
-    });
+    if (this.autoLayout) {
+      this.fig.attr(
+        'transform',
+        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+      );
+      this.fig_background.attr(
+        'transform',
+        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+      );
+
+      applyAttrs(this.title, {
+        x: 0.5 * this.width,
+      });
+    } else {
+      this.fig.attr(
+        'transform',
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+      );
+      this.fig_background.attr(
+        'transform',
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+      );
+
+      applyAttrs(this.title, {
+        x: 0.5 * this.plotareaWidth,
+        y: -(this.margin.top / 2.0),
+        dy: '1em',
+      });
+    }
 
     this.bg
-      .attr('width', this.plotarea_width)
-      .attr('height', this.plotarea_height);
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
     this.bg_events
-      .attr('width', this.plotarea_width)
-      .attr('height', this.plotarea_height);
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
 
     this.clip_path
-      .attr('width', this.plotarea_width)
-      .attr('height', this.plotarea_height);
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
 
     this.webGLCanvas.style.left = `${this.margin.left}px`;
     this.webGLCanvas.style.top = `${this.margin.top}px;`;
-    this.webGLCanvas.width = this.plotarea_width;
-    this.webGLCanvas.height = this.plotarea_height;
+    this.webGLCanvas.width = this.plotareaWidth;
+    this.webGLCanvas.height = this.plotareaHeight;
 
     for (const hook in this.relayoutHooks) {
       this.relayoutHooks[hook]();
@@ -920,8 +1078,8 @@ export class Figure extends DOMWidgetView {
   ) {
     let x_start = 0;
     let y_start = 0;
-    const fig_width = this.plotarea_width;
-    const fig_height = this.plotarea_height;
+    const fig_width = this.plotareaWidth;
+    const fig_height = this.plotareaHeight;
 
     switch (legend_location) {
       case 'top':
@@ -988,6 +1146,7 @@ export class Figure extends DOMWidgetView {
 
   update_title(model, title) {
     this.title.text(this.model.get('title'));
+    this.relayout();
   }
 
   remove() {
@@ -1065,8 +1224,8 @@ export class Figure extends DOMWidgetView {
     // Create standalone SVG string
     const node_background: any = this.svg_background.node();
     const node_foreground: any = this.svg.node();
-    // const width = this.plotarea_width;
-    // const height = this.plotarea_height;
+    // const width = this.plotareaWidth;
+    // const height = this.plotareaHeight;
 
     // Creates a standalone SVG string from an inline SVG element
     // containing all the computed style attributes.
@@ -1285,8 +1444,13 @@ export class Figure extends DOMWidgetView {
     toolbar.node().appendChild(save);
 
     this.el.appendChild(toolbar.node());
-    toolbar.node().style.top = `${this.margin.top / 2.0}px`;
-    toolbar.node().style.right = `${this.margin.right}px`;
+    if (this.autoLayout) {
+      toolbar.node().style.top = `${this.offsetY / 2.0}px`;
+      toolbar.node().style.right = `${this.offsetX}px`;
+    } else {
+      toolbar.node().style.top = `${this.margin.top / 2.0}px`;
+      toolbar.node().style.right = `${this.margin.right}px`;
+    }
     toolbar.node().style.visibility = 'hidden';
     toolbar.node().style.opacity = '0';
     this.el.addEventListener('mouseenter', () => {
@@ -1299,6 +1463,26 @@ export class Figure extends DOMWidgetView {
     });
     toolbar.node().style.display = 'none';
     return toolbar;
+  }
+
+  get autoLayout(): boolean {
+    return this.model.get('auto_layout');
+  }
+
+  get margin(): { top: number; bottom: number; left: number; right: number } {
+    return this.model.get('fig_margin');
+  }
+
+  get plotareaWidth(): number {
+    return this.autoLayout
+      ? this.width
+      : this.width - this.margin.left - this.margin.right;
+  }
+
+  get plotareaHeight(): number {
+    return this.autoLayout
+      ? this.height
+      : this.height - this.margin.top - this.margin.bottom;
   }
 
   axis_views: ViewList<DOMWidgetView>;
@@ -1315,12 +1499,11 @@ export class Figure extends DOMWidgetView {
   figure_padding_x: number;
   figure_padding_y: number;
   height: number;
+  offsetX: number;
+  offsetY: number;
   interaction_view: Interaction;
   interaction: d3.Selection<SVGGElement, any, any, any>;
-  margin: { top: number; bottom: number; left: number; right: number };
   mark_views: ViewList<Mark>;
-  plotarea_height: number;
-  plotarea_width: number;
   popper_reference: popper.ReferenceObject;
   popper: popper;
   scale_x: Scale;
@@ -1335,6 +1518,7 @@ export class Figure extends DOMWidgetView {
   xPaddingArr: { [id: string]: number };
   y_pad_dict: { [id: string]: number };
   yPaddingArr: { [id: string]: number };
+  decorators = { top: [], bottom: [], left: [], right: [] };
 
   public webGLCanvas: HTMLCanvasElement;
   public webGLContext: WebGLRenderingContext | null;

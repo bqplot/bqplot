@@ -83,6 +83,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "is-typedarray": "^1.0.0",
+    "kiwi.js": "^1.1.2",
     "popper.js": "^1.0.0",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
