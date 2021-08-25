@@ -1006,12 +1006,6 @@ export class MarketMap extends Figure {
           end_points.push(e);
         });
 
-        /*
-                console.log("new set");
-                end_points.forEach(function(point) { console.log(point); });
-                console.log("end set");
-               */
-
         return end_points;
       }
       elem_remaining = elem_remaining - elem_filled;
@@ -1079,12 +1073,6 @@ export class MarketMap extends Figure {
             end_points.push(d);
           }
         );
-
-        /*
-                console.log("new set");
-                end_points.forEach(function(point) { console.log(point); });
-                console.log("end set");
-               */
 
         return end_points;
       }
@@ -1225,12 +1213,6 @@ export class MarketMap extends Figure {
         end_points.push(d);
       });
     }
-
-    /*
-        console.log("new set");
-        end_points.forEach(function(point) { console.log(point); });
-        console.log("end set");
-       */
 
     return end_points;
   }

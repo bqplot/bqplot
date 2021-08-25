@@ -475,19 +475,12 @@ export class Figure extends DOMWidgetView {
       return this.range(direction);
     }
     const scale_id = scale_model.model_id;
-    // console.log('scale', scale_model)
-    // console.log('scale id', scale_model.model_id)
-    console.log('\n');
-    console.log('this.xPaddingArr', this.xPaddingArr);
-    console.log('this.yPaddingArr', this.yPaddingArr);
-    console.log('scale id', scale_id);
 
     if (direction === 'x') {
       const scale_padding =
         this.xPaddingArr[scale_id] !== undefined
           ? this.xPaddingArr[scale_id]
           : 0;
-      // console.log('scale_padding', scale_padding)
       const fig_padding = this.plotarea_width * this.figure_padding_x;
       return [
         fig_padding + scale_padding,
@@ -574,8 +567,6 @@ export class Figure extends DOMWidgetView {
       dict[scale_id] = {};
     }
     dict[scale_id][mark_view.model.model_id + '_' + mark_view.cid] = value;
-
-    console.log('update_padding_dict', dict);
   }
 
   mark_scales_updated(view: Mark) {
