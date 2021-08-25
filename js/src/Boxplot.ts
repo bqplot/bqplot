@@ -155,7 +155,7 @@ export class Boxplot extends Mark {
 
     // null box_width means auto calculated box width
     if (!width) {
-      const plotWidth = this.parent.plotarea_width;
+      const plotWidth = this.parent.plotareaWidth;
       const maxWidth = plotWidth / 10.0;
       width = plotWidth / (this.model.mark_data.length + 1) / 1.5;
       width = Math.min(width, maxWidth);

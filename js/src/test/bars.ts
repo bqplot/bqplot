@@ -40,7 +40,7 @@ describe('bars >', () => {
       .selectAll('.bargroup rect.bar')
       .nodes()
       .map((el) => Number(el.getAttribute('height')));
-    const height = objects.figure.plotarea_height;
+    const height = objects.figure.height;
     expect(heights).to.deep.equal([(height * 2) / 3, height]);
   });
 
@@ -77,7 +77,7 @@ describe('bars >', () => {
       .selectAll('.bargroup rect.bar')
       .nodes()
       .map((el) => Math.round(Number(el.getAttribute('height'))));
-    const height = objects.figure.plotarea_height;
+    const height = objects.figure.height;
     const h0 = Math.round((height * 2) / 3);
     const h2 = Math.round(height);
     const h3 = Math.round((height * 2.5) / 3);
@@ -123,7 +123,7 @@ describe('bars >', () => {
       .selectAll('.bargroup rect.bar')
       .nodes()
       .map((el) => Math.round(Number(el.getAttribute('height'))));
-    const height = objects.figure.plotarea_height;
+    const height = objects.figure.height;
     const h0 = Math.round((height * 2) / 3);
     const h2 = Math.round(height);
     const h3 = Math.round((height * 2.5) / 3);

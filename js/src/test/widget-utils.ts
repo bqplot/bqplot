@@ -58,7 +58,7 @@ export async function create_widget(
   return { model: model, view: view };
 }
 
-export async function create_figure_scatter(manager, x, y, log = false) {
+export async function create_figure_scatter(manager, x, y, log = false, autoLayout = false) {
   const layout = await create_model(
     manager,
     '@jupyter-widgets/base',
@@ -145,6 +145,7 @@ export async function create_figure_scatter(manager, x, y, log = false) {
       figure_padding_y: 0,
       fig_margin: { bottom: 0, left: 0, right: 0, top: 0 },
       marks: [scatterModel.toJSON()],
+      auto_layout: autoLayout,
     });
   } catch (e) {
     console.error('error', e);

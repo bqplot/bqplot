@@ -32,8 +32,7 @@ class ColorBar extends Axis {
     this.bar_height = 20;
     this.d3el
       .attr('class', 'ColorBar')
-      .attr('display', this.model.get('visible') ? 'inline' : 'none')
-      .attr('transform', this.get_topg_transform());
+      .attr('display', this.model.get('visible') ? 'inline' : 'none');
 
     this.ordinal = false;
     this.num_ticks = this.model.get('num_ticks');
@@ -295,6 +294,28 @@ class ColorBar extends Axis {
   }
 
   get_topg_transform() {
+    if (this.parent.autoLayout) {
+      if (this.vertical) {
+        if (this.side === 'right') {
+          return (
+            'translate(' + String(this.parent.width + this.autoOffset) + ', 0)'
+          );
+        }
+        return (
+          'translate(' + String(-this.bar_height - this.autoOffset) + ', 0)'
+        );
+      } else {
+        if (this.side === 'top') {
+          return (
+            'translate(0, ' + String(-this.bar_height - this.autoOffset) + ')'
+          );
+        }
+        return (
+          'translate(0, ' + String(this.parent.height + this.autoOffset) + ')'
+        );
+      }
+    }
+
     const em = 12;
     if (this.vertical) {
       if (this.side === 'right') {
@@ -337,6 +358,19 @@ class ColorBar extends Axis {
         ')'
       );
     }
+  }
+
+  calculateAutoSize() {
+    const box = this.g_axisline.node().getBoundingClientRect();
+    const side = this.model.get('side');
+    if (side == 'left' || side == 'right') {
+      return box.width + this.bar_height;
+    }
+    if (side == 'bottom' || side == 'top') {
+      return box.height + this.bar_height;
+    }
+    const axisWidth = this.g_axisline.node().getBoundingClientRect().width;
+    return this.bar_height + axisWidth;
   }
 
   get_label_transform() {

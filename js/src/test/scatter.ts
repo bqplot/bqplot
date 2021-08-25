@@ -35,8 +35,8 @@ describe('scatter >', () => {
       .selectAll('.object_grp')
       .nodes()
       .map((el) => el.getAttribute('transform'));
-    const width = objects.figure.plotarea_width;
-    const height = objects.figure.plotarea_height;
+    const width = objects.figure.width;
+    const height = objects.figure.height;
     expect(transforms).to.deep.equal([
       `translate(0, ${height})`,
       `translate(${width}, 0)`,
