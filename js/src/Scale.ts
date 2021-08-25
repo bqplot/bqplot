@@ -66,7 +66,7 @@ export class Scale extends widgets.WidgetView {
     | d3.ScaleOrdinal<string, number>
     | d3.ScaleBand<string>
     | d3.ScaleLinear<number, number>
-    | d3.ScaleLogarithmic<number, number>;
+    | d3.ScaleSymLog<number, number>;
 
   // Overriding super class
   model: widgets.WidgetModel & ScaleModel;

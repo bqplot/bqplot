@@ -68,7 +68,7 @@ export class LinearScale extends Scale {
   scale:
     | d3.ScaleLinear<number, number>
     | d3.ScaleTime<Date, number>
-    | d3.ScaleLogarithmic<number, number>;
+    | d3.ScaleSymLog<number, number>;
 
   model: LinearScaleModel;
 }
