@@ -15,27 +15,17 @@
 
 import { WidgetView } from '@jupyter-widgets/base';
 import * as d3 from 'd3';
-// const d3 =Object.assign({}, require("d3-axis"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-time"), require("d3-time-format"));
 import * as utils from './utils';
 import * as _ from 'underscore';
 import { applyAttrs, applyStyles } from './utils';
 import { Figure } from './Figure';
 import { Scale } from './Scale';
-import { isOrdinalScale } from './OrdinalScale';
 import { isDateScale } from './DateScale';
 import { isLogScale } from './LogScale';
 import { isLinearScale } from './LinearScale';
 import { isDateColorScale } from './DateColorScale';
-import { isColorScale } from './ColorScale';
+import { isOrdinalScale } from './OrdinalScale';
 
-// Polyfill for Math.log10 in IE11
-Math.log10 =
-  Math.log10 ||
-  function (x) {
-    return Math.log(x) / Math.LN10;
-  };
-
-const DATESCALE_WIDTH_THRESHOLD = 500;
 const UNITS_ARRAY = ['em', 'ex', 'px'];
 
 export class Axis extends WidgetView {
@@ -56,7 +46,6 @@ export class Axis extends WidgetView {
 
     Promise.all([scale_promise, offset_promise]).then(() => {
       this.create_listeners();
-      this.tick_format = this.generate_tick_formatter();
       this.set_scales_range();
       this.append_axis();
     });
@@ -126,9 +115,6 @@ export class Axis extends WidgetView {
   }
 
   set_tick_values(animate?: boolean) {
-    // Sets specific tick values from "tick_values" parameter
-
-    let useticks = [];
     const tick_values = this.model.get('tick_values');
     const num_ticks = this.model.get('num_ticks');
 
@@ -137,68 +123,12 @@ export class Axis extends WidgetView {
       tick_values !== null &&
       tick_values.length > 0
     ) {
-      this.axis.tickValues(this.get_ticks_from_array_or_length(tick_values));
+      this.axis.tickValues(tick_values);
     } else if (num_ticks !== undefined && num_ticks !== null) {
-      this.axis.tickValues(this.get_ticks_from_array_or_length());
-    } else {
-      if (isDateScale(this.axis_scale)) {
-        // Reduce number of suggested ticks if figure width is below the
-        // threshold. Note: "undefined" will result in the D3 default
-        // setting
-        const numDateTicks =
-          this.width < DATESCALE_WIDTH_THRESHOLD ? 5 : undefined;
-        const scale = this.axis_scale.scale;
-        this.axis.tickValues(scale.ticks(numDateTicks));
-      } else if (isOrdinalScale(this.axis_scale)) {
-        this.axis.tickValues(this.axis_scale.scale.domain());
-      } else if (isLogScale(this.axis_scale)) {
-        let i, r;
-        const scale = this.axis_scale.scale;
-        const allticks = scale.ticks();
-        const oom = Math.abs(Math.log10(scale.domain()[1] / scale.domain()[0]));
-        if (oom < 2) {
-          this.axis.tickValues(allticks);
-        } else if (oom < 7) {
-          useticks = [];
-          for (i = 0; i < allticks.length; i++) {
-            r = Math.abs(Math.log10(allticks[i]) % 1);
-            if (
-              Math.abs(r) < 0.001 ||
-              Math.abs(r - 1) < 0.001 ||
-              Math.abs(r - 0.30103) < 0.001 ||
-              Math.abs(r - 0.69897) < 0.001
-            ) {
-              useticks.push(allticks[i]);
-            }
-          }
-          this.axis.tickValues(useticks);
-        } else {
-          useticks = [];
-          const s = Math.round(oom / 10);
-          for (i = 0; i < allticks.length; i++) {
-            r = Math.abs(Math.log10(allticks[i]) % s);
-            if (Math.abs(r) < 0.001 || Math.abs(r - s) < 0.001) {
-              useticks.push(allticks[i]);
-            }
-          }
-          this.axis.tickValues(useticks);
-        }
-      } else if (
-        isLinearScale(this.axis_scale) ||
-        isColorScale(this.axis_scale)
-      ) {
-        this.axis.tickValues(this.axis_scale.scale.ticks());
-      }
+      // Here we don't rely on this.axis.ticks, because d3 does not always (almost never) respect it
+      this.axis.tickValues(this.compute_tick_values(num_ticks));
     }
-    if (
-      this.model.get('tick_format') === null ||
-      this.model.get('tick_format') === undefined
-    ) {
-      if (!isOrdinalScale(this.axis_scale)) {
-        this.tick_format = this.guess_tick_format(this.axis.tickValues());
-      }
-    }
-    this.axis.tickFormat(this.tick_format);
+    this.axis.tickFormat(this.get_formatter());
 
     if (this.g_axisline) {
       this.g_axisline
@@ -212,9 +142,160 @@ export class Axis extends WidgetView {
     }
   }
 
+  compute_tick_values(num_ticks) {
+    const scale_domain = this.axis_scale.scale.domain();
+
+    if (isDateScale(this.axis_scale) || isDateColorScale(this.axis_scale)) {
+      const epoch_times = (scale_domain as Date[]).map((date: Date) =>
+        date.getTime()
+      );
+      const step =
+        (epoch_times[epoch_times.length - 1] - epoch_times[0]) /
+        (num_ticks - 1);
+
+      const range_in_times = _.range(
+        epoch_times[0],
+        epoch_times[epoch_times.length - 1] + step * 0.5,
+        step
+      );
+      return range_in_times.map((elem) => new Date(elem));
+    }
+
+    if (isOrdinalScale(this.axis_scale)) {
+      if (num_ticks >= scale_domain.length) {
+        return scale_domain;
+      }
+
+      // The ticks are only a subset of the domain
+      const indices = _.range(
+        0,
+        scale_domain.length,
+        scale_domain.length / num_ticks
+      );
+      return indices.map((index) => scale_domain[Math.floor(index)]);
+    }
+
+    // Continuous scale
+    // @ts-ignore
+    const step = (scale_domain[1] - scale_domain[0]) / (num_ticks - 1);
+    // @ts-ignore
+    return _.range(scale_domain[0], scale_domain[1] + step * 0.5, step);
+  }
+
+  get_formatter() {
+    const tick_format = this.model.get('tick_format');
+
+    if (tick_format === null) {
+      return this.default_formatter();
+    }
+
+    if (isDateScale(this.axis_scale) || isDateColorScale(this.axis_scale)) {
+      return d3.utcFormat(tick_format);
+    }
+
+    if (isOrdinalScale(this.axis_scale)) {
+      //TODO: This may not be the best way to do this. We can
+      //check the instance of the elements in the domain and
+      //apply the format depending on that.
+      if (utils.is_valid_time_format(tick_format)) {
+        return d3.utcFormat(tick_format);
+      }
+    }
+
+    return d3.format(tick_format);
+  }
+
+  default_formatter() {
+    if (isDateScale(this.axis_scale) || isDateColorScale(this.axis_scale)) {
+      return this.default_date_formatter();
+    }
+
+    if (isOrdinalScale(this.axis_scale)) {
+      return (d) => d.toString();
+    }
+
+    // Continuous scale
+    const scale_domain = this.axis_scale.scale.domain() as number[];
+    const min = Math.min(Math.abs(scale_domain[0]), Math.abs(scale_domain[1]));
+    const max = Math.max(Math.abs(scale_domain[0]), Math.abs(scale_domain[1]));
+    if (min <= 1e-4 || max >= 1e6) {
+      return d3.format('.2e');
+    }
+  }
+
+  default_date_formatter() {
+    const scale_domain = this.axis_scale.scale.domain() as number[];
+    const diff = scale_domain[1] - scale_domain[0];
+
+    const format_millisecond = d3.utcFormat('.%L'),
+      format_second = d3.utcFormat(':%S'),
+      format_minute = d3.utcFormat('%I:%M'),
+      format_hour = d3.utcFormat('%I %p'),
+      format_day = d3.utcFormat('%b %d'),
+      format_month = d3.utcFormat('%b %Y'),
+      format_year = d3.utcFormat('%Y');
+
+    return (date) => {
+      let div = 1000;
+      if (Math.floor(diff / div) === 0) {
+        //diff is less than a second
+        if (d3.utcSecond(date) < date) {
+          return format_millisecond(date);
+        } else if (d3.utcMinute(date) < date) {
+          return format_second(date);
+        } else {
+          return format_minute(date);
+        }
+      } else if (Math.floor(diff / (div *= 60)) === 0) {
+        //diff is less than a minute
+        if (d3.utcMinute(date) < date) {
+          return format_second(date);
+        } else {
+          return format_minute(date);
+        }
+      } else if (Math.floor(diff / (div *= 60)) === 0) {
+        // diff is less than an hour
+        if (d3.utcHour(date) < date) {
+          return format_minute(date);
+        } else {
+          return format_hour(date);
+        }
+      } else if (Math.floor(diff / (div *= 24)) === 0) {
+        //diff is less than a day
+        if (d3.utcDay(date) < date) {
+          return format_hour(date);
+        } else {
+          return format_day(date);
+        }
+      } else if (Math.floor(diff / (div *= 27)) === 0) {
+        //diff is less than a month
+        if (d3.utcMonth(date) < date) {
+          return format_day(date);
+        } else {
+          return format_month(date);
+        }
+      } else if (Math.floor(diff / (div *= 12)) === 0) {
+        //diff is less than a year
+        if (d3.utcMonth(date) < date) {
+          return format_day(date);
+        } else {
+          return format_month(date);
+        }
+      } else {
+        //diff is more than a year
+        if (d3.utcMonth(date) < date) {
+          return format_day(date);
+        } else if (d3.utcYear(date) < date) {
+          return format_month(date);
+        } else {
+          return format_year(date);
+        }
+      }
+    };
+  }
+
   tickformat_changed() {
-    this.tick_format = this.generate_tick_formatter();
-    this.axis.tickFormat(this.tick_format);
+    this.axis.tickFormat(this.get_formatter());
     if (this.g_axisline) {
       this.g_axisline.call(this.axis);
     }
@@ -276,37 +357,6 @@ export class Axis extends WidgetView {
         : this.parent.range('x');
 
       this.offset_scale.expand_domain(initial_range, target_range);
-    }
-  }
-
-  generate_tick_formatter() {
-    if (isDateScale(this.axis_scale) || isDateColorScale(this.axis_scale)) {
-      if (this.model.get('tick_format')) {
-        return d3.utcFormat(this.model.get('tick_format'));
-      } else {
-        return this.guess_tick_format();
-      }
-    } else if (isOrdinalScale(this.axis_scale)) {
-      const tick_format = this.model.get('tick_format');
-      if (tick_format) {
-        //TODO: This may not be the best way to do this. We can
-        //check the instance of the elements in the domain and
-        //apply the format depending on that.
-        if (utils.is_valid_time_format(tick_format)) {
-          return d3.utcFormat(tick_format);
-        } else {
-          return d3.format(tick_format);
-        }
-      }
-      return (d) => {
-        return d;
-      };
-    } else {
-      // linear or log scale
-      if (this.model.get('tick_format')) {
-        return d3.format(this.model.get('tick_format'));
-      }
-      return this.guess_tick_format();
     }
   }
 
@@ -700,58 +750,6 @@ export class Axis extends WidgetView {
     this.d3el.style('display', visible ? 'inline' : 'none');
   }
 
-  get_ticks_from_array_or_length(data_array?: any[]) {
-    // This function is to be called when the ticks are passed explicitly
-    // or the number of ticks to be drawn.
-    // Have to do different things based on the type of the scale.
-    // If an array is passed, then just scale and return equally spaced
-    // points in the array. This is the way it is done for ordinal
-    // scales.
-    let step, max;
-    const num_ticks = this.model.get('num_ticks');
-
-    if (isOrdinalScale(this.axis_scale)) {
-      data_array = this.axis_scale.scale.domain();
-    }
-    if (num_ticks !== undefined && num_ticks !== null && num_ticks < 2) {
-      return [];
-    }
-    if (data_array) {
-      if (
-        num_ticks == undefined ||
-        num_ticks == null ||
-        data_array.length <= num_ticks
-      ) {
-        return data_array;
-      } else {
-        step = Math.floor(data_array.length / (num_ticks - 1));
-        const indices = _.range(0, data_array.length, step);
-        return indices.map((index) => {
-          return data_array[index];
-        });
-      }
-    }
-    const scale_range = this.axis_scale.scale.domain();
-    const max_index = this.axis_scale.scale.domain().length - 1;
-    step =
-      ((scale_range[max_index] as any) - (scale_range[0] as any)) /
-      (num_ticks - 1);
-    if (isDateScale(this.axis_scale) || isDateColorScale(this.axis_scale)) {
-      //For date scale, the dates have to be converted into milliseconds
-      //since epoch time and then back.
-      scale_range[0] = (scale_range[0] as Date).getTime();
-      scale_range[max_index] = (scale_range[max_index] as Date).getTime();
-      max = (scale_range[max_index] as any) + step * 0.5;
-      const range_in_times = _.range(scale_range[0] as any, max, step);
-      return range_in_times.map((elem) => {
-        return new Date(elem);
-      });
-    } else {
-      max = (scale_range[max_index] as any) + step * 0.5;
-      return _.range(scale_range[0] as any, max, step);
-    }
-  }
-
   set_scale_promise(model) {
     // Sets the child scale
     if (this.axis_scale) {
@@ -773,221 +771,6 @@ export class Axis extends WidgetView {
     // Called when the child scale changes
     this.axis_scale.off();
     this.set_scale_promise(scale);
-  }
-
-  _get_digits(number) {
-    return number === 0 ? 1 : Math.floor(Math.log10(Math.abs(number))) + 1;
-  }
-
-  _replace_trailing_zeros(str) {
-    //regex to replace the trailing
-    //zeros after the decimal point.
-    //Handles the case of exponentially formatted string
-    //TODO: Should be done in a single regex
-    const e_index = str.search('e');
-    if (e_index != -1) {
-      return (
-        str
-          .substring(0, e_index)
-          .replace(/(\.[0-9]*?)0+$/gi, '$1')
-          .replace(/\.$/, '') + str.substring(e_index)
-      );
-    } else {
-      return str.replace(/(\.[0-9]*?)0+$/gi, '$1').replace(/\.$/, '');
-    }
-  }
-
-  get_format_func(prec: number) {
-    if (prec === 0) {
-      // format this as an integer
-      return (number) => {
-        return d3.format('d')(Math.round(number));
-      };
-    }
-    //if it is -1, then it is a generic format
-    const fmt_string = prec == -1 ? '' : '.' + prec;
-    return (number) => {
-      const str = d3.format(fmt_string + 'g')(number);
-      const reg_str = str.replace(/-|\.|e/gi, '');
-      if (reg_str.length < 6) {
-        return this._replace_trailing_zeros(str);
-      } else {
-        //if length is more than 6, format it exponentially
-        if (fmt_string === '') {
-          //if fmt_string is "", then the number o/p can be
-          //arbitrarily large
-          let new_str = d3.format(fmt_string + 'e')(number);
-          if (new_str.length >= 7) {
-            //in the case of a round off error, setting the max
-            //limit to be 6
-            new_str = d3.format('.6e')(number);
-          }
-          return this._replace_trailing_zeros(new_str);
-        } else {
-          //Format with the precision required
-          return this._replace_trailing_zeros(
-            d3.format(fmt_string + 'e')(number)
-          );
-        }
-      }
-    };
-  }
-
-  _linear_scale_precision(ticks?: any[]): number {
-    if (!(isLinearScale(this.axis_scale) || isColorScale(this.axis_scale))) {
-      return -1;
-    }
-    ticks =
-      ticks === undefined || ticks === null
-        ? this.axis_scale.scale.ticks()
-        : ticks;
-    // Case where all data is concentrated into one point.
-    if (ticks.length === 1) {
-      return 1;
-    }
-    const diff = Math.abs(ticks[1] - ticks[0]);
-    const max = Math.max(Math.abs(ticks[0]), Math.abs(ticks[ticks.length - 1]));
-
-    const max_digits = this._get_digits(max);
-    // number of digits in the max
-    const diff_digits = this._get_digits(diff);
-    // number of digits in the min
-
-    const precision = Math.abs(max_digits - diff_digits);
-    // difference in the number of digits. The number of digits we have
-    // to display is the diff above + 1.
-    if (max_digits >= 0 && diff_digits > 0) {
-      if (max_digits <= 6) {
-        // format the number as an integer
-        return 0;
-      } else {
-        // precision plus 1 is returned here as they are the number of
-        // digits to be displayed. Capped at 6
-        return Math.min(precision, 6) + 1;
-      }
-    } else if (diff_digits <= 0) {
-      // return math.abs(diff_digits) + max_digits + 1. Capped at 6.
-      return Math.min(Math.abs(diff_digits) + max_digits, 6) + 1;
-    }
-  }
-
-  linear_sc_format(ticks?: any[]) {
-    return this.get_format_func(this._linear_scale_precision(ticks));
-  }
-
-  date_sc_format(ticks?: any[]) {
-    // assumes that scale is a linear date scale
-    if (!isDateScale(this.axis_scale)) {
-      return;
-    }
-    ticks =
-      ticks === undefined || ticks === null
-        ? this.axis_scale.scale.ticks()
-        : ticks;
-    // diff is the difference between ticks in milliseconds
-    const diff = Math.abs(ticks[1] - ticks[0]);
-
-    const format_millisecond = d3.utcFormat('.%L'),
-      format_second = d3.utcFormat(':%S'),
-      format_minute = d3.utcFormat('%I:%M'),
-      format_hour = d3.utcFormat('%I %p'),
-      format_day = d3.utcFormat('%b %d'),
-      format_month = d3.utcFormat('%b %Y'),
-      format_year = d3.utcFormat('%Y');
-
-    return (date) => {
-      let div = 1000;
-      if (Math.floor(diff / div) === 0) {
-        //diff is less than a second
-        if (d3.utcSecond(date) < date) {
-          return format_millisecond(date);
-        } else if (d3.utcMinute(date) < date) {
-          return format_second(date);
-        } else {
-          return format_minute(date);
-        }
-      } else if (Math.floor(diff / (div *= 60)) === 0) {
-        //diff is less than a minute
-        if (d3.utcMinute(date) < date) {
-          return format_second(date);
-        } else {
-          return format_minute(date);
-        }
-      } else if (Math.floor(diff / (div *= 60)) === 0) {
-        // diff is less than an hour
-        if (d3.utcHour(date) < date) {
-          return format_minute(date);
-        } else {
-          return format_hour(date);
-        }
-      } else if (Math.floor(diff / (div *= 24)) === 0) {
-        //diff is less than a day
-        if (d3.utcDay(date) < date) {
-          return format_hour(date);
-        } else {
-          return format_day(date);
-        }
-      } else if (Math.floor(diff / (div *= 27)) === 0) {
-        //diff is less than a month
-        if (d3.utcMonth(date) < date) {
-          return format_day(date);
-        } else {
-          return format_month(date);
-        }
-      } else if (Math.floor(diff / (div *= 12)) === 0) {
-        //diff is less than a year
-        if (d3.utcMonth(date) < date) {
-          return format_day(date);
-        } else {
-          return format_month(date);
-        }
-      } else {
-        //diff is more than a year
-        if (d3.utcMonth(date) < date) {
-          return format_day(date);
-        } else if (d3.utcYear(date) < date) {
-          return format_month(date);
-        } else {
-          return format_year(date);
-        }
-      }
-    };
-  }
-
-  log_sc_format(ticks?: any[]) {
-    return this.get_format_func(this._log_sc_precision(ticks));
-  }
-
-  _log_sc_precision(ticks?: any[]): number {
-    if (!isLogScale(this.axis_scale)) {
-      return -1;
-    }
-    ticks =
-      ticks === undefined || ticks === null
-        ? this.axis_scale.scale.ticks()
-        : ticks;
-    const ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
-
-    if (ratio >= 0.301) {
-      //format them as they are with the max_length of 6
-      return -1;
-    } else {
-      //return a default of 3 digits of precision
-      return 3;
-    }
-  }
-
-  guess_tick_format(ticks?: any[]) {
-    if (isDateScale(this.axis_scale) || isDateColorScale(this.axis_scale)) {
-      return this.date_sc_format(ticks);
-    } else if (
-      isLinearScale(this.axis_scale) ||
-      isColorScale(this.axis_scale)
-    ) {
-      return this.linear_sc_format(ticks);
-    } else if (isLogScale(this.axis_scale)) {
-      return this.log_sc_format(ticks);
-    }
   }
 
   get width(): number {
@@ -1014,6 +797,5 @@ export class Axis extends WidgetView {
   offset_scale: Scale;
   offset_value: any;
   parent: Figure;
-  tick_format: (d: number) => string;
   vertical: boolean;
 }
