@@ -13,19 +13,26 @@
  * limitations under the License.
  */
 
-import * as widgets from '@jupyter-widgets/base';
+import {
+  uuid,
+  resolvePromisesDict,
+  Dict,
+  ViewList,
+  WidgetModel,
+} from '@jupyter-widgets/base';
 import * as _ from 'underscore';
 
 import { MessageLoop } from '@lumino/messaging';
 
 import { Widget } from '@lumino/widgets';
 
+import { Scale } from 'bqscales';
+
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
 import { Figure } from './Figure';
+import { MarketMapModel } from './MarketMapModel';
 import { Tooltip } from './Tooltip';
-import { Scale } from './Scale';
-import { ColorScale } from './ColorScale';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import { applyAttrs, applyStyles } from './utils';
@@ -36,7 +43,7 @@ export class MarketMap extends Figure {
     this.width = figureSize.width;
     this.height = figureSize.height;
 
-    this.id = widgets.uuid();
+    this.id = uuid();
 
     this.scales = {};
     this.set_top_el_style();
@@ -119,7 +126,7 @@ export class MarketMap extends Figure {
     return this.create_scale_views().then(() => {
       this.create_listeners();
 
-      this.axis_views = new widgets.ViewList(this.add_axis, null, this);
+      this.axis_views = new ViewList(this.add_axis, null, this);
       const axis_views_updated = this.axis_views.update(this.model.get('axes'));
       this.model.on('change:axes', (model, value, options) => {
         this.axis_views.update(value);
@@ -321,10 +328,10 @@ export class MarketMap extends Figure {
   }
 
   update_domains() {
-    const color_scale_model = this.model.get('scales').color;
+    const color_scale_model = this.model.getScales().color;
     const color_data = this.model.get('color');
     if (color_scale_model && color_data.length > 0) {
-      color_scale_model.compute_and_set_domain(color_data, this.model.model_id);
+      color_scale_model.computeAndSetDomain(color_data, this.model.model_id);
     }
   }
 
@@ -416,25 +423,22 @@ export class MarketMap extends Figure {
     for (const key in this.scales) {
       this.stopListening(this.scales[key]);
     }
-    const scale_models = this.model.get('scales');
-    const that = this;
+    const scale_models = this.model.getScales();
     const scale_promises = {};
-    _.each(scale_models, (model: widgets.WidgetModel, key) => {
-      scale_promises[key] = that.create_child_view(model);
+    _.each(scale_models, (model: WidgetModel, key) => {
+      scale_promises[key] = this.create_child_view(model);
     });
-    return widgets
-      .resolvePromisesDict(scale_promises)
-      .then((d: { [key: string]: Scale }) => {
-        that.scales = d;
-        that.set_scales();
-      });
+
+    return resolvePromisesDict<Scale>(scale_promises).then((d: Dict<Scale>) => {
+      this.scales = d;
+      this.set_scales();
+    });
   }
 
   set_scales() {
     const that = this;
-    const color_scale = this.scales.color as ColorScale;
+    const color_scale = this.scales.color;
     if (color_scale) {
-      color_scale.set_range();
       color_scale.on('color_scale_range_changed', that.update_map_colors, that);
       this.update_domains();
       this.listenTo(color_scale, 'domain_changed', () => {
@@ -1357,7 +1361,7 @@ export class MarketMap extends Figure {
     return [{ x: curr_x * this.column_width, y: curr_y * this.row_height }];
   }
 
-  scales: { [key: string]: Scale };
+  scales: Dict<Scale>;
   num_rows: number;
   num_cols: number;
   row_groups: number;
@@ -1389,4 +1393,5 @@ export class MarketMap extends Figure {
   end_points: number[];
   tooltip_view: Tooltip;
   row_limits: number[];
+  model: MarketMapModel;
 }

@@ -14,9 +14,9 @@
  */
 
 import * as d3 from 'd3';
+import { LinearScale, OrdinalScale } from 'bqscales';
 // const d3 =Object.assign({}, require("d3-selection"));
 import { Interaction } from './Interaction';
-import { LinearScale } from './LinearScale';
 const convert_dates = require('./utils').convert_dates;
 import { WidgetView } from '@jupyter-widgets/base';
 
@@ -117,17 +117,17 @@ export abstract class BaseXSelector extends BaseSelector {
     const xy = this.model.get('orientation') == 'vertical' ? 'y' : 'x';
     const initial_range = this.parent.padded_range(xy, this.scale.model);
     const target_range = this.parent.range(xy);
-    this.scale.expand_domain(initial_range, target_range);
+    this.scale.expandDomain(initial_range, target_range);
   }
 
   set_range(array) {
     const xy = this.model.get('orientation') == 'vertical' ? 'y' : 'x';
     for (let iter = 0; iter < array.length; iter++) {
-      array[iter].set_range(this.parent.range(xy));
+      array[iter].setRange(this.parent.range(xy));
     }
   }
 
-  scale: LinearScale;
+  scale: LinearScale | OrdinalScale;
 }
 
 export abstract class BaseXYSelector extends BaseSelector {
@@ -142,24 +142,30 @@ export abstract class BaseXYSelector extends BaseSelector {
     const scale_promises = [];
     if (this.model.get('x_scale')) {
       scale_promises.push(
-        this.create_child_view(this.model.get('x_scale')).then((view) => {
-          that.x_scale = view as WidgetView as LinearScale;
-          that.update_xscale_domain();
-          that.set_x_range([that.x_scale]);
-          that.x_scale.on('domain_changed', that.update_xscale_domain, that);
-          return view;
-        })
+        this.create_child_view(this.model.get('x_scale')).then(
+          // @ts-ignore
+          (view: LinearScale | OrdinalScale) => {
+            that.x_scale = view;
+            that.update_xscale_domain();
+            that.set_x_range([that.x_scale]);
+            that.x_scale.on('domain_changed', that.update_xscale_domain, that);
+            return view;
+          }
+        )
       );
     }
     if (this.model.get('y_scale')) {
       scale_promises.push(
-        this.create_child_view(this.model.get('y_scale')).then((view) => {
-          that.y_scale = view as WidgetView as LinearScale;
-          that.update_yscale_domain();
-          that.set_y_range([that.y_scale]);
-          that.y_scale.on('domain_changed', that.update_yscale_domain, that);
-          return view;
-        })
+        this.create_child_view(this.model.get('y_scale')).then(
+          // @ts-ignore
+          (view: LinearScale | OrdinalScale) => {
+            that.y_scale = view;
+            that.update_yscale_domain();
+            that.set_y_range([that.y_scale]);
+            that.y_scale.on('domain_changed', that.update_yscale_domain, that);
+            return view;
+          }
+        )
       );
     }
 
@@ -168,13 +174,13 @@ export abstract class BaseXYSelector extends BaseSelector {
 
   set_x_range(array) {
     for (let iter = 0; iter < array.length; iter++) {
-      array[iter].set_range(this.parent.range('x'));
+      array[iter].setRange(this.parent.range('x'));
     }
   }
 
   set_y_range(array) {
     for (let iter = 0; iter < array.length; iter++) {
-      array[iter].set_range(this.parent.range('y'));
+      array[iter].setRange(this.parent.range('y'));
     }
   }
 
@@ -183,7 +189,7 @@ export abstract class BaseXYSelector extends BaseSelector {
     // for the selector must be expanded to account for the padding.
     const initial_range = this.parent.padded_range('x', this.x_scale.model);
     const target_range = this.parent.range('x');
-    this.x_scale.expand_domain(initial_range, target_range);
+    this.x_scale.expandDomain(initial_range, target_range);
   }
 
   update_yscale_domain() {
@@ -191,9 +197,9 @@ export abstract class BaseXYSelector extends BaseSelector {
     // for the selector must be expanded to account for the padding.
     const initial_range = this.parent.padded_range('y', this.y_scale.model);
     const target_range = this.parent.range('y');
-    this.y_scale.expand_domain(initial_range, target_range);
+    this.y_scale.expandDomain(initial_range, target_range);
   }
 
-  x_scale: LinearScale;
-  y_scale: LinearScale;
+  x_scale: LinearScale | OrdinalScale;
+  y_scale: LinearScale | OrdinalScale;
 }

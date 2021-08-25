@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-import * as d3 from 'd3';
+import * as _ from 'underscore';
 // const d3 =Object.assign({}, require("d3-array"), require("d3-drag"), require("d3-selection"), require("d3-selection-multi"));
+import * as d3 from 'd3';
+import { Scale } from 'bqscales';
 const d3GetEvent = function () {
   return require('d3-selection').event;
 }.bind(this);
 import { Mark } from './Mark';
-import { Scale } from './Scale';
-import * as _ from 'underscore';
 import { applyStyles } from './utils';
 
 export abstract class ScatterBase extends Mark {
@@ -97,22 +97,22 @@ export abstract class ScatterBase extends Mark {
       skew_scale = this.scales.skew,
       rotation_scale = this.scales.rotation;
     if (x_scale) {
-      x_scale.set_range(this.parent.padded_range('x', x_scale.model));
+      x_scale.setRange(this.parent.padded_range('x', x_scale.model));
     }
     if (y_scale) {
-      y_scale.set_range(this.parent.padded_range('y', y_scale.model));
+      y_scale.setRange(this.parent.padded_range('y', y_scale.model));
     }
     if (size_scale) {
-      size_scale.set_range([0, this.model.get('default_size')]);
+      size_scale.setRange([0, this.model.get('default_size')]);
     }
     if (opacity_scale) {
-      opacity_scale.set_range([0.2, 1]);
+      opacity_scale.setRange([0.2, 1]);
     }
     if (skew_scale) {
-      skew_scale.set_range([0, 1]);
+      skew_scale.setRange([0, 1]);
     }
     if (rotation_scale) {
-      rotation_scale.set_range([0, 180]);
+      rotation_scale.setRange([0, 180]);
     }
   }
 

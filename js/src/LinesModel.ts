@@ -159,13 +159,13 @@ export class LinesModel extends MarkModel {
     if (!this.mark_data) {
       return;
     }
-    const scales = this.get('scales');
+    const scales = this.getScales();
     const x_scale = scales.x,
       y_scale = scales.y;
     const color_scale = scales.color;
 
     if (!this.get('preserve_domain').x) {
-      x_scale.compute_and_set_domain(
+      x_scale.computeAndSetDomain(
         this.mark_data.map((elem) => {
           return elem.values.map((d) => {
             return d.x;
@@ -174,11 +174,11 @@ export class LinesModel extends MarkModel {
         this.model_id + '_x'
       );
     } else {
-      x_scale.del_domain([], this.model_id + '_x');
+      x_scale.delDomain([], this.model_id + '_x');
     }
 
     if (!this.get('preserve_domain').y) {
-      y_scale.compute_and_set_domain(
+      y_scale.computeAndSetDomain(
         this.mark_data.map((elem) => {
           return elem.values.map((d) => {
             return d.y;
@@ -187,18 +187,18 @@ export class LinesModel extends MarkModel {
         this.model_id + '_y'
       );
     } else {
-      y_scale.del_domain([], this.model_id + '_y');
+      y_scale.delDomain([], this.model_id + '_y');
     }
     if (color_scale !== null && color_scale !== undefined) {
       if (!this.get('preserve_domain').color) {
-        color_scale.compute_and_set_domain(
+        color_scale.computeAndSetDomain(
           this.mark_data.map((elem) => {
             return elem.color;
           }),
           this.model_id + '_color'
         );
       } else {
-        color_scale.del_domain([], this.model_id + '_color');
+        color_scale.delDomain([], this.model_id + '_color');
       }
     }
   }
@@ -295,33 +295,33 @@ export class FlexLineModel extends LinesModel {
     if (!this.mark_data) {
       return;
     }
-    const scales = this.get('scales');
+    const scales = this.getScales();
     const x_scale = scales.x,
       y_scale = scales.y;
     const color_scale = scales.color;
     const width_scale = scales.width;
 
     if (!this.get('preserve_domain').x) {
-      x_scale.compute_and_set_domain(
+      x_scale.computeAndSetDomain(
         this.x_data[0].slice(0, this.data_len),
         this.model_id + '_x'
       );
     } else {
-      x_scale.del_domain([], this.model_id + '_x');
+      x_scale.delDomain([], this.model_id + '_x');
     }
 
     if (!this.get('preserve_domain').y) {
-      y_scale.compute_and_set_domain(
+      y_scale.computeAndSetDomain(
         this.y_data[0].slice(0, this.data_len),
         this.model_id + '_y'
       );
     } else {
-      y_scale.del_domain([], this.model_id + '_y');
+      y_scale.delDomain([], this.model_id + '_y');
     }
 
     if (color_scale !== null && color_scale !== undefined) {
       if (!this.get('preserve_domain').color) {
-        color_scale.compute_and_set_domain(
+        color_scale.computeAndSetDomain(
           this.mark_data.map((elem) => {
             return elem.values.map((d) => {
               return d.color;
@@ -330,12 +330,12 @@ export class FlexLineModel extends LinesModel {
           this.model_id + '_color'
         );
       } else {
-        color_scale.del_domain([], this.model_id + '_color');
+        color_scale.delDomain([], this.model_id + '_color');
       }
     }
     if (width_scale !== null && width_scale !== undefined) {
       if (!this.get('preserve_domain').width) {
-        width_scale.compute_and_set_domain(
+        width_scale.computeAndSetDomain(
           this.mark_data.map((elem) => {
             return elem.values.map((d) => {
               return d.size;
@@ -344,7 +344,7 @@ export class FlexLineModel extends LinesModel {
           this.model_id + '_width'
         );
       } else {
-        width_scale.del_domain([], this.model_id + '_width');
+        width_scale.delDomain([], this.model_id + '_width');
       }
     }
   }

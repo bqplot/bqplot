@@ -67,31 +67,28 @@ export class HeatMapModel extends MarkModel {
       return;
     }
 
-    const scales = this.get('scales');
+    const scales = this.getScales();
     const flat_colors = [].concat.apply(
       [],
       this.mark_data.color.map((x) => Array.prototype.slice.call(x, 0))
     );
 
     if (!this.get('preserve_domain').x) {
-      scales.x.compute_and_set_domain(this.mark_data.x, this.model_id + '_x');
+      scales.x.computeAndSetDomain(this.mark_data.x, this.model_id + '_x');
     } else {
-      scales.x.del_domain([], this.model_id + '_x');
+      scales.x.delDomain([], this.model_id + '_x');
     }
 
     if (!this.get('preserve_domain').y) {
-      scales.y.compute_and_set_domain(this.mark_data.y, this.model_id + '_y');
+      scales.y.computeAndSetDomain(this.mark_data.y, this.model_id + '_y');
     } else {
-      scales.y.del_domain([], this.model_id + '_y');
+      scales.y.delDomain([], this.model_id + '_y');
     }
     if (scales.color !== null && scales.color !== undefined) {
       if (!this.get('preserve_domain').color) {
-        scales.color.compute_and_set_domain(
-          flat_colors,
-          this.model_id + '_color'
-        );
+        scales.color.computeAndSetDomain(flat_colors, this.model_id + '_color');
       } else {
-        scales.color.del_domain([], this.model_id + '_color');
+        scales.color.delDomain([], this.model_id + '_color');
       }
     }
   }

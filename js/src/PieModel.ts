@@ -115,13 +115,13 @@ export class PieModel extends MarkModel {
     }
 
     const color = this.get('color');
-    const color_scale = this.get('scales').color;
+    const color_scale = this.getScales().color;
 
     if (color_scale) {
       if (!this.get('preserve_domain').color) {
-        color_scale.compute_and_set_domain(color, this.model_id + '_color');
+        color_scale.computeAndSetDomain(color, this.model_id + '_color');
       } else {
-        color_scale.del_domain([], this.model_id + '_color');
+        color_scale.delDomain([], this.model_id + '_color');
       }
     }
   }
@@ -131,22 +131,22 @@ export class PieModel extends MarkModel {
       return;
     }
 
-    const scales = this.get('scales');
+    const scales = this.getScales();
 
     if (scales.x) {
       const x =
         scales.x.type === 'date' ? getDate(this.get('x')) : this.get('x');
       if (!this.get('preserve_domain').x) {
-        scales.x.compute_and_set_domain([x], this.model_id + '_x');
+        scales.x.computeAndSetDomain([x], this.model_id + '_x');
       } else {
-        scales.x.del_domain([], this.model_id + '_x');
+        scales.x.delDomain([], this.model_id + '_x');
       }
     }
     if (scales.y) {
       if (!this.get('preserve_domain').y) {
-        scales.y.compute_and_set_domain([this.get('y')], this.model_id + '_y');
+        scales.y.computeAndSetDomain([this.get('y')], this.model_id + '_y');
       } else {
-        scales.y.del_domain([], this.model_id + '_y');
+        scales.y.delDomain([], this.model_id + '_y');
       }
     }
   }

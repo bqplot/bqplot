@@ -56,11 +56,11 @@ export class Lines extends Mark {
   set_ranges(): void {
     const xScale = this.scales.x;
     if (xScale) {
-      xScale.set_range(this.parent.padded_range('x', xScale.model));
+      xScale.setRange(this.parent.padded_range('x', xScale.model));
     }
     const yScale = this.scales.y;
     if (yScale) {
-      yScale.set_range(this.parent.padded_range('y', yScale.model));
+      yScale.setRange(this.parent.padded_range('y', yScale.model));
     }
   }
 

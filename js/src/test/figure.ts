@@ -97,8 +97,8 @@ describe('figure >', () => {
     expect(Array.prototype.slice.call(pixel.data)).to.deep.equals(pixel_red);
     // add a normal (blue) scatter, which should be overlaid on top
     const scales = {
-      x: scatterGlView.model.get('scales').x.toJSON(),
-      y: scatterGlView.model.get('scales').y.toJSON(),
+      x: scatterGlView.model.getScales().x.toJSON(),
+      y: scatterGlView.model.getScales().y.toJSON(),
     };
     const color = null;
     const size = null;

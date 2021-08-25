@@ -51,7 +51,7 @@ from traittypes import Array
 from numpy import histogram
 import numpy as np
 
-from .scales import Scale, OrdinalScale, LinearScale
+from bqscales import Scale, OrdinalScale, LinearScale
 from .traits import (Date, array_serialization,
                      array_squeeze, array_dimension_bounds, array_supported_kinds)
 from ._version import __frontend_version__

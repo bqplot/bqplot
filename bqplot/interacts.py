@@ -41,7 +41,7 @@ from traitlets import (Bool, Int, Float, Unicode, Dict,
 from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization, register
 
-from .scales import Scale
+from bqscales import Scale
 from .traits import Date, array_serialization, _array_equal
 from .marks import Lines
 from ._version import __frontend_version__

@@ -32,7 +32,7 @@ export class FlexLine extends Lines {
     super.set_ranges();
     const width_scale = this.scales.width;
     if (width_scale) {
-      width_scale.set_range([0.5, this.model.get('stroke_width')]);
+      width_scale.setRange([0.5, this.model.get('stroke_width')]);
     }
   }
 

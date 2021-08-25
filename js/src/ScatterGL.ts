@@ -12,14 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Mark } from './Mark';
-import * as d3 from 'd3';
-import * as markers from './Markers';
 import * as _ from 'underscore';
+import * as d3 from 'd3';
+import * as THREE from 'three';
+import { ColorScale, Scale } from 'bqscales';
+
+import { Mark } from './Mark';
+import * as markers from './Markers';
 import { deepCopy } from './utils';
 import { ScatterGLModel } from './ScatterGLModel';
-import { Scale } from './Scale';
-import * as THREE from 'three';
 
 type TypedArray =
   | Int8Array
@@ -59,9 +60,9 @@ const color_to_array_rgba = function (color, default_color?) {
   }
 };
 
-const create_colormap = function (scale) {
+const create_colormap = function (scale: ColorScale) {
   // convert the d3 color scale to a texture
-  const colors = scale ? scale.model.color_range : ['#ff0000', '#ff0000'];
+  const colors = scale ? scale.model.colorRange : [0, 1];
   const color_scale = d3
     .scaleLinear()
     .range(colors)
@@ -1122,22 +1123,22 @@ export class ScatterGL extends Mark {
       skew_scale = this.scales.skew,
       rotation_scale = this.scales.rotation;
     if (x_scale) {
-      x_scale.set_range(this.parent.padded_range('x', x_scale.model));
+      x_scale.setRange(this.parent.padded_range('x', x_scale.model));
     }
     if (y_scale) {
-      y_scale.set_range(this.parent.padded_range('y', y_scale.model));
+      y_scale.setRange(this.parent.padded_range('y', y_scale.model));
     }
     if (size_scale) {
-      size_scale.set_range([0, this.model.get('default_size')]);
+      size_scale.setRange([0, this.model.get('default_size')]);
     }
     if (opacity_scale) {
-      opacity_scale.set_range([0.2, 1]);
+      opacity_scale.setRange([0.2, 1]);
     }
     if (skew_scale) {
-      skew_scale.set_range([0, 1]);
+      skew_scale.setRange([0, 1]);
     }
     if (rotation_scale) {
-      rotation_scale.set_range([0, Math.PI]); // TODO: this mirrors the 180 from the normal scatter, but why not 360?
+      rotation_scale.setRange([0, Math.PI]); // TODO: this mirrors the 180 from the normal scatter, but why not 360?
     }
   }
 

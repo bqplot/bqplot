@@ -13,15 +13,18 @@
  * limitations under the License.
  */
 
-import * as widgets from '@jupyter-widgets/base';
+import { WidgetModel, unpack_models } from '@jupyter-widgets/base';
+import { Dict } from '@jupyter-widgets/base';
+
+import { ScaleModel } from 'bqscales';
 import * as d3 from 'd3';
 import * as serialize from './serialize';
 import { semver_range } from './version';
 
-export class MarketMapModel extends widgets.WidgetModel {
+export class MarketMapModel extends WidgetModel {
   defaults() {
     return {
-      ...widgets.WidgetModel.prototype.defaults(),
+      ...WidgetModel.prototype.defaults(),
       _model_name: 'MarketMapModel',
       _view_name: 'MarketMap',
       _model_module: 'bqplot',
@@ -70,13 +73,18 @@ export class MarketMapModel extends widgets.WidgetModel {
       tooltip_widget: null,
     };
   }
+
+  getScales(): Dict<ScaleModel> {
+    return this.get('scales');
+  }
+
   static serializers = {
-    ...widgets.WidgetModel.serializers,
-    scales: { deserialize: widgets.unpack_models },
-    axes: { deserialize: widgets.unpack_models },
-    tooltip_widget: { deserialize: widgets.unpack_models },
-    style: { deserialize: widgets.unpack_models },
-    layout: { deserialize: widgets.unpack_models },
+    ...WidgetModel.serializers,
+    scales: { deserialize: unpack_models },
+    axes: { deserialize: unpack_models },
+    tooltip_widget: { deserialize: unpack_models },
+    style: { deserialize: unpack_models },
+    layout: { deserialize: unpack_models },
     names: serialize.array_or_json_serializer,
     groups: serialize.array_or_json_serializer,
     display_text: serialize.array_or_json_serializer,

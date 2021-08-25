@@ -31,7 +31,7 @@ from traitlets import Int, Unicode, Instance, Enum, Dict, Bool
 from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization
 
-from .scales import Scale, ColorScale
+from bqscales import Scale, ColorScale
 from .traits import array_serialization, array_dimension_bounds
 from ._version import __frontend_version__
 

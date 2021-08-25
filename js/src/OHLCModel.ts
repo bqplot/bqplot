@@ -135,7 +135,7 @@ export class OHLCModel extends MarkModel {
     if (!this.mark_data) {
       return;
     }
-    const scales = this.get('scales');
+    const scales = this.getScales();
     const xScale = scales.x,
       yScale = scales.y;
     let min_x_dist = Number.POSITIVE_INFINITY;
@@ -170,10 +170,11 @@ export class OHLCModel extends MarkModel {
     // X Scale
     if (!this.get('preserve_domain').x && this.mark_data.length !== 0) {
       if (xScale.type === 'ordinal') {
-        xScale.compute_and_set_domain(
+        xScale.computeAndSetDomain(
           this.mark_data.map((d) => {
             return d[0];
-          })
+          }),
+          this.model_id
         );
       } else {
         min = d3.min(
@@ -189,19 +190,19 @@ export class OHLCModel extends MarkModel {
         if (max instanceof Date) {
           max = max.getTime();
         }
-        xScale.set_domain(
+        xScale.setDomain(
           [min - min_x_dist / 2, max + min_x_dist / 2],
           this.model_id + '_x'
         );
       }
     } else {
-      xScale.del_domain([], this.model_id + '_x');
+      xScale.delDomain([], this.model_id + '_x');
     }
 
     // Y Scale
     if (!this.get('preserve_domain').y && this.mark_data.length !== 0) {
       // Remember that elem contains OHLC data here so we cannot use
-      // compute_and_set_domain
+      // computeAndSetDomain
       let top = this.px.h;
       let bottom = this.px.l;
       if (top === -1 || bottom === -1) {
@@ -221,12 +222,12 @@ export class OHLCModel extends MarkModel {
       if (max instanceof Date) {
         max = max.getTime();
       }
-      yScale.set_domain(
+      yScale.setDomain(
         [min - max_y_height, max + max_y_height],
         this.model_id + '_y'
       );
     } else {
-      yScale.del_domain([], this.model_id + '_y');
+      yScale.delDomain([], this.model_id + '_y');
     }
   }
 

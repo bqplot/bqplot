@@ -15,6 +15,7 @@
 
 import * as _ from 'underscore';
 import * as d3 from 'd3';
+import { LinearScale, OrdinalScale } from 'bqscales';
 // var d3 =Object.assign({}, require("d3-selection"), require("d3-selection-multi"));
 import { BaseXSelector } from './Selector';
 import * as sel_utils from './selector_utils';
@@ -117,8 +118,8 @@ export class FastIntervalSelector extends BaseXSelector {
     //update the interval location and size
     this.rect.attr('x', start);
     this.rect.attr('width', interval_size);
-    const pixel_extent = [start, start + interval_size];
-    this.set_selected('selected', this.scale.invert_range(pixel_extent));
+    const pixel_extent: [number, number] = [start, start + interval_size];
+    this.set_selected('selected', this.scale.invertRange(pixel_extent));
     this.update_mark_selected(pixel_extent, undefined);
     this.touch();
     this.dirty = false;
@@ -227,4 +228,5 @@ export class FastIntervalSelector extends BaseXSelector {
   size: number;
   background: d3.Selection<SVGRectElement, any, any, any>;
   rect: d3.Selection<SVGRectElement, any, any, any>;
+  scale: LinearScale | OrdinalScale;
 }

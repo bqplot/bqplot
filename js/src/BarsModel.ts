@@ -184,7 +184,7 @@ export class BarsModel extends MarkModel {
       return;
     }
     const color = this.get('color') || [];
-    const color_scale = this.get('scales').color;
+    const color_scale = this.getScales().color;
     const color_mode = this.get('color_mode');
     const apply_color_to_groups =
       color_mode === 'group' || (color_mode === 'auto' && !this.yIs2d);
@@ -218,9 +218,9 @@ export class BarsModel extends MarkModel {
 
     if (color_scale && color.length > 0) {
       if (!this.get('preserve_domain').color) {
-        color_scale.compute_and_set_domain(color, this.model_id + '_color');
+        color_scale.computeAndSetDomain(color, this.model_id + '_color');
       } else {
-        color_scale.del_domain([], this.model_id + '_color');
+        color_scale.delDomain([], this.model_id + '_color');
       }
     }
   }
@@ -229,24 +229,24 @@ export class BarsModel extends MarkModel {
     if (!this.mark_data) {
       return;
     }
-    const scales = this.get('scales');
+    const scales = this.getScales();
     const dom_scale = scales.x;
     const range_scale = scales.y;
 
     if (!this.get('preserve_domain').x) {
-      dom_scale.compute_and_set_domain(
+      dom_scale.computeAndSetDomain(
         this.mark_data.map((elem) => {
           return elem.key;
         }),
         this.model_id + '_x'
       );
     } else {
-      dom_scale.del_domain([], this.model_id + '_x');
+      dom_scale.delDomain([], this.model_id + '_x');
     }
 
     if (!this.get('preserve_domain').y) {
       if (this.get('type') === 'stacked') {
-        range_scale.compute_and_set_domain(
+        range_scale.computeAndSetDomain(
           [
             d3.min(this.mark_data, (c: any) => {
               return c.negMax;
@@ -269,13 +269,13 @@ export class BarsModel extends MarkModel {
             return val.yRef;
           });
         });
-        range_scale.compute_and_set_domain(
+        range_scale.computeAndSetDomain(
           [min, max, this.baseValue],
           this.model_id + '_y'
         );
       }
     } else {
-      range_scale.del_domain([], this.model_id + '_y');
+      range_scale.delDomain([], this.model_id + '_y');
     }
   }
 
