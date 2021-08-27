@@ -945,6 +945,8 @@ export class Figure extends DOMWidgetView {
 
       applyAttrs(this.title, {
         x: 0.5 * this.width,
+        y: this.autoLayout ? 0 : -this.margin.top / 2.0,
+        dy: this.autoLayout ? '0em' : '1em'
       });
     } else {
       this.fig.attr(
