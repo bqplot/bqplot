@@ -945,9 +945,12 @@ export class Figure extends DOMWidgetView {
 
       applyAttrs(this.title, {
         x: 0.5 * this.width,
-        y: this.autoLayout ? 0 : -this.margin.top / 2.0,
-        dy: this.autoLayout ? '0em' : '1em'
+        y: 0,
+        dy: '0em'
       });
+
+      this.toolbar_div.node().style.top = `${this.offsetY / 2.0}px`;
+      this.toolbar_div.node().style.right = `${this.offsetX}px`;
     } else {
       this.fig.attr(
         'transform',
@@ -963,6 +966,9 @@ export class Figure extends DOMWidgetView {
         y: -(this.margin.top / 2.0),
         dy: '1em',
       });
+
+      this.toolbar_div.node().style.top = `${this.margin.top / 2.0}px`;
+      this.toolbar_div.node().style.right = `${this.margin.right}px`;
     }
 
     this.bg
