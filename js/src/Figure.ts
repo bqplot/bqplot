@@ -49,6 +49,9 @@ export class Figure extends DOMWidgetView {
     this.debouncedRelayout = _.debounce(() => {
       this.relayout();
     }, 300);
+    this.debouncedUpdateDecorators = _.debounce(() => {
+      this.updateDecorators();
+    }, 100);
     // Internet Explorer does not support classList for svg elements
     this.el.classList.add('bqplot');
     this.el.classList.add('figure');
@@ -71,12 +74,6 @@ export class Figure extends DOMWidgetView {
 
     this.el.appendChild(svg_background);
     this.el.appendChild(svg);
-
-    // For testing we need to know when the mark_views is created, the tests
-    // can wait for this promise.
-    this._initial_marks_created = new Promise((resolve) => {
-      this._initial_marks_created_resolve = resolve;
-    });
 
     this.intersectObserver = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
@@ -260,13 +257,6 @@ export class Figure extends DOMWidgetView {
   }
 
   protected async renderImpl() {
-    const figureSize = this.getFigureSize();
-
-    this.width = figureSize.width;
-    this.height = figureSize.height;
-    this.offsetX = figureSize.x;
-    this.offsetY = figureSize.y;
-
     this.id = uuid();
 
     // Dictionary which contains the mapping for each of the marks id
@@ -285,27 +275,9 @@ export class Figure extends DOMWidgetView {
     this.figure_padding_y = this.model.get('padding_y');
     this.clip_id = 'clip_path_' + this.id;
 
-    // we hide it when the plot area is too small
-    if (this.plotareaWidth < 1 || this.plotareaHeight < 1) {
-      this.el.style.visibility = 'hidden';
-    } else {
-      this.el.style.visibility = '';
-    }
     // this.fig is the top <g> element to be impacted by a rescaling / change of margins
-
     this.fig = this.svg.append('g');
     this.fig_background = this.svg_background.append('g');
-
-    if (!this.autoLayout) {
-      this.fig.attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
-      this.fig_background.attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
-    }
 
     this.tooltip_div = d3
       .select(document.createElement('div'))
@@ -325,8 +297,6 @@ export class Figure extends DOMWidgetView {
       .attr('class', 'plotarea_background')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight)
       .style('pointer-events', 'inherit');
     applyStyles(this.bg, this.model.get('background_style'));
 
@@ -335,50 +305,51 @@ export class Figure extends DOMWidgetView {
       .attr('class', 'plotarea_events')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight)
       .style('pointer-events', 'inherit');
     this.bg_events.on('click', () => {
       this.trigger('bg_clicked');
     });
 
     this.fig_axes = this.fig_background.append('g');
+    const fig_axes_node = this.fig_axes.node();
+    fig_axes_node.style.display = 'none';
+
     this.fig_marks = this.fig.append('g');
     this.interaction = this.fig.append('g');
 
     /*
-         * The following was the structure of the DOM element constructed
-         *
-        <div class="bqplot figure jupyter-widgets">
-            <svg>
-                <g class="svg-figure" transform="margin translation">
-                    <g class="svg-axes"></g>
-                    <g class="svg-marks"></g>
-                    <g class="svg-interaction"></g>
-                </g>
-            </svg>
-        </div>
+    * The following was the structure of the DOM element constructed
+    *
+      <div class="bqplot figure jupyter-widgets">
+          <svg>
+              <g class="svg-figure" transform="margin translation">
+                  <g class="svg-axes"></g>
+                  <g class="svg-marks"></g>
+                  <g class="svg-interaction"></g>
+              </g>
+          </svg>
+      </div>
 
-        To allow the main/interaction layer on top, and also allowing us to draw
-        on top of the canvas (e.g. selectors), we create a new DOM structure.
-        When creating a screenshot/image, we collapse all this into one svg.
+      To allow the main/interaction layer on top, and also allowing us to draw
+      on top of the canvas (e.g. selectors), we create a new DOM structure.
+      When creating a screenshot/image, we collapse all this into one svg.
 
-        <div class="bqplot figure jupyter-widgets">
-            <svg class="svg-background">
-                <g transform="margin translation">
-                    <g class="svg-axes"></g>
-                </g>
-            </svg>
-            <canvas>
-            </canvas>
-            <svg class="svg-figure">
-                <g transform="margin translation">
-                    <g class="svg-marks"></g>
-                    <g class="svg-interaction"></g>
-                </g>
-            </svg>
-        </div>
-        */
+      <div class="bqplot figure jupyter-widgets">
+          <svg class="svg-background">
+              <g transform="margin translation">
+                  <g class="svg-axes"></g>
+              </g>
+          </svg>
+          <canvas>
+          </canvas>
+          <svg class="svg-figure">
+              <g transform="margin translation">
+                  <g class="svg-marks"></g>
+                  <g class="svg-interaction"></g>
+              </g>
+          </svg>
+      </div>
+    */
 
     this.clip_path = this.svg
       .append('svg:defs')
@@ -386,62 +357,118 @@ export class Figure extends DOMWidgetView {
       .attr('id', this.clip_id)
       .append('rect')
       .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight);
+      .attr('y', 0);
 
-    this.title = this.fig
-      .append('text')
-      .attr('class', 'mainheading')
-      .attr('x', 0.5 * this.plotareaWidth)
-      .attr('y', this.autoLayout ? 0 : -this.margin.top / 2.0)
-      .attr('dy', this.autoLayout ? '0em' : '1em');
+    this.title = this.fig.append('text').attr('class', 'mainheading');
+
     applyStyles(this.title, this.model.get('title_style'));
 
     this.title.text(this.model.get('title'));
+
+    this.tooltip_div = d3
+      .select(document.createElement('div'))
+      .attr('class', 'tooltip_div');
+
+    await this.create_figure_scales();
+
+    this.axis_views = new ViewList(this.add_axis, this.remove_axis, this);
+    await this.axis_views.update(this.model.get('axes'));
+
+    // Update decorators before computing the figure size
+    await this.updateDecorators(true);
+
+    // Create WebGL context for marks
+    this.webGLCanvas = document.createElement('canvas');
+    this.el.insertBefore(this.webGLCanvas, this.svg.node());
+
+    // Compute figure size
+    const figureSize = this.getFigureSize();
+
+    this.width = figureSize.width;
+    this.height = figureSize.height;
+    this.offsetX = figureSize.x;
+    this.offsetY = figureSize.y;
+
+    // We hide it when the plot area is too small
+    if (this.plotareaWidth < 1 || this.plotareaHeight < 1) {
+      this.el.style.visibility = 'hidden';
+    } else {
+      this.el.style.visibility = '';
+    }
+
+    if (this.scale_x !== undefined && this.scale_x !== null) {
+      this.scale_x.setRange([0, this.plotareaWidth]);
+    }
+
+    if (this.scale_y !== undefined && this.scale_y !== null) {
+      this.scale_y.setRange([this.plotareaHeight, 0]);
+    }
+
+    this.bg
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
+    this.bg_events
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
+    this.clip_path
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
+
+    // transform figure
+    if (this.autoLayout) {
+      this.fig.attr('transform', `translate(${figureSize.x}, ${figureSize.y})`);
+      this.fig_background.attr(
+        'transform',
+        `translate(${figureSize.x}, ${figureSize.y})`
+      );
+
+      this.webGLCanvas.style.left = `${figureSize.x}px`;
+      this.webGLCanvas.style.top = `${figureSize.y}px`;
+
+      applyAttrs(this.title, {
+        x: 0.5 * this.width,
+        y: 0,
+        dy: '0em',
+      });
+    } else {
+      this.fig.attr(
+        'transform',
+        `translate(${this.margin.left}, ${this.margin.top})`
+      );
+      this.fig_background.attr(
+        'transform',
+        `translate(${this.margin.left}, ${this.margin.top})`
+      );
+
+      this.webGLCanvas.style.left = `${this.margin.left}px`;
+      this.webGLCanvas.style.top = `${this.margin.top}px`;
+
+      applyAttrs(this.title, {
+        x: 0.5 * this.plotareaWidth,
+        y: -this.margin.top / 2.0,
+        dy: '1em',
+      });
+    }
 
     // TODO: remove the save png event mechanism.
     this.model.on('save_png', this.save_png, this);
     this.model.on('save_svg', this.save_svg, this);
     this.model.on('upload_png', this.upload_png, this);
 
-    const figure_scale_promise = this.create_figure_scales();
-
-    await figure_scale_promise;
-
-    // Create WebGL context for marks
-    this.webGLCanvas = document.createElement('canvas');
-    this.webGLContext = this.webGLCanvas.getContext('webgl');
-
-    this.webGLCanvas.style.left = `${this.margin.left}px`;
-    this.webGLCanvas.style.top = `${this.margin.top}px`;
     this.webGLCanvas.width = this.plotareaWidth;
     this.webGLCanvas.height = this.plotareaHeight;
 
-    this.el.insertBefore(this.webGLCanvas, this.svg.node());
-
-    if (this.webGLContext === null) {
-      console.warn(
-        'Unable to initialize WebGL. Your browser or machine may not support it.'
-      );
-    }
-
     this.mark_views = new ViewList(this.add_mark, this.remove_mark, this);
 
-    const mark_views_updated = this.mark_views
-      .update(this.model.get('marks'))
-      .then((views) => {
-        this.replace_dummy_nodes(views);
-        this.update_marks(views);
-        this.update_legend();
-        // Update Interaction layer
-        // This has to be done after the marks are created
-        this.set_interaction(this.model.get('interaction'));
-        this._initial_marks_created_resolve();
-      });
-
-    this.axis_views = new ViewList(this.add_axis, this.remove_axis, this);
-    const axis_views_updated = this.axis_views.update(this.model.get('axes'));
+    await this.mark_views.update(this.model.get('marks')).then((views) => {
+      this.replace_dummy_nodes(views);
+      this.update_marks(views);
+      this.update_legend();
+      // Update Interaction layer
+      // This has to be done after the marks are created
+      this.set_interaction(this.model.get('interaction'));
+    });
+    fig_axes_node.style.display = '';
 
     // TODO: move to the model
     this.model.on_some_change(
@@ -501,6 +528,10 @@ export class Figure extends DOMWidgetView {
     this.toolbar_div = this.create_toolbar();
     if (this.model.get('display_toolbar')) {
       this.toolbar_div.node().style.display = 'unset';
+      if (this.autoLayout) {
+        this.toolbar_div.node().style.top = `${this.offsetY / 2.0}px`;
+        this.toolbar_div.node().style.right = `${this.offsetX}px`;
+      }
     }
 
     this.model.on('change:display_toolbar', (_, display_toolbar) => {
@@ -512,7 +543,7 @@ export class Figure extends DOMWidgetView {
       }
     });
 
-    return Promise.all([mark_views_updated, axis_views_updated]);
+    this.rendered = true;
   }
 
   set needsWebGLContext(value: boolean) {
@@ -581,12 +612,10 @@ export class Figure extends DOMWidgetView {
     );
   }
 
-  create_figure_scales() {
+  async create_figure_scales() {
     // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
     // See the scale_x and scale_y attributes of the python Figure
-    const x_scale_promise = this.create_child_view(
-      this.model.get('scale_x')
-    ).then((view) => {
+    await this.create_child_view(this.model.get('scale_x')).then((view) => {
       this.scale_x = view as WidgetView as Scale;
       (
         this.scale_x.scale as
@@ -597,9 +626,7 @@ export class Figure extends DOMWidgetView {
       this.scale_x.setRange([0, this.plotareaWidth]);
     });
 
-    const y_scale_promise = this.create_child_view(
-      this.model.get('scale_y')
-    ).then((view) => {
+    await this.create_child_view(this.model.get('scale_y')).then((view) => {
       this.scale_y = view as WidgetView as Scale;
       (
         this.scale_y.scale as
@@ -609,7 +636,6 @@ export class Figure extends DOMWidgetView {
       ).clamp(true);
       this.scale_y.setRange([this.plotareaHeight, 0]);
     });
-    return Promise.all([x_scale_promise, y_scale_promise]);
   }
 
   padded_range(
@@ -656,7 +682,7 @@ export class Figure extends DOMWidgetView {
     }
   }
 
-  async updateDecorators() {
+  async updateDecorators(print = false) {
     if (this.autoLayout) {
       const axisViews = await Promise.all(this.axis_views.views);
       ['top', 'bottom', 'left', 'right'].forEach((side) => {
@@ -688,12 +714,12 @@ export class Figure extends DOMWidgetView {
     view.listenTo(
       model,
       'change:orientation change:side change:offset change:label_offset',
-      () => this.updateDecorators()
+      () => this.debouncedUpdateDecorators()
     );
     view.listenTo(model, 'change:label change:tick_rotate', () => {
       this.debouncedRelayout();
     });
-    this.updateDecorators();
+    this.debouncedUpdateDecorators();
 
     return view;
   }
@@ -702,9 +728,11 @@ export class Figure extends DOMWidgetView {
     if (this.el.parentNode) {
       // if the view is removed, we have a size of 0x0, and don't want to trigger
       // a relayout
-      this.updateDecorators();
+      this.debouncedUpdateDecorators();
     }
-    this.fig_axes.node().removeChild(view.el);
+    if (view.el.parentNode && view.el.parentNode === this.fig_axes.node()) {
+      this.fig_axes.node().removeChild(view.el);
+    }
   }
 
   remove_from_padding_dict(dict, mark_view: Mark, scale_model: ScaleModel) {
@@ -900,22 +928,8 @@ export class Figure extends DOMWidgetView {
     this.trigger('margin_updated');
   }
 
-  processPhosphorMessage(msg) {
-    super.processPhosphorMessage.apply(this, arguments);
-
-    switch (msg.type) {
-      case 'resize':
-      case 'after-show':
-      case 'after-attach':
-        if (this.pWidget.isVisible) {
-          this.debouncedRelayout();
-        }
-        break;
-    }
-  }
-
   relayout() {
-    if (!this.relayoutRequested) {
+    if (this.rendered && !this.relayoutRequested) {
       this.relayoutRequested = true; // avoid scheduling a relayout twice
       requestAnimationFrame(this.relayoutImpl.bind(this));
     }
@@ -959,33 +973,44 @@ export class Figure extends DOMWidgetView {
 
     // transform figure
     if (this.autoLayout) {
-      this.fig.attr(
-        'transform',
-        'translate(' + figureSize.x + ',' + figureSize.y + ')'
-      );
+      this.fig.attr('transform', `translate(${figureSize.x}, ${figureSize.y})`);
       this.fig_background.attr(
         'transform',
-        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+        `translate(${figureSize.x}, ${figureSize.y})`
       );
+
+      this.webGLCanvas.style.left = `${figureSize.x}px`;
+      this.webGLCanvas.style.top = `${figureSize.y}px`;
 
       applyAttrs(this.title, {
         x: 0.5 * this.width,
+        y: 0,
+        dy: '0em',
       });
+
+      this.toolbar_div.node().style.top = `${this.offsetY / 2.0}px`;
+      this.toolbar_div.node().style.right = `${this.offsetX}px`;
     } else {
       this.fig.attr(
         'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+        `translate(${this.margin.left}, ${this.margin.top})`
       );
       this.fig_background.attr(
         'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+        `translate(${this.margin.left}, ${this.margin.top})`
       );
+
+      this.webGLCanvas.style.left = `${this.margin.left}px`;
+      this.webGLCanvas.style.top = `${this.margin.top}px`;
 
       applyAttrs(this.title, {
         x: 0.5 * this.plotareaWidth,
         y: -(this.margin.top / 2.0),
         dy: '1em',
       });
+
+      this.toolbar_div.node().style.top = `${this.margin.top / 2.0}px`;
+      this.toolbar_div.node().style.right = `${this.margin.right}px`;
     }
 
     this.bg
@@ -999,8 +1024,6 @@ export class Figure extends DOMWidgetView {
       .attr('width', this.plotareaWidth)
       .attr('height', this.plotareaHeight);
 
-    this.webGLCanvas.style.left = `${this.margin.left}px`;
-    this.webGLCanvas.style.top = `${this.margin.top}px;`;
     this.webGLCanvas.width = this.plotareaWidth;
     this.webGLCanvas.height = this.plotareaHeight;
 
@@ -1525,15 +1548,17 @@ export class Figure extends DOMWidgetView {
   clip_id: string;
   clip_path: d3.Selection<SVGRectElement, any, any, any>;
   debouncedRelayout: () => void;
+  debouncedUpdateDecorators: () => void;
   fig_axes: d3.Selection<SVGGraphicsElement, any, any, any>;
   fig_marks: d3.Selection<SVGGraphicsElement, any, any, any>;
   fig_background: d3.Selection<SVGGraphicsElement, any, any, any>;
   fig: d3.Selection<SVGGraphicsElement, any, any, any>;
-  figure_padding_x: number;
-  figure_padding_y: number;
-  height: number;
-  offsetX: number;
-  offsetY: number;
+  figure_padding_x: number = 0;
+  figure_padding_y: number = 0;
+  width: number = 0;
+  height: number = 0;
+  offsetX: number = 0;
+  offsetY: number = 0;
   interaction_view: Interaction;
   interaction: d3.Selection<SVGGElement, any, any, any>;
   mark_views: ViewList<Mark>;
@@ -1546,7 +1571,6 @@ export class Figure extends DOMWidgetView {
   title: d3.Selection<SVGTextElement, any, any, any>;
   tooltip_div: d3.Selection<HTMLDivElement, any, any, any>;
   toolbar_div: d3.Selection<HTMLDivElement, any, any, any>;
-  width: number;
   x_pad_dict: { [id: string]: number };
   xPaddingArr: { [id: string]: number };
   y_pad_dict: { [id: string]: number };
@@ -1555,6 +1579,8 @@ export class Figure extends DOMWidgetView {
   resizeObserver: ResizeObserver;
   visible: boolean;
   decorators = { top: [], bottom: [], left: [], right: [] };
+
+  private rendered = false;
 
   public webGLCanvas: HTMLCanvasElement;
   public webGLContext: WebGLRenderingContext | null;
@@ -1572,6 +1598,5 @@ export class Figure extends DOMWidgetView {
 
   // this is public for the test framework, but considered a private API
   public _initial_marks_created: Promise<any>;
-  private _initial_marks_created_resolve: Function;
   private should_relayout = false;
 }

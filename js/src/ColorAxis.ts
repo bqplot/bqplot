@@ -21,7 +21,7 @@ import { Axis } from './Axis';
 import { applyAttrs } from './utils';
 
 class ColorBar extends Axis {
-  render() {
+  async render() {
     this.parent = this.options.parent;
     this.vertical = this.model.get('orientation') === 'vertical';
 
@@ -32,19 +32,20 @@ class ColorBar extends Axis {
     this.bar_height = 20;
     this.d3el
       .attr('class', 'ColorBar')
-      .attr('display', this.model.get('visible') ? 'inline' : 'none');
+      .attr('display', this.model.get('visible') ? 'inline' : 'none')
+      .attr('transform', this.get_topg_transform());
 
     this.ordinal = false;
     this.num_ticks = this.model.get('num_ticks');
-    const that = this;
-    return scale_promise.then(() => {
-      that.create_listeners();
-      this.create_axis();
-      this.set_tick_values();
-      that.tick_format = that.generate_tick_formatter();
-      that.set_scales_range();
-      that.append_axis();
-    });
+
+    await scale_promise;
+
+    this.create_listeners();
+    this.create_axis();
+    this.set_tick_values();
+    this.tick_format = this.generate_tick_formatter();
+    this.set_scales_range();
+    this.append_axis();
   }
 
   create_listeners() {
@@ -424,9 +425,11 @@ class ColorBar extends Axis {
   }
 
   get_color_bar_width() {
-    return this.vertical
+    const width = this.vertical
       ? this.height - 2 * this.x_offset
       : this.width - 2 * this.x_offset;
+
+    return width >= 0 ? width : 0;
   }
 
   update_label() {
@@ -473,7 +476,7 @@ class ColorBar extends Axis {
         .select('#text_elem')
         .style('text-anchor', this.vertical ? 'middle' : 'end');
     }
-    this.g_axisline.call(this.axis);
+    this.redraw_axisline();
   }
 
   redraw_axisline() {

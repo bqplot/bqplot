@@ -1033,9 +1033,8 @@ export class Axis extends WidgetView {
   }
 
   getBBox(): DOMRect {
-    // to get the bounding box, we don't want to include the gridlines, so we disable them
-    const tickSize = this.axis.tickSize();
-    this.axis.tickSize(6); // magic number 6 is used above as well
+    // To get the bounding box, we don't want to include the gridlines, so we disable them
+    this.axis.tickSize(6); // Default value is 6
     this.g_axisline.call(this.axis);
     // we also don't use the label if the label_offset is negative
     const negativeLabelOffset =
@@ -1048,7 +1047,7 @@ export class Axis extends WidgetView {
     // note that we use getBoundingClientRect to take into account transformations (such as rotations)
     const box = this.d3el.node().getBoundingClientRect();
     // and restore the gridlines
-    this.axis.tickSize(tickSize);
+    this.update_grid_lines();
     this.g_axisline.call(this.axis);
     // and restore label
     if (negativeLabelOffset) {

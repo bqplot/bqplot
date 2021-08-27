@@ -38,7 +38,7 @@ import popper from 'popper.js';
 import { applyAttrs, applyStyles, getLuminoWidget } from './utils';
 
 export class MarketMap extends Figure {
-  protected renderImpl() {
+  protected async renderImpl() {
     const figureSize = this.getFigureSize();
     this.width = figureSize.width;
     this.height = figureSize.height;
@@ -122,7 +122,7 @@ export class MarketMap extends Figure {
     });
     applyStyles(this.title, this.model.get('title_style'));
 
-    return this.create_scale_views().then(() => {
+    await this.create_scale_views().then(async () => {
       this.create_listeners();
 
       this.axis_views = new ViewList(this.add_axis, null, this);
@@ -142,7 +142,7 @@ export class MarketMap extends Figure {
         window.removeEventListener('resize', this.debouncedRelayout);
       });
 
-      return Promise.all([Promise.resolve(), axis_views_updated]);
+      await Promise.all([Promise.resolve(), axis_views_updated]);
     });
   }
 

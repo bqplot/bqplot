@@ -73,15 +73,18 @@ export class AxisModel extends widgets.WidgetModel {
   }
 
   validate_orientation() {
-    const side = this.get('side');
-    if (side) {
-      if (side === 'left' || side === 'right') {
-        this.set('orientation', 'vertical');
-      } else {
-        this.set('orientation', 'horizontal');
-      }
-      this.save_changes();
+    let side = this.get('side');
+    if (!side) {
+      side = 'bottom';
+      this.set('side', side);
     }
+
+    if (side === 'left' || side === 'right') {
+      this.set('orientation', 'vertical');
+    } else {
+      this.set('orientation', 'horizontal');
+    }
+    this.save_changes();
   }
 
   static serializers = {
