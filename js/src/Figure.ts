@@ -324,39 +324,38 @@ export class Figure extends DOMWidgetView {
     this.interaction = this.fig.append('g');
 
     /*
-         * The following was the structure of the DOM element constructed
-         *
-        <div class="bqplot figure jupyter-widgets">
-            <svg>
-                <g class="svg-figure" transform="margin translation">
-                    <g class="svg-axes"></g>
-                    <g class="svg-marks"></g>
-                    <g class="svg-interaction"></g>
-                </g>
-            </svg>
-        </div>
+    * The following was the structure of the DOM element constructed
+    *
+      <div class="bqplot figure jupyter-widgets">
+          <svg>
+              <g class="svg-figure" transform="margin translation">
+                  <g class="svg-axes"></g>
+                  <g class="svg-marks"></g>
+                  <g class="svg-interaction"></g>
+              </g>
+          </svg>
+      </div>
 
-        To allow the main/interaction layer on top, and also allowing us to draw
-        on top of the canvas (e.g. selectors), we create a new DOM structure.
-        When creating a screenshot/image, we collapse all this into one svg.
+      To allow the main/interaction layer on top, and also allowing us to draw
+      on top of the canvas (e.g. selectors), we create a new DOM structure.
+      When creating a screenshot/image, we collapse all this into one svg.
 
-        <div class="bqplot figure jupyter-widgets">
-            <svg class="svg-background">
-                <g transform="margin translation">
-                    <g class="svg-axes"></g>
-                </g>
-            </svg>
-            <canvas>
-            </canvas>
-            <svg class="svg-figure">
-                <g transform="margin translation">
-                    <g class="svg-marks"></g>
-                    <g class="svg-interaction"></g>
-                </g>
-            </svg>
-        </div>
-        */
-
+      <div class="bqplot figure jupyter-widgets">
+          <svg class="svg-background">
+              <g transform="margin translation">
+                  <g class="svg-axes"></g>
+              </g>
+          </svg>
+          <canvas>
+          </canvas>
+          <svg class="svg-figure">
+              <g transform="margin translation">
+                  <g class="svg-marks"></g>
+                  <g class="svg-interaction"></g>
+              </g>
+          </svg>
+      </div>
+    */
     this.clip_path = this.svg
       .append('svg:defs')
       .append('svg:clipPath')
@@ -382,9 +381,7 @@ export class Figure extends DOMWidgetView {
     this.model.on('save_svg', this.save_svg, this);
     this.model.on('upload_png', this.upload_png, this);
 
-    const figure_scale_promise = this.create_figure_scales();
-
-    await figure_scale_promise;
+    await this.create_figure_scales();
 
     // Create WebGL context for marks
     this.webGLCanvas = document.createElement('canvas');
@@ -686,7 +683,9 @@ export class Figure extends DOMWidgetView {
       // a relayout
       this.updateDecorators();
     }
-    this.fig_axes.node().removeChild(view.el);
+    if (view.el.parentNode && view.el.parentNode === this.fig_axes.node()) {
+      this.fig_axes.node().removeChild(view.el);
+    }
   }
 
   remove_from_padding_dict(dict, mark_view: Mark, scale_model: ScaleModel) {
