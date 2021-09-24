@@ -4,7 +4,7 @@
 import * as services from '@jupyterlab/services';
 import * as Backbone from 'backbone';
 import * as widgets from '@jupyter-widgets/controls';
-import * as base from '@jupyter-widgets/base';
+import * as base from '@jupyter-widgets/base-manager';
 import * as bqscales from 'bqscales';
 
 let numComms = 0;
@@ -52,7 +52,7 @@ export class MockComm {
   _on_close: Function = null;
 }
 
-export class DummyManager extends base.ManagerBase<HTMLElement> {
+export class DummyManager extends base.ManagerBase {
   constructor(library: any) {
     super();
     this.el = window.document.createElement('div');
