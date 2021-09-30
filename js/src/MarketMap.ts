@@ -795,9 +795,15 @@ export class MarketMap extends Figure {
           .append('td')
           .attr('class', 'tooltiptext')
           .text((datum, index) => {
-            return ref_data === null || ref_data === undefined
-              ? null
-              : that.tooltip_formats[index](ref_data[datum]);
+            if (ref_data === null || ref_data === undefined) {
+              return null;
+            }
+
+            if (ref_data[datum] === null || ref_data[datum] === undefined) {
+              return 'N/A';
+            }
+
+            return that.tooltip_formats[index](ref_data[datum]);
           });
       }
       this.popper.enableEventListeners();
