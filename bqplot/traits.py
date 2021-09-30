@@ -239,7 +239,9 @@ def dataframe_to_json(df, obj):
     if df is None:
         return None
     else:
-        return df.to_dict(orient='records')
+        # Replacing NaNs with None as it's not valid JSON
+        cleandf = df.fillna(np.nan).replace([np.nan], [None])
+        return cleandf.to_dict(orient='records')
 
 
 dataframe_serialization = dict(to_json=dataframe_to_json, from_json=dataframe_from_json)

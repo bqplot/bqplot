@@ -454,7 +454,6 @@ export class Map extends Mark {
     } else if (
       color_data[d.id] === undefined ||
       color_data[d.id] === null ||
-      color_data[d.id] === 'nan' ||
       color_scale === undefined
     ) {
       return colors.default_color;
