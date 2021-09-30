@@ -738,13 +738,7 @@ export class Figure extends widgets.DOMWidgetView {
       case 'after-show':
       case 'after-attach':
         if (this.pWidget.isVisible) {
-          const figureSize = this.getFigureSize();
-          if (
-            this.width !== figureSize.width ||
-            this.height !== figureSize.height
-          ) {
-            this.debouncedRelayout();
-          }
+          this.debouncedRelayout();
         }
         break;
     }
@@ -754,6 +748,12 @@ export class Figure extends widgets.DOMWidgetView {
     const relayoutImpl = () => {
       this.relayoutRequested = false; // reset relayout request
       const figureSize = this.getFigureSize();
+
+      if (this.width == figureSize.width && this.height == figureSize.height) {
+        // Bypass relayout
+        return;
+      }
+
       this.width = figureSize.width;
       this.height = figureSize.height;
       // update ranges
