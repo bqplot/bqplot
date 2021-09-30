@@ -241,6 +241,7 @@ export class Figure extends widgets.DOMWidgetView {
     // TODO: remove the save png event mechanism.
     this.model.on('save_png', this.save_png, this);
     this.model.on('save_svg', this.save_svg, this);
+    this.model.on('upload_png', this.upload_png, this);
 
     const figure_scale_promise = this.create_figure_scales();
 
@@ -1175,6 +1176,20 @@ export class Figure extends widgets.DOMWidgetView {
       };
       image.src =
         'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(xml)));
+    });
+  }
+
+  async upload_png(model, scale) {
+    const canvas = await this.get_rendered_canvas(scale);
+    canvas.toBlob(async (blob) => {
+      const buff = await blob.arrayBuffer();
+      model.send(
+        {
+          event: 'upload_png',
+        },
+        null,
+        [buff]
+      );
     });
   }
 

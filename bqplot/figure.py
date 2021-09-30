@@ -153,6 +153,12 @@ class Figure(DOMWidget):
     animation_duration = Int().tag(sync=True,
                                    display_name='Animation duration')
 
+    def __init__(self, **kwargs):
+        super(Figure, self).__init__(**kwargs)
+
+        self._upload_png_callback = None
+        self.on_msg(self._handle_custom_msgs)
+
     @default('scale_x')
     def _default_scale_x(self):
         return LinearScale(min=0, max=1, allow_padding=False)
@@ -185,6 +191,23 @@ class Figure(DOMWidget):
         '''
         self.send({"type": "save_svg", "filename": filename})
 
+    def get_png_data(self, callback, scale=None):
+        '''
+        Gets the Figure as a PNG memory view
+
+        Parameters
+        ----------
+        callback: callable
+            Called with the PNG data as the only positional argument.
+
+        scale: float (default: None)
+            Scale up the png resolution when scale > 1, when not given base this on the screen pixel ratio.
+        '''
+        if self._upload_png_callback:
+            raise Exception('get_png_data already in progress')
+        self._upload_png_callback = callback
+        self.send({'type': 'upload_png', 'scale': scale})
+
     @validate('min_aspect_ratio', 'max_aspect_ratio')
     def _validate_aspect_ratio(self, proposal):
         value = proposal['value']
@@ -195,6 +218,13 @@ class Figure(DOMWidget):
            value < self.min_aspect_ratio:
             raise TraitError('setting max_aspect_ratio < min_aspect_ratio')
         return value
+
+    def _handle_custom_msgs(self, _, content, buffers=None):
+        if content.get('event') == 'upload_png':
+            try:
+                self._upload_png_callback(buffers[0])
+            finally:
+                self._upload_png_callback = None
 
     _view_name = Unicode('Figure').tag(sync=True)
     _model_name = Unicode('FigureModel').tag(sync=True)

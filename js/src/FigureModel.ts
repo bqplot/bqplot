@@ -67,6 +67,8 @@ export class FigureModel extends widgets.DOMWidgetModel {
       this.trigger('save_png', msg.filename, msg.scale);
     } else if (msg.type === 'save_svg') {
       this.trigger('save_svg', msg.filename);
+    } else if (msg.type === 'upload_png') {
+      this.trigger('upload_png', this, msg.scale);
     }
   }
 
