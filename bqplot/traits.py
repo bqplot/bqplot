@@ -83,9 +83,7 @@ class Date(TraitType):
         self.error(obj, value)
 
     def __init__(self, default_value=dt.datetime.today(), **kwargs):
-        args = (default_value,)
-        self.default_value = default_value
-        super(Date, self).__init__(args=args, **kwargs)
+        super(Date, self).__init__(default_value=default_value, **kwargs)
         self.tag(**date_serialization)
 
 
@@ -130,8 +128,16 @@ def array_from_json(value, obj=None):
         # this will accept regular json data, like an array of values, which can be useful it you want
         # to link bqplot to other libraries that use that
         if isinstance(value, list):
-            if len(value) > 0 and isinstance(value[0], dict) and 'value' in value[0]:
-                return np.array([array_from_json(k) for k in value])
+            if len(value) > 0 and (isinstance(value[0], dict) and 'value' in value[0]):
+                subarrays = [array_from_json(k) for k in value]
+                if len(subarrays) > 0:
+                    expected_length = len(subarrays[0])
+                    # if a 'ragged' array, we should explicitly pass dtype=object
+                    if any(len(k) != expected_length for k in subarrays[1:]):
+                        return np.array(subarrays, dtype=object)
+                return np.array(subarrays)
+            elif len(value) > 0 and isinstance(value[0], list):
+                return np.array(value, dtype=object)
             else:
                 return np.array(value)
         elif 'value' in value:

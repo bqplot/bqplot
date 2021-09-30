@@ -955,8 +955,8 @@ class Boxplot(Mark):
 
     stroke = Color(None, allow_none=True)\
         .tag(sync=True, display_name='Stroke color')
-    box_fill_color = Color('steelblue', sync=True,
-                           display_name='Fill color for the box')
+    box_fill_color = Color('steelblue')\
+        .tag(sync=True, display_name='Fill color for the box')
     outlier_fill_color = Color('gray').tag(sync=True,
                                            display_name='Outlier fill color')
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
@@ -1280,10 +1280,10 @@ class OHLC(Mark):
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'}
     }).tag(sync=True)
-    marker = Enum(['candle', 'bar'], default_value='candle',
-                  display_name='Marker').tag(sync=True)
-    stroke = Color(None, display_name='Stroke color', allow_none=True)\
-        .tag(sync=True)
+    marker = Enum(['candle', 'bar'], default_value='candle')\
+        .tag(sync=True, display_name='Marker')
+    stroke = Color(None, allow_none=True)\
+        .tag(sync=True, display_name='Stroke color')
     stroke_width = Float(1.0).tag(sync=True, display_name='Stroke Width')
     colors = List(trait=Color(default_value=None, allow_none=True),
                   default_value=['green', 'red'])\

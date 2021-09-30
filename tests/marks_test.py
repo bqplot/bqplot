@@ -16,7 +16,7 @@ def test_scatter(figure):
 
 def test_lines(scales):
     # Create a Line chart with data of multiple shapes should work with binary serialization
-    lines = bqplot.Lines(x=[[0, 1], [0, 1, 2]], y=[[0, 1], [1, 0, -1]], scales=scales)
+    lines = bqplot.Lines(x=np.array([[0, 1], [0, 1, 2]], dtype=object), y=np.array([[0, 1], [1, 0, -1]], dtype=object), scales=scales)
 
     lines = bqplot.Lines(x=[[0, 1], [0, 1]], y=[[0, 1], [1, 0]], scales=scales)
     state = lines.get_state()
@@ -34,7 +34,8 @@ def test_lines_ordinal(scale_ordinal, scale_y):
 
 def test_bars(scales):
     # Create a Bar chart with data of multiple shapes should work with binary serialization
-    bars = bqplot.Bars(x=[0, 1], y=[[0, 1], [1, 0, -1]], scales=scales)
+    y = np.array([[0, 1], [1, 0, -1]], dtype=object)
+    bars = bqplot.Bars(x=[0, 1], y=y, scales=scales)
 
     bars = bqplot.Bars(x=[0, 1], y=[[1, 2], [3, 4]], scales=scales)
     state = bars.get_state()
