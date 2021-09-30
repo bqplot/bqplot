@@ -77,7 +77,7 @@ def test_binary_serialize_text():
 def test_dtype_with_str():
     # dtype object is not supported
     text = np.array(['foo', None, 'bar'])
-    assert text.dtype == np.object
+    assert text.dtype == object
     with pytest.raises(ValueError, match='.*Unsupported dtype object*'), pytest.warns(UserWarning):
         array_to_json(text)
     # but if they contain all strings, it should convert them.
@@ -92,7 +92,7 @@ def test_serialize_nested_list():
         [0, 1, 2, 3, 4, 5, 6],
         [0, 1, 2, 2, 3],
         [0, 1, 2, 3, 4, 5, 6, 7],
-    ])
+    ], dtype=object)
 
     serialized_data = array_to_json(data)
 
@@ -116,7 +116,7 @@ def test_serialize_nested_list():
         [0, 1, 2, 3, 4, 5, 6],
         np.array([0, 1, 2, 2, 3]),
         [0, 1, 2, 3]
-    ])
+    ], dtype=object)
 
     serialized_data = array_to_json(data)
 
@@ -139,7 +139,7 @@ def test_serialize_nested_list():
     data = np.array([
         ['Hello', 'Hallo'],
         ['Coucou', 'Hi', 'Ciao']
-    ])
+    ], dtype=object)
 
     serialized_data = array_to_json(data)
 
