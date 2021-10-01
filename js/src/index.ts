@@ -71,6 +71,7 @@ export * from './Image';
 export * from './ImageModel';
 export * from './ScatterGL';
 export * from './ScatterGLModel';
+export * from './MouseInteraction';
 
 // Temporary for backward compatibility
 export * from 'bqscales';
