@@ -58,13 +58,7 @@ export async function create_widget(
   return { model: model, view: view };
 }
 
-export async function create_figure_scatter(
-  manager,
-  x,
-  y,
-  mega = false,
-  log = false
-) {
+export async function create_figure_scatter(manager, x, y, log = false) {
   const layout = await create_model(
     manager,
     '@jupyter-widgets/base',
@@ -118,7 +112,7 @@ export async function create_figure_scatter(
 
   const scatterModel = await create_model_bqplot(
     manager,
-    mega ? 'ScatterGL' : 'Scatter',
+    'Scatter',
     'scatter1',
     {
       scales: scales,

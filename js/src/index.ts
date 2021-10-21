@@ -69,8 +69,6 @@ export * from './GraphModel';
 export * from './Graph';
 export * from './Image';
 export * from './ImageModel';
-export * from './ScatterGL';
-export * from './ScatterGLModel';
 
 // Temporary for backward compatibility
 export * from 'bqscales';
