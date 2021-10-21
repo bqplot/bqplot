@@ -20,3 +20,4 @@ dependencies:
     - selenium
     - flake8
     - nose
+    - codespell
