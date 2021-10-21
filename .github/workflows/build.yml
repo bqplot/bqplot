@@ -51,9 +51,7 @@ jobs:
       run: jupyter labextension list 2>&1 | grep bqplot
 
     - name: Discover typos with codespell
-      run: |
-        pip install codespell
-        codespell --ignore-words-list="afterall,curvelinear,hist" --skip="*.csv,*.json,*.lock"
+      run: codespell --ignore-words-list="afterall,curvelinear,hist" --skip="./share,./.git/*,./js/node_modules/*,./js/dist/*,*.csv,*.json,*.lock,*.map"
 
     - name: Python PEP8 check
       run: flake8 bqplot --ignore=E501,W504,W503
