@@ -26,7 +26,8 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
-ui-tests/test-output/*
+ui-tests/test-results
+ui-tests/playwright-report
 
 # Translations
 *.mo
