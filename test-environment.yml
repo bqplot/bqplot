@@ -12,8 +12,8 @@ dependencies:
     - pandas >=1.0.0,<2.0.0
     - bqscales  >=0.2.2,<0.3
     - scipy
-    - jupyterlab=3.0.11  # to build the lab federated bundle
-    - jupyter-packaging # to build the wheel
+    - jupyterlab=3.2
+    - jupyter-packaging
     - pytest
     - nbval
     - pytest-cov
