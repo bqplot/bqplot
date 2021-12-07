@@ -23,7 +23,6 @@ export interface BarGroupValue {
   subIndex: number;
   y0: number;
   y1: number;
-  yRef: number;
   x: number;
   y: number;
   colorIndex: number;
@@ -113,55 +112,79 @@ export class BarsModel extends MarkModel {
       // since x_data may be a TypedArray, explicitly use Array.map
       this.mark_data = Array.prototype.map.call(x_data, (x_elem, index) => {
         const data: any = {};
-        let y0 = this.baseValue;
-        let y0_neg = this.baseValue;
-        let y0_left = this.baseValue;
         data.key = x_elem;
+
+        let cumulative = 0; // accumulates size of histogram values for stacked histograms
+        let yTotal = 0;
+        data.values = Array.prototype.map.call(y_data, (y_elem, y_index) => {
+          yTotal += y_elem[index];
+        });
+        // does the bar to up or down between baseValue and yTotal?
+        let positive = yTotal > this.baseValue;
 
         // since y_data may be a TypedArray, explicitly use Array.map
         data.values = Array.prototype.map.call(y_data, (y_elem, y_index) => {
-          let value = y_elem[index] - this.baseValue;
-          if (isNaN(value)) {
-            value = 0;
+          // In the following code, the values y0, y1 are
+          // only relevant for a stacked bar chart. grouped
+          // bars only deal with baseValue and y.
+
+          // y0 is the value on the y scale for the upper end.
+          // First bar starts at baseValue
+          let y0 = y_index == 0 ? this.baseValue : cumulative;
+          if (!isNaN(y_elem[index])) {
+            cumulative += y_elem[index];
           }
-          const positive = value >= 0;
+          // y1 is the value on the y scale for the lower end
+          let y1 = cumulative;
+
+          if (positive) {
+            if (y0 <= this.baseValue && y1 <= this.baseValue) {
+              // bar is totally below the baseValue, no visual representation that makes sense
+              console.warn('bars are below base value, and not visible');
+            }
+            // make sure the bar does not end below baseValue
+            if (y1 < this.baseValue) {
+              y1 = this.baseValue;
+            }
+            // make sure the bar does begin below baseValue
+            if (y0 < this.baseValue) {
+              y0 = this.baseValue;
+            }
+          } else {
+            if (y0 >= this.baseValue && y1 >= this.baseValue) {
+              // bar is totally above the baseValue, no visual representation that makes sense
+              console.warn('bars are above base value, and not visible');
+            }
+            // make sure the bar does begin above baseValue
+            if (y1 > this.baseValue) {
+              y1 = this.baseValue;
+            }
+            // make sure the bar does not end above baseValue
+            if (y0 > this.baseValue) {
+              y0 = this.baseValue;
+            }
+          }
+          if (y1 < y0) {
+            // svg doesn't like negative heights, so we swap
+            [y1, y0] = [y0, y1];
+          }
           return {
             index: index,
             subIndex: y_index,
             x: x_elem,
-            // In the following code, the values y0, y1 are
-            // only relevant for a stacked bar chart. grouped
-            // bars only deal with baseValue and y.
-
-            // y0 is the value on the y scale for the upper end
-            // of the bar.
-            y0: positive
-              ? y0
-              : (function () {
-                  y0_left += value;
-                  return y0_left;
-                })(),
-            // y1 is the value on the y scale for the lower end
-            // of the bar.
-            y1: positive
-              ? (y0 += value)
-              : (function () {
-                  y0_neg += value;
-                  return y0_neg - value;
-                })(),
-            // yRef is the value on the y scale which represents
-            // the height of the bar
-            yRef: value,
+            y0,
+            y1,
             y: y_elem[index],
           };
         });
 
+        let extremes = [this.baseValue, yTotal];
         // posMax is the maximum positive value for a group of
         // bars.
-        data.posMax = y0;
+        data.posMax = d3.max(extremes);
         // negMax is the minimum negative value for a group of
         // bars.
-        data.negMax = y0_neg;
+        data.negMax = d3.min(extremes);
         return data;
       });
       this.yIs2d = this.mark_data[0].values.length > 1;
