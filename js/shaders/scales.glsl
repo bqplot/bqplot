@@ -1,3 +1,6 @@
+#define SCALE_TYPE_LINEAR 1
+#define SCALE_TYPE_LOG 2
+
 float scale_transform_linear(float domain_value, vec2 range, vec2 domain) {
     float normalized = (domain_value - domain[0]) / (domain[1] - domain[0]);
     float range_value = normalized * (range[1] - range[0]) + range[0];

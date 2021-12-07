@@ -1071,6 +1071,16 @@ export class ScatterGL extends Mark {
     if (!this.y_scale) {
       this.y_scale = this.parent.scale_y;
     }
+    const scaleTypeMap = {
+      linear: 1,
+      log: 2,
+    };
+    this.scatter_material.defines[`SCALE_TYPE_x`] =
+      scaleTypeMap[this.x_scale.model.type];
+    this.scatter_material.defines[`SCALE_TYPE_y`] =
+      scaleTypeMap[this.y_scale.model.type];
+    this.scatter_material.needsUpdate = true;
+
     this.listenTo(this.x_scale, 'domain_changed', function () {
       if (!this.model.dirty) {
         const animate = true;
@@ -1083,6 +1093,7 @@ export class ScatterGL extends Mark {
         this.update_position(animate);
       }
     });
+    this.update_scene();
   }
 
   initialize_additional_scales() {

@@ -101,8 +101,18 @@ attribute float color;
 attribute vec3 color;
 #endif
 
-#define SCALE_X(x) scale_transform_linear(x, range_x, domain_x)
-#define SCALE_Y(x) scale_transform_linear(x, range_y, domain_y)
+#if SCALE_TYPE_x == SCALE_TYPE_LINEAR
+    #define SCALE_X(x) scale_transform_linear(x, range_x, domain_x)
+#elif SCALE_TYPE_x == SCALE_TYPE_LOG
+    #define SCALE_X(x) scale_transform_log(x, range_x, domain_x)
+#endif
+
+#if SCALE_TYPE_y == SCALE_TYPE_LINEAR
+    #define SCALE_Y(x) scale_transform_linear(x, range_y, domain_y)
+#elif SCALE_TYPE_y == SCALE_TYPE_LOG
+    #define SCALE_Y(x) scale_transform_log(x, range_y, domain_y)
+#endif
+
 #define SCALE_SIZE(x) scale_transform_linear(x, range_size, domain_size)
 #define SCALE_ROTATION(x) scale_transform_linear(x, range_rotation, domain_rotation)
 #define SCALE_OPACITY(x) scale_transform_linear(x, range_opacity, domain_opacity)
