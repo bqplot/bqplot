@@ -1071,8 +1071,13 @@ export class ScatterGL extends Mark {
     if (!this.y_scale) {
       this.y_scale = this.parent.scale_y;
     }
+
+    // TODO Support ordinal scales?
     const scaleTypeMap = {
+      // Linear scales
+      date: 1,
       linear: 1,
+      // Log scales
       log: 2,
     };
     this.scatter_material.defines[`SCALE_TYPE_x`] =
