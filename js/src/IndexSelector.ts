@@ -81,7 +81,7 @@ export class IndexSelector extends BaseXSelector {
   }
 
   mousemove() {
-    if (!this.active) {
+    if (!this.active || this.dirty) {
       return;
     }
     this.dirty = true;
@@ -143,7 +143,10 @@ export class IndexSelector extends BaseXSelector {
     } else {
       const pixel = this.scale.scale(selected[0]);
       if (this.line !== undefined && this.line !== null) {
-        this.line.attr('x1', 0).attr('x2', 0).attr('visibility', 'visible');
+        this.line
+          .attr('x1', pixel)
+          .attr('x2', pixel)
+          .attr('visibility', 'visible');
       }
       //the selected may be called before the index selector is
       //active for the first time.
