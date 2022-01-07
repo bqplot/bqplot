@@ -1,6 +1,11 @@
 Usage
 =====
 
+The following code examples are static, but you can make them executable and test bqplot
+by clicking the following button:
+
+.. thebe-button:: Click me!
+
 Examples
 --------
 
