@@ -28,6 +28,8 @@ from jupyter_packaging import (
 import os
 from os.path import join as pjoin
 
+name = 'bqplot'
+
 here = os.path.dirname(os.path.abspath(__file__))
 version = get_version(pjoin('bqplot', '_version.py'))
 
@@ -35,8 +37,8 @@ js_dir = pjoin(here, 'js')
 
 # Representative files that should exist after a successful build
 jstargets = [
-    pjoin('share', 'jupyter', 'nbextensions', 'bqplot', 'index.js'),
-    pjoin('share', 'jupyter', 'labextensions', 'bqplot', 'package.json'),
+    pjoin('share', 'jupyter', 'nbextensions', name, 'index.js'),
+    pjoin('share', 'jupyter', 'labextensions', name, 'package.json'),
 ]
 
 data_files_spec = [
