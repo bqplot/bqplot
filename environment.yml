@@ -2,7 +2,7 @@ name: bqplot
 channels:
   - conda-forge
 dependencies:
-  - bqplot=0.12.31
+  - bqplot=0.12.32
   - scikit-learn
   - scipy
   - numpy
