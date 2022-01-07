@@ -45,6 +45,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'jupyter_sphinx',
+    'sphinx_thebe'
 ]
 
 autosummary_generate = True
@@ -64,9 +65,6 @@ if _release['version_info'][-1] == 'dev':
         significant differences from the latest stable release.
 
     """
-
-# The encoding of source files.
-#source_encoding = 'utf-8-sig'
 
 # The master toctree document.
 master_doc = 'index'
@@ -98,6 +96,15 @@ html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 htmlhelp_basename = 'bqplotdoc'
 
+# -- Options for thebe ---------------------------------------------
+
+thebe_config = {
+    "always_load": False,
+    "selector": "div.jupyter_cell",
+    "selector_output": "div.cell_output",
+    "repository_url": "https://github.com/bqplot/bqplot",
+    "repository_branch": "stable",
+}
 
 # -- Options for LaTeX output ---------------------------------------------
 

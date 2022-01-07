@@ -6,4 +6,5 @@ dependencies:
  - pandas
  - bqplot
  - sphinx_rtd_theme
+ - sphinx_thebe
  - jupyter_sphinx
