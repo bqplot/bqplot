@@ -114,60 +114,37 @@ export class BarsModel extends MarkModel {
         const data: any = {};
         data.key = x_elem;
 
-        let cumulative = 0; // accumulates size of histogram values for stacked histograms
-        let yTotal = 0;
-        data.values = Array.prototype.map.call(y_data, (y_elem, y_index) => {
-          yTotal += y_elem[index];
-        });
-        // does the bar to up or down between baseValue and yTotal?
-        let positive = yTotal > this.baseValue;
+        // split bins into positive ( value > baseValue) and negative, and stack those separately
+        // accumulates size/height of histogram values for stacked histograms
+        let cumulativePos = this.baseValue;
+        let cumulativeNeg = this.baseValue;
 
         // since y_data may be a TypedArray, explicitly use Array.map
         data.values = Array.prototype.map.call(y_data, (y_elem, y_index) => {
-          // In the following code, the values y0, y1 are
+          // y0, y1 are the upper and lower bound of the bars and
           // only relevant for a stacked bar chart. grouped
           // bars only deal with baseValue and y.
 
-          // y0 is the value on the y scale for the upper end.
-          // First bar starts at baseValue
-          let y0 = y_index == 0 ? this.baseValue : cumulative;
-          if (!isNaN(y_elem[index])) {
-            cumulative += y_elem[index];
-          }
-          // y1 is the value on the y scale for the lower end
-          let y1 = cumulative;
+          let y0, y1;
+          const value = isNaN(y_elem[index])
+            ? 0
+            : y_elem[index] - this.baseValue;
 
-          if (positive) {
-            if (y0 <= this.baseValue && y1 <= this.baseValue) {
-              // bar is totally below the baseValue, no visual representation that makes sense
-              console.warn('bars are below base value, and not visible');
+          if (value >= 0) {
+            y0 = cumulativePos;
+            if (!isNaN(y_elem[index])) {
+              cumulativePos += value;
             }
-            // make sure the bar does not end below baseValue
-            if (y1 < this.baseValue) {
-              y1 = this.baseValue;
-            }
-            // make sure the bar does begin below baseValue
-            if (y0 < this.baseValue) {
-              y0 = this.baseValue;
-            }
+            y1 = cumulativePos;
           } else {
-            if (y0 >= this.baseValue && y1 >= this.baseValue) {
-              // bar is totally above the baseValue, no visual representation that makes sense
-              console.warn('bars are above base value, and not visible');
+            // reverse y1 and y0 to not have negative heights
+            y1 = cumulativeNeg;
+            if (!isNaN(y_elem[index])) {
+              cumulativeNeg += value;
             }
-            // make sure the bar does begin above baseValue
-            if (y1 > this.baseValue) {
-              y1 = this.baseValue;
-            }
-            // make sure the bar does not end above baseValue
-            if (y0 > this.baseValue) {
-              y0 = this.baseValue;
-            }
+            y0 = cumulativeNeg;
           }
-          if (y1 < y0) {
-            // svg doesn't like negative heights, so we swap
-            [y1, y0] = [y0, y1];
-          }
+
           return {
             index: index,
             subIndex: y_index,
@@ -178,7 +155,7 @@ export class BarsModel extends MarkModel {
           };
         });
 
-        let extremes = [this.baseValue, yTotal];
+        let extremes = [this.baseValue, cumulativeNeg, cumulativePos];
         // posMax is the maximum positive value for a group of
         // bars.
         data.posMax = d3.max(extremes);
