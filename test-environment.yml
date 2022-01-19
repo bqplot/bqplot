@@ -12,7 +12,7 @@ dependencies:
     - pandas >=1.0.0,<2.0.0
     - bqscales  >=0.2.2,<0.3
     - scipy
-    - jupyterlab=3.2
+    - jupyterlab
     - jupyter-packaging
     - pytest
     - nbval
