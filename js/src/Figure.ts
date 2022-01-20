@@ -946,7 +946,7 @@ export class Figure extends DOMWidgetView {
       applyAttrs(this.title, {
         x: 0.5 * this.width,
         y: 0,
-        dy: '0em'
+        dy: '0em',
       });
 
       this.toolbar_div.node().style.top = `${this.offsetY / 2.0}px`;

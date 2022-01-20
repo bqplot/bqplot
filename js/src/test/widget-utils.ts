@@ -58,7 +58,13 @@ export async function create_widget(
   return { model: model, view: view };
 }
 
-export async function create_figure_scatter(manager, x, y, log = false, autoLayout = false) {
+export async function create_figure_scatter(
+  manager,
+  x,
+  y,
+  log = false,
+  autoLayout = false
+) {
   const layout = await create_model(
     manager,
     '@jupyter-widgets/base',
