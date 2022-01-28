@@ -228,21 +228,16 @@ export class Figure extends DOMWidgetView {
     };
   }
 
-  render() {
-    // we cannot use Promise.all here, since this.layoutPromise is resolved, and will be overwritten later on
-    this.displayed.then(() => {
-      // make sure we render after all layouts styles are set, since they can affect the size
-      this.layoutPromise.then(this.renderImpl.bind(this));
-    });
+  async render() {
+    // We don't do anything, we'll wait for the widget to actually be visible
   }
 
   protected async renderImpl() {
-    const figureSize = this.getFigureSize();
-
-    this.width = figureSize.width;
-    this.height = figureSize.height;
-    this.offsetX = figureSize.x;
-    this.offsetY = figureSize.y;
+    if (!this.attached || this.rendered) {
+      // If it's not attached yet, or it has already been rendered,
+      // we don't do anything
+      return;
+    }
 
     this.id = uuid();
 
@@ -262,27 +257,9 @@ export class Figure extends DOMWidgetView {
     this.figure_padding_y = this.model.get('padding_y');
     this.clip_id = 'clip_path_' + this.id;
 
-    // we hide it when the plot area is too small
-    if (this.plotareaWidth < 1 || this.plotareaHeight < 1) {
-      this.el.style.visibility = 'hidden';
-    } else {
-      this.el.style.visibility = '';
-    }
     // this.fig is the top <g> element to be impacted by a rescaling / change of margins
-
     this.fig = this.svg.append('g');
     this.fig_background = this.svg_background.append('g');
-
-    if (!this.autoLayout) {
-      this.fig.attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
-      this.fig_background.attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
-    }
 
     this.tooltip_div = d3
       .select(document.createElement('div'))
@@ -297,29 +274,8 @@ export class Figure extends DOMWidgetView {
       placement: 'auto',
     });
 
-    this.bg = this.fig_background
-      .append('rect')
-      .attr('class', 'plotarea_background')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight)
-      .style('pointer-events', 'inherit');
-    applyStyles(this.bg, this.model.get('background_style'));
-
-    this.bg_events = this.fig
-      .append('rect')
-      .attr('class', 'plotarea_events')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight)
-      .style('pointer-events', 'inherit');
-    this.bg_events.on('click', () => {
-      this.trigger('bg_clicked');
-    });
-
     this.fig_axes = this.fig_background.append('g');
+
     this.fig_marks = this.fig.append('g');
     this.interaction = this.fig.append('g');
 
@@ -356,32 +312,111 @@ export class Figure extends DOMWidgetView {
           </svg>
       </div>
     */
+
     this.clip_path = this.svg
       .append('svg:defs')
       .append('svg:clipPath')
       .attr('id', this.clip_id)
       .append('rect')
       .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight);
+      .attr('y', 0);
 
     this.title = this.fig
       .append('text')
-      .attr('class', 'mainheading')
-      .attr('x', 0.5 * this.plotareaWidth)
-      .attr('y', this.autoLayout ? 0 : -this.margin.top / 2.0)
-      .attr('dy', this.autoLayout ? '0em' : '1em');
+      .attr('class', 'mainheading');
+
     applyStyles(this.title, this.model.get('title_style'));
 
     this.title.text(this.model.get('title'));
+
+    this.tooltip_div = d3
+      .select(document.createElement('div'))
+      .attr('class', 'tooltip_div');
+
+    await this.create_figure_scales();
+
+    this.axis_views = new ViewList(this.add_axis, this.remove_axis, this);
+    await this.axis_views.update(this.model.get('axes'));
+
+    // Compute figure size
+    const figureSize = this.getFigureSize();
+
+    this.width = figureSize.width;
+    this.height = figureSize.height;
+    this.offsetX = figureSize.x;
+    this.offsetY = figureSize.y;
+
+    // We hide it when the plot area is too small
+    if (this.plotareaWidth < 1 || this.plotareaHeight < 1) {
+      this.el.style.visibility = 'hidden';
+    } else {
+      this.el.style.visibility = '';
+    }
+
+    applyAttrs(this.clip_path, {
+      width: this.plotareaWidth,
+      height: this.plotareaHeight,
+    });
+
+    // transform figure
+    if (this.autoLayout) {
+      this.fig.attr(
+        'transform',
+        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+      );
+      this.fig_background.attr(
+        'transform',
+        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+      );
+
+      applyAttrs(this.title, {
+        x: 0.5 * this.width,
+        y: 0,
+        dy: '0em',
+      });
+    } else {
+      this.fig.attr(
+        'transform',
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+      );
+      this.fig_background.attr(
+        'transform',
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+      );
+
+      applyAttrs(this.title, {
+        x: 0.5 * this.plotareaWidth,
+        y: -this.margin.top / 2.0,
+        dy: '0em',
+      });
+    }
+
+    this.bg = this.fig_background
+      .append('rect')
+      .attr('class', 'plotarea_background')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight)
+      .style('pointer-events', 'inherit');
+    applyStyles(this.bg, this.model.get('background_style'));
+
+    this.bg_events = this.fig
+      .append('rect')
+      .attr('class', 'plotarea_events')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight)
+      .style('pointer-events', 'inherit');
+    this.bg_events.on('click', () => {
+      this.trigger('bg_clicked');
+    });
 
     // TODO: remove the save png event mechanism.
     this.model.on('save_png', this.save_png, this);
     this.model.on('save_svg', this.save_svg, this);
     this.model.on('upload_png', this.upload_png, this);
-
-    await this.create_figure_scales();
 
     // Create WebGL context for marks
     this.webGLCanvas = document.createElement('canvas');
@@ -402,7 +437,7 @@ export class Figure extends DOMWidgetView {
 
     this.mark_views = new ViewList(this.add_mark, this.remove_mark, this);
 
-    const mark_views_updated = this.mark_views
+    await this.mark_views
       .update(this.model.get('marks'))
       .then((views) => {
         this.replace_dummy_nodes(views);
@@ -413,9 +448,6 @@ export class Figure extends DOMWidgetView {
         this.set_interaction(this.model.get('interaction'));
         this._initial_marks_created_resolve();
       });
-
-    this.axis_views = new ViewList(this.add_axis, this.remove_axis, this);
-    const axis_views_updated = this.axis_views.update(this.model.get('axes'));
 
     // TODO: move to the model
     this.model.on_some_change(
@@ -475,11 +507,14 @@ export class Figure extends DOMWidgetView {
     this.once('remove', () => {
       window.removeEventListener('resize', this.debouncedRelayout);
     });
-    this.updateDecorators();
 
     this.toolbar_div = this.create_toolbar();
     if (this.model.get('display_toolbar')) {
       this.toolbar_div.node().style.display = 'unset';
+      if (this.autoLayout) {
+        this.toolbar_div.node().style.top = `${this.offsetY / 2.0}px`;
+        this.toolbar_div.node().style.right = `${this.offsetX}px`;
+      }
     }
 
     this.model.on('change:display_toolbar', (_, display_toolbar) => {
@@ -491,7 +526,7 @@ export class Figure extends DOMWidgetView {
       }
     });
 
-    return Promise.all([mark_views_updated, axis_views_updated]);
+    this.rendered = true;
   }
 
   set needsWebGLContext(value: boolean) {
@@ -885,9 +920,14 @@ export class Figure extends DOMWidgetView {
     super.processPhosphorMessage.apply(this, arguments);
 
     switch (msg.type) {
-      case 'resize':
-      case 'after-show':
       case 'after-attach':
+        this.attached = true;
+        this.displayed.then(async () => {
+          // Make sure we render after all layouts styles are set, since they can affect the size
+          await this.layoutPromise.then(this.renderImpl.bind(this));
+        });
+        break;
+      case 'resize':
         if (this.pWidget.isVisible) {
           this.debouncedRelayout();
         }
@@ -896,7 +936,7 @@ export class Figure extends DOMWidgetView {
   }
 
   relayout() {
-    if (!this.relayoutRequested) {
+    if (this.rendered && !this.relayoutRequested) {
       this.relayoutRequested = true; // avoid scheduling a relayout twice
       requestAnimationFrame(this.relayoutImpl.bind(this));
     }
@@ -1492,6 +1532,9 @@ export class Figure extends DOMWidgetView {
       : this.height - this.margin.top - this.margin.bottom;
   }
 
+  private attached = false;
+  private rendered = false;
+
   axis_views: ViewList<DOMWidgetView>;
   bg: d3.Selection<SVGRectElement, any, any, any>;
   bg_events: d3.Selection<SVGRectElement, any, any, any>;
@@ -1503,11 +1546,12 @@ export class Figure extends DOMWidgetView {
   fig_marks: d3.Selection<SVGGraphicsElement, any, any, any>;
   fig_background: d3.Selection<SVGGraphicsElement, any, any, any>;
   fig: d3.Selection<SVGGraphicsElement, any, any, any>;
-  figure_padding_x: number;
-  figure_padding_y: number;
-  height: number;
-  offsetX: number;
-  offsetY: number;
+  figure_padding_x: number = 0;
+  figure_padding_y: number = 0;
+  width: number = 0;
+  height: number = 0;
+  offsetX: number = 0;
+  offsetY: number = 0;
   interaction_view: Interaction;
   interaction: d3.Selection<SVGGElement, any, any, any>;
   mark_views: ViewList<Mark>;
@@ -1520,7 +1564,6 @@ export class Figure extends DOMWidgetView {
   title: d3.Selection<SVGTextElement, any, any, any>;
   tooltip_div: d3.Selection<HTMLDivElement, any, any, any>;
   toolbar_div: d3.Selection<HTMLDivElement, any, any, any>;
-  width: number;
   x_pad_dict: { [id: string]: number };
   xPaddingArr: { [id: string]: number };
   y_pad_dict: { [id: string]: number };
