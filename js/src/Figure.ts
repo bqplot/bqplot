@@ -343,9 +343,7 @@ export class Figure extends DOMWidgetView {
       .attr('x', 0)
       .attr('y', 0);
 
-    this.title = this.fig
-      .append('text')
-      .attr('class', 'mainheading');
+    this.title = this.fig.append('text').attr('class', 'mainheading');
 
     applyStyles(this.title, this.model.get('title_style'));
 
@@ -395,10 +393,7 @@ export class Figure extends DOMWidgetView {
 
     // transform figure
     if (this.autoLayout) {
-      this.fig.attr(
-        'transform',
-        `translate(${figureSize.x}, ${figureSize.y})`
-      );
+      this.fig.attr('transform', `translate(${figureSize.x}, ${figureSize.y})`);
       this.fig_background.attr(
         'transform',
         `translate(${figureSize.x}, ${figureSize.y})`
@@ -442,17 +437,15 @@ export class Figure extends DOMWidgetView {
 
     this.mark_views = new ViewList(this.add_mark, this.remove_mark, this);
 
-    await this.mark_views
-      .update(this.model.get('marks'))
-      .then((views) => {
-        this.replace_dummy_nodes(views);
-        this.update_marks(views);
-        this.update_legend();
-        // Update Interaction layer
-        // This has to be done after the marks are created
-        this.set_interaction(this.model.get('interaction'));
-        this._initial_marks_created_resolve();
-      });
+    await this.mark_views.update(this.model.get('marks')).then((views) => {
+      this.replace_dummy_nodes(views);
+      this.update_marks(views);
+      this.update_legend();
+      // Update Interaction layer
+      // This has to be done after the marks are created
+      this.set_interaction(this.model.get('interaction'));
+      this._initial_marks_created_resolve();
+    });
 
     // TODO: move to the model
     this.model.on_some_change(
@@ -603,9 +596,7 @@ export class Figure extends DOMWidgetView {
   async create_figure_scales() {
     // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
     // See the scale_x and scale_y attributes of the python Figure
-    await this.create_child_view(
-      this.model.get('scale_x')
-    ).then((view) => {
+    await this.create_child_view(this.model.get('scale_x')).then((view) => {
       this.scale_x = view as WidgetView as Scale;
       (
         this.scale_x.scale as
@@ -616,9 +607,7 @@ export class Figure extends DOMWidgetView {
       this.scale_x.setRange([0, this.plotareaWidth]);
     });
 
-    await this.create_child_view(
-      this.model.get('scale_y')
-    ).then((view) => {
+    await this.create_child_view(this.model.get('scale_y')).then((view) => {
       this.scale_y = view as WidgetView as Scale;
       (
         this.scale_y.scale as
@@ -978,10 +967,7 @@ export class Figure extends DOMWidgetView {
 
     // transform figure
     if (this.autoLayout) {
-      this.fig.attr(
-        'transform',
-        `translate(${figureSize.x}, ${figureSize.y})`
-      );
+      this.fig.attr('transform', `translate(${figureSize.x}, ${figureSize.y})`);
       this.fig_background.attr(
         'transform',
         `translate(${figureSize.x}, ${figureSize.y})`
