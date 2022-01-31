@@ -360,6 +360,19 @@ export class Figure extends DOMWidgetView {
     this.axis_views = new ViewList(this.add_axis, this.remove_axis, this);
     await this.axis_views.update(this.model.get('axes'));
 
+    // Update decorators before computing the figure size
+    await this.updateDecorators();
+
+    // Create WebGL context for marks
+    this.webGLCanvas = document.createElement('canvas');
+    this.webGLContext = this.webGLCanvas.getContext('webgl');
+    if (this.webGLContext === null) {
+      console.warn(
+        'Unable to initialize WebGL. Your browser or machine may not support it.'
+      );
+    }
+    this.el.insertBefore(this.webGLCanvas, this.svg.node());
+
     // Compute figure size
     const figureSize = this.getFigureSize();
 
@@ -384,12 +397,15 @@ export class Figure extends DOMWidgetView {
     if (this.autoLayout) {
       this.fig.attr(
         'transform',
-        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+        `translate(${figureSize.x}, ${figureSize.y})`
       );
       this.fig_background.attr(
         'transform',
-        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+        `translate(${figureSize.x}, ${figureSize.y})`
       );
+
+      this.webGLCanvas.style.left = `${figureSize.x}px`;
+      this.webGLCanvas.style.top = `${figureSize.y}px`;
 
       applyAttrs(this.title, {
         x: 0.5 * this.width,
@@ -399,12 +415,15 @@ export class Figure extends DOMWidgetView {
     } else {
       this.fig.attr(
         'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+        `translate(${this.margin.left}, ${this.margin.top})`
       );
       this.fig_background.attr(
         'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+        `translate(${this.margin.left}, ${this.margin.top})`
       );
+
+      this.webGLCanvas.style.left = `${this.margin.left}px`;
+      this.webGLCanvas.style.top = `${this.margin.top}px`;
 
       applyAttrs(this.title, {
         x: 0.5 * this.plotareaWidth,
@@ -418,22 +437,8 @@ export class Figure extends DOMWidgetView {
     this.model.on('save_svg', this.save_svg, this);
     this.model.on('upload_png', this.upload_png, this);
 
-    // Create WebGL context for marks
-    this.webGLCanvas = document.createElement('canvas');
-    this.webGLContext = this.webGLCanvas.getContext('webgl');
-
-    this.webGLCanvas.style.left = `${this.margin.left}px`;
-    this.webGLCanvas.style.top = `${this.margin.top}px`;
     this.webGLCanvas.width = this.plotareaWidth;
     this.webGLCanvas.height = this.plotareaHeight;
-
-    this.el.insertBefore(this.webGLCanvas, this.svg.node());
-
-    if (this.webGLContext === null) {
-      console.warn(
-        'Unable to initialize WebGL. Your browser or machine may not support it.'
-      );
-    }
 
     this.mark_views = new ViewList(this.add_mark, this.remove_mark, this);
 
@@ -595,10 +600,10 @@ export class Figure extends DOMWidgetView {
     );
   }
 
-  create_figure_scales() {
+  async create_figure_scales() {
     // Creates the absolute scales for the figure: default domain is [0,1], range is [0,width] and [0,height].
     // See the scale_x and scale_y attributes of the python Figure
-    const x_scale_promise = this.create_child_view(
+    await this.create_child_view(
       this.model.get('scale_x')
     ).then((view) => {
       this.scale_x = view as WidgetView as Scale;
@@ -611,7 +616,7 @@ export class Figure extends DOMWidgetView {
       this.scale_x.setRange([0, this.plotareaWidth]);
     });
 
-    const y_scale_promise = this.create_child_view(
+    await this.create_child_view(
       this.model.get('scale_y')
     ).then((view) => {
       this.scale_y = view as WidgetView as Scale;
@@ -623,7 +628,6 @@ export class Figure extends DOMWidgetView {
       ).clamp(true);
       this.scale_y.setRange([this.plotareaHeight, 0]);
     });
-    return Promise.all([x_scale_promise, y_scale_promise]);
   }
 
   padded_range(
@@ -976,12 +980,15 @@ export class Figure extends DOMWidgetView {
     if (this.autoLayout) {
       this.fig.attr(
         'transform',
-        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+        `translate(${figureSize.x}, ${figureSize.y})`
       );
       this.fig_background.attr(
         'transform',
-        'translate(' + figureSize.x + ',' + figureSize.y + ')'
+        `translate(${figureSize.x}, ${figureSize.y})`
       );
+
+      this.webGLCanvas.style.left = `${figureSize.x}px`;
+      this.webGLCanvas.style.top = `${figureSize.y}px`;
 
       applyAttrs(this.title, {
         x: 0.5 * this.width,
@@ -994,12 +1001,15 @@ export class Figure extends DOMWidgetView {
     } else {
       this.fig.attr(
         'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+        `translate(${this.margin.left}, ${this.margin.top})`
       );
       this.fig_background.attr(
         'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+        `translate(${this.margin.left}, ${this.margin.top})`
       );
+
+      this.webGLCanvas.style.left = `${this.margin.left}px`;
+      this.webGLCanvas.style.top = `${this.margin.top}px`;
 
       applyAttrs(this.title, {
         x: 0.5 * this.plotareaWidth,
@@ -1022,8 +1032,6 @@ export class Figure extends DOMWidgetView {
       .attr('width', this.plotareaWidth)
       .attr('height', this.plotareaHeight);
 
-    this.webGLCanvas.style.left = `${this.margin.left}px`;
-    this.webGLCanvas.style.top = `${this.margin.top}px;`;
     this.webGLCanvas.width = this.plotareaWidth;
     this.webGLCanvas.height = this.plotareaHeight;
 
