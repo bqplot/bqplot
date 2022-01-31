@@ -156,9 +156,9 @@ export async function create_figure_scatter(
   } catch (e) {
     console.error('error', e);
   }
+
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, scatter: await figure.mark_views.views[0] };
 }
 
@@ -233,7 +233,6 @@ export async function create_figure_lines(manager, x, y, default_scales = {}) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, lines: await figure.mark_views.views[0] };
 }
 
@@ -289,7 +288,6 @@ export async function create_figure_pie(manager, sizes, labels) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, pie: await figure.mark_views.views[0] };
 }
 
@@ -360,7 +358,6 @@ export async function create_figure_bars(manager, x, y) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, bars: await figure.mark_views.views[0] };
 }
 
@@ -413,7 +410,6 @@ export async function create_figure_hist(manager, sample, bins) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, hist: await figure.mark_views.views[0] };
 }
 
@@ -500,7 +496,6 @@ export async function create_figure_gridheatmap(manager, color) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, grid: await figure.mark_views.views[0] };
 }
 
@@ -555,7 +550,6 @@ export async function create_figure_image(manager, ipywidgetImage) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, image: await figure.mark_views.views[0] };
 }
 export function getFills(selection: any) {
