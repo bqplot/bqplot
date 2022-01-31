@@ -274,6 +274,28 @@ export class Figure extends DOMWidgetView {
       placement: 'auto',
     });
 
+    this.bg = this.fig_background
+      .append('rect')
+      .attr('class', 'plotarea_background')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight)
+      .style('pointer-events', 'inherit');
+    applyStyles(this.bg, this.model.get('background_style'));
+
+    this.bg_events = this.fig
+      .append('rect')
+      .attr('class', 'plotarea_events')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight)
+      .style('pointer-events', 'inherit');
+    this.bg_events.on('click', () => {
+      this.trigger('bg_clicked');
+    });
+
     this.fig_axes = this.fig_background.append('g');
 
     this.fig_marks = this.fig.append('g');
@@ -390,28 +412,6 @@ export class Figure extends DOMWidgetView {
         dy: '0em',
       });
     }
-
-    this.bg = this.fig_background
-      .append('rect')
-      .attr('class', 'plotarea_background')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight)
-      .style('pointer-events', 'inherit');
-    applyStyles(this.bg, this.model.get('background_style'));
-
-    this.bg_events = this.fig
-      .append('rect')
-      .attr('class', 'plotarea_events')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight)
-      .style('pointer-events', 'inherit');
-    this.bg_events.on('click', () => {
-      this.trigger('bg_clicked');
-    });
 
     // TODO: remove the save png event mechanism.
     this.model.on('save_png', this.save_png, this);
