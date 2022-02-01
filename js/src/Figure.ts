@@ -273,8 +273,6 @@ export class Figure extends DOMWidgetView {
       .attr('class', 'plotarea_background')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight)
       .style('pointer-events', 'inherit');
     applyStyles(this.bg, this.model.get('background_style'));
 
@@ -283,8 +281,6 @@ export class Figure extends DOMWidgetView {
       .attr('class', 'plotarea_events')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', this.plotareaWidth)
-      .attr('height', this.plotareaHeight)
       .style('pointer-events', 'inherit');
     this.bg_events.on('click', () => {
       this.trigger('bg_clicked');
@@ -380,10 +376,23 @@ export class Figure extends DOMWidgetView {
       this.el.style.visibility = '';
     }
 
-    applyAttrs(this.clip_path, {
-      width: this.plotareaWidth,
-      height: this.plotareaHeight,
-    });
+    if (this.scale_x !== undefined && this.scale_x !== null) {
+      this.scale_x.setRange([0, this.plotareaWidth]);
+    }
+
+    if (this.scale_y !== undefined && this.scale_y !== null) {
+      this.scale_y.setRange([this.plotareaHeight, 0]);
+    }
+
+    this.bg
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
+    this.bg_events
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
+    this.clip_path
+      .attr('width', this.plotareaWidth)
+      .attr('height', this.plotareaHeight);
 
     // transform figure
     if (this.autoLayout) {
