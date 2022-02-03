@@ -68,10 +68,15 @@ jobs:
           optipng *.png
         working-directory: ui-tests/tests/bqplot.test.ts-snapshots
 
+      - name: Echo repo name
+        run: echo ${{ github.event.repository.html_url }}
+
       - name: Commit reference images
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          git remote set-url ${{ github.event.repository.html_url }}
 
           git pull
 
