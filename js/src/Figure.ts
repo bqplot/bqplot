@@ -138,17 +138,9 @@ export class Figure extends DOMWidgetView {
     // this.fig is the top <g> element to be impacted by a rescaling / change of margins
 
     this.fig = this.svg
-      .append('g')
-      .attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
+      .append('g');
     this.fig_background = this.svg_background
-      .append('g')
-      .attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
+      .append('g');
     this.tooltip_div = d3
       .select(document.createElement('div'))
       .attr('class', 'tooltip_div');
