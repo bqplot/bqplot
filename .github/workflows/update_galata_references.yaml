@@ -29,6 +29,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Echo repo name
+        run: echo ${{ github.head_ref }}
+
       - name: Setup conda
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -68,21 +71,16 @@ jobs:
           optipng *.png
         working-directory: ui-tests/tests/bqplot.test.ts-snapshots
 
-      - name: Echo repo name
-        run: echo ${{ github.event.repository.html_url }}
-
       - name: Commit reference images
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-          git remote set-url ${{ github.event.repository.html_url }}
-
-          git pull
+          git pull ${{ github.head_ref }}
 
           git add ui-tests/tests/bqplot.test.ts-snapshots
 
           git commit -m "Update Galata References"
-          git push
+          git push ${{ github.head_ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
