@@ -24,13 +24,13 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Configure git to use https
+        run: git config --global hub.protocol https
+
       - name: Checkout the branch from the PR that triggered the job
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Echo repo name
-        run: echo ${{ github.head_ref }}
 
       - name: Setup conda
         uses: conda-incubator/setup-miniconda@v2
@@ -76,11 +76,11 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-          git pull ${{ github.head_ref }}
+          git pull
 
           git add ui-tests/tests/bqplot.test.ts-snapshots
 
           git commit -m "Update Galata References"
-          git push ${{ github.head_ref }}
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
