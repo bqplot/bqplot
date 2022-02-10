@@ -225,4 +225,6 @@ jobs:
         run: mamba install yarn jupyterlab=2
 
       - name: Install the labextension
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
         run: jupyter labextension install dist/bqplot*.tgz --debug
