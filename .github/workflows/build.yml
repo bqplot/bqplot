@@ -115,11 +115,13 @@ jobs:
         working-directory: dist
 
       - name: Install Galata
-        run: yarn install
+        run: |
+          yarn install
+          yarn playwright install chromium
         working-directory: ui-tests
 
       - name: Launch JupyterLab
-        run: yarn run start-jlab:detached
+        run: yarn run start:detached
         working-directory: ui-tests
 
       - name: Wait for JupyterLab
@@ -137,7 +139,20 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ui-test-output
-          path: ui-tests/test-output
+          path: ui-tests/playwright-report
+
+      - name: Update snapshots
+        if: failure()
+        run: |
+          cd ui-tests
+          yarn run test:update
+
+      - name: Upload updated snapshots
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ipywidgets-updated-snapshots
+          path: ui-tests/tests
 
   install:
     runs-on: ${{ matrix.os }}-latest

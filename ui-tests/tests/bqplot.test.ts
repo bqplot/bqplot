@@ -1,171 +1,129 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { galata, describe, test } from '@jupyterlab/galata';
+import { IJupyterLabPageFixture, test } from '@jupyterlab/galata';
+import { expect } from '@playwright/test';
 import * as path from 'path';
 const klaw = require('klaw-sync');
 
-jest.setTimeout(600000);
 
 const filterUpdateNotebooks = item => {
   const basename = path.basename(item.path);
   return basename.includes('_update');
 }
 
-const testCellOutputs = async (theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
-  const paths = klaw('tests/notebooks', {filter: item => !filterUpdateNotebooks(item), nodir: true});
+const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
+  const paths = klaw(path.resolve(__dirname, './notebooks'), {filter: item => !filterUpdateNotebooks(item), nodir: true});
   const notebooks = paths.map(item => path.basename(item.path));
 
-  let results = [];
-
-  const contextPrefix = theme == 'JupyterLab Light' ? 'light_' : 'dark_';
-  galata.theme.setTheme(theme);
+  const contextPrefix = theme == 'JupyterLab Light' ? 'light' : 'dark';
+  page.theme.setTheme(theme);
 
   for (const notebook of notebooks) {
-    galata.context.capturePrefix = contextPrefix + notebook;
+    let results = [];
 
-    await galata.notebook.open(notebook);
-    expect(await galata.notebook.isOpen(notebook)).toBeTruthy();
-    await galata.notebook.activate(notebook);
-    expect(await galata.notebook.isActive(notebook)).toBeTruthy();
+    await page.notebook.openByPath(`${tmpPath}/${notebook}`);
+    await page.notebook.activate(notebook);
 
     let numCellImages = 0;
 
-    const getCaptureImageName = (id: number): string => {
-      return `cell-${id}`;
+    const getCaptureImageName = (contextPrefix: string, notebook: string, id: number): string => {
+      return `${contextPrefix}-${notebook}-cell-${id}.png`;
     };
 
-    await galata.notebook.runCellByCell({
+    await page.notebook.runCellByCell({
       onAfterCellRun: async (cellIndex: number) => {
-        const cell = await galata.notebook.getCellOutput(cellIndex);
+        const cell = await page.notebook.getCellOutput(cellIndex);
         if (cell) {
-          if (
-            await galata.capture.screenshot(
-              getCaptureImageName(numCellImages),
-              cell
-            )
-          ) {
-            numCellImages++;
-          }
+          results.push(await cell.screenshot());
+          numCellImages++;
         }
       }
     });
 
+    await page.notebook.save();
+
     for (let c = 0; c < numCellImages; ++c) {
-      results.push(await galata.capture.compareScreenshot(getCaptureImageName(c)));
+      expect(results[c]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, c));
     }
 
-    await galata.notebook.close(true);
-  }
-
-  for (const result of results) {
-    expect(result).toBe('same');
+    await page.notebook.close(true);
   }
 }
 
-const testPlotUpdates = async (theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
-  const paths = klaw('tests/notebooks', {filter: item => filterUpdateNotebooks(item), nodir: true});
+const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
+  const paths = klaw(path.resolve(__dirname, './notebooks'), {filter: item => filterUpdateNotebooks(item), nodir: true});
   const notebooks = paths.map(item => path.basename(item.path));
 
-  let results = [];
-
-  const contextPrefix = theme == 'JupyterLab Light' ? 'light_' : 'dark_';
-  galata.theme.setTheme(theme);
+  const contextPrefix = theme == 'JupyterLab Light' ? 'light' : 'dark';
+  page.theme.setTheme(theme);
 
   for (const notebook of notebooks) {
-    galata.context.capturePrefix = contextPrefix + notebook;
+    let results = [];
 
-    await galata.notebook.open(notebook);
-    expect(await galata.notebook.isOpen(notebook)).toBeTruthy();
-    await galata.notebook.activate(notebook);
-    expect(await galata.notebook.isActive(notebook)).toBeTruthy();
+    await page.notebook.openByPath(`${tmpPath}/${notebook}`);
+    await page.notebook.activate(notebook);
 
-    let numCellImages = 0;
-
-    const getCaptureImageName = (id: number): string => {
-      return `cell-${id}`;
+    const getCaptureImageName = (contextPrefix: string, notebook: string, id: number): string => {
+      return `${contextPrefix}-${notebook}-cell-${id}.png`;
     };
 
-    await galata.notebook.runCellByCell({
+    let cellCount = 0;
+    await page.notebook.runCellByCell({
       onAfterCellRun: async (cellIndex: number) => {
         // Always get first cell output which must contain the plot
-        const cell = await galata.notebook.getCellOutput(0);
+        const cell = await page.notebook.getCellOutput(0);
         if (cell) {
-          if (
-            await galata.capture.screenshot(
-              getCaptureImageName(numCellImages),
-              cell
-            )
-          ) {
-            numCellImages++;
-          }
+          results.push(await cell.screenshot());
+          cellCount++;
         }
       }
     });
 
-    for (let c = 0; c < numCellImages; ++c) {
-      results.push(await galata.capture.compareScreenshot(getCaptureImageName(c)));
+    await page.notebook.save();
+
+    for (let i = 0; i < cellCount; i++) {
+      expect(results[i]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, i));
     }
 
-    await galata.notebook.close(true);
-  }
-
-  for (const result of results) {
-    expect(result).toBe('same');
+    await page.notebook.close(true);
   }
 };
 
-describe('bqplot Visual Regression', () => {
-  beforeAll(async () => {
-    await galata.resetUI();
-  });
-
-  afterAll(async () => {
-    galata.context.capturePrefix = '';
-  });
-
-  test('Upload files to JupyterLab', async () => {
-    await galata.contents.moveDirectoryToServer(
-      path.resolve(__dirname, `./notebooks`),
-      'uploaded'
+test.describe('bqplot Visual Regression', () => {
+  test.beforeEach(async ({ page, tmpPath }) => {
+    await page.contents.uploadDirectory(
+      path.resolve(__dirname, './notebooks'),
+      tmpPath
     );
-    expect(
-      await galata.contents.fileExists('uploaded/scatter.ipynb')
-    ).toBeTruthy();
+    await page.filebrowser.openDirectory(tmpPath);
   });
 
-  test('Refresh File Browser', async () => {
-    await galata.filebrowser.refresh();
+  test('Light theme: Check bqplot first renders', async ({
+    page,
+    tmpPath,
+  }) => {
+    await testCellOutputs(page, tmpPath, 'JupyterLab Light');
   });
 
-  test('Open directory uploaded', async () => {
-    await galata.filebrowser.openDirectory('uploaded');
-    expect(
-      await galata.filebrowser.isFileListedInBrowser('scatter.ipynb')
-    ).toBeTruthy();
+  test('Dark theme: Check bqplot first renders', async ({
+    page,
+    tmpPath,
+  }) => {
+    await testCellOutputs(page, tmpPath, 'JupyterLab Dark');
   });
 
-  test('Light theme: Check bqplot first renders', async () => {
-    await testCellOutputs('JupyterLab Light');
+  test('Light theme: Check bqplot update plot properties', async ({
+    page,
+    tmpPath,
+  }) => {
+    await testPlotUpdates(page, tmpPath, 'JupyterLab Light');
   });
 
-  test('Dark theme: Check bqplot first renders', async () => {
-    await testCellOutputs('JupyterLab Dark');
-  });
-
-  test('Light theme: Check bqplot update plot properties', async () => {
-    await testPlotUpdates('JupyterLab Light');
-  });
-
-  test('Dark theme: Check bqplot update plot properties', async () => {
-    await testPlotUpdates('JupyterLab Dark');
-  });
-
-  test('Open home directory', async () => {
-    await galata.filebrowser.openHomeDirectory();
-  });
-
-  test('Delete uploaded directory', async () => {
-    await galata.contents.deleteDirectory('uploaded');
+  test('Dark theme: Check bqplot update plot properties', async ({
+    page,
+    tmpPath,
+  }) => {
+    await testPlotUpdates(page, tmpPath, 'JupyterLab Dark');
   });
 });
