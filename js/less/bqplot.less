@@ -50,6 +50,8 @@
 
   --bq-selector-fill: var(--jp-border-color1);
 
+  --bq-network-node-label-text-fill: #000;
+
   --bq-mark-tooltip-border: 2px solid var(--jp-border-color0);
   --bq-mark-tooltip-box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
     0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
@@ -113,6 +115,10 @@
 
 [data-jp-theme-light='false'] .linkarrow {
   fill: var(--bq-linkarrow-fill-light);
+}
+
+[data-jp-theme-light='false'] .network .node .label {
+  --bq-network-node-label-text-fill: #727272;
 }
 
 .classic {
@@ -409,6 +415,7 @@
   font: var(--bq-network-node-label-font);
   pointer-events: var(--bq-network-node-label-pointer-events);
   text-shadow: var(--bq-network-node-label-text-shadow);
+  fill: var(--bq-network-node-label-text-fill);
 }
 
 .linkarrow {
