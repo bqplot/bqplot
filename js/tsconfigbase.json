@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "composite": true,
+    "incremental": true,
     "declaration": true,
     "esModuleInterop": true,
     "lib": ["es2015", "dom"],
