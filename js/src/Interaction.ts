@@ -32,7 +32,7 @@ export class Interaction extends widgets.WidgetView {
   render() {
     this.parent = this.options.parent;
 
-    // Opaque interation layer
+    // Opaque interaction layer
     this.d3el
       .attr('x', 0)
       .attr('y', 0)

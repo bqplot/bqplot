@@ -96,12 +96,12 @@ export class Graph extends Mark {
 
   set_ranges() {
     if (this.scales.x) {
-      this.scales.x.set_range(
+      this.scales.x.setRange(
         this.parent.padded_range('x', this.scales.x.model)
       );
     }
     if (this.scales.y) {
-      this.scales.y.set_range(
+      this.scales.y.setRange(
         this.parent.padded_range('y', this.scales.y.model)
       );
     }
@@ -370,7 +370,9 @@ export class Graph extends Mark {
   }
 
   private dragstarted(d: NodeData) {
-    if (this.model.static) return;
+    if (this.model.static) {
+      return;
+    }
     if (!d3GetEvent().active) {
       this.force_layout.alphaTarget(0.4).restart();
     }
@@ -379,13 +381,17 @@ export class Graph extends Mark {
   }
 
   private dragged(d: NodeData) {
-    if (this.model.static) return;
+    if (this.model.static) {
+      return;
+    }
     d.fx = d3GetEvent().x;
     d.fy = d3GetEvent().y;
   }
 
   private dragended(d: NodeData) {
-    if (this.model.static) return;
+    if (this.model.static) {
+      return;
+    }
     if (!d3GetEvent().active) {
       this.force_layout.alphaTarget(0.4);
     }
@@ -461,7 +467,7 @@ export class Graph extends Mark {
       selected.splice(elem_index, 1);
     } else {
       if (accelKey) {
-        //If accel is pressed and the bar is not already selcted
+        //If accel is pressed and the bar is not already selected
         //add the bar to the list of selected bars.
         selected.push(index);
       }
@@ -573,7 +579,7 @@ export class Graph extends Mark {
 
   compute_view_padding() {
     const xPadding = d3.max<number>(
-      this.model.mark_data.map(function (d) {
+      this.model.mark_data.map((d) => {
         return (
           (d.shape_attrs.r || d.shape_attrs.width / 2 || d.shape_attrs.rx) + 1.0
         );

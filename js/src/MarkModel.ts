@@ -13,14 +13,17 @@
  * limitations under the License.
  */
 
-import * as widgets from '@jupyter-widgets/base';
+import { Dict, WidgetModel, unpack_models } from '@jupyter-widgets/base';
+
+import { ScaleModel } from 'bqscales';
+
 import { semver_range } from './version';
 import * as serialize from './serialize';
 
-export class MarkModel extends widgets.WidgetModel {
+export class MarkModel extends WidgetModel {
   defaults() {
     return {
-      ...widgets.WidgetModel.prototype.defaults(),
+      ...WidgetModel.prototype.defaults(),
       _model_name: 'MarkModel',
       _model_module: 'bqplot',
       _view_module: 'bqplot',
@@ -81,14 +84,14 @@ export class MarkModel extends widgets.WidgetModel {
     // disassociates the mark with the scale
     this.dirty = true;
     for (const key in scales) {
-      scales[key].del_domain([], this.model_id + '_' + key);
+      scales[key].delDomain([], this.model_id + '_' + key);
     }
     this.dirty = false;
     //TODO: Check if the views are being removed
   }
 
   handle_destroy() {
-    this.unregister_all_scales(this.get('scales'));
+    this.unregister_all_scales(this.getScales());
   }
 
   get_key_for_dimension(dimension) {
@@ -116,10 +119,14 @@ export class MarkModel extends widgets.WidgetModel {
     return data;
   }
 
+  getScales(): Dict<ScaleModel> {
+    return this.get('scales');
+  }
+
   static serializers = {
-    ...widgets.WidgetModel.serializers,
-    scales: { deserialize: widgets.unpack_models },
-    tooltip: { deserialize: widgets.unpack_models },
+    ...WidgetModel.serializers,
+    scales: { deserialize: unpack_models },
+    tooltip: { deserialize: unpack_models },
     selected: serialize.array_or_json_serializer,
   };
 

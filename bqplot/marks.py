@@ -51,7 +51,7 @@ from traittypes import Array
 from numpy import histogram
 import numpy as np
 
-from .scales import Scale, OrdinalScale, LinearScale
+from bqscales import Scale, OrdinalScale, LinearScale
 from .traits import (Date, array_serialization,
                      array_squeeze, array_dimension_bounds, array_supported_kinds)
 from ._version import __frontend_version__
@@ -164,7 +164,7 @@ class Mark(Widget):
         that triggered the tooltip to be visible.
     """
     mark_types = {}
-    scales = Dict(trait=Instance(Scale)).tag(sync=True, **widget_serialization)
+    scales = Dict(value_trait=Instance(Scale)).tag(sync=True, **widget_serialization)
     scales_metadata = Dict().tag(sync=True)
     preserve_domain = Dict().tag(sync=True)
     display_legend = Bool().tag(sync=True, display_name='Display legend')
@@ -667,7 +667,7 @@ class Scatter(_ScatterBase):
     icon = 'fa-cloud'
     name = 'Scatter'
 
-    # Scaled attribtes
+    # Scaled attributes
     skew = Array(None, allow_none=True).tag(sync=True, scaled=True,
                                             rtype='Number',
                                             **array_serialization)\
@@ -728,12 +728,6 @@ class Scatter(_ScatterBase):
 
     _view_name = Unicode('Scatter').tag(sync=True)
     _model_name = Unicode('ScatterModel').tag(sync=True)
-
-
-@register_mark('bqplot.ScatterGL')
-class ScatterGL(Scatter):
-    _view_name = Unicode('ScatterGL').tag(sync=True)
-    _model_name = Unicode('ScatterGLModel').tag(sync=True)
 
 
 @register_mark('bqplot.Label')
@@ -955,8 +949,8 @@ class Boxplot(Mark):
 
     stroke = Color(None, allow_none=True)\
         .tag(sync=True, display_name='Stroke color')
-    box_fill_color = Color('steelblue', sync=True,
-                           display_name='Fill color for the box')
+    box_fill_color = Color('steelblue')\
+        .tag(sync=True, display_name='Fill color for the box')
     outlier_fill_color = Color('gray').tag(sync=True,
                                            display_name='Outlier fill color')
     opacities = List(trait=Float(1.0, min=0, max=1, allow_none=True))\
@@ -1280,10 +1274,10 @@ class OHLC(Mark):
         'x': {'orientation': 'horizontal', 'dimension': 'x'},
         'y': {'orientation': 'vertical', 'dimension': 'y'}
     }).tag(sync=True)
-    marker = Enum(['candle', 'bar'], default_value='candle',
-                  display_name='Marker').tag(sync=True)
-    stroke = Color(None, display_name='Stroke color', allow_none=True)\
-        .tag(sync=True)
+    marker = Enum(['candle', 'bar'], default_value='candle')\
+        .tag(sync=True, display_name='Marker')
+    stroke = Color(None, allow_none=True)\
+        .tag(sync=True, display_name='Stroke color')
     stroke_width = Float(1.0).tag(sync=True, display_name='Stroke Width')
     colors = List(trait=Color(default_value=None, allow_none=True),
                   default_value=['green', 'red'])\

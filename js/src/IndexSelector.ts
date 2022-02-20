@@ -16,6 +16,7 @@
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-selection"));
 import * as _ from 'underscore';
+import { LinearScale, OrdinalScale } from 'bqscales';
 import { BaseXSelector } from './Selector';
 
 export class IndexSelector extends BaseXSelector {
@@ -80,7 +81,7 @@ export class IndexSelector extends BaseXSelector {
   }
 
   mousemove() {
-    if (!this.active) {
+    if (!this.active || this.dirty) {
       return;
     }
     this.dirty = true;
@@ -142,7 +143,10 @@ export class IndexSelector extends BaseXSelector {
     } else {
       const pixel = this.scale.scale(selected[0]);
       if (this.line !== undefined && this.line !== null) {
-        this.line.attr('x1', 0).attr('x2', 0).attr('visibility', 'visible');
+        this.line
+          .attr('x1', pixel)
+          .attr('x2', pixel)
+          .attr('visibility', 'visible');
       }
       //the selected may be called before the index selector is
       //active for the first time.
@@ -160,9 +164,9 @@ export class IndexSelector extends BaseXSelector {
     this.set_range([this.scale]);
   }
 
-  set_range(array) {
+  set_range(array: (LinearScale | OrdinalScale)[]) {
     for (let iter = 0; iter < array.length; iter++) {
-      array[iter].set_range([0, this.width]);
+      array[iter].setRange([0, this.width]);
     }
   }
 
@@ -170,4 +174,5 @@ export class IndexSelector extends BaseXSelector {
   dirty: boolean;
   line: d3.Selection<SVGLineElement, any, any, any>;
   background: d3.Selection<SVGRectElement, any, any, any>;
+  scale: LinearScale | OrdinalScale;
 }

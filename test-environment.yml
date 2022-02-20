@@ -8,15 +8,16 @@ dependencies:
     - ipywidgets >=5.2.2
     - traitlets >=4.3.0
     - traittypes >=0.0.6
-    - numpy >=1.10.4
-    - pandas
+    - numpy >=1.10.4,<2.0.0
+    - pandas >=1.0.0,<2.0.0
+    - bqscales  >=0.2.2,<0.3
     - scipy
-    - jupyter
-    - jupyterlab=3.0.7  # to build the lab federated bundle
-    - jupyter-packaging # to build the wheel
+    - jupyterlab
+    - jupyter-packaging
     - pytest
     - nbval
     - pytest-cov
     - selenium
     - flake8
     - nose
+    - codespell

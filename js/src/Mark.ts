@@ -16,6 +16,8 @@
 import * as widgets from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 
+import { ColorScale, GeoScale, LinearScale, OrdinalScale } from 'bqscales';
+
 import { MessageLoop } from '@lumino/messaging';
 
 import { Widget } from '@lumino/widgets';
@@ -31,6 +33,23 @@ function is_defined(value) {
   return value !== null && value !== undefined;
 }
 
+interface MarkScales {
+  x: LinearScale | OrdinalScale;
+  y: LinearScale | OrdinalScale;
+  width: LinearScale | OrdinalScale;
+  color: ColorScale;
+  link_color: ColorScale;
+  row: LinearScale | OrdinalScale;
+  column: LinearScale | OrdinalScale;
+  size: LinearScale | OrdinalScale;
+  opacity: LinearScale | OrdinalScale;
+  rotation: LinearScale | OrdinalScale;
+  skew: LinearScale | OrdinalScale;
+  sample: LinearScale | OrdinalScale;
+  count: LinearScale | OrdinalScale;
+  projection: GeoScale;
+}
+
 export abstract class Mark extends widgets.WidgetView {
   initialize() {
     this.display_el_classes = ['mark']; //classes on the element which
@@ -42,7 +61,7 @@ export abstract class Mark extends widgets.WidgetView {
     super.initialize.apply(this, arguments);
   }
 
-  render() {
+  render(): PromiseLike<any> {
     this.xPadding = 0;
     this.yPadding = 0;
     this.parent = this.options.parent;
@@ -97,6 +116,7 @@ export abstract class Mark extends widgets.WidgetView {
 
   abstract draw(animate?);
   abstract set_ranges();
+
   set_scale_views() {
     // first, if this.scales was already defined, unregister from the
     // old ones.
@@ -104,19 +124,25 @@ export abstract class Mark extends widgets.WidgetView {
       this.stopListening(this.scales[key]);
     }
 
-    const scale_models = this.model.get('scales');
+    const scale_models = this.model.getScales();
     const that = this;
     const scale_promises = {};
     _.each(scale_models, (model: widgets.WidgetModel, key) => {
       scale_promises[key] = that.create_child_view(model);
     });
-    return widgets.resolvePromisesDict(scale_promises).then((scales) => {
-      that.scales = scales;
-      that.set_positional_scales();
-      that.initialize_additional_scales();
-      that.set_ranges();
-      that.trigger('mark_scales_updated');
-    });
+
+    return (
+      widgets
+        .resolvePromisesDict(scale_promises)
+        // @ts-ignore: TODO Should find a proper type for scale_promises
+        .then((scales: MarkScales) => {
+          that.scales = scales;
+          that.set_positional_scales();
+          that.initialize_additional_scales();
+          that.set_ranges();
+          that.trigger('mark_scales_updated');
+        })
+    );
   }
 
   set_positional_scales() {
@@ -181,13 +207,13 @@ export abstract class Mark extends widgets.WidgetView {
   }
 
   highlight_axes() {
-    _.each(this.model.get('scales'), (model: any) => {
+    _.each(this.model.getScales(), (model: any) => {
       model.trigger('highlight_axis');
     });
   }
 
   unhighlight_axes() {
-    _.each(this.model.get('scales'), (model: any) => {
+    _.each(this.model.getScales(), (model: any) => {
       model.trigger('unhighlight_axis');
     });
   }
@@ -573,22 +599,7 @@ export abstract class Mark extends widgets.WidgetView {
   };
   event_metadata: { [key: string]: { [key: string]: any } };
   parent: Figure;
-  scales: {
-    rotation?;
-    skew?;
-    opacity?;
-    size?;
-    x?;
-    y?;
-    color?;
-    projection?;
-    count?;
-    sample?;
-    column?;
-    row?;
-    link_color?;
-    width?;
-  };
+  scales: MarkScales;
   selected_indices: (number | [number, number])[];
   selected_style: { [key: string]: string };
   tooltip_div: d3.Selection<any, any, any, any>;

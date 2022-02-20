@@ -41,7 +41,7 @@ from traitlets import (Bool, Int, Float, Unicode, Dict,
 from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization, register
 
-from .scales import Scale
+from bqscales import Scale
 from .traits import Date, array_serialization, _array_equal
 from .marks import Lines
 from ._version import __frontend_version__
@@ -53,7 +53,7 @@ def register_interaction(key=None):
 
     If no key is provided, the class name is used as a key. A key is provided
     for each core bqplot interaction type so that the frontend can use this
-    key regardless of the kernal language.
+    key regardless of the kernel language.
     """
     def wrap(interaction):
         name = key if key is not None else interaction.__module__ + \
@@ -154,7 +154,7 @@ class PanZoom(Interaction):
     """
     allow_pan = Bool(True).tag(sync=True)
     allow_zoom = Bool(True).tag(sync=True)
-    scales = Dict(trait=List(trait=Instance(Scale)))\
+    scales = Dict(value_trait=List(trait=Instance(Scale)))\
         .tag(sync=True, **widget_serialization)
 
     _view_name = Unicode('PanZoom').tag(sync=True)
@@ -203,7 +203,7 @@ class OneDSelector(Selector):
     ----------
     scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
-        co-ordinates. This scale is used for setting the selected attribute for
+        coordinates. This scale is used for setting the selected attribute for
         the selector.
     """
     scale = Instance(Scale, allow_none=True, default_value=None)\
@@ -222,11 +222,11 @@ class TwoDSelector(Selector):
     ----------
     x_scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
-        co-ordinates in the x-direction. This scale is used for setting the
+        coordinates in the x-direction. This scale is used for setting the
         selected attribute for the selector along with ``y_scale``.
     y_scale: An instance of Scale
         This is the scale which is used for inversion from the pixels to data
-        co-ordinates in the y-direction. This scale is used for setting the
+        coordinates in the y-direction. This scale is used for setting the
         selected attribute for the selector along with ``x_scale``.
     """
     x_scale = Instance(Scale, allow_none=True, default_value=None)\

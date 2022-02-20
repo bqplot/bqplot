@@ -18,6 +18,7 @@ import * as utils from './utils';
 import { Interaction } from './Interaction';
 import { Lines } from './Lines';
 import { LinesModel } from './LinesModel';
+import { LinearScale } from 'bqscales';
 
 export class HandDraw extends Interaction {
   render() {
@@ -87,12 +88,12 @@ export class HandDraw extends Interaction {
       if (!memory || !('previousPos' in this)) {
         this.previousPos = mousePos;
       }
-      const scaleX = this.linesView.scales.x.scale;
-      const scaleY = this.linesView.scales.y.scale;
+      const scaleX = this.linesView.scales.x.scale as unknown as LinearScale;
+      const scaleY = this.linesView.scales.y.scale as unknown as LinearScale;
 
-      const newx = scaleX.invert(mousePos[0]);
+      const newx = scaleX.invert(mousePos[0]) as number;
       const newy = scaleY.invert(mousePos[1]);
-      const oldx = scaleX.invert(this.previousPos[0]);
+      const oldx = scaleX.invert(this.previousPos[0]) as number;
       scaleY.invert(this.previousPos[1]);
       const old_index = this.nearestNeighbourSearch(
         this.lines.x_data[xindex],

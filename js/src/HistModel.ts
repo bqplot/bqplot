@@ -64,7 +64,7 @@ export class HistModel extends MarkModel {
   }
 
   update_data() {
-    const xScale = this.get('scales').sample;
+    const xScale = this.getScales().sample;
 
     // TODO: This potentially triggers domain_changed and therefore a
     // Draw, while update_data is generally followed by a Draw.
@@ -75,9 +75,9 @@ export class HistModel extends MarkModel {
       this.xBins = [];
     } else {
       if (!this.get('preserve_domain').sample) {
-        xScale.compute_and_set_domain(this.sample, this.model_id + '_sample');
+        xScale.computeAndSetDomain(this.sample, this.model_id + '_sample');
       } else {
-        xScale.del_domain([], this.model_id + '_sample');
+        xScale.delDomain([], this.model_id + '_sample');
       }
 
       this.minX = xScale.domain[0];
@@ -162,15 +162,17 @@ export class HistModel extends MarkModel {
   }
 
   update_domains() {
-    if (!this.mark_data) return;
+    if (!this.mark_data) {
+      return;
+    }
 
     // For histogram, changing the x-scale domain changes a lot of
     // things including the data which is to be plotted. So the x-domain
     // change is handled by the update_data function and only the
     // y-domain change is handled by this function.
-    const y_scale = this.get('scales').count;
+    const y_scale = this.getScales().count;
     if (!this.get('preserve_domain').count) {
-      y_scale.set_domain(
+      y_scale.setDomain(
         [0, d3.max(this.count) * 1.05],
         this.model_id + '_count'
       );

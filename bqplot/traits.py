@@ -41,7 +41,7 @@ def date_to_json(value, obj):
     if value is None:
         return value
     else:
-        # Droping microseconds and only keeping milliseconds to conform
+        # Dropping microseconds and only keeping milliseconds to conform
         # with JavaScript's Data.toJSON's behavior - and prevent bouncing
         # back updates from the front-end.
         return value.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
@@ -83,9 +83,7 @@ class Date(TraitType):
         self.error(obj, value)
 
     def __init__(self, default_value=dt.datetime.today(), **kwargs):
-        args = (default_value,)
-        self.default_value = default_value
-        super(Date, self).__init__(args=args, **kwargs)
+        super(Date, self).__init__(default_value=default_value, **kwargs)
         self.tag(**date_serialization)
 
 
@@ -130,8 +128,16 @@ def array_from_json(value, obj=None):
         # this will accept regular json data, like an array of values, which can be useful it you want
         # to link bqplot to other libraries that use that
         if isinstance(value, list):
-            if len(value) > 0 and isinstance(value[0], dict) and 'value' in value[0]:
-                return np.array([array_from_json(k) for k in value])
+            if len(value) > 0 and (isinstance(value[0], dict) and 'value' in value[0]):
+                subarrays = [array_from_json(k) for k in value]
+                if len(subarrays) > 0:
+                    expected_length = len(subarrays[0])
+                    # if a 'ragged' array, we should explicitly pass dtype=object
+                    if any(len(k) != expected_length for k in subarrays[1:]):
+                        return np.array(subarrays, dtype=object)
+                return np.array(subarrays)
+            elif len(value) > 0 and isinstance(value[0], list):
+                return np.array(value, dtype=object)
             else:
                 return np.array(value)
         elif 'value' in value:
@@ -239,7 +245,9 @@ def dataframe_to_json(df, obj):
     if df is None:
         return None
     else:
-        return df.to_dict(orient='records')
+        # Replacing NaNs with None as it's not valid JSON
+        cleandf = df.fillna(np.nan).replace([np.nan], [None])
+        return cleandf.to_dict(orient='records')
 
 
 dataframe_serialization = dict(to_json=dataframe_to_json, from_json=dataframe_from_json)

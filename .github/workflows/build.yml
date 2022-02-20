@@ -44,12 +44,14 @@ jobs:
         test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
         test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
 
-
     - name: Validate the nbextension
       run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
 
     - name: Validate the labextension
       run: jupyter labextension list 2>&1 | grep bqplot
+
+    - name: Discover typos with codespell
+      run: codespell --ignore-words-list="afterall,curvelinear,hist" --skip="./share,./.git/*,./js/node_modules/*,./js/dist/*,*.csv,*.json,*.lock,*.map"
 
     - name: Python PEP8 check
       run: flake8 bqplot --ignore=E501,W504,W503
@@ -113,11 +115,13 @@ jobs:
         working-directory: dist
 
       - name: Install Galata
-        run: yarn install
+        run: |
+          yarn install
+          yarn playwright install chromium
         working-directory: ui-tests
 
       - name: Launch JupyterLab
-        run: yarn run start-jlab:detached
+        run: yarn run start:detached
         working-directory: ui-tests
 
       - name: Wait for JupyterLab
@@ -135,7 +139,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ui-test-output
-          path: ui-tests/test-output
+          path: |
+            ui-tests/playwright-report
+            ui-tests/test-results
 
   install:
     runs-on: ${{ matrix.os }}-latest
@@ -223,4 +229,6 @@ jobs:
         run: mamba install yarn jupyterlab=2
 
       - name: Install the labextension
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
         run: jupyter labextension install dist/bqplot*.tgz --debug

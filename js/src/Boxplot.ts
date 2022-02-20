@@ -19,6 +19,7 @@ import * as _ from 'underscore';
 import { Mark } from './Mark';
 import { BoxplotModel } from './BoxplotModel';
 import { applyStyles } from './utils';
+import { isOrdinalScale } from 'bqscales';
 
 interface BoxPlotData {
   whiskerMax: number;
@@ -65,12 +66,12 @@ export class Boxplot extends Mark {
   set_ranges() {
     const xScale = this.scales.x;
     if (xScale) {
-      xScale.set_range(this.parent.padded_range('x', xScale.model));
+      xScale.setRange(this.parent.padded_range('x', xScale.model));
     }
 
     const yScale = this.scales.y;
     if (yScale) {
-      yScale.set_range(this.parent.padded_range('y', yScale.model));
+      yScale.setRange(this.parent.padded_range('y', yScale.model));
     }
   }
 
@@ -499,8 +500,7 @@ export class Boxplot extends Mark {
     newBoxplots.append('g').attr('class', 'outliers');
 
     const scaleX = this.scales.x;
-    const xOffset =
-      scaleX.model.type === 'ordinal' ? scaleX.scale.bandwidth() / 2 : 0;
+    const xOffset = isOrdinalScale(scaleX) ? scaleX.scale.bandwidth() / 2 : 0;
 
     selector
       .selectAll('.boxplot')

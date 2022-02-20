@@ -15,7 +15,9 @@
 
 import * as widgets from '@jupyter-widgets/base';
 import { semver_range } from './version';
-
+import { Interaction } from './Interaction';
+import { PanZoomModel } from './PanZoomModel';
+import * as _ from 'underscore';
 export class FigureModel extends widgets.DOMWidgetModel {
   defaults() {
     return {
@@ -54,6 +56,7 @@ export class FigureModel extends widgets.DOMWidgetModel {
       padding_y: 0.025,
       legend_location: 'top-right',
       animation_duration: 0,
+      display_toolbar: true,
     };
   }
 
@@ -67,6 +70,8 @@ export class FigureModel extends widgets.DOMWidgetModel {
       this.trigger('save_png', msg.filename, msg.scale);
     } else if (msg.type === 'save_svg') {
       this.trigger('save_svg', msg.filename);
+    } else if (msg.type === 'upload_png') {
+      this.trigger('upload_png', this, msg.scale);
     }
   }
 
@@ -74,6 +79,88 @@ export class FigureModel extends widgets.DOMWidgetModel {
     // TODO: Any view of this Figure model will pick up this event
     // and render a png. Remove this eventually.
     this.trigger('save_png');
+  }
+
+  /**
+   * Start or stop pan zoom mode
+   *
+   */
+  panzoom(): void {
+    if (this.panzoomData.panning) {
+      this.set('interaction', this.panzoomData.cached_interaction);
+      this.panzoomData.panning = false;
+      this.save_changes();
+    } else {
+      this.panzoomData.cached_interaction = this.get('interaction');
+      const panzoom = this.panzoomData.panzoom;
+      if (panzoom) {
+        this.set('interaction', panzoom);
+        this.save_changes();
+      } else {
+        this.create_panzoom_model().then((model) => {
+          this.set('interaction', model);
+          this.panzoomData.panzoom = model;
+          this.save_changes();
+        });
+      }
+      this.panzoomData.panning = true;
+    }
+  }
+
+  /**
+   * Creates a panzoom interaction widget for the this model.
+   *
+   * It will discover the relevant scales of this model.
+   */
+  private create_panzoom_model(): Promise<PanZoomModel> {
+    return this.widget_manager
+      .new_widget({
+        model_name: 'PanZoomModel',
+        model_module: 'bqplot',
+        model_module_version: this.get('_model_module_version'),
+        view_name: 'PanZoom',
+        view_module: 'bqplot',
+        view_module_version: this.get('_view_module_version'),
+      })
+      .then((model: PanZoomModel) => {
+        return Promise.all(this.get('marks')).then((marks: any[]) => {
+          const x_scales = [],
+            y_scales = [];
+          for (let i = 0; i < marks.length; ++i) {
+            const preserve_domain = marks[i].get('preserve_domain');
+            const scales = marks[i].getScales();
+            _.each(scales, (v, k) => {
+              const dimension = marks[i].get('scales_metadata')[k]['dimension'];
+              if (dimension === 'x' && !preserve_domain[k]) {
+                x_scales.push(scales[k]);
+              }
+              if (dimension === 'y' && !preserve_domain[k]) {
+                y_scales.push(scales[k]);
+              }
+            });
+          }
+          model.set('scales', {
+            x: x_scales,
+            y: y_scales,
+          });
+          model.save_changes();
+          return model;
+        });
+      });
+  }
+
+  /**
+   * Reset the scales, delete the PanZoom widget, set the figure
+   * interaction back to its previous value.
+   */
+  reset(): void {
+    this.set('interaction', this.panzoomData.cached_interaction);
+    const panzoom = this.panzoomData.panzoom;
+    panzoom.reset_scales();
+    panzoom.close();
+    this.panzoomData.panzoom = null;
+    this.panzoomData.panning = false;
+    this.save_changes();
   }
 
   static serializers = {
@@ -85,4 +172,10 @@ export class FigureModel extends widgets.DOMWidgetModel {
     scale_y: { deserialize: widgets.unpack_models },
     layout: { deserialize: widgets.unpack_models },
   };
+
+  private panzoomData: {
+    panning: boolean;
+    cached_interaction: Interaction;
+    panzoom: PanZoomModel | undefined;
+  } = { panning: false, cached_interaction: null, panzoom: undefined };
 }

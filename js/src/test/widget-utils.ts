@@ -9,9 +9,18 @@ export async function create_model_bqplot(
   return create_model(manager, 'bqplot', `${name}Model`, name, id, args);
 }
 
+export async function create_model_bqscales(
+  manager,
+  name: string,
+  id: string,
+  args: Object
+) {
+  return create_model(manager, 'bqscales', `${name}Model`, name, id, args);
+}
+
 export async function create_model(
   manager,
-  module: string,
+  module_name: string,
   model: string,
   view: string,
   id: string,
@@ -19,10 +28,10 @@ export async function create_model(
 ) {
   const model_widget = await manager.new_widget(
     {
-      model_module: module,
+      model_module: module_name,
       model_name: model,
       model_module_version: '*',
-      view_module: module,
+      view_module: module_name,
       view_name: view,
       view_module_version: '*',
       model_id: id,
@@ -49,13 +58,7 @@ export async function create_widget(
   return { model: model, view: view };
 }
 
-export async function create_figure_scatter(
-  manager,
-  x,
-  y,
-  mega = false,
-  log = false
-) {
+export async function create_figure_scatter(manager, x, y, log = false) {
   const layout = await create_model(
     manager,
     '@jupyter-widgets/base',
@@ -67,30 +70,30 @@ export async function create_figure_scatter(
   let scale_x;
   let scale_y;
   if (log) {
-    scale_x = await create_model_bqplot(manager, 'LogScale', 'scale_x', {
+    scale_x = await create_model_bqscales(manager, 'LogScale', 'scale_x', {
       min: 0.01,
       max: 100,
       allow_padding: false,
     });
-    scale_y = await create_model_bqplot(manager, 'LogScale', 'scale_y', {
+    scale_y = await create_model_bqscales(manager, 'LogScale', 'scale_y', {
       min: 0.1,
       max: 10,
       allow_padding: false,
     });
   } else {
-    scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {
+    scale_x = await create_model_bqscales(manager, 'LinearScale', 'scale_x', {
       min: 0,
       max: 1,
       allow_padding: false,
     });
-    scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {
+    scale_y = await create_model_bqscales(manager, 'LinearScale', 'scale_y', {
       min: 2,
       max: 3,
       allow_padding: false,
     });
   }
   // TODO: the default values for the ColorScale should not be required, but defined in the defaults method
-  const scale_color = await create_model_bqplot(
+  const scale_color = await create_model_bqscales(
     manager,
     'ColorScale',
     'scale_color',
@@ -109,7 +112,7 @@ export async function create_figure_scatter(
 
   const scatterModel = await create_model_bqplot(
     manager,
-    mega ? 'ScatterGL' : 'Scatter',
+    'Scatter',
     'scatter1',
     {
       scales: scales,
@@ -161,16 +164,26 @@ export async function create_figure_lines(manager, x, y, default_scales = {}) {
     'layout_figure1',
     { _dom_classes: '', width: '400px', height: '500px' }
   );
-  const scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {
-    min: 0,
-    max: 1,
-    allow_padding: false,
-  });
-  const scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {
-    min: 2,
-    max: 3,
-    allow_padding: false,
-  });
+  const scale_x = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_x',
+    {
+      min: 0,
+      max: 1,
+      allow_padding: false,
+    }
+  );
+  const scale_y = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_y',
+    {
+      min: 2,
+      max: 3,
+      allow_padding: false,
+    }
+  );
   const scales = { x: scale_x.toJSON(), y: scale_y.toJSON() };
   const scales_mark = {
     x: default_scales['x'] || scale_x.toJSON(),
@@ -227,12 +240,22 @@ export async function create_figure_pie(manager, sizes, labels) {
     { _dom_classes: '', width: '400px', height: '500px' }
   );
 
-  const scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {
-    allow_padding: false,
-  });
-  const scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {
-    allow_padding: false,
-  });
+  const scale_x = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_x',
+    {
+      allow_padding: false,
+    }
+  );
+  const scale_y = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_y',
+    {
+      allow_padding: false,
+    }
+  );
 
   const pieModel = await create_model_bqplot(manager, 'Pie', 'pie1', {
     sizes: sizes,
@@ -272,16 +295,26 @@ export async function create_figure_bars(manager, x, y) {
     'layout_figure1',
     { _dom_classes: '', width: '400px', height: '500px' }
   );
-  const scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {
-    min: 0,
-    max: 1,
-    allow_padding: false,
-  });
-  const scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {
-    min: 0,
-    max: 3,
-    allow_padding: false,
-  });
+  const scale_x = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_x',
+    {
+      min: 0,
+      max: 1,
+      allow_padding: false,
+    }
+  );
+  const scale_y = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_y',
+    {
+      min: 0,
+      max: 3,
+      allow_padding: false,
+    }
+  );
   const scales = { x: scale_x.toJSON(), y: scale_y.toJSON() };
   const color = null;
   const size = null;
@@ -386,29 +419,39 @@ export async function create_figure_gridheatmap(manager, color) {
     'layout_figure1',
     { _dom_classes: '', width: '400px', height: '500px' }
   );
-  const scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {
-    min: 0,
-    max: 1,
-    allow_padding: false,
-  });
-  const scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {
-    min: 0,
-    max: 1,
-    allow_padding: false,
-  });
-  const scale_row = await create_model_bqplot(
+  const scale_x = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_x',
+    {
+      min: 0,
+      max: 1,
+      allow_padding: false,
+    }
+  );
+  const scale_y = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_y',
+    {
+      min: 0,
+      max: 1,
+      allow_padding: false,
+    }
+  );
+  const scale_row = await create_model_bqscales(
     manager,
     'OrdinalScale',
     'scale_row',
     { reverse: true }
   );
-  const scale_column = await create_model_bqplot(
+  const scale_column = await create_model_bqscales(
     manager,
     'OrdinalScale',
     'scale_column',
     {}
   );
-  const scale_color = await create_model_bqplot(
+  const scale_color = await create_model_bqscales(
     manager,
     'ColorScale',
     'scale_color',
@@ -464,12 +507,22 @@ export async function create_figure_image(manager, ipywidgetImage) {
     { _dom_classes: '', width: '400px', height: '500px' }
   );
 
-  const scale_x = await create_model_bqplot(manager, 'LinearScale', 'scale_x', {
-    allow_padding: false,
-  });
-  const scale_y = await create_model_bqplot(manager, 'LinearScale', 'scale_y', {
-    allow_padding: false,
-  });
+  const scale_x = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_x',
+    {
+      allow_padding: false,
+    }
+  );
+  const scale_y = await create_model_bqscales(
+    manager,
+    'LinearScale',
+    'scale_y',
+    {
+      allow_padding: false,
+    }
+  );
 
   const scales = { x: scale_x.toJSON(), y: scale_y.toJSON() };
   const imageModel = await create_model_bqplot(manager, 'Image', 'image1', {

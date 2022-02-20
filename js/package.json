@@ -1,6 +1,6 @@
 {
   "name": "bqplot",
-  "version": "0.5.30",
+  "version": "0.5.31",
   "description": "bqplot",
   "keywords": [
     "jupyter",
@@ -46,10 +46,7 @@
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
-    "file-loader": "^6.0.0",
-    "imports-loader": "^0.8.0",
-    "json-loader": "^0.5.7",
-    "karma": "^5.0.2",
+    "karma": "^6.3.14",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-mocha": "^2.0.0",
@@ -64,7 +61,6 @@
     "mocha": "^7.1.1",
     "npm-run-all": "^4.1.3",
     "prettier": "^2.2.1",
-    "raw-loader": "~4.0.1",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.3.0",
@@ -79,6 +75,7 @@
     "@lumino/widgets": "^1",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
+    "bqscales": "^0.2.2",
     "d3": "^5.7.0",
     "d3-selection": "^1",
     "eslint-config-standard": "^16.0.2",
@@ -87,15 +84,19 @@
     "eslint-plugin-promise": "^4.2.1",
     "is-typedarray": "^1.0.0",
     "popper.js": "^1.0.0",
-    "three": "^0.91.0",
     "topojson": "^1.6.24",
     "underscore": "^1.8.3"
   },
   "jupyterlab": {
     "extension": "lib/jupyterlab-plugin",
+    "webpackConfig": "webpack.lab.config.js",
     "outputDir": "../share/jupyter/labextensions/bqplot",
     "sharedPackages": {
       "@jupyter-widgets/base": {
+        "bundled": false,
+        "singleton": true
+      },
+      "bqscales": {
         "bundled": false,
         "singleton": true
       }

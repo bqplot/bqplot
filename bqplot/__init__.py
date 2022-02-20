@@ -24,10 +24,11 @@ BQPlot Package
 Each plot starts with a `Figure` object. A `Figure` has a number of `Axis`
 objects (representing scales) and a number of `Mark` objects. `Mark`
 objects are a visual representation of the data. Scales transform data
-into visual properties (typically a number of pixels, a color, etc.).  ::
+into visual properties (typically a number of pixels, a color, etc.).
+
+.. jupyter-execute::
 
     from bqplot import *
-    from IPython.display import display
 
     x_data = range(10)
     y_data = [i ** 2 for i in x_data]
@@ -35,21 +36,20 @@ into visual properties (typically a number of pixels, a color, etc.).  ::
     x_sc = LinearScale()
     y_sc = LinearScale()
 
-    ax_x = Axis(label='Test X', scale=x_sc, tick_format='0.0f')
-    ax_y = Axis(label='Test Y', scale=y_sc,
-                orientation='vertical', tick_format='0.2f')
+    ax_x = Axis(label="Test X", scale=x_sc, tick_format="0.0f")
+    ax_y = Axis(
+        label="Test Y", scale=y_sc, orientation="vertical", tick_format="0.2f"
+    )
 
-    line = Lines(x=x_data,
-                 y=y_data,
-                 scales={'x': x_sc, 'y': y_sc},
-                 colors=['red', 'yellow'])
+    line = Lines(
+        x=x_data, y=y_data,
+        scales={"x": x_sc, "y": y_sc}, colors=["red", "yellow"]
+    )
 
-    fig = Figure(axes=[ax_x, ax_y], marks=[line])
-
-    display(fig)
+    Figure(axes=[ax_x, ax_y], marks=[line])
 
 .. automodule:: bqplot.figure
-.. automodule:: bqplot.scales
+.. automodule:: bqscales.scales
 .. automodule:: bqplot.marks
 .. automodule:: bqplot.axes
 .. automodule:: bqplot.market_map
@@ -64,7 +64,7 @@ into visual properties (typically a number of pixels, a color, etc.).  ::
 from .figure import *  # noqa
 from .axes import *  # noqa
 from .marks import *  # noqa
-from .scales import *  # noqa
+from bqscales import *  # noqa
 from .toolbar import *  # noqa
 from .default_tooltip import *  # noqa
 from ._version import version_info, __version__  # noqa

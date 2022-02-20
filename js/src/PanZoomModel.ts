@@ -13,14 +13,15 @@
  * limitations under the License.
  */
 
-import * as widgets from '@jupyter-widgets/base';
+import { ScaleModel } from 'bqscales';
+import { WidgetModel, unpack_models, Dict } from '@jupyter-widgets/base';
 import { semver_range } from './version';
 import * as _ from 'underscore';
 
-export class PanZoomModel extends widgets.WidgetModel {
+export class PanZoomModel extends WidgetModel {
   defaults() {
     return {
-      ...widgets.WidgetModel.prototype.defaults(),
+      ...WidgetModel.prototype.defaults(),
       _model_name: 'PanZoomModel',
       _view_name: 'PanZoom',
       _model_module: 'bqplot',
@@ -40,38 +41,42 @@ export class PanZoomModel extends widgets.WidgetModel {
   }
 
   reset_scales() {
-    widgets.resolvePromisesDict(this.get('scales')).then((scales: any) => {
-      _.each(
-        Object.keys(scales),
-        (k) => {
-          _.each(
-            scales[k],
-            (s: any, i) => {
-              s.set_state(this.scales_states[k][i]);
-            },
-            this
-          );
-        },
-        this
-      );
-    });
+    const scales = this.getScales();
+
+    _.each(
+      Object.keys(scales),
+      (k) => {
+        _.each(
+          scales[k],
+          (s: any, i) => {
+            s.set_state(this.scales_states[k][i]);
+          },
+          this
+        );
+      },
+      this
+    );
   }
 
   snapshot_scales() {
     // Save the state of the scales.
-    widgets.resolvePromisesDict(this.get('scales')).then((scales: any) => {
-      this.scales_states = Object.keys(scales).reduce((obj, key) => {
-        obj[key] = scales[key].map((s) => {
-          return s.get_state();
-        });
-        return obj;
-      }, {});
-    });
+    const scales = this.getScales();
+
+    this.scales_states = Object.keys(scales).reduce((obj, key) => {
+      obj[key] = scales[key].map((s) => {
+        return s.get_state(false);
+      });
+      return obj;
+    }, {});
+  }
+
+  getScales(): Dict<ScaleModel[]> {
+    return this.get('scales');
   }
 
   static serializers = {
-    ...widgets.WidgetModel.serializers,
-    scales: { deserialize: widgets.unpack_models },
+    ...WidgetModel.serializers,
+    scales: { deserialize: unpack_models },
   };
 
   scales_states: { [key: string]: any[] };

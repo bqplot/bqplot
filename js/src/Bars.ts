@@ -13,15 +13,14 @@
  * limitations under the License.
  */
 
-import * as d3 from 'd3';
-import { d3GetEvent } from './utils';
 import * as _ from 'underscore';
+import * as d3 from 'd3';
+import { LinearScale, OrdinalScale, isOrdinalScale } from 'bqscales';
+
+import { d3GetEvent } from './utils';
 import { Mark } from './Mark';
 import { BarData, BarGroupValue, BarsModel } from './BarsModel';
 import { applyStyles } from './utils';
-import { LinearScale } from './LinearScale';
-import { LogScale } from './LogScale';
-import { isOrdinalScale } from './OrdinalScale';
 
 export class Bars extends Mark {
   async render() {
@@ -64,16 +63,16 @@ export class Bars extends Mark {
     const dom = orient === 'vertical' ? 'x' : 'y';
     const rang = orient === 'vertical' ? 'y' : 'x';
     if (!isOrdinalScale(this.domScale)) {
-      this.domScale.set_range(
+      this.domScale.setRange(
         this.parent.padded_range(dom, this.domScale.model)
       );
     } else {
-      this.domScale.set_range(
+      this.domScale.setRange(
         this.parent.padded_range(dom, this.domScale.model),
         this.model.get('padding')
       );
     }
-    this.rangeScale.set_range(
+    this.rangeScale.setRange(
       this.parent.padded_range(rang, this.rangeScale.model)
     );
     // x_offset is set later by the adjustOffset method
@@ -917,7 +916,7 @@ export class Bars extends Mark {
           });
         }
       } else if (accelKey) {
-        //If accel is pressed and the bar is not already selcted
+        //If accel is pressed and the bar is not already selected
         //add the bar to the list of selected bars.
         selected.push(index);
       }
@@ -1002,10 +1001,10 @@ export class Bars extends Mark {
   }
 
   private domOffset: number;
-  private domScale: LinearScale | LogScale;
+  private domScale: LinearScale | OrdinalScale;
   private legendEl: d3.Selection<any, any, any, any>;
   private pixelCoords: [[number, number], [number, number]][][];
-  private rangeScale: LinearScale | LogScale;
+  private rangeScale: LinearScale | OrdinalScale;
   private stackedScale: d3.ScaleBand<any>;
   private groupedScale: d3.ScaleBand<any>;
   private xPixels: number[];

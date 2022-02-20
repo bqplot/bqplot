@@ -69,13 +69,13 @@ export class Pie extends Mark {
 
   set_ranges() {
     if (this.scales.x) {
-      this.scales.x.set_range(
+      this.scales.x.setRange(
         this.parent.padded_range('x', this.scales.x.model)
       );
     }
 
     if (this.scales.y) {
-      this.scales.y.set_range(
+      this.scales.y.setRange(
         this.parent.padded_range('y', this.scales.y.model)
       );
     }
@@ -600,7 +600,7 @@ export class Pie extends Mark {
   }
 
   compute_view_padding() {
-    const scales = this.model.get('scales');
+    const scales = this.model.getScales();
     const r = d3.max([
       this.model.get('radius'),
       this.model.get('inner_radius'),
