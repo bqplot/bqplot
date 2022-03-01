@@ -1272,6 +1272,18 @@ def clear():
             _context['scale_registry'][key] = {}
 
 
+def clear_figure(key):
+    """Clears the figure tied to given key of all marks axes and grid lines."""
+    fig = _context['figure_registry'].get(key)
+    if fig is not None:
+        fig.marks = []
+        fig.axes = []
+        setattr(fig, 'axis_registry', {})
+        _context['scales'] = {}
+        if key == _context['current_key']:
+            _context['scale_registry'][key] = {}
+
+
 def current_figure():
     """Returns the current context figure."""
     if _context['figure'] is None:
