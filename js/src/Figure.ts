@@ -1301,6 +1301,13 @@ export class Figure extends DOMWidgetView {
     return toolbar;
   }
 
+  /**
+   * @deprecated since 0.13.0 use extra.webGLRender
+   */
+  update_gl() {
+    this.extras.webGLRequestRender();
+  }
+
   axis_views: ViewList<DOMWidgetView>;
   bg: d3.Selection<SVGRectElement, any, any, any>;
   bg_events: d3.Selection<SVGRectElement, any, any, any>;
