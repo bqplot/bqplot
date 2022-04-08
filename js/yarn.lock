@@ -2354,10 +2354,10 @@ body-parser@1.19.0, body-parser@^1.19.0:
     raw-body "2.4.0"
     type-is "~1.6.17"
 
-bqscales@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/bqscales/-/bqscales-0.2.2.tgz#9ca0b02a7f6abe3f3d5dee85a170d7804c82d251"
-  integrity sha512-GMfOtAMIxNl8FHVp7Hs87RePKDDXYwtiRG9Z0qFqQiQKVKVDfWWcScfXWU2qpyc1DYQ3DGEI1N/cdzzehFJOmg==
+bqscales@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/bqscales/-/bqscales-0.2.3.tgz#9d733e0ff87a8f6cf180f6e0a574e4f1c2ad3a53"
+  integrity sha512-imnZ/X0z4kKLfxqKD+/G/b2Ai3WYAJ0Oes4Hj4rZubEExGa8gLaBwPmlq6pTn52T+nAw/Kj1DnkUP1wFHTUuWg==
   dependencies:
     "@jupyter-widgets/base" "^2.0.2 || ^3 || ^4.0.0"
     d3-array "^2.4.0"
