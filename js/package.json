@@ -14,6 +14,7 @@
   },
   "license": "Apache-2.0",
   "main": "lib/index.js",
+  "browser": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/bloomberg/bqplot.git"
@@ -79,9 +80,9 @@
     "@jupyter-widgets/base": "^2 || ^3 || ^4.0.0",
     "@lumino/messaging": "^1",
     "@lumino/widgets": "^1",
-    "bqscales": "^0.2.2",
-    "d3-selection": "^1",
+    "bqscales": "^0.2.3",
     "d3": "^5.7.0",
+    "d3-selection": "^1",
     "is-typedarray": "^1.0.0",
     "popper.js": "^1.0.0",
     "topojson": "^1.6.24",
