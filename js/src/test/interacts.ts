@@ -1,7 +1,7 @@
 import * as widgets from '@jupyter-widgets/base';
 import { expect } from 'chai';
 import { DummyManager } from './dummy-manager';
-import bqplot = require('..');
+import * as bqplot from '..';
 import {
   create_model_bqplot,
   create_figure_scatter,

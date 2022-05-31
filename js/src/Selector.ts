@@ -17,7 +17,7 @@ import * as d3 from 'd3';
 import { LinearScale, OrdinalScale } from 'bqscales';
 // const d3 =Object.assign({}, require("d3-selection"));
 import { Interaction } from './Interaction';
-const convert_dates = require('./utils').convert_dates;
+import { convert_dates } from './utils';
 import { WidgetView } from '@jupyter-widgets/base';
 
 export abstract class BaseSelector extends Interaction {

@@ -13,23 +13,28 @@
  * limitations under the License.
  */
 
-import * as bqplot from './index';
-require('../css/bqplot.css');
+import '../css/bqplot.css';
 
-import * as base from '@jupyter-widgets/base';
+import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
+
+import packageJson from '../package.json';
+
+const { name, version } = packageJson;
 
 /**
  * The widget manager provider.
  */
-module.exports = {
-  id: 'bqplot',
-  requires: [base.IJupyterWidgetRegistry],
+const plugin = {
+  id: name,
+  requires: [IJupyterWidgetRegistry],
   activate: function (app, widgets) {
     widgets.registerWidget({
-      name: 'bqplot',
-      version: bqplot.version,
-      exports: bqplot,
+      name,
+      version,
+      exports: async () => import('./index'),
     });
   },
   autoStart: true,
 };
+
+export default plugin;

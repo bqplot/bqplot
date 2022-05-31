@@ -1,22 +1,8 @@
 {
+  "extends": "./tsconfigbase",
   "compilerOptions": {
-    "declaration": true,
-    "esModuleInterop": true,
-    "lib": ["es2015", "dom"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "noUnusedLocals": true,
-    "outDir": "lib",
-    "resolveJsonModule": true,
-    "rootDir": "src",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    // TODO Turn this to true
-    "strict": false,
-    "strictPropertyInitialization": false,
-    "target": "es2015"
+    "outDir": "./",
+    "rootDir": "./"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["src/**/__tests__"]
+  "files": ["package.json"]
 }

@@ -13,4 +13,6 @@
  * limitations under the License.
  */
 
-export const semver_range = '^' + require('../package.json').version;
+import packageJson from '../package.json';
+
+export const semver_range = '^' + packageJson.version;

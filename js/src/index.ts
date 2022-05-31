@@ -73,4 +73,8 @@ export * from './ImageModel';
 // Temporary for backward compatibility
 export * from 'bqscales';
 
-export const version = require('../package.json').version;
+import packageJson from '../package.json';
+
+const { version } = packageJson;
+
+export { version };

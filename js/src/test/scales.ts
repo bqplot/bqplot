@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { DummyManager } from './dummy-manager';
-import bqplot = require('..');
+import * as bqplot from '..';
 import { create_model_bqplot } from './widget-utils';
 
 describe('scales >', () => {
