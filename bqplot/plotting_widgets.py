@@ -50,7 +50,7 @@ class Radar(Figure):
         self.spokes = Lines(scales=self.scales, colors=["#ccc"], stroke_width=0.5)
 
         # bands
-        self.bands = Lines(colors=["#ccc"], scales=self.scales, stroke_width=0.3,)
+        self.bands = Lines(colors=["#ccc"], scales=self.scales, stroke_width=0.5)
 
         # loops of the radar
         self.loops = Lines(
