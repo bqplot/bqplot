@@ -303,7 +303,7 @@ class IndexSelector(OneDSelector):
     color: Color or None (default: None)
         Color of the line representing the index selector.
     line_width: nonnegative integer (default: 0)
-        Width of the line represetning the index selector.
+        Width of the line representing the index selector.
     """
     selected = Array(None, allow_none=True)\
         .tag(sync=True, **array_serialization)
