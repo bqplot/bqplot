@@ -179,7 +179,7 @@ class Radar(Figure):
             self.spoke_labels.y = np.cos(t)
 
     def update_fill(self, *args):
-        if self.fill == True:
+        if self.fill:
             with self.loops.hold_sync():
                 self.loops.fill = "inside"
                 self.loops.fill_opacities = [0.2] * len(self.loops.y)
