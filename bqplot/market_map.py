@@ -81,7 +81,7 @@ class MarketMap(DOMWidget):
         formats for each of the fields for the tooltip data. Order should match
         the order of the tooltip_fields
     freeze_tooltip_location: bool (default: False)
-        if True, freezes the location of the tooltip. If False, tootip will
+        if True, freezes the location of the tooltip. If False, tooltip will
         follow the mouse
     show_groups: bool
         attribute to determine if the groups should be displayed. If set to
