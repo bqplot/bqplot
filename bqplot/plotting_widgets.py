@@ -27,7 +27,7 @@ class Radar(Figure):
         flag which lets us fill the radar loops or not
     """
 
-    data = DataFrame()
+    data = DataFrame().tag(dtype=None)
     data_range = List([0, 1]).tag(sync=True)
     band_type = Enum(
         ["circle", "polygon"], default_value="circle", allow_none=True
@@ -47,10 +47,14 @@ class Radar(Figure):
         # marks for the radar figure
 
         # spokes (straight lines going away from the center)
-        self.spokes = Lines(scales=self.scales, colors=["#ccc"], stroke_width=0.5)
+        self.spokes = Lines(
+            scales=self.scales, colors=["#ccc"], stroke_width=0.5
+        )
 
         # bands
-        self.bands = Lines(colors=["#ccc"], scales=self.scales, stroke_width=0.5)
+        self.bands = Lines(
+            colors=["#ccc"], scales=self.scales, stroke_width=0.5
+        )
 
         # loops of the radar
         self.loops = Lines(
@@ -105,7 +109,8 @@ class Radar(Figure):
             self.data_range[0], self.data_range[1], self.num_bands + 1
         )
         self.scaled_band_data = (
-            (band_data - self.data_range[0]) / (self.data_range[1] - self.data_range[0])
+            (band_data - self.data_range[0])
+            / (self.data_range[1] - self.data_range[0])
         )[:, np.newaxis]
 
         n = len(self.data.index)
