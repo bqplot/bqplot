@@ -95,7 +95,7 @@ COLOR_CODES = {'b': 'blue', 'g': 'green', 'r': 'red', 'c': 'cyan',
 
 MARKER_CODES = {'o': 'circle', 'v': 'triangle-down', '^': 'triangle-up',
                 's': 'square', 'd': 'diamond', '+': 'cross', 'p': 'plus',
-                'c': 'crosshair'}
+                'c': 'crosshair', '.': 'point'}
 
 
 PY2 = sys.version_info[0] == 2

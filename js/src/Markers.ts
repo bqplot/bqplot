@@ -211,6 +211,27 @@ const bqSymbolTypes = d3.map({
       -r
     );
   },
+  point: function (size) {
+    const pointFactor = 10;
+    const r = Math.sqrt(size / pi / pointFactor);
+    return (
+      'M0,' +
+      r +
+      'A' +
+      r +
+      ',' +
+      r +
+      ' 0 1,1 0,' +
+      -r +
+      'A' +
+      r +
+      ',' +
+      r +
+      ' 0 1,1 0,' +
+      r +
+      'Z'
+    );
+  },
 });
 
 function symbolSize() {
