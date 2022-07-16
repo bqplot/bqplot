@@ -578,7 +578,7 @@ class Scatter(_ScatterBase):
         Font-awesome icon for that mark
     name: string (class-level attribute)
         User-friendly name of the mark
-    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse', 'plus', 'crosshair'}
         Marker shape
     colors: list of colors (default: ['steelblue'])
         List of colors of the markers. If the list is shorter than the number
@@ -675,7 +675,8 @@ class Scatter(_ScatterBase):
 
     # Other attributes
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
-                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
+                   'triangle-up', 'arrow', 'rectangle', 'ellipse', 'plus',
+                   'crosshair'],
                   default_value='circle').tag(sync=True, display_name='Marker')
     colors = List(trait=Color(default_value=None, allow_none=True),
                   default_value=['steelblue'])\
