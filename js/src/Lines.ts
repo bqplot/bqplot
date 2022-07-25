@@ -631,16 +631,19 @@ export class Lines extends Mark {
         : [];
   }
 
-  get_interpolation():
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory {
+  get_interpolation(): d3Shape.CurveFactory {
     const curveTypes = {
       linear: d3.curveLinear,
       basis: d3.curveBasis,
+      'basis-open': d3.curveBasisOpen,
+      'basis-closed': d3.curveBasisClosed,
+      bundle: d3.curveBundle,
       cardinal: d3.curveCardinal,
+      'cardinal-open': d3.curveCardinalOpen,
+      'cardinal-closed': d3.curveCardinalClosed,
       monotone: d3.curveMonotoneY,
+      'step-before': d3.curveStepBefore,
+      'step-after': d3.curveStepAfter,
     };
 
     return curveTypes[this.model.get('interpolation')];

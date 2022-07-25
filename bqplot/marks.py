@@ -323,7 +323,8 @@ class Lines(Mark):
         in the list will have full opacity, while others will be faded.
     line_style: {'solid', 'dashed', 'dotted', 'dash_dotted'}
         Line style.
-    interpolation: {'linear', 'basis', 'cardinal', 'monotone'}
+    interpolation: {'linear', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open',
+    'cardinal-closed', 'monotone', 'step-before', 'step-after'}
         Interpolation scheme used for interpolation between the data points
         provided. Please refer to the svg interpolate documentation for details
         about the different interpolation schemes.
