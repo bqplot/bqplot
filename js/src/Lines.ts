@@ -643,7 +643,7 @@ export class Lines extends Mark {
       'cardinal-closed': d3.curveCardinalClosed,
       monotone: d3.curveMonotoneY,
       'step-before': d3.curveStepBefore,
-      'step-after': d3.curveStepAfter
+      'step-after': d3.curveStepAfter,
     };
 
     return curveTypes[this.model.get('interpolation')];
