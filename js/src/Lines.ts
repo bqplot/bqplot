@@ -631,18 +631,7 @@ export class Lines extends Mark {
         : [];
   }
 
-  get_interpolation():
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory
-    | d3Shape.CurveFactory {
+  get_interpolation(): d3Shape.CurveFactory {
     const curveTypes = {
       linear: d3.curveLinear,
       basis: d3.curveBasis,
