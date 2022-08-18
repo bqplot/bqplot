@@ -841,9 +841,9 @@ export class MarketMap extends Figure {
       tooltip_widget_creation_promise.then((view) => {
         that.tooltip_view = view as Tooltip;
 
-        MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
+        MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.BeforeAttach);
         that.tooltip_div.node().appendChild(view.el);
-        MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
+        MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.AfterAttach);
       });
     }
   }

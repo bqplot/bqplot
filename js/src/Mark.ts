@@ -341,7 +341,10 @@ export abstract class Mark extends widgets.WidgetView {
         'display',
         null
       );
-      MessageLoop.sendMessage(this.tooltip_view.pWidget, Widget.Msg.AfterShow);
+      MessageLoop.sendMessage(
+        this.tooltip_view.luminoWidget,
+        Widget.Msg.AfterShow
+      );
       this.parent.popper.enableEventListeners();
       this.move_tooltip();
     }
@@ -389,9 +392,9 @@ export abstract class Mark extends widgets.WidgetView {
       this.create_child_view(tooltip_model).then((view) => {
         this.tooltip_view = view;
 
-        MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
+        MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.BeforeAttach);
         this.tooltip_div.node().appendChild(view.el);
-        MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
+        MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.AfterAttach);
       });
     }
   }
