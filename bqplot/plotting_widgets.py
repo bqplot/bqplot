@@ -27,7 +27,7 @@ class Radar(Figure):
         flag which lets us fill the radar loops or not
     """
 
-    data = DataFrame().tag(dtype=None)
+    data = DataFrame()
     data_range = List([0, 1]).tag(sync=True)
     band_type = Enum(
         ["circle", "polygon"], default_value="circle", allow_none=True
