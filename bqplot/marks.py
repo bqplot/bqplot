@@ -1571,11 +1571,11 @@ class GridHeatMap(Mark):
         # Adding scales in case they are not passed too.
         scales = kwargs.pop('scales', {})
 
-        if(scales.get('row', None) is None):
+        if scales.get('row', None) is None:
             row_scale = OrdinalScale(reverse=True)
             scales['row'] = row_scale
 
-        if(scales.get('column', None) is None):
+        if scales.get('column', None) is None:
             column_scale = OrdinalScale()
             scales['column'] = column_scale
         kwargs['scales'] = scales
@@ -1669,11 +1669,11 @@ class HeatMap(Mark):
         # Adding default x and y data if they are not passed.
         # Adding scales in case they are not passed too.
 
-        if(scales.get('x', None) is None):
+        if scales.get('x', None) is None:
             x_scale = LinearScale()
             scales['x'] = x_scale
 
-        if(scales.get('y', None) is None):
+        if scales.get('y', None) is None:
             y_scale = LinearScale()
             scales['y'] = y_scale
         kwargs['scales'] = scales
