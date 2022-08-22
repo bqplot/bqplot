@@ -78,7 +78,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^6.0.0",
+    "@jupyter-widgets/base": "^2 || ^3 || ^4 || ^5 || ^6",
     "@lumino/messaging": "^1",
     "@lumino/widgets": "^1",
     "bqscales": "^0.3.1",
