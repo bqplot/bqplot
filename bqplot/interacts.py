@@ -519,7 +519,7 @@ class MultiSelector(BrushIntervalSelector):
 
     def hidden_selected_changed(self, name, selected):
         actual_selected = {}
-        if(self.read_json is None):
+        if self.read_json is None:
             self.selected = self._selected
         else:
             for key in self._selected:

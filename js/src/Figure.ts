@@ -740,14 +740,14 @@ export class Figure extends DOMWidgetView {
     this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
   }
 
-  processPhosphorMessage(msg) {
-    super.processPhosphorMessage.apply(this, arguments);
+  processLuminoMessage(msg) {
+    super.processLuminoMessage.apply(this, arguments);
 
     switch (msg.type) {
       case 'resize':
       case 'after-show':
       case 'after-attach':
-        if (this.pWidget.isVisible) {
+        if (this.luminoWidget.isVisible) {
           this.debouncedRelayout();
         }
         break;
