@@ -28,7 +28,7 @@ import { Scale, ScaleModel } from 'bqscales';
 
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
-import { applyAttrs, applyStyles } from './utils';
+import { applyAttrs, applyStyles, getLuminoWidget } from './utils';
 import { AxisModel } from './AxisModel';
 import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
@@ -735,6 +735,7 @@ export class Figure extends DOMWidgetView {
     this.trigger('margin_updated');
   }
 
+  // Phosphor shims
   update_plotarea_dimensions() {
     this.plotarea_width = this.width - this.margin.left - this.margin.right;
     this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
@@ -756,7 +757,7 @@ export class Figure extends DOMWidgetView {
       case 'resize':
       case 'after-show':
       case 'after-attach':
-        if (this.luminoWidget.isVisible) {
+        if (getLuminoWidget(this).isVisible) {
           this.debouncedRelayout();
         }
         break;
