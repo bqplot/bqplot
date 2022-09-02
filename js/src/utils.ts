@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import { DOMWidgetView } from '@jupyter-widgets/base';
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-scale"));
 import isTypedArray from 'is-typedarray';
@@ -117,4 +118,9 @@ export function d3GetEvent() {
   // be a different module as the one that is used in d3.on
   // leading to a null event, for now we can use window.event as fallback.
   return require('d3-selection').event || window.event;
+}
+
+// Phosphor shim for ipywidgets 7 support
+export function getLuminoWidget(ipywidget: DOMWidgetView) {
+  return ipywidget.pWidget ? ipywidget.pWidget : ipywidget.luminoWidget;
 }
