@@ -731,8 +731,17 @@ export class Figure extends widgets.DOMWidgetView {
     this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
   }
 
+  processPhosphorMessage(msg) {
+    // @ts-ignore: The following line can only compile with ipywidgets 7
+    this._processLuminoMessage(msg, super.processPhosphorMessage);
+  }
+
   processLuminoMessage(msg) {
-    super.processLuminoMessage.apply(this, arguments);
+    this._processLuminoMessage(msg, super.processLuminoMessage);
+  }
+
+  _processLuminoMessage(msg, _super) {
+    _super.call(this, msg);
 
     switch (msg.type) {
       case 'resize':
