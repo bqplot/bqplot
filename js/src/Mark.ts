@@ -20,7 +20,7 @@ import { MessageLoop } from '@lumino/messaging';
 
 import { Widget } from '@lumino/widgets';
 
-import { d3GetEvent } from './utils';
+import { d3GetEvent, getLuminoWidget } from './utils';
 import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
 import { Figure } from './Figure';
@@ -316,7 +316,7 @@ export abstract class Mark extends widgets.WidgetView {
         null
       );
       MessageLoop.sendMessage(
-        this.tooltip_view.luminoWidget,
+        getLuminoWidget(this.tooltip_view),
         Widget.Msg.AfterShow
       );
       this.parent.popper.enableEventListeners();
@@ -366,9 +366,9 @@ export abstract class Mark extends widgets.WidgetView {
       this.create_child_view(tooltip_model).then((view) => {
         this.tooltip_view = view;
 
-        MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.BeforeAttach);
+        MessageLoop.sendMessage(getLuminoWidget(view), Widget.Msg.BeforeAttach);
         this.tooltip_div.node().appendChild(view.el);
-        MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.AfterAttach);
+        MessageLoop.sendMessage(getLuminoWidget(view), Widget.Msg.AfterAttach);
       });
     }
   }

@@ -28,7 +28,7 @@ import { Scale } from './Scale';
 import { ColorScale } from './ColorScale';
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
-import { applyAttrs, applyStyles } from './utils';
+import { applyAttrs, applyStyles, getLuminoWidget } from './utils';
 
 export class MarketMap extends Figure {
   protected renderImpl() {
@@ -837,9 +837,9 @@ export class MarketMap extends Figure {
       tooltip_widget_creation_promise.then((view) => {
         that.tooltip_view = view as Tooltip;
 
-        MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.BeforeAttach);
+        MessageLoop.sendMessage(getLuminoWidget(view), Widget.Msg.BeforeAttach);
         that.tooltip_div.node().appendChild(view.el);
-        MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.AfterAttach);
+        MessageLoop.sendMessage(getLuminoWidget(view), Widget.Msg.AfterAttach);
       });
     }
   }

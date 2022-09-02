@@ -21,7 +21,7 @@ import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
 import { Dict, WidgetModel, WidgetView } from '@jupyter-widgets/base';
-import { applyAttrs, applyStyles } from './utils';
+import { applyAttrs, applyStyles, getLuminoWidget } from './utils';
 import { Scale } from './Scale';
 import { ScaleModel } from './ScaleModel';
 import { AxisModel } from './AxisModel';
@@ -726,6 +726,7 @@ export class Figure extends widgets.DOMWidgetView {
     this.trigger('margin_updated');
   }
 
+  // Phosphor shims
   update_plotarea_dimensions() {
     this.plotarea_width = this.width - this.margin.left - this.margin.right;
     this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
@@ -747,7 +748,7 @@ export class Figure extends widgets.DOMWidgetView {
       case 'resize':
       case 'after-show':
       case 'after-attach':
-        if (this.luminoWidget.isVisible) {
+        if (getLuminoWidget(this).isVisible) {
           this.debouncedRelayout();
         }
         break;
