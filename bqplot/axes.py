@@ -85,6 +85,10 @@ class Axis(BaseAxis):
         If tick_values is None, number of ticks
     tick_values: numpy.ndarray or None (default: None)
         Tick values for the axis
+    tick_labels: dict (default: None)
+        Override the tick labels with a dictionary of {value: label}.
+        Entries are optional, and if not provided, the default tick labels
+        will be used.
     offset: dict (default: {})
         Contains a scale and a value {'scale': scale or None,
         'value': value of the offset}
@@ -128,6 +132,7 @@ class Axis(BaseAxis):
     tick_values = Array(None, allow_none=True)\
         .tag(sync=True, **array_serialization)\
         .valid(array_dimension_bounds(1, 1))
+    tick_labels = Dict(None, allow_none=True).tag(sync=True)
     offset = Dict().tag(sync=True, **widget_serialization)
     label_location = Enum(['middle', 'start', 'end'],
                           default_value='middle').tag(sync=True)
