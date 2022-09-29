@@ -78,6 +78,7 @@ export class Axis extends WidgetView {
     // Tick attributes
     this.listenTo(this.model, 'change:tick_values', this.set_tick_values);
     this.listenTo(this.model, 'change:tick_format', this.tickformat_changed);
+    this.listenTo(this.model, 'change:tick_labels', this.tick_labels_changed);
     this.listenTo(this.model, 'change:num_ticks', this.set_tick_values);
     this.listenTo(this.model, 'change:tick_rotate', this.apply_tick_styling);
     this.listenTo(this.model, 'change:tick_style', this.apply_tick_styling);
@@ -224,6 +225,10 @@ export class Axis extends WidgetView {
     this.apply_tick_styling();
   }
 
+  tick_labels_changed() {
+    this.tickformat_changed();
+  }
+
   apply_tick_styling() {
     // Applies current tick styling to all displayed ticks
     const tickText = this.g_axisline.selectAll('.tick text');
@@ -283,6 +288,24 @@ export class Axis extends WidgetView {
   }
 
   generate_tick_formatter() {
+    const default_formatter = this.generate_default_tick_formatter();
+    const tickLabels = this.model.get('tick_labels');
+    if (tickLabels && Object.keys(tickLabels).length > 0) {
+      const formatter = (data) => {
+        let value = tickLabels[data];
+        if (value === undefined) {
+          return default_formatter(data);
+        } else {
+          return value;
+        }
+      };
+      return formatter;
+    } else {
+      return default_formatter;
+    }
+  }
+
+  generate_default_tick_formatter() {
     if (isDateScale(this.axis_scale) || isDateColorScale(this.axis_scale)) {
       if (this.model.get('tick_format')) {
         return d3.utcFormat(this.model.get('tick_format'));
