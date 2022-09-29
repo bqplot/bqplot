@@ -33,6 +33,7 @@ export class AxisModel extends widgets.WidgetModel {
       label: '',
       grid_lines: 'solid',
       tick_format: null,
+      tick_labels: null,
       scale: undefined,
       num_ticks: null,
       tick_values: [],
