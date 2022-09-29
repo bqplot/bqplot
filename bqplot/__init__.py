@@ -66,6 +66,7 @@ from .axes import *  # noqa
 from .marks import *  # noqa
 from .scales import *  # noqa
 from .toolbar import *  # noqa
+from .plotting_widgets import *  # noqa
 from .default_tooltip import *  # noqa
 from ._version import version_info, __version__  # noqa
 
