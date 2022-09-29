@@ -166,6 +166,72 @@ const bqSymbolTypes = d3.map({
       'Z'
     );
   },
+  plus: function (size, skew) {
+    // Use the same radius as square so that this mark is the same size as
+    // the square.
+    const r = Math.sqrt(size) / 2;
+    return (
+      'M0,' +
+      -r +
+      'L' +
+      '0' +
+      ',' +
+      r +
+      'M' +
+      -r +
+      ',' +
+      '0' +
+      'L' +
+      r +
+      ',' +
+      '0'
+    );
+  },
+  crosshair: function (size, skew) {
+    // Use a radius so that this mark is the same size as
+    // the square in the sense that it fits just inside a square
+    // of the same size
+    const r = Math.sqrt(size) / 2;
+    return (
+      'M' +
+      -r +
+      ',' +
+      -r +
+      'L' +
+      r +
+      ',' +
+      r +
+      'M' +
+      -r +
+      ',' +
+      r +
+      'L' +
+      r +
+      ',' +
+      -r
+    );
+  },
+  point: function (size) {
+    const pointFactor = 10;
+    const r = Math.sqrt(size / pi / pointFactor);
+    return (
+      'M0,' +
+      r +
+      'A' +
+      r +
+      ',' +
+      r +
+      ' 0 1,1 0,' +
+      -r +
+      'A' +
+      r +
+      ',' +
+      r +
+      ' 0 1,1 0,' +
+      r +
+      'Z'
+    );
+  },
 });
 
 function symbolSize() {

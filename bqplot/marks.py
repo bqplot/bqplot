@@ -328,7 +328,7 @@ class Lines(Mark):
         Interpolation scheme used for interpolation between the data points
         provided. Please refer to the svg interpolate documentation for details
         about the different interpolation schemes.
-    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse', 'plus', 'crosshair', 'point'}
         Marker shape
     marker_size: nonnegative int (default: 64)
         Default marker size in pixels
@@ -408,7 +408,8 @@ class Lines(Mark):
                 default_value='none')\
         .tag(sync=True, display_name='Fill')
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
-                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
+                   'triangle-up', 'arrow', 'rectangle', 'ellipse', 'plus',
+                   'crosshair', 'point'],
                   default_value=None, allow_none=True)\
         .tag(sync=True, display_name='Marker')
     marker_size = Int(64).tag(sync=True, display_name='Default size')
@@ -579,7 +580,7 @@ class Scatter(_ScatterBase):
         Font-awesome icon for that mark
     name: string (class-level attribute)
         User-friendly name of the mark
-    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse'}
+    marker: {'circle', 'cross', 'diamond', 'square', 'triangle-down', 'triangle-up', 'arrow', 'rectangle', 'ellipse', 'plus', 'crosshair', 'point'}
         Marker shape
     colors: list of colors (default: ['steelblue'])
         List of colors of the markers. If the list is shorter than the number
@@ -676,7 +677,8 @@ class Scatter(_ScatterBase):
 
     # Other attributes
     marker = Enum(['circle', 'cross', 'diamond', 'square', 'triangle-down',
-                   'triangle-up', 'arrow', 'rectangle', 'ellipse'],
+                   'triangle-up', 'arrow', 'rectangle', 'ellipse', 'plus',
+                   'crosshair', 'point'],
                   default_value='circle').tag(sync=True, display_name='Marker')
     colors = List(trait=Color(default_value=None, allow_none=True),
                   default_value=['steelblue'])\
