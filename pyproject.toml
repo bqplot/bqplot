@@ -1,3 +1,94 @@
 [build-system]
-requires = ["jupyter_packaging~=0.7.9", "jupyterlab~=3.0", "setuptools>=40.8.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = [
+    "hatchling",
+    "jupyterlab~=3.0",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "bqplot"
+description = "Interactive plotting for the Jupyter notebook, using d3.js and ipywidgets."
+readme = "README.md"
+requires-python = ">=3.7"
+authors = [
+    { name = "The BQplot Development Team" },
+]
+keywords = [
+    "d3",
+    "graphics",
+    "ipython",
+    "jupyter",
+    "plotting",
+    "widgets",
+]
+dependencies = [
+    "bqscales>=0.3.1,<0.4",
+    "ipywidgets>=7.5.0,<9",
+    "numpy>=1.10.4,<2.0.0",
+    "pandas>=1.0.0,<2.0.0",
+    "traitlets>=4.3.0",
+    "traittypes>=0.0.6",
+]
+version = "0.12.30"
+
+[project.license]
+file = "LICENSE"
+
+[project.urls]
+Homepage = "https://github.com/bqplot/bqplot"
+
+[tool.hatch.build]
+artifacts = [
+    "share/jupyter/nbextensions/bqplot",
+    "share/jupyter/labextensions/bqplot",
+]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"share/jupyter/nbextensions/bqplot" = "share/jupyter/nbextensions/bqplot"
+"share/jupyter/labextensions/bqplot" = "share/jupyter/labextensions/bqplot"
+"install.json" = "share/jupyter/labextensions/bqplot/install.json"
+"etc/jupyter/nbconfig/notebook.d/bqplot.json" = "etc/jupyter/nbconfig/notebook.d/bqplot.json"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".github",
+]
+
+[tool.hatch.build.hooks.jupyter-builder]
+ensured-targets = [
+    "share/jupyter/nbextensions/bqplot/index.js",
+    "share/jupyter/labextensions/bqplot/package.json",
+]
+dependencies = [
+    "hatch-jupyter-builder>=0.8.1",
+]
+build-function = "hatch_jupyter_builder.npm_builder"
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+path = "js"
+source_dir = "js/src"
+build_cmd = "build"
+npm = [
+    "yarn",
+]
+
+[tool.tbump]
+field = [
+    { name = "channel", default = "" },
+    { name = "release", default = "" },
+]
+
+[tool.tbump.version]
+current = "0.12.30"
+regex = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)((?P<channel>a|b|rc|.dev)(?P<release>\\d+))?"
+
+[tool.tbump.git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"
+
+[[tool.tbump.file]]
+src = "pyproject.toml"
+version_template = "version = \"{major}.{minor}.{patch}{channel}{release}\""
+
+[[tool.tbump.file]]
+src = "bqplot/_version.py"

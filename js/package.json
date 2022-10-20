@@ -20,9 +20,10 @@
     "url": "https://github.com/bloomberg/bqplot.git"
   },
   "scripts": {
-    "build": "jlpm run build:css && jlpm run build:js && jlpm run build:labextension && webpack --mode=production",
+    "build": "jlpm run build:css && jlpm run build:js && jlpm run build:labextension && jlpm run build:nbextension",
     "build:css": "lessc less/bqplot.less css/bqplot.css",
     "build:js": "tsc --build src",
+    "build:nbextension": "webpack --mode=production",
     "build:labextension": "jupyter labextension build .",
     "watch": "npm-run-all -p watch:*",
     "watch:js": "tsc --build src --watch",
