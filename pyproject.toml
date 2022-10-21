@@ -44,7 +44,7 @@ artifacts = [
 ]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"share/jupyter/nbextensions/bqplot" = "share/jupyter/nbextensions/bqplot"
+"share/jupyter/nbextensions/bqplot/*.js" = "share/jupyter/nbextensions/bqplot/"
 "share/jupyter/labextensions/bqplot" = "share/jupyter/labextensions/bqplot"
 "install.json" = "share/jupyter/labextensions/bqplot/install.json"
 "etc/jupyter/nbconfig/notebook.d/bqplot.json" = "etc/jupyter/nbconfig/notebook.d/bqplot.json"
