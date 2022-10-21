@@ -4,6 +4,7 @@ channels:
 dependencies:
     - pip
     - python
+    - build
     - nodejs=16
     - yarn
     - ipywidgets >=8

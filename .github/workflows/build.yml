@@ -71,7 +71,7 @@ jobs:
 
     - name: Build Python package
       run: |
-        python setup.py sdist bdist_wheel
+        python -m build
         cd dist
         sha256sum * | tee SHA256SUMS
 
@@ -216,8 +216,11 @@ jobs:
       - name: Setup conda
         uses: conda-incubator/setup-miniconda@v2
         with:
+          activate-environment: bqplot-test
+          environment-file: test-environment.yml
           python-version: ${{ matrix.python-version }}
           mamba-version: "*"
+          auto-activate-base: false
           channels: conda-forge
 
       - uses: actions/download-artifact@v2

@@ -1,5 +1,0 @@
-include bqplot/map_data/*.json
-
-include LICENSE
-# include only by default in setuptools 43.0.0+
-include pyproject.toml
