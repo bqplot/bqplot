@@ -10,7 +10,7 @@ site_url: https://bqplot.github.io/
 
 * __Core Plotting__ Support for core plotting is provided
 * __Responsive__ Built using the same machinery that powers Jupyter widgets
-    * Most of the attributes of `figure` and `mark` objects are implemented as [__traitlets__](https://traitlets.readthedocs.io/en/stable/) which make the plots respond to data updates. __After rendering the charts the attributes of the figures and marks can be updated in notebook cells down (or in callbacks) and changes are automatically relected in the chart!__
+    * Most of the attributes of `figure` and `mark` objects are implemented as [__traitlets__](https://traitlets.readthedocs.io/en/stable/) which make the plots respond to data updates. __After rendering the charts the attributes of the figures and marks can be updated in notebook cells down (or in callbacks) and changes are automatically reflected in the chart!__
 * __Selectors__ Selectors enable selecting slices of data
     * __1D selectors__ Select slices of data along one dimension (x or y)
     * __2D selectors__ Select slices of data along two dimensions (x and y) using rectangular brushing
