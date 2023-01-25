@@ -66,3 +66,6 @@ node_modules
 
 *.tsbuildinfo
 *.log
+
+# mkdocs
+site/
