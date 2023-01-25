@@ -3,7 +3,7 @@ repo_name: bqplot/bqplot
 repo_url: https://github.com/bqplot/bqplot
 theme:
   name: material
-  logo: assets/logo.png
+  logo: assets/images/logo.png
   extra:
     homepage: https://bqplot.github.io
   palette:
