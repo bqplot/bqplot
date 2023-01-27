@@ -2,6 +2,7 @@ name: bqplot_docs
 channels:
  - conda-forge
 dependencies:
+ - pip
  - numpy
  - pandas
  - bqplot
