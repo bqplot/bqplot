@@ -21,14 +21,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Setup conda
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Install Conda environment with Micromamba
+      uses: mamba-org/provision-with-micromamba@main
       with:
-        activate-environment: bqplot-test
+        environment-name: bqplot-test
         environment-file: test-environment.yml
-        python-version: ${{ matrix.python-version }}
-        mamba-version: "*"
-        auto-activate-base: false
         channels: conda-forge
 
     - name: Install the package
@@ -95,14 +92,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          activate-environment: bqplot-test
+          environment-name: bqplot-test
           environment-file: test-environment.yml
-          python-version: 3.9
-          mamba-version: "*"
-          auto-activate-base: false
           channels: conda-forge
 
       - uses: actions/download-artifact@v2
@@ -151,26 +145,18 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, macos, windows]
-        python: ['3.6', '3.9']
-        include:
-          - python: '3.6'
-            dist: 'bqplot*.tar.gz'
-          - python: '3.9'
-            dist: 'bqplot*.whl'
+        dist: ['bqplot*.tar.gz', 'bqplot*.whl']
 
     steps:
 
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          activate-environment: bqplot-test
+          environment-name: bqplot-test
           environment-file: test-environment.yml
-          python-version: ${{ matrix.python-version }}
-          mamba-version: "*"
-          auto-activate-base: false
           channels: conda-forge
 
       - uses: actions/download-artifact@v2
@@ -199,34 +185,30 @@ jobs:
         run: jupyter labextension list 2>&1 | grep bqplot
 
   JupyterLab2-build:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ubuntu-latest
     needs: [build]
 
     strategy:
       fail-fast: false
-      matrix:
-        os: [ubuntu]
-        python: ['3.9']
 
     steps:
 
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          python-version: ${{ matrix.python-version }}
-          mamba-version: "*"
+          environment-name: bqplot-test
+          environment-file: test-environment.yml
           channels: conda-forge
+          extra-specs: |
+            jupyterlab=2
 
       - uses: actions/download-artifact@v2
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
-
-      - name: Install JupyterLab 2
-        run: mamba install yarn jupyterlab=2
 
       - name: Install the labextension
         env:
