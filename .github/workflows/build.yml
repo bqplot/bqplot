@@ -199,15 +199,16 @@ jobs:
       - name: Install Conda environment with Micromamba
         uses: mamba-org/provision-with-micromamba@main
         with:
+          environment-name: bqplot-test
+          environment-file: test-environment.yml
           channels: conda-forge
+          extra-specs: |
+            jupyterlab=2
 
       - uses: actions/download-artifact@v2
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
-
-      - name: Install JupyterLab 2
-        run: mamba install yarn jupyterlab=2
 
       - name: Install the labextension
         env:
