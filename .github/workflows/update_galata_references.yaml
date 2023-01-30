@@ -32,14 +32,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          activate-environment: bqplot-test
+          environment-name: bqplot-test
           environment-file: test-environment.yml
-          python-version: 3.9
-          mamba-version: "*"
-          auto-activate-base: false
           channels: conda-forge
 
       - name: Install bqplot
