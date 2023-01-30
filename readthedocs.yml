@@ -1,4 +1,12 @@
+version: 2
+
+build:
+  os: "ubuntu-20.04"
+  tools:
+    python: "mambaforge-4.10"
+
+mkdocs:
+  configuration: mkdocs.yml
+
 conda:
-    file: docs/environment.yml
-python:
-    version: 3
+  environment: docs/mkdocs-environment.yml

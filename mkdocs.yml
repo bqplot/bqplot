@@ -1,0 +1,70 @@
+site_name: bqplot
+repo_name: bqplot/bqplot
+repo_url: https://github.com/bqplot/bqplot
+theme:
+  name: material
+  logo: assets/images/logo.png
+  extra:
+    homepage: https://bqplot.github.io
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.sections
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - md_in_html
+  - attr_list
+
+plugins:
+  - search
+  - mkdocstrings
+nav:
+    - bqplot: index.md
+    - Installation: installation.md
+    - API Documentation: api-doc.md
+    - Usage:
+      - Pyplot: usage/pyplot.md
+      - Object Model: usage/object-model.md
+      - Updating Plots: usage/updating-plots.md
+      - Figure: usage/figure.md
+      - Scales: usage/scales.md
+      - Axes: usage/axes.md
+      - Marks:
+        - Introduction: usage/marks/index.md
+        - Lines: usage/marks/lines.md
+        - Bars: usage/marks/bars.md
+        - Scatter: usage/marks/scatter.md
+        - Pie: usage/marks/pie.md
+        - Map: usage/marks/maps.md
+        - Heatmap: usage/marks/heatmap.md
+        - Marketmap: usage/marks/market.md
+      - Interactions:
+        - Mark Interactions: usage/interactions/mark-interactions.md
+        - Selectors: usage/interactions/selectors.md
+        - Panzoom: usage/interactions/panzoom.md
+        - Handdraw: usage/interactions/hand-draw.md
+      - Advanced:
+        - Linking With ipywidgets: usage/advanced/linking-ipywidgets.md
+        - Dashboarding: usage/advanced/dashboards.md
+        - Compound Widgets: usage/advanced/compound-widgets.md
