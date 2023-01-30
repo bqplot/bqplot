@@ -1,7 +1,0 @@
-name: bqplot_docs
-channels:
- - conda-forge
-dependencies:
- - pip
- - pip:
-   - mkdocs
