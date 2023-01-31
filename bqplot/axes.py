@@ -63,7 +63,7 @@ class Axis(BaseAxis):
 
     """A line axis.
 
-    A line axis is the visual representation of a numerical or date scale.
+    A line axis is the visual representation of a **numerical** or **date scale**.
 
     Attributes
     ----------
@@ -155,7 +155,7 @@ class ColorAxis(Axis):
 
     """A colorbar axis.
 
-    A color axis is the visual representation of a color scale.
+    A color axis is the visual representation of a **color scale**.
 
     Attributes
     ----------

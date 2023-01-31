@@ -38,11 +38,18 @@ markdown_extensions:
 
 plugins:
   - search
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            show_root_toc_entry: false
+            docstring_style: numpy
+            docstring_section_style: spacy
+            show_source: false
 nav:
     - bqplot: index.md
     - Installation: installation.md
-    - API Documentation: api-doc.md
     - Usage:
       - Pyplot: usage/pyplot.md
       - Object Model: usage/object-model.md
@@ -68,3 +75,12 @@ nav:
         - Linking With ipywidgets: usage/advanced/linking-ipywidgets.md
         - Dashboarding: usage/advanced/dashboards.md
         - Compound Widgets: usage/advanced/compound-widgets.md
+    - API Documentation:
+      - Figure: api/figure.md
+      - MarketMap: api/market_map.md
+      - Toolbar: api/toolbar.md
+      - Scales: api/scales.md
+      - Marks: api/marks.md
+      - Axes: api/axes.md
+      - Interactions: api/interactions.md
+      - Pyplot: api/pyplot.md
