@@ -6,6 +6,7 @@ dependencies:
   - pip
   - pandas
   - jupyter
+  - bqscales
   - bqplot
   - pip:
     - mkdocs-material

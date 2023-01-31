@@ -71,7 +71,7 @@ Every time you make a change on your tests it's necessary to rebuild the JS side
 yarn run build
 ```
 
-### Installation Of Older Versions 
+### Installation Of Older Versions
 
 (Only for JupyterLab <= 2)
 In order to install a previous bqplot version, you need to know which front-end version (JavaScript) matches with the back-end version (Python).

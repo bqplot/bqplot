@@ -40,7 +40,7 @@ from ._version import __frontend_version__
 
 class MarketMap(DOMWidget):
 
-    """Waffle wrapped map.
+    """Waffle wrapped map. A MarketMap is not a Mark, it's a custom Figure!
 
     Attributes
     ----------
@@ -88,6 +88,10 @@ class MarketMap(DOMWidget):
         True, the finer elements are blurred
 
     Map Drawing Attributes
+    ----------------------
+
+    Attributes
+    ----------
     cols: int
         Suggestion for no of columns in the map.If not specified, value is
         inferred from the no of rows and no of cells
@@ -104,7 +108,10 @@ class MarketMap(DOMWidget):
         more square cells for each of the groups
 
     Layout Attributes
+    -----------------
 
+    Attributes
+    ----------
     map_margin: dict (default: {top=50, bottom=50, left=50, right=50})
         Dictionary containing the top, bottom, left and right margins. The user
         is responsible for making sure that the width and height are greater
@@ -116,7 +123,10 @@ class MarketMap(DOMWidget):
 
 
     Display Attributes
+    ------------------
 
+    Attributes
+    ----------
     colors: list of colors
         Colors for each of the groups which are cycled over to cover all the
         groups
@@ -136,7 +146,10 @@ class MarketMap(DOMWidget):
         CSS style for the text of each cell
 
     Other Attributes
+    ----------------
 
+    Attributes
+    ----------
     enable_select: bool
         boolean to control the ability to select the cells of the map by
         clicking
@@ -144,22 +157,20 @@ class MarketMap(DOMWidget):
         boolean to control if the map should be aware of which cell is being
         hovered on. If it is set to False, tooltip will not be displayed
 
-    Note
-    ----
+    !!! Note
+        The aspect ratios stand for width / height ratios.
 
-    The aspect ratios stand for width / height ratios.
+        - If the available space is within bounds in terms of min and max aspect
+        ratio, we use the entire available space.
+        - If the available space is too oblong horizontally, we use the client
+        height and the width that corresponds max_aspect_ratio (maximize width
+        under the constraints).
+        - If the available space is too oblong vertically, we use the client width
+        and the height that corresponds to min_aspect_ratio (maximize height
+        under the constraint).
+        This corresponds to maximizing the area under the constraints.
 
-     - If the available space is within bounds in terms of min and max aspect
-       ratio, we use the entire available space.
-     - If the available space is too oblong horizontally, we use the client
-       height and the width that corresponds max_aspect_ratio (maximize width
-       under the constraints).
-     - If the available space is too oblong vertically, we use the client width
-       and the height that corresponds to min_aspect_ratio (maximize height
-       under the constraint).
-       This corresponds to maximizing the area under the constraints.
-
-    Default min and max aspect ratio are both equal to 16 / 9.
+        Default min and max aspect ratio are both equal to 16 / 9.
     """
     names = Array([]).tag(sync=True, **array_serialization)
     groups = Array([]).tag(sync=True, **array_serialization)
