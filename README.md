@@ -125,10 +125,6 @@ yarn run build
 
 [![Bqplot Screenshot](/bqplot.png)](https://github.com/bqplot/bqplot/blob/master/examples/Advanced%20Plotting/Advanced%20Plotting.ipynb)
 
-## Documentation
-
-Full documentation is available at https://bqplot.readthedocs.io/
-
 ## Install a previous bqplot version (Only for JupyterLab <= 2)
 
 In order to install a previous bqplot version, you need to know which front-end version (JavaScript) matches with the back-end version (Python).
