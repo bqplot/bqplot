@@ -23,7 +23,7 @@ Style attributes can be used for styling the figure (title, backgrounds, legends
 Layout attributes can be used for controlling the dimensions and margins
 
 ### Code Examples
-Let's look a few examples to configue the figure using the `pyplot` API:
+Let's look a few examples to configure the figure using the `pyplot` API:
 
 #### Width And Height
 Set the `height` and `width` of the figure by passing in a `layout` attribute like so:
