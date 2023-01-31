@@ -1,6 +1,6 @@
-## `pyplot` API
-
 `pyplot` is a context based functional API offering meaningful defaults. It's a concise API and very similar to matplotlib's pyplot. __Users new to bqplot should use `pyplot` as a starting point__. 
+
+`pyplot` API documentation can be found [here](../api/pyplot.md).
 
 Steps for building plots in `pyplot`:
 
