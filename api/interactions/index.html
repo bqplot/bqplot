@@ -1,0 +1,2181 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../axes/">
+      
+      
+        <link rel="next" href="../pyplot/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
+    
+    
+      
+        <title>Interactions - bqplot</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0d440cfe.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bqplot.interacts.BrushIntervalSelector" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="bqplot" class="md-header__button md-logo" aria-label="bqplot" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            bqplot
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Interactions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bqplot/bqplot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bqplot/bqplot
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="bqplot" class="md-nav__button md-logo" aria-label="bqplot" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    bqplot
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bqplot/bqplot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bqplot/bqplot
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        bqplot
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/pyplot/" class="md-nav__link">
+        Pyplot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/object-model.md" class="md-nav__link">
+        Object Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/updating-plots.md" class="md-nav__link">
+        Updating Plots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/figure.md" class="md-nav__link">
+        Figure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/scales.md" class="md-nav__link">
+        Scales
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/axes.md" class="md-nav__link">
+        Axes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+          Marks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Marks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/index.md" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/lines.md" class="md-nav__link">
+        Lines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/bars.md" class="md-nav__link">
+        Bars
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/scatter.md" class="md-nav__link">
+        Scatter
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/pie.md" class="md-nav__link">
+        Pie
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/maps.md" class="md-nav__link">
+        Map
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/heatmap.md" class="md-nav__link">
+        Heatmap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/market.md" class="md-nav__link">
+        Marketmap
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+          Interactions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_8">
+          <span class="md-nav__icon md-icon"></span>
+          Interactions
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/mark-interactions.md" class="md-nav__link">
+        Mark Interactions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/selectors.md" class="md-nav__link">
+        Selectors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/panzoom.md" class="md-nav__link">
+        Panzoom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/hand-draw.md" class="md-nav__link">
+        Handdraw
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+          Advanced
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/linking-ipywidgets.md" class="md-nav__link">
+        Linking With ipywidgets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/dashboards.md" class="md-nav__link">
+        Dashboarding
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/compound-widgets.md" class="md-nav__link">
+        Compound Widgets
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          API Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          API Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figure/" class="md-nav__link">
+        Figure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market_map/" class="md-nav__link">
+        MarketMap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../toolbar/" class="md-nav__link">
+        Toolbar
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scales/" class="md-nav__link">
+        Scales
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../marks/" class="md-nav__link">
+        Marks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../axes/" class="md-nav__link">
+        Axes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Interactions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Interactions
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.BrushIntervalSelector" class="md-nav__link">
+    BrushIntervalSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.BrushSelector" class="md-nav__link">
+    BrushSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.HandDraw" class="md-nav__link">
+    HandDraw
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.IndexSelector" class="md-nav__link">
+    IndexSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.FastIntervalSelector" class="md-nav__link">
+    FastIntervalSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.MultiSelector" class="md-nav__link">
+    MultiSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.OneDSelector" class="md-nav__link">
+    OneDSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.Interaction" class="md-nav__link">
+    Interaction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.PanZoom" class="md-nav__link">
+    PanZoom
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.Selector" class="md-nav__link">
+    Selector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.TwoDSelector" class="md-nav__link">
+    TwoDSelector
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyplot/" class="md-nav__link">
+        Pyplot
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.BrushIntervalSelector" class="md-nav__link">
+    BrushIntervalSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.BrushSelector" class="md-nav__link">
+    BrushSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.HandDraw" class="md-nav__link">
+    HandDraw
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.IndexSelector" class="md-nav__link">
+    IndexSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.FastIntervalSelector" class="md-nav__link">
+    FastIntervalSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.MultiSelector" class="md-nav__link">
+    MultiSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.OneDSelector" class="md-nav__link">
+    OneDSelector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.Interaction" class="md-nav__link">
+    Interaction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.PanZoom" class="md-nav__link">
+    PanZoom
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.Selector" class="md-nav__link">
+    Selector
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.interacts.TwoDSelector" class="md-nav__link">
+    TwoDSelector
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+  <h1>Interactions</h1>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.BrushIntervalSelector" class="doc doc-heading">
+        <code>bqplot.interacts.BrushIntervalSelector</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.OneDSelector" href="#bqplot.interacts.OneDSelector">OneDSelector</a></code></p>
+
+  
+      <p>Brush interval selector interaction.</p>
+<p>This 1-D selector interaction enables the user to select an interval using
+the brushing action of the mouse. A mouse-down marks the start of the
+interval. The drag after the mouse down in the x-direction selects the
+extent and a mouse-up signifies the end of the interval.</p>
+<p>Once an interval is drawn, the selector can be moved to a new interval by
+dragging the selector to the new interval.</p>
+<p>A double click at the same point without moving the mouse in the
+x-direction will result in the entire interval being selected.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>selected</code></td>
+          <td class="doc-attribute-details">
+            <p>Two element array containing the start and end of the interval selected
+in terms of the scale of the selector.
+This attribute changes while the selection is being made with the
+<code>BrushIntervalSelector</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.<span title="numpy.ndarray">ndarray</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>brushing</code></td>
+          <td class="doc-attribute-details">
+            <p>Boolean attribute to indicate if the selector is being dragged.
+It is True when the selector is being moved and False when it is not.
+This attribute can be used to trigger computationally intensive code
+which should be run only on the interval selection being completed as
+opposed to code which should be run whenever selected is changing.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>orientation</code></td>
+          <td class="doc-attribute-details">
+            <p>The orientation of the interval, either vertical or horizontal</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;horizontal&#39;, &#39;vertical&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>Color of the rectangle representing the brush selector.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Color or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.BrushSelector" class="doc doc-heading">
+        <code>bqplot.interacts.BrushSelector</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.TwoDSelector" href="#bqplot.interacts.TwoDSelector">TwoDSelector</a></code></p>
+
+  
+      <p>Brush interval selector interaction.</p>
+<p>This 2-D selector interaction enables the user to select a rectangular
+region using the brushing action of the mouse. A mouse-down marks the
+starting point of the interval. The drag after the mouse down selects the
+rectangle of interest and a mouse-up signifies the end point of
+the interval.</p>
+<p>Once an interval is drawn, the selector can be moved to a new interval by
+dragging the selector to the new interval.</p>
+<p>A double click at the same point without moving the mouse will result in
+the entire interval being selected.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>selected_x</code></td>
+          <td class="doc-attribute-details">
+            <p>Two element array containing the start and end of the interval selected
+in terms of the x_scale of the selector.
+This attribute changes while the selection is being made with the
+<code>BrushSelector</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.<span title="numpy.ndarray">ndarray</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>selected_y</code></td>
+          <td class="doc-attribute-details">
+            <p>Two element array containing the start and end of the interval selected
+in terms of the y_scale of the selector.
+This attribute changes while the selection is being made with the
+<code>BrushSelector</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.<span title="numpy.ndarray">ndarray</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>selected</code></td>
+          <td class="doc-attribute-details">
+            <p>A 2x2 array containing the coordinates ::</p>
+<p>[[selected_x[0], selected_y[0]],
+[selected_x[1], selected_y[1]]]</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.<span title="numpy.ndarray">ndarray</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>brushing</code></td>
+          <td class="doc-attribute-details">
+            <p>boolean attribute to indicate if the selector is being dragged.
+It is True when the selector is being moved and False when it is not.
+This attribute can be used to trigger computationally intensive code
+which should be run only on the interval selection being completed as
+opposed to code which should be run whenever selected is changing.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>Color of the rectangle representing the brush selector.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Color or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.HandDraw" class="doc doc-heading">
+        <code>bqplot.interacts.HandDraw</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.Interaction" href="#bqplot.interacts.Interaction">Interaction</a></code></p>
+
+  
+      <p>A hand-draw interaction.</p>
+<p>This can be used to edit the 'y' value of an existing line using the mouse.
+The minimum and maximum x values of the line which can be edited may be
+passed as parameters.
+The y-values for any part of the line can be edited by drawing the desired
+path while holding the mouse-down.
+y-values corresponding to x-values smaller than min_x or greater than max_x
+cannot be edited by HandDraw.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>lines</code></td>
+          <td class="doc-attribute-details">
+            <p>The instance of Lines which is edited using the hand-draw interaction.
+The 'y' values of the line are changed according to the path of the
+mouse. If the lines has multi dimensional 'y', then the 'line_index'
+attribute is used to selected the 'y' to be edited.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>an instance Lines mark or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>line_index</code></td>
+          <td class="doc-attribute-details">
+            <p>For a line with multi-dimensional 'y', this indicates the index of the
+'y' to be edited by the handdraw.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>nonnegative integer (default: 0)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>min_x</code></td>
+          <td class="doc-attribute-details">
+            <p>The minimum value of 'x' which should be edited via the handdraw.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float or Date or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_x</code></td>
+          <td class="doc-attribute-details">
+            <p>The maximum value of 'x' which should be edited via the handdraw.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float or Date or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.IndexSelector" class="doc doc-heading">
+        <code>bqplot.interacts.IndexSelector</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.OneDSelector" href="#bqplot.interacts.OneDSelector">OneDSelector</a></code></p>
+
+  
+      <p>Index selector interaction.</p>
+<p>This 1-D selector interaction uses the mouse x-coordinate to select the
+corresponding point in terms of the selector scale.</p>
+<p>Index Selector has two modes:
+    1. default mode: The mouse controls the x-position of the selector.
+    2. frozen mode: In this mode, the selector is frozen at a point and
+            does not respond to mouse events.</p>
+<div class="highlight"><pre><span></span><code>A single click switches between the two modes.
+</code></pre></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>selected</code></td>
+          <td class="doc-attribute-details">
+            <p>A single element array containing the point corresponding the
+x-position of the mouse. This attribute is updated as you move the
+mouse along the x-direction on the figure.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.<span title="numpy.ndarray">ndarray</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>Color of the line representing the index selector.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Color or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>line_width</code></td>
+          <td class="doc-attribute-details">
+            <p>Width of the line representing the index selector.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>nonnegative integer (default: 0)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.FastIntervalSelector" class="doc doc-heading">
+        <code>bqplot.interacts.FastIntervalSelector</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.OneDSelector" href="#bqplot.interacts.OneDSelector">OneDSelector</a></code></p>
+
+  
+      <p>Fast interval selector interaction.</p>
+<p>This 1-D selector is used to select an interval on the x-scale
+by just moving the mouse (without clicking or dragging). The
+x-coordinate of the mouse controls the mid point of the interval selected
+while the y-coordinate of the mouse controls the the width of the interval.
+The larger the y-coordinate, the wider the interval selected.</p>
+<p>Interval selector has three modes:
+    1. default mode: This is the default mode in which the mouse controls
+            the location and width of the interval.
+    2. fixed-width mode: In this mode the width of the interval is frozen
+            and only the location of the interval is controlled with the
+            mouse.
+            A single click from the default mode takes you to this mode.
+            Another single click takes you back to the default mode.
+    3. frozen mode: In this mode the selected interval is frozen and the
+            selector does not respond to mouse move.
+            A double click from the default mode takes you to this mode.
+            Another double click takes you back to the default mode.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>selected</code></td>
+          <td class="doc-attribute-details">
+            <p>Two-element array containing the start and end of the interval selected
+in terms of the scale of the selector.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.<span title="numpy.ndarray">ndarray</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>color of the rectangle representing the interval selector</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Color or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>size</code></td>
+          <td class="doc-attribute-details">
+            <p>if not None, this is the fixed pixel-width of the interval selector</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Float or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.MultiSelector" class="doc doc-heading">
+        <code>bqplot.interacts.MultiSelector</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.BrushIntervalSelector" href="#bqplot.interacts.BrushIntervalSelector">BrushIntervalSelector</a></code></p>
+
+  
+      <p>Multi selector interaction.</p>
+<p>This 1-D selector interaction enables the user to select multiple intervals
+using the mouse. A mouse-down marks the start of the interval. The drag
+after the mouse down in the x-direction selects the extent and a mouse-up
+signifies the end of the interval.</p>
+<p>The current selector is highlighted with a green border and the inactive
+selectors are highlighted with a red border.</p>
+<p>The multi selector has three modes:
+    1. default mode: In this mode the interaction behaves exactly as the
+            brush selector interaction with the current selector.
+    2. add mode: In this mode a new selector can be added by clicking at
+            a point and dragging over the interval of interest. Once a new
+            selector has been added, the multi selector is back in the
+            default mode.
+            From the default mode, ctrl+click switches to the add mode.
+    3. choose mode: In this mode, any of the existing inactive selectors
+            can be set as the active selector. When an inactive selector is
+            selected by clicking, the multi selector goes back to the
+            default mode.
+            From the default mode, shift+click switches to the choose mode.</p>
+<p>A double click at the same point without moving the mouse in the
+x-direction will result in the entire interval being selected for the
+current selector.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>selected</code></td>
+          <td class="doc-attribute-details">
+            <p>A dictionary with keys being the names of the intervals and values
+being the two element arrays containing the start and end of the
+interval selected by that particular selector in terms of the scale of
+the selector.
+This is a read-only attribute.
+This attribute changes while the selection is being made with the
+MultiSelectorinteraction.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>brushing</code></td>
+          <td class="doc-attribute-details">
+            <p>A boolean attribute to indicate if the selector is being dragged.
+It is True when the selector is being moved and false when it is not.
+This attribute can be used to trigger computationally intensive code
+which should be run only on the interval selection being completed as
+opposed to code which should be run whenever selected is changing.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>names</code></td>
+          <td class="doc-attribute-details">
+            <p>A list of strings indicating the keys of the different intervals.
+Default values are 'int1', 'int2', 'int3' and so on.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>show_names</code></td>
+          <td class="doc-attribute-details">
+            <p>Attribute to indicate if the names of the intervals are to be displayed
+along with the interval.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.OneDSelector" class="doc doc-heading">
+        <code>bqplot.interacts.OneDSelector</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.Selector" href="#bqplot.interacts.Selector">Selector</a></code></p>
+
+  
+      <p>One-dimensional selector interaction</p>
+<p>Base class for all selectors which select data in one dimension, i.e.,
+either the x or the y direction. The <code>scale</code> attribute should
+be provided.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>scale</code></td>
+          <td class="doc-attribute-details">
+            <p>This is the scale which is used for inversion from the pixels to data
+coordinates. This scale is used for setting the selected attribute for
+the selector.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>An instance of Scale</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.Interaction" class="doc doc-heading">
+        <code>bqplot.interacts.Interaction</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="ipywidgets.Widget">Widget</span></code></p>
+
+  
+      <p>The base interaction class.</p>
+<p>An interaction is a mouse interaction layer for a figure that requires the
+capture of all mouse events on the plot area. A consequence is that one can
+allow only one interaction at any time on a figure.</p>
+<p>An interaction can be associated with features such as selection or
+manual change of specific mark. Although, they differ from the so called
+'mark interactions' in that they do not rely on knowing whether a specific
+element of the mark are hovered by the mouse.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>types</code></td>
+          <td class="doc-attribute-details">
+            <p>A registry of existing interaction types.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict (class-level attribute) representing interaction types</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.PanZoom" class="doc doc-heading">
+        <code>bqplot.interacts.PanZoom</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.Interaction" href="#bqplot.interacts.Interaction">Interaction</a></code></p>
+
+  
+      <p>An interaction to pan and zoom wrt scales.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>allow_pan</code></td>
+          <td class="doc-attribute-details">
+            <p>Toggle the ability to pan.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>allow_zoom</code></td>
+          <td class="doc-attribute-details">
+            <p>Toggle the ability to zoom.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scales</code></td>
+          <td class="doc-attribute-details">
+            <p>Dictionary with keys such as 'x' and 'y' and values being the scales in
+the corresponding direction (dimensions) which should be panned or
+zoomed.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dictionary of lists of Scales (default: {})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.Selector" class="doc doc-heading">
+        <code>bqplot.interacts.Selector</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.Interaction" href="#bqplot.interacts.Interaction">Interaction</a></code></p>
+
+  
+      <p>Selector interaction. A selector can be used to select a subset of data</p>
+<p>Base class for all the selectors.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>marks</code></td>
+          <td class="doc-attribute-details">
+            <p>list of marks for which the <code>selected</code> attribute is updated based on
+the data selected by the selector.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.interacts.TwoDSelector" class="doc doc-heading">
+        <code>bqplot.interacts.TwoDSelector</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.interacts.Selector" href="#bqplot.interacts.Selector">Selector</a></code></p>
+
+  
+      <p>Two-dimensional selector interaction.</p>
+<p>Base class for all selectors which select data in both the x and y
+dimensions. The attributes 'x_scale' and 'y_scale' should be provided.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x_scale</code></td>
+          <td class="doc-attribute-details">
+            <p>This is the scale which is used for inversion from the pixels to data
+coordinates in the x-direction. This scale is used for setting the
+selected attribute for the selector along with <code>y_scale</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>An instance of Scale</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y_scale</code></td>
+          <td class="doc-attribute-details">
+            <p>This is the scale which is used for inversion from the pixels to data
+coordinates in the y-direction. This scale is used for setting the
+selected attribute for the selector along with <code>x_scale</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>An instance of Scale</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.sections", "content.code.copy", "content.code.annotate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,4888 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../scales/">
+      
+      
+        <link rel="next" href="../axes/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
+    
+    
+      
+        <title>Marks - bqplot</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0d440cfe.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bqplot.Mark" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="bqplot" class="md-header__button md-logo" aria-label="bqplot" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            bqplot
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Marks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bqplot/bqplot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bqplot/bqplot
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="bqplot" class="md-nav__button md-logo" aria-label="bqplot" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    bqplot
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bqplot/bqplot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bqplot/bqplot
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        bqplot
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/pyplot/" class="md-nav__link">
+        Pyplot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/object-model.md" class="md-nav__link">
+        Object Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/updating-plots.md" class="md-nav__link">
+        Updating Plots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/figure.md" class="md-nav__link">
+        Figure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/scales.md" class="md-nav__link">
+        Scales
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/axes.md" class="md-nav__link">
+        Axes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+          Marks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Marks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/index.md" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/lines.md" class="md-nav__link">
+        Lines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/bars.md" class="md-nav__link">
+        Bars
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/scatter.md" class="md-nav__link">
+        Scatter
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/pie.md" class="md-nav__link">
+        Pie
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/maps.md" class="md-nav__link">
+        Map
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/heatmap.md" class="md-nav__link">
+        Heatmap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/market.md" class="md-nav__link">
+        Marketmap
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+          Interactions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_8">
+          <span class="md-nav__icon md-icon"></span>
+          Interactions
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/mark-interactions.md" class="md-nav__link">
+        Mark Interactions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/selectors.md" class="md-nav__link">
+        Selectors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/panzoom.md" class="md-nav__link">
+        Panzoom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/hand-draw.md" class="md-nav__link">
+        Handdraw
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+          Advanced
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/linking-ipywidgets.md" class="md-nav__link">
+        Linking With ipywidgets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/dashboards.md" class="md-nav__link">
+        Dashboarding
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/compound-widgets.md" class="md-nav__link">
+        Compound Widgets
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          API Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          API Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figure/" class="md-nav__link">
+        Figure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market_map/" class="md-nav__link">
+        MarketMap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../toolbar/" class="md-nav__link">
+        Toolbar
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scales/" class="md-nav__link">
+        Scales
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Marks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Marks
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Mark" class="md-nav__link">
+    Mark
+  </a>
+  
+    <nav class="md-nav" aria-label="Mark">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Mark--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Mark--methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Lines" class="md-nav__link">
+    Lines
+  </a>
+  
+    <nav class="md-nav" aria-label="Lines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Lines--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Lines--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.FlexLine" class="md-nav__link">
+    FlexLine
+  </a>
+  
+    <nav class="md-nav" aria-label="FlexLine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.FlexLine--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.FlexLine--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Scatter" class="md-nav__link">
+    Scatter
+  </a>
+  
+    <nav class="md-nav" aria-label="Scatter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Scatter--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Scatter--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Hist" class="md-nav__link">
+    Hist
+  </a>
+  
+    <nav class="md-nav" aria-label="Hist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Hist--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Hist--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Bars" class="md-nav__link">
+    Bars
+  </a>
+  
+    <nav class="md-nav" aria-label="Bars">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Bars--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Bars--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Graph" class="md-nav__link">
+    Graph
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Graph--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Graph--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.GridHeatMap" class="md-nav__link">
+    GridHeatMap
+  </a>
+  
+    <nav class="md-nav" aria-label="GridHeatMap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.GridHeatMap--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.GridHeatMap--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.HeatMap" class="md-nav__link">
+    HeatMap
+  </a>
+  
+    <nav class="md-nav" aria-label="HeatMap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.HeatMap--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Label" class="md-nav__link">
+    Label
+  </a>
+  
+    <nav class="md-nav" aria-label="Label">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Label--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Label--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.OHLC" class="md-nav__link">
+    OHLC
+  </a>
+  
+    <nav class="md-nav" aria-label="OHLC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.OHLC--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.OHLC--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Pie" class="md-nav__link">
+    Pie
+  </a>
+  
+    <nav class="md-nav" aria-label="Pie">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Pie--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Pie--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Map" class="md-nav__link">
+    Map
+  </a>
+  
+    <nav class="md-nav" aria-label="Map">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Map--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Map--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../axes/" class="md-nav__link">
+        Axes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interactions/" class="md-nav__link">
+        Interactions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyplot/" class="md-nav__link">
+        Pyplot
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Mark" class="md-nav__link">
+    Mark
+  </a>
+  
+    <nav class="md-nav" aria-label="Mark">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Mark--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Mark--methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Lines" class="md-nav__link">
+    Lines
+  </a>
+  
+    <nav class="md-nav" aria-label="Lines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Lines--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Lines--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.FlexLine" class="md-nav__link">
+    FlexLine
+  </a>
+  
+    <nav class="md-nav" aria-label="FlexLine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.FlexLine--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.FlexLine--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Scatter" class="md-nav__link">
+    Scatter
+  </a>
+  
+    <nav class="md-nav" aria-label="Scatter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Scatter--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Scatter--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Hist" class="md-nav__link">
+    Hist
+  </a>
+  
+    <nav class="md-nav" aria-label="Hist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Hist--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Hist--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Bars" class="md-nav__link">
+    Bars
+  </a>
+  
+    <nav class="md-nav" aria-label="Bars">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Bars--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Bars--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Graph" class="md-nav__link">
+    Graph
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Graph--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Graph--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.GridHeatMap" class="md-nav__link">
+    GridHeatMap
+  </a>
+  
+    <nav class="md-nav" aria-label="GridHeatMap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.GridHeatMap--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.GridHeatMap--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.HeatMap" class="md-nav__link">
+    HeatMap
+  </a>
+  
+    <nav class="md-nav" aria-label="HeatMap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.HeatMap--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Label" class="md-nav__link">
+    Label
+  </a>
+  
+    <nav class="md-nav" aria-label="Label">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Label--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Label--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.OHLC" class="md-nav__link">
+    OHLC
+  </a>
+  
+    <nav class="md-nav" aria-label="OHLC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.OHLC--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.OHLC--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Pie" class="md-nav__link">
+    Pie
+  </a>
+  
+    <nav class="md-nav" aria-label="Pie">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Pie--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Pie--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.Map" class="md-nav__link">
+    Map
+  </a>
+  
+    <nav class="md-nav" aria-label="Map">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Map--data-attributes" class="md-nav__link">
+    Data Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.Map--style-attributes" class="md-nav__link">
+    Style Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+  <h1>Marks</h1>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Mark" class="doc doc-heading">
+        <code>bqplot.Mark</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="ipywidgets.Widget">Widget</span></code></p>
+
+  
+      <p>The base mark class.</p>
+<p>Traitlet mark attributes may be decorated with metadata.</p>
+<div class="admonition note">
+<p class="admonition-title">Data Attribute Decoration</p>
+<p>Data attributes are decorated with the following values:</p>
+<ul>
+<li><strong>scaled: bool</strong>
+    Indicates whether the considered attribute is a data attribute which
+    must be associated with a scale in order to be taken into account.</li>
+<li><strong>rtype: string</strong>
+    Range type of the associated scale.</li>
+<li><strong>atype: string</strong>
+    Key in bqplot's axis registry of the recommended axis type to represent
+    this scale. When not specified, the default is 'bqplot.Axis'.</li>
+</ul>
+</div>
+<h4 id="bqplot.Mark--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>display_name</code></td>
+          <td class="doc-attribute-details">
+            <p>Holds a user-friendly name for the trait attribute.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>mark_types</code></td>
+          <td class="doc-attribute-details">
+            <p>A registry of existing mark types.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scales</code></td>
+          <td class="doc-attribute-details">
+            <p>A dictionary of scales holding scales for each data attribute.
+- If a mark holds a scaled attribute named 'x', the scales dictionary
+must have a corresponding scale for the key 'x'.
+- The scale's range type should be equal to the scaled attribute's
+range type (rtype).</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dict of scales (default: {})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scales_metadata</code></td>
+          <td class="doc-attribute-details">
+            <p>A dictionary of dictionaries holding metadata on the way scales are
+used by the mark. For example, a linear scale may be used to count
+pixels horizontally or vertically. The content of this dictionary
+may change dynamically. It is an instance-level attribute.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dict (default: {})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>preserve_domain</code></td>
+          <td class="doc-attribute-details">
+            <p>Indicates if this mark affects the domain(s) of the specified scale(s).
+The keys of this dictionary are the same as the ones of the "scales"
+attribute, and values are boolean. If a key is missing, it is
+considered as False.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict (default: {})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>display_legend</code></td>
+          <td class="doc-attribute-details">
+            <p>Display toggle for the mark legend in the general figure legend</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>labels</code></td>
+          <td class="doc-attribute-details">
+            <p>Labels of the items of the mark. This attribute has different meanings
+depending on the type of mark.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of unicode strings (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>apply_clip</code></td>
+          <td class="doc-attribute-details">
+            <p>Indicates whether the items that are beyond the limits of the chart
+should be clipped.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>visible</code></td>
+          <td class="doc-attribute-details">
+            <p>Visibility toggle for the mark.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>selected_style</code></td>
+          <td class="doc-attribute-details">
+            <p>CSS style to be applied to selected items in the mark.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict (default: {})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>unselected_style</code></td>
+          <td class="doc-attribute-details">
+            <p>CSS style to be applied to items that are not selected in the mark,
+when a selection exists.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict (default: {})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>selected</code></td>
+          <td class="doc-attribute-details">
+            <p>Indices of the selected items in the mark.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of integers or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>tooltip</code></td>
+          <td class="doc-attribute-details">
+            <p>Widget to be displayed as tooltip when elements of the scatter are
+hovered on</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>DOMWidget or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>tooltip_style</code></td>
+          <td class="doc-attribute-details">
+            <p>Styles to be applied to the tooltip widget</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dictionary (default: {&#39;opacity&#39;: 0.9})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>enable_hover</code></td>
+          <td class="doc-attribute-details">
+            <p>Boolean attribute to control the hover interaction for the scatter. If
+this is false, the on_hover custom mssg is not sent back to the python
+side</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>interactions</code></td>
+          <td class="doc-attribute-details">
+            <p>Dictionary listing the different interactions for each mark. The key is
+the event which triggers the interaction and the value is the kind of
+interactions. Keys and values can only take strings from separate enums
+for each mark.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dictionary (default: {&#39;hover&#39;: &#39;tooltip&#39;})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>tooltip_location</code></td>
+          <td class="doc-attribute-details">
+            <p>Enum specifying the location of the tooltip. 'mouse' places the tooltip
+at the location of the mouse when the tooltip is activated and 'center'
+places the tooltip at the center of the figure. If tooltip is linked to
+a click event, 'mouse' places the tooltip at the location of the click
+that triggered the tooltip to be visible.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;mouse&#39;, &#39;center&#39;} (default: &#39;mouse&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Mark--methods">Methods</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>on_hover(callback, remove=False)</code></td>
+          <td class="doc-attribute-details">
+            <p>Register a callback that will be triggered on hover.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>on_click(callback, remove=False)</code></td>
+          <td class="doc-attribute-details">
+            <p>Register a callback that will be triggered on click.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>on_legend_hover(callback, remove=False)</code></td>
+          <td class="doc-attribute-details">
+            <p>Register a callback that will be triggered on legend hover.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>on_legend_click(callback, remove=False)</code></td>
+          <td class="doc-attribute-details">
+            <p>Register a callback that will be triggered on legend click.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>on_element_click(callback, remove=False)</code></td>
+          <td class="doc-attribute-details">
+            <p>Register a callback that will be triggered on element click.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>on_background_click(callback, remove=False)</code></td>
+          <td class="doc-attribute-details">
+            <p>Register a callback that will be triggered on background click.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Lines" class="doc doc-heading">
+        <code>bqplot.Lines</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>Lines mark.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In the case of the Lines mark, scales for 'x' and 'y' <strong>must</strong> be provided.</p>
+</div>
+<h4 id="bqplot.Lines--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>abscissas of the data points (1d or 2d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>ordinates of the data points (1d or 2d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>colors of the different lines based on data. If it is [], then the
+colors from the colors attribute are used. Each line has a single color
+and if the size of colors is less than the number of lines, the
+remaining lines are given the default colors.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Lines--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>icon</code></td>
+          <td class="doc-attribute-details">
+            <p>Font-awesome icon for the respective mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td class="doc-attribute-details">
+            <p>User-friendly name of the mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>List of colors of the Lines. If the list is shorter than the number
+of lines, the colors are reused.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of colors (default: CATEGORY10)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>close_path</code></td>
+          <td class="doc-attribute-details">
+            <p>Whether to close the paths or not.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>fill</code></td>
+          <td class="doc-attribute-details">
+            <p>Fill in the area defined by the curves</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;none&#39;, &#39;bottom&#39;, &#39;top&#39;, &#39;inside&#39;, &#39;between&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>fill_colors</code></td>
+          <td class="doc-attribute-details">
+            <p>Fill colors for the areas. Defaults to stroke-colors when no
+color provided</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of colors (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacities</code></td>
+          <td class="doc-attribute-details">
+            <p>Opacity for the  lines and patches. Defaults to 1 when the list is too
+short, or the element of the list is set to None.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of floats (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>fill_opacities</code></td>
+          <td class="doc-attribute-details">
+            <p>Opacity for the areas. Defaults to 1 when the list is too
+short, or the element of the list is set to None.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of floats (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke_width</code></td>
+          <td class="doc-attribute-details">
+            <p>Stroke width of the Lines</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: 2)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>labels_visibility</code></td>
+          <td class="doc-attribute-details">
+            <p>Visibility of the curve labels</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;none&#39;, &#39;label&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>curves_subset</code></td>
+          <td class="doc-attribute-details">
+            <p>If set to None, all the lines are displayed. Otherwise, only the items
+in the list will have full opacity, while others will be faded.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of integers or None (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>line_style</code></td>
+          <td class="doc-attribute-details">
+            <p>Line style.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;solid&#39;, &#39;dashed&#39;, &#39;dotted&#39;, &#39;dash_dotted&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>interpolation</code></td>
+          <td class="doc-attribute-details">
+            
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;linear&#39;, &#39;basis&#39;, &#39;basis-open&#39;, &#39;basis-closed&#39;, &#39;bundle&#39;, &#39;cardinal&#39;, &#39;cardinal-open&#39;,</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>&#39;cardinal-closed&#39;, &#39;monotone&#39;, &#39;step-before&#39;, &#39;step-after&#39;}</code></td>
+          <td class="doc-attribute-details">
+            <p>Interpolation scheme used for interpolation between the data points
+provided. Please refer to the svg interpolate documentation for details
+about the different interpolation schemes.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>marker</code></td>
+          <td class="doc-attribute-details">
+            <p>Marker shape</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;circle&#39;, &#39;cross&#39;, &#39;diamond&#39;, &#39;square&#39;, &#39;triangle-down&#39;, &#39;triangle-up&#39;, &#39;arrow&#39;, &#39;rectangle&#39;, &#39;ellipse&#39;, &#39;plus&#39;, &#39;crosshair&#39;, &#39;point&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>marker_size</code></td>
+          <td class="doc-attribute-details">
+            <p>Default marker size in pixels</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>nonnegative int (default: 64)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The fields which can be passed to the default tooltip are:<ul>
+<li><strong>name</strong>: label of the line</li>
+<li><strong>index</strong>: index of the line being hovered on</li>
+<li><strong>color</strong>: data attribute for the color of the line</li>
+</ul>
+</li>
+<li>The following are the events which can trigger interactions:<ul>
+<li><strong>click</strong>: left click of the mouse</li>
+<li><strong>hover</strong>: mouse-over an element</li>
+</ul>
+</li>
+<li>The following are the interactions which can be linked to the above events:<ul>
+<li><strong>tooltip</strong>: display tooltip</li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.FlexLine" class="doc doc-heading">
+        <code>bqplot.FlexLine</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>Lines mark with the possibility to change the line width and color for each segment.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In the case of the FlexLines mark, scales for 'x' and 'y' <strong>must</strong> be provided.
+Scales for the color and width data attributes are optional. In the case
+where another data attribute than 'x' or 'y' is provided but the
+corresponding scale is missing, the data attribute is ignored.</p>
+</div>
+<h4 id="bqplot.FlexLine--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>abscissas of the data points (1d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>ordinates of the data points (1d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>Array controlling the color of the data points</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>width</code></td>
+          <td class="doc-attribute-details">
+            <p>Array controlling the widths of the Lines.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.FlexLine--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>name</code></td>
+          <td class="doc-attribute-details">
+            <p>user-friendly name of the mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attributes)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>List of colors for the Lines</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of colors (default: CATEGORY10)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke_width</code></td>
+          <td class="doc-attribute-details">
+            <p>Default stroke width of the Lines</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: 1.5)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Scatter" class="doc doc-heading">
+        <code>bqplot.Scatter</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="bqplot.marks._ScatterBase">_ScatterBase</span></code></p>
+
+  
+      <p>Scatter mark.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In the case of the Scatter mark, scales for 'x' and 'y' <strong>must</strong> be provided.
+The scales of other data attributes are optional. In the case where another
+data attribute than 'x' or 'y' is provided but the corresponding scale is
+missing, the data attribute is ignored.</p>
+</div>
+<h4 id="bqplot.Scatter--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>abscissas of the data points (1d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>ordinates of the data points (1d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>color of the data points (1d array). Defaults to default_color when not
+provided or when a value is NaN</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacity</code></td>
+          <td class="doc-attribute-details">
+            <p>opacity of the data points (1d array). Defaults to default_opacity when
+not provided or when a value is NaN</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>size</code></td>
+          <td class="doc-attribute-details">
+            <p>size of the data points. Defaults to default_size when not provided or
+when a value is NaN</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>skew</code></td>
+          <td class="doc-attribute-details">
+            <p>skewness of the markers representing the data points. Defaults to
+default_skew when not provided or when a value is NaN</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>rotation</code></td>
+          <td class="doc-attribute-details">
+            <p>orientation of the markers representing the data points.
+The rotation scale's range is [0, 180]
+Defaults to 0 when not provided or when a value is NaN.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Scatter--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>icon</code></td>
+          <td class="doc-attribute-details">
+            <p>Font-awesome icon for that mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td class="doc-attribute-details">
+            <p>User-friendly name of the mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>marker</code></td>
+          <td class="doc-attribute-details">
+            <p>Marker shape</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;circle&#39;, &#39;cross&#39;, &#39;diamond&#39;, &#39;square&#39;, &#39;triangle-down&#39;, &#39;triangle-up&#39;, &#39;arrow&#39;, &#39;rectangle&#39;, &#39;ellipse&#39;, &#39;plus&#39;, &#39;crosshair&#39;, &#39;point&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>List of colors of the markers. If the list is shorter than the number
+of points, the colors are reused.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of colors (default: [&#39;steelblue&#39;])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>default_colors</code></td>
+          <td class="doc-attribute-details">
+            <p>Same as <code>colors</code>, deprecated as of version 0.8.4</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Deprecated</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>fill</code></td>
+          <td class="doc-attribute-details">
+            <p>Whether to fill the markers or not</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke</code></td>
+          <td class="doc-attribute-details">
+            <p>Stroke color of the marker</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Color or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke_width</code></td>
+          <td class="doc-attribute-details">
+            <p>Stroke width of the marker</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Float (default: 1.5)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacities</code></td>
+          <td class="doc-attribute-details">
+            <p>Default opacities of the markers. If the list is shorter than
+the number
+of points, the opacities are reused.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of floats (default: [1.0])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>default_skew</code></td>
+          <td class="doc-attribute-details">
+            <p>Default skew of the marker.
+This number is validated to be between 0 and 1.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: 0.5)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>default_size</code></td>
+          <td class="doc-attribute-details">
+            <p>Default marker size in pixel.
+If size data is provided with a scale, default_size stands for the
+maximal marker size (i.e. the maximum value for the 'size' scale range)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>nonnegative int (default: 64)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>drag_size</code></td>
+          <td class="doc-attribute-details">
+            <p>Ratio of the size of the dragged scatter size to the default
+scatter size.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>nonnegative float (default: 5.)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>names</code></td>
+          <td class="doc-attribute-details">
+            <p>Labels for the points of the chart</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>display_names</code></td>
+          <td class="doc-attribute-details">
+            <p>Controls whether names are displayed for points in the scatter</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>label_display_horizontal_offset</code></td>
+          <td class="doc-attribute-details">
+            <p>Adds an offset, in pixels, to the horizontal positioning of the 'names'
+label above each data point</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>label_display_vertical_offset</code></td>
+          <td class="doc-attribute-details">
+            <p>Adds an offset, in pixels, to the vertical positioning of the 'names'
+label above each data point</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>enable_move</code></td>
+          <td class="doc-attribute-details">
+            <p>Controls whether points can be moved by dragging. Refer to restrict_x,
+restrict_y for more options.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>restrict_x</code></td>
+          <td class="doc-attribute-details">
+            <p>Restricts movement of the point to only along the x axis. This is valid
+only when enable_move is set to True. If both restrict_x and restrict_y
+are set to True, the point cannot be moved.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>restrict_y</code></td>
+          <td class="doc-attribute-details">
+            <p>Restricts movement of the point to only along the y axis. This is valid
+only when enable_move is set to True. If both restrict_x and restrict_y
+are set to True, the point cannot be moved.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The fields which can be passed to the default tooltip are:<ul>
+<li>All the data attributes (x, y, color, opacity, size, skew, rotation)</li>
+<li><strong>index</strong>: index of the marker being hovered on</li>
+</ul>
+</li>
+<li>The following are the events which can trigger interactions:<ul>
+<li><strong>click</strong>: left click of the mouse</li>
+<li><strong>hover</strong>: mouse-over an element</li>
+</ul>
+</li>
+<li>The following are the interactions which can be linked to the above events:<ul>
+<li><strong>tooltip</strong>: display tooltip</li>
+<li><strong>add</strong>: add new points to the scatter (can only linked to click)</li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Hist" class="doc doc-heading">
+        <code>bqplot.Hist</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>Histogram mark.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In the case of the Hist mark, scales for 'sample' and 'count' <strong>must</strong> be provided.</p>
+</div>
+<h4 id="bqplot.Hist--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>sample</code></td>
+          <td class="doc-attribute-details">
+            <p>sample of which the histogram must be computed.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>count</code></td>
+          <td class="doc-attribute-details">
+            <p>number of sample points per bin. It is a read-only attribute.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (read-only)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Hist--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>icon</code></td>
+          <td class="doc-attribute-details">
+            <p>font-awesome icon for that mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td class="doc-attribute-details">
+            <p>user-friendly name of the mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>bins</code></td>
+          <td class="doc-attribute-details">
+            <p>number of bins in the histogram</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>nonnegative int (default: 10)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>normalized</code></td>
+          <td class="doc-attribute-details">
+            <p>Boolean attribute to return normalized values which
+sum to 1 or direct counts for the <code>count</code> attribute. The scale of
+<code>count</code> attribute is determined by the value of this flag.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>List of colors of the Histogram. If the list is shorter than the number
+of bins, the colors are reused.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of colors (default: [&#39;steelblue&#39;])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke</code></td>
+          <td class="doc-attribute-details">
+            <p>Stroke color of the histogram</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Color or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacities</code></td>
+          <td class="doc-attribute-details">
+            <p>Opacity for the bins of the histogram. Defaults to 1 when the list
+is too short, or the element of the list is set to None.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of floats (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>midpoints</code></td>
+          <td class="doc-attribute-details">
+            <p>midpoints of the bins of the histogram. It is a read-only attribute.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The fields which can be passed to the default tooltip are:<ul>
+<li><strong>midpoint</strong>: mid-point of the bin related to the rectangle hovered on</li>
+<li><strong>count</strong>: number of elements in the bin hovered on</li>
+<li><strong>bin_start</strong>: start point of the bin</li>
+<li><strong>bin_end</strong>: end point of the bin</li>
+<li><strong>index</strong>: index of the bin</li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Bars" class="doc doc-heading">
+        <code>bqplot.Bars</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>Bar mark.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In the case of the Bars mark, scales for 'x' and 'y'  <strong>must</strong> be provided.
+The scales of other data attributes are optional. In the case where another
+data attribute than 'x' or 'y' is provided but the corresponding scale is
+missing, the data attribute is ignored.</p>
+</div>
+<h4 id="bqplot.Bars--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>abscissas of the data points (1d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>ordinates of the values for the data points</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>color of the data points (1d array). Defaults to default_color when not
+provided or when a value is NaN</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Bars--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>icon</code></td>
+          <td class="doc-attribute-details">
+            <p>font-awesome icon for that mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td class="doc-attribute-details">
+            <p>user-friendly name of the mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color_mode</code></td>
+          <td class="doc-attribute-details">
+            <p>Specify how default colors are applied to bars.
+The 'group' mode means colors are assigned per group. If the list
+of colors is shorter than the number of groups, colors are reused.
+The 'element' mode means colors are assigned per group element. If the list
+of colors is shorter than the number of bars in a group, colors are reused.
+The 'no_group' mode means colors are assigned per bar, discarding the fact
+that there are groups or stacks. If the list of colors is shorter than the
+total number of bars, colors are reused.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;auto&#39;, &#39;group&#39;, &#39;element&#39;, &#39;no_group&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacity_mode</code></td>
+          <td class="doc-attribute-details">
+            <p>Same as the <code>color_mode</code> attribute, but for the opacity.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;auto&#39;, &#39;group&#39;, &#39;element&#39;, &#39;no_group&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>type</code></td>
+          <td class="doc-attribute-details">
+            <p>whether 2-dimensional bar charts should appear grouped or stacked.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;stacked&#39;, &#39;grouped&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>list of colors for the bars.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of colors (default: [&#39;steelblue&#39;])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>orientation</code></td>
+          <td class="doc-attribute-details">
+            <p>Specifies whether the bar chart is drawn horizontally or vertically.
+If a horizontal bar chart is drawn, the x data is drawn vertically.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;horizontal&#39;, &#39;vertical&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>padding</code></td>
+          <td class="doc-attribute-details">
+            <p>Attribute to control the spacing between the bars value is specified
+as a percentage of the width of the bar</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: 0.05)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>fill</code></td>
+          <td class="doc-attribute-details">
+            <p>Whether to fill the bars or not</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke</code></td>
+          <td class="doc-attribute-details">
+            <p>Stroke color for the bars</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Color or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke_width</code></td>
+          <td class="doc-attribute-details">
+            <p>Stroke width of the bars</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Float (default: 0.)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacities</code></td>
+          <td class="doc-attribute-details">
+            <p>Opacities for the bars. Defaults to 1 when the list is too
+short, or the element of the list is set to None.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of floats (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>base</code></td>
+          <td class="doc-attribute-details">
+            <p>reference value from which the bars are drawn. defaults to 0.0</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: 0.0)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>align</code></td>
+          <td class="doc-attribute-details">
+            <p>alignment of bars with respect to the tick value</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;center&#39;, &#39;left&#39;, &#39;right&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>label_display</code></td>
+          <td class="doc-attribute-details">
+            <p>whether or not to display bar data labels</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>label_display_format</code></td>
+          <td class="doc-attribute-details">
+            <p>format for displaying values.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (default: .2f)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>label_font_style</code></td>
+          <td class="doc-attribute-details">
+            <p>CSS style for the text of each cell</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>label_display_vertical_offset</code></td>
+          <td class="doc-attribute-details">
+            <p>vertical offset value for the label display</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>label_display_horizontal_offset</code></td>
+          <td class="doc-attribute-details">
+            <p>horizontal offset value for the label display</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The fields which can be passed to the default tooltip are:<ul>
+<li>All the data attributes</li>
+<li><strong>index</strong>: index of the bar being hovered on</li>
+<li><strong>sub_index</strong>: if data is two dimensional, this is the minor index</li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Graph" class="doc doc-heading">
+        <code>bqplot.Graph</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>Graph with nodes and links.</p>
+<h4 id="bqplot.Graph--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>abscissas of the node data points (1d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>ordinates of the node data points (1d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>color of the node data points (1d array).</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>link_color</code></td>
+          <td class="doc-attribute-details">
+            <p>link data passed as 2d matrix</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray of shape(len(nodes), len(nodes))</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Graph--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>node_data</code></td>
+          <td class="doc-attribute-details">
+            <p>list of node attributes for the graph</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="traitlets.List">List</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>link_matrix</code></td>
+          <td class="doc-attribute-details">
+            <p>link data passed as 2d matrix</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray of shape(len(nodes), len(nodes))</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>link_data</code></td>
+          <td class="doc-attribute-details">
+            <p>list of link attributes for the graph</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="traitlets.List">List</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>charge</code></td>
+          <td class="doc-attribute-details">
+            <p>charge of force layout. Will be ignored when x and y data attributes
+are set</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>int (default: -600)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>static</code></td>
+          <td class="doc-attribute-details">
+            <p>whether the graph is static or not</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>link_distance</code></td>
+          <td class="doc-attribute-details">
+            <p>link distance in pixels between nodes. Will be ignored when x and y
+data attributes are set</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: 100)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>link_type</code></td>
+          <td class="doc-attribute-details">
+            <p>Enum representing link type</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;arc&#39;, &#39;line&#39;, &#39;slant_line&#39;} (default: &#39;arc&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>directed</code></td>
+          <td class="doc-attribute-details">
+            <p>directed or undirected graph</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>highlight_links</code></td>
+          <td class="doc-attribute-details">
+            <p>highlights incoming and outgoing links when hovered on a node</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>list of node colors</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list (default: CATEGORY10)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.GridHeatMap" class="doc doc-heading">
+        <code>bqplot.GridHeatMap</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>GridHeatMap mark.</p>
+<p>Alignment: The tiles can be aligned so that the data matches either the
+start, the end or the midpoints of the tiles. This is controlled by the
+align attribute.</p>
+<p>Suppose the data passed is a m-by-n matrix. If the scale for the rows is
+Ordinal, then alignment is by default the mid points. For a non-ordinal
+scale, the data cannot be aligned to the mid points of the rectangles.</p>
+<p>If it is not ordinal, then two cases arise. If the number of rows passed
+is m, then align attribute can be used. If the number of rows passed
+is m+1, then the data are the boundaries of the m rectangles.</p>
+<p>If rows and columns are not passed, and scales for them are also
+not passed, then ordinal scales are generated for the rows and columns.</p>
+<h4 id="bqplot.GridHeatMap--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>color of the data points (2d array). The number of elements in
+this array correspond to the number of cells created in the heatmap.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>row</code></td>
+          <td class="doc-attribute-details">
+            <p>labels for the rows of the <code>color</code> array passed. The length of
+this can be no more than 1 away from the number of rows in <code>color</code>.
+This is a scaled attribute and can be used to affect the height of the
+cells as the entries of <code>row</code> can indicate the start or the end points
+of the cells. Refer to the property <code>row_align</code>.
+If this property is None, then a uniformly spaced grid is generated in
+the row direction.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>column</code></td>
+          <td class="doc-attribute-details">
+            <p>labels for the columns of the <code>color</code> array passed. The length of
+this can be no more than 1 away from the number of columns in <code>color</code>
+This is a scaled attribute and can be used to affect the width of the
+cells as the entries of <code>column</code> can indicate the start or the
+end points of the cells. Refer to the property <code>column_align</code>.
+If this property is None, then a uniformly spaced grid is generated in
+the column direction.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.GridHeatMap--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>row_align</code></td>
+          <td class="doc-attribute-details">
+            <p>This is only valid if the number of entries in <code>row</code> exactly match the
+number of rows in <code>color</code> and the <code>row_scale</code> is not <code>OrdinalScale</code>.
+<code>start</code> aligns the row values passed to be aligned with the start
+of the tiles and <code>end</code> aligns the row values to the end of the tiles.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="traitlets.Enum">Enum</span>([start, end])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>column_align</code></td>
+          <td class="doc-attribute-details">
+            <p>This is only valid if the number of entries in <code>column</code> exactly
+match the number of columns in <code>color</code> and the <code>column_scale</code> is
+not <code>OrdinalScale</code>. <code>start</code> aligns the column values passed to
+be aligned with the start of the tiles and <code>end</code> aligns the
+column values to the end of the tiles.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Enum([&#39;start&#39;, end&#39;])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>anchor_style</code></td>
+          <td class="doc-attribute-details">
+            <p>Controls the style for the element which serves as the anchor during
+selection.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict (default: {})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>display_format</code></td>
+          <td class="doc-attribute-details">
+            <p>format for displaying values. If None, then values are not displayed</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>font_style</code></td>
+          <td class="doc-attribute-details">
+            <p>CSS style for the text of each cell</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.HeatMap" class="doc doc-heading">
+        <code>bqplot.HeatMap</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>HeatMap mark.</p>
+<h4 id="bqplot.HeatMap--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>color of the data points (2d array).</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>labels for the columns of the <code>color</code> array passed. The length of
+this has to be the number of columns in <code>color</code>.
+This is a scaled attribute.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>labels for the rows of the <code>color</code> array passed. The length of this has
+to be the number of rows in <code>color</code>.
+This is a scaled attribute.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Label" class="doc doc-heading">
+        <code>bqplot.Label</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="bqplot.marks._ScatterBase">_ScatterBase</span></code></p>
+
+  
+      <p>Label mark.</p>
+<h4 id="bqplot.Label--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>horizontal position of the labels, in data coordinates or in
+figure coordinates</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>vertical position of the labels, in data coordinates or in
+figure coordinates</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>label colors</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>size</code></td>
+          <td class="doc-attribute-details">
+            <p>label sizes</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>rotation</code></td>
+          <td class="doc-attribute-details">
+            <p>label rotations</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacity</code></td>
+          <td class="doc-attribute-details">
+            <p>label opacities</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Label--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x_offset</code></td>
+          <td class="doc-attribute-details">
+            <p>horizontal offset in pixels from the stated x location</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>int (default: 0)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y_offset</code></td>
+          <td class="doc-attribute-details">
+            <p>vertical offset in pixels from the stated y location</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>int (default: 0)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>text</code></td>
+          <td class="doc-attribute-details">
+            <p>text to be displayed</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (default: &#39;&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>default_size</code></td>
+          <td class="doc-attribute-details">
+            <p>font size in px, em or ex</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (default: &#39;14px&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>font_weight</code></td>
+          <td class="doc-attribute-details">
+            <p>font weight of the caption</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;bold&#39;, &#39;normal&#39;, &#39;bolder&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>drag_size</code></td>
+          <td class="doc-attribute-details">
+            <p>Ratio of the size of the dragged label font size to the default
+label font size.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>nonnegative float (default: 1.)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>align</code></td>
+          <td class="doc-attribute-details">
+            <p>alignment of the text with respect to the provided location
+enable_move: Bool (default: False)
+Enable the label to be moved by dragging. Refer to restrict_x,
+restrict_y for more options.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;start&#39;, &#39;middle&#39;, &#39;end&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>restrict_x</code></td>
+          <td class="doc-attribute-details">
+            <p>Restricts movement of the label to only along the x axis. This is valid
+only when enable_move is set to True. If both restrict_x and restrict_y
+are set to True, the label cannot be moved.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>restrict_y</code></td>
+          <td class="doc-attribute-details">
+            <p>Restricts movement of the label to only along the y axis. This is valid
+only when enable_move is set to True. If both restrict_x and restrict_y
+are set to True, the label cannot be moved.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.OHLC" class="doc doc-heading">
+        <code>bqplot.OHLC</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>Open/High/Low/Close marks.</p>
+<h4 id="bqplot.OHLC--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>abscissas of the data points (1d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.<span title="numpy.ndarray">ndarray</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>Open/High/Low/Close ordinates of the data points (2d array)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.<span title="numpy.ndarrays">ndarrays</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.OHLC--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>icon</code></td>
+          <td class="doc-attribute-details">
+            <p>font-awesome icon for that mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td class="doc-attribute-details">
+            <p>user-friendly name of the mark</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (class-level attribute)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>marker</code></td>
+          <td class="doc-attribute-details">
+            <p>marker type</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;candle&#39;, &#39;bar&#39;}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke</code></td>
+          <td class="doc-attribute-details">
+            <p>stroke color of the marker</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>color (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke_width</code></td>
+          <td class="doc-attribute-details">
+            <p>stroke width of the marker</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>float (default: 1.0)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>fill colors for the markers (up/down)</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>List of colors (default: [&#39;limegreen&#39;, &#39;red&#39;])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacities</code></td>
+          <td class="doc-attribute-details">
+            <p>Opacities for the markers of the OHLC mark. Defaults to 1 when
+the list is too short, or the element of the list is set to None.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of floats (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>format</code></td>
+          <td class="doc-attribute-details">
+            <p>description of y data being passed
+supports all permutations of the strings 'ohlc', 'oc', and 'hl'</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (default: &#39;ohlc&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The fields which can be passed to the default tooltip are:<ul>
+<li><strong>x</strong>: the x value associated with the bar/candle</li>
+<li><strong>open</strong>: open value for the bar/candle</li>
+<li><strong>high</strong>: high value for the bar/candle</li>
+<li><strong>low</strong>: low value for the bar/candle</li>
+<li><strong>close</strong>: close value for the bar/candle</li>
+<li><strong>index</strong>: index of the bar/candle being hovered on</li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Pie" class="doc doc-heading">
+        <code>bqplot.Pie</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>Piechart mark.</p>
+<h4 id="bqplot.Pie--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>sizes</code></td>
+          <td class="doc-attribute-details">
+            <p>proportions of the pie slices</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>color of the data points. Defaults to colors when not provided.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>numpy.ndarray or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Pie--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>list of colors for the slices.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of colors (default: CATEGORY10)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stroke</code></td>
+          <td class="doc-attribute-details">
+            <p>stroke color for the marker</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>color (default: &#39;white&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>opacities</code></td>
+          <td class="doc-attribute-details">
+            <p>Opacities for the slices of the Pie mark. Defaults to 1 when the list
+is too short, or the element of the list is set to None.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>list of floats (default: [])</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sort</code></td>
+          <td class="doc-attribute-details">
+            <p>sort the pie slices by descending sizes</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-attribute-details">
+            <p>horizontal position of the pie center, in data coordinates or in figure
+coordinates</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Float (default: 0.5) or Date</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-attribute-details">
+            <p>vertical y position of the pie center, in data coordinates or in figure
+coordinates</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Float (default: 0.5)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>radius</code></td>
+          <td class="doc-attribute-details">
+            <p>radius of the pie, in pixels</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="traitlets.Float">Float</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>inner_radius</code></td>
+          <td class="doc-attribute-details">
+            <p>inner radius of the pie, in pixels</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="traitlets.Float">Float</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>start_angle</code></td>
+          <td class="doc-attribute-details">
+            <p>start angle of the pie (from top), in degrees</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Float (default: 0.0)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>end_angle</code></td>
+          <td class="doc-attribute-details">
+            <p>end angle of the pie (from top), in degrees</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Float (default: 360.0)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>display_labels</code></td>
+          <td class="doc-attribute-details">
+            <p>label display options</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;none&#39;, &#39;inside&#39;, &#39;outside&#39;} (default: &#39;inside&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>display_values</code></td>
+          <td class="doc-attribute-details">
+            <p>if True show values along with labels</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: False)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>values_format</code></td>
+          <td class="doc-attribute-details">
+            <p>format for displaying values</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (default: &#39;.2f&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>label_color</code></td>
+          <td class="doc-attribute-details">
+            <p>color of the labels</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Color or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>font_size</code></td>
+          <td class="doc-attribute-details">
+            <p>label font size in px, em or ex</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>string (default: &#39;14px&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>font_weight</code></td>
+          <td class="doc-attribute-details">
+            <p>label font weight</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>{&#39;bold&#39;, &#39;normal&#39;, &#39;bolder&#39;} (default: &#39;normal&#39;)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="bqplot.Map" class="doc doc-heading">
+        <code>bqplot.Map</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="bqplot.marks.Mark" href="#bqplot.Mark">Mark</a></code></p>
+
+  
+      <p>Map mark.</p>
+<h4 id="bqplot.Map--data-attributes">Data Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>color</code></td>
+          <td class="doc-attribute-details">
+            <p>dictionary containing the data associated with every country for the
+color scale</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dict or None (default: None)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.Map--style-attributes">Style Attributes</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>colors</code></td>
+          <td class="doc-attribute-details">
+            <p>default colors for items of the map when no color data is passed.
+The dictionary should be indexed by the id of the element and have
+the corresponding colors as values. The key <code>default_color</code>
+controls the items for which no color is specified.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dict (default: {})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>selected_styles</code></td>
+          <td class="doc-attribute-details">
+            
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dict (default: {&#39;selected_fill&#39;: &#39;Red&#39;,</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>selected_stroke</code></td>
+          <td class="doc-attribute-details">
+            <p>Dictionary containing the styles for selected subunits</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>None, &#39;selected_stroke_width&#39;: 2.0})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>hovered_styles</code></td>
+          <td class="doc-attribute-details">
+            
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>Dict (default: {&#39;hovered_fill&#39;: &#39;Orange&#39;,</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>hovered_stroke</code></td>
+          <td class="doc-attribute-details">
+            <p>Dictionary containing the styles for hovered subunits</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>None, &#39;hovered_stroke_width&#39;: 2.0})</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>hover_highlight</code></td>
+          <td class="doc-attribute-details">
+            <p>boolean to control if the map should be aware of which country is being
+hovered on.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>bool (default: True)</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>map_data</code></td>
+          <td class="doc-attribute-details">
+            <p>a topojson-formatted dictionary with the objects to map under the key
+'subunits'.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>dict (default: topo_load(&#34;map_data/WorldMap.json&#34;))</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.sections", "content.code.copy", "content.code.annotate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      
+    
+  </body>
+</html>

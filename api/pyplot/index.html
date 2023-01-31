@@ -1,0 +1,2196 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../interactions/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
+    
+    
+      
+        <title>Pyplot - bqplot</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0d440cfe.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bqplot.pyplot.figure" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="bqplot" class="md-header__button md-logo" aria-label="bqplot" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            bqplot
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Pyplot
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bqplot/bqplot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bqplot/bqplot
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="bqplot" class="md-nav__button md-logo" aria-label="bqplot" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    bqplot
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bqplot/bqplot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bqplot/bqplot
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        bqplot
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/pyplot/" class="md-nav__link">
+        Pyplot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/object-model.md" class="md-nav__link">
+        Object Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/updating-plots.md" class="md-nav__link">
+        Updating Plots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/figure.md" class="md-nav__link">
+        Figure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/scales.md" class="md-nav__link">
+        Scales
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/axes.md" class="md-nav__link">
+        Axes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+          Marks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Marks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/index.md" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/lines.md" class="md-nav__link">
+        Lines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/bars.md" class="md-nav__link">
+        Bars
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/scatter.md" class="md-nav__link">
+        Scatter
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/pie.md" class="md-nav__link">
+        Pie
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/maps.md" class="md-nav__link">
+        Map
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/heatmap.md" class="md-nav__link">
+        Heatmap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/marks/market.md" class="md-nav__link">
+        Marketmap
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+          Interactions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_8">
+          <span class="md-nav__icon md-icon"></span>
+          Interactions
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/mark-interactions.md" class="md-nav__link">
+        Mark Interactions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/selectors.md" class="md-nav__link">
+        Selectors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/panzoom.md" class="md-nav__link">
+        Panzoom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/interactions/hand-draw.md" class="md-nav__link">
+        Handdraw
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+          Advanced
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/linking-ipywidgets.md" class="md-nav__link">
+        Linking With ipywidgets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/dashboards.md" class="md-nav__link">
+        Dashboarding
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/advanced/compound-widgets.md" class="md-nav__link">
+        Compound Widgets
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          API Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          API Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figure/" class="md-nav__link">
+        Figure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market_map/" class="md-nav__link">
+        MarketMap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../toolbar/" class="md-nav__link">
+        Toolbar
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scales/" class="md-nav__link">
+        Scales
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../marks/" class="md-nav__link">
+        Marks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../axes/" class="md-nav__link">
+        Axes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interactions/" class="md-nav__link">
+        Interactions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Pyplot
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Pyplot
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.figure" class="md-nav__link">
+    figure()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.show" class="md-nav__link">
+    show()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.axes" class="md-nav__link">
+    axes()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.plot" class="md-nav__link">
+    plot()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.scatter" class="md-nav__link">
+    scatter()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.hist" class="md-nav__link">
+    hist()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.bar" class="md-nav__link">
+    bar()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.ohlc" class="md-nav__link">
+    ohlc()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.geo" class="md-nav__link">
+    geo()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.clear" class="md-nav__link">
+    clear()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.close" class="md-nav__link">
+    close()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.current_figure" class="md-nav__link">
+    current_figure()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.scales" class="md-nav__link">
+    scales()
+  </a>
+  
+    <nav class="md-nav" aria-label="scales()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.pyplot.scales--example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.pyplot.scales--notes" class="md-nav__link">
+    Notes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.xlim" class="md-nav__link">
+    xlim()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.ylim" class="md-nav__link">
+    ylim()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.axes" class="md-nav__link">
+    axes()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.xlabel" class="md-nav__link">
+    xlabel()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.ylabel" class="md-nav__link">
+    ylabel()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.figure" class="md-nav__link">
+    figure()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.show" class="md-nav__link">
+    show()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.axes" class="md-nav__link">
+    axes()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.plot" class="md-nav__link">
+    plot()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.scatter" class="md-nav__link">
+    scatter()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.hist" class="md-nav__link">
+    hist()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.bar" class="md-nav__link">
+    bar()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.ohlc" class="md-nav__link">
+    ohlc()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.geo" class="md-nav__link">
+    geo()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.clear" class="md-nav__link">
+    clear()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.close" class="md-nav__link">
+    close()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.current_figure" class="md-nav__link">
+    current_figure()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.scales" class="md-nav__link">
+    scales()
+  </a>
+  
+    <nav class="md-nav" aria-label="scales()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.pyplot.scales--example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bqplot.pyplot.scales--notes" class="md-nav__link">
+    Notes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.xlim" class="md-nav__link">
+    xlim()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.ylim" class="md-nav__link">
+    ylim()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.axes" class="md-nav__link">
+    axes()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.xlabel" class="md-nav__link">
+    xlabel()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bqplot.pyplot.ylabel" class="md-nav__link">
+    ylabel()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+  <h1>Pyplot</h1>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.figure" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Creates figures and switches between figures.</p>
+<p>If a <code>bqplot.Figure</code> object is provided via the fig optional argument,
+this figure becomes the current context figure.</p>
+<p>Otherwise:</p>
+<ul>
+<li>If no key is provided, a new empty context figure is created.</li>
+<li>If a key is provided for which a context already exists, the
+  corresponding context becomes current.</li>
+<li>If a key is provided and no corresponding context exists, a new context
+  is reated for that key and becomes current.</li>
+</ul>
+<p>Besides, optional arguments allow to set or modify Attributes
+of the selected context figure.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>key</code></td>
+          <td class="doc-param-details">
+            <p>Any variable that can be used as a key for a dictionary</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>fig</code></td>
+          <td class="doc-param-details">
+            <p>A bqplot Figure</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.show" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">display_toolbar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Shows the current context figure in the output area.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>key</code></td>
+          <td class="doc-param-details">
+            <p>Any variable that can be used as a key for a dictionary.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="bqplot.pyplot.hashable">hashable</span>, optional</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>display_toolbar</code></td>
+          <td class="doc-param-details">
+            <p>If True, a toolbar for different mouse interaction is displayed with
+the figure.</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>True</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>RAISES</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+            <span class="doc-raises-annotation">
+                <code>KeyError</code>
+            </span>
+          </td>
+          <td class="doc-raises-details">
+            <p>When no context figure is associated with the provided key.</p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code>&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; import pyplot as plt
+&gt;&gt;&gt; n = 100
+&gt;&gt;&gt; x = np.arange(n)
+&gt;&gt;&gt; y = np.cumsum(np.random.randn(n))
+&gt;&gt;&gt; plt.plot(x,y)
+&gt;&gt;&gt; plt.show()
+</code></pre></div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.axes" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">mark</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Draws axes corresponding to the scales of a given mark.</p>
+<p>It also returns a dictionary of drawn axes. If the mark is not provided,
+the last drawn mark is used.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mark</code></td>
+          <td class="doc-param-details">
+            <p>The mark to inspect to create axes. If None, the last mark drawn is
+used instead.</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the axes to be created. If a scale labeled 'x' is required
+for that mark, options['x'] contains optional keyword arguments for the
+constructor of the corresponding axis type.</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>{}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.plot" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Draw lines in the current context figure.</p>
+<p>Signature: <code>plot(x, y, **kwargs)</code> or <code>plot(y, **kwargs)</code>, depending of the
+length of the list of positional arguments. In the case where the <code>x</code> array
+is not provided.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-param-details">
+            <p>The x-coordinates of the plotted line. When not provided, the function
+defaults to <code>numpy.arange(len(y))</code>
+x can be 1-dimensional or 2-dimensional.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-param-details">
+            <p>The y-coordinates of the plotted line. If argument <code>x</code> is 2-dimensional
+it must also be 2-dimensional.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>marker_str</code></td>
+          <td class="doc-param-details">
+            <p>string representing line_style, marker and color.
+For e.g. 'g--o', 'sr' etc</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the scales to be created. If a scale labeled 'x' is
+required for that mark, options['x'] contains optional keyword
+arguments for the constructor of the corresponding scale type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>axes_options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the axes to be created. If an axis labeled 'x' is required
+for that mark, axes_options['x'] contains optional keyword arguments
+for the constructor of the corresponding axis type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>figure</code></td>
+          <td class="doc-param-details">
+            <p>The figure to which the line is to be added.
+If the value is None, the current figure is used.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.scatter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Draw a scatter in the current context figure.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-param-details">
+            <p>The x-coordinates of the data points.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-param-details">
+            <p>The y-coordinates of the data points.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the scales to be created. If a scale labeled 'x' is
+required for that mark, options['x'] contains optional keyword
+arguments for the constructor of the corresponding scale type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>axes_options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the axes to be created. If an axis labeled 'x' is required
+for that mark, axes_options['x'] contains optional keyword arguments
+for the constructor of the corresponding axis type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.hist" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Draw a histogram in the current context figure.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>sample</code></td>
+          <td class="doc-param-details">
+            <p>The sample for which the histogram must be generated.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the scales to be created. If a scale labeled 'counts'
+is required for that mark, options['counts'] contains optional keyword
+arguments for the constructor of the corresponding scale type.</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>{}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>axes_options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the axes to be created. If an axis labeled 'counts' is
+required for that mark, axes_options['counts'] contains optional
+keyword arguments for the constructor of the corresponding axis type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.bar" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Draws a bar chart in the current context figure.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-param-details">
+            <p>The x-coordinates of the data points.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-param-details">
+            <p>The y-coordinates of the data pints.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the scales to be created. If a scale labeled 'x' is
+required for that mark, options['x'] contains optional keyword
+arguments for the constructor of the corresponding scale type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>axes_options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the axes to be created. If an axis labeled 'x' is required
+for that mark, axes_options['x'] contains optional keyword arguments
+for the constructor of the corresponding axis type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.ohlc" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">ohlc</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Draw OHLC bars or candle bars in the current context figure.</p>
+<p>Signature: <code>ohlc(x, y, **kwargs)</code> or <code>ohlc(y, **kwargs)</code>, depending of the
+length of the list of positional arguments. In the case where the <code>x</code> array
+is not provided</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x</code></td>
+          <td class="doc-param-details">
+            <p>The x-coordinates of the plotted line. When not provided, the function
+defaults to <code>numpy.arange(len(y))</code>.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>y</code></td>
+          <td class="doc-param-details">
+            <p>The ohlc (open/high/low/close) information. A two dimensional array. y
+must have the shape (n, 4).</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the scales to be created. If a scale labeled 'x' is
+required for that mark, options['x'] contains optional keyword
+arguments for the constructor of the corresponding scale type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>axes_options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the axes to be created. If an axis labeled 'x' is required
+for that mark, axes_options['x'] contains optional keyword arguments
+for the constructor of the corresponding axis type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.geo" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">geo</span><span class="p">(</span><span class="n">map_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Draw a map in the current context figure.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>map_data</code></td>
+          <td class="doc-param-details">
+            <p>Name of the map or json file required for the map data.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the scales to be created. If a scale labeled 'x' is
+required for that mark, options['x'] contains optional keyword
+arguments for the constructor of the corresponding scale type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>axes_options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the axes to be created. If an axis labeled 'x' is required
+for that mark, axes_options['x'] contains optional keyword arguments
+for the constructor of the corresponding axis type.</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.clear" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Clears the current context figure of all marks axes and grid lines.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.close" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Closes and unregister the context figure corresponding to the key.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>key</code></td>
+          <td class="doc-param-details">
+            <p>Any variable that can be used as a key for a dictionary</p>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.current_figure" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">current_figure</span><span class="p">()</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Returns the current context figure.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.scales" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">scales</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scales</span><span class="o">=</span><span class="p">{})</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Creates and switches between context scales.</p>
+<p>If no key is provided, a new blank context is created.</p>
+<p>If a key is provided for which a context already exists, the existing
+context is set as the current context.</p>
+<p>If a key is provided and no corresponding context exists, a new context is
+created for that key and set as the current context.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>key</code></td>
+          <td class="doc-param-details">
+            <p>Any variable that can be used as a key for a dictionary</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scales</code></td>
+          <td class="doc-param-details">
+            <p>Dictionary of scales to be used in the new context</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>{}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h4 id="bqplot.pyplot.scales--example">Example</h4>
+<div class="highlight"><pre><span></span><code>&gt;&gt;&gt; scales(scales={
+&gt;&gt;&gt;    &#39;x&#39;: Keep,
+&gt;&gt;&gt;    &#39;color&#39;: ColorScale(min=0, max=1)
+&gt;&gt;&gt; })
+</code></pre></div>
+<p>This creates a new scales context, where the 'x' scale is kept from the
+previous context, the 'color' scale is an instance of ColorScale
+provided by the user. Other scales, potentially needed such as the 'y'
+scale in the case of a line chart will be created on the fly when
+needed.</p>
+<h4 id="bqplot.pyplot.scales--notes">Notes</h4>
+<p>Every call to the function figure triggers a call to scales.</p>
+<p>The <code>scales</code> parameter is ignored if the <code>key</code> argument is not Keep and
+context scales already exist for that key.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.xlim" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Set the domain bounds of the current 'x' scale.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.ylim" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Set the domain bounds of the current 'y' scale.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.axes" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">mark</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Draws axes corresponding to the scales of a given mark.</p>
+<p>It also returns a dictionary of drawn axes. If the mark is not provided,
+the last drawn mark is used.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mark</code></td>
+          <td class="doc-param-details">
+            <p>The mark to inspect to create axes. If None, the last mark drawn is
+used instead.</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td class="doc-param-details">
+            <p>Options for the axes to be created. If a scale labeled 'x' is required
+for that mark, options['x'] contains optional keyword arguments for the
+constructor of the corresponding axis type.</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>{}</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.xlabel" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mark</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Sets the value of label for an axis whose associated scale has the
+dimension <code>x</code>.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>label</code></td>
+          <td class="doc-param-details">
+            <p>The label for x axis</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="bqplot.pyplot.ylabel" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bqplot</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mark</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Sets the value of label for an axis whose associated scale has the
+dimension <code>y</code>.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>label</code></td>
+          <td class="doc-param-details">
+            <p>The label for y axis</p>
+            <p>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.sections", "content.code.copy", "content.code.annotate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      
+    
+  </body>
+</html>

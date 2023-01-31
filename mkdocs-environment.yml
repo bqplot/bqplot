@@ -1,0 +1,13 @@
+name: mkdocs
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pip
+  - pandas
+  - jupyter
+  - bqscales
+  - bqplot
+  - pip:
+    - mkdocs-material
+    - mkdocstrings[python]
