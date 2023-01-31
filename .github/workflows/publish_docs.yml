@@ -1,15 +1,15 @@
-name: Deploy docs
+name: Build and Deploy
 
 on:
   push:
     branches:
       - master
-
-permissions:
-  contents: write
+  pull_request:
+    branches:
+      - '*'
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,6 +21,28 @@ jobs:
           micromamba-version: '0.22.0'
           environment-file: 'docs/mkdocs-environment.yml'
 
-      - name: Build the JupyterLite site
+      - name: Build the docs site
         shell: bash -l {0}
-        run: mkdocs gh-deploy --force
+        run: mkdocs build --site-dir dist
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
