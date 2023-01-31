@@ -1,5 +1,3 @@
-## Object Model API
-
 `bqplot` is based on _Grammar of Graphics_ paradigm. The Object Model provides the user an object-oriented interface for building plots. This means the API is verbose but fully customizable.
 
 Following are the core components in the `Object Model`:
