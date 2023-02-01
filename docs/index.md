@@ -4,8 +4,8 @@ site_url: https://bqplot.github.io/
 
 # bqplot
 
-![bqplot](https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo.svg#only-light)
-![bqplot](https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark.svg#only-dark)
+![bqplot](https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-nobackground.svg#only-light)
+![bqplot](https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark-nobackground.svg#only-dark)
 
 `bqplot` is a python based 2-D visualization system for Jupyter, based on the constructs of _Grammar of Graphics_. In `bqplot` every component of the plot is an interactive widget. This allows the user to seamlessly integrate `bqplot` with other Jupyter widgets to create rich visualizations by using just python code!
 

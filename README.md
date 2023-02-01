@@ -1,9 +1,9 @@
 # bqplot
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo.svg">
-  <img alt="bqplot." src="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark-nobackground.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-nobackground.svg">
+  <img alt="bqplot." src="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark-nobackground.svg">
 </picture>
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/stable?filepath=examples/Index.ipynb)
