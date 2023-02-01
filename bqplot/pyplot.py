@@ -12,41 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-r"""
-
-======
-Pyplot
-======
-
-.. currentmodule:: bqplot.pyplot
-
-.. autosummary::
-   :toctree: _generate/
-
-   figure
-   show
-   axes
-
-   plot
-   scatter
-   hist
-   bar
-   ohlc
-   geo
-
-   clear
-   close
-   current_figure
-
-   scales
-   xlim
-   ylim
-
-   axes
-   xlabel
-   ylabel
-
-"""
 import sys
 from collections import OrderedDict
 from IPython.display import display
@@ -106,8 +71,8 @@ else:
     string_types = str,
 
 
+# Determine whether `v` can be hashed.
 def hashable(data, v):
-    """Determine whether `v` can be hashed."""
     try:
         data[v]
     except (TypeError, KeyError, IndexError):

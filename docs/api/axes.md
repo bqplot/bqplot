@@ -1,6 +1,3 @@
 
-::: bqplot.Axis
-    handler: python
-
-::: bqplot.ColorAxis
+::: bqplot.axes
     handler: python

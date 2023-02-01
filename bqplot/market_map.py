@@ -12,20 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-r"""
-
-==========
-Market Map
-==========
-
-.. currentmodule:: bqplot.market_map
-
-.. autosummary::
-   :toctree: _generate/
-
-   MarketMap
-"""
-
 from traitlets import Int, Unicode, List, Dict, Bool, Instance, Float
 from traittypes import Array, DataFrame
 from ipywidgets import (DOMWidget, CallbackDispatcher, Color,
