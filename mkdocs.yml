@@ -86,3 +86,4 @@ nav:
       - Axes: api/axes.md
       - Interactions: api/interactions.md
       - Pyplot: api/pyplot.md
+    - Contributing: contributing.md
