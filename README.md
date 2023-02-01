@@ -1,7 +1,5 @@
 # bqplot
 
-[![Travis](https://travis-ci.com/bqplot/bqplot.svg?branch=master)](https://travis-ci.com/bqplot/bqplot)
-[![Documentation](https://readthedocs.org/projects/bqplot/badge/?version=latest)](http://bqplot.readthedocs.org)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/stable?filepath=examples/Index.ipynb)
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jupyter-widgets/Lobby)
 
@@ -12,25 +10,15 @@
 `bqplot` is a 2-D visualization system for Jupyter, based on the constructs of
 the *Grammar of Graphics*.
 
-## Usage
-
 [![Wealth of Nations](./wealth-of-nations.gif)](https://github.com/bqplot/bqplot/blob/master/examples/Applications/Wealth%20Of%20Nations/Bubble%20Chart.ipynb)
 
 In bqplot, every component of a plot is an interactive widget. This allows the
 user to integrate visualizations with other Jupyter interactive widgets to
 create integrated GUIs with a few lines of Python code.
 
-## Goals
+## Documentation
 
--   Provide a unified framework for 2-D visualizations with a pythonic API
--   Provide a sensible API for adding user interactions (panning, zooming, selection, etc)
-
-Two APIs are provided
-
-- `Object Model`, which
-  is inspired by the constructs of the Grammar of Graphics (figure, marks, axes,
-  scales). This API is verbose but is fully customizable
-- `pyplot`, which is a context-based API similar to Matplotlib's pyplot. `pyplot` provides sensible default choices for most parameters
+You can follow the documentation on https://bqplot.github.io/bqplot
 
 ## Trying it online
 
@@ -136,10 +124,6 @@ yarn run build
 ### Using the `Object Model` API
 
 [![Bqplot Screenshot](/bqplot.png)](https://github.com/bqplot/bqplot/blob/master/examples/Advanced%20Plotting/Advanced%20Plotting.ipynb)
-
-## Documentation
-
-Full documentation is available at https://bqplot.readthedocs.io/
 
 ## Install a previous bqplot version (Only for JupyterLab <= 2)
 
