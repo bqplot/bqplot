@@ -12,31 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-r"""
-
-=====
-Marks
-=====
-
-.. currentmodule:: bqplot.marks
-
-.. autosummary::
-   :toctree: _generate/
-
-   Mark
-   Lines
-   FlexLine
-   Scatter
-   Hist
-   Bars
-   Graph
-   GridHeatMap
-   HeatMap
-   Label
-   OHLC
-   Pie
-   Map
-"""
 import os
 import json
 
@@ -58,13 +33,11 @@ from ._version import __frontend_version__
 from .colorschemes import CATEGORY10
 
 
+# Returns a decorator registering a mark class in the mark type registry.
+# If no key is provided, the class name is used as a key. A key is provided
+# for each core bqplot mark so that the frontend can use
+# this key regardless of the kernel language.
 def register_mark(key=None):
-    """Returns a decorator registering a mark class in the mark type registry.
-
-    If no key is provided, the class name is used as a key. A key is provided
-    for each core bqplot mark so that the frontend can use
-    this key regardless of the kernel language.
-    """
     def wrap(mark):
         name = key if key is not None else mark.__module__ + mark.__name__
         Mark.mark_types[name] = mark
@@ -1253,10 +1226,6 @@ class Bins(Bars):
         .tag(sync=True, display_name='Number of bins')
 
     def __init__(self, **kwargs):
-        '''
-        Sets listeners on the data and the binning parameters.
-        Adjusts `Bars` defaults to suit a histogram better.
-        '''
         self.observe(self.bin_data,
                      names=['sample', 'bins', 'density', 'min', 'max'])
         # One unique color by default
@@ -1267,9 +1236,7 @@ class Bins(Bars):
         super(Bins, self).__init__(**kwargs)
 
     def bin_data(self, *args):
-        '''
-        Performs the binning of `sample` data, and draws the corresponding bars
-        '''
+        # Performs the binning of `sample` data, and draws the corresponding bars
         # Get range
         _min = self.sample.min() if self.min is None else self.min
         _max = self.sample.max() if self.max is None else self.max

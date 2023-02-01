@@ -12,21 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-r"""
-
-====
-Axes
-====
-
-.. currentmodule:: bqplot.axes
-
-.. autosummary::
-   :toctree: _generate/
-
-   Axis
-   ColorAxis
-"""
-
 from traitlets import Int, Unicode, Instance, Enum, Dict, Bool
 from traittypes import Array
 from ipywidgets import Widget, Color, widget_serialization
@@ -36,13 +21,11 @@ from .traits import array_serialization, array_dimension_bounds
 from ._version import __frontend_version__
 
 
+# Returns a decorator registering an axis class in the axis type registry.
+# If no key is provided, the class name is used as a key. A key is provided
+# for each core bqplot axis so that the frontend can use this key regardless
+# of the kernel language.
 def register_axis(key=None):
-    """Returns a decorator registering an axis class in the axis type registry.
-
-    If no key is provided, the class name is used as a key. A key is provided
-    for each core bqplot axis so that the frontend can use this key regardless
-    of the kernel language.
-    """
     def wrap(axis):
         name = key if key is not None else axis.__module__ + axis.__name__
         BaseAxis.axis_types[name] = axis
