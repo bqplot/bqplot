@@ -2,8 +2,8 @@
 
 `Figure` API documentation can be accessed using the following links:
 
-1. [Figure](/api/figure) class
-2. [`figure`](/api/pyplot/#bqplot.pyplot.figure) method in `pyplot`
+1. [Figure](bqplot/api/figure) class
+2. [`figure`](bqplot/api/pyplot/#bqplot.pyplot.figure) method in `pyplot`
 
 In this section, we'll be focusing on pyplot API to create and configure `figure` objects.
 
@@ -17,9 +17,9 @@ fig = plt.figure()
 
 ### Attributes
 
-#### [Style Attributes](/api/figure/#bqplot.Figure--style-attributes)
+#### [Style Attributes](bqplot/api/figure/#bqplot.Figure--style-attributes)
 Style attributes can be used for styling the figure (title, backgrounds, legends) etc.
-#### [Layout Attributes](/api/figure/#bqplot.Figure--layout-attributes)
+#### [Layout Attributes](bqplot/api/figure/#bqplot.Figure--layout-attributes)
 Layout attributes can be used for controlling the dimensions and margins
 
 ### Code Examples
@@ -48,7 +48,7 @@ fig.layout.height = "500px"
 Since bqplot figures are SVG nodes any CSS styles applicable to SVG can be passed as a `dict` to the `background_style` attribute, like so:
 
 ```
-background_style = {"stroke": "blue", 
+background_style = {"stroke": "blue",
                     "fill": "red",
                     "fill-opacity": .3}
 fig = plt.figure(title="Figure", background_style=background_style)
