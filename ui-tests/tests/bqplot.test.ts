@@ -91,9 +91,9 @@ const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, th
 };
 
 test.describe('bqplot Visual Regression', () => {
-  test.beforeEach(async ({ page, tmpPath }, testInfo) => {
+  test.beforeEach(async ({ page, tmpPath }) => {
     page.on("console", (message) => {
-      testInfo.annotations.push({ type: message.type(), description: message.text() });
+      console.log('CONSOLE MSG ---', message.text());
     });
 
     await page.contents.uploadDirectory(
