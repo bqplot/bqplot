@@ -16,6 +16,10 @@ const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, th
   const paths = klaw(path.resolve(__dirname, './notebooks'), {filter: item => !filterUpdateNotebooks(item), nodir: true});
   const notebooks = paths.map(item => path.basename(item.path));
 
+  page.on("console", (message) => {
+    test.info().annotations.push({ type: message.type(), description: message.text() });
+  });
+
   const contextPrefix = theme == 'JupyterLab Light' ? 'light_' : 'dark_';
   page.theme.setTheme(theme);
 
@@ -54,6 +58,10 @@ const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, th
 const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
   const paths = klaw(path.resolve(__dirname, './notebooks'), {filter: item => filterUpdateNotebooks(item), nodir: true});
   const notebooks = paths.map(item => path.basename(item.path));
+
+  page.on("console", (message) => {
+    test.info().annotations.push({ type: message.type(), description: message.text() });
+  });
 
   const contextPrefix = theme == 'JupyterLab Light' ? 'light_' : 'dark_';
   page.theme.setTheme(theme);
