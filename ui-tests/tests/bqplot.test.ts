@@ -16,7 +16,7 @@ const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, th
   const paths = klaw(path.resolve(__dirname, './notebooks'), {filter: item => !filterUpdateNotebooks(item), nodir: true});
   const notebooks = paths.map(item => path.basename(item.path));
 
-  const contextPrefix = theme == 'JupyterLab Light' ? 'light_' : 'dark_';
+  const contextPrefix = theme == 'JupyterLab Light' ? 'light' : 'dark';
   page.theme.setTheme(theme);
 
   for (const notebook of notebooks) {
@@ -55,7 +55,7 @@ const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, th
   const paths = klaw(path.resolve(__dirname, './notebooks'), {filter: item => filterUpdateNotebooks(item), nodir: true});
   const notebooks = paths.map(item => path.basename(item.path));
 
-  const contextPrefix = theme == 'JupyterLab Light' ? 'light_' : 'dark_';
+  const contextPrefix = theme == 'JupyterLab Light' ? 'light' : 'dark';
   page.theme.setTheme(theme);
 
   for (const notebook of notebooks) {
@@ -92,6 +92,10 @@ const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, th
 
 test.describe('bqplot Visual Regression', () => {
   test.beforeEach(async ({ page, tmpPath }) => {
+    page.on("console", (message) => {
+      console.log('CONSOLE MSG ---', message.text());
+    });
+
     await page.contents.uploadDirectory(
       path.resolve(__dirname, './notebooks'),
       tmpPath
