@@ -1,4 +1,5 @@
 site_name: bqplot
+site_url: https://bqplot.github.io/bqplot
 repo_name: bqplot/bqplot
 repo_url: https://github.com/bqplot/bqplot
 theme:
