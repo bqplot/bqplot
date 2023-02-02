@@ -2,10 +2,10 @@
 
 Following are the core components in the `Object Model`:
 
-1. [Scales](../api/scales.md)
-2. [Marks](../api/marks.md)
-3. [Axes](../api/axes.md)
-4. [Figure](../api/figure.md)
+1. [Scales](/bqplot/api/scales)
+2. [Marks](/bqplot/api/marks)
+3. [Axes](/bqplot/api/axes)
+4. [Figure](/bqplot/api/figure)
 
 
 The following are the steps to build a Figure in bqplot using the Object Model:
