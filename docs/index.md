@@ -25,6 +25,7 @@ site_url: https://bqplot.github.io/
 While `bqplot` provides support for static plotting for most of the chart types, it really shines in interactive plotting where data attributes are updated in an event-driven fashion (using ipywidgets, click handlers etc.)
 
 ## Python API
+
 Two APIs are provided in bqplot:
 
 * [__Pyplot__](usage/pyplot.md)
