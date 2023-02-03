@@ -6,12 +6,14 @@ on:
       - master
     paths:
       - docs/**
+      - bqplot/**
       - mkdocs.yml
   pull_request:
     branches:
       - '*'
     paths:
       - docs/**
+      - bqplot/**
       - mkdocs.yml
 
 jobs:
