@@ -2,8 +2,8 @@
 
 `Figure` API documentation can be accessed using the following links:
 
-1. [Figure](/bqplot/api/figure) class
-2. [`figure`](/bqplot/api/pyplot/#bqplot.pyplot.figure) method in `pyplot`
+1. [Figure](../api/figure.md) class
+2. [`figure`](../api/pyplot.md#bqplot.pyplot.figure) method in `pyplot`
 
 In this section, we'll be focusing on pyplot API to create and configure `figure` objects.
 
