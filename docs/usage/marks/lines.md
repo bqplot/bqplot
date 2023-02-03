@@ -90,7 +90,7 @@ plt.scales(scales={"x": bq.DateScale()})
 time_series_line = plt.plot(x, y, "r", stroke_width=1,
                             fill="bottom", # (1)!
                             fill_colors=["red"],
-                            fill_opacities=[.4]))
+                            fill_opacities=[.4])
 fig
 ```
 

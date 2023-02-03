@@ -33,13 +33,14 @@ theme:
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.inlinehilite
   - admonition
   - pymdownx.details
   - pymdownx.superfences
   - md_in_html
   - attr_list
-
 plugins:
   - search
   - mkdocstrings:

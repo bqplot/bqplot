@@ -1,6 +1,6 @@
 `bqplot` is based on _Grammar of Graphics_ paradigm. The Object Model provides the user an object-oriented interface for building plots. This means the API is verbose but fully customizable.
 
-Following are the core components in the `Object Model`:
+Following are the core components of the `Object Model`:
 
 1. [Scales](../api/scales.md)
 2. [Marks](../api/marks.md)
@@ -16,7 +16,7 @@ The following are the steps to build a Figure in bqplot using the Object Model:
 4. Finally create a figure using `Figure` class. Figure takes marks and axes as inputs.
 __Figure object is a instance of `DOMWidget` and can be rendered like any other jupyter widgets__
 
-Let's look a few examples (`pyplot` usage available [here](pyplot.md)):
+Let's look a few examples (`pyplot` usage available [here](pyplot.md#line-chart)):
 
 #### Line Chart
 ```py
