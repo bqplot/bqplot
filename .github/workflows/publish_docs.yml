@@ -29,6 +29,9 @@ jobs:
           micromamba-version: '0.22.0'
           environment-file: 'docs/mkdocs-environment.yml'
 
+      - name: Discover typos with codespell
+        run: codespell --ignore-words-list="afterall,curvelinear,hist" --skip="share,.git/*,js/*,*.csv,*.json,*.lock,*.map"
+
       - name: Build the docs site
         shell: bash -l {0}
         run: mkdocs build --site-dir dist
