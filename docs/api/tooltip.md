@@ -1,0 +1,2 @@
+::: bqplot.Tooltip
+    handler: python
