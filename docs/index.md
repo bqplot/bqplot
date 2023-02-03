@@ -36,7 +36,7 @@ Two APIs are provided in bqplot:
 
 * [__Object Model__](usage/object-model.md)
     * Based on the constructs of Grammar of Graphics
-    * Users need to explicitly create `Figure`, `Mark`, `Axis` and `Scale` objects
+    * Users need to explicitly create [`Scale`](api/scales.md), [`Mark`](api/marks.md), [`Axis`](api/axes.md) and [`Figure`](api/figure.md) objects
     * Verbose API
     * Fully customizable
     * Extensible
