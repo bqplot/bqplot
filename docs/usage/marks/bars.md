@@ -81,6 +81,59 @@ fig
 ```
 ![plot](../../assets/images/bars-image2.png)
 
+#### Stacked/Grouped Bar Charts
+Use the `type` attribute for stacked/grouped bar charts, like so:
+
+=== "Stacked"
+
+    ```py hl_lines="5"
+    fig = plt.figure(title="Stacked Bar Chart")
+    x = list("ABCDE")
+    y = np.random.rand(3, 5) # 2d array
+
+    stacked_bar = plt.bar(x, y, type="stacked", padding=.4,
+                          colors=["orangered", "steelblue", "limegreen"])
+
+    fig
+    ```
+    ![plot](../../assets/images/bars-image3.png)
+
+=== "Grouped"
+
+    ```py hl_lines="5"
+    fig = plt.figure(title="Stacked Bar Chart")
+    x = list("ABCDE")
+    y = np.random.rand(3, 5) # 2d array
+
+    grouped_bar = plt.bar(x, y, type="grouped", padding=.4,
+                          colors=["orangered", "steelblue", "limegreen"])
+
+    fig
+    ```
+    ![plot](../../assets/images/bars-image4.png)
+
+
+#### Using `color` data attribute
+Using `color` __data__ attribute we can encode a third dimension (apart from `x` and `y`) using color scales, like so:
+
+```py hl_lines="3 4 10 12"
+import bqplot as bq
+
+# provide enough bottom margin to accommodate the color bar
+fig = plt.figure(fig_margin = dict(top=50, bottom=80, left=50, right=50))
+
+x = list("ABCDE")
+y, color = np.random.rand(2, 5) 
+
+# add a 'reds' scheme color scale
+plt.scales(scales={"color": bq.ColorScale(scheme="Reds", min=0, max=1)})
+
+bar = plt.bar(x, y, color=color, padding=0.2)
+
+fig
+```
+![plot](../../assets/images/bars-image5.png)
+
 
 ### Example Notebooks
 For detailed examples of plotting bar charts, refer to the following example notebooks:
