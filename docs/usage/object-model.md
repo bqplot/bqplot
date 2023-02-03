@@ -1,6 +1,6 @@
 `bqplot` is based on _Grammar of Graphics_ paradigm. The Object Model provides the user an object-oriented interface for building plots. This means the API is verbose but fully customizable.
 
-Following are the core components in the `Object Model`:
+Following are the core components of the `Object Model`:
 
 1. [Scales](../api/scales.md)
 2. [Marks](../api/marks.md)
