@@ -16,7 +16,7 @@ The following are the steps to build a Figure in bqplot using the Object Model:
 4. Finally create a figure using `Figure` class. Figure takes marks and axes as inputs.
 __Figure object is a instance of `DOMWidget` and can be rendered like any other jupyter widgets__
 
-Let's look a few examples (`pyplot` usage available [here](pyplot.md)):
+Let's look a few examples (`pyplot` usage available [here](pyplot.md#line-chart)):
 
 #### Line Chart
 ```py
