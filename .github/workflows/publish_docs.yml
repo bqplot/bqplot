@@ -1,12 +1,18 @@
-name: Build and Deploy
+name: Docs
 
 on:
   push:
     branches:
       - master
+    paths:
+      - docs/**
+      - mkdocs.yml
   pull_request:
     branches:
       - '*'
+    paths:
+      - docs/**
+      - mkdocs.yml
 
 jobs:
   build:
