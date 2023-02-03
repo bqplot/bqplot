@@ -51,7 +51,7 @@ We can update multiple attributes of the `mark` object simultaneously by using t
     ```
 
 #### Animations
-We can enable __animated__ data attributes by passing in `animation_duration` (in milliseconds) to the figure. Let's look at an example to update a scatter plot
+We can enable __animated__ data updates by passing in `animation_duration` (in milliseconds) to the figure. Let's look at an example to update a scatter plot
 
 ```py hl_lines="3"
 x, y = np.random.rand(2, 10)
