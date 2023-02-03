@@ -17,9 +17,9 @@ fig = plt.figure()
 
 ### Attributes
 
-#### [Style Attributes](/bqplot/api/figure/#bqplot.Figure--style-attributes)
+#### [Style Attributes](../api/figure.md#bqplot.Figure--style-attributes)
 Style attributes can be used for styling the figure (title, backgrounds, legends) etc.
-#### [Layout Attributes](/bqplot/api/figure/#bqplot.Figure--layout-attributes)
+#### [Layout Attributes](../api/figure.md#bqplot.Figure--layout-attributes)
 Layout attributes can be used for controlling the dimensions and margins
 
 ### Code Examples
@@ -69,8 +69,6 @@ fig
 ![plot](../assets/images/figure-image1.png)
 
 As you can see in the image above the grey region is the figure margin.
-
-
 
 #### Interactions
 Refer to the [Interaction](interactions/index.md) document for more details
