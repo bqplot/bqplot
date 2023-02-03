@@ -1,6 +1,6 @@
 site_name: bqplot
 site_description: bqplot: 2-D interactive visualization system for the Jupyter notebook
-site_url: https://bqplot.github.io/
+site_url: https://bqplot.github.io/bqplot
 
 # bqplot
 

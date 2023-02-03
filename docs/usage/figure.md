@@ -2,8 +2,8 @@
 
 `Figure` API documentation can be accessed using the following links:
 
-1. [Figure](bqplot/api/figure) class
-2. [`figure`](bqplot/api/pyplot/#bqplot.pyplot.figure) method in `pyplot`
+1. [Figure](../api/figure.md) class
+2. [`figure`](../api/pyplot.md#bqplot.pyplot.figure) method in `pyplot`
 
 In this section, we'll be focusing on pyplot API to create and configure `figure` objects.
 
@@ -17,9 +17,9 @@ fig = plt.figure()
 
 ### Attributes
 
-#### [Style Attributes](bqplot/api/figure/#bqplot.Figure--style-attributes)
+#### [Style Attributes](../api/figure.md#bqplot.Figure--style-attributes)
 Style attributes can be used for styling the figure (title, backgrounds, legends) etc.
-#### [Layout Attributes](bqplot/api/figure/#bqplot.Figure--layout-attributes)
+#### [Layout Attributes](../api/figure.md#bqplot.Figure--layout-attributes)
 Layout attributes can be used for controlling the dimensions and margins
 
 ### Code Examples
@@ -69,8 +69,6 @@ fig
 ![plot](../assets/images/figure-image1.png)
 
 As you can see in the image above the grey region is the figure margin.
-
-
 
 #### Interactions
 Refer to the [Interaction](interactions/index.md) document for more details

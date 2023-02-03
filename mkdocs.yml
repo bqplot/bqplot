@@ -5,20 +5,20 @@ repo_url: https://github.com/bqplot/bqplot
 theme:
   name: material
   custom_dir: custom_theme/
-  logo: https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark-notext-nobackground.svg
+  logo: https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-notext-nobackground.svg
   favicon: https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-notext-nobackground.svg
   extra:
     homepage: https://bqplot.github.io/bqplot
   palette:
     - scheme: default
-      primary: black
-      accent: black
+      primary: red
+      accent: red
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: black
-      accent: black
+      primary: red
+      accent: red
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -80,12 +80,13 @@ nav:
         - Dashboarding: usage/advanced/dashboards.md
         - Compound Widgets: usage/advanced/compound-widgets.md
     - API Documentation:
-      - Figure: api/figure.md
-      - MarketMap: api/market_map.md
-      - Toolbar: api/toolbar.md
-      - Scales: api/scales.md
-      - Marks: api/marks.md
-      - Axes: api/axes.md
-      - Interactions: api/interactions.md
       - Pyplot: api/pyplot.md
+      - Figure: api/figure.md
+      - Scales: api/scales.md
+      - Axes: api/axes.md
+      - Marks: api/marks.md
+      - Toolbar: api/toolbar.md
+      - Interactions: api/interactions.md
+      - MarketMap: api/market_map.md
+      
     - Contributing: contributing.md
