@@ -86,6 +86,7 @@ nav:
       - Scales: api/scales.md
       - Axes: api/axes.md
       - Marks: api/marks.md
+      - Tooltip: api/tooltip.md
       - Toolbar: api/toolbar.md
       - Interactions: api/interactions.md
       - MarketMap: api/market_map.md
