@@ -4,6 +4,7 @@ channels:
 dependencies:
   - python
   - pip
+  - codespell
   - pandas
   - jupyter
   - bqscales

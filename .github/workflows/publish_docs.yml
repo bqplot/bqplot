@@ -16,6 +16,10 @@ on:
       - bqplot/**
       - mkdocs.yml
 
+defaults:
+  run:
+    shell: bash -l {0}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,7 +37,6 @@ jobs:
         run: codespell --ignore-words-list="afterall,curvelinear,hist" --skip="share,.git/*,js/*,*.csv,*.json,*.lock,*.map"
 
       - name: Build the docs site
-        shell: bash -l {0}
         run: mkdocs build --site-dir dist
 
       - name: Upload artifact
