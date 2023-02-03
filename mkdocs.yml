@@ -11,14 +11,14 @@ theme:
     homepage: https://bqplot.github.io/bqplot
   palette:
     - scheme: default
-      primary: red
-      accent: red
+      primary: pink
+      accent: pink
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: red
-      accent: red
+      primary: pink
+      accent: pink
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -88,5 +88,4 @@ nav:
       - Toolbar: api/toolbar.md
       - Interactions: api/interactions.md
       - MarketMap: api/market_map.md
-      
     - Contributing: contributing.md
