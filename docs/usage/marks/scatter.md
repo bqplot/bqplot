@@ -10,7 +10,7 @@ The Scatter mark provides the following features:
 
 #### [Data Attributes](../../../api/marks/#bqplot.marks.Scatter--data-attributes)
 
-#### [Style Attributes](../../../api/marks/#bqplot.marks.S--style-attributes)
+#### [Style Attributes](../../../api/marks/#bqplot.marks.Scatter--style-attributes)
 
 ### pyplot
 The function for plotting scatter charts in `pyplot` is [`plt.scatter`](../../api/pyplot.md#bqplot.pyplot.scatter). It takes two main arguments:
@@ -166,7 +166,7 @@ By implementing and registering callback functions we can achieve the desired be
     ```
 ##### Selecting Points
 Discrete points can be selected via mouse clicks or a continuous __region__ of points can be selected by using __Selectors__.
-The `selected` attribute of scatter will be __automatically__ updated in both the above cases. Note that `selected` attribute is a `list` of __indices__ of the selected points!
+The `selected` attribute of scatter will be __automatically__ updated in both the cases. Note that `selected` attribute is a `list` of __indices__ of the selected points!
 
 !!! tip
     Use the `selected_style` and `unselected_style` attributes (which are dicts) to apply CSS styling for selected and un-selected points respectively
