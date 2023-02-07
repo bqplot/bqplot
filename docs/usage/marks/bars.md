@@ -66,7 +66,7 @@ Use the `padding` attribute (between 0 and 1) to increase or decrease the spacin
     ```
 
 #### Horizontal Bar Chart
-Use [`pyplot.barh`](../../api/pyplot.md#bqplot.pyplot.barh) method to create a horizontal bar chart, like so:
+Use [`plt.barh`](../../api/pyplot.md#bqplot.pyplot.barh) method to create a horizontal bar chart, like so:
 
 ```py hl_lines="7"
 fig = plt.figure(title="Horizontal Bar Chart")
@@ -136,7 +136,7 @@ fig
 
 
 ### Example Notebooks
-For detailed examples of plotting bar charts, refer to the following example notebooks:
+For detailed examples of plotting bar charts, refer to the following example notebooks
 
 1. [pyplot](https://github.com/bqplot/bqplot/blob/master/examples/Marks/Pyplot/Bars.ipynb)
 2. [Object Model](https://github.com/bqplot/bqplot/blob/master/examples/Marks/Object%20Model/Bars.ipynb)
