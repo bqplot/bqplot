@@ -136,7 +136,7 @@ fig
 
 
 ### Example Notebooks
-For detailed examples of plotting bar charts, refer to the following example notebooks
+For detailed examples of bar plots, refer to the following example notebooks
 
 1. [pyplot](https://github.com/bqplot/bqplot/blob/master/examples/Marks/Pyplot/Bars.ipynb)
 2. [Object Model](https://github.com/bqplot/bqplot/blob/master/examples/Marks/Object%20Model/Bars.ipynb)

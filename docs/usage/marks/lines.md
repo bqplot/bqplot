@@ -212,7 +212,7 @@ fig
 ![plot](../../assets/images/lines-image6.png)
 
 ### Example Notebooks
-For detailed examples of plotting lines, refer to the following example notebooks
+For detailed examples of line plots, refer to the following example notebooks
 
 1. [pyplot](https://github.com/bqplot/bqplot/blob/master/examples/Marks/Pyplot/Lines.ipynb)
 2. [Object Model](https://github.com/bqplot/bqplot/blob/master/examples/Marks/Object%20Model/Lines.ipynb)
