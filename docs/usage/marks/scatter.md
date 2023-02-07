@@ -107,6 +107,129 @@ fig
 
 ![plot](../../assets/images/scatter-image3.png)
 
+For a comprehensive example of encoding multi-dimensional data in a bubble chart, checkout the [Wealth Of Nations](https://github.com/bqplot/bqplot-gallery/blob/main/notebooks/wealth_of_nations/bubble_chart.ipynb) notebook in [`bqplot-gallery`](https://github.com/bqplot/bqplot-gallery).
+
+
+#### Interactions
+##### Tooltips
+Tooltips can be added by setting the `tooltip` attribute to a [Tooltip](../../api/tooltip.md) instance
+
+```py hl_lines="5 7"
+import bqplot as bq
+
+fig = plt.figure()
+x, y = np.random.rand(2, 20)
+tooltip = bq.Tooltip(fields=["x", "y"], formats=[".2f", ".2f"])
+scatter = plt.scatter(x, y, colors=["green"], stroke="black",
+                      tooltip=tooltip)
+fig
+```
+
+##### Adding/Moving points
+New points can be added by clicking on the chart and existing points can be moved using a mouse pointer. `x` and `y` data attributes will be __automatically__ updated as new points are added or existing points are moved around!
+
+By implementing and registering callback functions we can achieve the desired behavior when points are added or updated.
+
+=== "Add points"
+    Set `interactions = {"click": "add"}` to add points on mouse clicks. `x` and `y` data attributes will be __automatically__ updated when new points are added!
+    ```py hl_lines="4"
+    fig = plt.figure()
+    x, y = np.random.rand(2, 20)
+    scatter = plt.scatter(x, y, colors=["green"], stroke="black",
+                          interactions={"click": "add"})
+
+    # callback to invoke when new points are added
+    def on_add(*args):
+        pass
+
+    # register callback on x and y changes
+    scatter.observe(on_add, names=["x", "y"])
+
+    fig
+    ```
+=== "Update points"
+    Set `enable_move=True` to move points. `x` and `y` data attributes will be __automatically__ updated as points are moved around!
+    ```py hl_lines="4"
+    fig = plt.figure()
+    x, y = np.random.rand(2, 20)
+    scatter = plt.scatter(x, y, colors=["green"], stroke="black",
+                          enable_move=True)
+
+    # callback to invoke when points are moved around
+    def on_move(*args):
+        pass
+
+    # register callback on x and y changes
+    scatter.observe(on_move, names=["x", "y"])
+
+    fig
+    ```
+##### Selecting Points
+Discrete points can be selected via mouse clicks or a continuous __region__ of points can be selected by using __Selectors__.
+The `selected` attribute of scatter will be __automatically__ updated in both the above cases. Note that `selected` attribute is a `list` of __indices__ of the selected points!
+
+!!! tip
+    Use the `selected_style` and `unselected_style` attributes (which are dicts) to apply CSS styling for selected and un-selected points respectively
+
+
+Callbacks can be registered on changes to `selected` attribute.
+
+=== "Discrete Selection"
+    To select discrete set of points set `interactions = {"click": "select"}`. Single point can be selected by a mouse click. Mouse click + `command` key (mac) (or `control` key (windows)) lets you select multiple points.
+    ```py hl_lines="4 5"
+    fig = plt.figure()
+    x, y = np.random.rand(2, 20)
+    scatter = plt.scatter(x, y, colors=["green"], stroke="black",
+                          interactions={"click": "select"},
+                          unselected_style={"opacity": "0.3"})
+
+    # callback to invoke when points are selected
+    def on_select(*args):
+        selected_indices = scatter.selected
+        if selected_indices is not None:
+            selected_x = scatter.x[selected_indices]
+            selected_y = scatter.y[selected_indices]
+
+            # do something with selected data
+
+    # register callback on selected attribute
+    scatter.observe(on_select, names=["selected"])
+
+    fig
+    ```
+
+=== "Continous Region Selection"
+    Use [BrushSelector](../../api/interactions.md#bqplot.interacts.BrushSelector) to select points in a rectangular region or a [Lasso Selector](../../api/interactions.md#bqplot.interacts.LassoSelector)
+    to select points in a closed free-form region. Let's look at an example using a brush selector.
+
+    Check [Selectors](../interactions/selectors.md) page for more details on how to setup and use various selectors.
+
+    ```py hl_lines="9 10"
+    import bqplot as bq
+
+    fig = plt.figure()
+    x, y = np.random.rand(2, 20)
+    scatter = plt.scatter(x, y, colors=["green"], stroke="black",
+                        unselected_style={"opacity": "0.3"})
+    xs, ys = scatter.scales["x"], scatter.scales["y"]
+
+    selector = bq.interacts.BrushSelector(x_scale=xs, y_scale=ys, marks=[scatter])
+    fig.interaction = selector
+
+    # callback to invoke when points are selected
+    def on_select(*args):
+        selected_indices = scatter.selected
+        if selected_indices is not None:
+            selected_x = scatter.x[selected_indices]
+            selected_y = scatter.y[selected_indices]
+
+            # do something with selected data
+
+    # register callback on selected attribute
+    scatter.observe(on_select, names=["selected"])
+
+    fig
+    ```
 
 ### Example Notebooks
 For detailed examples of scatter plots, refer to the following example notebooks
