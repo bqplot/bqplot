@@ -198,7 +198,7 @@ Callbacks can be registered on changes to `selected` attribute.
     fig
     ```
 
-=== "Continous Region Selection"
+=== "Continuous Region Selection"
     Use [BrushSelector](../../api/interactions.md#bqplot.interacts.BrushSelector) to select points in a rectangular region or a [Lasso Selector](../../api/interactions.md#bqplot.interacts.LassoSelector)
     to select points in a closed free-form region. Check [Selectors](../interactions/selectors.md) page for more details on how to setup and use various selectors.
     

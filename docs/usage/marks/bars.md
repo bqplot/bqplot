@@ -184,7 +184,7 @@ Callbacks can be registered on changes to `selected` attribute.
     fig
     ```
 
-=== "Continous Selection"
+=== "Continuous Selection"
     Use [BrushIntervalSelector](../../api/interactions.md#bqplot.interacts.BrushIntervalSelector) to select bars in a continuous rectangular range. 
     Check [Selectors](../interactions/selectors.md) page for more details on how to setup and use various selectors.
 
