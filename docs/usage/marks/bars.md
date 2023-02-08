@@ -134,7 +134,91 @@ fig
 ```
 ![plot](../../assets/images/bars-image5.png)
 
+#### Interactions
+##### Tooltips
+Tooltips can be added by setting the `tooltip` attribute to a [Tooltip](../../api/tooltip.md) instance
 
+```py hl_lines="6 8"
+import bqplot as bq
+
+fig = plt.figure()
+x = np.arange(1, 11)
+y = np.random.rand(10)
+tooltip = bq.Tooltip(fields=["x", "y"], formats=["", ".2f"])
+bar = plt.bar(x, y, tooltip=tooltip)
+fig
+```
+
+##### Selecting Points
+Discrete bar(s) can be selected via mouse clicks or a continuous set of bars can be selected by using __Selectors__.
+The `selected` attribute of the bar mark will be __automatically__ updated in both the cases. Note that `selected` attribute is a `list` of __indices__ of the selected bars!
+
+!!! tip
+    Use the `selected_style` and `unselected_style` attributes (which are dicts) to apply CSS styling for selected and un-selected bars respectively
+
+Callbacks can be registered on changes to `selected` attribute.
+
+=== "Discrete Selection"
+    To select discrete set of bars set `interactions = {"click": "select"}`. Single bar can be selected by a mouse click. Mouse click + `command` key (mac) (or `control` key (windows)) lets you select multiple bars.
+    ```py hl_lines="5 6"
+    fig = plt.figure()
+    x = list("ABCDEFGHIJ")
+    y = np.random.rand(10)
+    bar = plt.bar(x, y,
+                interactions={"click": "select"},
+                unselected_style={"opacity": "0.5"})
+
+    # callback to invoke when points are selected
+    def on_select(*args):
+        selected_indices = bar.selected
+        if selected_indices is not None:
+            selected_x = bar.x[selected_indices]
+            selected_y = bar.y[selected_indices]
+
+            # do something with selected data
+            print(selected_x, selected_y)
+
+    # register callback on selected attribute
+    bar.observe(on_select, names=["selected"])
+
+    fig
+    ```
+
+=== "Continous Selection"
+    Use [BrushIntervalSelector](../../api/interactions.md#bqplot.interacts.BrushIntervalSelector) to select bars in a continuous rectangular range. 
+    Check [Selectors](../interactions/selectors.md) page for more details on how to setup and use various selectors.
+
+    Let's look at an example.
+
+
+    ```py hl_lines="9 10"
+    import bqplot as bq
+
+    fig = plt.figure()
+    x = list("ABCDEFGHIJ")
+    y = np.random.rand(10)
+    bar = plt.bar(x, y, unselected_style={"opacity": "0.3"})
+    xs = bar.scales["x"]
+
+    selector = bq.interacts.BrushIntervalSelector(scale=xs, marks=[bar])
+    fig.interaction = selector
+
+    # callback to invoke when points are selected
+    def on_select(*args):
+        selected_indices = bar.selected
+        if selected_indices is not None:
+            selected_x = bar.x[selected_indices]
+            selected_y = bar.y[selected_indices]
+
+            # do something with selected data
+
+    # register callback on selected attribute
+    bar.observe(on_select, names=["selected"])
+
+    fig
+    ```
+
+For an advanced real world example of slicing datasets using bar charts, checkout the [Logs Analytics](https://github.com/bqplot/bqplot-gallery/blob/main/notebooks/logs_analytics/logs_analytics.ipynb) dashboard in [`bqplot-gallery`](https://github.com/bqplot/bqplot-gallery).
 ### Example Notebooks
 For detailed examples of bar plots, refer to the following example notebooks
 
