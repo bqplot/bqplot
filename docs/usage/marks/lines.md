@@ -72,7 +72,7 @@ fig
 ![plot](../../assets/images/lines-image2.png)
 
 #### Time Series
-If the dates are of type `numpy.datetime64` then `pyplot` automatically infers a date scale for the `x` attribute. Otherwise a `DateScale` need to be explcitly specified using the `plt.scales` function
+If the dates are of type `numpy.datetime64` then `pyplot` automatically infers a date scale for the `x` attribute. Otherwise a `DateScale` need to be explicitly specified using the `plt.scales` function
 
 ```py title="Time Series" hl_lines="12"
 import bqplot as bq
@@ -212,7 +212,7 @@ fig
 ![plot](../../assets/images/lines-image6.png)
 
 ### Example Notebooks
-For detailed examples of plotting lines, refer to the following example notebooks:
+For detailed examples of line plots, refer to the following example notebooks
 
 1. [pyplot](https://github.com/bqplot/bqplot/blob/master/examples/Marks/Pyplot/Lines.ipynb)
 2. [Object Model](https://github.com/bqplot/bqplot/blob/master/examples/Marks/Object%20Model/Lines.ipynb)
