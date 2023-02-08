@@ -200,9 +200,9 @@ Callbacks can be registered on changes to `selected` attribute.
 
 === "Continous Region Selection"
     Use [BrushSelector](../../api/interactions.md#bqplot.interacts.BrushSelector) to select points in a rectangular region or a [Lasso Selector](../../api/interactions.md#bqplot.interacts.LassoSelector)
-    to select points in a closed free-form region. Let's look at an example using a brush selector.
-
-    Check [Selectors](../interactions/selectors.md) page for more details on how to setup and use various selectors.
+    to select points in a closed free-form region. Check [Selectors](../interactions/selectors.md) page for more details on how to setup and use various selectors.
+    
+    Let's look at an example using a brush selector.
 
     ```py hl_lines="9 10"
     import bqplot as bq
