@@ -84,8 +84,7 @@ fig
 
 #### Using Alternative Color Schemes
 By adjusting the scales for the color values used in the heatmap, we can change the plot to use any color scheme we desire. 
-U
-sing `color` __data__ attribute we can encode a third dimension (apart from `x` and `y`) using color scales, like so:
+Using `color` __data__ attribute we can encode a third dimension (apart from `x` and `y`) using color scales, like so:
 
 ```py hl_lines="3 4 10 12"
 import bqplot as bq
@@ -127,8 +126,7 @@ fig
 ```
 
 ##### Selecting Cells
-Discrete cell(s) can be selected via mouse clicks.
-The `selected` attribute of the gridheatmap mark will be __automatically__ updated. Note that `selected` attribute is a `list` of __indices__ of the rows and columns for the selected cells!
+Discrete cell(s) can be selected via mouse clicks. The `selected` attribute of the gridheatmap mark will be __automatically__ updated. Note that `selected` attribute is a `list` of __indices__ of the rows and columns for the selected cells!
 
 !!! tip
     Use the `selected_style` and `unselected_style` attributes (which are dicts) to apply CSS styling for selected and un-selected cells respectively
