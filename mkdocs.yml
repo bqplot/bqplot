@@ -70,6 +70,7 @@ nav:
         - Pie: usage/marks/pie.md
         - Map: usage/marks/maps.md
         - Heatmap: usage/marks/heatmap.md
+        - Gridheatmap: usage/marks/gridheatmap.md
         - Marketmap: usage/marks/market.md
       - Interactions:
         - Mark Interactions: usage/interactions/mark-interactions.md

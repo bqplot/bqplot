@@ -26,11 +26,11 @@ For further customization, any of the attributes above can be passed as keyword 
 import bqplot.pyplot as plt
 import numpy as np
 
-data   = np.random.randn(10, 10)
-row    = list("ABCDEFGHIJ")
+data = np.random.randn(10, 10)
+row = list("ABCDEFGHIJ")
 column = np.arange(10)
 
-fig      = plt.figure(title="Grid Heat Map")
+fig = plt.figure(title="Grid Heat Map")
 grid_map = plt.gridheatmap(color=data, row=row, column=column)
 fig
 ```
@@ -59,7 +59,11 @@ Often colors might obscure the true values of each cell in the map. To avoid con
 === "Update After Construction"
     ```py
     grid_map.display_format = ".2f"
-    grid_map.font_style = {"font-size": "16px", "fill": "black", "font-weight": "bold"}
+    grid_map.font_style = {
+        "font-size": "16px", 
+        "fill": "black", 
+        "font-weight": "bold"
+    }
     ```
 ![plot](../../assets/images/gridheatmap-image2.png)
 
@@ -67,13 +71,14 @@ Often colors might obscure the true values of each cell in the map. To avoid con
 Grid Heat Maps will adjust to any scalar non-uniform inputs in either the column or row arguments. For example, if we have an uneven grid where certain cells vary in size, Grid Heat Maps will reflect this size on the plot as shown below. 
 
 ```py hl_lines="9"
-row        = np.arange(10)
-row[5:]    = np.arange(6, 11)
-column     = np.arange(10)
+row = np.arange(10)
+row[5:] = np.arange(6, 11)
+column = np.arange(10)
 column[7:] = np.arange(8, 11)
 
-fig      = plt.figure(title="Non Uniform Grid Heat Map", 
-                      padding_y=0)
+fig = plt.figure(title="Non Uniform Grid Heat Map",
+                 padding_y=0)
+
 grid_map = plt.gridheatmap(color=data, 
                            row=row, 
                            column=column)
@@ -109,8 +114,8 @@ Tooltips can be added by setting the `tooltip` attribute to a [Tooltip](../../ap
 ```py hl_lines="6 8"
 import bqplot as bq
 
-row     = list("ABCDEFGHIJ")
-column  = np.arange(10)
+row = list("ABCDEFGHIJ")
+column = np.arange(10)
 tooltip = bq.Tooltip(fields=["row", "column", "color"], 
                      formats=["", ".2f", ".2f"])
 
