@@ -30,7 +30,7 @@ data = np.random.randn(10, 10)
 row = list("ABCDEFGHIJ")
 column = np.arange(10)
 
-fig = plt.figure(title="Grid Heat Map")
+fig = plt.figure(title="Grid Heat Map", padding_y=0)
 grid_map = plt.gridheatmap(color=data, row=row, column=column)
 fig
 ```
@@ -42,8 +42,8 @@ Attributes can be updated in separate notebook cells or in callbacks when an eve
 grid_map.opacity = 0.3
 ```
 
-#### Display Numeric Color Values
-Often colors might obscure the true values of each cell in the map. To avoid confusion, plot the numeric values for each cell, like so:
+#### Cell Text Values
+Often colors might obscure the values of each cell in the map. To avoid confusion, we can plot the explicit numeric values over each cell. Any CSS styles applicable to text can be passed as a `dict` to the `font_style` attribute to style the text.
     
 === "During Construction"
     ```py
@@ -67,16 +67,16 @@ Often colors might obscure the true values of each cell in the map. To avoid con
     ```
 ![plot](../../assets/images/gridheatmap-image2.png)
 
-#### Non-Uniform Grid Heat Map
+#### Non-Uniform Cells
 Grid Heat Maps will adjust to any scalar non-uniform inputs in either the column or row arguments. For example, if we have an uneven grid where certain cells vary in size, Grid Heat Maps will reflect this size on the plot as shown below. 
 
-```py hl_lines="9"
+```py
 row = np.arange(10)
 row[5:] = np.arange(6, 11)
 column = np.arange(10)
 column[7:] = np.arange(8, 11)
 
-fig = plt.figure(title="Non Uniform Grid Heat Map",
+fig = plt.figure(title="Non-Uniform Cells",
                  padding_y=0)
 
 grid_map = plt.gridheatmap(color=data, 
@@ -87,15 +87,14 @@ fig
 ![plot](../../assets/images/gridheatmap-image3.png)
 
 
-#### Using Alternative Color Schemes
+#### Alternative Color Schemes
 By adjusting the scales for the color values used in the heatmap, we can change the plot to use any color scheme we desire. 
 Using `color` __data__ attribute we can encode a third dimension (apart from `x` and `y`) using color scales, like so:
 
-```py hl_lines="3 4 10 12"
+```py
 import bqplot as bq
 
-fig = plt.figure(title='Grid Heat Map Alternative Colors', 
-                 padding_y=0)
+fig = plt.figure(title='Alternative Colors', padding_y=0)
 grid_map = plt.gridheatmap(
     color=data, 
     row=row, 
@@ -111,7 +110,7 @@ fig
 ##### Tooltips
 Tooltips can be added by setting the `tooltip` attribute to a [Tooltip](../../api/tooltip.md) instance
 
-```py hl_lines="6 8"
+```py
 import bqplot as bq
 
 row = list("ABCDEFGHIJ")
@@ -119,8 +118,7 @@ column = np.arange(10)
 tooltip = bq.Tooltip(fields=["row", "column", "color"], 
                      formats=["", ".2f", ".2f"])
 
-fig = plt.figure(title="Grid Heat Map Tooltip", 
-                 padding_y=0.0)
+fig = plt.figure(title="Tooltip", padding_y=0.0)
 grid_map = plt.gridheatmap(
     data,
     row=row,
@@ -137,14 +135,18 @@ Discrete cell(s) can be selected via mouse clicks. The `selected` attribute of t
     Use the `selected_style` and `unselected_style` attributes (which are dicts) to apply CSS styling for selected and un-selected cells respectively
 
 Callbacks can be registered on changes to `selected` attribute. To select discrete set of cells set `interactions = {"click": "select"}`. Single cells can be selected by a mouse click. Mouse click + `command` key (mac) (or `control` key (windows)) lets you select multiple cells.
-    ```py hl_lines="5 6"
-    fig = plt.figure(padding_y=0)
+    ```py
+    fig = plt.figure(title="Cell Selection", padding_y=0)
     row = list("ABCDEFGHIJ")
     column = np.arange(10)
 
-    grid_map = plt.gridheatmap(data, row=row, column=column,
-                interactions={"click": "select"},
-                unselected_style={"opacity": "0.5"})
+    grid_map = plt.gridheatmap(
+        data, 
+        row=row, 
+        column=column,
+        interactions={"click": "select"},
+        unselected_style={"opacity": "0.5"}
+    )
 
     # callback to invoke when cells are selected
     def on_select(*args):
