@@ -68,7 +68,7 @@ nav:
         - Bars: usage/marks/bars.md
         - Scatter: usage/marks/scatter.md
         - Pie: usage/marks/pie.md
-        - Map: usage/marks/maps.md
+        - Map: usage/marks/map.md
         - Heatmap: usage/marks/heatmap.md
         - Gridheatmap: usage/marks/gridheatmap.md
         - Marketmap: usage/marks/market.md
