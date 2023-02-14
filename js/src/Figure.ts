@@ -272,7 +272,10 @@ export class Figure extends widgets.DOMWidgetView {
     // TODO: move to the model
     this.model.on_some_change(
       ['fig_margin', 'min_aspect_ratio', 'max_aspect_ratio'],
-      this.debouncedRelayout,
+      () => {
+        this.should_relayout = true;
+        this.debouncedRelayout();
+      },
       this
     );
     this.model.on_some_change(
@@ -760,10 +763,15 @@ export class Figure extends widgets.DOMWidgetView {
       this.relayoutRequested = false; // reset relayout request
       const figureSize = this.getFigureSize();
 
-      if (this.width == figureSize.width && this.height == figureSize.height) {
+      if (
+          this.width == figureSize.width &&
+          this.height == figureSize.height &&
+          !this.should_relayout
+      ) {
         // Bypass relayout
         return;
       }
+      this.should_relayout = false;
 
       this.width = figureSize.width;
       this.height = figureSize.height;
@@ -1317,4 +1325,5 @@ export class Figure extends widgets.DOMWidgetView {
   // this is public for the test framework, but considered a private API
   public _initial_marks_created: Promise<any>;
   private _initial_marks_created_resolve: Function;
+  private should_relayout: boolean = false;
 }
