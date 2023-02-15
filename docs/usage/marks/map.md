@@ -138,7 +138,7 @@ fig
 
 1. We have enabled __both__ selections and tooltip here!
 
-For an advanced example of maps and choropleths, checkout the [Logs Analytics](https://github.com/bqplot/bqplot-gallery/blob/main/notebooks/logs_analytics/logs_analytics.ipynb) dashboard in [`bqplot-gallery`](https://github.com/bqplot/bqplot-gallery).
+For an advanced example of maps and choropleths, checkout the [Wealth Of Nations Choropleth](https://github.com/bqplot/bqplot-gallery/blob/main/notebooks/wealth_of_nations/choropleth.ipynb) dashboard in [`bqplot-gallery`](https://github.com/bqplot/bqplot-gallery).
 
 ### Example Notebooks
 For detailed examples of maps, refer to the following example notebooks
