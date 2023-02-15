@@ -138,7 +138,7 @@ fig
 ##### Tooltips
 Tooltips can be added by setting the `tooltip` attribute to a [Tooltip](../../api/tooltip.md) instance
 
-```py hl_lines="6 8"
+```py hl_lines="6 7"
 import bqplot as bq
 
 fig = plt.figure()
@@ -149,7 +149,7 @@ bar = plt.bar(x, y, tooltip=tooltip)
 fig
 ```
 
-##### Selecting Points
+##### Selecting Bars
 Discrete bar(s) can be selected via mouse clicks or a continuous set of bars can be selected by using __Selectors__.
 The `selected` attribute of the bar mark will be __automatically__ updated in both the cases. Note that `selected` attribute is a `list` of __indices__ of the selected bars!
 
