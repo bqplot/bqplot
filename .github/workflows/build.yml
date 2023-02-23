@@ -11,6 +11,8 @@ on:
     paths:
       - js/**
       - bqplot/**
+      - .github/workflows/**
+      - setup.cfg
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
