@@ -117,6 +117,8 @@ test.describe('bqplot Visual Regression', () => {
     page,
     tmpPath,
   }) => {
+    page.on('console', msg => console.log('PAGE LOG:', msg.type, msg.text(), msg.location()));
+    page.on("pageerror", err => console.log("PAGE ERROR:", err.message))
     await testPlotUpdates(page, tmpPath, 'JupyterLab Light');
   });
 
@@ -124,6 +126,8 @@ test.describe('bqplot Visual Regression', () => {
     page,
     tmpPath,
   }) => {
+    page.on('console', msg => console.log('PAGE LOG:', msg.type, msg.text(), msg.location()));
+    page.on("pageerror", err => console.log("PAGE ERROR:", err.message))
     await testPlotUpdates(page, tmpPath, 'JupyterLab Dark');
   });
 });

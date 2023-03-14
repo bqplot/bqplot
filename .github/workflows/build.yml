@@ -15,16 +15,16 @@ defaults:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
 
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Setup conda
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Install Conda environment with Micromamba
+      uses: mamba-org/provision-with-micromamba@main
       with:
-        activate-environment: bqplot-test
+        environment-name: bqplot-test
         environment-file: test-environment.yml
         python-version: ${{ matrix.python-version }}
         mamba-version: "*"
@@ -88,17 +88,17 @@ jobs:
         path: ./dist
 
   visual-regression-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [build]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          activate-environment: bqplot-test
+          environment-name: bqplot-test
           environment-file: test-environment.yml
           python-version: 3.9
           mamba-version: "*"
@@ -174,10 +174,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          activate-environment: bqplot-test
+          environment-name: bqplot-test
           environment-file: test-environment.yml
           python-version: ${{ matrix.python-version }}
           mamba-version: "*"
@@ -224,8 +224,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/provision-with-micromamba@main
         with:
           python-version: ${{ matrix.python-version }}
           mamba-version: "*"
@@ -237,7 +237,7 @@ jobs:
           path: ./dist
 
       - name: Install JupyterLab 2
-        run: mamba install yarn jupyterlab=2
+        run: micromamba install yarn jupyterlab=2
 
       - name: Install the labextension
         env:
