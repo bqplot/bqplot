@@ -28,7 +28,7 @@ import { Scale, ScaleModel } from 'bqscales';
 
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
-import { applyAttrs, applyStyles, getLuminoWidget } from './utils';
+import { applyAttrs, applyStyles } from './utils';
 import { AxisModel } from './AxisModel';
 import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
@@ -73,6 +73,29 @@ export class Figure extends DOMWidgetView {
     this._initial_marks_created = new Promise((resolve) => {
       this._initial_marks_created_resolve = resolve;
     });
+
+    this.intersectObserver = new IntersectionObserver(
+      (entries: IntersectionObserverEntry[]) => {
+        if (entries[0].isIntersecting) {
+          this.visible = true;
+          this.debouncedRelayout();
+        } else if (entries[0].rootBounds != null) {
+          /* When 'rootBounds' is null, 'isIntersecting' is 'false', but the plot is visible, so only change 'visible'
+           * if rootBonds is set. I can't find any info on this behaviour. */
+          this.visible = false;
+        }
+      },
+      { threshold: 0 }
+    );
+    this.intersectObserver.observe(this.el);
+
+    this.resizeObserver = new ResizeObserver(
+      (entries: ResizeObserverEntry[]) => {
+        this.debouncedRelayout();
+      }
+    );
+
+    this.resizeObserver.observe(this.el);
 
     super.initialize.apply(this, arguments);
   }
@@ -338,13 +361,6 @@ export class Figure extends DOMWidgetView {
 
     document.body.appendChild(this.tooltip_div.node());
     this.create_listeners();
-
-    // In the classic notebook, we should relayout the figure on
-    // resize of the main window.
-    window.addEventListener('resize', this.debouncedRelayout);
-    this.once('remove', () => {
-      window.removeEventListener('resize', this.debouncedRelayout);
-    });
 
     this.toolbar_div = this.create_toolbar();
     if (this.model.get('display_toolbar')) {
@@ -744,29 +760,6 @@ export class Figure extends DOMWidgetView {
     this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
   }
 
-  processPhosphorMessage(msg) {
-    // @ts-ignore: The following line can only compile with ipywidgets 7
-    this._processLuminoMessage(msg, super.processPhosphorMessage);
-  }
-
-  processLuminoMessage(msg) {
-    this._processLuminoMessage(msg, super.processLuminoMessage);
-  }
-
-  _processLuminoMessage(msg, _super) {
-    _super.call(this, msg);
-
-    switch (msg.type) {
-      case 'resize':
-      case 'after-show':
-      case 'after-attach':
-        if (getLuminoWidget(this).isVisible) {
-          this.debouncedRelayout();
-        }
-        break;
-    }
-  }
-
   relayout() {
     if (!this.relayoutRequested) {
       this.relayoutRequested = true; // avoid scheduling a relayout twice
@@ -779,9 +772,10 @@ export class Figure extends DOMWidgetView {
     const figureSize = this.getFigureSize();
 
     if (
-      this.width == figureSize.width &&
-      this.height == figureSize.height &&
-      !this.should_relayout
+      (this.width == figureSize.width &&
+        this.height == figureSize.height &&
+        !this.should_relayout) ||
+      !this.visible
     ) {
       // Bypass relayout
       return;
@@ -1018,6 +1012,8 @@ export class Figure extends DOMWidgetView {
     if (this.tooltip_div !== undefined) {
       this.tooltip_div.remove();
     }
+    this.intersectObserver.disconnect();
+    this.resizeObserver.disconnect();
     return super.remove.apply(this, arguments);
   }
 
@@ -1360,6 +1356,9 @@ export class Figure extends DOMWidgetView {
   xPaddingArr: { [id: string]: number };
   y_pad_dict: { [id: string]: number };
   yPaddingArr: { [id: string]: number };
+  intersectObserver: IntersectionObserver;
+  resizeObserver: ResizeObserver;
+  visible: boolean;
 
   public webGLCanvas: HTMLCanvasElement;
   public webGLContext: WebGLRenderingContext | null;
@@ -1378,5 +1377,5 @@ export class Figure extends DOMWidgetView {
   // this is public for the test framework, but considered a private API
   public _initial_marks_created: Promise<any>;
   private _initial_marks_created_resolve: Function;
-  private should_relayout: boolean = false;
+  private should_relayout = false;
 }
