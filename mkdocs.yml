@@ -72,6 +72,7 @@ nav:
         - Heatmap: usage/marks/heatmap.md
         - Gridheatmap: usage/marks/gridheatmap.md
         - Marketmap: usage/marks/market.md
+        - Label: usage/marks/label.md
       - Interactions:
         - Mark Interactions: usage/interactions/mark-interactions.md
         - Selectors: usage/interactions/selectors.md
