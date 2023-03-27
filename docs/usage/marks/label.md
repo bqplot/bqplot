@@ -26,13 +26,13 @@ For further customization, any of the attributes above can be passed as keyword 
 import numpy as np
 import bqplot.pyplot as plt
 
-fig = plt.figure(title="Basic Label Example", max_aspect_ratio=1.5)
+fig = plt.figure(title="Basic Label Example")
 x   = np.linspace(0, 2 * np.pi)
 y   = np.sin(x)
 
-line   = plt.plot(x, y, colors="black")
+line   = plt.plot(x, y)
 label  = plt.label(
-    text=["Peak", "Trough"],
+    text=["Max", "Min"],
     x=[.5 * np.pi, 1.5 * np.pi],
     y=[1, -1]
 )
@@ -46,7 +46,7 @@ fig
     label.y_offset = 10
     ```
 
-Attributes can be updated in separate notebook cells or in callbacks when an event is triggered!
+Attributes can also be updated in separate notebook cells or in callbacks when an event is triggered!
 ```py
 # update the label color
 label.colors   = ['red', 'blue']
