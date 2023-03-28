@@ -27,6 +27,8 @@ import { PanZoomModel } from './PanZoomModel';
 
 const nop = () => {};
 
+const IS_CHROMIUM = navigator.userAgent.includes(' Chrome/');
+
 export class PanZoom extends interaction.Interaction {
   render() {
     super.render();
@@ -102,8 +104,43 @@ export class PanZoom extends interaction.Interaction {
     });
   }
 
+  hasRotatedParent(element) {
+    const parent = element.parentNode;
+    /* Base case: the element has no parent or the parent is the <html> element */
+    if (!parent || parent.tagName === 'HTML') {
+      return false;
+    }
+
+    /* Check if the parent is rotated */
+    const computedStyle = window.getComputedStyle(parent);
+    const transform = computedStyle.getPropertyValue('transform');
+
+    if (transform !== 'none' && !transform.startsWith('matrix(1, 0, 0, 1')) {
+      return true;
+    }
+
+    /* Recursively check the parent's parent */
+    return this.hasRotatedParent(parent);
+  }
+
+  mousePos() {
+    if (this.use_css_rotation_workaround) {
+      const mouseEvent = window.event as MouseEvent;
+
+      /* the mouse position is only correct within this.el */
+      if (mouseEvent.target === this.el) {
+        this.last_mouse_pos = [mouseEvent.offsetX, mouseEvent.offsetY];
+      }
+      return this.last_mouse_pos;
+    } else {
+      return d3.mouse(this.el);
+    }
+  }
+
   mousedown() {
-    this._mousedown(d3.mouse(this.el));
+    this.use_css_rotation_workaround =
+      !IS_CHROMIUM && this.hasRotatedParent(this.el);
+    this._mousedown(this.mousePos());
   }
 
   _mousedown(mouse_pos) {
@@ -128,7 +165,7 @@ export class PanZoom extends interaction.Interaction {
   }
 
   mousemove() {
-    this._mousemove(d3.mouse(this.el));
+    this._mousemove(this.mousePos());
   }
 
   _mousemove(mouse_pos) {
@@ -180,7 +217,7 @@ export class PanZoom extends interaction.Interaction {
       const event = d3GetEvent();
       event.preventDefault();
       const delta = event.deltaY * -1;
-      const mouse_pos = d3.mouse(this.el);
+      const mouse_pos = this.mousePos();
       this._zoom(mouse_pos, delta);
     }
   }
@@ -227,4 +264,6 @@ export class PanZoom extends interaction.Interaction {
   previous_pos: [number, number];
   domains_in_order: { x: any[]; y: any[] };
   model: PanZoomModel;
+  last_mouse_pos = null;
+  use_css_rotation_workaround: boolean;
 }
