@@ -11,6 +11,8 @@ on:
     paths:
       - js/**
       - bqplot/**
+      - .github/workflows/**
+      - setup.cfg
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
@@ -25,7 +27,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install Conda environment with Micromamba
       uses: mamba-org/provision-with-micromamba@main
@@ -85,7 +87,7 @@ jobs:
       working-directory: js
 
     - name: Upload builds
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: dist ${{ github.run_number }}
         path: ./dist
@@ -96,7 +98,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Conda environment with Micromamba
         uses: mamba-org/provision-with-micromamba@main
@@ -105,7 +107,7 @@ jobs:
           environment-file: test-environment.yml
           channels: conda-forge
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
@@ -136,7 +138,7 @@ jobs:
 
       - name: Upload UI Test artifacts
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ui-test-output
           path: |
@@ -156,7 +158,7 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Conda environment with Micromamba
         uses: mamba-org/provision-with-micromamba@main
@@ -165,7 +167,7 @@ jobs:
           environment-file: test-environment.yml
           channels: conda-forge
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
