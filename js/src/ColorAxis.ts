@@ -40,6 +40,8 @@ class ColorBar extends Axis {
     const that = this;
     return scale_promise.then(() => {
       that.create_listeners();
+      this.create_axis();
+      this.set_tick_values();
       that.tick_format = that.generate_tick_formatter();
       that.set_scales_range();
       that.append_axis();
@@ -70,7 +72,7 @@ class ColorBar extends Axis {
     );
   }
 
-  update_display() {
+  create_axis(): void {
     this.side = this.model.get('side');
     this.vertical = this.model.get('orientation') === 'vertical';
     if (this.vertical) {
@@ -84,7 +86,11 @@ class ColorBar extends Axis {
           ? d3.axisTop(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>)
           : d3.axisBottom(this.axis_scale.scale as d3.AxisScale<d3.AxisDomain>);
     }
+  }
+
+  update_display() {
     this.g_axisline.remove();
+    this.create_axis();
     this.g_axisline = this.d3el
       .select('#colorBarG' + this.cid)
       .append('g')
@@ -415,7 +421,9 @@ class ColorBar extends Axis {
         transform =
           'translate(0, ' + (this.side === 'top' ? 0 : this.bar_height) + ')';
       }
-      this.g_axisline.attr('transform', transform).call(this.axis);
+      if (this.g_axisline) {
+        this.g_axisline.attr('transform', transform).call(this.axis);
+      }
     }
   }
 
