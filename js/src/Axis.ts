@@ -56,12 +56,14 @@ export class Axis extends WidgetView {
 
     Promise.all([scale_promise, offset_promise]).then(() => {
       this.create_listeners();
-      this.tick_format = this.generate_tick_formatter();
+      this.create_axis();
       this.set_scales_range();
+      this.update_scales();
+      this.set_tick_values();
+      this.tickformat_changed();
       this.append_axis();
     });
   }
-
   create_listeners() {
     // Creates all event listeners
 
@@ -122,7 +124,10 @@ export class Axis extends WidgetView {
 
   update_display() {
     this.g_axisline.remove();
+    this.create_axis();
+    this.set_tick_values();
     this.set_scales_range();
+    this.tickformat_changed();
     this.append_axis();
   }
 
@@ -191,16 +196,6 @@ export class Axis extends WidgetView {
         this.axis.tickValues(this.axis_scale.scale.ticks());
       }
     }
-    if (
-      this.model.get('tick_format') === null ||
-      this.model.get('tick_format') === undefined
-    ) {
-      if (!isOrdinalScale(this.axis_scale)) {
-        this.tick_format = this.guess_tick_format(this.axis.tickValues());
-      }
-    }
-    this.axis.tickFormat(this.tick_format);
-
     if (this.g_axisline) {
       this.g_axisline
         .transition('set_tick_values')
@@ -228,9 +223,11 @@ export class Axis extends WidgetView {
 
   apply_tick_styling() {
     // Applies current tick styling to all displayed ticks
-    const tickText = this.g_axisline.selectAll('.tick text');
-    applyStyles(tickText, this.model.get('tick_style'));
-    tickText.attr('transform', this.get_tick_transforms());
+    if (this.g_axisline) {
+      const tickText = this.g_axisline.selectAll('.tick text');
+      applyStyles(tickText, this.model.get('tick_style'));
+      tickText.attr('transform', this.get_tick_transforms());
+    }
   }
 
   get_tick_transforms() {
@@ -364,7 +361,6 @@ export class Axis extends WidgetView {
   }
 
   append_axis() {
-    this.create_axis();
     this.update_scales();
 
     // Create initial SVG element
@@ -383,7 +379,6 @@ export class Axis extends WidgetView {
     applyAttrs(lineText, this.get_label_attributes());
 
     // Apply custom settings
-    this.set_tick_values();
     this.update_grid_lines();
     this.update_color();
     this.apply_tick_styling();
@@ -679,6 +674,7 @@ export class Axis extends WidgetView {
     //animate axis and grid lines on domain changes
     const animate = true;
     this.set_tick_values(animate);
+    this.tickformat_changed();
     this.update_grid_lines(animate);
   }
 
@@ -856,14 +852,11 @@ export class Axis extends WidgetView {
     };
   }
 
-  _linear_scale_precision(ticks?: any[]): number {
+  _linear_scale_precision(): number {
     if (!(isLinearScale(this.axis_scale) || isColorScale(this.axis_scale))) {
       return -1;
     }
-    ticks =
-      ticks === undefined || ticks === null
-        ? this.axis_scale.scale.ticks()
-        : ticks;
+    let ticks: any[] = this.axis.tickValues();
     // Case where all data is concentrated into one point.
     if (ticks.length === 1) {
       return 1;
@@ -894,19 +887,16 @@ export class Axis extends WidgetView {
     }
   }
 
-  linear_sc_format(ticks?: any[]) {
-    return this.get_format_func(this._linear_scale_precision(ticks));
+  linear_sc_format() {
+    return this.get_format_func(this._linear_scale_precision());
   }
 
-  date_sc_format(ticks?: any[]) {
+  date_sc_format() {
     // assumes that scale is a linear date scale
     if (!isDateScale(this.axis_scale)) {
       return;
     }
-    ticks =
-      ticks === undefined || ticks === null
-        ? this.axis_scale.scale.ticks()
-        : ticks;
+    let ticks: any[] = this.axis.tickValues();
     // diff is the difference between ticks in milliseconds
     const diff = Math.abs(ticks[1] - ticks[0]);
 
@@ -977,18 +967,15 @@ export class Axis extends WidgetView {
     };
   }
 
-  log_sc_format(ticks?: any[]) {
-    return this.get_format_func(this._log_sc_precision(ticks));
+  log_sc_format() {
+    return this.get_format_func(this._log_sc_precision());
   }
 
-  _log_sc_precision(ticks?: any[]): number {
+  _log_sc_precision(): number {
     if (!isLogScale(this.axis_scale)) {
       return -1;
     }
-    ticks =
-      ticks === undefined || ticks === null
-        ? this.axis_scale.scale.ticks()
-        : ticks;
+    let ticks: any[] = this.axis.tickValues();
     const ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
 
     if (ratio >= 0.301) {
@@ -1000,16 +987,16 @@ export class Axis extends WidgetView {
     }
   }
 
-  guess_tick_format(ticks?: any[]) {
+  guess_tick_format() {
     if (isDateScale(this.axis_scale) || isDateColorScale(this.axis_scale)) {
-      return this.date_sc_format(ticks);
+      return this.date_sc_format();
     } else if (
       isLinearScale(this.axis_scale) ||
       isColorScale(this.axis_scale)
     ) {
-      return this.linear_sc_format(ticks);
+      return this.linear_sc_format();
     } else if (isLogScale(this.axis_scale)) {
-      return this.log_sc_format(ticks);
+      return this.log_sc_format();
     }
   }
 
