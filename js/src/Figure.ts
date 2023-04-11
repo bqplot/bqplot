@@ -73,10 +73,10 @@ export class Figure extends widgets.DOMWidgetView {
 
     this.intersectObserver = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
-        if (entries[0].isIntersecting) {
+        if (entries[entries.length - 1].isIntersecting) {
           this.visible = true;
           this.debouncedRelayout();
-        } else if (entries[0].rootBounds != null) {
+        } else if (entries[entries.length - 1].rootBounds != null) {
           /* When 'rootBounds' is null, 'isIntersecting' is 'false', but the plot is visible, so only change 'visible'
            * if rootBonds is set. I can't find any info on this behaviour. */
           this.visible = false;
