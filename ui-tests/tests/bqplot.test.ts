@@ -91,6 +91,14 @@ const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, th
 };
 
 test.describe('bqplot Visual Regression', () => {
+  test.use({
+    mockSettings: {
+      '@jupyterlab/apputils-extension:notification': {
+        fetchNews: 'false'
+      }
+    }
+  });
+
   test.beforeEach(async ({ page, tmpPath }) => {
     page.on("console", (message) => {
       console.log('CONSOLE MSG ---', message.text());
