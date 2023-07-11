@@ -124,3 +124,23 @@ export function d3GetEvent() {
 export function getLuminoWidget(ipywidget: DOMWidgetView) {
   return ipywidget.pWidget ? ipywidget.pWidget : ipywidget.luminoWidget;
 }
+
+export function getEffectiveBackgroundColor(element) {
+  if (!element) {
+    // If no element provided or we have traversed beyond the body or html,
+    // we default to white as the background color.
+    return 'rgb(255, 255, 255)';
+  }
+
+  const style = window.getComputedStyle(element);
+  const bgColor = style.backgroundColor;
+  const hasBackgroundImage = style.backgroundImage !== 'none';
+  const isTransparent =
+    bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+
+  if (!isTransparent || hasBackgroundImage) {
+    return bgColor;
+  }
+
+  return getEffectiveBackgroundColor(element.parentElement);
+}
