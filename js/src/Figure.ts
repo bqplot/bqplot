@@ -28,7 +28,7 @@ import { Scale, ScaleModel } from 'bqscales';
 
 import * as popperreference from './PopperReference';
 import popper from 'popper.js';
-import { applyAttrs, applyStyles } from './utils';
+import { applyAttrs, applyStyles, getEffectiveBackgroundColor } from './utils';
 import { AxisModel } from './AxisModel';
 import { Mark } from './Mark';
 import { MarkModel } from './MarkModel';
@@ -1105,7 +1105,7 @@ export class Figure extends DOMWidgetView {
     svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
     svg.setAttribute('width', this.width);
     svg.setAttribute('height', this.height);
-    svg.style.background = window.getComputedStyle(document.body).background;
+    svg.style.background = getEffectiveBackgroundColor(this.el);
 
     const computedStyle = window.getComputedStyle(this.el);
     const cssCode =
