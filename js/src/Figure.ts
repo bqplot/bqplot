@@ -21,7 +21,7 @@ import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
 import { Dict, WidgetModel, WidgetView } from '@jupyter-widgets/base';
-import { applyAttrs, applyStyles } from './utils';
+import { applyAttrs, applyStyles, getEffectiveBackgroundColor } from './utils';
 import { Scale } from './Scale';
 import { ScaleModel } from './ScaleModel';
 import { AxisModel } from './AxisModel';
@@ -1106,7 +1106,7 @@ export class Figure extends widgets.DOMWidgetView {
       svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
       svg.setAttribute('width', this.width);
       svg.setAttribute('height', this.height);
-      svg.style.background = window.getComputedStyle(document.body).background;
+      svg.style.backgroundColor = getEffectiveBackgroundColor(this.el);
 
       const computedStyle = window.getComputedStyle(this.el);
       const cssCode =
