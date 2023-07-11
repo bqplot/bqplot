@@ -37,8 +37,7 @@ jobs:
         channels: conda-forge
 
     - name: Install the package
-      run: |
-        pip install .
+      run: pip install . -vvv
 
     - name: Test installation files
       run: |
