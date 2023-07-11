@@ -48,6 +48,12 @@ jobs:
         test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
         test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
 
+    - name: Debug nbextension
+      run: jupyter nbextension list
+
+    - name: Debug labextension
+      run: jupyter labextension list
+
     - name: Validate the nbextension
       run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
 
