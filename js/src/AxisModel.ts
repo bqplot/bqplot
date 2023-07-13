@@ -75,7 +75,12 @@ export class AxisModel extends widgets.WidgetModel {
   validate_orientation() {
     let side = this.get('side');
     if (!side) {
-      side = 'bottom';
+      const orientation = this.get('orientation');
+      if (!orientation || orientation === 'horizontal') {
+        side = 'bottom';
+      } else {
+        side = 'left';
+      }
       this.set('side', side);
     }
 
