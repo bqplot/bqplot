@@ -42,42 +42,16 @@ jobs:
       - name: Install bqplot
         run: pip install .
 
-      - name: Install Galata
-        run: |
-          yarn install
-          yarn playwright install chromium
+      - name: Install dependencies
+        shell: bash -l {0}
         working-directory: ui-tests
-
-      - name: Launch JupyterLab
-        run: yarn run start:detached
-        working-directory: ui-tests
-
-      - name: Wait for JupyterLab
-        uses: ifaxity/wait-on-action@v1
-        with:
-          resource: http-get://localhost:8888/api
-          timeout: 20000
-
-      - name: Generate updated Galata References
-        run: yarn run test:update
-        working-directory: ui-tests
-
-      - name: Compress screenshots
-        run: |
-          sudo apt install optipng
-          optipng *.png
-        working-directory: ui-tests/tests/bqplot.test.ts-snapshots
-
-      - name: Commit reference images
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-
-          git pull
-
-          git add ui-tests/tests/bqplot.test.ts-snapshots
-
-          git commit -m "Update Galata References"
-          git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+        run: jlpm install
+
+      - uses: jupyterlab/maintainer-tools/.github/actions/update-snapshots@main
+        with:
+          npm_client: jlpm
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          start_server_script: 'null'
+          test_folder: ui-tests
