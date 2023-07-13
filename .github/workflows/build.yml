@@ -68,15 +68,15 @@ jobs:
 
     - name: JavaScript prettyfier
       run: |
-        yarn install
-        yarn run prettier --check .
+        jlpm install
+        jlpm run prettier --check .
       working-directory: js
 
     - name: Python tests
       run: pytest tests examples/Marks
 
     - name: JavaScript tests
-      run: yarn run test
+      run: jlpm run test
       working-directory: js
 
     - name: Build Python package
@@ -87,8 +87,8 @@ jobs:
 
     - name: Pack JavaScript package
       run: |
-        yarn pack
-        mv bqplot*.tgz ../dist
+        jlpm pack -o bqplot.tgz
+        mv bqplot.tgz ../dist
       working-directory: js
 
     - name: Upload builds
@@ -121,34 +121,38 @@ jobs:
         run: pip install -vv bqplot*.whl
         working-directory: dist
 
-      - name: Install Galata
-        run: |
-          yarn install
-          yarn playwright install chromium
+      - name: Install dependencies
+        shell: bash -l {0}
         working-directory: ui-tests
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+        run: jlpm install
 
-      - name: Launch JupyterLab
-        run: yarn run start:detached
-        working-directory: ui-tests
-
-      - name: Wait for JupyterLab
-        uses: ifaxity/wait-on-action@v1
+      - name: Set up browser cache
+        uses: actions/cache@v3
         with:
-          resource: http-get://localhost:8888/api
-          timeout: 20000
+          path: |
+            ${{ github.workspace }}/pw-browsers
+          key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
 
-      - name: Run UI Tests
-        run: yarn run test
+      - name: Install browser
+        shell: bash -l {0}
+        run: npx playwright install chromium
         working-directory: ui-tests
 
-      - name: Upload UI Test artifacts
+      - name: Execute integration tests
+        shell: bash -l {0}
+        working-directory: ui-tests
+        run: npx playwright test
+
+      - name: Upload Playwright Test report
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: ui-test-output
+          name: bqplot-playwright-tests
           path: |
-            ui-tests/playwright-report
             ui-tests/test-results
+            ui-tests/playwright-report
 
   install:
     runs-on: ${{ matrix.os }}-latest

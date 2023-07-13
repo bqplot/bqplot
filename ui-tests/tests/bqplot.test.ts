@@ -1,8 +1,7 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { IJupyterLabPageFixture, test } from '@jupyterlab/galata';
-import { expect } from '@playwright/test';
+import { expect, IJupyterLabPageFixture, test } from '@jupyterlab/galata';
 import * as path from 'path';
 const klaw = require('klaw-sync');
 
@@ -91,14 +90,6 @@ const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, th
 };
 
 test.describe('bqplot Visual Regression', () => {
-  test.use({
-    mockSettings: {
-      '@jupyterlab/apputils-extension:notification': {
-        fetchNews: 'false'
-      }
-    }
-  });
-
   test.beforeEach(async ({ page, tmpPath }) => {
     page.on("console", (message) => {
       console.log('CONSOLE MSG ---', message.text());
