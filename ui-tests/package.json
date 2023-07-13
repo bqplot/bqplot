@@ -4,18 +4,19 @@
   "description": "bqplot UI Tests",
   "private": true,
   "scripts": {
-    "start": "jupyter lab --config ./jupyter_server_config.py",
-    "start:detached": "yarn run start&",
-    "test": "playwright test",
-    "test:debug": "PWDEBUG=1 playwright test",
-    "test:report": "http-server ./playwright-report -a localhost -o",
-    "test:update": "playwright test --update-snapshots"
+    "start": "jupyter lab --config jupyter_server_config.py",
+    "test": "npx playwright test",
+    "test:update": "npx playwright test --update-snapshots",
+    "test:debug": "PWDEBUG=1 npx playwright test"
   },
   "author": "bqplot",
   "license": "Apache-2.0",
+  "devDependencies": {
+    "@jupyterlab/galata": "^5.0.1",
+    "@playwright/test": "^1.32.0"
+  },
   "dependencies": {
-    "@jupyterlab/galata": "~4.5.0",
-    "klaw-sync": "^6.0.0",
-    "rimraf": "^3.0.2"
+    "@types/klaw-sync": "^6.0.1",
+    "klaw-sync": "^6.0.0"
   }
 }

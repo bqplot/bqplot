@@ -65,7 +65,7 @@ $ jupyter labextension install @jupyter-widgets/jupyterlab-manager bqplot
 
 ##### Development installation
 
-For a development installation (requires JupyterLab (version >= 3) and yarn):
+For a development installation (requires JupyterLab (version >= 4) and yarn):
 
 ```
 $ git clone https://github.com/bqplot/bqplot.git
@@ -90,7 +90,7 @@ Whenever you make a change of the JavaScript code, you will need to rebuild:
 
 ```
 cd js
-yarn run build
+jlpm run build
 ```
 
 Then refreshing the JupyterLab/Jupyter Notebook is enough to reload the changes.
@@ -112,13 +112,13 @@ And run it with for Python tests:
 And `cd js` to run the JS tests with:
 
 ```bash
-yarn run test
+jlpm run test
 ```
 
 Every time you make a change on your tests it's necessary to rebuild the JS side:
 
 ```bash
-yarn run build
+jlpm run build
 ```
 
 ## Examples

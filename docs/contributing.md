@@ -9,7 +9,7 @@ Currently there has been an active effort on making the project comply to all es
 Prettier rules are enforced though and you can run them in the `js` folder with:
 
 ```bash
-    yarn prettier --write .
+    jlpm prettier --write .
 ```
 
 The configuration of this project linters were based in the [widgets-cookiecutter](https://github.com/jupyter-widgets/widget-ts-cookiecutter/tree/master/%7B%7Bcookiecutter.github_project_name%7D%7D).

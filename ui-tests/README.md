@@ -5,24 +5,24 @@ This directory contains visual regression tests for bqplot, using Galata.
 In order to run them, you need to install dependencies:
 
 ```bash
-const install -c conda-forge yarn jupyterlab=3.0.7
+conda install -c conda-forge jupyterlab=4
 
-yarn install
+jlpm install
 ```
 
 Then start JupyterLab in one terminal (you need to check that it properly starts on port 8888):
 ```bash
-yarn run start-jlab
+jlpm run start-jlab
 ```
 
 Finally, run the galata tests:
 ```bash
-yarn run test
+jlpm run test
 ```
 
 If bqplot visuals change, you can re-generate reference images by running:
 ```bash
-yarn run update-references
+jlpm run update-references
 ```
 
 ## Notebooks directory
