@@ -3,7 +3,6 @@ import { DummyManager } from './dummy-manager';
 import * as bqplot from '..';
 import { create_figure_scatter, create_model_bqplot } from './widget-utils';
 
-
 describe('coloraxis >', () => {
   beforeEach(async function () {
     this.manager = new DummyManager({ bqplot: bqplot });

@@ -20,11 +20,11 @@ describe('figure >', () => {
     const { scatter, figure } = await create_figure_scatter(this.manager, x, y);
 
     // we start with the scatter and legend
-    expect(figure.fig_marks.node().children).lengthOf(2);
+    expect(figure.fig_marks.node().children).lengthOf(3);
     // we remove the scatter
     figure.model.set('marks', []);
     await Promise.all(figure.mark_views.views);
-    expect(figure.fig_marks.node().children).lengthOf(1);
+    expect(figure.fig_marks.node().children).lengthOf(2);
     // we set the marks twice without waiting, so we should never see the second scatter in the DOM
     figure.model.set('marks', [scatter.model, scatter.model]);
     const previousViewsPromise = Promise.all(figure.mark_views.views);
@@ -32,7 +32,7 @@ describe('figure >', () => {
     await Promise.all(figure.mark_views.views);
     await previousViewsPromise; // we also want to wait for these promises to be resolved so the dummy
     // DOM node van be removed in the remove event handler in Figure.add_mark
-    expect(figure.fig_marks.node().children).lengthOf(2);
+    expect(figure.fig_marks.node().children).lengthOf(3);
   });
 
   it('min aspect check', async function () {
@@ -70,7 +70,7 @@ describe('figure >', () => {
 
     // relaxing it, we expect it to grow again
     figure.model.set('min_aspect_ratio', 1.0);
-    ({width, height, x, y} = figure.getFigureSize());
+    ({ width, height, x, y } = figure.getFigureSize());
     expect(width).to.be.equals(400);
     expect(height).to.be.equals(400);
     expect(x).to.be.equals(0);
@@ -78,7 +78,7 @@ describe('figure >', () => {
 
     // and back to its original size
     figure.model.set('min_aspect_ratio', 0.1);
-    ({width, height, x, y} = figure.getFigureSize());
+    ({ width, height, x, y } = figure.getFigureSize());
     expect(width).to.be.equals(400);
     expect(height).to.be.equals(500);
     expect(x).to.be.equals(0);
