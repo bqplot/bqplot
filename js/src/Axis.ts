@@ -106,11 +106,7 @@ export class Axis extends WidgetView {
     );
     this.listenTo(this.model, 'change:label_offset', this.update_label_offset);
     this.listenTo(this.model, 'change:visible', this.update_visibility);
-    this.model.on_some_change(
-      ['side', 'orientation'],
-      this.update_display,
-      this
-    );
+    this.listenTo(this.model, 'change:side', this.update_display);
     this.listenTo(this.model, 'change:offset', this.update_offset);
     this.listenTo(this.parent, 'margin_updated', this.parent_margin_updated);
   }
@@ -252,7 +248,7 @@ export class Axis extends WidgetView {
   update_scale_domain() {
     // Sets the scale domain (Range of input values)
 
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
 
     const initial_range = is_vertical
       ? this.parent.padded_range('y', this.axis_scale.model)
@@ -269,7 +265,7 @@ export class Axis extends WidgetView {
   update_offset_scale_domain() {
     // Sets the domain (range of input values) of the offset scale
 
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
 
     if (this.offset_scale) {
       const initial_range = !is_vertical
@@ -334,7 +330,7 @@ export class Axis extends WidgetView {
   }
 
   set_scales_range() {
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
 
     this.axis_scale.setRange(is_vertical ? [this.height, 0] : [0, this.width]);
     if (this.offset_scale) {
@@ -347,7 +343,7 @@ export class Axis extends WidgetView {
   create_axis() {
     // Creates the initial D3 axis and sets it on this.axis
 
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     const side = this.model.get('side');
 
     if (is_vertical) {
@@ -395,7 +391,7 @@ export class Axis extends WidgetView {
      */
     let return_promise = Promise.resolve();
     const offset = this.model.get('offset');
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
 
     if (offset.value !== undefined && offset.value !== null) {
       //If scale is undefined but, the value is defined, then we have
@@ -439,7 +435,7 @@ export class Axis extends WidgetView {
   }
 
   get_basic_transform() {
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     const side = this.model.get('side');
 
     if (is_vertical) {
@@ -450,7 +446,7 @@ export class Axis extends WidgetView {
   }
 
   get_axis_transform() {
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     if (is_vertical) {
       return 'translate(' + this.process_offset() + ', 0)';
     } else {
@@ -477,7 +473,7 @@ export class Axis extends WidgetView {
     let label_x = 0;
     const label_location = this.model.get('label_location');
     const label_offset = this.calculate_label_offset();
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     const side = this.model.get('side');
 
     if (is_vertical) {
@@ -576,7 +572,7 @@ export class Axis extends WidgetView {
     // of the axis, an offset is set.
 
     let label_offset = this.model.get('label_offset');
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     const side = this.model.get('side');
 
     if (!label_offset) {
@@ -609,12 +605,11 @@ export class Axis extends WidgetView {
   update_grid_lines(animate?: boolean) {
     const grid_type = this.model.get('grid_lines');
     const side = this.model.get('side');
-    const orientation = this.model.get('orientation');
-    const is_x = orientation !== 'vertical';
+    const is_vertical = ['left', 'right'].includes(side);
     const animation_duration =
       animate === true ? this.parent.model.get('animation_duration') : 0;
 
-    let tickSize = orientation === 'vertical' ? -this.width : -this.height;
+    let tickSize = is_vertical ? -this.width : -this.height;
     let tickOffset = 0;
 
     //apply offsets if applicable
@@ -623,7 +618,7 @@ export class Axis extends WidgetView {
 
       if (side === 'bottom' || side == 'right') {
         tickSize = -offset;
-        tickOffset = is_x ? this.height - offset : this.width - offset;
+        tickOffset = !is_vertical ? this.height - offset : this.width - offset;
       } else {
         tickSize += offset;
         tickOffset = -offset;
@@ -644,7 +639,7 @@ export class Axis extends WidgetView {
       .call(this.axis)
       .selectAll('.tick line')
       .attr(
-        is_x ? 'y1' : 'x1',
+        !is_vertical ? 'y1' : 'x1',
         this.offset_scale && grid_type !== 'none' ? tickOffset : null
       )
       .style('stroke-dasharray', grid_type === 'dashed' ? '5, 5' : null);

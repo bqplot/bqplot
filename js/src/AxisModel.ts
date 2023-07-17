@@ -28,8 +28,7 @@ export class AxisModel extends widgets.WidgetModel {
       _model_module_version: semver_range,
       _view_module_version: semver_range,
 
-      orientation: 'horizontal',
-      side: null,
+      side: 'bottom',
       label: '',
       grid_lines: 'solid',
       tick_format: null,
@@ -51,45 +50,6 @@ export class AxisModel extends widgets.WidgetModel {
 
   initialize(attributes, options) {
     super.initialize(attributes, options);
-    this.on('change:side', this.validate_orientation, this);
-    this.on('change:orientation', this.validate_side, this);
-    this.validate_orientation();
-    this.validate_side();
-  }
-
-  validate_side() {
-    const orientation = this.get('orientation');
-    const side = this.get('side');
-    if (orientation === 'vertical') {
-      if (side !== 'left' && side !== 'right') {
-        this.set('side', 'left');
-      }
-    } else {
-      if (side !== 'bottom' && side !== 'top') {
-        this.set('side', 'bottom');
-      }
-    }
-    this.save_changes();
-  }
-
-  validate_orientation() {
-    let side = this.get('side');
-    if (!side) {
-      const orientation = this.get('orientation');
-      if (!orientation || orientation === 'horizontal') {
-        side = 'bottom';
-      } else {
-        side = 'left';
-      }
-      this.set('side', side);
-    }
-
-    if (side === 'left' || side === 'right') {
-      this.set('orientation', 'vertical');
-    } else {
-      this.set('orientation', 'horizontal');
-    }
-    this.save_changes();
   }
 
   static serializers = {

@@ -23,7 +23,7 @@ import { applyAttrs } from './utils';
 class ColorBar extends Axis {
   async render() {
     this.parent = this.options.parent;
-    this.vertical = this.model.get('orientation') === 'vertical';
+    this.vertical = ['left', 'right'].includes(this.model.get('side'));
 
     const scale_promise = this.set_scale(this.model.get('scale'));
     this.side = this.model.get('side');
@@ -65,16 +65,12 @@ class ColorBar extends Axis {
     this.listenTo(this.parent, 'margin_updated', this.parent_margin_updated);
     this.listenTo(this.model, 'change:visible', this.update_visibility);
     this.listenTo(this.model, 'change:label', this.update_label);
-    this.model.on_some_change(
-      ['side', 'orientation'],
-      this.update_display,
-      this
-    );
+    this.listenTo(this.model, 'change:side', this.update_display);
   }
 
   create_axis(): void {
     this.side = this.model.get('side');
-    this.vertical = this.model.get('orientation') === 'vertical';
+    this.vertical = ['left', 'right'].includes(this.model.get('side'));
     if (this.vertical) {
       this.axis =
         this.side === 'right'
