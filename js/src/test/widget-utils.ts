@@ -58,7 +58,13 @@ export async function create_widget(
   return { model: model, view: view };
 }
 
-export async function create_figure_scatter(manager, x, y, log = false) {
+export async function create_figure_scatter(
+  manager,
+  x,
+  y,
+  log = false,
+  autoLayout = false
+) {
   const layout = await create_model(
     manager,
     '@jupyter-widgets/base',
@@ -145,13 +151,14 @@ export async function create_figure_scatter(manager, x, y, log = false) {
       figure_padding_y: 0,
       fig_margin: { bottom: 0, left: 0, right: 0, top: 0 },
       marks: [scatterModel.toJSON()],
+      auto_layout: autoLayout,
     });
   } catch (e) {
     console.error('error', e);
   }
+
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, scatter: await figure.mark_views.views[0] };
 }
 
@@ -226,7 +233,6 @@ export async function create_figure_lines(manager, x, y, default_scales = {}) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, lines: await figure.mark_views.views[0] };
 }
 
@@ -282,7 +288,6 @@ export async function create_figure_pie(manager, sizes, labels) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, pie: await figure.mark_views.views[0] };
 }
 
@@ -353,7 +358,6 @@ export async function create_figure_bars(manager, x, y) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, bars: await figure.mark_views.views[0] };
 }
 
@@ -406,7 +410,6 @@ export async function create_figure_hist(manager, sample, bins) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, hist: await figure.mark_views.views[0] };
 }
 
@@ -493,7 +496,6 @@ export async function create_figure_gridheatmap(manager, color) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, grid: await figure.mark_views.views[0] };
 }
 
@@ -548,7 +550,6 @@ export async function create_figure_image(manager, ipywidgetImage) {
   }
   const figure = await create_view(manager, figureModel);
   await manager.display_view(undefined, figure);
-  await figure._initial_marks_created;
   return { figure: figure, image: await figure.mark_views.views[0] };
 }
 export function getFills(selection: any) {

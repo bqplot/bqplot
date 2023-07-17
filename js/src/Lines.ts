@@ -506,7 +506,7 @@ export class Lines extends Mark {
     });
 
     if (fill == 'bottom') {
-      this.area.y0(this.parent.plotarea_height);
+      this.area.y0(this.parent.plotareaHeight);
     } else if (fill == 'top') {
       this.area.y0(0);
     } else if (fill == 'between') {
@@ -565,7 +565,7 @@ export class Lines extends Mark {
       });
 
     if (fill == 'bottom') {
-      this.area.y0(this.parent.plotarea_height);
+      this.area.y0(this.parent.plotareaHeight);
     } else if (fill == 'top') {
       this.area.y0(0);
     } else if (fill == 'between') {

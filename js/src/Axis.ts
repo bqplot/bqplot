@@ -50,14 +50,14 @@ export class Axis extends WidgetView {
     super.initialize.apply(this, arguments);
   }
 
-  render() {
+  async render() {
     this.d3el.style('display', this.model.get('visible') ? 'inline' : 'none');
     this.parent = this.options.parent;
 
     const scale_promise = this.set_scale_promise(this.model.get('scale'));
     const offset_promise = this.get_offset_promise();
 
-    Promise.all([scale_promise, offset_promise]).then(() => {
+    return await Promise.all([scale_promise, offset_promise]).then(() => {
       this.create_listeners();
       this.create_axis();
       this.set_scales_range();
@@ -106,11 +106,7 @@ export class Axis extends WidgetView {
     );
     this.listenTo(this.model, 'change:label_offset', this.update_label_offset);
     this.listenTo(this.model, 'change:visible', this.update_visibility);
-    this.model.on_some_change(
-      ['side', 'orientation'],
-      this.update_display,
-      this
-    );
+    this.listenTo(this.model, 'change:side', this.update_display);
     this.listenTo(this.model, 'change:offset', this.update_offset);
     this.listenTo(this.parent, 'margin_updated', this.parent_margin_updated);
   }
@@ -252,7 +248,7 @@ export class Axis extends WidgetView {
   update_scale_domain() {
     // Sets the scale domain (Range of input values)
 
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
 
     const initial_range = is_vertical
       ? this.parent.padded_range('y', this.axis_scale.model)
@@ -269,7 +265,7 @@ export class Axis extends WidgetView {
   update_offset_scale_domain() {
     // Sets the domain (range of input values) of the offset scale
 
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
 
     if (this.offset_scale) {
       const initial_range = !is_vertical
@@ -334,7 +330,7 @@ export class Axis extends WidgetView {
   }
 
   set_scales_range() {
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
 
     this.axis_scale.setRange(is_vertical ? [this.height, 0] : [0, this.width]);
     if (this.offset_scale) {
@@ -347,7 +343,7 @@ export class Axis extends WidgetView {
   create_axis() {
     // Creates the initial D3 axis and sets it on this.axis
 
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     const side = this.model.get('side');
 
     if (is_vertical) {
@@ -395,7 +391,7 @@ export class Axis extends WidgetView {
      */
     let return_promise = Promise.resolve();
     const offset = this.model.get('offset');
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
 
     if (offset.value !== undefined && offset.value !== null) {
       //If scale is undefined but, the value is defined, then we have
@@ -439,18 +435,18 @@ export class Axis extends WidgetView {
   }
 
   get_basic_transform() {
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     const side = this.model.get('side');
 
     if (is_vertical) {
-      return side === 'right' ? this.width : 0;
+      return side === 'right' ? this.width + this.autoOffset : -this.autoOffset;
     } else {
-      return side === 'top' ? 0 : this.height;
+      return side === 'top' ? -this.autoOffset : this.height + this.autoOffset;
     }
   }
 
   get_axis_transform() {
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     if (is_vertical) {
       return 'translate(' + this.process_offset() + ', 0)';
     } else {
@@ -477,7 +473,7 @@ export class Axis extends WidgetView {
     let label_x = 0;
     const label_location = this.model.get('label_location');
     const label_offset = this.calculate_label_offset();
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     const side = this.model.get('side');
 
     if (is_vertical) {
@@ -566,7 +562,7 @@ export class Axis extends WidgetView {
     applyAttrs(axisLabel, this.get_label_attributes());
   }
 
-  update_label_offset(model, offset) {
+  update_label_offset() {
     this.label_offset = this.calculate_label_offset();
     this.g_axisline.select('text.axislabel').attr('y', this.label_offset);
   }
@@ -576,7 +572,7 @@ export class Axis extends WidgetView {
     // of the axis, an offset is set.
 
     let label_offset = this.model.get('label_offset');
-    const is_vertical = this.model.get('orientation') === 'vertical';
+    const is_vertical = ['left', 'right'].includes(this.model.get('side'));
     const side = this.model.get('side');
 
     if (!label_offset) {
@@ -609,12 +605,11 @@ export class Axis extends WidgetView {
   update_grid_lines(animate?: boolean) {
     const grid_type = this.model.get('grid_lines');
     const side = this.model.get('side');
-    const orientation = this.model.get('orientation');
-    const is_x = orientation !== 'vertical';
+    const is_vertical = ['left', 'right'].includes(side);
     const animation_duration =
       animate === true ? this.parent.model.get('animation_duration') : 0;
 
-    let tickSize = orientation === 'vertical' ? -this.width : -this.height;
+    let tickSize = is_vertical ? -this.width : -this.height;
     let tickOffset = 0;
 
     //apply offsets if applicable
@@ -623,7 +618,7 @@ export class Axis extends WidgetView {
 
       if (side === 'bottom' || side == 'right') {
         tickSize = -offset;
-        tickOffset = is_x ? this.height - offset : this.width - offset;
+        tickOffset = !is_vertical ? this.height - offset : this.width - offset;
       } else {
         tickSize += offset;
         tickOffset = -offset;
@@ -644,7 +639,7 @@ export class Axis extends WidgetView {
       .call(this.axis)
       .selectAll('.tick line')
       .attr(
-        is_x ? 'y1' : 'x1',
+        !is_vertical ? 'y1' : 'x1',
         this.offset_scale && grid_type !== 'none' ? tickOffset : null
       )
       .style('stroke-dasharray', grid_type === 'dashed' ? '5, 5' : null);
@@ -1005,21 +1000,62 @@ export class Axis extends WidgetView {
   }
 
   get width(): number {
-    return (
-      this.parent.width - this.parent.margin.right - this.parent.margin.left
-    );
+    return this.parent.plotareaWidth;
   }
 
   get height(): number {
-    return (
-      this.parent.height - this.parent.margin.top - this.parent.margin.bottom
-    );
+    return this.parent.plotareaHeight;
   }
 
   get margin() {
     return this.parent.margin;
   }
 
+  calculateAutoSize() {
+    // if offset is used, we don't take up any auto layout space
+    if (this.offset_value !== undefined) {
+      return 0;
+    } else {
+      const box = this.getBBox();
+      const side = this.model.get('side');
+      if (side == 'left' || side == 'right') {
+        return box.width;
+      }
+      if (side == 'bottom' || side == 'top') {
+        return box.height;
+      }
+    }
+  }
+
+  getBBox(): DOMRect {
+    // To get the bounding box, we don't want to include the gridlines, so we disable them
+    this.axis.tickSize(6); // Default value is 6
+    this.g_axisline.call(this.axis);
+    // we also don't use the label if the label_offset is negative
+    const negativeLabelOffset =
+      this.model.get('label_offset') && this.model.get('label_offset').length
+        ? this.model.get('label_offset')[0] == '-'
+        : false;
+    if (negativeLabelOffset) {
+      this.g_axisline.select('text.axislabel').style('display', 'none');
+    }
+    // note that we use getBoundingClientRect to take into account transformations (such as rotations)
+    const box = this.d3el.node().getBoundingClientRect();
+    // and restore the gridlines
+    this.update_grid_lines();
+    this.g_axisline.call(this.axis);
+    // and restore label
+    if (negativeLabelOffset) {
+      this.g_axisline.select('text.axislabel').style('display', '');
+    }
+    return box;
+  }
+
+  setAutoOffset(autoOffset) {
+    this.autoOffset = autoOffset;
+  }
+
+  autoOffset: number = 0;
   axis_scale: Scale;
   axis: d3.Axis<d3.AxisDomain>;
   d3el: d3.Selection<HTMLElement, any, any, any>;

@@ -62,16 +62,20 @@ export class DummyManager extends baseManager.ManagerBase {
   }
 
   // @ts-ignore
-  display_view(
+  async display_view(
     msg: services.KernelMessage.IMessage,
     view: Backbone.View<Backbone.Model>,
     options: any
   ) {
-    return Promise.resolve(view).then((view) => {
+    await Promise.resolve(view).then(async (view) => {
       this.el.appendChild(view.el);
       view.on('remove', () => console.log('view removed', view));
       (<any>window).last_view = view;
       view.trigger('displayed');
+      if (view['renderImpl']) {
+        view['attached'] = true;
+        await view['renderImpl']();
+      }
       return view.el;
     });
   }

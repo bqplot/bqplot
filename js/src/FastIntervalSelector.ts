@@ -30,11 +30,6 @@ export class FastIntervalSelector extends BaseXSelector {
     this.dirty = false;
     this.size = this.model.get('size');
 
-    this.width =
-      this.parent.width - this.parent.margin.left - this.parent.margin.right;
-    this.height =
-      this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
-
     const that = this;
     const scale_creation_promise = this.create_scales();
     Promise.all([this.mark_views_promise, scale_creation_promise]).then(() => {

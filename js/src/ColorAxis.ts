@@ -21,9 +21,9 @@ import { Axis } from './Axis';
 import { applyAttrs } from './utils';
 
 class ColorBar extends Axis {
-  render() {
+  async render() {
     this.parent = this.options.parent;
-    this.vertical = this.model.get('orientation') === 'vertical';
+    this.vertical = ['left', 'right'].includes(this.model.get('side'));
 
     const scale_promise = this.set_scale(this.model.get('scale'));
     this.side = this.model.get('side');
@@ -37,15 +37,15 @@ class ColorBar extends Axis {
 
     this.ordinal = false;
     this.num_ticks = this.model.get('num_ticks');
-    const that = this;
-    return scale_promise.then(() => {
-      that.create_listeners();
-      this.create_axis();
-      this.set_tick_values();
-      that.tick_format = that.generate_tick_formatter();
-      that.set_scales_range();
-      that.append_axis();
-    });
+
+    await scale_promise;
+
+    this.create_listeners();
+    this.create_axis();
+    this.set_tick_values();
+    this.tick_format = this.generate_tick_formatter();
+    this.set_scales_range();
+    this.append_axis();
   }
 
   create_listeners() {
@@ -65,16 +65,12 @@ class ColorBar extends Axis {
     this.listenTo(this.parent, 'margin_updated', this.parent_margin_updated);
     this.listenTo(this.model, 'change:visible', this.update_visibility);
     this.listenTo(this.model, 'change:label', this.update_label);
-    this.model.on_some_change(
-      ['side', 'orientation'],
-      this.update_display,
-      this
-    );
+    this.listenTo(this.model, 'change:side', this.update_display);
   }
 
   create_axis(): void {
     this.side = this.model.get('side');
-    this.vertical = this.model.get('orientation') === 'vertical';
+    this.vertical = ['left', 'right'].includes(this.model.get('side'));
     if (this.vertical) {
       this.axis =
         this.side === 'right'
@@ -295,6 +291,28 @@ class ColorBar extends Axis {
   }
 
   get_topg_transform() {
+    if (this.parent.autoLayout) {
+      if (this.vertical) {
+        if (this.side === 'right') {
+          return (
+            'translate(' + String(this.parent.width + this.autoOffset) + ', 0)'
+          );
+        }
+        return (
+          'translate(' + String(-this.bar_height - this.autoOffset) + ', 0)'
+        );
+      } else {
+        if (this.side === 'top') {
+          return (
+            'translate(0, ' + String(-this.bar_height - this.autoOffset) + ')'
+          );
+        }
+        return (
+          'translate(0, ' + String(this.parent.height + this.autoOffset) + ')'
+        );
+      }
+    }
+
     const em = 12;
     if (this.vertical) {
       if (this.side === 'right') {
@@ -337,6 +355,19 @@ class ColorBar extends Axis {
         ')'
       );
     }
+  }
+
+  calculateAutoSize() {
+    const box = this.g_axisline.node().getBoundingClientRect();
+    const side = this.model.get('side');
+    if (side == 'left' || side == 'right') {
+      return box.width + this.bar_height;
+    }
+    if (side == 'bottom' || side == 'top') {
+      return box.height + this.bar_height;
+    }
+    const axisWidth = this.g_axisline.node().getBoundingClientRect().width;
+    return this.bar_height + axisWidth;
   }
 
   get_label_transform() {
@@ -390,9 +421,11 @@ class ColorBar extends Axis {
   }
 
   get_color_bar_width() {
-    return this.vertical
+    const width = this.vertical
       ? this.height - 2 * this.x_offset
       : this.width - 2 * this.x_offset;
+
+    return width >= 0 ? width : 0;
   }
 
   update_label() {
@@ -439,7 +472,7 @@ class ColorBar extends Axis {
         .select('#text_elem')
         .style('text-anchor', this.vertical ? 'middle' : 'end');
     }
-    this.g_axisline.call(this.axis);
+    this.redraw_axisline();
   }
 
   redraw_axisline() {

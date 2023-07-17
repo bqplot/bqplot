@@ -11,6 +11,8 @@ import './utils';
 import './figure';
 import './interacts';
 import './image';
+import './axis';
+import './coloraxis';
 
 require('@jupyter-widgets/controls/css/widgets.css');
 require('../../css/bqplot.css');
