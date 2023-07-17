@@ -129,6 +129,12 @@ class Axis(BaseAxis):
     _model_name = Unicode('AxisModel').tag(sync=True)
     _ipython_display_ = None  # We cannot display an axis outside of a figure.
 
+    def __init__(self, *args, **kwargs):
+        super(Axis, self).__init__(**kwargs)
+
+        if kwargs.get('orientation') is not None:
+            self.orientation = kwargs.get('orientation')
+
     @property
     def orientation(self):
         return 'vertical' if self.side in ['right', 'left'] else 'horizontal'
