@@ -92,4 +92,5 @@ nav:
       - Toolbar: api/toolbar.md
       - Interactions: api/interactions.md
       - MarketMap: api/market_map.md
+    - Migration Guide: migrate.md
     - Contributing: contributing.md
