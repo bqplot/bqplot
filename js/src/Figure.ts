@@ -1596,7 +1596,5 @@ export class Figure extends DOMWidgetView {
 
   private relayoutRequested = false;
 
-  // this is public for the test framework, but considered a private API
-  public _initial_marks_created: Promise<any>;
   private should_relayout = false;
 }
