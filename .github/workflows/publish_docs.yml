@@ -27,11 +27,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install mamba
-        uses: mamba-org/provision-with-micromamba@main
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/setup-micromamba@main
         with:
-          micromamba-version: '0.22.0'
           environment-file: 'docs/mkdocs-environment.yml'
+          channels: conda-forge
 
       - name: Discover typos with codespell
         run: codespell --ignore-words-list="afterall,curvelinear,hist" --skip="share,.git/*,js/*,*.csv,*.json,*.lock,*.map"
