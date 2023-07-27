@@ -9,7 +9,7 @@ dependencies:
     - traittypes >=0.0.6
     - numpy >=1.10.4,<2.0.0
     - pandas >=1.0.0,<2.0.0
-    - bqscales  >=0.3.1
+    - bqscales >=0.3.3
     - scipy
     - notebook
     - yarn =3
