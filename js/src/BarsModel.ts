@@ -23,7 +23,6 @@ export interface BarGroupValue {
   subIndex: number;
   y0: number;
   y1: number;
-  yRef: number;
   x: number;
   y: number;
   colorIndex: number;
@@ -113,55 +112,56 @@ export class BarsModel extends MarkModel {
       // since x_data may be a TypedArray, explicitly use Array.map
       this.mark_data = Array.prototype.map.call(x_data, (x_elem, index) => {
         const data: any = {};
-        let y0 = this.baseValue;
-        let y0_neg = this.baseValue;
-        let y0_left = this.baseValue;
         data.key = x_elem;
+
+        // split bins into positive ( value > baseValue) and negative, and stack those separately
+        // accumulates size/height of histogram values for stacked histograms
+        let cumulativePos = this.baseValue;
+        let cumulativeNeg = this.baseValue;
 
         // since y_data may be a TypedArray, explicitly use Array.map
         data.values = Array.prototype.map.call(y_data, (y_elem, y_index) => {
-          let value = y_elem[index] - this.baseValue;
-          if (isNaN(value)) {
-            value = 0;
+          // y0, y1 are the upper and lower bound of the bars and
+          // only relevant for a stacked bar chart. grouped
+          // bars only deal with baseValue and y.
+
+          let y0, y1;
+          const value = isNaN(y_elem[index])
+            ? 0
+            : y_elem[index] - this.baseValue;
+
+          if (value >= 0) {
+            y0 = cumulativePos;
+            if (!isNaN(y_elem[index])) {
+              cumulativePos += value;
+            }
+            y1 = cumulativePos;
+          } else {
+            // reverse y1 and y0 to not have negative heights
+            y1 = cumulativeNeg;
+            if (!isNaN(y_elem[index])) {
+              cumulativeNeg += value;
+            }
+            y0 = cumulativeNeg;
           }
-          const positive = value >= 0;
+
           return {
             index: index,
             subIndex: y_index,
             x: x_elem,
-            // In the following code, the values y0, y1 are
-            // only relevant for a stacked bar chart. grouped
-            // bars only deal with baseValue and y.
-
-            // y0 is the value on the y scale for the upper end
-            // of the bar.
-            y0: positive
-              ? y0
-              : (function () {
-                  y0_left += value;
-                  return y0_left;
-                })(),
-            // y1 is the value on the y scale for the lower end
-            // of the bar.
-            y1: positive
-              ? (y0 += value)
-              : (function () {
-                  y0_neg += value;
-                  return y0_neg - value;
-                })(),
-            // yRef is the value on the y scale which represents
-            // the height of the bar
-            yRef: value,
+            y0,
+            y1,
             y: y_elem[index],
           };
         });
 
+        let extremes = [this.baseValue, cumulativeNeg, cumulativePos];
         // posMax is the maximum positive value for a group of
         // bars.
-        data.posMax = y0;
+        data.posMax = d3.max(extremes);
         // negMax is the minimum negative value for a group of
         // bars.
-        data.negMax = y0_neg;
+        data.negMax = d3.min(extremes);
         return data;
       });
       this.yIs2d = this.mark_data[0].values.length > 1;
