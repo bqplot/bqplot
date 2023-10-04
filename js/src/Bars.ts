@@ -420,7 +420,7 @@ export class Bars extends Mark {
           rang === 'y' ? rangeScale(d.y1) : rangeScale(d.y0)
         )
         .attr(rangeControl, (d: BarGroupValue) =>
-          Math.abs(rangeScale(d.y1 + d.yRef) - rangeScale(d.y1))
+          Math.abs(rangeScale(d.y0) - rangeScale(d.y1))
         );
     } else {
       bandWidth = Math.max(1.0, this.groupedScale.bandwidth());
@@ -460,8 +460,8 @@ export class Bars extends Mark {
           : d3.min([rangeScale(d.y), rangeScale(this.model.baseValue)]);
         rectCoords[domControl] = bandWidth;
         rectCoords[rangeControl] = isStacked
-          ? Math.abs(rangeScale(d.y1 + d.yRef) - rangeScale(d.y1))
-          : Math.abs(rangeScale(this.model.baseValue) - rangeScale(d.yRef));
+          ? Math.abs(rangeScale(d.y0) - rangeScale(d.y1))
+          : Math.abs(rangeScale(this.model.baseValue) - rangeScale(d.y));
         return [
           [rectCoords.x, rectCoords.x + rectCoords.width],
           [rectCoords.y, rectCoords.y + rectCoords.height],
