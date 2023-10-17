@@ -3,7 +3,7 @@ To release a new version of bqplot on PyPI:
 ## Create a new environment for the release
 
 ```sh
-conda create -c conda-forge --override-channels -y -n bqplotrelease jupyterlab nodejs twine ipywidgets pip jupyter_packaging
+conda create -c conda-forge --override-channels -y -n bqplotrelease "jupyterlab=3.2" "nodejs=16" twine ipywidgets pip jupyter_packaging "yarn<2"
 conda activate bqplotrelease
 ```
 
@@ -28,7 +28,7 @@ cd bqplot
 ```sh
 cd js/
 npm version [Major/minor/patch]
-npm install
+yarn install
 npm publish
 cd ..
 ```
@@ -55,16 +55,19 @@ git diff
 Commit the changes in git
 
 ```sh
-git commit -sa
+git commit -sa -m "Release 0.12.42"
 ```
 
 Tag the release
 
 ```sh
-git tag [version, like 0.12.4]
+git tag [version, like 0.12.42]
 ```
 
-Push your change to a new PR and ask for a review to merge the PR.
+Push the changes:
+```
+git push origin 0.12.x 0.12.42
+```
 
 ## Update the recipe on conda-forge and set the stable branch to the newly tagged commit
 
