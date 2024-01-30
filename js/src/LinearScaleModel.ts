@@ -78,8 +78,9 @@ export class LinearScaleModel extends ScaleModel {
 
   update_domain() {
     const that = this;
-    // if all domains are empty, we reset to the default domain of (0, 1)
+    // if all domains are empty, and min or max are not set, we reset to the default domain of (0, 1)
     if (
+      (this.min_from_data || this.max_from_data) &&
       _.every(this.domains, (d) => {
         return d.length === 0;
       })
