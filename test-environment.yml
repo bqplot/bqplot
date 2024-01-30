@@ -15,7 +15,7 @@ dependencies:
     - jupyterlab=3.2
     - notebook
     - jupyter-packaging
-    - pytest
+    - pytest <8
     - nbval
     - pytest-cov
     - selenium
