@@ -97,9 +97,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Conda environment with Micromamba
-        uses: mamba-org/setup-micromamba@main
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          environment-file: test-environment.yml
+          environment-name:  bqplot-test
+          environment-file: test-environment.yaml
+          python-version: 3.9
+          auto-activate-base: false
           channels: conda-forge
 
       - uses: actions/download-artifact@v3
