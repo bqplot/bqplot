@@ -95,10 +95,13 @@ test.describe('bqplot Visual Regression', () => {
       console.log('CONSOLE MSG ---', message.text());
     });
 
+    console.log('--- UPLOADING NOTEBOOKS', __dirname);
+
     await page.contents.uploadDirectory(
       path.resolve(__dirname, './notebooks'),
       tmpPath
     );
+    console.log('--- UPLOADED NOTEBOOKS');
     await page.filebrowser.openDirectory(tmpPath);
   });
 
