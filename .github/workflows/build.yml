@@ -121,13 +121,6 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         run: jlpm install
 
-      - name: Set up browser cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{ github.workspace }}/pw-browsers
-          key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
-
       - name: Install browser
         shell: bash -l {0}
         run: npx playwright install chromium
