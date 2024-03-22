@@ -3,16 +3,8 @@ name: Build
 on:
   push:
     branches: [ master ]
-    paths:
-      - js/**
-      - bqplot/**
   pull_request:
     branches: '*'
-    paths:
-      - js/**
-      - bqplot/**
-      - .github/workflows/**
-      - setup.cfg
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
