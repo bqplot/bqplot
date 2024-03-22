@@ -27,6 +27,9 @@ jobs:
       - name: Configure git to use https
         run: git config --global hub.protocol https
 
+      - name: Install hub
+        run: sudo apt-get update && sudo apt-get install -y hub
+
       - name: Checkout the branch from the PR that triggered the job
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
