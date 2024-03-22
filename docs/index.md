@@ -19,7 +19,7 @@ site_url: https://bqplot.github.io/bqplot
     * __2D selectors__ Select slices of data along two dimensions (x and y) using rectangular brushing
     * __Lasso__ Select slices of data along two dimensions (x and y) using a lasso
 * __Jupyter Widget Integration__ Seamless integration and linking with Jupyter widgets
-* __Extensibility__ `Object Model` can be extended to build re-usable compound plotting widgets and widget libraries
+* __Extensibility__ `Object Model` can be extended to build reusable compound plotting widgets and widget libraries
 * __Dashboards/Apps__ Build rich interactive dashboards and apps by integrating `bqplot` with other Jupyter widget libraries and `voila` dashboarding tool
 
 While `bqplot` provides support for static plotting for most of the chart types, it really shines in interactive plotting where data attributes are updated in an event-driven fashion (using ipywidgets, click handlers etc.)

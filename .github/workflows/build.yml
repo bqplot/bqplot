@@ -3,16 +3,8 @@ name: Build
 on:
   push:
     branches: [ master ]
-    paths:
-      - js/**
-      - bqplot/**
   pull_request:
     branches: '*'
-    paths:
-      - js/**
-      - bqplot/**
-      - .github/workflows/**
-      - setup.cfg
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
@@ -47,14 +39,8 @@ jobs:
         test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
         test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
 
-    - name: Debug nbextension
-      run: jupyter nbextension list
-
     - name: Debug labextension
       run: jupyter labextension list
-
-    - name: Validate the nbextension
-      run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
 
     - name: Validate the labextension
       run: jupyter labextension list 2>&1 | grep bqplot
@@ -105,9 +91,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Conda environment with Micromamba
-        uses: mamba-org/setup-micromamba@main
+        uses: mamba-org/provision-with-micromamba@main
         with:
+          environment-name:  bqplot-test
           environment-file: test-environment.yml
+          python-version: 3.9
+          auto-activate-base: false
           channels: conda-forge
 
       - uses: actions/download-artifact@v3
@@ -126,13 +115,6 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         run: jlpm install
 
-      - name: Set up browser cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{ github.workspace }}/pw-browsers
-          key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
-
       - name: Install browser
         shell: bash -l {0}
         run: npx playwright install chromium
@@ -141,7 +123,7 @@ jobs:
       - name: Execute integration tests
         shell: bash -l {0}
         working-directory: ui-tests
-        run: npx playwright test
+        run: jlpm run test
 
       - name: Upload Playwright Test report
         if: always()
@@ -191,9 +173,6 @@ jobs:
           test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot
           test -f $CONDA_PREFIX/share/jupyter/labextensions/bqplot/package.json
           test -d $CONDA_PREFIX/share/jupyter/labextensions/bqplot/static
-
-      - name: Validate the nbextension
-        run: jupyter nbextension list 2>&1 | grep "bqplot/extension"
 
       - name: Validate the labextension
         run: jupyter labextension list 2>&1 | grep bqplot

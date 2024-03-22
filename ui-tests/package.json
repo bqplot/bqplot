@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "start": "jupyter lab --config jupyter_server_config.py",
-    "test": "npx playwright test",
-    "test:update": "npx playwright test --update-snapshots",
-    "test:debug": "PWDEBUG=1 npx playwright test"
+    "test": "playwright test",
+    "test:update": "playwright test --update-snapshots",
+    "test:debug": "PWDEBUG=1 playwright test"
   },
   "author": "bqplot",
   "license": "Apache-2.0",

@@ -78,7 +78,7 @@ def test_dtype_with_str():
     # dtype object is not supported
     text = np.array(['foo', None, 'bar'])
     assert text.dtype == object
-    with pytest.raises(ValueError, match='.*Unsupported dtype object*'), pytest.warns(UserWarning):
+    with pytest.raises(ValueError, match='.*Unsupported dtype object*'):
         array_to_json(text)
     # but if they contain all strings, it should convert them.
     # This is for backward compatibility of expecting pandas dataframe

@@ -40,7 +40,7 @@ fig
 ```
 ![plot](../../assets/images/label-image1.png)
 !!! tip
-    To render labels professionally it's better to offset the label to avoid obscuring the true graph below. To do so, set the `x_offset` and `y_offset` attrbiutes (which accepts values in pixels), like so:
+    To render labels professionally it's better to offset the label to avoid obscuring the true graph below. To do so, set the `x_offset` and `y_offset` attributes (which accepts values in pixels), like so:
     ```py
     label.x_offset = 10
     label.y_offset = 10
@@ -59,9 +59,9 @@ fig   = plt.figure()
 y     = np.cumsum(np.random.randn(100))
 line  = plt.plot(np.arange(y.size), y_data)
 label = plt.label(
-    ["Halfway Point"], 
-    default_size=26, 
-    font_weight="bolder", 
+    ["Halfway Point"],
+    default_size=26,
+    font_weight="bolder",
     colors=["orange"]
 )
 
@@ -70,7 +70,7 @@ label.y = [0.5]
 ```
 ![plot](../../assets/images/label-image2.png)
 
-Further, we can use values expressed in the units of the data. For example, if we consider a time series, we might want to label a specific date. Rather than calculating the position of the data with respect to the figure, we can simply pass in the date to the label function. 
+Further, we can use values expressed in the units of the data. For example, if we consider a time series, we might want to label a specific date. Rather than calculating the position of the data with respect to the figure, we can simply pass in the date to the label function.
 ```py
 fig = plt.figure()
 y   = pd.Series(
@@ -80,8 +80,8 @@ y   = pd.Series(
 )
 
 lines = plt.plot(y.index, y)
-label = plt.label(["Special Day"], 
-                  x=[np.datetime64("2007-02-14")], 
+label = plt.label(["Special Day"],
+                  x=[np.datetime64("2007-02-14")],
                   colors=["orange"])
 
 labels.y = [0.5]

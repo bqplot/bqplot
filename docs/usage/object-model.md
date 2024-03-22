@@ -105,4 +105,4 @@ bq.Figure(marks=[line, scatter], axes=[xax, yax], title="Scatter and Line")
 __Object Model__ is a verbose but fully customizable object-oriented API for plotting. Lower level constructs like scales, axes etc. have to explicitly constructed.
 For detailed usage refer to the [example notebooks](https://github.com/bqplot/bqplot/tree/master/examples/Marks/Object%20Model) using `Object Model`.
 
-__Object Model__ can be used to build re-usable plotting widgets and widget libraries. More details can be found in [here]
+__Object Model__ can be used to build reusable plotting widgets and widget libraries. More details can be found in [here]
