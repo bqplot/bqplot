@@ -13,7 +13,6 @@ dependencies:
     - scipy
     - notebook
     - yarn =3
-    # Using Notebook 6 in CI st. we can test the old nbextension
     - jupyterlab =4
     - jupyter-packaging
     - pytest
