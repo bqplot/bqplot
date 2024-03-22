@@ -666,7 +666,7 @@ def plot(*args, **kwargs):
         else:
             kwargs['x'] = _infer_x_for_line(args[0])
     elif len(args) == 2:
-        if type(args[1]) == str:
+        if isinstance(args[1], str):
             kwargs['y'] = args[0]
             kwargs['x'] = _infer_x_for_line(args[0])
             marker_str = args[1].strip()
@@ -676,7 +676,7 @@ def plot(*args, **kwargs):
     elif len(args) == 3:
         kwargs['x'] = args[0]
         kwargs['y'] = args[1]
-        if type(args[2]) == str:
+        if isinstance(args[2], str):
             marker_str = args[2].strip()
 
     if marker_str:
