@@ -69,3 +69,5 @@ node_modules
 
 # mkdocs
 site/
+
+.yarn
