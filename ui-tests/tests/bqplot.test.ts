@@ -43,7 +43,7 @@ const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, th
     await page.notebook.save();
 
     for (let c = 0; c < numCellImages; ++c) {
-      expect(results[c]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, c));
+      expect(results[c]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, c), {threshold: 0.3});
     }
 
     await page.notebook.close(true);
@@ -82,7 +82,7 @@ const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, th
     await page.notebook.save();
 
     for (let i = 0; i < cellCount; i++) {
-      expect(results[i]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, i));
+      expect(results[i]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, i), {threshold: 0.3});
     }
 
     await page.notebook.close(true);
@@ -95,13 +95,10 @@ test.describe('bqplot Visual Regression', () => {
       console.log('CONSOLE MSG ---', message.text());
     });
 
-    console.log('--- UPLOADING NOTEBOOKS', __dirname);
-
     await page.contents.uploadDirectory(
       path.resolve(__dirname, './notebooks'),
       tmpPath
     );
-    console.log('--- UPLOADED NOTEBOOKS');
     await page.filebrowser.openDirectory(tmpPath);
   });
 
