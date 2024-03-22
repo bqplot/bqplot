@@ -11,14 +11,13 @@ dependencies:
     - pandas >=1.0.0,<2.0.0
     - bqscales >=0.3.3
     - scipy
-    - notebook
+    - nodejs =20
     - yarn =3
     - jupyterlab =4
     - jupyter-packaging
     - pytest
     - nbval
     - pytest-cov
-    - selenium
     - flake8
     - nose
     - codespell
