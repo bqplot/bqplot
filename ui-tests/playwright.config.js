@@ -11,5 +11,5 @@ module.exports = {
     reuseExistingServer: !process.env.CI
   },
   timeout: 600000,
-  retries: 1
+  retries: 3
 };
