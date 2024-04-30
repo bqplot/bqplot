@@ -1352,8 +1352,8 @@ export class Figure extends DOMWidgetView {
       .attr('href', data_url);
 
     svg.insertBefore(defs, svg.firstChild);
-    // Getting the outer HTML
-    return svg.outerHTML;
+    // Getting the outer HTML. .outerHTML replaces '\xa0' with '&nbsp;', which is invalid in SVG
+    return svg.outerHTML.replace(/&nbsp;/g, '\xa0');
   }
 
   async get_rendered_canvas(scale): Promise<HTMLCanvasElement> {
