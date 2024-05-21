@@ -1162,8 +1162,8 @@ export class Figure extends widgets.DOMWidgetView {
       }
 
       svg.insertBefore(defs, svg.firstChild);
-      // Getting the outer HTML
-      return svg.outerHTML;
+      // Getting the outer HTML. .outerHTML replaces '\xa0' with '&nbsp;', which is invalid in SVG
+      return svg.outerHTML.replace(/&nbsp;/g, '\xa0');
     });
   }
 
