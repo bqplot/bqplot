@@ -52,7 +52,7 @@ plt.show()
 
 #### Bar Chart
 
-For creating other marks (like scatter, pie, bars, etc.), only step 2 needs to be changed. Lets look an example to create a bar chart:
+For creating other marks (like scatter, pie, bars, etc.), only step 3 needs to be changed. Lets look an example to create a bar chart:
 ```py  hl_lines="15"
 # first, create data vectors x and y to plot a bar chart
 x = list("ABCDE")
