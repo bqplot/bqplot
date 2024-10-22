@@ -19,7 +19,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Conda environment with Micromamba
       uses: mamba-org/setup-micromamba@main
@@ -77,7 +77,7 @@ jobs:
       working-directory: js
 
     - name: Upload builds
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist ${{ github.run_number }}
         path: ./dist
@@ -88,7 +88,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Conda environment with Micromamba
         uses: mamba-org/setup-micromamba@main
@@ -99,7 +99,7 @@ jobs:
           auto-activate-base: false
           channels: conda-forge
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
@@ -127,7 +127,7 @@ jobs:
 
       - name: Upload Playwright Test report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bqplot-playwright-tests
           path: |
@@ -147,7 +147,7 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Conda environment with Micromamba
         uses: mamba-org/setup-micromamba@main
@@ -155,7 +155,7 @@ jobs:
           environment-file: test-environment.yml
           channels: conda-forge
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
