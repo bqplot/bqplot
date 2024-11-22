@@ -680,7 +680,8 @@ export class ScatterGL extends Mark {
     animate: boolean = true,
     after_animation: Function = () => {}
   ) {
-    if (animate) {
+    const animation_duration = this.parent.model.get('animation_duration');
+    if (animate && animation_duration > 0) {
       // `value_previous.array` must have at least the same length as `value.array` in order for animation to work
       if (
         value.array.length < new_parameters.array.length &&
