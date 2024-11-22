@@ -14,6 +14,8 @@ describe('scatter mega >', () => {
     const x = { dtype: 'float32', value: new DataView(x_array.buffer) };
     const y = { dtype: 'float32', value: new DataView(y_array.buffer) };
     const objects = await create_figure_scatter(this.manager, x, y, true);
+    // without a non zero animation_duration, previous will be set to current
+    objects.figure.model.set('animation_duration', 1e-6);
     const scatter = objects.scatter;
 
     expect(scatter.x.array).to.deep.equal(x_array);
@@ -53,6 +55,7 @@ describe('scatter mega >', () => {
       value: new DataView(new Float32Array([2, 3]).buffer),
     };
     const objects = await create_figure_scatter(this.manager, x, y, true);
+    objects.figure.model.set('animation_duration', 1e-6);
     const scatter = objects.scatter;
     const default_size = scatter.model.get('default_size');
 
@@ -102,6 +105,7 @@ describe('scatter mega >', () => {
       value: new DataView(new Float32Array([2, 3, 3]).buffer),
     };
     const objects = await create_figure_scatter(this.manager, x, y, true);
+    objects.figure.model.set('animation_duration', 1e-6);
     const scatter = objects.scatter;
 
     const opacities = new Float32Array([1]);
@@ -289,6 +293,7 @@ describe('scatter mega >', () => {
     const x = { dtype: 'float32', value: new DataView(x_array.buffer) };
     const y = { dtype: 'float32', value: new DataView(y_array.buffer) };
     const objects = await create_figure_scatter(this.manager, x, y, true);
+    objects.figure.model.set('animation_duration', 1e-6);
     const scatter = objects.scatter;
 
     const steelblue = new Float32Array([
@@ -365,6 +370,7 @@ describe('scatter mega >', () => {
     const x = { dtype: 'float32', value: new DataView(x_array.buffer) };
     const y = { dtype: 'float32', value: new DataView(y_array.buffer) };
     const objects = await create_figure_scatter(this.manager, x, y, true);
+    objects.figure.model.set('animation_duration', 1e-6);
     const scatter = objects.scatter;
 
     const steelblue = new Float32Array([
