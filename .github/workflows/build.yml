@@ -31,6 +31,12 @@ jobs:
         auto-activate-base: false
         channels: conda-forge
 
+    - name: Yarn install
+      run: |
+        yarn install
+      working-directory: js
+
+
     - name: Install the package
       run: |
         pip install .
