@@ -4,7 +4,7 @@ channels:
 dependencies:
     - pip
     - python
-    - yarn <2
+    - yarn <4
     - nodejs=16
     - ipywidgets >=8
     - traitlets >=4.3.0
