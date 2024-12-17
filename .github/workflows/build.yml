@@ -83,7 +83,7 @@ jobs:
 
     - name: Pack JavaScript package
       run: |
-        yarn pack
+        yarn pack -o %s-%v.tgz
         mv bqplot*.tgz ../dist
       working-directory: js
 
