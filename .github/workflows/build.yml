@@ -233,6 +233,7 @@ jobs:
       - name: Install Conda environment with Micromamba
         uses: mamba-org/setup-micromamba@main
         with:
+          environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
 
