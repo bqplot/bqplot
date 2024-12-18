@@ -122,12 +122,12 @@ jobs:
 
       - name: Install Galata
         run: |
-          yarn install
+          jlpm install
           npx playwright install chromium
         working-directory: ui-tests
 
       - name: Launch JupyterLab
-        run: yarn run start:detached&
+        run: jlpm run start:detached&
         working-directory: ui-tests
 
       - name: Wait for JupyterLab
