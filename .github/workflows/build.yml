@@ -233,17 +233,16 @@ jobs:
       - name: Install Conda environment with Micromamba
         uses: mamba-org/setup-micromamba@main
         with:
-          environment-name: test-env
+          environment-name: base
           create-args: >-
             python=${{ matrix.python-version }}
+            jupyterlab=2
+            yarn
 
       - uses: actions/download-artifact@v4
         with:
           name: dist-${{ github.run_number }}
           path: ./dist
-
-      - name: Install JupyterLab 2
-        run: micromamba install yarn jupyterlab=2
 
       - name: Install the labextension
         env:
