@@ -90,7 +90,7 @@ jobs:
     - name: Upload builds
       uses: actions/upload-artifact@v4
       with:
-        name: dist ${{ github.run_number }}
+        name: dist-${{ github.run_number }}
         path: ./dist
 
   visual-regression-tests:
@@ -113,7 +113,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: dist ${{ github.run_number }}
+          name: dist-${{ github.run_number }}
           path: ./dist
 
       - name: Install the package
@@ -192,7 +192,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: dist ${{ github.run_number }}
+          name: dist-${{ github.run_number }}
           path: ./dist
 
       - name: Install the package
@@ -239,7 +239,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: dist ${{ github.run_number }}
+          name: dist-${{ github.run_number }}
           path: ./dist
 
       - name: Install JupyterLab 2
