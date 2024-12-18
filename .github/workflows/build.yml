@@ -216,14 +216,8 @@ jobs:
         run: jupyter labextension list 2>&1 | grep bqplot
 
   JupyterLab2-build:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ubuntu-latest
     needs: [build]
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu]
-        python: ['3.9']
 
     steps:
 
@@ -235,7 +229,7 @@ jobs:
         with:
           environment-name: lab2
           create-args: >-
-            python=${{ matrix.python-version }}
+            python=3.9
             jupyterlab=2
             yarn
 
