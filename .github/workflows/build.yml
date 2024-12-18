@@ -88,7 +88,7 @@ jobs:
       working-directory: js
 
     - name: Upload builds
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist ${{ github.run_number }}
         path: ./dist
@@ -102,7 +102,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Conda environment with Micromamba
-        uses: mamba-org/provision-with-micromamba@main
+        uses: mamba-org/setup-micromamba@main
         with:
           environment-name: bqplot-test
           environment-file: test-environment.yml
@@ -111,7 +111,7 @@ jobs:
           auto-activate-base: false
           channels: conda-forge
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
@@ -142,7 +142,7 @@ jobs:
 
       - name: Upload UI Test artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ui-test-output
           path: ui-tests/playwright-report
@@ -155,7 +155,7 @@ jobs:
 
       - name: Upload updated snapshots
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ipywidgets-updated-snapshots
           path: ui-tests/tests
@@ -181,7 +181,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Conda environment with Micromamba
-        uses: mamba-org/provision-with-micromamba@main
+        uses: mamba-org/setup-micromamba@main
         with:
           environment-name: bqplot-test
           environment-file: test-environment.yml
@@ -190,7 +190,7 @@ jobs:
           auto-activate-base: false
           channels: conda-forge
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
@@ -237,7 +237,7 @@ jobs:
           mamba-version: "*"
           channels: conda-forge
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: dist ${{ github.run_number }}
           path: ./dist
