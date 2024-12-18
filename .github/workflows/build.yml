@@ -122,7 +122,7 @@ jobs:
 
       - name: Install Galata
         run: |
-          yarn install
+          npm ci # we don't have a yarn lockfile yet, but a package-lock.json
           yarn playwright install chromium
         working-directory: ui-tests
 
