@@ -137,7 +137,7 @@ jobs:
           timeout: 20000
 
       - name: Run UI Tests
-        run: yarn run test
+        run: jlpm run test
         working-directory: ui-tests
 
       - name: Upload UI Test artifacts
