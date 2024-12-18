@@ -233,9 +233,8 @@ jobs:
       - name: Install Conda environment with Micromamba
         uses: mamba-org/setup-micromamba@main
         with:
-          python-version: ${{ matrix.python-version }}
-          mamba-version: "*"
-          channels: conda-forge
+          create-args: >-
+            python=${{ matrix.python-version }}
 
       - uses: actions/download-artifact@v4
         with:
