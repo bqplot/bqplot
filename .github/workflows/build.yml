@@ -123,8 +123,8 @@ jobs:
       - name: Install Galata
         run: |
           jlpm install
-          jlpm install playwright
-          jlpm run playwright install chromium
+          jlpm add playwright
+          npx playwright install chromium
         working-directory: ui-tests
 
       - name: Launch JupyterLab
