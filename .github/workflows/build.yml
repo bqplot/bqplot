@@ -127,7 +127,7 @@ jobs:
         working-directory: ui-tests
 
       - name: Launch JupyterLab
-        run: yarn run start:detached
+        run: yarn run start:detached&
         working-directory: ui-tests
 
       - name: Wait for JupyterLab
