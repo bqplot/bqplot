@@ -233,7 +233,7 @@ jobs:
       - name: Install Conda environment with Micromamba
         uses: mamba-org/setup-micromamba@main
         with:
-          environment-name: base
+          environment-name: lab2
           create-args: >-
             python=${{ matrix.python-version }}
             jupyterlab=2
@@ -248,5 +248,5 @@ jobs:
         env:
           NODE_OPTIONS: --openssl-legacy-provider
         run: |
-         micromamba activate base
+         micromamba activate lab2
          jupyter labextension install dist/bqplot*.tgz --debug
