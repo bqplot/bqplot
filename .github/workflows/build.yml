@@ -123,7 +123,7 @@ jobs:
       - name: Install Galata
         run: |
           yarn install
-          yarn playwright install chromium
+          npx playwright install chromium
         working-directory: ui-tests
 
       - name: Launch JupyterLab
