@@ -123,7 +123,6 @@ jobs:
       - name: Install Galata
         run: |
           jlpm install
-          jlpm add playwright
           npx playwright install chromium
         working-directory: ui-tests
 
