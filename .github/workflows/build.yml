@@ -124,7 +124,7 @@ jobs:
         run: |
           jlpm install
           jlpm install playwright
-          jlpm playwright install chromium
+          jlpm run playwright install chromium
         working-directory: ui-tests
 
       - name: Launch JupyterLab
@@ -152,7 +152,7 @@ jobs:
         if: failure()
         run: |
           cd ui-tests
-          yarn run test:update
+          jlpm run test:update
 
       - name: Upload updated snapshots
         if: failure()
