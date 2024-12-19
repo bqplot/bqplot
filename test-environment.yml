@@ -4,7 +4,7 @@ channels:
 dependencies:
     - pip
     - python
-    - yarn <2
+    - yarn <4
     - nodejs=16
     - ipywidgets >=8
     - traitlets >=4.3.0
@@ -13,7 +13,8 @@ dependencies:
     - pandas >=1.0.0,<2.0.0
     - scipy
     - jupyterlab=3.2
-    - notebook
+    # Using Notebook 6 in CI st. we can test the old nbextension
+    - notebook =6
     - jupyter-packaging
     - pytest <8
     - nbval
