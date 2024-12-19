@@ -749,14 +749,15 @@ export class ScatterGL extends Mark {
     this.scatter_material.uniforms['animation_time_' + name]['value'] = 0;
     const set = (value) => {
       this.scatter_material.uniforms['animation_time_' + name]['value'] = value;
-      if(value == 1) {
-        const updater = {
-          x: this.update_x,
-          y: this.update_y,
-          size: this.update_size,
-          opacity: this.update_opacity,
-        }[name] || null;
-        if(updater !== null) {
+      if (value == 1) {
+        const updater =
+          {
+            x: this.update_x,
+            y: this.update_y,
+            size: this.update_size,
+            opacity: this.update_opacity,
+          }[name] || null;
+        if (updater !== null) {
           // we update once without animation, otherwise we might
           // have dynamic range issues https://github.com/bqplot/bqplot/issues/1661
           // when the previous values are in a completely different d3-domain
@@ -785,7 +786,7 @@ export class ScatterGL extends Mark {
       this.x,
       this.x_previous,
       new AttributeParameters(x_array, 1, 1),
-      animate,
+      animate
     );
 
     if (rerender) {
@@ -808,7 +809,7 @@ export class ScatterGL extends Mark {
       this.y,
       this.y_previous,
       new AttributeParameters(y_array, 1, 1),
-      animate,
+      animate
     );
 
     if (rerender) {
@@ -857,7 +858,7 @@ export class ScatterGL extends Mark {
       this.opacity,
       this.opacity_previous,
       opacity_parameters,
-      animate,
+      animate
     );
 
     if (rerender) {
@@ -872,7 +873,7 @@ export class ScatterGL extends Mark {
       this.size,
       this.size_previous,
       size_parameters,
-      animate,
+      animate
     );
 
     if (rerender) {
@@ -887,7 +888,7 @@ export class ScatterGL extends Mark {
       this.rotation,
       this.rotation_previous,
       rotation_parameters,
-      animate,
+      animate
     );
 
     if (rerender) {
