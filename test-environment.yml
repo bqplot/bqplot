@@ -21,3 +21,4 @@ dependencies:
     - flake8
     - nose
     - codespell
+    - pooch
