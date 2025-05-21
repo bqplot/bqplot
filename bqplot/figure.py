@@ -157,6 +157,7 @@ class Figure(DOMWidget):
         super(Figure, self).__init__(**kwargs)
 
         self._upload_png_callback = None
+        self._upload_svg_callback = None
         self.on_msg(self._handle_custom_msgs)
 
     @default('scale_x')
@@ -208,6 +209,20 @@ class Figure(DOMWidget):
         self._upload_png_callback = callback
         self.send({'type': 'upload_png', 'scale': scale})
 
+    def get_svg_data(self, callback):
+        '''
+        Gets the Figure as an SVG memory view (string).
+
+        Parameters
+        ----------
+        callback: callable
+            Called with the SVG data (string) as the only positional argument.
+        '''
+        if self._upload_svg_callback:
+            raise Exception('get_svg_data already in progress')
+        self._upload_svg_callback = callback
+        self.send({'type': 'upload_svg'})
+
     @validate('min_aspect_ratio', 'max_aspect_ratio')
     def _validate_aspect_ratio(self, proposal):
         value = proposal['value']
@@ -225,6 +240,11 @@ class Figure(DOMWidget):
                 self._upload_png_callback(buffers[0])
             finally:
                 self._upload_png_callback = None
+        elif content.get('event') == 'upload_svg':
+            try:
+                self._upload_svg_callback(buffers[0])
+            finally:
+                self._upload_svg_callback = None
 
     _view_name = Unicode('Figure').tag(sync=True)
     _model_name = Unicode('FigureModel').tag(sync=True)
