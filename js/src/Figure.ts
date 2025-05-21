@@ -265,6 +265,7 @@ export class Figure extends widgets.DOMWidgetView {
     this.model.on('save_png', this.save_png, this);
     this.model.on('save_svg', this.save_svg, this);
     this.model.on('upload_png', this.upload_png, this);
+    this.model.on('upload_svg', this.upload_svg, this);
 
     const figure_scale_promise = this.create_figure_scales();
 
@@ -1205,6 +1206,22 @@ export class Figure extends widgets.DOMWidgetView {
         [buff]
       );
     });
+  }
+
+  async upload_svg(model) {
+    console.log('upload_svg');
+    const svg_string = await this.get_svg();
+    const svg_blob = new Blob([svg_string], {
+      type: 'image/svg+xml;charset=utf-8',
+    });
+    const svg_buffer = await svg_blob.arrayBuffer();
+    model.send(
+      {
+        event: 'upload_svg',
+      },
+      null,
+      [svg_buffer]
+    );
   }
 
   save_png(filename, scale) {
