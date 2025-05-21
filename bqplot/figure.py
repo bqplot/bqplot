@@ -211,12 +211,12 @@ class Figure(DOMWidget):
 
     def get_svg_data(self, callback):
         '''
-        Gets the Figure as an SVG memory view (string).
+        Gets the Figure as an SVG memory view (utf-8 encoded bytes).
 
         Parameters
         ----------
         callback: callable
-            Called with the SVG data (string) as the only positional argument.
+            Called with the SVG data (utf-8 encoded bytes) as the only positional argument.
         '''
         if self._upload_svg_callback:
             raise Exception('get_svg_data already in progress')
