@@ -71,6 +71,11 @@ For a development installation (requires JupyterLab (version >= 4) and yarn):
 $ git clone https://github.com/bqplot/bqplot.git
 $ cd bqplot
 $ pip install -e .
+```
+
+If you're using **Jupyter Notebook < 7**, you may need to run the following to enable the nbextension:
+
+```
 $ jupyter nbextension install --py --overwrite --symlink --sys-prefix bqplot
 $ jupyter nbextension enable --py --sys-prefix bqplot
 ```
