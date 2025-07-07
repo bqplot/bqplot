@@ -32,7 +32,7 @@ import numpy as np
 import pandas as pd
 import warnings
 import datetime as dt
-import six
+
 
 # Date
 
@@ -162,7 +162,7 @@ def array_to_json(ar, obj=None, force_contiguous=True):
 
     if ar.dtype.kind == 'O':
         # Try to serialize the array of objects
-        is_string = np.vectorize(lambda x: isinstance(x, six.string_types))
+        is_string = np.vectorize(lambda x: isinstance(x, str))
         is_timestamp = np.vectorize(lambda x: isinstance(x, pd.Timestamp))
         is_array_like = np.vectorize(lambda x: isinstance(x, (list, np.ndarray)))
 
