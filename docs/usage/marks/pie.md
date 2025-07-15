@@ -116,7 +116,7 @@ pie.observe(on_select, names=["selected"])
 fig
 ```
 
-You can also update the `selected` slices programatically and the UI automatically updates itself.
+You can also update the `selected` slices programmatically and the UI automatically updates itself.
 ```py
 pie.selected = [1]
 
