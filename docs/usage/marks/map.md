@@ -51,8 +51,9 @@ fig
 To render a choropleth, `color` data attribute needs to be passed. __Note that `color` must be a dictionary whose keys are element ids__
 
 ```py hl_lines="3 6"
-fig = plt.figure(title="Choropleth")
+import bqplot as bq
 
+fig = plt.figure(title="Choropleth")
 plt.scales(scales={"color": bq.ColorScale(scheme="Greens")})
 chloro_map = plt.geo(
     map_data="WorldMap",
@@ -77,8 +78,6 @@ fig
 Use [geo scale](../../api/scales.md#bqscales.Orthographic) to customize the projections, like so:
 
 ```py hl_lines="4 5"
-import bqplot as bq
-
 fig = plt.figure(title="Advanced World Map")
 geo_scale = bq.Orthographic(scale_factor=375, center=[0, 25], rotate=(-50, 0))
 plt.scales(scales={"projection": geo_scale})
