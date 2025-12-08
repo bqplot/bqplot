@@ -11,6 +11,7 @@ dependencies:
     - pandas >=1.0.0,<2.0.0
     - bqscales >=0.3.3
     - scipy
+    - scikit-image
     - nodejs =20
     - yarn =3
     - jupyterlab =4
