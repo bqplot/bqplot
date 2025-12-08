@@ -34,9 +34,9 @@
     "lint": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
-    "@jupyter-widgets/base-manager": "^1.0.0",
+    "@jupyter-widgets/base-manager": "^1.0.12",
     "@jupyter-widgets/controls": "^5",
-    "@jupyterlab/builder": "^4",
+    "@jupyterlab/builder": "^4.5",
     "@types/chai": "^4.1.7",
     "@types/d3": "^5.7.2",
     "@types/expect.js": "^0.3.29",
@@ -73,7 +73,7 @@
     "sinon": "^9.0.2",
     "sinon-chai": "^3.3.0",
     "style-loader": "^1.2.0",
-    "typescript": "~4.2.0",
+    "typescript": "~5",
     "webpack": "^5",
     "webpack-cli": "^3.3.12"
   },

@@ -71,3 +71,4 @@ node_modules
 site/
 
 .yarn
+ui-tests/.yarn
