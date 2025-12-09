@@ -279,7 +279,7 @@ class Mark(Widget):
         handler(self, content)
 
     def _repr_mimebundle_(self, **kwargs):
-        return { 'text/plain': str(self) }
+        return {'text/plain': str(self)}
 
 
 @register_mark('bqplot.Lines')
