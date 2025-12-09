@@ -381,10 +381,10 @@ export class Map extends Mark {
     this.model.set('selected', []);
     this.touch();
     this.highlight_g.selectAll('.selected').remove();
-    d3.select(this.d3el.node().parentNode)
+    d3.select(this.d3el.node().parentNode as Element)
       .selectAll('path')
       .classed('selected', false);
-    d3.select(this.d3el.node().parentNode)
+    d3.select(this.d3el.node().parentNode as Element)
       .selectAll('path')
       .classed('hovered', false);
 

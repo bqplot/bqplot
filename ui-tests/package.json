@@ -12,7 +12,7 @@
   "author": "bqplot",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@jupyterlab/galata": "^5.0.1",
+    "@jupyterlab/galata": "^5.5.0",
     "@playwright/test": "^1.32.0"
   },
   "dependencies": {

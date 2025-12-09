@@ -1306,7 +1306,7 @@ export class Figure extends DOMWidgetView {
       get_css(this.el, ['.theme-dark', '.theme-light', '.bqplot > ', ':root']) +
       '\n';
     // extract all CSS variables, and generate a piece of css to define the variables
-    const cssVariables = cssCode.match(/(--\w[\w-]*)/g) || [];
+    const cssVariables: string[] = cssCode.match(/(--\w[\w-]*)/g) || [];
     const cssVariableCode =
       cssVariables.reduce((cssCode, variable) => {
         const value = computedStyle.getPropertyValue(variable);
