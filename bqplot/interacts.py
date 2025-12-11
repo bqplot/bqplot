@@ -74,7 +74,6 @@ class Interaction(Widget):
         return {'text/plain': str(self)}
 
 
-
 @register_interaction('bqplot.HandDraw')
 class HandDraw(Interaction):
 
