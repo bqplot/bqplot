@@ -454,6 +454,8 @@ export class Figure extends DOMWidgetView {
     this.model.on('save_png', this.save_png, this);
     this.model.on('save_svg', this.save_svg, this);
     this.model.on('upload_png', this.upload_png, this);
+    this.model.on('upload_svg', this.upload_svg, this);
+    console.log('RENDER FFS');
 
     this.webGLCanvas.width = this.plotareaWidth;
     this.webGLCanvas.height = this.plotareaHeight;
@@ -1394,6 +1396,21 @@ export class Figure extends DOMWidgetView {
         [buff]
       );
     });
+  }
+
+  async upload_svg(model) {
+    const svg_string = await this.get_svg();
+    const svg_blob = new Blob([svg_string], {
+      type: 'image/svg+xml;charset=utf-8',
+    });
+    const svg_buffer = await svg_blob.arrayBuffer();
+    model.send(
+      {
+        event: 'upload_svg',
+      },
+      null,
+      [svg_buffer]
+    );
   }
 
   save_png(filename, scale) {
