@@ -64,8 +64,15 @@ class Interaction(Widget):
     _model_module = Unicode('bqplot').tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
-    # We cannot display an interaction outside of a figure
+
+    # We cannot display interactions outside of a figure
+    # for ipywidgets <=7
     _ipython_display_ = None
+
+    # for ipywidgets >=8
+    def _repr_mimebundle_(self, **kwargs):
+        return {'text/plain': str(self)}
+
 
 
 @register_interaction('bqplot.HandDraw')

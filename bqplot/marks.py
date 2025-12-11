@@ -182,7 +182,14 @@ class Mark(Widget):
     _view_module = Unicode('bqplot').tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
+    # We cannot display a marks outside of a figure
+    # for ipywidgets <=7
     _ipython_display_ = None
+
+    # for ipywidgets >=8
+    def _repr_mimebundle_(self, **kwargs):
+        return {'text/plain': str(self)}
 
     def _get_dimension_scales(self, dimension, preserve_domain=False):
         """
@@ -277,9 +284,6 @@ class Mark(Widget):
             return
 
         handler(self, content)
-
-    def _repr_mimebundle_(self, **kwargs):
-        return {'text/plain': str(self)}
 
 
 @register_mark('bqplot.Lines')

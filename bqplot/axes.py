@@ -127,7 +127,14 @@ class Axis(BaseAxis):
 
     _view_name = Unicode('Axis').tag(sync=True)
     _model_name = Unicode('AxisModel').tag(sync=True)
-    _ipython_display_ = None  # We cannot display an axis outside of a figure.
+
+    # We cannot display axes outside of a figure
+    # for ipywidgets <=7
+    _ipython_display_ = None
+
+    # for ipywidgets >=8
+    def _repr_mimebundle_(self, **kwargs):
+        return {'text/plain': str(self)}
 
     def __init__(self, *args, **kwargs):
         super(Axis, self).__init__(**kwargs)
