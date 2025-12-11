@@ -21,11 +21,13 @@ import packageJson from '../package.json';
 
 const { name, version } = packageJson;
 
+const EXTENSION_ID = `@bqplot/bqplot:${version}`;
+
 /**
  * The widget manager provider.
  */
 const plugin = {
-  id: name,
+  id: EXTENSION_ID,
   requires: [IJupyterWidgetRegistry],
   activate: function (app, widgets) {
     widgets.registerWidget({
