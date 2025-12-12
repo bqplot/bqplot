@@ -38,7 +38,10 @@ import { FigureModel } from './FigureModel';
 import { Axis } from './Axis';
 import { version } from './version';
 
-export const FIGURE_CSS_CLASS = `bqplot_${version.replace(/[^0-9A-Za-z]+/g, '_')}`;
+export const FIGURE_CSS_CLASS = `bqplot_${version.replace(
+  /[^0-9A-Za-z]+/g,
+  '_'
+)}`;
 
 interface IFigureSize {
   width: number;
