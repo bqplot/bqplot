@@ -281,7 +281,7 @@ export class Figure extends DOMWidgetView {
 
     this.tooltip_div = d3
       .select(document.createElement('div'))
-      .attr('class', 'tooltip_div');
+      .attr('class', 'bqplot_tooltip_div');
     this.popper_reference = new popperreference.PositionReference({
       x: 0,
       y: 0,

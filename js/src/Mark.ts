@@ -76,7 +76,7 @@ export abstract class Mark extends widgets.WidgetView {
     }
     this.tooltip_div = d3
       .select(document.createElement('div'))
-      .attr('class', 'mark_tooltip')
+      .attr('class', 'bqplot_mark_tooltip')
       .attr('id', 'tooltip_' + this.uuid)
       .style('display', 'none')
       .style('opacity', 0);
