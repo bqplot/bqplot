@@ -38,8 +38,7 @@ import { FigureModel } from './FigureModel';
 import { Axis } from './Axis';
 import { version } from './version';
 
-const FIGURE_CSS_CLASS = `bqplot_${version.replace(/[^0-9A-Za-z]+/g, "_")}`;
-
+const FIGURE_CSS_CLASS = `bqplot_${version.replace(/[^0-9A-Za-z]+/g, '_')}`;
 
 interface IFigureSize {
   width: number;
@@ -125,12 +124,12 @@ export class Figure extends DOMWidgetView {
       return domSize;
     }
 
-    let solver = new kiwi.Solver();
-    var width = new kiwi.Variable();
-    var height = new kiwi.Variable();
+    const solver = new kiwi.Solver();
+    const width = new kiwi.Variable();
+    const height = new kiwi.Variable();
 
     // calculate padding by summing up all auto sizes + fig_margins
-    var padding = { top: 0, bottom: 0, left: 0, right: 0 };
+    const padding = { top: 0, bottom: 0, left: 0, right: 0 };
     const fig_margin = this.model.get('fig_margin');
     ['top', 'bottom', 'left', 'right'].forEach((side) => {
       padding[side] = this.decorators[side].reduce((total, decorator) => {
@@ -178,8 +177,8 @@ export class Figure extends DOMWidgetView {
       y - padding.top - domSize.height/2 + height/2 + padding.bottom/2 + padding.top/2 = 0
       y - padding.top/2 - domSize.height/2 + height/2 + padding.bottom/2 = 0
     */
-    var x = new kiwi.Variable();
-    var y = new kiwi.Variable();
+    const x = new kiwi.Variable();
+    const y = new kiwi.Variable();
     solver.addConstraint(
       new kiwi.Constraint(
         new kiwi.Expression(
@@ -1569,12 +1568,12 @@ export class Figure extends DOMWidgetView {
   fig_marks: d3.Selection<SVGGraphicsElement, any, any, any>;
   fig_background: d3.Selection<SVGGraphicsElement, any, any, any>;
   fig: d3.Selection<SVGGraphicsElement, any, any, any>;
-  figure_padding_x: number = 0;
-  figure_padding_y: number = 0;
-  width: number = 0;
-  height: number = 0;
-  offsetX: number = 0;
-  offsetY: number = 0;
+  figure_padding_x = 0;
+  figure_padding_y = 0;
+  width = 0;
+  height = 0;
+  offsetX = 0;
+  offsetY = 0;
   interaction_view: Interaction;
   interaction: d3.Selection<SVGGElement, any, any, any>;
   mark_views: ViewList<Mark>;
