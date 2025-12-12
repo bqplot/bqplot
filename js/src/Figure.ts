@@ -365,10 +365,6 @@ export class Figure extends DOMWidgetView {
 
     this.title.text(this.model.get('title'));
 
-    this.tooltip_div = d3
-      .select(document.createElement('div'))
-      .attr('class', 'tooltip_div');
-
     await this.create_figure_scales();
 
     this.axis_views = new ViewList(this.add_axis, this.remove_axis, this);
