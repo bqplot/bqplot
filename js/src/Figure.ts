@@ -36,6 +36,10 @@ import { MarkModel } from './MarkModel';
 import { Interaction } from './Interaction';
 import { FigureModel } from './FigureModel';
 import { Axis } from './Axis';
+import { version } from './version';
+
+const FIGURE_CSS_CLASS = `bqplot_${version.replace(/[^0-9A-Za-z]+/g, "_")}`;
+
 
 interface IFigureSize {
   width: number;
@@ -53,7 +57,7 @@ export class Figure extends DOMWidgetView {
       this.updateDecorators();
     }, 100);
     // Internet Explorer does not support classList for svg elements
-    this.el.classList.add('bqplot');
+    this.el.classList.add(FIGURE_CSS_CLASS);
     this.el.classList.add('figure');
     this.el.classList.add('jupyter-widgets');
     this.change_theme();
@@ -1364,7 +1368,7 @@ export class Figure extends DOMWidgetView {
       const image = new Image();
       image.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.classList.add('bqplot');
+        canvas.classList.add(FIGURE_CSS_CLASS);
         canvas.width = this.width * scale;
         canvas.height = this.height * scale;
         canvas.style.width = this.width.toString();
