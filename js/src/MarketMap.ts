@@ -84,7 +84,7 @@ export class MarketMap extends Figure {
     // code for tool tip to be displayed
     this.tooltip_div = d3
       .select(document.createElement('div'))
-      .attr('class', 'mark_tooltip');
+      .attr('class', 'bqplot_mark_tooltip');
     applyStyles(this.tooltip_div, { opacity: 0, 'pointer-events': 'none' });
 
     const freeze_tooltip_loc = this.model.get('freeze_tooltip_location');
