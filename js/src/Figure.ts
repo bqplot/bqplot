@@ -451,7 +451,6 @@ export class Figure extends DOMWidgetView {
     this.model.on('save_svg', this.save_svg, this);
     this.model.on('upload_png', this.upload_png, this);
     this.model.on('upload_svg', this.upload_svg, this);
-    console.log('RENDER FFS');
 
     this.webGLCanvas.width = this.plotareaWidth;
     this.webGLCanvas.height = this.plotareaHeight;
