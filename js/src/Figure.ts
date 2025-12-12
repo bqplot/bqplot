@@ -38,7 +38,7 @@ import { FigureModel } from './FigureModel';
 import { Axis } from './Axis';
 import { version } from './version';
 
-const FIGURE_CSS_CLASS = `bqplot_${version.replace(/[^0-9A-Za-z]+/g, '_')}`;
+export const FIGURE_CSS_CLASS = `bqplot_${version.replace(/[^0-9A-Za-z]+/g, '_')}`;
 
 interface IFigureSize {
   width: number;
@@ -284,7 +284,7 @@ export class Figure extends DOMWidgetView {
 
     this.tooltip_div = d3
       .select(document.createElement('div'))
-      .attr('class', 'bqplot_tooltip_div');
+      .attr('class', `${FIGURE_CSS_CLASS}_tooltip_div`);
     this.popper_reference = new popperreference.PositionReference({
       x: 0,
       y: 0,
