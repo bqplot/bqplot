@@ -1,0 +1,10 @@
+name: bqplot-nblink-environment
+channels:
+  - emscripten-forge
+  - conda-forge
+dependencies:
+  - xeus-python
+  - bqplot
+  - scikit-learn
+  - scipy
+  - numpy
