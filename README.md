@@ -6,8 +6,7 @@
   <img alt="bqplot." src="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark-nobackground.svg">
 </picture>
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/stable?filepath=examples/Index.ipynb)
-[![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jupyter-widgets/Lobby)
+[![notebook-link](https://img.shields.io/badge/notebook-link-e2d610?logo=jupyter&logoColor=white)](https://notebook.link/github/bqplot/bqplot/?path=examples%2FIndex.ipynb)
 
 2-D plotting library for Project Jupyter
 
@@ -28,10 +27,10 @@ You can follow the documentation on https://bqplot.github.io/bqplot
 
 ## Trying it online
 
-To try out bqplot interactively in your web browser, just click on the binder
+To try out bqplot interactively in your web browser, just click on the Notebook.link
 link:
 
-[![Binder](docs/source/binder-logo.svg)](https://mybinder.org/v2/gh/bqplot/bqplot/stable?filepath=examples/Index.ipynb)
+[![notebook-link](https://img.shields.io/badge/notebook-link-e2d610?logo=jupyter&logoColor=white)](https://notebook.link/github/bqplot/bqplot/?path=examples%2FIndex.ipynb)
 
 ### Dependencies
 
