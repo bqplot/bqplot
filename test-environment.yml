@@ -22,3 +22,4 @@ dependencies:
     - flake8
     - nose
     - codespell
+    - scikit-learn
