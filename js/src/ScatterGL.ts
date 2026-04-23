@@ -502,6 +502,17 @@ export class ScatterGL extends Mark {
     this.parent.update_gl();
   }
 
+  update_material_scales() {
+    const scaleTypeMap = { date: 1, linear: 1, log: 2 };
+    const x_scale = this.scales.x ? this.scales.x : this.parent.scale_x;
+    const y_scale = this.scales.y ? this.scales.y : this.parent.scale_y;
+    this.scatter_material.defines[`SCALE_TYPE_x`] =
+      scaleTypeMap[x_scale.model.type];
+    this.scatter_material.defines[`SCALE_TYPE_y`] =
+      scaleTypeMap[y_scale.model.type];
+    this.scatter_material.needsUpdate = true;
+  }
+
   render_gl() {
     this.set_ranges();
     const fig = this.parent;
@@ -552,6 +563,8 @@ export class ScatterGL extends Mark {
     this.camera.bottom = 0;
     this.camera.top = fig.plotarea_height;
     this.camera.updateProjectionMatrix();
+
+    this.update_material_scales();
 
     this.scatter_material.uniforms['range_x'].value = range_x;
     this.scatter_material.uniforms['range_y'].value = [range_y[1], range_y[0]]; // flipped coordinates in WebGL
