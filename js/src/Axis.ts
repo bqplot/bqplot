@@ -285,7 +285,7 @@ export class Axis extends WidgetView {
     const tickLabels = this.model.get('tick_labels');
     if (tickLabels && Object.keys(tickLabels).length > 0) {
       const formatter = (data) => {
-        let value = tickLabels[data];
+        const value = tickLabels[data];
         if (value === undefined) {
           return default_formatter(data);
         } else {
@@ -855,7 +855,7 @@ export class Axis extends WidgetView {
     if (!(isLinearScale(this.axis_scale) || isColorScale(this.axis_scale))) {
       return -1;
     }
-    let ticks: any[] = this.axis.tickValues();
+    const ticks: any[] = this.axis.tickValues();
     // Case where all data is concentrated into one point.
     if (ticks.length === 1) {
       return 1;
@@ -895,7 +895,7 @@ export class Axis extends WidgetView {
     if (!isDateScale(this.axis_scale)) {
       return;
     }
-    let ticks: any[] = this.axis.tickValues();
+    const ticks: any[] = this.axis.tickValues();
     // diff is the difference between ticks in milliseconds
     const diff = Math.abs(ticks[1] - ticks[0]);
 
@@ -974,7 +974,7 @@ export class Axis extends WidgetView {
     if (!isLogScale(this.axis_scale)) {
       return -1;
     }
-    let ticks: any[] = this.axis.tickValues();
+    const ticks: any[] = this.axis.tickValues();
     const ratio = Math.abs(Math.log10(ticks[1] / ticks[0]));
 
     if (ratio >= 0.301) {
@@ -1055,7 +1055,7 @@ export class Axis extends WidgetView {
     this.autoOffset = autoOffset;
   }
 
-  autoOffset: number = 0;
+  autoOffset = 0;
   axis_scale: Scale;
   axis: d3.Axis<d3.AxisDomain>;
   d3el: d3.Selection<HTMLElement, any, any, any>;
