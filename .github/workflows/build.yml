@@ -5,6 +5,8 @@ on:
     branches: [ master, 0.12.x ]
   pull_request:
     branches: '*'
+  release:
+    types: [published]
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
@@ -80,6 +82,11 @@ jobs:
         python setup.py sdist bdist_wheel
         cd dist
         sha256sum * | tee SHA256SUMS
+
+    - name: Twine check
+      run: |
+        pip install --upgrade twine
+        twine check dist/*.whl dist/*.tar.gz
 
     - name: Pack JavaScript package
       run: |
@@ -168,11 +175,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, macos, windows]
-        python: ['3.6', '3.9']
+        python: ['3.6', '3.9', '3.12']
         include:
           - python: '3.6'
             dist: 'bqplot*.tar.gz'
           - python: '3.9'
+            dist: 'bqplot*.whl'
+          - python: '3.12'
             dist: 'bqplot*.whl'
 
     steps:
@@ -244,3 +253,105 @@ jobs:
         run: |
          micromamba activate lab2
          jupyter labextension install dist/bqplot*.tgz --debug
+
+  publish-pypi:
+    runs-on: ubuntu-24.04
+    needs: [build, visual-regression-tests]
+    permissions:
+      id-token: write
+    environment:
+      name: ${{ github.event_name == 'release' && 'release-pypi' || '' }}
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.run_number }}
+          path: ./dist
+
+      - name: Keep only PyPI artifacts
+        run: |
+          rm -f dist/*.tgz dist/SHA256SUMS
+          ls -la dist/
+
+      - name: Verify tag matches wheel version
+        if: github.event_name == 'release'
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          WHEEL_VERSION=$(ls dist/bqplot-*.whl | sed -E 's|.*/bqplot-([^-]+)-.*\.whl|\1|')
+          echo "Release tag:    $TAG"
+          echo "Wheel version:  $WHEEL_VERSION"
+          if [ "$TAG" != "$WHEEL_VERSION" ]; then
+            echo "::error::Release tag '$TAG' does not match wheel version '$WHEEL_VERSION'"
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Twine check
+        run: |
+          python -m pip install --upgrade pip twine
+          twine check dist/*.whl dist/*.tar.gz
+
+      - name: Publish to PyPI (Trusted Publisher)
+        if: github.event_name == 'release'
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-npm:
+    runs-on: ubuntu-24.04
+    needs: [build, visual-regression-tests]
+    permissions:
+      id-token: write
+      contents: read
+    environment:
+      name: ${{ github.event_name == 'release' && 'release-npm' || '' }}
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.run_number }}
+          path: ./dist
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm to a version that supports trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Show npm package version
+        run: |
+          NPM_VERSION=$(ls dist/bqplot-*.tgz | sed -E 's|.*/bqplot-(.+)\.tgz|\1|')
+          echo "Will publish bqplot@$NPM_VERSION"
+          echo "NPM_VERSION=$NPM_VERSION" >> "$GITHUB_ENV"
+
+      - name: Check npm version
+        id: npm_check
+        run: |
+          if npm view "bqplot@$NPM_VERSION" version > /dev/null 2>&1; then
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+            echo "bqplot@$NPM_VERSION is already on npm"
+          else
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
+            echo "bqplot@$NPM_VERSION not yet on npm"
+          fi
+
+      - name: Fail if releasing an already-published version
+        if: github.event_name == 'release' && steps.npm_check.outputs.already_published == 'true'
+        run: |
+          echo "::error::bqplot@$NPM_VERSION is already on npm; bump js/package.json before releasing"
+          exit 1
+
+      - name: npm publish (dry-run)
+        if: github.event_name != 'release' && steps.npm_check.outputs.already_published == 'false'
+        run: npm publish ./dist/bqplot-*.tgz --access public --dry-run
+
+      - name: Skip dry-run (version already published)
+        if: github.event_name != 'release' && steps.npm_check.outputs.already_published == 'true'
+        run: echo "::notice::bqplot@$NPM_VERSION is already on npm; skipping dry-run. Bump js/package.json on a release-prep PR to exercise the full publish flow."
+
+      - name: npm publish (Trusted Publisher)
+        if: github.event_name == 'release'
+        run: npm publish ./dist/bqplot-*.tgz --access public --provenance
