@@ -3,7 +3,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark-nobackground.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-nobackground.svg">
-  <img alt="bqplot." src="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark-nobackground.svg">
+  <img alt="bqplot logo" src="https://raw.githubusercontent.com/bqplot/design/master/bqplot-logo-dark-nobackground.svg">
 </picture>
 
 [![notebook-link](https://img.shields.io/badge/notebook-link-e2d610?logo=jupyter&logoColor=white)](https://notebook.link/github/bqplot/bqplot/?path=examples%2FIndex.ipynb)
