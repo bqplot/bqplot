@@ -195,7 +195,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: dist-${{ github.run_number }}
+          name: dist ${{ github.run_number }}
           path: ./dist
 
       - name: Keep only PyPI artifacts
@@ -240,7 +240,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: dist-${{ github.run_number }}
+          name: dist ${{ github.run_number }}
           path: ./dist
 
       - uses: actions/setup-node@v4
