@@ -183,38 +183,6 @@ jobs:
 
       - name: Validate the labextension
         run: jupyter labextension list 2>&1 | grep bqplot
-<<<<<<< HEAD
-=======
-
-  JupyterLab2-build:
-    runs-on: ubuntu-latest
-    needs: [build]
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install Conda environment with Micromamba
-        uses: mamba-org/setup-micromamba@main
-        with:
-          environment-name: lab2
-          create-args: >-
-            python=3.9
-            jupyterlab=2
-            yarn
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist-${{ github.run_number }}
-          path: ./dist
-
-      - name: Install the labextension
-        env:
-          NODE_OPTIONS: --openssl-legacy-provider
-        run: |
-         micromamba activate lab2
-         jupyter labextension install dist/bqplot*.tgz --debug
 
   publish-pypi:
     runs-on: ubuntu-24.04
@@ -317,4 +285,3 @@ jobs:
       - name: npm publish (Trusted Publisher)
         if: github.event_name == 'release'
         run: npm publish ./dist/bqplot-*.tgz --access public --provenance
->>>>>>> a6dd7a36 (ci: publish to PyPI and npm via trusted publishers)
