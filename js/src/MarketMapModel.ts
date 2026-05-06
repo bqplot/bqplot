@@ -53,7 +53,7 @@ export class MarketMapModel extends WidgetModel {
       scales: {},
       axes: [],
       color: [],
-      map_margin: {
+      fig_margin: {
         top: 50,
         right: 50,
         left: 50,

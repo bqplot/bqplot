@@ -98,7 +98,7 @@ class MarketMap(DOMWidget):
 
     Attributes
     ----------
-    map_margin: dict (default: {top=50, bottom=50, left=50, right=50})
+    fig_margin: dict (default: {top=50, bottom=50, left=50, right=50})
         Dictionary containing the top, bottom, left and right margins. The user
         is responsible for making sure that the width and height are greater
         than the sum of the margins.
@@ -179,7 +179,7 @@ class MarketMap(DOMWidget):
     scales = Dict().tag(sync=True, **widget_serialization)
     axes = List().tag(sync=True, **widget_serialization)
     color = Array([]).tag(sync=True, **array_serialization)
-    map_margin = Dict(dict(top=50, right=50, left=50, bottom=50))\
+    fig_margin = Dict(dict(top=50, right=50, left=50, bottom=50))\
         .tag(sync=True)
 
     layout = LayoutTraitType(kw=dict(min_width='125px'))\
