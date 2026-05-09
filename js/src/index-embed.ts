@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
-require('../less/bqplot.less');
+require('../less/bqplot.tmp.less');
 module.exports = require('./index');
