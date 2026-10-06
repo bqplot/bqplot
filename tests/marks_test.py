@@ -1,6 +1,5 @@
 import bqplot
 import numpy as np
-import pytest
 
 
 def test_scatter(figure):
