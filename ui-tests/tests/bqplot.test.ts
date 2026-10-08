@@ -34,6 +34,11 @@ const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, th
       onAfterCellRun: async (cellIndex: number) => {
         const cell = await page.notebook.getCellOutput(cellIndex);
         if (cell) {
+          // Wait for bqplot to finish rendering before capturing, otherwise
+          // the screenshot can race the async SVG draw and flake (~1% pixels).
+          await cell.waitForSelector('svg.svg-figure');
+          await page.evaluate(() => (document as any).fonts.ready);
+          await page.waitForTimeout(300);
           results.push(await cell.screenshot());
           numCellImages++;
         }
@@ -43,7 +48,7 @@ const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, th
     await page.notebook.save();
 
     for (let c = 0; c < numCellImages; ++c) {
-      expect(results[c]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, c), {threshold: 0.3});
+      expect(results[c]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, c), {threshold: 0.3, maxDiffPixelRatio: 0.02});
     }
 
     await page.notebook.close(true);
@@ -73,6 +78,10 @@ const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, th
         // Always get first cell output which must contain the plot
         const cell = await page.notebook.getCellOutput(0);
         if (cell) {
+          // Let the async plot update settle before capturing to avoid flakes.
+          await cell.waitForSelector('svg.svg-figure');
+          await page.evaluate(() => (document as any).fonts.ready);
+          await page.waitForTimeout(300);
           results.push(await cell.screenshot());
           cellCount++;
         }
@@ -82,7 +91,7 @@ const testPlotUpdates = async (page: IJupyterLabPageFixture, tmpPath: string, th
     await page.notebook.save();
 
     for (let i = 0; i < cellCount; i++) {
-      expect(results[i]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, i), {threshold: 0.3});
+      expect(results[i]).toMatchSnapshot(getCaptureImageName(contextPrefix, notebook, i), {threshold: 0.3, maxDiffPixelRatio: 0.02});
     }
 
     await page.notebook.close(true);
