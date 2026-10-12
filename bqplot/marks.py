@@ -495,6 +495,8 @@ class FlexLine(Mark):
     stroke_width = Float(1.5).tag(sync=True, display_name='Stroke width')
     colors = List(trait=Color(default_value=None, allow_none=True),
                   default_value=CATEGORY10).tag(sync=True)
+    labels_visibility = Enum(['none', 'label'], default_value='none')\
+        .tag(sync=True, display_name='Labels visibility')
     _view_name = Unicode('FlexLine').tag(sync=True)
     _model_name = Unicode('FlexLineModel').tag(sync=True)
 
