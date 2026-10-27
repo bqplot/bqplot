@@ -90,7 +90,11 @@ jobs:
         path: ./dist
 
   visual-regression-tests:
-    runs-on: ubuntu-latest
+    # Pinned to 24.04: ubuntu-latest moved to 26.04, which Playwright's pinned
+    # version has no chromium build for ("Playwright does not support chromium
+    # on ubuntu26.04"). 24.04 also matches the OS the -linux.png baselines were
+    # generated on, so snapshots don't need regenerating.
+    runs-on: ubuntu-24.04
     needs: [build]
 
     steps:
