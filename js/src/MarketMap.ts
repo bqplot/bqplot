@@ -30,7 +30,7 @@ import { Scale } from 'bqscales';
 
 import * as d3 from 'd3';
 // var d3 =Object.assign({}, require("d3-array"), require("d3-format"), require("d3-selection"), require("d3-selection-multi"), require("d3-shape"));
-import { Figure } from './Figure';
+import { Figure, FIGURE_CSS_CLASS } from './Figure';
 import { MarketMapModel } from './MarketMapModel';
 import { Tooltip } from './Tooltip';
 import * as popperreference from './PopperReference';
@@ -84,7 +84,7 @@ export class MarketMap extends Figure {
     // code for tool tip to be displayed
     this.tooltip_div = d3
       .select(document.createElement('div'))
-      .attr('class', 'bqplot_mark_tooltip');
+      .attr('class', `${FIGURE_CSS_CLASS}_mark_tooltip`);
     applyStyles(this.tooltip_div, { opacity: 0, 'pointer-events': 'none' });
 
     const freeze_tooltip_loc = this.model.get('freeze_tooltip_location');
