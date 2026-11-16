@@ -138,6 +138,7 @@ export class Bars extends Mark {
       //animate bars on data update
       const animate = true;
       this.draw(animate);
+      this.compute_view_padding();
     });
 
     this.listenTo(this.model, 'change:colors', this.updateColors);

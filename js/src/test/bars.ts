@@ -18,6 +18,50 @@ describe('bars >', () => {
     this.manager = new DummyManager({ bqplot: bqplot });
   });
 
+  for (const [initialCount, orientation] of [
+    [1, 'vertical'],
+    [2, 'vertical'],
+    [10, 'vertical'],
+    [1, 'horizontal'],
+  ] as const) {
+    it(`updates layout when changing from ${initialCount} bars to four (${orientation})`, async function () {
+      const scaleState = { min: null, max: null, allow_padding: true };
+      const x = [0.375, 1.125, 1.875, 2.625];
+      const y = [1, 1, 1, 1];
+      const reference = await create_figure_bars(
+        new DummyManager({ bqplot: bqplot }),
+        x,
+        y,
+        scaleState
+      );
+      const { bars } = await create_figure_bars(
+        this.manager,
+        Array.from({ length: initialCount }, (_, i) => i + 0.5),
+        Array(initialCount).fill(1),
+        scaleState
+      );
+      reference.bars.model.set('orientation', orientation);
+      bars.model.set('orientation', orientation);
+
+      bars.model.set({ x: x, y: y });
+      d3Timer.timerFlush();
+
+      const geometry = (view) =>
+        view.d3el
+          .selectAll('.bargroup')
+          .nodes()
+          .map((group) => ({
+            transform: group.getAttribute('transform'),
+            width: group.querySelector('rect.bar').getAttribute('width'),
+            height: group.querySelector('rect.bar').getAttribute('height'),
+          }));
+      expect(geometry(bars)).to.deep.equal(geometry(reference.bars));
+      expect(bars.scales.x.scale.range()).to.deep.equal(
+        reference.bars.scales.x.scale.range()
+      );
+    });
+  }
+
   it('create 1d', async function () {
     const x = {
       dtype: 'float32',
