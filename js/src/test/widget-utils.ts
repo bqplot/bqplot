@@ -291,7 +291,7 @@ export async function create_figure_pie(manager, sizes, labels) {
   return { figure: figure, pie: await figure.mark_views.views[0] };
 }
 
-export async function create_figure_bars(manager, x, y) {
+export async function create_figure_bars(manager, x, y, xScaleState = {}) {
   const layout = await create_model(
     manager,
     '@jupyter-widgets/base',
@@ -308,6 +308,7 @@ export async function create_figure_bars(manager, x, y) {
       min: 0,
       max: 1,
       allow_padding: false,
+      ...xScaleState,
     }
   );
   const scale_y = await create_model_bqscales(
