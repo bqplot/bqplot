@@ -94,3 +94,4 @@ nav:
       - MarketMap: api/market_map.md
     - Migration Guide: migrate.md
     - Contributing: contributing.md
+    - Dashboards Gallery: https://bqplot.github.io/bqplot-gallery
