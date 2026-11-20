@@ -155,7 +155,7 @@ export class BarsModel extends MarkModel {
           };
         });
 
-        let extremes = [this.baseValue, cumulativeNeg, cumulativePos];
+        const extremes = [this.baseValue, cumulativeNeg, cumulativePos];
         // posMax is the maximum positive value for a group of
         // bars.
         data.posMax = d3.max(extremes);

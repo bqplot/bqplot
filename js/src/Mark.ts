@@ -25,7 +25,7 @@ import { Widget } from '@lumino/widgets';
 import { d3GetEvent, getLuminoWidget } from './utils';
 import * as _ from 'underscore';
 import { MarkModel } from './MarkModel';
-import { Figure } from './Figure';
+import { FIGURE_CSS_CLASS, Figure } from './Figure';
 import { applyStyles } from './utils';
 
 // Check that value is defined and not null
@@ -76,7 +76,7 @@ export abstract class Mark extends widgets.WidgetView {
     }
     this.tooltip_div = d3
       .select(document.createElement('div'))
-      .attr('class', 'bqplot_mark_tooltip')
+      .attr('class', `${FIGURE_CSS_CLASS}_mark_tooltip`)
       .attr('id', 'tooltip_' + this.uuid)
       .style('display', 'none')
       .style('opacity', 0);

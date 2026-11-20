@@ -72,3 +72,5 @@ site/
 
 .yarn
 ui-tests/.yarn
+
+js/less/bqplot.tmp.less

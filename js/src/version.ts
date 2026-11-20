@@ -15,4 +15,5 @@
 
 import packageJson from '../package.json';
 
+export const version = packageJson.version;
 export const semver_range = '^' + packageJson.version;
