@@ -151,3 +151,35 @@ def test_serialize_nested_list():
     deserialized_data = array_from_json(serialized_data)
 
     assert np.all(data == deserialized_data)
+
+
+def test_from_json_rectangular_numeric_roundtrip():
+    # A rectangular list of numeric rows (e.g. GridHeatMap ``selected`` arriving
+    # as [[row, col], ...]) must deserialize to a numeric array, not dtype=object,
+    # so ipywidgets can re-serialize it without "Unsupported dtype object".
+    # Regression test for gh-1632.
+    value = [[0, 1], [2, 3]]
+    arr = array_from_json(value)
+    assert arr.dtype.kind in ('i', 'u')  # numeric, not object
+    assert arr.tolist() == value
+
+    # the round-trip that previously raised ValueError("Unsupported dtype object")
+    serialized = array_to_json(arr)
+    assert serialized['dtype'] == 'int32'
+    assert array_from_json(serialized).tolist() == value
+
+    # a single selected cell (the minimal GridHeatMap selection)
+    single = array_from_json([[0, 1]])
+    assert single.dtype.kind in ('i', 'u')
+    assert array_from_json(array_to_json(single)).tolist() == [[0, 1]]
+
+
+def test_from_json_ragged_still_object():
+    # Genuinely ragged lists must still fall back to object dtype and keep
+    # serializing element-by-element.
+    ragged = array_from_json([[0, 1, 2], [3, 4]])
+    assert ragged.dtype == object
+    serialized = array_to_json(ragged)
+    assert len(serialized) == 2
+    assert serialized[0]['dtype'] == 'int32'
+    assert serialized[1]['dtype'] == 'int32'

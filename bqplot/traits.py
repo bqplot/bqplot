@@ -137,7 +137,15 @@ def array_from_json(value, obj=None):
                         return np.array(subarrays, dtype=object)
                 return np.array(subarrays)
             elif len(value) > 0 and isinstance(value[0], list):
-                return np.array(value, dtype=object)
+                # Rectangular numeric lists (e.g. GridHeatMap ``selected`` =
+                # [[row, col], ...]) must become a proper numeric array so they
+                # round-trip back through ``array_to_json``; forcing dtype=object
+                # here makes re-serialization raise "Unsupported dtype object".
+                # Only fall back to object dtype for genuinely ragged lists.
+                try:
+                    return np.array(value)
+                except ValueError:
+                    return np.array(value, dtype=object)
             else:
                 return np.array(value)
         elif 'value' in value:
