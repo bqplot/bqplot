@@ -343,8 +343,7 @@ class Lines(Mark):
         in the list will have full opacity, while others will be faded.
     line_style: {'solid', 'dashed', 'dotted', 'dash_dotted'}
         Line style.
-    interpolation: {'linear', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open',
-    'cardinal-closed', 'monotone', 'step-before', 'step-after'}
+    interpolation: {'linear', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'cardinal-closed', 'monotone', 'step-before', 'step-after'}
         Interpolation scheme used for interpolation between the data points
         provided. Please refer to the svg interpolate documentation for details
         about the different interpolation schemes.
@@ -353,6 +352,8 @@ class Lines(Mark):
     marker_size: nonnegative int (default: 64)
         Default marker size in pixels
 
+    Notes
+    -----
     !!! note
         - The fields which can be passed to the default tooltip are:
             - **name**: label of the line
@@ -673,6 +674,8 @@ class Scatter(_ScatterBase):
         only when enable_move is set to True. If both restrict_x and restrict_y
         are set to True, the point cannot be moved.
 
+    Notes
+    -----
     !!! Note
         - The fields which can be passed to the default tooltip are:
             - All the data attributes (x, y, color, opacity, size, skew, rotation)
@@ -881,6 +884,8 @@ class Hist(Mark):
     midpoints: list (default: [])
         midpoints of the bins of the histogram. It is a read-only attribute.
 
+    Notes
+    -----
     !!! Note
         - The fields which can be passed to the default tooltip are:
             - **midpoint**: mid-point of the bin related to the rectangle hovered on
@@ -938,7 +943,7 @@ class Boxplot(Mark):
 
     Attributes
     ----------
-    : numpy.ndarray (default: [])
+    x: numpy.ndarray (default: [])
         abscissas of the data points (1d array)
     y: numpy.ndarray (default: [[]])
         Sample data points (2d array)
@@ -1078,6 +1083,8 @@ class Bars(Mark):
     label_display_horizontal_offset: float
         horizontal offset value for the label display
 
+    Notes
+    -----
     !!! Note
         - The fields which can be passed to the default tooltip are:
             - All the data attributes
@@ -1209,6 +1216,8 @@ class Bins(Bars):
         The upper range of the bins.  If not provided, lower range
         is simply `x.max()`.
 
+    Notes
+    -----
     !!! Note
         - The fields which can be passed to the default tooltip are:
             - All the `Bars` data attributes (`x`, `y`, `color`)
@@ -1296,6 +1305,8 @@ class OHLC(Mark):
         description of y data being passed
         supports all permutations of the strings 'ohlc', 'oc', and 'hl'
 
+    Notes
+    -----
     !!! Note
         - The fields which can be passed to the default tooltip are:
             - **x**: the x value associated with the bar/candle
